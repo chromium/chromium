@@ -192,8 +192,8 @@ void Scheduler::SetNeedsOneBeginImplFrame() {
 // This is an experimental method introduced for crbug.com/496610055
 // in which we send an artificial BeginMainFrame if we know that we're
 // in the last renderer frame of a cross-document view transition.
-void Scheduler::SendEarlyLastBeginMainFrame() {
-  TRACE_EVENT0("cc", "Scheduler::SendEarlyLastBeginMainFrame");
+void Scheduler::SendEarlyFinalBeginMainFrame() {
+  TRACE_EVENT0("cc", "Scheduler::SendEarlyFinalBeginMainFrame");
   viz::BeginFrameArgs args = last_dispatched_begin_main_frame_args_;
 
   // Ensure we start from the latest known args to avoid sequence number

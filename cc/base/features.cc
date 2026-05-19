@@ -266,10 +266,10 @@ BASE_FEATURE(kResourcePoolPreferExactSizeReuse,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Killswitch for disabling SendEarlyBeginMainFrame function in cc/scheduler.
-BASE_FEATURE(kSendEarlyLastBeginMainFrame, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSendEarlyFinalBeginMainFrame, base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool SendEarlyLastBeginMainFrameIsEnabled() {
-  return base::FeatureList::IsEnabled(kSendEarlyLastBeginMainFrame);
+bool SendEarlyFinalBeginMainFrameIsEnabled() {
+  return base::FeatureList::IsEnabled(kSendEarlyFinalBeginMainFrame);
 }
 
 }  // namespace features

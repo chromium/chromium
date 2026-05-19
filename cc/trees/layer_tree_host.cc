@@ -2133,7 +2133,7 @@ void LayerTreeHost::SetHasCopyRequest(bool has_copy_request) {
 }
 
 void LayerTreeHost::RequestImmediateBeginMainFrame() {
-  if (features::SendEarlyLastBeginMainFrameIsEnabled()) {
+  if (features::SendEarlyFinalBeginMainFrameIsEnabled()) {
     proxy_->SendImmediateBeginMainFrame();
   }
 }

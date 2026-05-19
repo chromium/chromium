@@ -1074,7 +1074,7 @@ base::SingleThreadTaskRunner* ProxyMain::ImplThreadTaskRunner() {
 
 void ProxyMain::SendImmediateBeginMainFrame() {
   ImplThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyImpl::SendEarlyLastBeginMainFrame,
+      FROM_HERE, base::BindOnce(&ProxyImpl::SendEarlyFinalBeginMainFrame,
                                 base::Unretained(proxy_impl_.get())));
 }
 

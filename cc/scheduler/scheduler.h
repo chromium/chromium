@@ -166,7 +166,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // active).
   void SetNeedsOneBeginImplFrame();
 
-  void SendEarlyLastBeginMainFrame();
+  void SendEarlyFinalBeginMainFrame();
 
   void SetNeedsRedraw();
 

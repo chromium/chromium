@@ -294,8 +294,8 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResourcePoolPreferExactSizeReuse);
 // signal has just occurred. This optimization is specific to the last frame of
 // the document renderer during a cross-document view transition and should
 // not occur otherwise.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendEarlyLastBeginMainFrame);
-CC_BASE_EXPORT bool SendEarlyLastBeginMainFrameIsEnabled();
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendEarlyFinalBeginMainFrame);
+CC_BASE_EXPORT bool SendEarlyFinalBeginMainFrameIsEnabled();
 
 }  // namespace features
 

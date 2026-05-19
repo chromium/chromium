@@ -669,7 +669,7 @@ TEST_P(SchedulerTest, InitializeLayerTreeFrameSinkDoesNotBeginImplFrame) {
   EXPECT_NO_ACTION();
 }
 
-TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringIdle) {
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_DuringIdle) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // Simulate basic standard frame cycle passing cleanly.
@@ -699,13 +699,13 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringIdle) {
   client_->Reset();
 
   // Send immediate last frame synthetically.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   EXPECT_TRUE(client_->IsInsideBeginImplFrame());
   EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
 }
 
-TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_HalfInterval) {
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_HalfInterval) {
   SetUpScheduler(EXTERNAL_BFS);
 
   base::TimeDelta default_interval = viz::BeginFrameArgs::DefaultInterval();
@@ -733,7 +733,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_HalfInterval) {
   client_->Reset();
 
   // Send the early last frame signal.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   // Wait for half the default interval amount of time.
   task_runner_->AdvanceMockTickClock(default_interval * 0.5);
@@ -743,7 +743,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_HalfInterval) {
             base_seq + 1);
 }
 
-TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_Throttling) {
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_Throttling) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // Send a regular frame first.
@@ -766,7 +766,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_Throttling) {
       client_->last_begin_main_frame_args().frame_id.sequence_number;
 
   // Send the early last frame signal.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   // Check if the last BeginMainFrame sequence number had advanced, despite
   // throttling.
@@ -775,7 +775,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_Throttling) {
   EXPECT_TRUE(client_->IsInsideBeginImplFrame());
 }
 
-TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringCommit) {
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_DuringCommit) {
   // This is always set in proxy_impl.
   scheduler_settings_.main_frame_before_commit_enabled = true;
   SetUpScheduler(EXTERNAL_BFS);
@@ -790,7 +790,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringCommit) {
 
   // Send the early last frame signal while the previous frame is pending
   // commit.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   // Frame should not be sent immediately because the previous one hasn't
   // committed.
@@ -805,7 +805,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringCommit) {
             base_seq + 1);
 }
 
-TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringActivate) {
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_DuringActivate) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // Start a frame, complete the commit, and leave it pending activation.
@@ -819,7 +819,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringActivate) {
 
   // Send the early last frame signal while the previous frame is pending
   // activate.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   // Frame should not be sent immediately because we are awaiting activation.
   EXPECT_EQ(client_->last_begin_main_frame_args().frame_id.sequence_number,
@@ -834,7 +834,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_DuringActivate) {
 }
 
 TEST_P(SchedulerTest,
-       SendEarlyLastBeginMainFrame_MonotonicityAndDuplicateDropping) {
+       SendEarlyFinalBeginMainFrame_MonotonicityAndDuplicateDropping) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // 1. Start with a regular frame to initialize
@@ -861,7 +861,7 @@ TEST_P(SchedulerTest,
 
   // 3. Send early last BeginMainFrame signal.
   // This should advance beyond impl_only_seq.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   uint64_t spoofed_seq =
       client_->last_begin_impl_frame_args().frame_id.sequence_number;
@@ -884,7 +884,7 @@ TEST_P(SchedulerTest,
   EXPECT_NO_ACTION();
 }
 
-TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_ClearsPendingRetroFrame) {
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_ClearsPendingRetroFrame) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // Initialize last_dispatched_begin_main_frame_args_.
@@ -915,7 +915,7 @@ TEST_P(SchedulerTest, SendEarlyLastBeginMainFrame_ClearsPendingRetroFrame) {
 
   // 3. Send early last BeginMainFrame.
   // It should take the max(last_started, pending) and advance.
-  scheduler_->SendEarlyLastBeginMainFrame();
+  scheduler_->SendEarlyFinalBeginMainFrame();
 
   uint64_t spoofed_seq =
       client_->last_begin_impl_frame_args().frame_id.sequence_number;

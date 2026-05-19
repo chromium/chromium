@@ -291,9 +291,9 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
     return f;
   }
 
-  void DidSendEarlyLastBeginMainFrame() override {
-    LayerTreeHostImpl::DidSendEarlyLastBeginMainFrame();
-    test_hooks_->DidSendEarlyLastBeginMainFrameOnThread(this);
+  void DidSendEarlyFinalBeginMainFrame() override {
+    LayerTreeHostImpl::DidSendEarlyFinalBeginMainFrame();
+    test_hooks_->DidSendEarlyFinalBeginMainFrameOnThread(this);
   }
 
   void NotifyReadyToActivate() override {

@@ -609,7 +609,7 @@ class LayerTreeHostProxyTestRequestImmediateBeginMainFrame
     }
   }
 
-  void DidSendEarlyLastBeginMainFrameOnThread(
+  void DidSendEarlyFinalBeginMainFrameOnThread(
       LayerTreeHostImpl* host_impl) override {
     received_ = true;
   }
@@ -634,7 +634,8 @@ class LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled
     : public LayerTreeHostProxyTest {
  protected:
   LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled() {
-    feature_list_.InitAndDisableFeature(features::kSendEarlyLastBeginMainFrame);
+    feature_list_.InitAndDisableFeature(
+        features::kSendEarlyFinalBeginMainFrame);
   }
   ~LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled() override =
       default;
@@ -651,7 +652,7 @@ class LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled
     }
   }
 
-  void DidSendEarlyLastBeginMainFrameOnThread(
+  void DidSendEarlyFinalBeginMainFrameOnThread(
       LayerTreeHostImpl* host_impl) override {
     received_ = true;
   }

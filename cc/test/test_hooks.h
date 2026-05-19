@@ -73,7 +73,7 @@ class TestHooks : public AnimationDelegate {
                                               const Tile* tile,
                                               bool update_damage) {}
   virtual void DidRunBeginMainFrame() {}
-  virtual void DidSendEarlyLastBeginMainFrameOnThread(
+  virtual void DidSendEarlyFinalBeginMainFrameOnThread(
       LayerTreeHostImpl* host_impl) {}
   virtual void DidReceivePresentationTimeOnThread(
       LayerTreeHostImpl* host_impl,
