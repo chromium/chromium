@@ -136,8 +136,11 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessageTask(
     auto it = pending_response_map_.find(*id);
     if (it == pending_response_map_.cend()) {
       LOG(ERROR) << "Unexpected message id=" << *id;
-      agent_host_->GetProcessHost()->ShutdownForBadMessage(
-          content::RenderProcessHost::CrashReportMode::GENERATE_CRASH_DUMP);
+      if (agent_host_) {
+        agent_host_->GetProcessHost()->ShutdownForBadMessage(
+            content::RenderProcessHost::CrashReportMode::GENERATE_CRASH_DUMP);
+      }
+      return;
     }
 
     // Result handler callback may add more callbacks, so make sure we use
