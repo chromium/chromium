@@ -104,3 +104,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WebView) {
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ClipPath) {
   RunTest("contextual_tasks/utils/clip_path_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WindowManager) {
+  RunTest("contextual_tasks/window_manager_test.js", "mocha.run();");
+}
