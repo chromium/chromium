@@ -925,7 +925,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             return;
         }
 
-        updateSceneLayerYOffset();
+        updateSceneLayerYOffset(/* includeMinHeightBoundary= */ true);
     }
 
     public void onTransitionStart() {
@@ -1000,7 +1000,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
         mLayerYOffset = layerYOffset;
         if (mOverlayCoordinator != null) {
-            updateSceneLayerYOffset();
+            updateSceneLayerYOffset(/* includeMinHeightBoundary= */ false);
         }
 
         // Skip the layout params in non-resting position to avoid trigger layout during browser
@@ -1020,7 +1020,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Remove the offset tag on animation starts, so the toolbar does not set the yOffset
         // while the compositor moves the layer with offset tags.
         mOverlayCoordinator.setOffsetTagInfo(null);
-        updateSceneLayerYOffset();
+        updateSceneLayerYOffset(/* includeMinHeightBoundary= */ true);
     }
 
     // In compositor, the position of the toolbar depends on the capture. As of Nov 2025, the
@@ -1028,7 +1028,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     // the size of the tab strip.
     // To place the toolbar at its desired position, we have to subtract the diffs of the capture a
     // nd the toolbar, in order to put the toolbar at the desired yOffset.
-    private void updateSceneLayerYOffset() {
+    private void updateSceneLayerYOffset(boolean includeMinHeightBoundary) {
         // Edge case: When Chrome launches on NTP, the browser controls might not dispatch
         // a valid yOffset for the toolbar. If the capture size changes (e.g. resize screen), we
         // we will not have a valid yOffset.
@@ -1075,14 +1075,21 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // is fully scrolled off.
         // TODO(crbug.com/448641122): Let hairline layer owns the adjustment logic.
         int hairlineAdjustment = 0;
-        if (shouldHideHairlineInSceneLayer()) {
+        if (shouldHideHairlineInSceneLayer(includeMinHeightBoundary)) {
             hairlineAdjustment = -mControlContainer.getToolbarHairlineHeight();
         }
 
         assertNonNull(mOverlayCoordinator).setYOffset(mLayerYOffset - diff + hairlineAdjustment);
     }
 
-    private boolean shouldHideHairlineInSceneLayer() {
+    /**
+     * Returns whether the toolbar scene layer should be shifted up to keep the hairline hidden.
+     *
+     * @param includeMinHeightBoundary Whether to include content offsets exactly at the top
+     *     controls min-height boundary. When false, the adjustment only applies after the content
+     *     offset has moved past the min-height boundary.
+     */
+    private boolean shouldHideHairlineInSceneLayer(boolean includeMinHeightBoundary) {
         // When mIsHairlineVisible is false, the hairline view is hidden and therefore is not
         // drawn into the toolbar capture. With no hairline in the capture there is nothing to
         // hide, so no scene layer adjustment is needed.
@@ -1094,7 +1101,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         int topControlsMinHeight = mBrowserControls.getTopControlsMinHeight();
         int topControlsHairlineHeight = mBrowserControls.getTopControlsHairlineHeight();
         int contentOffset = mBrowserControls.getContentOffset();
-        return BrowserControlsUtils.shouldContentOffsetHideTopControlsHairline(
-                contentOffset, topControlsMinHeight, topControlsHairlineHeight);
+        return (includeMinHeightBoundary || contentOffset > topControlsMinHeight)
+                && BrowserControlsUtils.shouldContentOffsetHideTopControlsHairline(
+                        contentOffset, topControlsMinHeight, topControlsHairlineHeight);
     }
 }
