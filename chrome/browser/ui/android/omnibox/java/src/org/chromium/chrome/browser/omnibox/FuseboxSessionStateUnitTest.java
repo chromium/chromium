@@ -32,8 +32,10 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.url.GURL;
@@ -218,5 +220,59 @@ public class FuseboxSessionStateUnitTest {
         assertNull(session.getAutocompleteController());
         assertNull(session.getComposeboxQueryControllerBridge());
         assertNull(session.getFuseboxAttachmentModelList());
+    }
+
+    @Test
+    public void testActivate_defaultPageClassification_setsInitialUserText() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn("Title").when(mLocationBarDataProvider).getTitle();
+        doReturn(new GURL("https://www.google.com"))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
+        doReturn(PageClassification.OTHER_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
+
+        assertEquals("www.google.com/", session.getAutocompleteInput().getUserText());
+    }
+
+    @Test
+    public void testActivate_searchWidgetPageClassification_doesNotSetInitialUserText() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn("Title").when(mLocationBarDataProvider).getTitle();
+        doReturn(new GURL("https://www.google.com"))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
+        doReturn(PageClassification.ANDROID_SEARCH_WIDGET_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
+
+        assertEquals("", session.getAutocompleteInput().getUserText());
+    }
+
+    @Test
+    public void testActivate_shortcutsWidgetPageClassification_doesNotSetInitialUserText() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn("Title").when(mLocationBarDataProvider).getTitle();
+        doReturn(new GURL("https://www.google.com"))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
+        doReturn(PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
+
+        assertEquals("", session.getAutocompleteInput().getUserText());
     }
 }
