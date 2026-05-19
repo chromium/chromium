@@ -23,11 +23,9 @@ UkmConfig::MergeResult UkmConfig::Merge(const UkmConfig& config) {
 }
 
 base::flat_set<uint64_t> UkmConfig::GetRawObservedEvents() const {
-  base::flat_set<uint64_t> events;
-  for (const auto& it : metrics_for_event_) {
-    events.insert(it.first.GetUnsafeValue());
-  }
-  return events;
+  return base::MakeFlatSet<uint64_t>(
+      metrics_for_event_, /*comp=*/{},
+      [](const auto& it) { return it.first.GetUnsafeValue(); });
 }
 
 const base::flat_set<UkmMetricHash>* UkmConfig::GetObservedMetrics(

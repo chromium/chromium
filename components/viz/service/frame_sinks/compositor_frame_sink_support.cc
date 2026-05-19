@@ -635,10 +635,9 @@ void CompositorFrameSinkSupport::SetThreads(
     threads_ = std::move(unverified_threads);
     return;
   }
-  base::flat_set<base::PlatformThreadId> thread_ids;
-  for (const auto& thread : unverified_threads) {
-    thread_ids.insert(base::PlatformThreadId(thread.id));
-  }
+  auto thread_ids = base::MakeFlatSet<base::PlatformThreadId>(
+      unverified_threads, /*comp=*/{},
+      [&](const auto& thread) { return base::PlatformThreadId(thread.id); });
   frame_sink_manager_->VerifySandboxedThreadIds(
       thread_ids,
       base::BindOnce(

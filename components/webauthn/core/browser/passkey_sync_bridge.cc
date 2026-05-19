@@ -118,11 +118,11 @@ std::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
   // Google Password Manager passkeys are disabled when Sync is disabled so it
   // shouldn't be the case that there are any local entities when Sync starts.
   // But it can happen in corner cases. This code uploads any such entities to
-  // the server.
-  base::flat_set<std::string_view> local_only_sync_ids;
-  for (const auto& it : data_) {
-    local_only_sync_ids.insert(it.first);
-  }
+  // the server. The string_views in `local_only_sync_ids` reference std::string
+  // keys in `data_` and so remain valid until they are consumed below.
+  auto local_only_sync_ids = base::MakeFlatSet<std::string_view>(
+      data_, /*comp=*/{},
+      [](const auto& it) { return std::string_view(it.first); });
   for (const auto& change : entity_changes) {
     local_only_sync_ids.erase(change->storage_key());
   }

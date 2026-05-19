@@ -732,20 +732,17 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
 
 base::flat_set<GaiaId> GetGaiaIDs(
     const std::vector<gaia::ListedAccount>& listed_accounts) {
-  base::flat_set<GaiaId> result;
-  for (const gaia::ListedAccount& listed_account : listed_accounts) {
-    result.insert(listed_account.gaia_id);
-  }
-  return result;
+  return base::MakeFlatSet<GaiaId>(
+      listed_accounts, /*comp=*/{},
+      [](const gaia::ListedAccount& listed_account) {
+        return listed_account.gaia_id;
+      });
 }
 
 base::flat_set<GaiaId> GetGaiaIDs(
     const google::protobuf::Map<std::string, EnclaveLocalState::User>& users) {
-  base::flat_set<GaiaId> result;
-  for (const auto& it : users) {
-    result.insert(GaiaId(it.first));
-  }
-  return result;
+  return base::MakeFlatSet<GaiaId>(
+      users, /*comp=*/{}, [](const auto& it) { return GaiaId(it.first); });
 }
 
 std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {

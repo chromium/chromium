@@ -62,11 +62,9 @@ base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
     return {};
   }
 
-  base::flat_set<std::string> extension_ids;
-  for (const auto item : pref->GetValue()->GetDict()) {
-    extension_ids.insert(item.first);
-  }
-  return extension_ids;
+  return base::MakeFlatSet<std::string>(
+      pref->GetValue()->GetDict(), /*comp=*/{},
+      [](const auto& item) { return item.first; });
 }
 
 Profile* GetProfile() {

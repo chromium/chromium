@@ -51,11 +51,10 @@ void UpdateDecoderAudioTypesInternal(
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
 void UpdateEncoderVideoProfilesInternal(
     const media::VideoEncodeAccelerator::SupportedProfiles& supported_configs) {
-  base::flat_set<media::VideoCodecProfile> media_profiles;
-  for (const auto& config : supported_configs) {
-    media_profiles.insert(
-        static_cast<media::VideoCodecProfile>(config.profile));
-  }
+  auto media_profiles = base::MakeFlatSet<media::VideoCodecProfile>(
+      supported_configs, /*comp=*/{}, [&](const auto& config) {
+        return static_cast<media::VideoCodecProfile>(config.profile);
+      });
   media::UpdateDefaultEncoderSupportedVideoProfiles(media_profiles);
 }
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)

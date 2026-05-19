@@ -281,10 +281,9 @@ MATCHER(ResourceIdEq, "") {
 
 MATCHER(PlaneZOrdersAreUnique, "") {
   const OverlayCandidateList& candidates = arg;
-  base::flat_set<int> z_orders;
-  for (const auto& candidate : candidates) {
-    z_orders.insert(candidate.plane_z_order);
-  }
+  auto z_orders = base::MakeFlatSet<int>(
+      candidates, /*comp=*/{},
+      [&](const auto& candidate) { return candidate.plane_z_order; });
   return candidates.size() == z_orders.size();
 }
 

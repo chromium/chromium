@@ -120,11 +120,9 @@ void ModelProviderRegistry::RemoveObserverForOptimizationTargetModel(
 
 base::flat_set<proto::OptimizationTarget>
 ModelProviderRegistry::GetRegisteredOptimizationTargets() const {
-  base::flat_set<proto::OptimizationTarget> optimization_targets;
-  for (const auto& registration_info : model_registration_info_map_) {
-    optimization_targets.insert(registration_info.first);
-  }
-  return optimization_targets;
+  return base::MakeFlatSet<proto::OptimizationTarget>(
+      model_registration_info_map_, /*comp=*/{},
+      [](const auto& registration_info) { return registration_info.first; });
 }
 
 const ModelInfo* ModelProviderRegistry::GetModel(

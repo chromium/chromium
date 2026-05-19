@@ -25,11 +25,8 @@ namespace {
 
 base::flat_set<GURL> GetAllIconUrlsForSizeAny(
     base::flat_map<IconPurpose, GURL> icon_purpose_to_urls) {
-  base::flat_set<GURL> urls;
-  for (const auto& data : icon_purpose_to_urls) {
-    urls.insert(data.second);
-  }
-  return urls;
+  return base::MakeFlatSet<GURL>(icon_purpose_to_urls, /*comp=*/{},
+                                 [](const auto& data) { return data.second; });
 }
 
 void PopulateIconUrlsForSizeAnyIfNeeded(

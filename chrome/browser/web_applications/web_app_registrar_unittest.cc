@@ -140,10 +140,8 @@ class WebAppRegistrarTest : public WebAppTest {
   }
 
   base::flat_set<webapps::AppId> PopulateRegistry(const Registry& registry) {
-    base::flat_set<webapps::AppId> app_ids;
-    for (auto& kv : registry) {
-      app_ids.insert(kv.second->app_id());
-    }
+    auto app_ids = base::MakeFlatSet<webapps::AppId>(
+        registry, /*comp=*/{}, [&](auto& kv) { return kv.second->app_id(); });
 
     database_factory().WriteRegistry(registry);
 

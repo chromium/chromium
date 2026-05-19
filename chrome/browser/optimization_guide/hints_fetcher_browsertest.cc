@@ -447,10 +447,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       return;
     }
 
-    base::flat_set<std::string> hosts_and_urls_requested;
-    for (const auto& host : hints_request.hosts()) {
-      hosts_and_urls_requested.insert(host.host());
-    }
+    auto hosts_and_urls_requested = base::MakeFlatSet<std::string>(
+        hints_request.hosts(), /*comp=*/{},
+        [&](const auto& host) { return host.host(); });
     for (const auto& url : hints_request.urls()) {
       // TODO(crbug.com/40118423):  Remove normalization step once nav predictor
       // provides predictable URLs.

@@ -809,10 +809,9 @@ std::u16string SuggestUniqueTabGroupName(
 
   std::vector<tab_groups::SavedTabGroup> saved_groups =
       tab_group_sync_service->GetAllGroups();
-  base::flat_set<std::u16string> existing_titles;
-  for (const auto& group : saved_groups) {
-    existing_titles.insert(group.title());
-  }
+  auto existing_titles = base::MakeFlatSet<std::u16string>(
+      saved_groups, /*comp=*/{},
+      [&](const auto& group) { return group.title(); });
 
   if (!existing_titles.contains(folder_title)) {
     return folder_title;

@@ -216,11 +216,9 @@ const char* GetAcceleratorActionName(AcceleratorAction action) {
 }
 
 base::flat_set<AcceleratorAction> GetAcceleratorActionsForTest() {
-  base::flat_set<AcceleratorAction> all;
-  for (auto& entry : kAcceleratorActionToName) {
-    all.emplace(entry.first);
-  }
-  return all;
+  return base::MakeFlatSet<AcceleratorAction>(
+      kAcceleratorActionToName, /*comp=*/{},
+      [](auto& entry) { return entry.first; });
 }
 
 }  // namespace ash

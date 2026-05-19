@@ -79,10 +79,9 @@ std::vector<uint64_t> DrmModifiersFilterVulkan::Filter(
   std::vector<VkDrmFormatModifierPropertiesEXT> modifier_props =
       QueryVkDrmFormatModifierPropertiesEXT(phys_dev, vulkan_format);
 
-  base::flat_set<uint64_t> vulkan_modifiers;
-  for (const auto& props : modifier_props) {
-    vulkan_modifiers.insert(props.drmFormatModifier);
-  }
+  auto vulkan_modifiers = base::MakeFlatSet<uint64_t>(
+      modifier_props, /*comp=*/{},
+      [&](const auto& props) { return props.drmFormatModifier; });
   std::vector<uint64_t> intersection;
   for (const auto& modifier : modifiers) {
     if (vulkan_modifiers.contains(modifier)) {

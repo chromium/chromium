@@ -268,10 +268,11 @@ const apps::FileHandlers WebFileHandlersPermissionHandler::GetAppsFileHandlers(
          web_file_handler.file_handler.accept.additional_properties) {
       apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = mime_type;
-      base::flat_set<std::string> file_extensions;
-      for (const auto& file_extension : file_extension_list.GetList()) {
-        file_extensions.insert(file_extension.GetString());
-      }
+      auto file_extensions = base::MakeFlatSet<std::string>(
+          file_extension_list.GetList(), /*comp=*/{},
+          [&](const auto& file_extension) {
+            return file_extension.GetString();
+          });
       accept_entry.file_extensions = file_extensions;
       accept.emplace_back(accept_entry);
     }

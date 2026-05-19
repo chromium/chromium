@@ -306,11 +306,9 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   base::flat_set<std::string> GaiaAccountsInState() {
     const webauthn_pb::EnclaveLocalState& state =
         manager_.local_state_for_testing();
-    base::flat_set<std::string> ret;
-    for (const auto& it : state.users()) {
-      ret.insert(it.first);
-    }
-    return ret;
+
+    return base::MakeFlatSet<std::string>(
+        state.users(), /*comp=*/{}, [](const auto& it) { return it.first; });
   }
 
   void OnKeysStored(const GaiaId& gaia_id) override {

@@ -42,10 +42,9 @@ bool BurnInController::UpdateResults(ResultsMap& results,
 
   // Record the burn-in iteration number for categories we are seeing for the
   // first time in this search.
-  base::flat_set<Category> updated_categories;
-  for (const auto& result : results[result_type]) {
-    updated_categories.insert(result->category());
-  }
+  auto updated_categories = base::MakeFlatSet<Category>(
+      results[result_type], /*comp=*/{},
+      [&](const auto& result) { return result->category(); });
   for (auto& category : categories) {
     const auto it = updated_categories.find(category.category);
     if (it != updated_categories.end() && category.burn_in_iteration == -1) {

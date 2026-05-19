@@ -112,10 +112,9 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
   const auto it = results.find(provider);
   DCHECK(it != results.end());
 
-  base::flat_set<std::string> seen_ids;
-  for (const auto result : best_matches_) {
-    seen_ids.insert(result->id());
-  }
+  auto seen_ids = base::MakeFlatSet<std::string>(
+      best_matches_, /*comp=*/{},
+      [](const auto& result) { return result->id(); });
 
   for (const auto& result : it->second) {
     if (ShouldIgnoreResult(result.get())) {

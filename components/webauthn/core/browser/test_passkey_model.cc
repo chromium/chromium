@@ -49,11 +49,9 @@ bool TestPasskeyModel::IsEmpty() const {
 }
 
 base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
-  base::flat_set<std::string> ids;
-  for (const auto& credential : credentials_) {
-    ids.emplace(credential.sync_id());
-  }
-  return ids;
+  return base::MakeFlatSet<std::string>(
+      credentials_, /*comp=*/{},
+      [](const auto& credential) { return credential.sync_id(); });
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics> TestPasskeyModel::GetPasskeys(
