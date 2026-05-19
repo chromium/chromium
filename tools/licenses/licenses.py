@@ -131,6 +131,9 @@ PRUNE_PATHS = set([
     # Mock test data.
     os.path.join('tools', 'binary_size', 'libsupersize', 'testdata'),
 
+    # Catapult bisect dependencies (not shipped).
+    os.path.join('tools', 'catapult_bisect_dep'),
+
     # Overrides some WebRTC files, same license. Skip this one.
     os.path.join('third_party', 'webrtc_overrides'),
 
