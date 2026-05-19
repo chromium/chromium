@@ -5599,21 +5599,32 @@ void GLES2DecoderImpl::InvalidateFramebufferImpl(
     translated_attachments[i] = attachment;
   }
 
+  bool skip_api_call = false;
+  if (workarounds().dont_invalidate_incomplete_fbos) {
+    if (DoCheckFramebufferStatus(target) != GL_FRAMEBUFFER_COMPLETE) {
+      skip_api_call = true;
+    }
+  }
+
   bool dirty = false;
   switch (op) {
     case kFramebufferDiscard:
-      if (gl_version_info().is_es3) {
-        api()->glInvalidateFramebufferFn(target, validated_count,
-                                         translated_attachments.data());
-      } else {
-        api()->glDiscardFramebufferEXTFn(target, validated_count,
-                                         translated_attachments.data());
+      if (!skip_api_call) {
+        if (gl_version_info().is_es3) {
+          api()->glInvalidateFramebufferFn(target, validated_count,
+                                           translated_attachments.data());
+        } else {
+          api()->glDiscardFramebufferEXTFn(target, validated_count,
+                                           translated_attachments.data());
+        }
       }
       dirty = true;
       break;
     case kFramebufferInvalidate:
-      api()->glInvalidateFramebufferFn(target, validated_count,
-                                       translated_attachments.data());
+      if (!skip_api_call) {
+        api()->glInvalidateFramebufferFn(target, validated_count,
+                                         translated_attachments.data());
+      }
       dirty = true;
       break;
     case kFramebufferInvalidateSub:
