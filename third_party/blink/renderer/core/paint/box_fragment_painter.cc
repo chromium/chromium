@@ -2419,7 +2419,9 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     }
   } else if (style.HasBorderRadius() &&
              HitTestClippedOutByBorder(hit_test.location, physical_offset)) {
-    return false;
+    if (!hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow()) {
+      return false;
+    }
   }
 
   bool pointer_events_bounding_box = false;

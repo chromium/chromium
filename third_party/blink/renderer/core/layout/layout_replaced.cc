@@ -174,7 +174,9 @@ bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
 
   if (StyleRef().HasBorderRadius() &&
       HitTestClippedOutByBorder(hit_test_location, accumulated_offset)) {
-    return false;
+    if (!result.GetHitTestRequest().IsHitTestVisualOverflow()) {
+      return false;
+    }
   }
 
   // Now hit test ourselves.
