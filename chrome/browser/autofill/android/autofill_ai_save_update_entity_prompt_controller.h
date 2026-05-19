@@ -8,10 +8,12 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -63,6 +65,8 @@ class AutofillAiSaveUpdateEntityPromptController {
   // Called by AutofillAiSaveUpdateEntityPromptController.java
   void OnWalletLinkClicked(JNIEnv* env);
   void OnUserAccepted(JNIEnv* env);
+  void OnUserEdited(JNIEnv* env,
+                    const EntityInstanceAndroid& edited_entity_instance);
   void OnUserDeclined(JNIEnv* env);
   // Called whenever the prompt is dismissed (e.g. because the user already
   // accepted/declined/edited the entity (after OnUserAccepted/Declined/Edited
@@ -70,7 +74,9 @@ class AutofillAiSaveUpdateEntityPromptController {
   void OnPromptDismissed(JNIEnv* env);
 
  private:
-  void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
+  void RunPromptClosedCallback(
+      AutofillClient::AutofillAiBubbleResult result,
+      std::optional<EntityInstance> edited_entity_instance = std::nullopt);
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;

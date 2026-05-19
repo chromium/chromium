@@ -80,6 +80,11 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private EntityEditorCoordinator mEntityEditor;
 
+    private final EntityInstance mEntity =
+            new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                    .setGuid("guid1")
+                    .setRecordType(RecordType.LOCAL)
+                    .build();
     private Activity mActivity;
     private AutofillAiSaveUpdateEntityPromptController mPromptController;
     private AutofillAiSaveUpdateEntityPrompt mPrompt;
@@ -95,14 +100,9 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 AutofillAiSaveUpdateEntityPromptController.create(
                         NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        EntityInstance entity =
-                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
-                        .setGuid("")
-                        .setRecordType(RecordType.LOCAL)
-                        .build();
         mPrompt =
                 new AutofillAiSaveUpdateEntityPrompt(
-                        mPromptController, mModalDialogManager, mActivity, mProfile, entity);
+                        mPromptController, mModalDialogManager, mActivity, mProfile, mEntity);
         mPrompt.setEntityEditorForTesting(mEntityEditor);
     }
 
@@ -114,9 +114,9 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
         mModalDialogManager.clickPositiveButton();
         assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mPromptControllerJni, times(1))
+        verify(mPromptControllerJni)
                 .onUserAccepted(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
-        verify(mPromptControllerJni, times(1))
+        verify(mPromptControllerJni)
                 .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
     }
 
@@ -133,6 +133,10 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                         .build();
         mPrompt.onDone(editedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
         verify(mPromptControllerJni)
+                .onUserEdited(
+                        eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER),
+                        eq(editedEntity));
+        verify(mPromptControllerJni)
                 .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
     }
 
@@ -144,9 +148,9 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
         mModalDialogManager.clickNegativeButton();
         assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mPromptControllerJni, times(1))
+        verify(mPromptControllerJni)
                 .onUserDeclined(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
-        verify(mPromptControllerJni, times(1))
+        verify(mPromptControllerJni)
                 .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
     }
 
@@ -158,7 +162,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
         mPrompt.dismiss();
         assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mPromptControllerJni, times(1))
+        verify(mPromptControllerJni)
                 .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
     }
 

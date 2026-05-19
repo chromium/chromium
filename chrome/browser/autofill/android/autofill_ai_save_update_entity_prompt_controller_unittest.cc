@@ -125,6 +125,25 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
 }
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       DisplayPrompt_UserEdited) {
+  CreateController();
+  EXPECT_CALL(prompt_view(), Show(&prompt_controller()));
+  prompt_controller().DisplayPrompt();
+
+  EntityInstance edited_entity = test::GetPassportEntityInstance(
+      {.name = u"Bob Doe", .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstanceAndroid edited_entity_android(
+      edited_entity, /*is_enabled=*/true,
+      /*is_eligible_for_wallet_storage=*/true,
+      /*requires_reauth_to_see=*/false);
+
+  EXPECT_CALL(prompt_closed_callback(),
+              Run(AutofillClient::AutofillAiBubbleResult::kAccepted,
+                  Optional(edited_entity), _));
+  prompt_controller().OnUserEdited(env(), edited_entity_android);
+}
+
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
        DisplayPrompt_UserDeclined) {
   CreateController();
   EXPECT_CALL(prompt_view(), Show(&prompt_controller()));

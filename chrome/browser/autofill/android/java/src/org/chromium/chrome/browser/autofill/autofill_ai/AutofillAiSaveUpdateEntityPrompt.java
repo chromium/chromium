@@ -87,8 +87,8 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
     @Override
     public void onDone(
             EntityInstance entityInstance, int descriptionStringId, int acceptButtonStringId) {
-        // TODO: crbug.com/509798874 - Send the updated entity instance to C++.
         mEditorClosingPending = true;
+        mController.onUserEdited(entityInstance);
         maybeDismissSaveUpdatePrompt(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
