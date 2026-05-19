@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "crypto/scoped_capi_types.h"
@@ -77,16 +78,16 @@ std::pair<std::optional<std::string>, std::optional<std::string>> GetSPKIHash(
 
     // Get the subject. First ask how long the name is, including null
     // terminator.
-    size_t length = CertGetNameStringA(
+    size_t length = CertGetNameStringW(
         cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, /*dwFlags=*/0,
         /*pvTypePara=*/nullptr, /*pszNameString=*/nullptr, /*cchNameString=*/0);
     if (length > 0) {
-      std::vector<char> subject(length);
-      CertGetNameStringA(
+      std::vector<wchar_t> subject(length);
+      CertGetNameStringW(
           cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, /*dwFlags=*/0,
           /*pvTypePara=*/nullptr, /*pszNameString=*/subject.data(),
           /*cchNameString=*/subject.size());
-      ret.second = subject.data();
+      ret.second = base::WideToUTF8(subject.data());
     }
   }
 
