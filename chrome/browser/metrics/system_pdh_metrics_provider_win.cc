@@ -297,6 +297,7 @@ SystemPdhMetricsProvider::PdhQueryHandler::~PdhQueryHandler() = default;
 
 void SystemPdhMetricsProvider::PdhQueryHandler::StopRecording() {
   timer_.Stop();
+  process_counters_.clear();
   pdh_query_.reset();
 }
 

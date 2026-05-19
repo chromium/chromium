@@ -138,13 +138,14 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
       const DWORD format_;
     };
 
+    // Initialized during metric recording, and cleared when stopped.
+    base::win::ScopedPdhQuery pdh_query_;
+
+    // Must be destroyed before `pdh_query_`.
     using ProcessCounterArray = std::array<ProcessCounter, 18>;
     absl::flat_hash_map<content::ChildProcessId,
                         std::unique_ptr<ProcessCounterArray>>
         process_counters_;
-
-    // Initialized during metric recording, and cleared when stopped.
-    base::win::ScopedPdhQuery pdh_query_;
 
     // This is the name without extension of the current exe binary name. For
     // example, assuming that the current process is chrome.exe, this returns
