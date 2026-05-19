@@ -2810,6 +2810,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_SEND_TO_DEVICES" desc="Menu item for sending the page to another device. [CHAR_LIMIT=27]">
         Send to devices
       </message>
+      <message name="IDS_MENU_QR_CODE" desc="Menu item for generating a QR Code for the current page. [CHAR_LIMIT=27]">
+        QR code
+      </message>
       <message name="IDS_MENU_BACK_BUTTON_IPH_TEXT" desc="Message on the generic text buble to educate users on the menu back button">
         Open the menu to go back
       </message>

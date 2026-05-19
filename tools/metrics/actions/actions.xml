@@ -28999,6 +28999,11 @@ should be able to be added at any place in this file.
   <description>User pressed 'Print' in the app menu.</description>
 </action>
 
+<action name="MobileMenuQRCode">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'QR Code' in the app menu.</description>
+</action>
+
 <action name="MobileMenuQuit">
   <obsolete>This menu item was never added to the app menu.</obsolete>
   <owner>aurimas@chromium.org</owner>

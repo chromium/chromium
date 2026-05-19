@@ -163,6 +163,7 @@ found in the LICENSE file.
     <item type="id" name="addresses_and_more_menu_id" />
     <item type="id" name="copy_link_menu_id" />
     <item type="id" name="send_to_devices_menu_id" />
+    <item type="id" name="qr_code_menu_id" />
     <item type="id" name="history_parent_menu_id" />
     <item type="id" name="bookmark_menu_id" />
     <item type="id" name="bookmark_folder_menu_id" />

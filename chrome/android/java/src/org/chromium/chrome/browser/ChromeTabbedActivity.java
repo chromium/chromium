@@ -242,6 +242,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfGestureDetector;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetricsRecorder;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -4196,6 +4197,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return true;
             }
             return false;
+        } else if (id == R.id.qr_code_menu_id) {
+            assert currentTab != null;
+            QrCodeCoordinator qrCodeCoordinator =
+                    new QrCodeCoordinator(this, currentTab.getUrl().getSpec(), getWindowAndroid());
+            qrCodeCoordinator.show();
+            RecordUserAction.record("MobileMenuQRCode");
+            return true;
         } else if (id == R.id.add_to_group_menu_id
                 || id == R.id.add_tab_to_group_menu_id
                 || id == R.id.add_tab_to_new_group_menu_id) {
