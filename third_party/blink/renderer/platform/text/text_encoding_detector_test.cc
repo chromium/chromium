@@ -34,7 +34,7 @@ TEST(TextEncodingDetectorTest, Ignore7BitEncoding) {
   EXPECT_EQ(TextEncoding("US-ASCII"), encoding);
 }
 
-TEST(TextEncodingDetectorTest, NonWHATWGEncodingBecomesAscii) {
+TEST(TextEncodingDetectorTest, NonWhatwgEncodingBecomesAscii) {
   std::string pseudo_jpg =
       "\xff\xd8\xff\xe0\x00\x10JFIF foo bar baz\xff\xe1\x00\xa5"
       "\x01\xd7\xff\x01\x57\x33\x44\x55\x66\x77\xed\xcb\xa9\x87"
@@ -47,7 +47,7 @@ TEST(TextEncodingDetectorTest, NonWHATWGEncodingBecomesAscii) {
   EXPECT_EQ(TextEncoding("US-ASCII"), encoding);
 }
 
-TEST(TextEncodingDetectorTest, UrlHintHelpsEUCJP) {
+TEST(TextEncodingDetectorTest, UrlHintHelpsEucJp) {
   std::string eucjp_bytes =
       "<TITLE>"
       "\xA5\xD1\xA5\xEF\xA1\xBC\xA5\xC1\xA5\xE3\xA1\xBC\xA5\xC8\xA1\xC3\xC5\xEA"
@@ -68,7 +68,7 @@ TEST(TextEncodingDetectorTest, UrlHintHelpsEUCJP) {
       << "With URL hint including '.jp', it's detected as EUC-JP";
 }
 
-TEST(TextEncodingDetectorTest, LanguageHintHelpsEUCJP) {
+TEST(TextEncodingDetectorTest, LanguageHintHelpsEucJp) {
   std::string eucjp_bytes =
       "<TITLE>"
       "\xA5\xD1\xA5\xEF\xA1\xBC\xA5\xC1\xA5\xE3\xA1\xBC\xA5\xC8\xA1\xC3\xC5\xEA"
