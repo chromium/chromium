@@ -762,8 +762,6 @@ suite('General', () => {
               ?.getBookmarkDescriptionForTests(folder));
     });
 
-    // TODO(https://crbug.com/512674938): Reenable.
-    // <if expr="not is_macosx">
     test('RenamesBookmark', async () => {
       const renamedBookmarkId = '4';
       powerBookmarksApp.$.contextMenu.fire(
@@ -797,7 +795,6 @@ suite('General', () => {
           rowItemElement.shadowRoot.querySelector<CrInputElement>('cr-input');
       assertFalse(!!input);
     });
-    // </if>
 
     test('BlursRenameInput', async () => {
       const renamedBookmarkId = '4';
