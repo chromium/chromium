@@ -983,6 +983,44 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({"EnablePixAccountLinkingNative:prompt_variant/VariationC"})
+    public void testPixAccountLinkingPromptContents_VariantC() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.get(SCREEN_VIEW_MODEL).set(SETTINGS_LINK_CALLBACK, v -> {});
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView productIcon = mView.getContentView().findViewById(R.id.product_icon);
+        assertNotNull(productIcon);
+
+        TextView title = mView.getContentView().findViewById(R.id.title);
+        assertThat(title.getText(), is("Check out faster next time?"));
+
+        TextView bodyText = mView.getContentView().findViewById(R.id.body_text);
+        assertThat(
+                bodyText.getText().toString(),
+                is(
+                        "You won't need to switch apps anymore. Google encryption protects your"
+                                + " info and will confirm that it's you before payment happens."));
+
+        TextView settingsLink =
+                mView.getContentView().findViewById(R.id.pix_code_detection_settings_link);
+        assertThat(
+                settingsLink.getText().toString(),
+                is("To turn off Pix code detection, go to Chrome settings"));
+
+        ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
+        assertThat(acceptButton.getText(), is("Link your account"));
+
+        ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
+        assertThat(declineButton.getText(), is("Not now"));
+    }
+
+    @Test
+    @MediumTest
     public void testViewLifecycleCanBeManipulatedByTheModel() {
         // Verify that the view's initial state does not survive page navigations (does not have a
         // custom lifecycle).

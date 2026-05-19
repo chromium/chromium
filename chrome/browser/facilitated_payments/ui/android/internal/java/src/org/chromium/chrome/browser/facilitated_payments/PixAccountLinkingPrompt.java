@@ -30,6 +30,7 @@ import org.chromium.ui.widget.ButtonCompat;
 @NullMarked
 public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView {
     private static final String VARIATION_B = "VariationB";
+    private static final String VARIATION_C = "VariationC";
 
     private LinearLayout mView;
 
@@ -42,6 +43,8 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
         int layoutId = R.layout.pix_account_linking_prompt;
         if (VARIATION_B.equals(promptVariant)) {
             layoutId = R.layout.pix_account_linking_prompt_b;
+        } else if (VARIATION_C.equals(promptVariant)) {
+            layoutId = R.layout.pix_account_linking_prompt_c;
         }
 
         mView =
@@ -83,8 +86,7 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
                                 settingsLink
                                         .getContext()
                                         .getString(
-                                                R.string
-                                                        .pix_account_linking_prompt_b_settings_link),
+                                                R.string.pix_account_linking_prompt_settings_link),
                                 new SpanApplier.SpanInfo(
                                         "<link1>",
                                         "</link1>",

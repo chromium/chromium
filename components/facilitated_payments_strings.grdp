@@ -137,14 +137,11 @@
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_VALUE_PROP_MESSAGE_2" desc="Second value prop message in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
     Google encryption protects your info
   </message>
-  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_ACCEPT" desc="Text for the accept button in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_LINK_ACCOUNT" desc="Text for the accept button in the bottom sheet showing Pix account linking prompt for Variants B and C." formatter_data="android_java">
     Link your account
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_DECLINE_FIRST_TWO_TIMES" desc="Text for the decline button in the bottom sheet showing Pix account linking prompt. This string is used for the first two times the prompt is shown, where we show 'Not now' instead of 'No thanks'." formatter_data="android_java">
     Not now
-  </message>
-  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_SETTINGS_LINK" desc="Text for the settings link in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
-    To turn off Pix code detection, go to <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Chrome settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_TITLE" desc="Title for the bottom sheet showing Pix account linking prompt. It asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome." formatter_data="android_java">
     Pay with Pix directly in Chrome next time
@@ -163,6 +160,13 @@
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_DECLINE" desc="Text for the decline button in the bottom sheet showing Pix account linking prompt. It asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome." formatter_data="android_java">
     No thanks
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_C_TITLE" desc="Title for the bottom sheet showing Pix account linking prompt (Variation C)." formatter_data="android_java">
+    Check out faster next time?
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_C_BODY" desc="Body text for the bottom sheet showing Pix account linking prompt (Variation C)." formatter_data="android_java">You won't need to switch apps anymore. Google encryption protects your info and will confirm that it's you before payment happens.</message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_SETTINGS_LINK" desc="Text for the settings link in the bottom sheet showing Pix account linking prompt." formatter_data="android_java">
+    To turn off Pix code detection, go to <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Chrome settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
 </if>
 

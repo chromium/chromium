@@ -33,35 +33,19 @@ found in the LICENSE file.
         android:textAlignment="center"
         android:layout_marginTop="@dimen/pix_account_linking_prompt_title_top_margin"
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
-        android:text="@string/pix_account_linking_prompt_b_title"
-        android:focusable="true" />
+        android:text="@string/pix_account_linking_prompt_c_title" />
 
     <TextView
-        android:id="@+id/value_prop_message_1"
+        android:id="@+id/body_text"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:paddingTop="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
+        android:paddingTop="0dp"
         android:paddingBottom="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
-        android:layout_marginTop="@dimen/pix_account_linking_prompt_value_prop_section_top_margin"
+        android:layout_marginTop="4dp"
         android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
-        app:drawableStartCompat="@drawable/facilitated_payments_globe_icon"
-        android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
-        android:text="@string/pix_account_linking_prompt_b_value_prop_message_1"
+        android:text="@string/pix_account_linking_prompt_c_body"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:focusable="true" />
-
-    <TextView
-        android:id="@+id/value_prop_message_2"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:paddingTop="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
-        android:paddingBottom="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
-        android:layout_marginTop="@dimen/pix_account_linking_prompt_inter_value_prop_vertical_margin"
-        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
-        app:drawableStartCompat="@drawable/facilitated_payments_lock_icon"
-        android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
-        android:text="@string/pix_account_linking_prompt_b_value_prop_message_2"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textAlignment="center"
         android:focusable="true" />
 
     <TextView
@@ -74,6 +58,7 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:textColorLink="@macro/default_text_color_link"
         android:focusable="true" />
+
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/accept_button"
         android:layout_width="match_parent"
@@ -86,7 +71,7 @@ found in the LICENSE file.
         android:id="@+id/decline_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/pix_account_linking_prompt_decline_button_bottom_margin"
+        android:layout_marginBottom="9dp"
         android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_decline_button_top_margin"
         style="@style/TextButton"
         android:text="@string/pix_account_linking_prompt_decline_first_two_times" />
