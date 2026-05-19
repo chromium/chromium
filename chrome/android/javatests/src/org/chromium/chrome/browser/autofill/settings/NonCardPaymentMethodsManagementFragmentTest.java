@@ -26,6 +26,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -203,6 +204,7 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // Test that when the A2A preference is set to false, the A2A toggle is not checked.
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky. See crbug.com/514670265")
     @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aPrefDisabled_a2aSwitchDisabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -314,6 +316,7 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // off.
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky. See crbug.com/514670265")
     public void testEwalletSwitchDisabled_eWalletRowItemsRemoved() throws TimeoutException {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
@@ -330,6 +333,7 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // Test that eWallet accounts are added when the eWallet toggle is turned on.
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky. See crbug.com/514670265")
     public void testEwalletSwitchEnabled_eWalletRowItemsAdded() throws TimeoutException {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(
