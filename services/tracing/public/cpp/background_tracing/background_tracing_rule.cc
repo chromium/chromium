@@ -227,12 +227,16 @@ class HistogramRule : public BackgroundTracingRule,
                             histogram_upper_value_));
     base::trace_event::NamedTriggerManager::GetInstance()->AddObserver(rule_id_,
                                                                        this);
-    TracingAgentObserverManager::GetInstance()->AddAgentObserver(this);
+    if (auto* manager = TracingAgentObserverManager::GetInstance()) {
+      manager->AddAgentObserver(this);
+    }
   }
 
   void DoUninstall() override {
     histogram_sample_callback_.reset();
-    TracingAgentObserverManager::GetInstance()->RemoveAgentObserver(this);
+    if (auto* manager = TracingAgentObserverManager::GetInstance()) {
+      manager->RemoveAgentObserver(this);
+    }
     base::trace_event::NamedTriggerManager::GetInstance()->RemoveObserver(
         rule_id_, this);
   }

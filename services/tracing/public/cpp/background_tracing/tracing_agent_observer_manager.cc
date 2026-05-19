@@ -20,7 +20,6 @@ void TracingAgentObserverManager::SetInstance(
 
 // static
 TracingAgentObserverManager* TracingAgentObserverManager::GetInstance() {
-  CHECK(g_instance);
   return g_instance;
 }
 
