@@ -167,6 +167,62 @@ bool AudioBufferSourceHandler::HandleLoopWrapping(double virtual_end_frame,
   return false;
 }
 
+void AudioBufferSourceHandler::ProcessFastPath(double virtual_delta_frames,
+                                               double virtual_end_frame,
+                                               uint32_t buffer_length,
+                                               size_t destination_length,
+                                               unsigned number_of_channels,
+                                               int& frames_to_process,
+                                               unsigned& write_index,
+                                               double& virtual_read_index) {
+  auto source_channels = source_channels_.as_span();
+  auto destination_channels = destination_channels_.as_span();
+
+  unsigned read_index = static_cast<unsigned>(virtual_read_index);
+  unsigned delta_frames = static_cast<unsigned>(virtual_delta_frames);
+  unsigned end_frame = static_cast<unsigned>(virtual_end_frame);
+
+  while (frames_to_process > 0) {
+    int frames_to_end = end_frame - read_index;
+    int frames_this_time = std::min(frames_to_process, frames_to_end);
+    frames_this_time = std::max(0, frames_this_time);
+    size_t frames_this_time_size = base::checked_cast<size_t>(frames_this_time);
+
+    DCHECK_LE(write_index + frames_this_time, destination_length);
+    DCHECK_LE(read_index + frames_this_time, buffer_length);
+
+    for (unsigned i = 0; i < number_of_channels; ++i) {
+      auto dest =
+          destination_channels[i].subspan(write_index, frames_this_time_size);
+
+      if (!source_channels[i].empty()) {
+        dest.copy_from(
+            source_channels[i].subspan(read_index, frames_this_time_size));
+      } else {
+        std::ranges::fill(dest, 0.0f);
+      }
+    }
+
+    write_index += frames_this_time;
+    read_index += frames_this_time;
+    frames_to_process -= frames_this_time;
+
+    // It can happen that `frames_this_time` is 0. DCHECK that we will
+    // actually exit the loop in this case.  `frames_this_time` is 0 only if
+    // `read_index` >= `end_frame`.
+    DCHECK(frames_this_time ? true : read_index >= end_frame);
+
+    // Wrap-around.
+    double temp_read_index = read_index;
+    if (HandleLoopWrapping(end_frame, delta_frames, write_index,
+                           frames_to_process, temp_read_index)) {
+      break;
+    }
+    read_index = static_cast<unsigned>(temp_read_index);
+  }
+  virtual_read_index = read_index;
+}
+
 bool AudioBufferSourceHandler::RenderFromBuffer(
     AudioBus* bus,
     unsigned destination_frame_offset,
@@ -304,50 +360,9 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       virtual_read_index == floor(virtual_read_index) &&
       virtual_delta_frames == floor(virtual_delta_frames) &&
       virtual_end_frame == floor(virtual_end_frame)) {
-    unsigned read_index = static_cast<unsigned>(virtual_read_index);
-    unsigned delta_frames = static_cast<unsigned>(virtual_delta_frames);
-    end_frame = static_cast<unsigned>(virtual_end_frame);
-
-    while (frames_to_process > 0) {
-      int frames_to_end = end_frame - read_index;
-      int frames_this_time = std::min(frames_to_process, frames_to_end);
-      frames_this_time = std::max(0, frames_this_time);
-      size_t frames_this_time_size =
-          base::checked_cast<size_t>(frames_this_time);
-
-      DCHECK_LE(write_index + frames_this_time, destination_length);
-      DCHECK_LE(read_index + frames_this_time, buffer_length);
-
-      for (unsigned i = 0; i < number_of_channels; ++i) {
-        auto dest =
-            destination_channels[i].subspan(write_index, frames_this_time_size);
-
-        if (!source_channels[i].empty()) {
-          dest.copy_from(
-              source_channels[i].subspan(read_index, frames_this_time_size));
-        } else {
-          std::ranges::fill(dest, 0.0f);
-        }
-      }
-
-      write_index += frames_this_time;
-      read_index += frames_this_time;
-      frames_to_process -= frames_this_time;
-
-      // It can happen that `frames_this_time` is 0. DCHECK that we will
-      // actually exit the loop in this case.  `frames_this_time` is 0 only if
-      // `read_index` >= `end_frame`.
-      DCHECK(frames_this_time ? true : read_index >= end_frame);
-
-      // Wrap-around.
-      double temp_read_index = read_index;
-      if (HandleLoopWrapping(end_frame, delta_frames, write_index,
-                             frames_to_process, temp_read_index)) {
-        break;
-      }
-      read_index = static_cast<unsigned>(temp_read_index);
-    }
-    virtual_read_index = read_index;
+    ProcessFastPath(virtual_delta_frames, virtual_end_frame, buffer_length,
+                    destination_length, number_of_channels, frames_to_process,
+                    write_index, virtual_read_index);
   } else {
     while (frames_to_process--) {
       unsigned read_index = static_cast<unsigned>(virtual_read_index);
