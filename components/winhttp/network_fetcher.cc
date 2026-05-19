@@ -99,14 +99,17 @@ void NetworkFetcher::CompleteFetch() {
   if (!fetch_complete_callback_) {
     return;
   }
+  const int reported_response_code =
+      FAILED(net_error_) ? net_error_ : response_code_;
   if (!file_.IsValid()) {
-    std::move(fetch_complete_callback_).Run(response_code_);
+    std::move(fetch_complete_callback_).Run(reported_response_code);
     return;
   }
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, kTaskTraits,
       base::BindOnce([](base::File file) { file.Close(); }, std::move(file_)),
-      base::BindOnce(std::move(fetch_complete_callback_), response_code_));
+      base::BindOnce(std::move(fetch_complete_callback_),
+                     reported_response_code));
 }
 
 HRESULT NetworkFetcher::QueryHeaderString(const std::wstring& name,

@@ -41,8 +41,10 @@ TEST(WinHttpNetworkFetcher, InvalidUrlPost) {
       /*fetch_started_callback=*/base::DoNothing(),
       /*fetch_progress_callback=*/base::DoNothing(),
       /*fetch_complete_callback=*/
-      base::BindLambdaForTesting(
-          [&run_loop](int response_code) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop](int response_code) {
+        EXPECT_EQ(response_code, E_INVALIDARG);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   EXPECT_EQ(network_fetcher->GetNetError(), E_INVALIDARG);
 }
@@ -61,8 +63,10 @@ TEST(WinHttpNetworkFetcher, InvalidUrlDownload) {
       /*fetch_started_callback=*/base::DoNothing(),
       /*fetch_progress_callback=*/base::DoNothing(),
       /*fetch_complete_callback=*/
-      base::BindLambdaForTesting(
-          [&run_loop](int response_code) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop](int response_code) {
+        EXPECT_EQ(response_code, E_INVALIDARG);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   EXPECT_EQ(network_fetcher->GetNetError(), E_INVALIDARG);
 }
@@ -80,8 +84,14 @@ TEST(WinHttpNetworkFetcher, NullSession) {
       /*fetch_started_callback=*/base::DoNothing(),
       /*fetch_progress_callback=*/base::DoNothing(),
       /*fetch_complete_callback=*/
-      base::BindLambdaForTesting(
-          [&run_loop](int response_code) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop](int response_code) {
+        EXPECT_THAT(
+            response_code,
+            ::testing::AnyOf(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WIN32,
+                                          ERROR_WINHTTP_NOT_INITIALIZED),
+                             E_HANDLE));
+        run_loop.Quit();
+      }));
   run_loop.Run();
   EXPECT_THAT(network_fetcher->GetNetError(),
               ::testing::AnyOf(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WIN32,
