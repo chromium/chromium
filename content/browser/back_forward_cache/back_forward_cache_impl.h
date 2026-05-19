@@ -404,7 +404,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns true if the |entry| is forward of the |current_nav_entry_index| in
   // the session history.
   bool IsForwardEntry(const std::unique_ptr<Entry>& entry,
-                      NavigationControllerImpl& controller,
                       int current_nav_entry_index);
 
   // Called when a history back navigation commits. Records the number of
@@ -563,10 +562,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // memory usage of background processes because Android will kill the process
   // if memory becomes scarce.
   std::optional<size_t> GetForegroundedEntriesCacheSize();
-
-  // Returns the associated NavigationControllerImpl. We can just retrieve it
-  // from the first entry since they all share the same NavigationController.
-  NavigationControllerImpl& GetNavigationController();
 
   // Enforces a limit on the number of entries. Which entries are counted
   // towards the limit depends on the values of `reason`.

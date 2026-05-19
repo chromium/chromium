@@ -1526,7 +1526,7 @@ void BackForwardCacheImpl::SetEmbedderSuppliedCacheForwardEntriesAllowed(
   embedder_supplied_cache_forward_entries_allowed_ =
       embedder_supplied_cache_forward_entries_allowed;
   if (!embedder_supplied_cache_forward_entries_allowed && !entries_.empty()) {
-    PruneForwardEntries(GetNavigationController().GetLastCommittedEntryIndex());
+    PruneForwardEntries(controller_->GetLastCommittedEntryIndex());
   }
 }
 
@@ -1541,9 +1541,8 @@ void BackForwardCacheImpl::PruneForwardEntries(int target_entry_index) {
   if (entries_.empty()) {
     return;
   }
-  auto& controller = GetNavigationController();
   for (std::unique_ptr<Entry>& entry : entries_) {
-    if (IsForwardEntry(entry, controller, target_entry_index)) {
+    if (IsForwardEntry(entry, target_entry_index)) {
       entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
           BackForwardCacheMetrics::NotRestoredReason::kForwardCacheDisabled);
     }
@@ -1712,10 +1711,6 @@ BackForwardCacheImpl::GetEntries() {
   return entries_;
 }
 
-NavigationControllerImpl& BackForwardCacheImpl::GetNavigationController() {
-  return *controller_;
-}
-
 std::list<BackForwardCacheImpl::Entry*>
 BackForwardCacheImpl::GetEntriesForRenderViewHostImpl(
     const RenderViewHostImpl* rvhi) const {
@@ -1815,9 +1810,8 @@ void BackForwardCacheImpl::RenderViewHostNoLongerStored(
 }
 
 bool BackForwardCacheImpl::IsForwardEntry(const std::unique_ptr<Entry>& entry,
-                                          NavigationControllerImpl& controller,
                                           int current_nav_entry_index) {
-  int entry_index = controller.GetEntryIndexWithUniqueID(
+  int entry_index = controller_->GetEntryIndexWithUniqueID(
       entry->render_frame_host()->nav_entry_id());
   return entry_index != -1 && entry_index > current_nav_entry_index;
 }
@@ -1826,9 +1820,8 @@ void BackForwardCacheImpl::RecordForwardEntriesCount(
     int current_nav_entry_index) {
   int count = 0;
   if (!entries_.empty()) {
-    auto& controller = GetNavigationController();
     count = std::ranges::count_if(entries_, [&](const auto& entry) {
-      return IsForwardEntry(entry, controller, current_nav_entry_index);
+      return IsForwardEntry(entry, current_nav_entry_index);
     });
   }
   base::UmaHistogramExactLinear("BackForwardCache.History.ForwardEntriesCount",
@@ -1842,7 +1835,6 @@ void BackForwardCacheImpl::RecordEntryMatch(const GURL& new_url,
                                   BackForwardCacheEntryMatchResult::kNoEntries);
     return;
   }
-  auto& controller = GetNavigationController();
   bool match_found = false;
   bool index_match_found = false;
 
@@ -1850,7 +1842,7 @@ void BackForwardCacheImpl::RecordEntryMatch(const GURL& new_url,
   for (const auto& entry : entries_) {
     if (entry->render_frame_host()->GetLastCommittedURL() == new_url) {
       match_found = true;
-      int entry_index = controller.GetEntryIndexWithUniqueID(
+      int entry_index = controller_->GetEntryIndexWithUniqueID(
           entry->render_frame_host()->nav_entry_id());
       if (entry_index == target_nav_entry_index) {
         index_match_found = true;
@@ -1917,11 +1909,9 @@ void BackForwardCacheImpl::OnMemoryPressure(
   // TODO(431957711): Check if this is really needed.
   // TODO(431957711): `number_of_tabs` can only ever be 0 or 1. Consider fixing
   // it or removing it the metric.
-  auto& navigation_controller =
-      rfh->frame_tree_node()->navigator().controller();
   size_t number_of_tabs = 0;
   size_t number_of_cached_entries = 0;
-  if (!navigation_controller.GetPendingEntry()) {
+  if (!controller_->GetPendingEntry()) {
     size_t count = Prune(cache_size, reason);
     if (count > 0) {
       number_of_tabs++;
