@@ -129,6 +129,7 @@ source_set("browser_tests") {
     ":impl",
     ":mac",
     "//base",
+    "//chrome/browser:app_controller_mac",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

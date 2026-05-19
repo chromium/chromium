@@ -134,6 +134,7 @@ source_set("interactive_ui_tests") {
     "//chrome/app:branded_strings",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:shell_integration",
     "//chrome/browser/default_browser",
     "//chrome/browser/default_browser:test_support",

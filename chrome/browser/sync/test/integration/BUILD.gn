@@ -487,6 +487,7 @@ source_set("sync_integration_test_support") {
 
   deps = [
     "//base",
+    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/autofill",
     "//chrome/browser/bookmarks",

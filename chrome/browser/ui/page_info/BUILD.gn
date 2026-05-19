@@ -56,6 +56,7 @@ source_set("impl") {
       "page_info_infobar_delegate.cc",
     ]
     deps += [
+      "//chrome/browser:certificate_viewer",
       "//chrome/browser/extensions",
       "//chrome/browser/hid",
       "//chrome/browser/smart_card",

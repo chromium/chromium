@@ -78,8 +78,8 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
-#include "chrome/browser/android/contextualsearch/unhandled_tap_notifier_impl.h"
-#include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"
+#include "chrome/browser/android/contextualsearch/unhandled_tap_notifier_impl.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"  // nogncheck crbug.com/40147906
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h"
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
 

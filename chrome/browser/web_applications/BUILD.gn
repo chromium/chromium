@@ -698,6 +698,10 @@ source_set("web_applications") {
     ]
   }
 
+  if (is_linux) {
+    deps += [ "//chrome/browser:shell_integration_linux" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//ash",
@@ -1216,6 +1220,10 @@ source_set("web_applications_unit_tests") {
     deps += [ "//components/services/app_service" ]
   }
 
+  if (is_linux) {
+    deps += [ "//chrome/browser:shell_integration_linux" ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -1351,6 +1359,7 @@ source_set("web_applications_browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:chrome_browser_main",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
@@ -1427,6 +1436,10 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/apps/app_shim",
       "//components/system_media_controls",
     ]
+  }
+
+  if (is_linux) {
+    deps += [ "//chrome/browser:shell_integration_linux" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

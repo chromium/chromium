@@ -134,6 +134,7 @@ source_set("impl") {
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
+      "//chrome/browser:intranet_redirect_detector",
       "//chrome/browser:primitives",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/history_embeddings",
