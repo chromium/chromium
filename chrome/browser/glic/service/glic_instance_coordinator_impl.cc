@@ -467,9 +467,12 @@ bool GlicInstanceCoordinatorImpl::IsDetached() const {
 
 bool GlicInstanceCoordinatorImpl::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
-  if (const auto* instance = GetInstanceForTab(
-          TabListInterface::From(const_cast<BrowserWindowInterface*>(&bwi))
-              ->GetActiveTab())) {
+  auto* tab_list =
+      TabListInterface::From(const_cast<BrowserWindowInterface*>(&bwi));
+  if (!tab_list) {
+    return false;
+  }
+  if (const auto* instance = GetInstanceForTab(tab_list->GetActiveTab())) {
     return instance->IsShowing();
   }
   return false;

@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
@@ -51,8 +52,10 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/base_window.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -2087,5 +2090,18 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
             1);
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       IsPanelShowingForBrowserSafeWithoutTabList) {
+  testing::NiceMock<MockBrowserWindowInterface> mock_bwi;
+  ui::UnownedUserDataHost user_data_host;
+  ON_CALL(mock_bwi, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+
+  // Since user_data_host has no TabListInterface registered,
+  // TabListInterface::From(&mock_bwi) will return nullptr.
+  // IsPanelShowingForBrowser should return false and NOT crash.
+  EXPECT_FALSE(coordinator().IsPanelShowingForBrowser(mock_bwi));
+}
 
 }  // namespace glic
