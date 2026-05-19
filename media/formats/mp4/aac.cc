@@ -27,7 +27,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
     return false;
   }
 
-  BitReader reader(data.data(), data.size());
+  BitReader reader(data);
   uint8_t extension_type = 0;
   bool ps_present = false;
   uint8_t extension_frequency_index = 0xff;

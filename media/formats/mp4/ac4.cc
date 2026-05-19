@@ -415,7 +415,7 @@ bool AC4::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
     return false;
   }
 
-  BitReader reader(&data[0], data.size());
+  BitReader reader(data);
 
   uint8_t ac4_dsi_version = 0;
   // ac4_dsi_version, 3 bits

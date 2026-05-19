@@ -71,6 +71,12 @@ TEST(ESDescriptorTest, FiveByteLengthTest) {
   EXPECT_EQ(es_desc.decoder_specific_info().size(), 0u);
 }
 
+TEST(ESDescriptorTest, EmptyDataTest) {
+  ESDescriptor es_desc;
+  std::vector<uint8_t> data;
+  EXPECT_FALSE(es_desc.Parse(data));
+}
+
 }  // namespace mp4
 
 }  // namespace media

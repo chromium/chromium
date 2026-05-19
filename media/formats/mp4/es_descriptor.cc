@@ -111,7 +111,7 @@ ESDescriptor::ESDescriptor()
 ESDescriptor::~ESDescriptor() = default;
 
 bool ESDescriptor::Parse(const std::vector<uint8_t>& data) {
-  BitReader reader(&data[0], data.size());
+  BitReader reader(data);
   uint8_t tag;
   uint32_t size;
   uint8_t stream_dependency_flag;

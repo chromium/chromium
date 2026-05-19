@@ -44,7 +44,7 @@ bool AC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   }
 
   // Parse dac3 box using reader.
-  BitReader reader(&data[0], data.size());
+  BitReader reader(data);
 
   // skip fscod, bsid, bsmod
   RCHECK(reader.SkipBits(2 + 5 + 3));

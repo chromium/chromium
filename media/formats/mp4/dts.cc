@@ -26,7 +26,7 @@ bool DTS::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
     return false;
 
   // Parse ddts box using reader.
-  BitReader reader(&data[0], data.size());
+  BitReader reader(data);
 
   // Parse Sample frequency
   RCHECK(reader.ReadBits(32, &dts_sampling_frequency_));
