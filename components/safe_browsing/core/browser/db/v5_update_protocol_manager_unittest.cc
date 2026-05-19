@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -205,6 +206,7 @@ TEST_F(V5UpdateProtocolManagerTest, TestEnableAutoUpdates) {
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingNetwork) {
+  base::HistogramTester histogram_tester;
   const std::vector<ExpectedV5Update> expected_updates;
   auto pm(CreateProtocolManager(expected_updates));
 
@@ -226,10 +228,27 @@ TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingNetwork) {
   EXPECT_EQ(1ul, GetUpdateBackOffMult(pm.get()));
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kNetworkError, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Result",
+                                      V4OperationResult::NETWORK_ERROR, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.Result",
+                                      net::ERR_CONNECTION_RESET, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Network.Result",
+                                      net::ERR_CONNECTION_RESET, 1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Update.Network.Time", 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.TimedOut",
+                                      false, 1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.SBUpdate.Network.Time", 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Network.TimedOut",
+                                      false, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingTimeout) {
+  base::HistogramTester histogram_tester;
   const std::vector<ExpectedV5Update> expected_updates;
   auto pm(CreateProtocolManager(expected_updates));
 
@@ -258,10 +277,26 @@ TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingTimeout) {
   EXPECT_EQ(1ul, GetUpdateErrorCount(pm.get()));
   EXPECT_EQ(1ul, GetUpdateBackOffMult(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kNetworkError, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Result",
+                                      V4OperationResult::NETWORK_ERROR, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.Result",
+                                      net::ERR_TIMED_OUT, 1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.SBUpdate.Network.Result", 0);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Update.Network.Time", 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.TimedOut",
+                                      true, 1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.SBUpdate.Network.Time", 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Network.TimedOut",
+                                      true, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingResponseCode) {
+  base::HistogramTester histogram_tester;
   const std::vector<ExpectedV5Update> expected_updates;
   auto pm(CreateProtocolManager(expected_updates));
 
@@ -281,6 +316,16 @@ TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingResponseCode) {
   EXPECT_EQ(1ul, GetUpdateErrorCount(pm.get()));
   EXPECT_EQ(1ul, GetUpdateBackOffMult(pm.get()));
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kHttpError, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Result",
+                                      V4OperationResult::HTTP_ERROR, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.Result",
+                                      net::HTTP_NO_CONTENT, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Network.Result",
+                                      net::HTTP_NO_CONTENT, 1);
 
   // Teardown will confirm the callback was not called.
 }
@@ -362,6 +407,7 @@ TEST_F(V5UpdateProtocolManagerTest, TestBase64EncodingUsesUrlEncoding) {
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesNoError) {
+  base::HistogramTester histogram_tester;
   store_state_map_->clear();
   ListIdentifier malware(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   store_state_map_->insert({malware, "initial_state_1"});
@@ -388,10 +434,34 @@ TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesNoError) {
   EXPECT_EQ(1ul, GetUpdateBackOffMult(pm.get()));
   EXPECT_FALSE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Result",
+                                      V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.Result",
+                                      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Network.Result",
+                                      net::HTTP_OK, 1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Update.Network.Time", 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.Network.TimedOut",
+                                      false, 1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.SBUpdate.Network.Time", 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.Network.TimedOut",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Update.ResponseSizeKB",
+                                      response_data.size() / 1024, 1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBUpdate.ResponseSizeKB",
+                                      response_data.size() / 1024, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kSuccess, 1);
+
   // Teardown will confirm the callback was called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestPostProcessingTimeAdjustment) {
+  base::HistogramTester histogram_tester;
   auto pm = CreateProtocolManager({});
 
   // Set initial conditions.
@@ -407,6 +477,12 @@ TEST_F(V5UpdateProtocolManagerTest, TestPostProcessingTimeAdjustment) {
 
   // Verify it is adjusted.
   EXPECT_EQ(base::Seconds(50), interval);
+
+  // Verify histogram logging
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SBUpdate.NextUpdateInterval", 60000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.NextUpdateInterval", 60000, 1);
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMinimumWaitDuration) {
@@ -416,6 +492,7 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMinimumWaitDuration) {
         lists_and_durations;
     base::expected<int, V5UpdateProtocolManager::V5ParseResult>
         expected_duration_or_error;
+    std::optional<bool> has_unexpected_wait_duration;
   };
 
   ListIdentifier malware(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
@@ -423,23 +500,36 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMinimumWaitDuration) {
   ListIdentifier phishing(SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 
   std::vector<TestCase> test_cases = {
-      {"Valid wait duration", {{malware, 60}}, 60},
-      {"Unset wait duration", {{malware, std::nullopt}}, 0},
-      {"Zero wait duration", {{malware, 0}}, 0},
+      {"Valid wait duration",
+       {{malware, 60}},
+       60,
+       /*has_unexpected_wait_duration*/ false},
+      {"Unset wait duration",
+       {{malware, std::nullopt}},
+       0,
+       /*has_unexpected_wait_duration*/ true},
+      {"Zero wait duration",
+       {{malware, 0}},
+       0,
+       /*has_unexpected_wait_duration*/ true},
       {"Negative wait duration",
        {{malware, -60}},
        base::unexpected(
-           V5UpdateProtocolManager::V5ParseResult::kNegativeDurationError)},
+           V5UpdateProtocolManager::V5ParseResult::kNegativeDurationError),
+       /*has_unexpected_wait_duration*/ std::nullopt},
       {"Multiple wait durations",
        {{malware, 120}, {uws, 60}, {phishing, 180}},
-       60},
+       60,
+       /*has_unexpected_wait_duration*/ false},
       {"Multiple wait durations with unset",
        {{malware, 120}, {uws, std::nullopt}, {phishing, 180}},
-       0},
+       0,
+       /*has_unexpected_wait_duration*/ true},
   };
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.test_case_name);
+    base::HistogramTester histogram_tester;
     auto pm = CreateProtocolManager({});
     V5::BatchGetHashListsResponse response;
     std::vector<V5UpdateProtocolManager::ListIdentifierAndVersion> lists;
@@ -467,6 +557,14 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMinimumWaitDuration) {
     } else {
       ASSERT_FALSE(parsed.has_value());
       EXPECT_EQ(test_case.expected_duration_or_error.error(), parsed.error());
+    }
+    if (test_case.has_unexpected_wait_duration.has_value()) {
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.V5Update.UnexpectedMinimumWaitDuration",
+          test_case.has_unexpected_wait_duration.value(), 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "SafeBrowsing.V5Update.UnexpectedMinimumWaitDuration", 0);
     }
   }
 }
@@ -568,6 +666,7 @@ TEST_F(V5UpdateProtocolManagerTest, TestBackToBackGetUpdatesWithWaitDuration) {
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingInvalidProto) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -580,10 +679,22 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingInvalidProto) {
       "invalid_proto_data", net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kParseFromStringError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMismatchedSize) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -618,10 +729,22 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMismatchedSize) {
       response_data, net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kMismatchedSizeError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMismatchedName) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -647,10 +770,22 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMismatchedName) {
       response_data, net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kMismatchedNameError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingEmptyName) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -675,10 +810,22 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingEmptyName) {
       response_data, net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kMismatchedNameError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMismatchedPrefixLength) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -705,11 +852,23 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingMismatchedPrefixLength) {
       response_data, net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kMismatchedPrefixLengthError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest,
        TestResponseParsingMismatchedPrefixLengthAlternate) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -736,10 +895,22 @@ TEST_F(V5UpdateProtocolManagerTest,
       response_data, net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kMismatchedPrefixLengthError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
+
   // Teardown will confirm the callback was not called.
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingNullBody) {
+  base::HistogramTester histogram_tester;
   expect_callback_to_be_called_ = false;
   auto pm = CreateProtocolManager({}, /*expect_success=*/false);
 
@@ -751,6 +922,17 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingNullBody) {
       test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(), "",
       net::HTTP_OK);
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Parse.Result",
+      V5UpdateProtocolManager::V5ParseResult::kParseFromStringError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V5Update.Result",
+      V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::STATUS_200, 1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBUpdate.Result",
+                                     V4OperationResult::PARSE_ERROR, 1);
 
   // Teardown will confirm the callback was not called.
 }

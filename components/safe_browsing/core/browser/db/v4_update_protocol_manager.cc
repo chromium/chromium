@@ -58,6 +58,9 @@ void RecordUpdateResult(safe_browsing::V4OperationResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.V4Update.Result", result,
       safe_browsing::V4OperationResult::OPERATION_RESULT_MAX);
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.SBUpdate.Result", result,
+      safe_browsing::V4OperationResult::OPERATION_RESULT_MAX);
 }
 
 }  // namespace
@@ -248,25 +251,35 @@ void V4UpdateProtocolManager::IssueUpdateRequest() {
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
+  base::TimeTicks request_start_time = base::TimeTicks::Now();
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&V4UpdateProtocolManager::OnURLLoaderComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this), request_start_time));
 
   request_ = std::move(loader);
 
   // Begin the update request timeout.
-  timeout_timer_.Start(FROM_HERE, base::Seconds(kTimerUpdateWaitSecMax), this,
-                       &V4UpdateProtocolManager::HandleTimeout);
+  timeout_timer_.Start(
+      FROM_HERE, base::Seconds(kTimerUpdateWaitSecMax),
+      base::BindOnce(&V4UpdateProtocolManager::HandleTimeout,
+                     base::Unretained(this), request_start_time));
 }
 
-void V4UpdateProtocolManager::HandleTimeout() {
+void V4UpdateProtocolManager::HandleTimeout(
+    base::TimeTicks request_start_time) {
+  RecordNetworkTimeHistograms("SafeBrowsing.V4Update.Network.Time",
+                              request_start_time);
+  base::UmaHistogramBoolean("SafeBrowsing.V4Update.Network.TimedOut", true);
+  base::UmaHistogramBoolean("SafeBrowsing.SBUpdate.Network.TimedOut", true);
+
   request_.reset();
   ScheduleNextUpdateWithBackoff(true);
 }
 
 // SafeBrowsing request responses are handled here.
 void V4UpdateProtocolManager::OnURLLoaderComplete(
+    base::TimeTicks request_start_time,
     std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = 0;
@@ -274,11 +287,13 @@ void V4UpdateProtocolManager::OnURLLoaderComplete(
     response_code = request_->ResponseInfo()->headers->response_code();
   }
 
-  OnURLLoaderCompleteInternal(request_->NetError(), response_code,
+  OnURLLoaderCompleteInternal(request_start_time, request_->NetError(),
+                              response_code,
                               std::move(response_body).value_or(""));
 }
 
 void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(
+    base::TimeTicks request_start_time,
     int net_error,
     int response_code,
     const std::string& data) {
@@ -287,9 +302,15 @@ void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(
   last_response_code_ = response_code;
   RecordHttpResponseOrErrorCode("SafeBrowsing.V4Update.Network.Result",
                                 net_error, last_response_code_);
+  RecordHttpResponseOrErrorCode("SafeBrowsing.SBUpdate.Network.Result",
+                                net_error, last_response_code_);
 
   last_response_time_ = Time::Now();
 
+  RecordNetworkTimeHistograms("SafeBrowsing.V4Update.Network.Time",
+                              request_start_time);
+  base::UmaHistogramBoolean("SafeBrowsing.V4Update.Network.TimedOut", false);
+  base::UmaHistogramBoolean("SafeBrowsing.SBUpdate.Network.TimedOut", false);
   std::unique_ptr<ParsedServerResponse> parsed_server_response(
       new ParsedServerResponse);
   if (net_error == net::OK && last_response_code_ == net::HTTP_OK) {
@@ -302,6 +323,8 @@ void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(
     request_.reset();
 
     UMA_HISTOGRAM_COUNTS_1M("SafeBrowsing.V4Update.ResponseSizeKB",
+                            data.size() / 1024);
+    UMA_HISTOGRAM_COUNTS_1M("SafeBrowsing.SBUpdate.ResponseSizeKB",
                             data.size() / 1024);
 
     // The caller should update its state now, based on parsed_server_response.
@@ -332,6 +355,13 @@ void V4UpdateProtocolManager::GetUpdateUrlAndHeaders(
     net::HttpRequestHeaders* headers) const {
   SBProtocolManagerUtil::GetRequestUrlAndHeaders(
       req_base64, "threatListUpdates:fetch", config_, gurl, headers);
+}
+
+void V4UpdateProtocolManager::RecordProtocolSpecificNextUpdateInterval(
+    base::TimeDelta interval) {
+  base::UmaHistogramCustomTimes("SafeBrowsing.V4Update.NextUpdateInterval",
+                                interval, base::Seconds(1), base::Hours(24),
+                                50);
 }
 
 }  // namespace safe_browsing

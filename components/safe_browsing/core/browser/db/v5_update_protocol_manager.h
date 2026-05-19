@@ -42,6 +42,9 @@ using V5UpdateCallback = base::RepeatingCallback<void(
 
 class V5UpdateProtocolManager : public SBUpdateProtocolManager {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(V5ParseResult)
   enum class V5ParseResult {
     // Success.
     kSuccess = 0,
@@ -61,7 +64,11 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
 
     kMaxValue = kNegativeDurationError,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:V5ParseResult)
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(V5OperationResult)
   enum class V5OperationResult {
     // 200 response code means that the server recognized the request.
     kSuccess = 0,
@@ -77,6 +84,7 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
 
     kMaxValue = kHttpError,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:V5OperationResult)
 
   V5UpdateProtocolManager(const V5UpdateProtocolManager&) = delete;
   V5UpdateProtocolManager& operator=(const V5UpdateProtocolManager&) = delete;
@@ -130,6 +138,7 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
   // `update_callback_` or schedules the next update attempt upon failure.
   void OnURLLoaderComplete(
       std::vector<ListIdentifierAndVersion> list_identifier_to_version_mapping,
+      base::TimeTicks request_start_time,
       std::optional<std::string> response_body);
 
   // Helper method for `OnURLLoaderComplete` that returns the result of fetching
@@ -137,6 +146,7 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
   base::expected<ParsedResponse, V5OperationResult> OnURLLoaderCompleteInternal(
       int net_error,
       int response_code,
+      base::TimeTicks request_start_time,
       const std::optional<std::string>& response_body,
       const std::vector<ListIdentifierAndVersion>&
           list_identifier_to_version_mapping);
@@ -174,6 +184,10 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
   void ScheduleNextUpdateAfterInterval(
       base::TimeDelta interval,
       std::vector<ListIdentifierAndVersion> list_identifier_to_version_mapping);
+
+  // SBUpdateProtocolManager override:
+  void RecordProtocolSpecificNextUpdateInterval(
+      base::TimeDelta interval) override;
 
   // The callback that's called when fetching lists completes.
   V5UpdateCallback update_callback_;

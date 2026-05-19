@@ -50,8 +50,10 @@ class V4UpdateProtocolManager : public SBUpdateProtocolManager {
   FRIEND_TEST_ALL_PREFIXES(V4UpdateProtocolManagerTest,
                            TestExtendedReportingLevelIncluded);
 
-  void OnURLLoaderComplete(std::optional<std::string> response_body);
-  void OnURLLoaderCompleteInternal(int net_error,
+  void OnURLLoaderComplete(base::TimeTicks request_start_time,
+                           std::optional<std::string> response_body);
+  void OnURLLoaderCompleteInternal(base::TimeTicks request_start_time,
+                                   int net_error,
                                    int response_code,
                                    const std::string& data);
 
@@ -76,7 +78,7 @@ class V4UpdateProtocolManager : public SBUpdateProtocolManager {
 
   // Called when update request times out. Cancels the existing request and
   // re-sends the update request.
-  void HandleTimeout();
+  void HandleTimeout(base::TimeTicks request_start_time);
 
   // Updates internal update and backoff state for each update response error,
   // assuming that the current time is |now|.
@@ -93,6 +95,10 @@ class V4UpdateProtocolManager : public SBUpdateProtocolManager {
   void ScheduleNextUpdateAfterInterval(base::TimeDelta interval);
 
  private:
+  // SBUpdateProtocolManager override:
+  void RecordProtocolSpecificNextUpdateInterval(
+      base::TimeDelta interval) override;
+
   // The last known state of the lists.
   // Updated after every successful update of the database.
   std::unique_ptr<StoreStateMap> store_state_map_;

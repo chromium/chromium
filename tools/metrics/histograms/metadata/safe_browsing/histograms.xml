@@ -137,6 +137,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".UrlUws" summary=""/>
 </variants>
 
+<variants name="SafeBrowsingUpdateProtocol">
+  <variant name="SBUpdate" summary="Safe Browsing update"/>
+  <variant name="V4Update" summary="Safe Browsing V4 update"/>
+  <variant name="V5Update" summary="Safe Browsing V5 update"/>
+</variants>
+
+<variants name="SafeBrowsingUpdateProtocolV4OrSB">
+  <variant name="SBUpdate" summary="Safe Browsing update"/>
+  <variant name="V4Update" summary="Safe Browsing V4 update"/>
+</variants>
+
 <variants name="ThreatSources">
   <variant name=""/>
   <variant name=".AndroidSafeBrowsing"/>
@@ -4217,20 +4228,6 @@ security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4Update.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-10-04">
-<!-- Note to owner: This histogram can be renewed 1 full year if it is still
-useful for Chirp alerts (go/crca-alerts). -->
-
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Response or error codes when fetching updates from the SafeBrowsing PVer4
-    service. Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is
-    matched to the actual HTTP response code.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4Update.Parse.Result"
     enum="SafeBrowsingParseV4UpdateResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to parse the Safe
@@ -4245,26 +4242,41 @@ risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4Update.ResponseSizeKB" units="KB"
-    expires_after="2026-10-07">
-  <owner>vakh@chromium.org</owner>
+<histogram name="SafeBrowsing.V5Update.Parse.Result" enum="V5ParseResult"
+    expires_after="never">
+<!-- expires-never: This reports the reason for the failure to parse the Safe
+Browsing database update received from the API backend. It is crucial to detect
+if we ever start failing to parse the updates which puts users' security at
+risk. -->
+
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The size of the response sent by the SafeBrowsing PVer4 service, in KB.
-  </summary>
+  <summary>Track the parsing results of a status 200 V5Update request.</summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4Update.Result"
-    enum="SafeBrowsingV4OperationResult" expires_after="never">
+<histogram name="SafeBrowsing.V5Update.Result" enum="V5OperationResult"
+    expires_after="never">
 <!-- expires-never: This reports the outcome of fetching the Safe Browsing
 database update from the API backend. It is crucial to detect if we ever start
 failing to fetch the updates which puts users' security at risk. -->
 
-  <owner>vakh@chromium.org</owner>
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Track return status from V4 update attempts. The buckets of this histogram
-    overlap, so the counts cannot be used as percentages.
+    Track return status from V5Update attempts. This is logged when the update
+    request has completed and the response has either been parsed successfully
+    or has failed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5Update.UnexpectedMinimumWaitDuration"
+    enum="Boolean" expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the minimum wait duration received from the V5 update
+    response was unexpected (missing or zero). Logged when parsing the update
+    response.
   </summary>
 </histogram>
 
@@ -4397,6 +4409,79 @@ failing to fetch the updates which puts users' security at risk. -->
     <variant name=".Unknown" summary="an Unknown"/>
     <variant name=".UnsupportedFileType" summary="an UnsupportedFileType"/>
   </token>
+</histogram>
+
+<histogram name="SafeBrowsing.{Protocol}.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-10-04">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes when fetching updates from the {Protocol} service.
+    Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the
+    actual HTTP response code.
+  </summary>
+  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{Protocol}.Network.Time" units="ms"
+    expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time that it took for the update request to Safe Browsing servers using
+    the {Protocol} protocol, or how long it took for it to time out.
+  </summary>
+  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{Protocol}.Network.TimedOut"
+    enum="BooleanTimedOut" expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the network request timed out when fetching updates from the
+    {Protocol} service.
+  </summary>
+  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{Protocol}.NextUpdateInterval" units="ms"
+    expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the next update interval for Safe Browsing updates using the
+    {Protocol} protocol. Logged when calculating the next update interval.
+  </summary>
+  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{Protocol}.ResponseSizeKB" units="KB"
+    expires_after="2026-10-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of the response sent by the {Protocol} service, in KB.
+  </summary>
+  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{Protocol}.Result"
+    enum="SafeBrowsingV4OperationResult" expires_after="never">
+<!-- expires-never: This reports the outcome of fetching the Safe Browsing
+database update from the API backend. It is crucial to detect if we ever start
+failing to fetch the updates which puts users' security at risk. -->
+
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Track return status from {Protocol} attempts. The buckets of this histogram
+    overlap, so the counts cannot be used as percentages.
+  </summary>
+  <token key="Protocol" variants="SafeBrowsingUpdateProtocolV4OrSB"/>
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"

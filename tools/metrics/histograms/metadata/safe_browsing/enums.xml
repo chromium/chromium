@@ -811,6 +811,30 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_map.cc:WriteError) -->
 
+<!-- LINT.IfChange(V5OperationResult) -->
+
+<enum name="V5OperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="ParseError"/>
+  <int value="2" label="NetworkError"/>
+  <int value="3" label="HttpError"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_update_protocol_manager.h:V5OperationResult) -->
+
+<!-- LINT.IfChange(V5ParseResult) -->
+
+<enum name="V5ParseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="ParseFromStringError"/>
+  <int value="2" label="MismatchedSizeError"/>
+  <int value="3" label="MismatchedNameError"/>
+  <int value="4" label="MismatchedPrefixLengthError"/>
+  <int value="5" label="NegativeDurationError"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_update_protocol_manager.h:V5ParseResult) -->
+
 <!-- LINT.IfChange(V8IframeState) -->
 
 <enum name="V8IframeState">

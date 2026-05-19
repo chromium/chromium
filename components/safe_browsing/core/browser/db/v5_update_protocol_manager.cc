@@ -9,9 +9,13 @@
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -21,6 +25,16 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace {
+
+void RecordSBUpdateResult(safe_browsing::V4OperationResult v4_result) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.SBUpdate.Result", v4_result,
+      safe_browsing::V4OperationResult::OPERATION_RESULT_MAX);
+}
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -173,11 +187,13 @@ void V5UpdateProtocolManager::IssueUpdateRequest(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
   loader->SetTimeoutDuration(base::Seconds(kTimerUpdateWaitSecMax));
+  base::TimeTicks request_start_time = base::TimeTicks::Now();
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&V5UpdateProtocolManager::OnURLLoaderComplete,
                      weak_factory_.GetWeakPtr(),
-                     std::move(list_identifier_to_version_mapping)));
+                     std::move(list_identifier_to_version_mapping),
+                     request_start_time));
 
   request_ = std::move(loader);
 }
@@ -208,6 +224,7 @@ std::string V5UpdateProtocolManager::GetBase64SerializedUpdateRequestProto(
 
 void V5UpdateProtocolManager::OnURLLoaderComplete(
     std::vector<ListIdentifierAndVersion> list_identifier_to_version_mapping,
+    base::TimeTicks request_start_time,
     std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = 0;
@@ -217,10 +234,13 @@ void V5UpdateProtocolManager::OnURLLoaderComplete(
 
   base::expected<ParsedResponse, V5OperationResult> result =
       OnURLLoaderCompleteInternal(request_->NetError(), response_code,
-                                  std::move(response_body),
+                                  request_start_time, std::move(response_body),
                                   list_identifier_to_version_mapping);
 
   request_.reset();
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.V5Update.Result",
+      result.has_value() ? V5OperationResult::kSuccess : result.error());
   if (result.has_value()) {
     // Set the next update interval based on the minimum wait duration
     // across lists.
@@ -240,25 +260,54 @@ base::expected<V5UpdateProtocolManager::ParsedResponse,
 V5UpdateProtocolManager::OnURLLoaderCompleteInternal(
     int net_error,
     int response_code,
+    base::TimeTicks request_start_time,
     const std::optional<std::string>& response_body,
     const std::vector<ListIdentifierAndVersion>&
         list_identifier_to_version_mapping) {
+  RecordHttpResponseOrErrorCode("SafeBrowsing.V5Update.Network.Result",
+                                net_error, response_code);
+  bool timed_out = (net_error == net::ERR_TIMED_OUT);
+  if (!timed_out) {
+    // v4 did not set a timeout within the network request directly, so we
+    // omit it here for a fair comparison between v4 and v5.
+    RecordHttpResponseOrErrorCode("SafeBrowsing.SBUpdate.Network.Result",
+                                  net_error, response_code);
+  }
+  RecordNetworkTimeHistograms("SafeBrowsing.V5Update.Network.Time",
+                              request_start_time);
+  base::UmaHistogramBoolean("SafeBrowsing.V5Update.Network.TimedOut",
+                            timed_out);
+  base::UmaHistogramBoolean("SafeBrowsing.SBUpdate.Network.TimedOut",
+                            timed_out);
+
   // Used for chrome://safe-browsing debugging page.
   last_response_code_ = response_code;
   last_response_time_ = base::Time::Now();
 
   // Return early if hit a net error or an http error.
   if (net_error != net::OK) {
+    RecordSBUpdateResult(V4OperationResult::NETWORK_ERROR);
     return base::unexpected(V5OperationResult::kNetworkError);
   }
   if (response_code != net::HTTP_OK) {
+    RecordSBUpdateResult(V4OperationResult::HTTP_ERROR);
     return base::unexpected(V5OperationResult::kHttpError);
   }
 
+  RecordSBUpdateResult(V4OperationResult::STATUS_200);
   ResetUpdateErrors();
   base::expected<ParsedResponse, V5ParseResult> parsed_response =
       ParseUpdateResponse(response_body, list_identifier_to_version_mapping);
+  base::UmaHistogramEnumeration("SafeBrowsing.V5Update.Parse.Result",
+                                parsed_response.has_value()
+                                    ? V5ParseResult::kSuccess
+                                    : parsed_response.error());
+  base::UmaHistogramCounts1M("SafeBrowsing.V5Update.ResponseSizeKB",
+                             response_body.value_or("").size() / 1024);
+  base::UmaHistogramCounts1M("SafeBrowsing.SBUpdate.ResponseSizeKB",
+                             response_body.value_or("").size() / 1024);
   if (!parsed_response.has_value()) {
+    RecordSBUpdateResult(V4OperationResult::PARSE_ERROR);
     return base::unexpected(V5OperationResult::kParseError);
   }
   return std::move(parsed_response.value());
@@ -322,7 +371,8 @@ V5UpdateProtocolManager::ParseUpdateResponse(
       // expected to fetch immediately. Note that this is not expected to happen
       // in our case because we are not setting any client-specified constraints
       // that would trigger an unset (or 0) minimum_wait_duration. But, we
-      // respect the server's response if it responds this way regardless.
+      // respect the server's response if it responds this way regardless and
+      // track this with a histogram below.
       list_minimum_wait_duration = base::TimeDelta();
     }
     if (!overall_minimum_wait_duration.has_value() ||
@@ -336,6 +386,10 @@ V5UpdateProtocolManager::ParseUpdateResponse(
     parsed_response[list_identifier] = std::move(list_to_insert);
   }
 
+  bool unexpected_duration = overall_minimum_wait_duration.value().is_zero();
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.V5Update.UnexpectedMinimumWaitDuration",
+      unexpected_duration);
   return ParsedResponse(std::move(parsed_response),
                         overall_minimum_wait_duration.value());
 }
@@ -358,5 +412,12 @@ V5UpdateProtocolManager::ParsedResponse::ParsedResponse(ParsedResponse&&) =
     default;
 V5UpdateProtocolManager::ParsedResponse&
 V5UpdateProtocolManager::ParsedResponse::operator=(ParsedResponse&&) = default;
+
+void V5UpdateProtocolManager::RecordProtocolSpecificNextUpdateInterval(
+    base::TimeDelta interval) {
+  base::UmaHistogramCustomTimes("SafeBrowsing.V5Update.NextUpdateInterval",
+                                interval, base::Seconds(1), base::Hours(24),
+                                50);
+}
 
 }  // namespace safe_browsing

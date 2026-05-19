@@ -39,6 +39,7 @@ static const int kTimerStartIntervalSecMin = 60;
 static const int kTimerStartIntervalSecMax = 300;
 
 // Maximum time, in seconds, to wait for a response to an update request.
+// If updating this value, any histograms using this must be renamed.
 static const int kTimerUpdateWaitSecMax = 15 * 60;  // 15 minutes
 
 class SBUpdateProtocolManager {
@@ -94,6 +95,14 @@ class SBUpdateProtocolManager {
 
   // Get the next update interval, considering whether we are in backoff.
   base::TimeDelta GetNextUpdateInterval(bool back_off);
+
+  // Records the protocol-specific next update interval histogram.
+  virtual void RecordProtocolSpecificNextUpdateInterval(
+      base::TimeDelta interval) = 0;
+
+  // Records the network response time histograms.
+  void RecordNetworkTimeHistograms(std::string protocol_histogram_name,
+                                   base::TimeTicks request_start_time);
 
   // The time delta after which the next update request may be sent.
   // It is set to a random interval between 60 and 300 seconds at start.

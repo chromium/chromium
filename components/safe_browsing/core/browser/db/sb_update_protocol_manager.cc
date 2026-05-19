@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -62,6 +63,10 @@ base::TimeDelta SBUpdateProtocolManager::GetNextUpdateInterval(bool back_off) {
         &update_error_count_, &update_back_off_mult_);
   }
 
+  base::UmaHistogramCustomTimes("SafeBrowsing.SBUpdate.NextUpdateInterval",
+                                next, base::Seconds(1), base::Hours(24), 50);
+  RecordProtocolSpecificNextUpdateInterval(next);
+
   if (!last_response_time_.is_null()) {
     // The callback spent some time updating the database, including disk I/O.
     // Do not wait that extra time.
@@ -93,6 +98,20 @@ void SBUpdateProtocolManager::CollectUpdateInfo(
     update_info->set_next_update_time_millis(
         next_update_time_.value().InMillisecondsSinceUnixEpoch());
   }
+}
+
+void SBUpdateProtocolManager::RecordNetworkTimeHistograms(
+    std::string protocol_histogram_name,
+    base::TimeTicks request_start_time) {
+  base::TimeDelta request_duration =
+      base::TimeTicks::Now() - request_start_time;
+  // Make the max bucket only as much as the update request timeout duration.
+  base::UmaHistogramCustomTimes(protocol_histogram_name, request_duration,
+                                base::Milliseconds(1),
+                                base::Seconds(kTimerUpdateWaitSecMax), 50);
+  base::UmaHistogramCustomTimes("SafeBrowsing.SBUpdate.Network.Time",
+                                request_duration, base::Milliseconds(1),
+                                base::Seconds(kTimerUpdateWaitSecMax), 50);
 }
 
 const base::Time& SBUpdateProtocolManager::last_response_time() const {
