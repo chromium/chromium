@@ -46,6 +46,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/obsolete/md5.h"
+#include "net/base/filename_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/win/shell.h"
 #include "ui/gfx/image/image.h"
@@ -654,6 +655,9 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 base::FilePath GetSanitizedFileName(const std::u16string& name) {
   std::wstring file_name = base::AsWString(name);
   base::i18n::ReplaceIllegalCharactersInPath(&file_name, ' ');
+  if (net::IsReservedNameOnWindows(file_name)) {
+    file_name.insert(0, 1, FILE_PATH_LITERAL('_'));
+  }
   return base::FilePath(file_name);
 }
 

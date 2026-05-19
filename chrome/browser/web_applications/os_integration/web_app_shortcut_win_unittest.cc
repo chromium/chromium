@@ -103,6 +103,18 @@ TEST_F(WebAppShortcutWinTest, GetSanitizedFileName) {
             GetSanitizedFileName(u"path/separator"));
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_   _")),
             GetSanitizedFileName(u"***"));
+  // Test reserved names on Windows.
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_COM1")),
+            GetSanitizedFileName(u"COM1"));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_PRN")),
+            GetSanitizedFileName(u"PRN"));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_CON")),
+            GetSanitizedFileName(u"CON"));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_LPT9")),
+            GetSanitizedFileName(u"LPT9"));
+  // Test reserved names with extension (only base filename is checked).
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_COM1.lnk")),
+            GetSanitizedFileName(u"COM1.lnk"));
 }
 
 TEST_F(WebAppShortcutWinTest, GetShortcutPaths) {
@@ -451,6 +463,10 @@ TEST_F(WebAppShortcutWinTest, GetIconFilePath) {
   EXPECT_EQ(
       GetIconFilePath(web_app_path, u"***"),
       base::FilePath(FILE_PATH_LITERAL("test\\web\\app\\dir\\_   _.ico")));
+  // Test reserved names on Windows.
+  EXPECT_EQ(
+      GetIconFilePath(web_app_path, u"COM1"),
+      base::FilePath(FILE_PATH_LITERAL("test\\web\\app\\dir\\_COM1.ico")));
 }
 
 }  // namespace web_app::internals
