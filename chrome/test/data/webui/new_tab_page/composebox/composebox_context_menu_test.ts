@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ContextUploadErrorType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -298,6 +298,144 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         (contextActionMenu as any).close();
         fakeAnchor.remove();
       }
+    });
+
+    test('selected tabs are displayed at the top of the list', async () => {
+      createComposeboxElement(testProxy);
+      const sampleTabs = [
+        {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInRecentTabChip: true,
+          lastActive: {internalValue: BigInt(1)},
+        },
+        {
+          tabId: 2,
+          title: 'Tab 2',
+          url: 'https://example.com/2',
+          showInRecentTabChip: true,
+          lastActive: {internalValue: BigInt(2)},
+        },
+        {
+          tabId: 3,
+          title: 'Tab 3',
+          url: 'https://example.com/3',
+          showInRecentTabChip: true,
+          lastActive: {internalValue: BigInt(3)},
+        },
+      ] as any;
+
+      testProxy.searchboxHandler.setResultFor(
+          'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+      // Select tabId 2 by setting it in addedTabsIds.
+      testProxy.element.addedTabsIds =
+          new Map([[2, {low: 0n, high: 1n}] as any]);
+
+      // Click entrypoint button to show the menu and load/sort suggestions.
+      const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextMenuEntrypoint);
+      const entrypointButton =
+          contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+              '#entrypoint');
+      assertTrue(!!entrypointButton);
+      entrypointButton.click();
+      await microtasksFinished();
+      await testProxy.element.updateComplete;
+
+      // Assert that tabSuggestions passed down to entrypointAndMenu has the
+      // selected tab at the top.
+      const sortedSuggestions = (entrypointAndMenu as any).tabSuggestions;
+      assertEquals(sortedSuggestions.length, 3);
+      assertEquals(sortedSuggestions[0].tabId, 2);
+      assertEquals(sortedSuggestions[1].tabId, 1);
+      assertEquals(sortedSuggestions[2].tabId, 3);
+    });
+
+    test('clicking sorted suggestions adds the correct tab', async () => {
+      createComposeboxElement(testProxy);
+      const sampleTabs = [
+        {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInRecentTabChip: true,
+          lastActive: {internalValue: BigInt(1)},
+        },
+        {
+          tabId: 2,
+          title: 'Tab 2',
+          url: 'https://example.com/2',
+          showInRecentTabChip: true,
+          lastActive: {internalValue: BigInt(2)},
+        },
+      ] as any;
+
+      testProxy.searchboxHandler.setResultFor(
+          'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+      const inputState = new MockInputState({
+        allowedInputTypes: [InputType.kBrowserTab],
+      });
+      testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+      await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+      // Click entrypoint button to show the menu and load suggestions.
+      const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextMenuEntrypoint);
+      const entrypointButton =
+          contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+              '#entrypoint');
+      assertTrue(!!entrypointButton);
+      entrypointButton.click();
+      await microtasksFinished();
+
+      assertEquals(testProxy.element.tabSuggestions.length, 2);
+
+      testProxy.element.addedTabsIds =
+          new Map([[2, {low: 0n, high: 1n}] as any]);
+      await testProxy.element.updateComplete;
+      await (entrypointAndMenu as any).updateComplete;
+
+      const contextualActionMenu = entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-action-menu');
+      assertTrue(!!contextualActionMenu);
+      await (contextualActionMenu as any).updateComplete;
+      await microtasksFinished();
+
+
+
+      const items =
+          contextualActionMenu.$.menu.querySelectorAll('.dropdown-item');
+      assertEquals(items.length, 2);
+
+      // Find the button for Tab 1 (which was index 0 originally, but now index
+      // 1 after sorting).
+      const tab1Button = Array.from(items).find(
+                             (item: any) => item.getAttribute('title') ===
+                                 'Tab 1') as HTMLButtonElement;
+      assertTrue(!!tab1Button);
+
+      // Reset mock and set promise resolver.
+      testProxy.searchboxHandler.reset();
+      testProxy.searchboxHandler.setPromiseResolveFor(
+          ADD_TAB_CONTEXT_FN, {low: BigInt(3), high: BigInt(4)});
+
+      // Click Tab 1 button.
+      tab1Button.click();
+
+      // Verify that addTabContext is called with tabId 1, not 2.
+      const args =
+          await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+      assertEquals(args[0], 1);
     });
   });
 

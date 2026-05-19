@@ -1841,7 +1841,12 @@ export const ComposeboxEmbedderMixin =
             return;
           }
           const {tabs} = await this.getSearchboxHandler().getRecentTabs();
-          this.tabSuggestions = [...tabs];
+          // Order tabs in submenu: selected tabs are first.
+          const addedTabIdsSet = new Set(this.addedTabsIds.keys());
+          this.tabSuggestions = [
+            ...tabs.filter((tab: any) => addedTabIdsSet.has(tab.tabId)),
+            ...tabs.filter((tab: any) => !addedTabIdsSet.has(tab.tabId)),
+          ];
 
           if (this.inputState) {
             const {allowedInputTypes, disabledInputTypes} = this.inputState;
