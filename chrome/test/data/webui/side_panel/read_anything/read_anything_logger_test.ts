@@ -325,4 +325,40 @@ suite('Logger', () => {
         'Accessibility.ReadAnything.Readability.PageLinksNoHrefCount',
         (await metrics.whenCalled('recordCount'))[0]);
   });
+
+  suite('logDistilledPageStructure', () => {
+    let container: HTMLElement;
+
+    setup(() => {
+      container = document.createElement('div');
+      metrics.reset();
+    });
+
+    test('when hidden does not log', () => {
+      logger.setHidden(true);
+      const p = document.createElement('p');
+      p.textContent = 'Paragraph';
+      container.replaceChildren(p);
+      logger.logDistilledPageStructure(container);
+      assertEquals(0, metrics.getCallCount('recordCount'));
+    });
+
+    test('logs number of paragraphs', () => {
+      const p1 = document.createElement('p');
+      p1.textContent = 'P1';
+      const p2 = document.createElement('p');
+      p2.textContent = 'P2';
+      const p3 = document.createElement('p');
+      p3.textContent = 'P3';
+      container.replaceChildren(p1, p2, p3);
+      logger.logDistilledPageStructure(container);
+
+      assertEquals(1, metrics.getCallCount('recordCount'));
+      const countCalls = metrics.getArgs('recordCount');
+      assertEquals(
+          'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
+          countCalls[0][0]);
+      assertEquals(3, countCalls[0][1]);
+    });
+  });
 });

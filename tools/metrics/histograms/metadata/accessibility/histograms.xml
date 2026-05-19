@@ -3029,6 +3029,21 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.DistilledPageStructure.{CountMetric}"
+    units="count" expires_after="2027-05-01">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records {CountMetric}. Recorded when the content is successfully distilled
+    and updated in the Reading Mode panel.
+  </summary>
+  <token key="CountMetric">
+    <variant name="NumberParagraphs"
+        summary="the number of paragraphs distilled on the page"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.EmptyState"
     enum="ReadAnythingEmptyState" expires_after="2026-10-04">
   <owner>abigailbklein@google.com</owner>

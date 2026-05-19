@@ -422,6 +422,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
           getWordCount(wordCountContainer.textContent) :
           0;
       chrome.readingMode.onDistilled(wordCount);
+      if (wordCountContainer && wordCountContainer instanceof Element) {
+        this.logger_.logDistilledPageStructure(wordCountContainer);
+      }
     }
   }
 

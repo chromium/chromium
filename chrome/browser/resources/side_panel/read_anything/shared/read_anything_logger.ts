@@ -211,6 +211,17 @@ export class ReadAnythingLogger {
     this.metrics.recordCount(umaName, count);
   }
 
+  logDistilledPageStructure(wordCountContainer: Element) {
+    if (this.isHidden_) {
+      return;
+    }
+
+    const paragraphs = wordCountContainer.querySelectorAll('p');
+    this.metrics.recordCount(
+        'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
+        paragraphs.length);
+  }
+
   static getInstance(): ReadAnythingLogger {
     return instance || (instance = new ReadAnythingLogger());
   }
