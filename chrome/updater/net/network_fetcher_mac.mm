@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -417,18 +418,21 @@ WrapPostRequestCallbacksWithEventLogging(
                           std::move(post_request_complete_callback));
   }
 
-  std::unique_ptr<int> response_code = std::make_unique<int>(0);
+  scoped_refptr<base::RefCountedData<int>> response_code =
+      base::MakeRefCounted<base::RefCountedData<int>>(0);
   return std::make_pair(
       base::BindRepeating(
-          [](int* out_response_code, ResponseStartedCallback callback,
-             int response_code, int64_t content_length) {
-            *out_response_code = response_code;
+          [](scoped_refptr<base::RefCountedData<int>> out_response_code,
+             ResponseStartedCallback callback, int response_code,
+             int64_t content_length) {
+            out_response_code->data = response_code;
             callback.Run(response_code, content_length);
           },
-          response_code.get(), response_started_callback),
+          response_code, response_started_callback),
       base::BindOnce(
           [](scoped_refptr<UpdaterEventLogger> event_logger,
-             base::Time request_start_time, std::unique_ptr<int> response_code,
+             base::Time request_start_time,
+             scoped_refptr<base::RefCountedData<int>> response_code,
              const GURL& url, PostRequestCompleteCallback callback,
              std::optional<std::string> response_body, int net_error,
              const std::string& header_etag,
@@ -443,8 +447,8 @@ WrapPostRequestCallbacksWithEventLogging(
                 (base::Time::Now() - request_start_time).InMilliseconds());
             if (net_error > 0) {
               event.set_error_code(net_error);
-            } else if (*response_code < 200 && *response_code > 299) {
-              event.set_error_code(*response_code);
+            } else if (response_code->data < 200 && response_code->data > 299) {
+              event.set_error_code(response_code->data);
             }
             proto::Omaha4Metric metric;
             *metric.mutable_network_event() = std::move(event);
@@ -453,7 +457,7 @@ WrapPostRequestCallbacksWithEventLogging(
                                     header_x_cup_server_proof,
                                     header_set_cookie, xheader_retry_after_sec);
           },
-          event_logger, base::Time::Now(), std::move(response_code), url,
+          event_logger, base::Time::Now(), response_code, url,
           std::move(post_request_complete_callback)));
 }
 
