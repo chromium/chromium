@@ -2447,6 +2447,36 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void nameWindowMenuVisible_Api31Enabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertTrue(
+                isMenuVisible(
+                        createModelList(getSubmenuItems(modelList, R.id.more_tools_menu_id)),
+                        R.id.name_window_menu_id));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void nameWindowMenuHidden_Api31Disabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(
+                isMenuVisible(
+                        createModelList(getSubmenuItems(modelList, R.id.more_tools_menu_id)),
+                        R.id.name_window_menu_id));
+    }
+
+    @Test
     @Config(qualifiers = "sw320dp")
     @EnableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"

@@ -1527,6 +1527,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             return true;
         }
 
+        if (shouldShowNameWindowItem()) {
+            return true;
+        }
+
         return false;
     }
 
@@ -1546,6 +1550,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             submenuItems.add(buildDevToolsItem(currentTab));
         }
 
+        if (shouldShowNameWindowItem()) {
+            submenuItems.add(buildNameWindowItem());
+        }
+
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
                 buildModelForMenuItemWithSubmenu(
@@ -1555,6 +1563,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 ? R.drawable.ic_more_tools_24dp
                                 : Resources.ID_NULL,
                         () -> submenuItems));
+    }
+
+    private boolean shouldShowNameWindowItem() {
+        return MultiWindowUtils.isMultiInstanceApi31Enabled();
+    }
+
+    private ListItem buildNameWindowItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.name_window_menu_id,
+                        R.string.menu_name_window,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_window_24dp : 0));
     }
 
     @Contract("null -> false")

@@ -363,6 +363,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_update_24dp.xml",
   "java/res/drawable/ic_warning_white_24dp.xml",
   "java/res/drawable/ic_webstore_menu.xml",
+  "java/res/drawable/ic_window_24dp.xml",
   "java/res/drawable/improved_bookmark_row_visual_background.xml",
   "java/res/drawable/improved_bookmark_save_flow_multi_pane_bottom_background.xml",
   "java/res/drawable/improved_bookmark_save_flow_multi_pane_top_background.xml",

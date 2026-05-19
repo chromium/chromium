@@ -35,10 +35,12 @@ public class UiUtils {
     @IntDef({
         NameWindowDialogSource.WINDOW_MANAGER,
         NameWindowDialogSource.TAB_STRIP,
+        NameWindowDialogSource.APP_MENU,
     })
     public @interface NameWindowDialogSource {
         int WINDOW_MANAGER = 0;
         int TAB_STRIP = 1;
+        int APP_MENU = 2;
     }
 
     /**

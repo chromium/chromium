@@ -196,6 +196,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.TabbedCrashRecoveryDelegate;
 import org.chromium.chrome.browser.multiwindow.TabbedWindowStateTracker;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
@@ -4203,6 +4204,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     new QrCodeCoordinator(this, currentTab.getUrl().getSpec(), getWindowAndroid());
             qrCodeCoordinator.show();
             RecordUserAction.record("MobileMenuQRCode");
+            return true;
+        } else if (id == R.id.name_window_menu_id) {
+            assert mMultiInstanceManager != null;
+            mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.APP_MENU);
+            RecordUserAction.record("MobileMenuNameWindow");
             return true;
         } else if (id == R.id.add_to_group_menu_id
                 || id == R.id.add_tab_to_group_menu_id

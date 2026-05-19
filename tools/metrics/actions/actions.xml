@@ -28842,6 +28842,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuNameWindow">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Name window' in the app menu.</description>
+</action>
+
 <action name="MobileMenuNewIncognitoTab.BeforeTabRestore">
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

@@ -230,6 +230,8 @@ public class MultiWindowMetricsUtils {
             case NameWindowDialogSource.TAB_STRIP:
                 RecordUserAction.record("Android.TabStripMenu.NameWindow");
                 break;
+            case NameWindowDialogSource.APP_MENU:
+                break;
             default:
                 assert false : "Unexpected @NameWindowDialogSource.";
                 break;
@@ -244,6 +246,8 @@ public class MultiWindowMetricsUtils {
             case NameWindowDialogSource.TAB_STRIP:
                 RecordUserAction.record("Android.TabStripMenu.SaveWindowName");
                 break;
+            case NameWindowDialogSource.APP_MENU:
+                break;
             default:
                 assert false : "Unexpected @NameWindowDialogSource.";
                 break;
@@ -257,6 +261,8 @@ public class MultiWindowMetricsUtils {
                 break;
             case NameWindowDialogSource.TAB_STRIP:
                 RecordUserAction.record("Android.TabStripMenu.ChangeWindowName");
+                break;
+            case NameWindowDialogSource.APP_MENU:
                 break;
             default:
                 assert false : "Unexpected @NameWindowDialogSource.";
