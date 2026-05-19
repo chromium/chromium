@@ -41,6 +41,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/cred_man_support.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace actor_login {
 
 using base::test::RunUntil;
@@ -149,6 +154,10 @@ class ActorLoginPasswordCredentialsFetcherTest : public ::testing::Test {
     ON_CALL(client_, IsFillingEnabled).WillByDefault(Return(true));
     ON_CALL(driver_, CheckViewAreaVisible)
         .WillByDefault(WithArg<1>(&PostResponse<true>));
+#if BUILDFLAG(IS_ANDROID)
+    webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+        webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void TearDown() override {

@@ -283,6 +283,7 @@ test("components_unittests") {
     "//components/page_image_service:unit_tests",
     "//components/page_info/core:unit_tests",
     "//components/password_manager/core/browser:unit_tests",
+    "//components/password_manager/core/browser/actor_login/internal:unit_tests",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching_unittests",
     "//components/password_manager/core/browser/affiliation:unit_tests",
     "//components/password_manager/core/browser/export:unit_tests",
@@ -773,7 +774,6 @@ test("components_unittests") {
       "//components/live_caption:unit_tests",
 
       # TODO(crbug.com/470475787): Enable this test on Android.
-      "//components/password_manager/core/browser/actor_login/internal:unit_tests",
       "//components/soda:unit_tests",
       "//components/storage_monitor:unit_tests",
       "//components/web_modal:unit_tests",

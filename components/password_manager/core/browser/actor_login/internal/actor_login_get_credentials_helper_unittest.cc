@@ -60,6 +60,13 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
  public:
   ActorLoginGetCredentialsHelperTest() = default;
 
+  void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::kActorLoginNoPermanentPermissionsAndroid);
+#endif
+  }
+
   std::unique_ptr<ActorLoginGetCredentialsHelper> CreateHelper(
       std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers,
       base::OnceCallback<void(CredentialsOrError)> callback) {
@@ -74,6 +81,7 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<MockActorLoginMetricsHelper> metrics_helper_;
 };

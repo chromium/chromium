@@ -41,6 +41,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/cred_man_support.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace actor_login {
 
 using autofill::FormData;
@@ -217,6 +222,10 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
         .WillByDefault(Return(false));
     ON_CALL(mock_client_, GetAffiliationService)
         .WillByDefault(Return(&mock_affiliation_service_));
+#if BUILDFLAG(IS_ANDROID)
+    webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+        webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {

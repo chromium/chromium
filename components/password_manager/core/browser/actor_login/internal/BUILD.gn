@@ -2,11 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The code can theoretically be used on iOS too, it's just currently
-# not needed. Remove the asserts if using it on mobile and remember
-# to also modify components/BUILD.gn to start building the tests.
-assert(!is_ios)
-
 source_set("delegate") {
   sources = [
     "actor_login_credential_filler.cc",
@@ -128,4 +123,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_android) {
+    deps += [ "//components/webauthn/android" ]
+  }
 }
