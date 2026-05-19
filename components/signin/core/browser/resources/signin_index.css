@@ -21,18 +21,18 @@ tr.header {
 }
 
 div {
-  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
   display: inline-block;
   width: 100%;
 }
 
 div#signin-info {
-  -webkit-columns: 2;
+  columns: 2;
 }
 
 div#token-info,
 div#cookie-info {
-  -webkit-columns: 1;
+  columns: 1;
 }
 
 table.signin-details {

@@ -3,11 +3,11 @@
  * found in the LICENSE file. */
 
 #info {
-  -webkit-column-width: 350px;
+  column-width: 350px;
 }
 
 #info > div {
-  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
   width: 350px;
 }
 
