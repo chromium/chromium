@@ -99,8 +99,8 @@ class PeerConnectionRecord {
       timestamp: update.timestamp,
     });
     if (this.record_.updateLog.length > 1) {
-      return
-          this.record_.updateLog[this.record_.updateLog.length - 1].timestamp -
+      return this.record_.updateLog[this.record_.updateLog.length - 1]
+                 .timestamp -
           this.record_.updateLog[this.record_.updateLog.length - 2].timestamp;
     }
   }
@@ -503,8 +503,8 @@ function addStandardStats(data) {
       .getElementsByClassName('candidatepair')[0].firstElementChild;
     candidateElement.innerText = '';
     if (!(localCandidate && remoteCandidate)) {
-      return;
       candidateElement.innerText = '(not connected)';
+      return;
     }
 
     if (localCandidate.address &&
