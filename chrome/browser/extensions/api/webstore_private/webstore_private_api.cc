@@ -29,9 +29,7 @@
 #include "base/version_info/version_info.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,7 +37,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
@@ -50,8 +47,6 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,6 +64,7 @@
 #include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/scoped_active_install.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -588,13 +584,19 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   } else {
     ReportWebStoreInstallEsbAllowlistParameter(details().esb_allowlist);
+#if BUILDFLAG(IS_ANDROID)
+    auto* supervised_user_extensions_delegate =
+        ManagementAPI::GetFactoryInstance()
+            ->Get(profile_)
+            ->GetSupervisedUserExtensionsDelegate();
+#endif  // BUILDFLAG(IS_ANDROID)
 
     if (ShouldShowFrictionDialog(profile_)) {
       ShowInstallFrictionDialog(web_contents);
 #if BUILDFLAG(IS_ANDROID)
-    } else if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
-               !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-                   profile_)) {
+    } else if (supervised_user_extensions_delegate->IsChild() &&
+               !supervised_user_extensions_delegate
+                    ->CanSkipExtensionParentApprovals()) {
       supervised_user_extensions_metrics_recorder_
           .RecordAskParentDialogUmaMetrics(
               SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::
@@ -730,10 +732,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
     SupervisedExtensionApprovalResult result) {
 #if BUILDFLAG(IS_ANDROID)
+  auto* supervised_user_extensions_delegate =
+      extensions::ManagementAPI::GetFactoryInstance()
+          ->Get(profile_)
+          ->GetSupervisedUserExtensionsDelegate();
   if (result != SupervisedExtensionApprovalResult::kApproved &&
-      supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
-      !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-          profile_)) {
+      supervised_user_extensions_delegate->IsChild() &&
+      !supervised_user_extensions_delegate->CanSkipExtensionParentApprovals()) {
     supervised_user_extensions_metrics_recorder_.RecordEnablementUmaMetrics(
         SupervisedUserExtensionsMetricsRecorder::EnablementState::
             kFailedToEnable);
@@ -815,7 +820,10 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 bool WebstorePrivateBeginInstallWithManifest3Function::
     PromptForParentApproval() {
-  DCHECK(supervised_user::AreExtensionsPermissionsEnabled(profile_));
+  DCHECK(extensions::ManagementAPI::GetFactoryInstance()
+             ->Get(profile_)
+             ->GetSupervisedUserExtensionsDelegate()
+             ->IsChild());
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     // The browser window has gone away.
@@ -871,14 +879,18 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS: {
+      auto* supervised_user_extensions_delegate =
+          ManagementAPI::GetFactoryInstance()
+              ->Get(profile_)
+              ->GetSupervisedUserExtensionsDelegate();
       // TODO(b/202064235): The only user of this branch is ChromeOs v1 flow.
       // Handle parent permission for child accounts on ChromeOS.
       // Parent permission not required for theme installation.
       if (!dummy_extension_->is_theme() &&
           ExtensionsBrowserClient::Get()->IsValidContext(profile_) &&
-          supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
-          !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-              profile_)) {
+          supervised_user_extensions_delegate->IsChild() &&
+          !supervised_user_extensions_delegate
+               ->CanSkipExtensionParentApprovals()) {
         if (PromptForParentApproval()) {
           // If we are showing parent permission dialog, return instead of
           // break, so that we don't release the ref below.
@@ -1083,11 +1095,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
       ExtensionInstallPrompt::INSTALL_PROMPT);
 
   if (!dummy_extension_->is_theme()) {
+    auto* supervised_user_extensions_delegate =
+        ManagementAPI::GetFactoryInstance()
+            ->Get(profile_)
+            ->GetSupervisedUserExtensionsDelegate();
     const bool requires_parent_permission =
-        supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
-        !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-            profile_);
-
+        supervised_user_extensions_delegate->IsChild() &&
+        !supervised_user_extensions_delegate->CanSkipExtensionParentApprovals();
     // We don't prompt for parent permission for themes, so no need
     // to configure the install prompt to indicate that this is a child
     // asking a parent for installation permission.
@@ -1095,7 +1109,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     // Record metrics for supervised users that are in "Skip parent
     // approval"-mode and use the Extension install dialog (that is used by
     // non-supervised users).
-    if (supervised_user::AreExtensionsPermissionsEnabled(profile_)) {
+    if (supervised_user_extensions_delegate->IsChild()) {
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
     }
     if (requires_parent_permission) {
@@ -1340,8 +1354,10 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
       IsPendingCustodianApproval::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto* profile = Profile::FromBrowserContext(browser_context());
-  if (!supervised_user::AreExtensionsPermissionsEnabled(profile)) {
+  if (!ManagementAPI::GetFactoryInstance()
+           ->Get(browser_context())
+           ->GetSupervisedUserExtensionsDelegate()
+           ->IsChild()) {
     return RespondNow(BuildResponse(false));
   }
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());

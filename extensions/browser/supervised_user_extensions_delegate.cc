@@ -67,4 +67,9 @@ void SupervisedUserExtensionsDelegate::RecordExtensionEnablementUmaMetrics(
   NOTIMPLEMENTED();
 }
 
+bool SupervisedUserExtensionsDelegate::CanSkipExtensionParentApprovals() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 }  // namespace extensions

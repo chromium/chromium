@@ -12,7 +12,6 @@
 #include "components/update_client/test_configurator.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_host_delegate.h"
-#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/test_runtime_api_delegate.h"
@@ -77,6 +76,34 @@ class TestExtensionManagementClient : public ExtensionManagementClient {
     return false;
   }
   bool IsAllowedManifestVersion(const Extension* extension) override {
+    return false;
+  }
+  bool IsAllowedManifestType(Manifest::Type manifest_type,
+                             const std::string& extension_id) const override {
+    return false;
+  }
+  ManagedInstallationMode GetInstallationMode(
+      const Extension* extension) override {
+    return ManagedInstallationMode::kBlocked;
+  }
+  ManagedInstallationMode GetInstallationMode(
+      const ExtensionId& extension_id,
+      const std::string& update_url) override {
+    return ManagedInstallationMode::kBlocked;
+  }
+  const std::string BlockedInstallMessage(const ExtensionId& id) override {
+    return std::string();
+  }
+  bool IsPermissionSetAllowed(const Extension* extension,
+                              const PermissionSet& perms) override {
+    return false;
+  }
+  bool IsPermissionSetAllowed(const ExtensionId& extension_id,
+                              const std::string& update_url,
+                              const PermissionSet& perms) override {
+    return false;
+  }
+  bool IsInstallationExplicitlyBlocked(const ExtensionId& id) override {
     return false;
   }
 };

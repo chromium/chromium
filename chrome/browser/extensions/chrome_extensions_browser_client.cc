@@ -67,6 +67,8 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -1188,6 +1190,22 @@ bool ChromeExtensionsBrowserClient::CanUseNonComponentExtensions(
     content::BrowserContext* context) {
   return profile_util::ProfileCanUseNonComponentExtensions(
       Profile::FromBrowserContext(context));
+}
+
+void ChromeExtensionsBrowserClient::CanInstallExtensionByPolicy(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const base::Version& extension_version,
+    base::OnceCallback<void(bool, std::u16string)> callback) {
+  policy::ExtensionInstallPolicyService* extension_install_policy_service =
+      policy::ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
+          Profile::FromBrowserContext(context));
+  if (extension_install_policy_service) {
+    extension_install_policy_service->CanInstallExtension(
+        {extension_id, extension_version.GetString()}, std::move(callback));
+  } else {
+    std::move(callback).Run(/*can_install=*/true, std::u16string());
+  }
 }
 
 void ChromeExtensionsBrowserClient::SetAPIClientForTest(

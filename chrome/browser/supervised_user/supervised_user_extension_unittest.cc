@@ -19,8 +19,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -30,13 +33,23 @@
 
 using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
 
+namespace extensions {
+
 namespace {
 const char good_crx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 const char autoupdate[] = "ogjcoiohnmldgjemafoockdghcjciccf";
 const char permissions_increase[] = "pgdpcfcocojkjfbgpiianjngphoopgmo";
-}  // namespace
 
-namespace extensions {
+std::unique_ptr<KeyedService> BuildManagementApi(
+    content::BrowserContext* context) {
+  return std::make_unique<ManagementAPI>(context);
+}
+
+std::unique_ptr<KeyedService> BuildEventRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<EventRouter>(context, ExtensionPrefs::Get(context));
+}
+}  // namespace
 
 // Base class for the extension parental controls tests for supervised users.
 class SupervisedUserExtensionTestBase : public ExtensionServiceTestWithInstall {
@@ -51,6 +64,14 @@ class SupervisedUserExtensionTestBase : public ExtensionServiceTestWithInstall {
     params.profile_is_supervised = profile_is_supervised;
     InitializeExtensionService(std::move(params));
     CreateExtensionManager();
+    SetTestingFactories();
+  }
+
+  void SetTestingFactories() {
+    ManagementAPI::GetFactoryInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildManagementApi));
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildEventRouter));
   }
 
   void CreateExtensionManager() {
@@ -111,7 +132,11 @@ class SupervisedUserExtensionTestBase : public ExtensionServiceTestWithInstall {
 
   const Extension* CheckEnabled(const std::string& extension_id) {
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
-    EXPECT_FALSE(IsPendingCustodianApproval(extension_id));
+    // Skip IsPendingCustodianApproval check when delegate doesn't exist to
+    // prevent inadvertent SupervisedUserExtensionsDelegate creation.
+    if (supervised_user_extensions_delegate()) {
+      EXPECT_FALSE(IsPendingCustodianApproval(extension_id));
+    }
     ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
     EXPECT_TRUE(extension_prefs->GetDisableReasons(extension_id).empty());
     return registry()->enabled_extensions().GetByID(extension_id);
@@ -594,6 +619,7 @@ TEST_F(SupervisedUserExtensionTest,
   ExtensionServiceInitParams params;
   params.profile_is_supervised = true;
   InitializeExtensionService(std::move(params));
+  SetTestingFactories();
   SetDefaultParentalControlSettings();
   // Install an extension. It should be enabled as we haven't created the SU
   // extension manager yet. Treated as a pre-existing extension.
@@ -631,6 +657,7 @@ TEST_F(SupervisedUserExtensionTest,
   ExtensionServiceInitParams params;
   params.profile_is_supervised = true;
   InitializeExtensionService(std::move(params));
+  SetTestingFactories();
   SetDefaultParentalControlSettings();
   // Install an extension. It should be enabled as we haven't created the SU
   // extension manager yet. Treated as a pre-existing extension.

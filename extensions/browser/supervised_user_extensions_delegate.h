@@ -79,6 +79,12 @@ class SupervisedUserExtensionsDelegate {
   // Records when an extension has been enabled or disabled by parental
   // controls.
   virtual void RecordExtensionEnablementUmaMetrics(bool enabled) const;
+
+  // Returns true if the extension handling mode for skipping parent approval is
+  // enabled and the parent has authorized installing extensions without their
+  // approval.
+  // Returns false if the user is not supervised.
+  virtual bool CanSkipExtensionParentApprovals();
 };
 
 }  // namespace extensions

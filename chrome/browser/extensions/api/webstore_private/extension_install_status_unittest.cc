@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
+#include "extensions/browser/api/webstore_private/extension_install_status.h"
 
 #include <vector>
 
@@ -14,14 +14,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
+#include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/policy/cloud/mock_extension_install_policy_service.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/features.h"
@@ -29,7 +27,10 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -77,9 +78,19 @@ struct StatusAndMessage {
   bool operator==(const StatusAndMessage&) const = default;
 };
 
+std::unique_ptr<KeyedService> BuildManagementApi(
+    content::BrowserContext* context) {
+  return std::make_unique<ManagementAPI>(context);
+}
+
+std::unique_ptr<KeyedService> BuildEventRouter(
+    content::BrowserContext* context) {
+  return std::make_unique<EventRouter>(context, ExtensionPrefs::Get(context));
+}
+
 }  // namespace
 
-class ExtensionInstallStatusTest : public testing::Test {
+class ExtensionInstallStatusTest : public ExtensionServiceTestWithInstall {
  public:
   ExtensionInstallStatusTest() = default;
 
@@ -90,21 +101,15 @@ class ExtensionInstallStatusTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // These tests rely on more elaborate Profile setup than a generic
-    // TestingProfile provides. Use TestingProfileManager to make the Profile.
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    // `profile_manager_` owns the returned Profile.
-    profile_ = profile_manager_->CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName, /*prefs=*/nullptr,
-        /*user_name=*/std::u16string(),
-        /*avatar_id=*/0, /*testing_factories=*/{});
-  }
+    ExtensionServiceTestWithInstall::SetUp();
+    InitializeExtensionService(GetExtensionServiceInitParams());
+    ManagementAPI::GetFactoryInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildManagementApi));
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildEventRouter));
 
-  void TearDown() override {
-    profile_ = nullptr;
-    profile_manager_.reset();
+    // Create instance of ManagementAPI.
+    CHECK(ManagementAPI::GetFactoryInstance()->Get(profile()));
   }
 
   scoped_refptr<const Extension> CreateExtension(const ExtensionId& id) {
@@ -121,8 +126,8 @@ class ExtensionInstallStatusTest : public testing::Test {
 
   void SetPolicy(const std::string& pref_name,
                  std::unique_ptr<base::Value> value) {
-    profile()->GetTestingPrefService()->SetManagedPref(pref_name,
-                                                       std::move(value));
+    testing_profile()->GetTestingPrefService()->SetManagedPref(
+        pref_name, std::move(value));
   }
 
   void SetPendingList(const std::vector<ExtensionId>& ids) {
@@ -133,7 +138,7 @@ class ExtensionInstallStatusTest : public testing::Test {
                        ::base::TimeToValue(base::Time::Now()));
       id_values.Set(id, std::move(request_data));
     }
-    profile()->GetTestingPrefService()->SetDict(
+    testing_profile()->GetTestingPrefService()->SetDict(
         enterprise_reporting::kCloudExtensionRequestIds, std::move(id_values));
   }
 
@@ -168,12 +173,14 @@ class ExtensionInstallStatusTest : public testing::Test {
         .status;
   }
 
-  TestingProfile* profile() { return profile_; }
+  // Returns the initialization parameters for the extension service.
+  virtual ExtensionServiceInitParams GetExtensionServiceInitParams() {
+    return ExtensionServiceInitParams();
+  }
 
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  // Since this is testing the MV2 deprecation experiments, we don't want to
+  // bypass their disabling for testing.
+  bool ShouldAllowMV2Extensions() override { return false; }
 };
 
 TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {
@@ -686,18 +693,25 @@ class ExtensionInstallStatusTestWithCloudPolicyChecks
 
   void SetUp() override {
     ExtensionInstallStatusTest::SetUp();
-    policy::ExtensionInstallPolicyServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            profile(),
-            base::BindRepeating([](content::BrowserContext* context) {
-              return base::WrapUnique<KeyedService>(
-                  new policy::MockExtensionInstallPolicyService());
-            }));
     mock_extension_install_policy_service_ =
         static_cast<policy::MockExtensionInstallPolicyService*>(
             policy::ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
                 profile()));
     ASSERT_TRUE(mock_extension_install_policy_service_);
+  }
+
+  ExtensionServiceInitParams GetExtensionServiceInitParams() override {
+    TestingProfile::TestingFactories testing_factories = {
+        TestingProfile::TestingFactory{
+            policy::ExtensionInstallPolicyServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context) {
+              return base::WrapUnique<KeyedService>(
+                  new policy::MockExtensionInstallPolicyService());
+            })}};
+
+    ExtensionServiceInitParams params;
+    params.testing_factories = std::move(testing_factories);
+    return params;
   }
 
   void TearDown() override {
@@ -851,7 +865,7 @@ class SupervisedUserExtensionInstallStatusTest
 // kCustodianApprovalRequiredForInstallation.
 TEST_F(SupervisedUserExtensionInstallStatusTest,
        NewExtensionWithCustodianApprovalRequiredForInstallation) {
-  profile()->SetIsSupervisedProfile(true);
+  testing_profile()->SetIsSupervisedProfile(true);
   // The supervised user requires parent approval to install extensions.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), false);
@@ -866,7 +880,7 @@ TEST_F(SupervisedUserExtensionInstallStatusTest,
 TEST_F(
     SupervisedUserExtensionInstallStatusTest,
     NewExtensionOnSkipApprovalModeDoesNotRequireCustodianApprovalForInstallation) {
-  profile()->SetIsSupervisedProfile(true);
+  testing_profile()->SetIsSupervisedProfile(true);
   // The supervised user does not require parent approval to install extensions.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), true);
@@ -881,7 +895,7 @@ TEST_F(
 TEST_F(
     SupervisedUserExtensionInstallStatusTest,
     NewExtensionWithParentApprovalDoesNotRequireCustodianApprovalForInstallation) {
-  profile()->SetIsSupervisedProfile(true);
+  testing_profile()->SetIsSupervisedProfile(true);
   // The supervised user requires parent approval to install extensions.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), false);
@@ -899,7 +913,7 @@ TEST_F(
 // Themes do not require approval for supervised users.
 TEST_F(SupervisedUserExtensionInstallStatusTest,
        NewThemeDoesNotRequireCustodianApprovalForInstallation) {
-  profile()->SetIsSupervisedProfile(true);
+  testing_profile()->SetIsSupervisedProfile(true);
   // The supervised user requires parent approval to install extensions but
   // themes are always allowed.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(

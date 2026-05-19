@@ -184,8 +184,6 @@ source_set("extensions") {
     "api/tabs/windows_util.h",
     "api/top_sites/top_sites_api.cc",
     "api/top_sites/top_sites_api.h",
-    "api/webstore_private/extension_install_status.cc",
-    "api/webstore_private/extension_install_status.h",
     "api/webstore_private/webstore_private_api.cc",
     "api/webstore_private/webstore_private_api.h",
     "blocklist_factory.cc",

@@ -64,6 +64,7 @@ class SupervisedUserExtensionsDelegateImpl
       const extensions::Extension& extension) override;
   void RemoveExtensionApproval(const extensions::Extension& extension) override;
   void RecordExtensionEnablementUmaMetrics(bool enabled) const override;
+  bool CanSkipExtensionParentApprovals() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Inject test instance for testing.

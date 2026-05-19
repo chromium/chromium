@@ -385,4 +385,12 @@ bool ExtensionsBrowserClient::CanUseNonComponentExtensions(
   return true;
 }
 
+void ExtensionsBrowserClient::CanInstallExtensionByPolicy(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const base::Version& extension_version,
+    base::OnceCallback<void(bool, std::u16string)> callback) {
+  std::move(callback).Run(/*can_install=*/true, std::u16string());
+}
+
 }  // namespace extensions

@@ -39,6 +39,7 @@ class ExtensionFunctionRegistry;
 namespace base {
 class CommandLine;
 class FilePath;
+class Version;
 }  // namespace base
 
 namespace content {
@@ -688,6 +689,13 @@ class ExtensionsBrowserClient {
   // Returns whether the given browser context is allowed to use non-component
   // extensions.
   virtual bool CanUseNonComponentExtensions(content::BrowserContext* context);
+
+  // Checks whether the extension can be installed based on policy.
+  virtual void CanInstallExtensionByPolicy(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const base::Version& extension_version,
+      base::OnceCallback<void(bool, std::u16string)> callback);
 
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;

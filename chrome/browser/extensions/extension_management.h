@@ -103,6 +103,20 @@ class ExtensionManagement : public KeyedService,
                                 const std::string& extension_id,
                                 Manifest::Type manifest_type) override;
   bool IsAllowedManifestVersion(const Extension* extension) override;
+  bool IsAllowedManifestType(Manifest::Type manifest_type,
+                             const std::string& extension_id) const override;
+  ManagedInstallationMode GetInstallationMode(
+      const Extension* extension) override;
+  ManagedInstallationMode GetInstallationMode(
+      const ExtensionId& extension_id,
+      const std::string& update_url) override;
+  bool IsInstallationExplicitlyBlocked(const ExtensionId& id) override;
+  const std::string BlockedInstallMessage(const ExtensionId& id) override;
+  bool IsPermissionSetAllowed(const Extension* extension,
+                              const PermissionSet& perms) override;
+  bool IsPermissionSetAllowed(const ExtensionId& extension_id,
+                              const std::string& update_url,
+                              const PermissionSet& perms) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -120,14 +134,6 @@ class ExtensionManagement : public KeyedService,
   bool ExtensionsEnabledForDesktopAndroid() const;
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
-  // Returns installation mode for an extension.
-  ManagedInstallationMode GetInstallationMode(const Extension* extension);
-
-  // Returns installation mode for an extension with id `extension_id` and
-  // updated with `update_url`.
-  ManagedInstallationMode GetInstallationMode(const ExtensionId& extension_id,
-                                              const std::string& update_url);
-
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
   base::DictValue GetForceInstallList() const;
@@ -144,18 +150,9 @@ class ExtensionManagement : public KeyedService,
   // overridden by policy.
   bool IsUpdateUrlOverridden(const ExtensionId& id);
 
-  // Returns if an extension with id `id` is explicitly blocked by enterprise
-  // policy or not.
-  bool IsInstallationExplicitlyBlocked(const ExtensionId& id);
-
   // Returns true if an extension download should be allowed to proceed.
   bool IsOffstoreInstallAllowed(const GURL& url,
                                 const GURL& referrer_url) const;
-
-  // Returns true if an extension with manifest type `manifest_type` and
-  // id `extension_id` is allowed to be installed.
-  bool IsAllowedManifestType(Manifest::Type manifest_type,
-                             const std::string& extension_id) const;
 
   bool IsAllowedByUnpublishedAvailabilityPolicy(const Extension* extension);
 
@@ -197,21 +194,6 @@ class ExtensionManagement : public KeyedService,
   // Returns blocked permission set for `extension`.
   std::unique_ptr<const PermissionSet> GetBlockedPermissions(
       const Extension* extension);
-
-  // If the extension is blocked from install and a custom error message
-  // was defined returns it. Otherwise returns an empty string. The maximum
-  // string length is 1000 characters.
-  const std::string BlockedInstallMessage(const ExtensionId& id);
-
-  // Returns true if every permission in `perms` is allowed for `extension`.
-  bool IsPermissionSetAllowed(const Extension* extension,
-                              const PermissionSet& perms);
-
-  // Returns true if every permission in `perms` is allowed for an extension
-  // with id `extension_id` and updated with `update_url`.
-  bool IsPermissionSetAllowed(const ExtensionId& extension_id,
-                              const std::string& update_url,
-                              const PermissionSet& perms);
 
   // Returns true if `extension` meets the minimum required version set for it.
   // If there is no such requirement set for it, returns true as well.

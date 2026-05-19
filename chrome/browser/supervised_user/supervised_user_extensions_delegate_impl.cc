@@ -133,6 +133,11 @@ void SupervisedUserExtensionsDelegateImpl::RecordExtensionEnablementUmaMetrics(
   extensions_manager_.RecordExtensionEnablementUmaMetrics(enabled);
 }
 
+bool SupervisedUserExtensionsDelegateImpl::CanSkipExtensionParentApprovals() {
+  return supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+      Profile::FromBrowserContext(context_));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void SupervisedUserExtensionsDelegateImpl::
     SetParentAccessExtensionApprovalsManagerForTesting(

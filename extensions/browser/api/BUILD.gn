@@ -52,6 +52,7 @@ group("api_implementations") {
     "//extensions/browser/api/system_network",
     "//extensions/browser/api/test",
     "//extensions/browser/api/user_scripts",
+    "//extensions/browser/api/webstore_private",
   ]
 
   # APIs that are currently not supported on desktop-android.

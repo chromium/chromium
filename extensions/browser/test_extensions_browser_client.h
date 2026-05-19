@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/update_client/update_client.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/extension_cache.h"
@@ -57,6 +58,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   }
   void set_extension_cache(std::unique_ptr<ExtensionCache> extension_cache) {
     extension_cache_ = std::move(extension_cache);
+  }
+  void set_extension_management_client(
+      std::unique_ptr<ExtensionManagementClient> client) {
+    extension_management_client_ = std::move(client);
   }
 
   // Sets a factory to respond to calls of the CreateUpdateClient method.
