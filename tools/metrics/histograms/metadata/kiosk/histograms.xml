@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2026-09-13">
+<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2026-11-15">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>

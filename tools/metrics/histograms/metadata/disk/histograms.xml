@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DiskCache.0.EvictedAge" units="ms" expires_after="2026-09-06">
+<histogram name="DiskCache.0.EvictedAge" units="ms" expires_after="2026-11-15">
   <owner>ricea@chromium.org</owner>
   <owner>src/net/disk_cache/OWNERS</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.0.TotalIOTimeRead" units="ms"
-    expires_after="2026-09-06">
+    expires_after="2026-11-15">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.0.TotalIOTimeWrite" units="ms"
-    expires_after="2026-09-06">
+    expires_after="2026-11-15">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.MoveCacheToRestartCache.Windows"
-    enum="BooleanSuccess" expires_after="2026-09-06">
+    enum="BooleanSuccess" expires_after="2026-11-15">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.MoveCacheToRestartCacheError.Windows"
-    enum="WinGetLastError" expires_after="2026-09-06">
+    enum="WinGetLastError" expires_after="2026-11-15">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

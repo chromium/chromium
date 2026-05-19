@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="XR.OpenXR.SceneUnderstandingMSFTAvailability" enum="Boolean"
-    expires_after="2026-09-12">
+    expires_after="2026-11-15">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
