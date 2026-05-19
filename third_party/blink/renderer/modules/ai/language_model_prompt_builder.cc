@@ -766,27 +766,39 @@ class ThenCallback : public ThenCallable<Type, ThenCallback<Type, ReactType>> {
 void LanguageModelPromptBuilder::BitmapToMojo(
     std::variant<DOMDataView*, V8ImageBitmapSource*> source,
     PendingEntry* entry) {
+  ScriptPromise<ImageBitmap> promise;
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::TryCatch try_catch(isolate);
-  ExceptionState exception_state(isolate);
 
-  // Note: GetBitmapFromV8ImageBitmapSource doesn't support async which is
-  // required for blobs so async ImageBitmapFactories::CreateImageBitmap is
-  // preferred.
-  // TODO(crbug.com/419321438): Change CreateImageBitmap to not use JS promises.
-  ScriptPromise<ImageBitmap> promise = std::visit(
-      absl::Overload{
-          [&](const DOMDataView* data_view) {
-            return ImageBitmapFactories::CreateImageBitmap(
-                script_state_, data_view,
-                MakeGarbageCollected<ImageBitmapOptions>(), exception_state);
-          },
-          [&](const V8ImageBitmapSource* bitmap_source) {
-            return ImageBitmapFactories::CreateImageBitmap(
-                script_state_, bitmap_source,
-                MakeGarbageCollected<ImageBitmapOptions>(), exception_state);
-          }},
-      source);
+  {
+    ExceptionState exception_state(isolate);
+
+    // Note: GetBitmapFromV8ImageBitmapSource doesn't support async which is
+    // required for blobs so async ImageBitmapFactories::CreateImageBitmap is
+    // preferred.
+    // TODO(crbug.com/419321438): Use CreateImageBitmap without JS promises.
+    promise = std::visit(
+        absl::Overload{
+            [&](const DOMDataView* data_view) {
+              return ImageBitmapFactories::CreateImageBitmap(
+                  script_state_, data_view,
+                  MakeGarbageCollected<ImageBitmapOptions>(), exception_state);
+            },
+            [&](const V8ImageBitmapSource* bitmap_source) {
+              return ImageBitmapFactories::CreateImageBitmap(
+                  script_state_, bitmap_source,
+                  MakeGarbageCollected<ImageBitmapOptions>(), exception_state);
+            }},
+        source);
+    CHECK_EQ(exception_state.HadException(), try_catch.HasCaught());
+  }
+
+  if (try_catch.HasCaught()) {
+    v8::Local<v8::Value> exception = try_catch.Exception();
+    try_catch.Reset();
+    Reject(ScriptValue(isolate, exception));
+    return;
+  }
 
   promise.Then(
       script_state_,
@@ -797,31 +809,35 @@ void LanguageModelPromptBuilder::BitmapToMojo(
           [](LanguageModelPromptBuilder* builder, ScriptState* script_state,
              ScriptValue value) { builder->Reject(std::move(value)); },
           WrapPersistent(this))));
-  if (exception_state.HadException()) {
-    CHECK(try_catch.HasCaught());
-    this->Reject(ScriptValue(isolate, try_catch.Exception()));
-  }
 }
 
 void LanguageModelPromptBuilder::OnBitmapLoaded(PendingEntry* entry,
                                                 ScriptState* script_state,
                                                 ImageBitmap* bitmap) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::TryCatch try_catch(isolate);
-  ExceptionState exception_state(isolate);
   if (!bitmap) {
     Reject(DOMException::Create(
         "Invalid image bitmap.",
         DOMException::GetErrorName(DOMExceptionCode::kDataError)));
     return;
   }
-  std::optional<SkBitmap> skia_bitmap =
-      GetBitmapFromCanvasImageSource(*bitmap, exception_state);
-  if (!skia_bitmap) {
-    CHECK(exception_state.HadException() && try_catch.HasCaught());
-    Reject(ScriptValue(isolate, try_catch.Exception()));
+
+  std::optional<SkBitmap> skia_bitmap;
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+  {
+    ExceptionState exception_state(isolate);
+    skia_bitmap = GetBitmapFromCanvasImageSource(*bitmap, exception_state);
+    CHECK_EQ(skia_bitmap.has_value(), !exception_state.HadException());
+    CHECK_EQ(skia_bitmap.has_value(), !try_catch.HasCaught());
+  }
+
+  if (try_catch.HasCaught()) {
+    v8::Local<v8::Value> exception = try_catch.Exception();
+    try_catch.Reset();
+    Reject(ScriptValue(isolate, exception));
     return;
   }
+
   OnPromptContentProcessed(
       mojom::blink::AILanguageModelPromptContent::NewBitmap(
           skia_bitmap.value()),
