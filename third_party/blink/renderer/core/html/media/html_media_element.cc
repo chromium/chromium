@@ -813,7 +813,8 @@ void HTMLMediaElement::ParseAttribute(
     if (web_media_player_)
       web_media_player_->SetLatencyHint(latencyHint());
   } else if (name == html_names::kMutedAttr) {
-    if (params.reason == AttributeModificationReason::kByParser) {
+    if (!RuntimeEnabledFeatures::MediaElementMutedDefaultStateEnabled() &&
+        params.reason == AttributeModificationReason::kByParser) {
       muted_ = true;
     }
   } else if (name == html_names::kLoadingAttr &&
@@ -839,8 +840,10 @@ void HTMLMediaElement::CloneNonAttributePropertiesFrom(const Element& other,
                                                        NodeCloningData& data) {
   HTMLElement::CloneNonAttributePropertiesFrom(other, data);
 
-  if (FastHasAttribute(html_names::kMutedAttr))
+  if (!RuntimeEnabledFeatures::MediaElementMutedDefaultStateEnabled() &&
+      FastHasAttribute(html_names::kMutedAttr)) {
     muted_ = true;
+  }
 }
 
 void HTMLMediaElement::FinishParsingChildren() {
@@ -1613,7 +1616,7 @@ bool HTMLMediaElement::HandleCommandInternal(HTMLElement& invoker,
   } else if (command == CommandEventType::kToggleMuted) {
     // No user activation check as `setMuted` already handles the autoplay
     // policy check.
-    setMuted(!muted_);
+    setMuted(!muted());
     return true;
   }
 
@@ -3354,16 +3357,34 @@ void HTMLMediaElement::setVolume(double vol, ExceptionState& exception_state) {
 }
 
 bool HTMLMediaElement::muted() const {
+  // https://html.spec.whatwg.org/multipage/media.html#concept-media-muted
+
+  // Note: the spec requirements about playbackRate aren't implemented because
+  // negative playback rate isn't supported. Changes here would be needed if we
+  // ever do support it.
+  static_assert(kMinPlaybackRate >= 0);
+
+  if (RuntimeEnabledFeatures::MediaElementMutedDefaultStateEnabled() &&
+      muted_is_default_) {
+    return FastHasAttribute(html_names::kMutedAttr);
+  }
+
   return muted_;
 }
 
 void HTMLMediaElement::setMuted(bool muted) {
   DVLOG(2) << "setMuted(" << *this << ", " << base::ToString(muted) << ")";
 
-  if (muted_ == muted)
-    return;
+  bool was_muted = this->muted();
 
+  if (RuntimeEnabledFeatures::MediaElementMutedDefaultStateEnabled()) {
+    muted_is_default_ = false;
+  }
   muted_ = muted;
+
+  if (was_muted == this->muted()) {
+    return;
+  }
 
   PseudoStateChanged(CSSSelector::kPseudoMuted);
 
@@ -3397,8 +3418,9 @@ bool HTMLMediaElement::UserWantsControlsVisible() const {
 }
 
 double HTMLMediaElement::EffectiveMediaVolume() const {
-  if (muted_)
+  if (muted()) {
     return 0;
+  }
 
   return volume_;
 }
@@ -4160,8 +4182,9 @@ void HTMLMediaElement::UpdatePlayState(
            << ") - shouldBePlaying = " << base::ToString(should_be_playing)
            << ", isPlaying = " << base::ToString(is_playing);
 
-  if (should_be_playing && !muted_)
+  if (should_be_playing && !muted()) {
     was_always_muted_ = false;
+  }
 
   if (should_be_playing) {
     if (!is_playing) {

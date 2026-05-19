@@ -897,6 +897,7 @@ class CORE_EXPORT HTMLMediaElement
   bool should_delay_load_event_ : 1 = false;
   bool have_fired_loaded_data_ : 1 = false;
   bool can_autoplay_ : 1 = true;
+  bool muted_is_default_ : 1 = true;
   bool muted_ : 1 = false;
   bool paused_ : 1 = true;
   bool seeking_ : 1 = false;

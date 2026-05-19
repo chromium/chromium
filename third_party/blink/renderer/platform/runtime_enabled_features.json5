@@ -3828,6 +3828,10 @@
       base_feature: "none",
     },
     {
+      name: "MediaElementMutedDefaultState",
+      status: "experimental",
+    },
+    {
       name: "MediaElementVolumeGreaterThanOne",
     },
     // Set to reflect the kMediaEngagementBypassAutoplayPolicies feature.
