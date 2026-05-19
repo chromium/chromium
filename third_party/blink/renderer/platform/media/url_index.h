@@ -73,7 +73,8 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Keep in sync with WebMediaPlayer::CorsMode.
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
   enum CacheMode { kNormal, kCacheDisabled };
-  using KeyType = std::pair<KURL, CorsMode>;
+  using KeyType =
+      std::pair<KURL, std::pair<CorsMode, media::DataSource::EncodingMode>>;
 
   // `url_index` is a WeakPtr since while UrlData objects are created by the
   // UrlIndex they are not owned by the UrlIndex until after the network load

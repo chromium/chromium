@@ -84,9 +84,9 @@ UrlData::UrlData(const KURL& url,
 
 UrlData::~UrlData() = default;
 
-std::pair<KURL, UrlData::CorsMode> UrlData::key() const {
+UrlData::KeyType UrlData::key() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return std::make_pair(url(), cors_mode());
+  return std::make_pair(url(), std::make_pair(cors_mode(), encoding_mode()));
 }
 
 void UrlData::set_valid_until(base::Time valid_until) {
@@ -284,7 +284,8 @@ scoped_refptr<UrlData> UrlIndex::GetByUrl(
     UrlData::CacheMode cache_mode,
     media::DataSource::EncodingMode encoding_mode) {
   if (cache_mode == UrlData::kNormal) {
-    auto i = indexed_data_.find(std::make_pair(url, cors_mode));
+    auto i = indexed_data_.find(
+        std::make_pair(url, std::make_pair(cors_mode, encoding_mode)));
     if (i != indexed_data_.end() && i->value->Valid()) {
       return i->value;
     }
