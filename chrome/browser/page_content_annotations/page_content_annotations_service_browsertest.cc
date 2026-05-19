@@ -7,11 +7,15 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
+#include <tuple>
 #include <variant>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -1332,14 +1336,15 @@ IN_PROC_BROWSER_TEST_F(
   service()->RemoveObserver(AnnotationType::kCategoryClassifier, &observer);
 }
 
-class PageContentAnnotationsServiceContentExtractionTest
+class PageContentAnnotationsServiceContentExtractionTestBase
     : public InProcessBrowserTest {
  public:
-  virtual void InitializeFeatureList() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAnnotatedPageContentExtraction,
-        {{"capture_delay", "0s"}, {"include_inner_text", "true"}});
+  static std::string GetPageSettledMonitorParamName(bool is_enabled) {
+    return is_enabled ? "PageSettledMonitorEnabled"
+                      : "PageSettledMonitorDisabled";
   }
+
+  virtual void InitializeFeatureList() {}
 
   void SetUp() override {
     InitializeFeatureList();
@@ -1356,10 +1361,52 @@ class PageContentAnnotationsServiceContentExtractionTest
   }
 
  protected:
+  void AddPageSettledMonitorFeatureState(
+      bool is_enabled,
+      std::vector<base::test::FeatureRefAndParams>& enabled_features,
+      std::vector<base::test::FeatureRef>& disabled_features) {
+    if (is_enabled) {
+      enabled_features.push_back(
+          {features::kPageContentExtractionUsingPageSettledMonitor, {}});
+      enabled_features.push_back(
+          {features::kPageSettledMonitor,
+           {// Effectively disable the timeout to prevent flakes.
+            {features::kPageStabilityTimeout.name, "30000ms"},
+            {features::kObservationDelayTimeout.name, "30000ms"}}});
+    } else {
+      disabled_features.push_back(
+          features::kPageContentExtractionUsingPageSettledMonitor);
+    }
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+class PageContentAnnotationsServiceContentExtractionTest
+    : public PageContentAnnotationsServiceContentExtractionTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
+    return GetPageSettledMonitorParamName(info.param);
+  }
+
+  virtual bool IsPageSettledMonitorEnabled() const { return GetParam(); }
+
+  void InitializeFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kAnnotatedPageContentExtraction,
+         {{"capture_delay", "0s"}, {"include_inner_text", "true"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features, disabled_features);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        Basic) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -1412,7 +1459,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
                  kExtractionLatencyName));
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        Subframe) {
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
@@ -1443,16 +1490,22 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
 }
 
 class PageContentAnnotationsServiceContentExtractionResponseCodeTest
-    : public PageContentAnnotationsServiceContentExtractionTest,
-      public testing::WithParamInterface<bool> {
+    : public PageContentAnnotationsServiceContentExtractionTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
+  bool IsPageSettledMonitorEnabled() const { return std::get<1>(GetParam()); }
+
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features_with_params =
         {{features::kAnnotatedPageContentExtraction,
           {{"capture_delay", "0s"}, {"include_inner_text", "true"}}}};
     std::vector<base::test::FeatureRef> disabled_features;
 
-    bool are_404_navigations_saved_to_history = GetParam();
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features_with_params,
+                                      disabled_features);
+
+    bool are_404_navigations_saved_to_history = std::get<0>(GetParam());
     if (are_404_navigations_saved_to_history) {
       enabled_features_with_params.push_back({history::kVisitedLinksOn404, {}});
     } else {
@@ -1569,13 +1622,35 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     PageContentAnnotationsServiceContentExtractionResponseCodeTest,
-    ::testing::Bool());
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "VisitedLinksOn404Enabled"
+                                   : "VisitedLinksOn404Disabled",
+           "_",
+           PageContentAnnotationsServiceContentExtractionTestBase::
+               GetPageSettledMonitorParamName(std::get<1>(info.param))});
+    });
 
 class PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag
     : public PageContentAnnotationsServiceContentExtractionTest {
  public:
-  void InitializeFeatureList() override {}
+  void InitializeFeatureList() override {
+    if (IsPageSettledMonitorEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kPageContentExtractionUsingPageSettledMonitor);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kPageContentExtractionUsingPageSettledMonitor);
+    }
+  }
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
+    ::testing::Bool(),
+    &PageContentAnnotationsServiceContentExtractionTest::DescribeParams);
 
 class FakeExtractionServiceObserver
     : public PageContentExtractionService::Observer {
@@ -1598,7 +1673,7 @@ class FakeExtractionServiceObserver
       scoped_observation_{this};
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
     ObserverAddedAfterWebContentsInit) {
   FakeExtractionServiceObserver observer;
@@ -1645,7 +1720,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents->GetPrimaryPage()));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
     AsyncGettersWaitUntilExtracted) {
   FakeExtractionServiceObserver observer;
@@ -1677,7 +1752,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(eligibility_future.Get().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag,
     AsyncGettersInvalidateOnNavigation) {
   FakeExtractionServiceObserver observer;
@@ -1708,33 +1783,23 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class PageContentAnnotationsServiceContentExtractionTestActionable
-    : public InProcessBrowserTest {
+    : public PageContentAnnotationsServiceContentExtractionTest {
  public:
-  virtual void InitializeFeatureList() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAnnotatedPageContentExtraction,
-        {{"capture_delay", "0s"}, {"mode", "actionable"}});
+  void InitializeFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kAnnotatedPageContentExtraction,
+         {{"capture_delay", "0s"}, {"mode", "actionable"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features, disabled_features);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
-
-  void SetUp() override {
-    InitializeFeatureList();
-    InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    InProcessBrowserTest::SetUpOnMainThread();
-
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        GetChromeTestDataDir());
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionTestActionable,
     Basic) {
   FakeExtractionServiceObserver observer;
@@ -1759,7 +1824,13 @@ IN_PROC_BROWSER_TEST_F(
                 ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionTestActionable,
+    ::testing::Bool(),
+    &PageContentAnnotationsServiceContentExtractionTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        RefreshAPC) {
   FakeExtractionServiceObserver observer;
   auto* service =
@@ -1806,7 +1877,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
   EXPECT_EQ("New Title", result->page_content->data.main_frame_data().title());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        RefreshAPC_QueuedCallbacks) {
   FakeExtractionServiceObserver observer;
   auto* service =
@@ -1850,7 +1921,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
             result_2->page_content->data.main_frame_data().title());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        RefreshAPC_WebContentsClosed) {
   FakeExtractionServiceObserver observer;
   auto* service =
@@ -1882,7 +1953,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
   EXPECT_FALSE(result.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        RefreshAPC_WhileInitialExtractionPending) {
   FakeExtractionServiceObserver observer;
   auto* service =
@@ -1915,16 +1986,30 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
             result->page_content->data.main_frame_data().title());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionTest,
+    ::testing::Bool(),
+    &PageContentAnnotationsServiceContentExtractionTest::DescribeParams);
+
 class PageContentAnnotationsServiceContentExtractionTestLongCaptureDelay
     : public PageContentAnnotationsServiceContentExtractionTest {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAnnotatedPageContentExtraction, {{"capture_delay", "120s"}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kAnnotatedPageContentExtraction,
+         {{"capture_delay", "120s"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features, disabled_features);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionTestLongCaptureDelay,
     RefreshAPC_MultipleNavigations_PendingCallbackResolvedWithNullopt) {
   FakeExtractionServiceObserver observer;
@@ -1955,17 +2040,30 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(result.has_value());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionTestLongCaptureDelay,
+    ::testing::Bool(),
+    &PageContentAnnotationsServiceContentExtractionTest::DescribeParams);
+
 class PageContentAnnotationsServiceContentExtractionTestHidden
     : public PageContentAnnotationsServiceContentExtractionTest {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAnnotatedPageContentExtraction,
-        {{"capture_delay", "0s"}, {"triggering_mode", "on_hidden"}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kAnnotatedPageContentExtraction,
+         {{"capture_delay", "0s"}, {"triggering_mode", "on_hidden"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features, disabled_features);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
                        RefreshAPC_WithOnHiddenTrigger) {
   FakeExtractionServiceObserver observer;
   auto* service =
@@ -1995,7 +2093,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
   EXPECT_EQ("Test Page", result->page_content->data.main_frame_data().title());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
                        AsyncGettersReturnNulloptWhenVisibleInOnHiddenMode) {
   FakeExtractionServiceObserver observer;
   auto* service =
@@ -2018,20 +2116,30 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
   EXPECT_FALSE(content_future.Get().has_value());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionTestHidden,
+    ::testing::Bool(),
+    &PageContentAnnotationsServiceContentExtractionTest::DescribeParams);
+
 // Tests PDF extraction behavior based on feature
 // `kAnnotatedPageContentExtraction`:
 // - Enabled: PDF text is extracted; UKM is not recorded.
 // - Disabled: PDF text is not extracted; PDF page count is recorded to UKM.
 class PageContentAnnotationsServiceContentExtractionPdfTest
-    : public PageContentAnnotationsServiceContentExtractionTest,
-      public testing::WithParamInterface<bool> {
+    : public PageContentAnnotationsServiceContentExtractionTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
-    return info.param ? "PDFTextExtractionEnabled"
-                      : "PDFTextExtractionDisabled";
+  static std::string DescribeParams(
+      const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+    return base::StrCat(
+        {std::get<0>(info.param) ? "PDFTextExtractionEnabled"
+                                 : "PDFTextExtractionDisabled",
+         "_", GetPageSettledMonitorParamName(std::get<1>(info.param))});
   }
 
-  bool IsPDFTextExtractionEnabled() const { return GetParam(); }
+  bool IsPDFTextExtractionEnabled() const { return std::get<0>(GetParam()); }
+  bool IsPageSettledMonitorEnabled() const { return std::get<1>(GetParam()); }
 
   void InitializeFeatureList() override {
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
@@ -2055,6 +2163,9 @@ class PageContentAnnotationsServiceContentExtractionPdfTest
       disabled_features.push_back(
           features::kAnnotatedPageContentPDFTextExtraction);
     }
+
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features, disabled_features);
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -2633,7 +2744,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionPdfTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PageContentAnnotationsServiceContentExtractionPdfTest,
-    ::testing::Bool(),
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
     &PageContentAnnotationsServiceContentExtractionPdfTest::DescribeParams);
 
 }  // namespace page_content_annotations
