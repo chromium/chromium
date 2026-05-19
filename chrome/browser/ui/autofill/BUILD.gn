@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/account_settings",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/autofill",
     "//chrome/browser/autofill:test_support",
     "//chrome/browser/glic",

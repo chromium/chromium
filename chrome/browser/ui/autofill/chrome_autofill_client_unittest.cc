@@ -75,6 +75,8 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #else
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -90,6 +92,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 namespace autofill {
@@ -660,6 +664,17 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
                 }));
 
     BrowserWithTestWindowTest::SetUp();
+
+    // Register the fake actor service before any tabs are added, so that
+    // any TabFeatures created (including the first tab) use the fake service
+    // instead of creating a real one that gets destroyed later.
+    actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<actor::ActorKeyedServiceFake>(
+              Profile::FromBrowserContext(context));
+        }));
+
     // Create the first tab so that `web_contents()` exists.
     AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
   }
@@ -736,6 +751,46 @@ TEST_F(ChromeAutofillClientTestWithWindow, OpenGeminiInSidebar) {
       .WillOnce(testing::Return(base::WeakPtr<glic::GlicInstance>()));
 
   client()->OpenGeminiInSidebar(u"test prompt");
+}
+
+// Tests that `OnActorTaskStateChange` calls `ReparseKnownForms` on all drivers
+// when a new task gets assigned.
+TEST_F(ChromeAutofillClientTestWithWindow,
+       OnActorTaskStateChange_ReparseForms) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutofillActorMode);
+
+  actor::ActorKeyedServiceFake* actor_service =
+      static_cast<actor::ActorKeyedServiceFake*>(
+          actor::ActorKeyedService::Get(profile()));
+  ASSERT_TRUE(actor_service);
+
+  TestAutofillManagerInjector<MockAutofillManager> manager_injector;
+  AddTab(browser(), GURL("about:blank"));
+  content::WebContents* active_contents = web_contents();
+  MockAutofillManager* mock_manager = manager_injector[active_contents];
+  ASSERT_TRUE(mock_manager);
+
+  actor::TaskId task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  // Associate the active tab with the task.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(active_contents);
+  ASSERT_TRUE(tab_interface);
+  task->AddTab(tab_interface->GetHandle(), /*stop_task_on_detach=*/true,
+               base::DoNothing());
+
+  // Verify first call (assignment) triggers `ReparseKnownForms`.
+  EXPECT_CALL(*mock_manager, ReparseKnownForms()).Times(1);
+  actor_service->NotifyTaskStateChanged(*task);
+  testing::Mock::VerifyAndClearExpectations(mock_manager);
+
+  // Verify second call (no new task) does NOT trigger ReparseKnownForms
+  EXPECT_CALL(*mock_manager, ReparseKnownForms()).Times(0);
+  actor_service->NotifyTaskStateChanged(*task);
+  testing::Mock::VerifyAndClearExpectations(mock_manager);
 }
 #endif
 

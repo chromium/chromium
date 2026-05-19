@@ -398,7 +398,7 @@ class AutofillManager
   AutofillDriver& driver() { return *driver_; }
 
   // Reparses all known forms.
-  void ReparseKnownForms();
+  virtual void ReparseKnownForms();
 
   // After subscribing, FieldClassificationModelHandler::OnModelUpdated() will
   // trigger ReparseKnownForms(). There may be a handler for Autofill and/or

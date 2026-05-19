@@ -30,6 +30,7 @@ class MockAutofillManager : public AutofillManager {
   ~MockAutofillManager() override;
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
+  MOCK_METHOD(void, ReparseKnownForms, (), (override));
   MOCK_METHOD(void, OnFocusOnNonFormFieldImpl, (), (override));
   MOCK_METHOD(void, OnDidAutofillFormImpl, (const FormData& form), (override));
   MOCK_METHOD(void,
