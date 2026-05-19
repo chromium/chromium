@@ -17,10 +17,9 @@ import {simulateSyncStatus} from './sync_test_util.js';
 import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
-import type {StoredAccount} from 'chrome://settings/settings.js';
 // <if expr="is_chromeos">
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import type {AccountManagerBrowserProxy} from 'chrome://settings/settings.js';
+import type {Account, AccountManagerBrowserProxy} from 'chrome://settings/settings.js';
 import {AccountManagerBrowserProxyImpl} from 'chrome://settings/settings.js';
 // </if>
 
@@ -29,6 +28,7 @@ import {listenOnce} from 'chrome://resources/js/util.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import type {StoredAccount} from 'chrome://settings/settings.js';
 
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
@@ -36,9 +36,16 @@ import {simulateStoredAccounts} from './sync_test_util.js';
 // clang-format on
 
 // <if expr="is_chromeos">
+type TestAccount = Partial<Account>;
+// </if>
+// <if expr="not is_chromeos">
+type TestAccount = StoredAccount;
+// </if>
+
+// <if expr="is_chromeos">
 class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
     AccountManagerBrowserProxy {
-  private accounts_: any[] = [];
+  private accounts_: Account[] = [];
 
   constructor() {
     super([
@@ -46,7 +53,7 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy implements
     ]);
   }
 
-  setAccounts(accounts: any[]) {
+  setAccounts(accounts: Account[]) {
     this.accounts_ = accounts;
   }
 
@@ -497,7 +504,7 @@ suite('PeoplePageAccountSettings', function() {
   });
 
   async function simulateSignedInState(
-      state: SignedInState, accounts: StoredAccount[]) {
+      state: SignedInState, accounts: TestAccount[]) {
     await syncBrowserProxy.whenCalled('getSyncStatus');
     simulateSyncStatus({
       signedInState: state,
@@ -514,7 +521,7 @@ suite('PeoplePageAccountSettings', function() {
 
     // <if expr="is_chromeos">
     await accountManagerBrowserProxy.whenCalled('getAccounts');
-    accountManagerBrowserProxy.setAccounts(accounts);
+    accountManagerBrowserProxy.setAccounts(accounts as Account[]);
     webUIListenerCallback('accounts-changed');
     // </if>
 
