@@ -10,6 +10,8 @@ source_set("password_change") {
     "annotated_page_content_capturer_impl.h",
     "button_click_helper.cc",
     "button_click_helper.h",
+    "change_password_form_filler.cc",
+    "change_password_form_filler.h",
     "change_password_form_filling_submission_helper.cc",
     "change_password_form_filling_submission_helper.h",
     "change_password_form_finder.cc",
@@ -67,6 +69,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "annotated_page_content_capturer_unittest.cc",
+    "change_password_form_filler_unittest.cc",
     "change_password_form_filling_submission_helper_unittest.cc",
     "change_password_form_finder_unittest.cc",
     "change_password_form_waiter_unittest.cc",

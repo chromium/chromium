@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/fake_annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -530,7 +531,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   CompleteFormFilling(form_manager, verifier.get(), std::nullopt);
 
-  ASSERT_TRUE(verifier->form_waiter());
+  ASSERT_TRUE(verifier->form_filler()->form_waiter());
 
   task_environment()->AdvanceClock(base::Seconds(10));
 
@@ -554,7 +555,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateEmptyTestPasswordFormData());
 
-  EXPECT_TRUE(verifier->form_waiter());
+  EXPECT_TRUE(verifier->form_filler()->form_waiter());
 
   autofill::FormData new_form_data =
       CreateTestPasswordFormData("", "", 101, 102);
@@ -569,7 +570,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   EXPECT_CALL(driver(), FillChangePasswordForm)
       .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
-      verifier->form_waiter())
+      verifier->form_filler()->form_waiter())
       ->OnPasswordFormParsed(new_form_manager);
 
   EXPECT_TRUE(
@@ -684,7 +685,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
 
-  EXPECT_TRUE(verifier->form_waiter());
+  EXPECT_TRUE(verifier->form_filler()->form_waiter());
   autofill::FormData new_form_data =
       CreateTestPasswordFormData("", "", 101, 102);
   new_form_data.set_renderer_id(autofill::test::MakeFormRendererId());
@@ -697,7 +698,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_CALL(driver(), FillChangePasswordForm)
       .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
-      verifier->form_waiter())
+      verifier->form_filler()->form_waiter())
       ->OnPasswordFormParsed(new_form_manager);
 
   EXPECT_TRUE(
@@ -738,13 +739,13 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   CompleteFormFilling(form_manager, verifier.get(), std::nullopt);
 
   // A form waiter should be created.
-  ASSERT_TRUE(verifier->form_waiter());
+  ASSERT_TRUE(verifier->form_filler()->form_waiter());
 
   // If the same form is parsed again, it should be ignored.
   // No new filling attempt should be made.
   EXPECT_CALL(driver(), FillChangePasswordForm).Times(0);
   static_cast<password_manager::PasswordFormManagerObserver*>(
-      verifier->form_waiter())
+      verifier->form_filler()->form_waiter())
       ->OnPasswordFormParsed(form_manager);
 
   // To ensure no async tasks are pending that would call
