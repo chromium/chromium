@@ -80,6 +80,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
                          bool delay_until_visibility_change);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
   void SetNeedsCommitOnImpl(bool urgent);
+  void SendEarlyLastBeginMainFrame();
   void SetTargetLocalSurfaceIdOnImpl(
       const viz::LocalSurfaceId& target_local_surface_id);
   void BeginMainFrameAbortedOnImpl(

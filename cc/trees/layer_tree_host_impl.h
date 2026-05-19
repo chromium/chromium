@@ -449,6 +449,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Resets all of the trees to an empty state.
   void ResetTreesForTesting();
 
+  virtual void DidSendEarlyLastBeginMainFrame();
+
   size_t SourceAnimationFrameNumberForTesting() const;
 
   void RegisterScrollbarAnimationController(ElementId scroll_element_id,

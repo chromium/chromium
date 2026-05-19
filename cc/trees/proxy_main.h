@@ -132,6 +132,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       base::optional_ref<const BrowserControlsOffsetTagModifications>
           offset_tag_modifications) override;
   void RequestBeginMainFrameNotExpected(bool new_state) override;
+  void SendImmediateBeginMainFrame() override;
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;

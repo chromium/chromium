@@ -931,6 +931,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
                         bool speculative);
   void ImageDecodesFinished(const std::vector<std::pair<int, bool>>& results);
 
+  // Experimental feature implementation override for crbug.com/496610055
+  // which sends an early BeginMainFrame instead of waiting for the next
+  // vsync from Viz.
+  void RequestImmediateBeginMainFrame();
+
   void RequestBeginMainFrameNotExpected(bool new_state);
 
   float recording_scale_factor() const {

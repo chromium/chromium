@@ -2132,6 +2132,12 @@ void LayerTreeHost::SetHasCopyRequest(bool has_copy_request) {
   has_copy_request_ = has_copy_request;
 }
 
+void LayerTreeHost::RequestImmediateBeginMainFrame() {
+  if (features::SendEarlyLastBeginMainFrameIsEnabled()) {
+    proxy_->SendImmediateBeginMainFrame();
+  }
+}
+
 void LayerTreeHost::RequestBeginMainFrameNotExpected(bool new_state) {
   DCHECK(IsMainThread());
   proxy_->RequestBeginMainFrameNotExpected(new_state);

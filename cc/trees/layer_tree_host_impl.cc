@@ -1645,6 +1645,8 @@ void LayerTreeHostImpl::ResetTreesForTesting() {
   recycle_tree_ = nullptr;
 }
 
+void LayerTreeHostImpl::DidSendEarlyLastBeginMainFrame() {}
+
 size_t LayerTreeHostImpl::SourceAnimationFrameNumberForTesting() const {
   return next_frame_token();
 }

@@ -1072,6 +1072,12 @@ base::SingleThreadTaskRunner* ProxyMain::ImplThreadTaskRunner() {
   return task_runner_provider_->ImplThreadTaskRunner();
 }
 
+void ProxyMain::SendImmediateBeginMainFrame() {
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SendEarlyLastBeginMainFrame,
+                                base::Unretained(proxy_impl_.get())));
+}
+
 void ProxyMain::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   DCHECK(IsMainThread());
   ImplThreadTaskRunner()->PostTask(

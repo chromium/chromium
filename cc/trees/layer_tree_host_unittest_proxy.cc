@@ -4,6 +4,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
@@ -588,5 +590,83 @@ class LayerTreeHostProxyTestDelayedCommitDueToVisibility
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostProxyTestDelayedCommitDueToVisibility);
+
+class LayerTreeHostProxyTestRequestImmediateBeginMainFrame
+    : public LayerTreeHostProxyTest {
+ protected:
+  LayerTreeHostProxyTestRequestImmediateBeginMainFrame() = default;
+  ~LayerTreeHostProxyTestRequestImmediateBeginMainFrame() override = default;
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
+    if (!requested_) {
+      requested_ = true;
+      MainThreadTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHost::RequestImmediateBeginMainFrame,
+                         base::Unretained(layer_tree_host())));
+    }
+  }
+
+  void DidSendEarlyLastBeginMainFrameOnThread(
+      LayerTreeHostImpl* host_impl) override {
+    received_ = true;
+  }
+
+  void DidCommit() override {
+    if (received_) {
+      EndTest();
+    }
+  }
+
+  void AfterTest() override { EXPECT_TRUE(received_); }
+
+ private:
+  bool requested_ = false;
+  bool received_ = false;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostProxyTestRequestImmediateBeginMainFrame);
+
+// Tests killswitch disables RequestImmediateBeginMainFrame.
+class LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled
+    : public LayerTreeHostProxyTest {
+ protected:
+  LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled() {
+    feature_list_.InitAndDisableFeature(features::kSendEarlyLastBeginMainFrame);
+  }
+  ~LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled() override =
+      default;
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
+    if (!requested_) {
+      requested_ = true;
+      MainThreadTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHost::RequestImmediateBeginMainFrame,
+                         base::Unretained(layer_tree_host())));
+    }
+  }
+
+  void DidSendEarlyLastBeginMainFrameOnThread(
+      LayerTreeHostImpl* host_impl) override {
+    received_ = true;
+  }
+
+  void DidCommit() override { EndTest(); }
+
+  void AfterTest() override { EXPECT_FALSE(received_); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  bool requested_ = false;
+  bool received_ = false;
+};
+
+MULTI_THREAD_TEST_F(
+    LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled);
 
 }  // namespace cc

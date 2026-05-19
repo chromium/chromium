@@ -145,6 +145,12 @@ class CC_EXPORT Proxy {
   // pending local surface id change which will take effect when resume frame
   // production.
   virtual void NotifyNewLocalSurfaceIdExpectedWhilePaused() = 0;
+
+  // Optional experimental feature implementation for crbug.com/496610055.
+  // This function will send an early final BeginMainFrame when in the last
+  // frame of a renderer and inside a cross-document view transition.
+  // Only implemented for the proxy_main.
+  virtual void SendImmediateBeginMainFrame() {}
 };
 
 }  // namespace cc

@@ -290,6 +290,13 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSelectionEdgeVisibilityUsesFullEdge);
 // resources.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResourcePoolPreferExactSizeReuse);
 
+// When enabled, instructs the scheduler to act as though a new BeginMainFrame
+// signal has just occurred. This optimization is specific to the last frame of
+// the document renderer during a cross-document view transition and should
+// not occur otherwise.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendEarlyLastBeginMainFrame);
+CC_BASE_EXPORT bool SendEarlyLastBeginMainFrameIsEnabled();
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
