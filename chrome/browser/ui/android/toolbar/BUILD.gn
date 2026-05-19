@@ -621,6 +621,7 @@ source_set("toolbar") {
   deps = [
     "//base",
     "//chrome/browser/profiles",
+    "//chrome/browser/search",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/ui/android/toolbar:adaptive_jni_headers",
     "//chrome/browser/ui/android/toolbar:jni_headers",

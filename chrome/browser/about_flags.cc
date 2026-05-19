@@ -9366,6 +9366,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"use-webui-ntp-android", flag_descriptions::kUseWebUiNtpAndroidName,
+     flag_descriptions::kUseWebUiNtpAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kUseWebUiNtpAndroid)},
 
     {"tab-strip-density-change-android",
      flag_descriptions::kTabStripDensityChangeAndroidName,

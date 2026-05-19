@@ -468,6 +468,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseAppTaskForCustomTabActivation,
     &kUseInitialNetworkStateAtStartup,
     &kUseLibunwindstackNativeUnwinderAndroid,
+    &kUseWebUiNtpAndroid,
     &kVirtualKeyboardTransientInnerHeightFix,
     &kWebApkMinShellVersion,
     &kWebOtpCrossDeviceSimpleString,
@@ -839,6 +840,7 @@ BASE_FEATURE(kUseInitialNetworkStateAtStartup, base::FEATURE_ENABLED_BY_DEFAULT)
 // Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
 // only on Android.
 BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseWebUiNtpAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kVirtualKeyboardTransientInnerHeightFix, base::FEATURE_ENABLED_BY_DEFAULT);
 // Shows only the remote device name on the Android notification instead of
 // a descriptive text.

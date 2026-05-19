@@ -10898,6 +10898,7 @@ from previous Chrome versions.
   <int value="-1060469653" label="BookmarksBarNTP:disabled"/>
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
   <int value="-1059844654" label="CompositorViewRemeasureFix:enabled"/>
+  <int value="-1059525584" label="UseWebUiNtpAndroid:disabled"/>
   <int value="-1059478136" label="PreinstalledWebAppDuplicationFixer:enabled"/>
   <int value="-1057056167" label="VirtualKeyboardMultipaste:enabled"/>
   <int value="-1056947847" label="OfflineItemsInNotifications:disabled"/>
@@ -14397,6 +14398,7 @@ from previous Chrome versions.
   <int value="95043207" label="NtpOneGoogleBarAsyncBarParts:disabled"/>
   <int value="95820546" label="RubyShortHeuristics:disabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
+  <int value="96328487" label="UseWebUiNtpAndroid:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
   <int value="97691440" label="SkipServiceWorkerForInstallPromot:disabled"/>
   <int value="97764742" label="QuickAnswersForMoreLocales:disabled"/>

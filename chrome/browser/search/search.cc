@@ -36,6 +36,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #else
 #include "chrome/browser/search/instant_service.h"
@@ -304,6 +305,16 @@ bool IsInstantNTPURL(const GURL& url, Profile* profile) {
 
   GURL new_tab_url(GetNewTabPageURL(profile));
   return new_tab_url.is_valid() && MatchesOriginAndPath(url, new_tab_url);
+}
+
+bool IsWebUiNtpEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kUseWebUiNtp) ||
+         base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtpAndroid);
+#else
+  return true;
+#endif
 }
 
 bool IsSplitViewNewTabPage(const GURL& url) {

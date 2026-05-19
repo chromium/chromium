@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -77,10 +78,7 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
       url.host() == chrome::kChromeUINewTabHost) {
     return true;
   }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseWebUiNtp) &&
-      url.SchemeIs(content::kChromeUIScheme) &&
+  if (search::IsWebUiNtpEnabled() && url.SchemeIs(content::kChromeUIScheme) &&
       url.host() == chrome::kChromeUINewTabPageHost) {
     return true;
   }
