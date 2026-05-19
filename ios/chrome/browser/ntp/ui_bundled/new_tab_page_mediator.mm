@@ -772,8 +772,11 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       initWithMutableTraits:self.consumer.traitOverrides];
   [traitAccessor setBoolForNewTabPageImageBackgroundTrait:(image != nil)];
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
-  CleanupImageFetcherCacheIfNeeded(
-      _prefService, self.webState->GetBrowserState(), self, customBackground);
+
+  if (self.webState) {
+    CleanupImageFetcherCacheIfNeeded(
+        _prefService, self.webState->GetBrowserState(), self, customBackground);
+  }
 }
 
 // Attempts to apply the cached background image. Returns YES if a cached image
