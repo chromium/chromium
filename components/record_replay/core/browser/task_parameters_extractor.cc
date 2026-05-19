@@ -17,7 +17,7 @@ void TaskParametersExtractor::StartExtraction(TaskDefinition task_definition) {
 }
 
 void TaskParametersExtractor::FillExtractedParametersTo(
-    TaskData* task_data,
+    TaskObservation* observation,
     base::OnceCallback<void(bool)> completion_callback) {
   if (!active_task_definition_.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -25,12 +25,17 @@ void TaskParametersExtractor::FillExtractedParametersTo(
     return;
   }
 
-  // Iterate over all steps and populate all expected keys with dummy values.
-  for (const auto& [step_index, step_anno] : active_task_definition_->steps()) {
-    auto& step_values =
-        *(*task_data->mutable_step_data())[step_index].mutable_values();
-    for (const std::string& expected_key : step_anno.expected_data_keys()) {
-      step_values.insert({expected_key, "dummy_value"});
+  // Copy the active task definition into the observation.
+  *observation->mutable_definition() = *active_task_definition_;
+
+  // Populate all step-specific parameters inside the observation definition
+  // with dummy values.
+  for (int i = 0; i < observation->mutable_definition()->task_steps_size();
+       ++i) {
+    TaskStep* step = observation->mutable_definition()->mutable_task_steps(i);
+    for (int j = 0; j < step->parameters_size(); ++j) {
+      TaskParameter* param = step->mutable_parameters(j);
+      param->set_value("dummy_value");
     }
   }
 

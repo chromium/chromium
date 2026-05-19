@@ -1,0 +1,73 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package record_replay;
+
+option optimize_for = LITE_RUNTIME;
+
+message TaskDefinition {
+  optional int64 id = 1;   // Populated when read from DB
+  int64 recording_id = 2;  // Optional
+  string url = 3;          // Target URL
+  string title = 4;
+  string description = 5;
+  repeated TaskStep task_steps = 6;
+  map<int32, StepDefinition> steps = 10;
+}
+
+message TaskStep {
+  optional int64 id = 1;  // Populated when read from DB (surrogate key)
+  int32 step_index = 2;   // Preserves order
+  string description = 3;
+  string url = 4;
+  repeated TaskParameter parameters = 5;
+}
+
+message TaskParameter {
+  optional int64 id = 1;  // Populated when read from DB
+  string key = 2;
+  string name = 3;
+  string type = 4;  // e.g. string, numeric, ...
+  string description = 5;
+  optional ExtractionStrategy extraction_strategy = 6;
+  optional string value = 7;  // Populated for observations only
+}
+
+message TaskObservation {
+  optional int64 id = 1;          // Populated when read from DB
+  TaskDefinition definition = 2;  // Inlined object. Required by consumer.
+  int64 start_time = 3;           // Microseconds since Windows epoch
+  int64 end_time = 4;             // Microseconds since Windows epoch
+  ExecutionSource execution_source = 5;
+}
+
+message ExtractionStrategy {
+  // Stub message for M0.
+}
+
+enum ExecutionSource {
+  AUTOMATIC = 0;
+  MANUAL = 1;
+}
+
+// Legacy message. To be replaced with TaskStep.
+message StepDefinition {
+  string description = 1;
+  repeated string expected_data_keys = 2;
+}
+
+// Legacy message. To be replaced with TaskParameter.
+message TaskData {
+  // Maps step index to the data values.
+  map<int32, StepDataValues> step_data = 1;
+}
+
+// Legacy message. To be replaced with TaskParameter::values.
+message StepDataValues {
+  // Maps data key to its value. The keys are from StepDefinition
+  // expected_data_keys.
+  map<string, string> values = 1;
+}

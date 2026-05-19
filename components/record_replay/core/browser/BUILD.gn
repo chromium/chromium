@@ -70,5 +70,8 @@ source_set("unit_tests") {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "recording.proto" ]
+  sources = [
+    "recording.proto",
+    "task_definition.proto",
+  ]
 }

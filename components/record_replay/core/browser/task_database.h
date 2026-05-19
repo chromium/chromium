@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 #include "sql/database.h"
 
 namespace record_replay {

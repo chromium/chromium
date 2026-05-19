@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 
 namespace record_replay {
 
@@ -32,7 +32,7 @@ class TaskParametersExtractor : public KeyedService {
   // observation object. Upon completion - calls the
   // completion callback.
   void FillExtractedParametersTo(
-      TaskData* task_data,
+      TaskObservation* observation,
       base::OnceCallback<void(bool)> completion_callback);
 
   // Stops the task parameter values extraction.

@@ -9,7 +9,7 @@
 
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 
 namespace record_replay {
 

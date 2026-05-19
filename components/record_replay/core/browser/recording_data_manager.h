@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 
 namespace record_replay {
 

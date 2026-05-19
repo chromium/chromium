@@ -14,6 +14,7 @@
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_database.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 
 namespace record_replay {
 
