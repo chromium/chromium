@@ -86,30 +86,6 @@ class SecurePaymentConfirmationService
       scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store);
 
  private:
-  // States of the enrollment flow, necessary to ensure correctness with
-  // round-trips to the renderer process. Methods that perform async
-  // actions (like StorePaymentCredential) have procedure:
-  //   1. Validate state.
-  //   2. Validate parameters.
-  //   3. Use parameters.
-  //   4. Update the state.
-  //   5. Make the async call.
-  // Methods that perform terminating actions (like OnWebDataServiceRequestDone)
-  // have procedure:
-  //   1. Validate state.
-  //   2. Validate parameters.
-  //   3. Use parameters.
-  //   4. Call Reset() to perform cleanup.
-  //   5. Invoke a mojo callback to the renderer.
-  // Any method may call Reset() to ensure callbacks are called and return to a
-  // valid Idle state.
-  enum class State { kIdle, kStoringCredential };
-
-  // Called when a payment credential has been stored (or failed to be stored)
-  // in the underlying database.
-  void OnStorePaymentCredential(WebDataServiceBase::Handle h,
-                                std::unique_ptr<WDTypedResult> result);
-
   // MakeCredentialCallback:
   void OnAuthenticatorMakeCredential(
       SecurePaymentConfirmationService::MakePaymentCredentialCallback callback,
@@ -134,18 +110,11 @@ class SecurePaymentConfirmationService
   void IsBrowserBoundKeyHardwareSupported(
       base::OnceCallback<void(bool)> callback);
 
-  bool IsCurrentStateValid() const;
   void RecordFirstSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult result);
-  void Reset();
 
-  State state_ = State::kIdle;
   scoped_refptr<WebPaymentsWebDataService> web_data_service_;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
-  std::optional<WebDataServiceBase::Handle> data_service_request_handle_;
-  StorePaymentCredentialCallback storage_callback_;
-  std::optional<WebDataServiceBase::Handle>
-      set_browser_bound_key_request_handle_;
   bool is_system_prompt_result_recorded_ = false;
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
   scoped_refptr<BrowserBoundKeyStore> test_browser_bound_key_store_;

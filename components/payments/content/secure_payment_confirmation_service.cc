@@ -70,9 +70,7 @@ SecurePaymentConfirmationService::SecurePaymentConfirmationService(
       browser_bound_key_store_keychain_access_group_(
           std::move(browser_bound_key_store_keychain_access_group)) {}
 
-SecurePaymentConfirmationService::~SecurePaymentConfirmationService() {
-  Reset();
-}
+SecurePaymentConfirmationService::~SecurePaymentConfirmationService() = default;
 
 void SecurePaymentConfirmationService::SecurePaymentConfirmationAvailability(
     SecurePaymentConfirmationAvailabilityCallback callback) {
@@ -143,9 +141,10 @@ void SecurePaymentConfirmationService::StorePaymentCredential(
     const std::string& rp_id,
     const std::vector<uint8_t>& user_id,
     StorePaymentCredentialCallback callback) {
-  if (state_ != State::kIdle || !IsCurrentStateValid() ||
+  if (!web_data_service_ ||
+      !content::IsFrameAllowedToUseSecurePaymentConfirmation(
+          &render_frame_host()) ||
       credential_id.empty() || rp_id.empty() || user_id.empty()) {
-    Reset();
     std::move(callback).Run(
         mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
     return;
@@ -158,20 +157,20 @@ void SecurePaymentConfirmationService::StorePaymentCredential(
   // will already have been stored during creation.
   if (base::FeatureList::IsEnabled(
           features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
-    Reset();
     std::move(callback).Run(mojom::PaymentCredentialStorageStatus::SUCCESS);
     return;
   }
 
-  storage_callback_ = std::move(callback);
-  state_ = State::kStoringCredential;
-  data_service_request_handle_ =
-      web_data_service_->AddSecurePaymentConfirmationCredential(
-          std::make_unique<SecurePaymentConfirmationCredential>(credential_id,
-                                                                rp_id, user_id),
-          base::BindOnce(
-              &SecurePaymentConfirmationService::OnStorePaymentCredential,
-              weak_ptr_factory_.GetWeakPtr()));
+  web_data_service_->AddSecurePaymentConfirmationCredential(
+      std::make_unique<SecurePaymentConfirmationCredential>(credential_id,
+                                                            rp_id, user_id),
+      base::BindOnce([](WebDataServiceBase::Handle h,
+                        std::unique_ptr<WDTypedResult> result) {
+        return result && static_cast<WDResult<bool>*>(result.get())->GetValue()
+                   ? mojom::PaymentCredentialStorageStatus::SUCCESS
+                   : mojom::PaymentCredentialStorageStatus::
+                         FAILED_TO_STORE_CREDENTIAL;
+      }).Then(std::move(callback)));
 }
 
 void SecurePaymentConfirmationService::MakePaymentCredential(
@@ -232,24 +231,6 @@ void SecurePaymentConfirmationService::SetPasskeyBrowserBinderForTesting(
 void SecurePaymentConfirmationService::SetBrowserBoundKeyStoreForTesting(
     scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store) {
   test_browser_bound_key_store_ = browser_bound_key_store;
-}
-
-void SecurePaymentConfirmationService::OnStorePaymentCredential(
-    WebDataServiceBase::Handle h,
-    std::unique_ptr<WDTypedResult> result) {
-  if (state_ != State::kStoringCredential || !IsCurrentStateValid() ||
-      data_service_request_handle_ != h) {
-    Reset();
-    return;
-  }
-
-  auto callback = std::move(storage_callback_);
-  Reset();
-
-  std::move(callback).Run(
-      result && static_cast<WDResult<bool>*>(result.get())->GetValue()
-          ? mojom::PaymentCredentialStorageStatus::SUCCESS
-          : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
 }
 
 // Handles the authenticator make credential callback by adding the browser
@@ -334,45 +315,12 @@ void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
-bool SecurePaymentConfirmationService::IsCurrentStateValid() const {
-  if (!content::IsFrameAllowedToUseSecurePaymentConfirmation(
-          &render_frame_host()) ||
-      !web_data_service_) {
-    return false;
-  }
-
-  switch (state_) {
-    case State::kIdle:
-      return !storage_callback_ && !data_service_request_handle_;
-
-    case State::kStoringCredential:
-      return storage_callback_ && data_service_request_handle_;
-  }
-}
-
 void SecurePaymentConfirmationService::RecordFirstSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result) {
   if (!is_system_prompt_result_recorded_) {
     is_system_prompt_result_recorded_ = true;
     RecordEnrollSystemPromptResult(result);
   }
-}
-
-void SecurePaymentConfirmationService::Reset() {
-  // Callbacks must either be run or disconnected before being destroyed, so
-  // run them if they are still connected.
-  if (storage_callback_) {
-    std::move(storage_callback_)
-        .Run(mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
-  }
-
-  if (web_data_service_ && data_service_request_handle_) {
-    web_data_service_->CancelRequest(data_service_request_handle_.value());
-  }
-
-  data_service_request_handle_.reset();
-  is_system_prompt_result_recorded_ = false;
-  state_ = State::kIdle;
 }
 
 }  // namespace payments
