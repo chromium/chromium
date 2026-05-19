@@ -53,6 +53,15 @@ constexpr char kValidTestingConfigJSON[] = R"({
       "branch-capacity-in-bytes": 500
     },
   },
+  // Network process.
+  "utility.network.mojom.NetworkService": {
+    "global": {
+      "enable-quarantine": true,
+      "enable-zapping": true,
+      "leak-on-destruction": true,
+      "branch-capacity-in-bytes": 600
+    },
+  },
 })";
 
 TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
@@ -65,7 +74,7 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
   config = GetSchedulerLoopQuarantineConfiguration(
-      "", SchedulerLoopQuarantineBranchType::kGlobal);
+      "browser", SchedulerLoopQuarantineBranchType::kGlobal);
   EXPECT_TRUE(config.enable_quarantine);
   EXPECT_TRUE(config.enable_zapping);
   EXPECT_TRUE(config.leak_on_destruction);
@@ -73,7 +82,7 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_STREQ(config.branch_name, "browser/global");
 
   config = GetSchedulerLoopQuarantineConfiguration(
-      "", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
+      "browser", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
   EXPECT_TRUE(config.enable_quarantine);
   EXPECT_TRUE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);
@@ -81,7 +90,7 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_STREQ(config.branch_name, "browser/*");
 
   config = GetSchedulerLoopQuarantineConfiguration(
-      "", SchedulerLoopQuarantineBranchType::kMain);
+      "browser", SchedulerLoopQuarantineBranchType::kMain);
   EXPECT_TRUE(config.enable_quarantine);
   EXPECT_TRUE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);
@@ -111,6 +120,89 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_FALSE(config.leak_on_destruction);
   EXPECT_EQ(200, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "renderer/main");
+
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "utility.network.mojom.NetworkService",
+      SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_TRUE(config.leak_on_destruction);
+  EXPECT_EQ(600, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "utility.net..workService/global");
+}
+
+constexpr char kWildcardMatchingConfigJSON[] = R"({
+  "*": {
+    "global": {
+      "branch-capacity-in-bytes": 100
+    },
+  },
+  "utility.*": {
+    "*": {
+      "branch-capacity-in-bytes": 200
+    },
+    "main": {
+      "branch-capacity-in-bytes": 250
+    }
+  },
+  "utility.network.*": {
+    "global": {
+      "branch-capacity-in-bytes": 300
+    }
+  },
+  "utility.network.mojom.NetworkService": {
+    "global": {
+      "branch-capacity-in-bytes": 400
+    },
+  },
+})";
+
+TEST(SchedulerLoopQuarantineConfigTest, WildcardMatching) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kPartitionAllocSchedulerLoopQuarantine,
+      {{base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
+        kWildcardMatchingConfigJSON}});
+
+  partition_alloc::internal::SchedulerLoopQuarantineConfig config;
+
+  // 1. Exact process match wins.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "utility.network.mojom.NetworkService",
+      SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_EQ(400, config.branch_capacity_in_bytes);
+
+  // 2. Longest process prefix wins ("utility.network.*" > "utility.*").
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "utility.network.mojom.FooService",
+      SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_EQ(300, config.branch_capacity_in_bytes);
+
+  // 3. Prefix match wins over global wildcard ("utility.*" > "*").
+  // This also tests branch-level wildcard fallback within the same process
+  // match.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "utility.other.Service", SchedulerLoopQuarantineBranchType::kIO);
+  EXPECT_EQ(200, config.branch_capacity_in_bytes);
+
+  // 4. Exact branch match within a process match.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "utility.other.Service", SchedulerLoopQuarantineBranchType::kMain);
+  EXPECT_EQ(250, config.branch_capacity_in_bytes);
+
+  // 5. Fallback across process patterns.
+  // "utility.network.mojom.FooService" matches "utility.network.*", but that
+  // entry only has "global". So it should fall back to "utility.*" which has
+  // a "main" branch.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "utility.network.mojom.FooService",
+      SchedulerLoopQuarantineBranchType::kMain);
+  EXPECT_EQ(250, config.branch_capacity_in_bytes);
+
+  // 6. Global wildcard fallback.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "renderer", SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_EQ(100, config.branch_capacity_in_bytes);
 }
 
 constexpr char kInvalidTestingConfigJSON[] = "nyan";
@@ -125,7 +217,7 @@ TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {
   partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
   config = GetSchedulerLoopQuarantineConfiguration(
-      "", SchedulerLoopQuarantineBranchType::kGlobal);
+      "browser", SchedulerLoopQuarantineBranchType::kGlobal);
   EXPECT_FALSE(config.enable_quarantine);
   EXPECT_FALSE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);
@@ -133,7 +225,7 @@ TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {
   EXPECT_STREQ(config.branch_name, "browser/global");
 
   config = GetSchedulerLoopQuarantineConfiguration(
-      "", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
+      "browser", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
   EXPECT_FALSE(config.enable_quarantine);
   EXPECT_FALSE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);
@@ -141,7 +233,7 @@ TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {
   EXPECT_STREQ(config.branch_name, "browser/*");
 
   config = GetSchedulerLoopQuarantineConfiguration(
-      "", SchedulerLoopQuarantineBranchType::kMain);
+      "browser", SchedulerLoopQuarantineBranchType::kMain);
   EXPECT_FALSE(config.enable_quarantine);
   EXPECT_FALSE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);

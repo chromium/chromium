@@ -136,12 +136,35 @@ namespace switches {
 constexpr char kGpuProcess[] = "gpu-process";
 constexpr char kProcessType[] = "type";
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
+const char kUtilitySubType[] = "utility-sub-type";
 constexpr char kZygoteProcess[] = "zygote";
 }  // namespace switches
 
 [[maybe_unused]] std::string GetProcessType() {
   const CommandLine* command_line = CommandLine::ForCurrentProcess();
   return command_line->GetSwitchValueASCII(switches::kProcessType);
+}
+
+// Returns a "process type identifier" for the current process.
+// It is the process type (e.g. "renderer", "gpu-process") for non-utility
+// processes. For the browser process, it is "browser".
+// For utility processes, it is "utility" followed by "." and the utility
+// sub-type name (e.g. "utility.network.mojom.NetworkService").
+[[maybe_unused]] std::string GetProcessTypeIdentifier() {
+  const CommandLine* command_line = CommandLine::ForCurrentProcess();
+  std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+  if (process_type.empty()) {
+    return "browser";
+  }
+  if (process_type == "utility") {
+    std::string utility_subtype =
+        command_line->GetSwitchValueASCII(switches::kUtilitySubType);
+    if (!utility_subtype.empty()) {
+      return "utility." + utility_subtype;
+    }
+  }
+  return process_type;
 }
 
 class LockMetricsRecorderSupport
@@ -879,9 +902,10 @@ void ReconfigureSchedulerLoopQuarantineBranch(
           base::features::kPartitionAllocSchedulerLoopQuarantine)) {
     return;
   }
-  std::string process_type = GetProcessType();
+  std::string process_type_identifier = GetProcessTypeIdentifier();
   partition_alloc::internal::SchedulerLoopQuarantineConfig config =
-      GetSchedulerLoopQuarantineConfiguration(process_type, branch_type);
+      GetSchedulerLoopQuarantineConfiguration(process_type_identifier,
+                                              branch_type);
   for (size_t alloc_token = 0; alloc_token < allocator_shim::kNumPartitions;
        alloc_token++) {
     allocator_shim::internal::PartitionAllocMalloc::Allocator(
@@ -1157,16 +1181,18 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       break;
   }
 
+  std::string process_type_identifier = GetProcessTypeIdentifier();
   const auto scheduler_loop_quarantine_global_config =
       GetSchedulerLoopQuarantineConfiguration(
-          process_type, SchedulerLoopQuarantineBranchType::kGlobal);
+          process_type_identifier, SchedulerLoopQuarantineBranchType::kGlobal);
   const auto scheduler_loop_quarantine_thread_local_config =
       GetSchedulerLoopQuarantineConfiguration(
-          process_type, SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
+          process_type_identifier,
+          SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
   const auto
       scheduler_loop_quarantine_for_advanced_memory_safety_checks_config =
           GetSchedulerLoopQuarantineConfiguration(
-              process_type,
+              process_type_identifier,
               SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks);
 
   if (base::FeatureList::IsEnabled(

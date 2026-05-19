@@ -4,7 +4,9 @@
 
 #include "base/allocator/scheduler_loop_quarantine_config.h"
 
+#include <algorithm>
 #include <string_view>
+#include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/feature_list.h"
@@ -17,8 +19,6 @@
 namespace base::allocator {
 
 namespace {
-// For configuration purpose use "browser" instead of "" for visibility.
-constexpr char kProcessTypeBrowserStr[] = "browser";
 constexpr char kProcessTypeWildcardStr[] = "*";
 // SchedulerLoopQuarantineBranchType string representation.
 constexpr char kBranchTypeGlobalStr[] = "global";
@@ -61,26 +61,35 @@ constexpr char kKeyMaxQuarantineSize[] = "max-quarantine-size";
 
 ::partition_alloc::internal::SchedulerLoopQuarantineConfig
 GetSchedulerLoopQuarantineConfiguration(
-    std::string_view process_type,
+    std::string_view process_type_identifier,
     SchedulerLoopQuarantineBranchType branch_type) {
   ::partition_alloc::internal::SchedulerLoopQuarantineConfig config = {};
 
-  std::string_view process_type_str = process_type;
-  if (process_type_str.empty()) {
-    process_type_str = kProcessTypeBrowserStr;
-  }
   // Should not be a special name.
-  DCHECK_NE(process_type_str, kProcessTypeWildcardStr);
+  DCHECK_NE(process_type_identifier, kProcessTypeWildcardStr);
 
   std::string_view branch_type_str =
       GetSchedulerLoopQuarantineBranchTypeStr(branch_type);
 
+  std::string process_name(process_type_identifier);
+  constexpr size_t kMaxBranchNameLen = sizeof(config.branch_name) - 1;
+  if (process_name.length() + 1 + branch_type_str.length() >
+      kMaxBranchNameLen) {
+    size_t max_process_name_len =
+        kMaxBranchNameLen - 1 - branch_type_str.length();
+    // Use ".." as a separator.
+    size_t side_len = (max_process_name_len - 2) / 2;
+    process_name =
+        base::StrCat({process_type_identifier.substr(0, side_len), "..",
+                      process_type_identifier.substr(
+                          process_type_identifier.length() - side_len)});
+  }
+
   // Set a branch name like "browser/main" or "renderer/*";
-  std::string branch_name =
-      base::StrCat({process_type_str, "/", branch_type_str});
+  std::string branch_name = base::StrCat({process_name, "/", branch_type_str});
   // `std::string::copy` does not append a null character.
-  branch_name.copy(config.branch_name, sizeof(config.branch_name) - 1);
-  config.branch_name[sizeof(config.branch_name) - 1] = '\0';
+  branch_name.copy(config.branch_name, kMaxBranchNameLen);
+  config.branch_name[kMaxBranchNameLen] = '\0';
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (!FeatureList::IsEnabled(
@@ -101,36 +110,55 @@ GetSchedulerLoopQuarantineConfiguration(
     return config;  // Ill-formed JSON; disabled.
   }
 
+  struct Match {
+    const DictValue* dict;
+    size_t length;
+  };
+  std::vector<Match> matches;
+
+  for (auto [key, value] : *config_processes) {
+    if (!value.is_dict()) {
+      LOG(ERROR) << "Non-dict value for key: " << key;
+      continue;
+    }
+    if (key.find(kProcessTypeWildcardStr) < key.length() - 1) {
+      LOG(ERROR) << "Wildcard '*' must be at the end of the process type: "
+                 << key;
+      continue;
+    }
+
+    const DictValue& dict_value = value.GetDict();
+
+    if (key == process_type_identifier) {
+      matches.push_back({&dict_value, key.length()});
+    } else if (key.ends_with(kProcessTypeWildcardStr)) {
+      std::string_view prefix =
+          std::string_view(key).substr(0, key.length() - 1);
+      if (process_type_identifier.starts_with(prefix)) {
+        matches.push_back({&dict_value, prefix.length()});
+      }
+    }
+  }
+
+  // Sort matches by length, descending.
+  std::sort(matches.begin(), matches.end(),
+            [](const Match& a, const Match& b) { return a.length > b.length; });
+
   const DictValue* config_entry = nullptr;
+  for (const auto& match : matches) {
+    const DictValue* config_process = match.dict;
+    config_entry = config_process->FindDict(branch_type_str);
 
-  const DictValue* config_current_process =
-      config_processes->FindDict(process_type_str);
-  if (config_current_process) {
-    // First, try the exact match.
-    config_entry = config_current_process->FindDict(branch_type_str);
-
-    // Falls back to thread-local default unless global.
+    // Falls back to thread-local default unless global nor AMSC.
     if (!config_entry &&
         branch_type != SchedulerLoopQuarantineBranchType::kGlobal &&
         branch_type !=
             SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks) {
-      config_entry =
-          config_current_process->FindDict(kBranchTypeThreadLocalDefaultStr);
+      config_entry = config_process->FindDict(kBranchTypeThreadLocalDefaultStr);
     }
-  }
 
-  DictValue* config_wildcard_process =
-      config_processes->FindDict(kProcessTypeWildcardStr);
-  if (!config_entry && config_wildcard_process) {
-    // Couldn't find a configuration entry with the exact process name match.
-    // Look-up an entry with a process name being "*".
-    config_entry = config_wildcard_process->FindDict(branch_type_str);
-
-    // Falls back to thread-local default unless global.
-    if (!config_entry &&
-        branch_type != SchedulerLoopQuarantineBranchType::kGlobal) {
-      config_entry =
-          config_wildcard_process->FindDict(kBranchTypeThreadLocalDefaultStr);
+    if (config_entry) {
+      break;
     }
   }
 

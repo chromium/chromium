@@ -28,10 +28,11 @@ enum class SchedulerLoopQuarantineBranchType {
   kAdvancedMemorySafetyChecks,
 };
 
-// Returns quarantine configuration for `process_name` and `branch_type`.
+// Returns quarantine configuration for `process_type_identifier` and
+// `branch_type`.
 BASE_EXPORT ::partition_alloc::internal::SchedulerLoopQuarantineConfig
 GetSchedulerLoopQuarantineConfiguration(
-    std::string_view process_type,
+    std::string_view process_type_identifier,
     SchedulerLoopQuarantineBranchType branch_type);
 
 }  // namespace base::allocator
