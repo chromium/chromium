@@ -10,10 +10,11 @@
 #include <mmreg.h>
 #include <mmsystem.h>
 #include <stddef.h>
-#include <stdint.h>
 
+#include <cstdint>
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/win/scoped_handle.h"
@@ -23,6 +24,11 @@
 namespace media {
 
 class AudioManagerWin;
+
+struct WaveBuffer {
+  WAVEHDR header = {};
+  base::HeapArray<char> audio_data;
+};
 
 // Implements PCM audio output support for Windows using the WaveXXX API.
 // While not as nice as the DirectSound-based API, it should work in all target
@@ -70,10 +76,7 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
     PCMA_CLOSED        // Device has been released.
   };
 
-  // Returns pointer to the n-th buffer.
-  inline WAVEHDR* GetBuffer(int n) const;
-
-  // Size of one buffer in bytes, rounded up if necessary.
+  // Size of one audio data buffer in bytes.
   inline size_t BufferSize() const;
 
   // Windows calls us back asking for more data when buffer_event_ signalled.
@@ -133,9 +136,8 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
   // Handle returned by RegisterWaitForSingleObject().
   HANDLE waiting_handle_;
 
-  // Pointer to the allocated audio buffers, we allocate all buffers in one big
-  // chunk. This object owns them.
-  std::unique_ptr<char[]> buffers_;
+  // Owned wave headers and audio data buffers.
+  base::HeapArray<WaveBuffer> buffers_;
 
   // Lock used to avoid the conflict when callbacks are called simultaneously.
   base::Lock lock_;

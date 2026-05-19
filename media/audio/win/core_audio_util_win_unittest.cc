@@ -149,24 +149,17 @@ TEST_F(CoreAudioUtilWinTest, CreateDefaultDevice) {
   struct {
     EDataFlow flow;
     ERole role;
-  } data[] = {
-    {eRender, eConsole},
-    {eRender, eCommunications},
-    {eRender, eMultimedia},
-    {eCapture, eConsole},
-    {eCapture, eCommunications},
-    {eCapture, eMultimedia}
-  };
+  } data[] = {{eRender, eConsole},         {eRender, eCommunications},
+              {eRender, eMultimedia},      {eCapture, eConsole},
+              {eCapture, eCommunications}, {eCapture, eMultimedia}};
 
   // Create default devices for all flow/role combinations above.
   ComPtr<IMMDevice> audio_device;
-  for (size_t i = 0; i < std::size(data); ++i) {
+  for (auto e_data : data) {
     audio_device = CoreAudioUtil::CreateDevice(
-        AudioDeviceDescription::kDefaultDeviceId, UNSAFE_TODO(data[i]).flow,
-        UNSAFE_TODO(data[i]).role);
+        AudioDeviceDescription::kDefaultDeviceId, e_data.flow, e_data.role);
     EXPECT_TRUE(audio_device.Get());
-    EXPECT_EQ(UNSAFE_TODO(data[i]).flow,
-              CoreAudioUtil::GetDataFlow(audio_device.Get()));
+    EXPECT_EQ(e_data.flow, CoreAudioUtil::GetDataFlow(audio_device.Get()));
   }
 
   // Only eRender and eCapture are allowed as flow parameter.
@@ -205,20 +198,17 @@ TEST_F(CoreAudioUtilWinTest, GetDefaultDeviceName) {
   struct {
     EDataFlow flow;
     ERole role;
-  } data[] = {
-    {eRender, eConsole},
-    {eRender, eCommunications},
-    {eCapture, eConsole},
-    {eCapture, eCommunications}
-  };
+  } data[] = {{eRender, eConsole},
+              {eRender, eCommunications},
+              {eCapture, eConsole},
+              {eCapture, eCommunications}};
 
   // Get name and ID of default devices for all flow/role combinations above.
   ComPtr<IMMDevice> audio_device;
   AudioDeviceName device_name;
-  for (size_t i = 0; i < std::size(data); ++i) {
+  for (auto e_data : data) {
     audio_device = CoreAudioUtil::CreateDevice(
-        AudioDeviceDescription::kDefaultDeviceId, UNSAFE_TODO(data[i]).flow,
-        UNSAFE_TODO(data[i]).role);
+        AudioDeviceDescription::kDefaultDeviceId, e_data.flow, e_data.role);
     EXPECT_TRUE(SUCCEEDED(
         CoreAudioUtil::GetDeviceName(audio_device.Get(), &device_name)));
     EXPECT_FALSE(device_name.device_name.empty());
@@ -235,11 +225,11 @@ TEST_F(CoreAudioUtilWinTest, GetAudioControllerID) {
 
   // Enumerate all active input and output devices and fetch the ID of
   // the associated device.
-  EDataFlow flows[] = { eRender , eCapture };
-  for (size_t i = 0; i < std::size(flows); ++i) {
+  EDataFlow flows[] = {eRender, eCapture};
+  for (auto flow : flows) {
     ComPtr<IMMDeviceCollection> collection;
     ASSERT_TRUE(SUCCEEDED(enumerator->EnumAudioEndpoints(
-        UNSAFE_TODO(flows[i]), DEVICE_STATE_ACTIVE, &collection)));
+        flow, DEVICE_STATE_ACTIVE, &collection)));
     UINT count = 0;
     collection->GetCount(&count);
     for (UINT j = 0; j < count; ++j) {
@@ -283,11 +273,10 @@ TEST_F(CoreAudioUtilWinTest, CreateClient) {
 
   EDataFlow data[] = {eRender, eCapture};
 
-  for (size_t i = 0; i < std::size(data); ++i) {
+  for (auto flow : data) {
     HRESULT hr = S_FALSE;
-    ComPtr<IAudioClient> client =
-        CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
-                                    UNSAFE_TODO(data[i]), eConsole, hr);
+    ComPtr<IAudioClient> client = CoreAudioUtil::CreateClient(
+        AudioDeviceDescription::kDefaultDeviceId, flow, eConsole, hr);
     EXPECT_TRUE(client.Get());
     EXPECT_HRESULT_SUCCEEDED(hr);
     EXPECT_FALSE(CoreAudioUtil::IsClientInitialized(client.Get()));
@@ -299,20 +288,18 @@ TEST_F(CoreAudioUtilWinTest, CreateClient3) {
 
   EDataFlow data[] = {eRender, eCapture};
 
-  for (size_t i = 0; i < std::size(data); ++i) {
-    ComPtr<IAudioClient3> client3 =
-        CoreAudioUtil::CreateClient3(AudioDeviceDescription::kDefaultDeviceId,
-                                     UNSAFE_TODO(data[i]), eConsole);
+  for (auto flow : data) {
+    ComPtr<IAudioClient3> client3 = CoreAudioUtil::CreateClient3(
+        AudioDeviceDescription::kDefaultDeviceId, flow, eConsole);
     EXPECT_TRUE(client3.Get());
   }
 
   // Use ComPtr notation to achieve the same thing as above. ComPtr::As wraps
   // QueryInterface calls on existing COM objects. In this case we use an
   // existing IAudioClient to obtain the IAudioClient3 interface.
-  for (size_t i = 0; i < std::size(data); ++i) {
-    ComPtr<IAudioClient> client =
-        CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
-                                    UNSAFE_TODO(data[i]), eConsole);
+  for (auto flow : data) {
+    ComPtr<IAudioClient> client = CoreAudioUtil::CreateClient(
+        AudioDeviceDescription::kDefaultDeviceId, flow, eConsole);
     EXPECT_TRUE(client.Get());
     ComPtr<IAudioClient3> client3;
     EXPECT_TRUE(SUCCEEDED(client.As(&client3)));
@@ -377,13 +364,12 @@ TEST_F(CoreAudioUtilWinTest, GetDevicePeriod) {
 
   // Verify that the device periods are valid for the default render and
   // capture devices.
-  for (size_t i = 0; i < std::size(data); ++i) {
+  for (auto flow : data) {
     ComPtr<IAudioClient> client;
     REFERENCE_TIME shared_time_period = 0;
     REFERENCE_TIME exclusive_time_period = 0;
-    client =
-        CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
-                                    UNSAFE_TODO(data[i]), eConsole);
+    client = CoreAudioUtil::CreateClient(
+        AudioDeviceDescription::kDefaultDeviceId, flow, eConsole);
     EXPECT_TRUE(client.Get());
     EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetDevicePeriod(
         client.Get(), AUDCLNT_SHAREMODE_SHARED, &shared_time_period)));
@@ -408,9 +394,9 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
 
   // Verify that the preferred audio parameters are OK for the default render
   // and capture devices.
-  for (size_t i = 0; i < std::size(data); ++i) {
+  for (auto flow : data) {
     AudioParameters params;
-    const bool is_output_device = (UNSAFE_TODO(data[i]) == eRender);
+    const bool is_output_device = (flow == eRender);
     EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
         AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params));
     EXPECT_TRUE(params.IsValid());
@@ -639,18 +625,17 @@ TEST_F(CoreAudioUtilWinTest, CreateRenderAndCaptureClients) {
   WAVEFORMATEXTENSIBLE format;
   uint32_t endpoint_buffer_size = 0;
 
-  for (size_t i = 0; i < std::size(data); ++i) {
+  for (auto flow : data) {
     ComPtr<IAudioClient> client;
     ComPtr<IAudioRenderClient> render_client;
     ComPtr<IAudioCaptureClient> capture_client;
 
-    client =
-        CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
-                                    UNSAFE_TODO(data[i]), eConsole);
+    client = CoreAudioUtil::CreateClient(
+        AudioDeviceDescription::kDefaultDeviceId, flow, eConsole);
     EXPECT_TRUE(client.Get());
     EXPECT_TRUE(SUCCEEDED(
         CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format)));
-    if (UNSAFE_TODO(data[i]) == eRender) {
+    if (flow == eRender) {
       // It is not possible to create a render client using an uninitialized
       // client interface.
       HRESULT hr = S_OK;
@@ -665,7 +650,7 @@ TEST_F(CoreAudioUtilWinTest, CreateRenderAndCaptureClients) {
       EXPECT_TRUE(render_client.Get());
       EXPECT_HRESULT_SUCCEEDED(hr);
       EXPECT_GT(endpoint_buffer_size, 0u);
-    } else if (UNSAFE_TODO(data[i]) == eCapture) {
+    } else if (flow == eCapture) {
       // It is not possible to create a capture client using an uninitialized
       // client interface.
       HRESULT hr = S_OK;
