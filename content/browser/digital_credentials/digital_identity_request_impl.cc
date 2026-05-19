@@ -115,23 +115,6 @@ bool CanVctValueBypassInterstitial(const std::string& vct_value) {
 }
 
 
-// Returns whether the request is a Digital Payment Credential (DPC) request
-// that can bypass the interstitial.
-bool IsDpcRequest(const base::flat_set<std::string>& all_claims,
-                  const base::flat_set<std::string>& all_vct_values,
-                  const base::flat_set<std::string>& all_doctype_values) {
-  // A DPC request is identified by either a DPC vct_value or a DPC
-  // doctype_value.
-  bool has_dpc_indicator =
-      std::ranges::any_of(all_vct_values, IsDpcVctValue) ||
-      std::ranges::any_of(all_doctype_values, IsDpcDocTypeValue);
-  if (!has_dpc_indicator) {
-    return false;
-  }
-  // Even for DPC, the interstitial is only bypassed if no sensitive claims are
-  // requested.
-  return std::ranges::all_of(all_claims, CanClaimBypassInterstitial);
-}
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     const base::DictValue& request) {
@@ -153,6 +136,8 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
 
     bool is_mdl = format && *format == kMdocFormat && doctype &&
                   *doctype == kMdlDocumentType;
+    bool is_sdjwt = format && (*format == "dc+sd-jwt" ||
+                               *format == "dc-authorization+sd-jwt");
 
     std::vector<std::string> claims;
     for (const base::Value& claim : *claims_list) {
@@ -169,8 +154,13 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
         return {};
       }
 
-      bool path_ok = paths->size() == 2u && paths->front().is_string() &&
-                     paths->front().GetString() == kMdlNamespace;
+      bool path_ok = false;
+      if (is_mdl) {
+        path_ok = paths->size() == 2u && paths->front().is_string() &&
+                  paths->front().GetString() == kMdlNamespace;
+      } else if (is_sdjwt) {
+        path_ok = paths->size() == 1u;
+      }
 
       bool is_mdl_claim =
           re2::RE2::FullMatch(*claim_name,
@@ -180,7 +170,7 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
           *claim_name == kMdocBirthDateDataElement;
 
       if (is_mdl_claim) {
-        if (is_mdl && path_ok) {
+        if ((is_mdl || is_sdjwt) && path_ok) {
           claims.push_back(*claim_name);
         } else {
           claims.push_back("__invalid_context__");
@@ -217,38 +207,56 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     return false;
   }
 
-  base::flat_set<std::string> all_claims;
-  base::flat_set<std::string> all_vct_values;
-  base::flat_set<std::string> all_doctype_values;
   for (const base::Value& credential : *credentials) {
     const base::DictValue* credential_dict = credential.GetIfDict();
     if (!credential_dict) {
       return false;
     }
-    std::vector<std::string> credential_claims =
-        credential_to_claims(*credential_dict);
-    all_claims.insert(credential_claims.begin(), credential_claims.end());
 
+    std::vector<std::string> claims = credential_to_claims(*credential_dict);
+    if (!std::ranges::all_of(claims, CanClaimBypassInterstitial)) {
+      return false;
+    }
+
+    const std::string* format = credential_dict->FindString("format");
     const base::DictValue* meta_dict = credential_dict->FindDict(kMeta);
-    if (!meta_dict) {
+    std::vector<std::string> vct_values;
+    std::string doctype_value;
+    if (meta_dict) {
+      vct_values = meta_to_vct_values(*meta_dict);
+      doctype_value = meta_to_doctype_value(*meta_dict);
+    }
+
+    bool is_dpc = std::ranges::any_of(vct_values, IsDpcVctValue) ||
+                  IsDpcDocTypeValue(doctype_value);
+    if (is_dpc) {
       continue;
     }
-    std::vector<std::string> meta_vct_values = meta_to_vct_values(*meta_dict);
-    all_vct_values.insert(meta_vct_values.begin(), meta_vct_values.end());
 
-    std::string doctype_value = meta_to_doctype_value(*meta_dict);
-    if (!doctype_value.empty()) {
-      all_doctype_values.insert(doctype_value);
+    bool is_mdl =
+        format && *format == kMdocFormat && doctype_value == kMdlDocumentType;
+    if (is_mdl) {
+      continue;
     }
+
+    bool is_sdjwt = format && (*format == "dc+sd-jwt" ||
+                               *format == "dc-authorization+sd-jwt");
+    if (is_sdjwt) {
+      continue;
+    }
+
+    bool is_phone =
+        std::ranges::all_of(vct_values, CanVctValueBypassInterstitial);
+    if (is_phone && !vct_values.empty()) {
+      continue;
+    }
+
+    // If it doesn't qualify as a DPC, MDL, SD-JWT, or phone-carrier bypass,
+    // it requires an interstitial.
+    return false;
   }
 
-  // The interstitial is bypassed if either:
-  // 1. The request only asks for claims and vct_values that are known to be
-  //    bypassable (e.g. phone number verification).
-  // 2. The request is a DPC request and only asks for bypassable claims.
-  return (std::ranges::all_of(all_claims, CanClaimBypassInterstitial) &&
-          std::ranges::all_of(all_vct_values, CanVctValueBypassInterstitial)) ||
-         IsDpcRequest(all_claims, all_vct_values, all_doctype_values);
+  return true;
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
