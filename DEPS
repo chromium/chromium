@@ -4611,6 +4611,7 @@ hooks = [
       '--use-external-config',
       '--boards={cros_boards_with_qemu_images}',
       '--download-vm',
+      '--download-test-metadata',
     ],
   },
   {
