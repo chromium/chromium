@@ -7,6 +7,6 @@
 namespace subresource_filter {
 
 BASE_FEATURE(kAdTagging, base::FEATURE_ENABLED_BY_DEFAULT);
-
+BASE_FEATURE(kSubresourceFilterPrewarm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace subresource_filter

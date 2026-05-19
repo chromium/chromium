@@ -4,6 +4,11 @@
 
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 
+#include "base/feature_list.h"
+#include "base/memory/page_size.h"
+#include "base/trace_event/trace_event.h"
+#include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace subresource_filter {
@@ -29,6 +34,19 @@ void UnverifiedRulesetDealer::UnregisterMojoInterfaces(
 
 void UnverifiedRulesetDealer::SetRulesetForProcess(base::File ruleset_file) {
   SetRulesetFile(std::move(ruleset_file));
+  if (base::FeatureList::IsEnabled(kSubresourceFilterPrewarm)) {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
+                 "UnverifiedRulesetDealer Prewarm");
+    cached_ruleset_ = GetRuleset();
+    if (cached_ruleset_) {
+      base::span<const uint8_t> data = cached_ruleset_->data();
+      const size_t page_size = base::GetPageSize();
+      for (size_t i = 0; i < data.size(); i += page_size) {
+        const volatile uint8_t* ptr = &data[i];
+        [[maybe_unused]] uint8_t dummy = *ptr;
+      }
+    }
+  }
 }
 
 void UnverifiedRulesetDealer::OnRendererAssociatedRequest(

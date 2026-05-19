@@ -48,6 +48,10 @@ class UnverifiedRulesetDealer : public RulesetDealer,
 
   mojo::AssociatedReceiver<mojom::SubresourceFilterRulesetObserver> receiver_{
       this};
+
+  // Intentional violation of the RulesetDealer weak-ptr based contract. Only
+  // used when the kSubresourceFilterPrewarm experiment is enabled.
+  scoped_refptr<const MemoryMappedRuleset> cached_ruleset_;
 };
 
 }  // namespace subresource_filter
