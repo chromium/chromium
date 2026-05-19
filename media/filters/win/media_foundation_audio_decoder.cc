@@ -596,8 +596,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
 
 void MediaFoundationAudioDecoder::ResetTimestampState() {
   discard_helper_ =
-      std::make_unique<AudioDiscardHelper>(sample_rate_, config_.codec_delay(),
-                                           /*delayed_discard=*/false);
+      std::make_unique<AudioDiscardHelper>(sample_rate_, config_.codec_delay());
   discard_helper_->Reset(config_.codec_delay());
   time_info_.clear();
 }

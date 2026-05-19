@@ -335,8 +335,8 @@ bool OpusAudioDecoder::ConfigureDecoder() {
 }
 
 void OpusAudioDecoder::ResetTimestampState() {
-  discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config_.samples_per_second(), 0, false);
+  discard_helper_ =
+      std::make_unique<AudioDiscardHelper>(config_.samples_per_second(), 0);
   discard_helper_->Reset(
       config_.should_discard_decoder_delay() ? config_.codec_delay() : 0);
 }

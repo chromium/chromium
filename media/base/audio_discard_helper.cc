@@ -22,15 +22,12 @@ static void WarnOnNonMonotonicTimestamps(base::TimeDelta last_timestamp,
                 << " diff " << diff.InMicroseconds() << " us";
 }
 
-AudioDiscardHelper::AudioDiscardHelper(int sample_rate,
-                                       size_t decoder_delay,
-                                       bool delayed_discard)
+AudioDiscardHelper::AudioDiscardHelper(int sample_rate, size_t decoder_delay)
     : sample_rate_(sample_rate),
       decoder_delay_(decoder_delay),
       timestamp_helper_(sample_rate_),
       discard_frames_(0),
       last_input_timestamp_(kNoTimestamp),
-      delayed_discard_(delayed_discard),
       delayed_end_discard_(0) {
   DCHECK_GT(sample_rate_, 0);
 }
@@ -46,7 +43,6 @@ void AudioDiscardHelper::Reset(size_t initial_discard) {
   discard_frames_ = initial_discard;
   last_input_timestamp_ = kNoTimestamp;
   timestamp_helper_.Reset();
-  delayed_discard_padding_ = DecoderBuffer::DiscardPadding();
 }
 
 bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
@@ -67,12 +63,6 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
   DCHECK(initialized());
 
   if (!decoded_buffer) {
-    // If there's a one buffer delay for decoding, we need to save it so it can
-    // be processed with the next decoder buffer.
-    if (delayed_discard_) {
-      delayed_discard_padding_ =
-          time_info.discard_padding.value_or(DecoderBuffer::DiscardPadding());
-    }
     return false;
   }
 
@@ -82,13 +72,6 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
   // buffer's discard padding for processing with the current decoded buffer.
   DecoderBuffer::DiscardPadding current_discard_padding =
       time_info.discard_padding.value_or(DecoderBuffer::DiscardPadding());
-  if (delayed_discard_) {
-    // For simplicity disallow cases where decoder delay is present with delayed
-    // discard (no codecs at present).  Doing so allows us to avoid complexity
-    // around endpoint tracking when handling complete buffer discards.
-    DCHECK_EQ(decoder_delay_, 0u);
-    std::swap(current_discard_padding, delayed_discard_padding_);
-  }
 
   if (discard_frames_ > 0) {
     const size_t decoded_frames = decoded_buffer->frame_count();
