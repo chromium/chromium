@@ -36,7 +36,7 @@ source_set("searchbox") {
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
   ]
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/drive_picker_host:mojo_bindings" ]
+    public_deps = [ "//chrome/browser/ui/views/drive_picker_host:mojo_bindings" ]
   }
 }
 
