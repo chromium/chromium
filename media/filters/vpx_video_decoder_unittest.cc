@@ -507,7 +507,7 @@ TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
 
   const auto& frame = output_frames_.front();
   ASSERT_TRUE(frame->hdr_metadata().HasAgtm());
-  EXPECT_EQ(frame->hdr_metadata().GetAgtm().fHdrReferenceWhite, 203.0535f);
+  EXPECT_EQ(frame->hdr_metadata().GetAgtm().fHdrReferenceWhite, 203.0f);
 
   Destroy();
 }
