@@ -279,9 +279,6 @@ void LoadStreamTask::SendFeedQueryRequest() {
   if (options_.load_type != LoadType::kBackgroundRefresh) {
     if (options_.stream_type.IsForYou())
       network_request_id_ = GetLaunchReliabilityLogger().LogFeedRequestStart();
-    else if (options_.stream_type.IsWebFeed())
-      network_request_id_ =
-          GetLaunchReliabilityLogger().LogWebFeedRequestStart();
   }
   RequestMetadata request_metadata =
       stream_->GetRequestMetadata(options_.stream_type,
@@ -297,15 +294,8 @@ void LoadStreamTask::SendFeedQueryRequest() {
 
   FeedNetwork& network = stream_->GetNetwork();
   const bool force_feed_query = GetFeedConfig().use_feed_query_requests;
-  if (!force_feed_query && options_.stream_type.IsWebFeed()) {
-    // Special case: web feed that is not using Feed Query requests go to
-    // WebFeedListContentsDiscoverApi.
-    network.SendApiRequest<WebFeedListContentsDiscoverApi>(
-        std::move(request), account_info, std::move(request_metadata),
-        base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
-  } else if (options_.stream_type.IsForYou() &&
-             base::FeatureList::IsEnabled(kDiscoFeedEndpoint) &&
-             !force_feed_query) {
+  if (options_.stream_type.IsForYou() &&
+      base::FeatureList::IsEnabled(kDiscoFeedEndpoint) && !force_feed_query) {
     // Special case: For You feed using the DiscoFeedEndpoint call
     // Query*FeedDiscoverApi.
     switch (options_.load_type) {

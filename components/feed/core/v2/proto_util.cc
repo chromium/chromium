@@ -194,9 +194,6 @@ feedwire::Request CreateFeedQueryRequest(
   if (stream_type.IsForYou()) {
     entry_point.set_feed_entry_point_source_value(
         feedwire::FeedEntryPointSource::CHROME_DISCOVER_FEED);
-  } else if (stream_type.IsWebFeed()) {
-    entry_point.set_feed_entry_point_source_value(
-        feedwire::FeedEntryPointSource::CHROME_FOLLOWING_FEED);
   }
 
   // |consistency_token|, for action reporting, is only applicable to signed-in
@@ -370,15 +367,6 @@ feedwire::Request CreateFeedQueryRefreshRequest(
   feedwire::Request request =
       CreateFeedQueryRequest(stream_type, request_reason, request_metadata,
                              consistency_token, std::string());
-  if (stream_type.IsWebFeed()) {
-    // A special token that requests content for followed Web Feeds.
-    constexpr char kChromeFollowToken[] = "\"\004\022\002\b5*\tFollowing";
-    request.mutable_feed_request()
-        ->mutable_feed_query()
-        ->mutable_web_feed_token()
-        ->mutable_web_feed_token()
-        ->set_web_feed_token(kChromeFollowToken);
-  }
   SetNoticeCardAcknowledged(&request, request_metadata);
   SetInfoCardTrackingStates(&request, request_metadata);
   SetTimesFollowedFromWebPageMenu(&request, request_metadata);

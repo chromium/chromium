@@ -32,9 +32,6 @@ std::string_view StreamPrefix(feed::StreamKind stream_kind) {
   switch (stream_kind) {
     case feed::StreamKind::kForYou:
       return kForYouStreamKey;
-    // TODO(crbug.com/407797637): remove kFollowing from
-    // components/feed/core/v2/public/types.h
-    case feed::StreamKind::kFollowing:
     case feed::StreamKind::kUnknown:
       NOTREACHED();
   }

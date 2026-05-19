@@ -83,9 +83,6 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
       case StreamKind::kForYou:
         histogram_name = "ContentSuggestions.Feed.EngagementType";
         break;
-      case StreamKind::kFollowing:
-        histogram_name = "ContentSuggestions.Feed.WebFeed.EngagementType";
-        break;
       case StreamKind::kUnknown:
         histogram_name = "ContentSuggestions.Feed.AllFeeds.EngagementType";
         break;

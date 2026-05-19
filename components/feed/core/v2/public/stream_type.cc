@@ -12,10 +12,6 @@ std::string StreamType::ToString() const {
       return "Unknown";
     case StreamKind::kForYou:
       return "ForYou";
-      // TODO(crbug.com/407797637): remove kFollowing from
-      // components/feed/core/v2/public/types.h
-    case StreamKind::kFollowing:
-      return "WebFeed";
   }
 }
 

@@ -352,8 +352,6 @@ bool TestSurfaceBase::IsInitialLoadSpinnerUpdate(
 
 TestForYouSurface::TestForYouSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kForYou), stream) {}
-TestWebFeedSurface::TestWebFeedSurface(FeedStream* stream)
-    : TestSurfaceBase(StreamType(StreamKind::kFollowing), stream) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;
@@ -901,8 +899,6 @@ TestMetricsReporter::StreamMetrics& TestMetricsReporter::Stream(
     const StreamType& stream_type) {
   if (stream_type.IsForYou())
     return for_you;
-  if (stream_type.IsWebFeed())
-    return web_feed;
   ADD_FAILURE() << stream_type << " case not supported here";
   return for_you;
 }

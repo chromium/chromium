@@ -18,29 +18,20 @@ class StreamType {
  public:
   StreamType() = default;
   virtual ~StreamType() = default;
-  explicit StreamType(StreamKind k, std::string s = std::string())
-      : kind_(k), web_feed_id_(std::move(s)) {}
+  explicit StreamType(StreamKind k) : kind_(k) {}
   bool operator<(const StreamType& rhs) const {
-    if (kind_ == rhs.kind_) {
-      return web_feed_id_.compare(rhs.web_feed_id_) < 0;
-    }
     return kind_ < rhs.kind_;
   }
-  bool operator==(const StreamType& rhs) const {
-    return (kind_ == rhs.kind_) && (web_feed_id_ == rhs.web_feed_id_);
-  }
+  bool operator==(const StreamType& rhs) const { return kind_ == rhs.kind_; }
   bool IsForYou() const { return kind_ == StreamKind::kForYou; }
-  bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
   bool IsValid() const { return kind_ != StreamKind::kUnknown; }
   StreamKind GetKind() const { return kind_; }
-  std::string GetWebFeedId() const { return web_feed_id_; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;
 
  private:
   StreamKind kind_ = StreamKind::kUnknown;
-  std::string web_feed_id_;
 };
 
 inline std::ostream& operator<<(std::ostream& os,

@@ -239,10 +239,7 @@ enum class StreamKind : int {
   kUnknown = 0,
   // For you stream.
   kForYou = 1,
-  // Following stream.
-  kFollowing = 2,
-
-  kMaxValue = kFollowing,
+  kMaxValue = kForYou,
 };
 
 // Used to tell how to open an URL.

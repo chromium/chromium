@@ -79,8 +79,6 @@ std::string_view HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
     case StreamKind::kForYou:
       return "Feed.";
-      // TODO(crbug.com/407797637): Remove kFollowing from StreamKind
-    case StreamKind::kFollowing:
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       return "Feed.";
@@ -107,8 +105,6 @@ void ReportContentSuggestionsOpened(const StreamType& stream_type,
       base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Opened",
                                     index_in_stream, kMaxSuggestionsTotal);
       break;
-    case StreamKind::kFollowing:
-      // TODO(crbug.com/407797637): Remove kFollowing from StreamKind
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       break;
@@ -453,8 +449,6 @@ void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
       base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Shown",
                                     index_in_stream, kMaxSuggestionsTotal);
       break;
-    case StreamKind::kFollowing:
-      // TODO(crbug.com/407797637): Remove kFollowing from StreamKind
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       break;
@@ -792,7 +786,6 @@ void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
 
   std::string histogram_name =
       base::StrCat({"ContentSuggestions.Feed.UserJourney.OpenCard",
-                    pending_open_.stream_type.IsWebFeed() ? ".WebFeed" : "",
                     success ? ".SuccessDuration" : ".Failure"});
 
   if (success) {
@@ -1044,7 +1037,6 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
   switch (stream_type.GetKind()) {
     case StreamKind::kForYou:
       return for_you_stats_;
-    case StreamKind::kFollowing:
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       return for_you_stats_;

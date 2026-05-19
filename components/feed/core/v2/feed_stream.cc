@@ -1036,11 +1036,6 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
                          ? NetworkRequestType::kFeedQuery
                          : NetworkRequestType::kNextPage;
       break;
-    case StreamKind::kFollowing:
-      // TODO(crbug.com/407797637): remove kFollowing from
-      // components/feed/core/v2/public/types.h
-      request_type = NetworkRequestType::kFeedQuery;
-      break;
   }
 
   if (consume_quota && !request_throttler_.RequestQuota(request_type)) {
@@ -1158,8 +1153,6 @@ void FeedStream::OnEulaAccepted() {
 }
 
 void FeedStream::OnAllHistoryDeleted() {
-  // We don't really need to delete StreamType(StreamKind::kFollowing) data
-  // here, but clearing all data because it's easy.
   ClearAll();
 }
 

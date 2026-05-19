@@ -103,8 +103,8 @@ void FeedV2InternalsPageHandler::RefreshForYouFeed() {
 }
 
 void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
-  feed_stream_->ForceRefreshForDebugging(
-      feed::StreamType(feed::StreamKind::kFollowing));
+  // TODO(crbug.com/407797637): Remove this function and the related button in
+  // chrome://snippets-internals.
 }
 
 void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {

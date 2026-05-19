@@ -202,10 +202,6 @@ class TestForYouSurface : public TestSurfaceBase {
  public:
   explicit TestForYouSurface(FeedStream* stream = nullptr);
 };
-class TestWebFeedSurface : public TestSurfaceBase {
- public:
-  explicit TestWebFeedSurface(FeedStream* stream = nullptr);
-};
 
 class TestImageFetcher : public ImageFetcher {
  public:
@@ -479,7 +475,6 @@ class TestMetricsReporter : public MetricsReporter {
   std::optional<LoadStreamStatus> background_refresh_status;
   std::optional<UploadActionsStatus> upload_action_status;
 
-  StreamMetrics web_feed;
   StreamMetrics for_you;
 };
 
