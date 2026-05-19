@@ -292,10 +292,7 @@ export function getClickSourceType(e: Event): MenuSourceType {
 // * others -> mouse
 export function getContextMenuSourceType(e: Event): MenuSourceType {
   if (e instanceof PointerEvent) {
-    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
-      return MenuSourceType.kTouch;
-    }
-    return MenuSourceType.kMouse;
+    return getClickSourceType(e);
   }
   if (e instanceof MouseEvent && e.button === BUTTON_LEFT) {
     // Mac Ctrl+Click (ctrlKey + button 0) should be Mouse for context menu.

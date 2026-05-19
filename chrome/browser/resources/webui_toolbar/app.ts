@@ -47,12 +47,15 @@ import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
 import {PermissionChipElement} from './permission_chip.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
+import {getClickSourceType, getContextMenuSourceType} from './toolbar_button.js';
 
 export {
   BrowserProxyImpl,
   ContentSettingIconElement,
   ContentSettingImageType,
   ContentSettingsIconsElement,
+  getClickSourceType,
+  getContextMenuSourceType,
   IconTable,
   IconType,
   LhsChipIdentifier,
