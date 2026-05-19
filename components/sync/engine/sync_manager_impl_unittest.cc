@@ -33,6 +33,7 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/polling_constants.h"
+#include "components/sync/engine/required_passphrase_verifier.h"
 #include "components/sync/engine/sync_scheduler.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -114,7 +115,7 @@ class SyncEncryptionHandlerObserverMock
  public:
   MOCK_METHOD(void,
               OnPassphraseRequired,
-              (const KeyDerivationParams&, const sync_pb::EncryptedData&),
+              (std::unique_ptr<RequiredPassphraseVerifier>),
               (override));
   MOCK_METHOD(void,
               OnPassphraseAccepted,

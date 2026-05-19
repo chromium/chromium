@@ -42,6 +42,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/nigori/required_passphrase_verifier_impl.h"
 #include "components/sync/service/bookmark_sync_error_state.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
@@ -267,7 +268,8 @@ class SyncServiceImplTest : public ::testing::Test {
 
   void TriggerPassphraseRequired() {
     service_->GetEncryptionObserverForTest()->OnPassphraseRequired(
-        KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData());
+        std::make_unique<RequiredPassphraseVerifierImpl>(
+            KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData()));
   }
 
   void RunUntilSyncTransportState(SyncService::TransportState expected_state) {

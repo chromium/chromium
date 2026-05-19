@@ -30,9 +30,9 @@ class Encryptor;
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
 class EngineComponentsFactory;
 class HttpPostProviderFactory;
-class Nigori;
 class SyncEngineHost;
 struct SyncStatus;
 
@@ -125,8 +125,9 @@ class SyncEngine : public DataTypeConfigurer {
   // new encrypted keys arrive during the asynchronous call,
   // OnPassphraseRequired may be triggered at a later time. It is an error to
   // call this when there are no pending keys.
-  virtual void SetExplicitPassphraseDecryptionKey(
-      std::unique_ptr<Nigori> key) = 0;
+  virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
+  virtual void SetDecryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token) = 0;
 
   // Analogous to SetExplicitPassphraseDecryptionKey() but specifically for
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could

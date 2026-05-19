@@ -17,6 +17,7 @@
 #include "components/sync/engine/data_type_worker.h"
 #include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/required_passphrase_verifier.h"
 
 namespace syncer {
 
@@ -155,8 +156,7 @@ base::WeakPtr<DataTypeConnector> DataTypeRegistry::AsWeakPtr() {
 }
 
 void DataTypeRegistry::OnPassphraseRequired(
-    const KeyDerivationParams& key_derivation_params,
-    const sync_pb::EncryptedData& pending_keys) {}
+    std::unique_ptr<RequiredPassphraseVerifier> verifier) {}
 
 void DataTypeRegistry::OnPassphraseAccepted(
     const CustomPassphraseBootstrapToken& bootstrap_token) {}

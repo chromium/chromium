@@ -19,10 +19,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_string_conversions.h"
@@ -242,13 +242,20 @@ void SyncEngineImpl::SetEncryptionPassphrase(const std::string& passphrase) {
                                 backend_, passphrase));
 }
 
-void SyncEngineImpl::SetExplicitPassphraseDecryptionKey(
-    std::unique_ptr<Nigori> key) {
+void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetDecryptionPassphrase,
+                                backend_, passphrase));
+}
+
+void SyncEngineImpl::SetDecryptionBootstrapToken(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&SyncEngineBackend::DoSetExplicitPassphraseDecryptionKey,
-                     backend_, std::move(key)));
+      base::BindOnce(&SyncEngineBackend::DoSetDecryptionBootstrapToken,
+                     backend_, bootstrap_token));
 }
 
 void SyncEngineImpl::AddTrustedVaultDecryptionKeys(

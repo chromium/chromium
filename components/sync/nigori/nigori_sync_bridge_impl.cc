@@ -22,6 +22,7 @@
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_storage.h"
 #include "components/sync/nigori/pending_local_nigori_commit.h"
+#include "components/sync/nigori/required_passphrase_verifier_impl.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -301,10 +302,9 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(
-      const KeyDerivationParams& key_derivation_params,
-      const sync_pb::EncryptedData& pending_keys) override {
+      std::unique_ptr<RequiredPassphraseVerifier> verifier) override {
     for (Observer& observer : observers_) {
-      observer.OnPassphraseRequired(key_derivation_params, pending_keys);
+      observer.OnPassphraseRequired(verifier->Clone());
     }
   }
 
@@ -485,13 +485,33 @@ void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
       PendingLocalNigoriCommit::ForSetCustomPassphrase(passphrase));
 }
 
-void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
-    std::unique_ptr<Nigori> key) {
+void NigoriSyncBridgeImpl::SetDecryptionPassphrase(
+    const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // `key` should be a valid one already (verified by SyncServiceCrypto,
-  // using pending keys exposed by OnPassphraseRequired()).
+  if (passphrase.empty()) {
+    return;
+  }
+  SetDecryptionNigori(Nigori::CreateByDerivation(
+      GetKeyDerivationParamsForPendingKeys(), passphrase));
+}
+
+void NigoriSyncBridgeImpl::SetDecryptionBootstrapToken(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (bootstrap_token.IsEmpty()) {
+    return;
+  }
+  const sync_pb::NigoriKey& proto = bootstrap_token.ToProto();
+  SetDecryptionNigori(Nigori::CreateByImport(
+      proto.deprecated_user_key(), proto.encryption_key(), proto.mac_key()));
+}
+
+void NigoriSyncBridgeImpl::SetDecryptionNigori(std::unique_ptr<Nigori> key) {
   if (!state_.pending_keys) {
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
+    return;
+  }
+  if (!key) {
     return;
   }
 
@@ -1027,7 +1047,8 @@ void NigoriSyncBridgeImpl::MaybeNotifyOfPendingKeys() const {
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
       broadcasting_observer_->OnPassphraseRequired(
-          GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys);
+          std::make_unique<RequiredPassphraseVerifierImpl>(
+              GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
       break;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
       broadcasting_observer_->OnTrustedVaultKeyRequired();

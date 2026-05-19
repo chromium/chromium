@@ -20,6 +20,8 @@
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
+
 // A fake of the SyncEngine.
 //
 // This class implements the bare minimum required for the SyncServiceImpl to
@@ -80,7 +82,10 @@ class FakeSyncEngine final : public SyncEngine {
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
 
-  void SetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key) override;
+  void SetDecryptionPassphrase(const std::string& passphrase) override;
+
+  void SetDecryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override;
 
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,

@@ -17,6 +17,8 @@
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
+
 // A mock of the SyncEngine.
 //
 // Note: If you don't really care about all the exact details, FakeSyncEngine is
@@ -47,9 +49,10 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, StartSyncingWithServer, (), (override));
   MOCK_METHOD(void, StartHandlingInvalidations, (), (override));
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(void, SetDecryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(void,
-              SetExplicitPassphraseDecryptionKey,
-              (std::unique_ptr<Nigori>),
+              SetDecryptionBootstrapToken,
+              (const CustomPassphraseBootstrapToken&),
               (override));
   MOCK_METHOD(void,
               AddTrustedVaultDecryptionKeys,

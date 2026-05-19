@@ -18,6 +18,8 @@
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
+
 // A fake sync encryption handler capable of keeping track of the encryption
 // state without opening any transactions or interacting with the nigori node.
 // Note that this only performs basic interactions with the cryptographer
@@ -38,7 +40,9 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
   Cryptographer* GetCryptographer() override;
   PassphraseType GetPassphraseType() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
-  void SetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key) override;
+  void SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetDecryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() override;

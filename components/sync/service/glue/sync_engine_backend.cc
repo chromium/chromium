@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
@@ -260,11 +261,17 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
              sync_manager_->birthday(), sync_manager_->bag_of_chips());
 }
 
-void SyncEngineBackend::DoSetExplicitPassphraseDecryptionKey(
-    std::unique_ptr<Nigori> key) {
+void SyncEngineBackend::DoSetDecryptionPassphrase(
+    const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->SetExplicitPassphraseDecryptionKey(
-      std::move(key));
+  sync_manager_->GetEncryptionHandler()->SetDecryptionPassphrase(passphrase);
+}
+
+void SyncEngineBackend::DoSetDecryptionBootstrapToken(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_manager_->GetEncryptionHandler()->SetDecryptionBootstrapToken(
+      bootstrap_token);
 }
 
 void SyncEngineBackend::ShutdownOnUIThread() {

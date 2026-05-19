@@ -126,6 +126,7 @@ static_library("engine") {
     "nigori/nigori.h",
     "nudge_handler.h",
     "polling_constants.h",
+    "required_passphrase_verifier.h",
     "shutdown_reason.cc",
     "shutdown_reason.h",
     "sync_credentials.h",

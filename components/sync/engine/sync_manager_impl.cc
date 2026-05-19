@@ -33,6 +33,7 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/polling_constants.h"
+#include "components/sync/engine/required_passphrase_verifier.h"
 #include "components/sync/engine/sync_scheduler.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -207,8 +208,7 @@ void SyncManagerImpl::Init(InitArgs* args) {
 }
 
 void SyncManagerImpl::OnPassphraseRequired(
-    const KeyDerivationParams& key_derivation_params,
-    const sync_pb::EncryptedData& pending_keys) {
+    std::unique_ptr<RequiredPassphraseVerifier> verifier) {
   // Does nothing.
 }
 

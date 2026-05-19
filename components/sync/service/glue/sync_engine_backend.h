@@ -25,8 +25,8 @@
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
 class DataTypeController;
-class Nigori;
 class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
@@ -125,7 +125,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Called to decrypt the pending keys using the `key` derived from
   // user-entered passphrase.
-  void DoSetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key);
+  void DoSetDecryptionPassphrase(const std::string& passphrase);
+  void DoSetDecryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token);
 
   // Called to decrypt the pending keys using trusted vault keys.
   void DoAddTrustedVaultDecryptionKeys(

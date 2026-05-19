@@ -26,6 +26,8 @@ static_library("nigori") {
     "nigori_sync_bridge_impl.h",
     "pending_local_nigori_commit.cc",
     "pending_local_nigori_commit.h",
+    "required_passphrase_verifier_impl.cc",
+    "required_passphrase_verifier_impl.h",
   ]
 
   deps = [ "//components/os_crypt/async/common" ]

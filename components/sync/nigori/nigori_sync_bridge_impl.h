@@ -60,7 +60,9 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   Cryptographer* GetCryptographer() override;
   PassphraseType GetPassphraseType() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
-  void SetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key) override;
+  void SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetDecryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() override;
@@ -121,6 +123,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // If there are pending keys and depending on the passphrase type, it invokes
   // the appropriate observer methods (if any).
   void MaybeNotifyOfPendingKeys() const;
+
+  // Attempts to decrypt pending keys with `key` (if non-null and pending keys
+  // exist). If successful, updates the cryptographer and stores local data.
+  void SetDecryptionNigori(std::unique_ptr<Nigori> key);
 
   // Queues keystore rotation or full keystore migration if current state
   // assumes it should happen.

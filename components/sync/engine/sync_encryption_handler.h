@@ -13,10 +13,8 @@
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
 
 namespace sync_pb {
-class EncryptedData;
 class NigoriSpecifics_TrustedVaultDebugInfo;
 }  // namespace sync_pb
 
@@ -25,7 +23,7 @@ namespace syncer {
 class Cryptographer;
 class CustomPassphraseBootstrapToken;
 class KeystoreKeysHandler;
-class Nigori;
+class RequiredPassphraseVerifier;
 enum class PassphraseType;
 
 // Sync's encryption handler. Handles tracking encrypted types, ensuring the
@@ -41,14 +39,10 @@ class SyncEncryptionHandler {
     ~Observer() override = default;
 
     // Called when user interaction is required to obtain a valid passphrase for
-    // decryption.
-    // `key_derivation_params` are the parameters that should be used to obtain
-    // the key from the passphrase.
-    // `pending_keys` is a copy of the cryptographer's pending keys, that may be
-    // cached by the frontend for subsequent use by the UI.
+    // decryption. `verifier` can be used to verify passphrases or bootstrap
+    // tokens against pending sync keys.
     virtual void OnPassphraseRequired(
-        const KeyDerivationParams& key_derivation_params,
-        const sync_pb::EncryptedData& pending_keys) = 0;
+        std::unique_ptr<RequiredPassphraseVerifier> verifier) = 0;
 
     // Called when the passphrase provided by the user has been accepted and is
     // now used to encrypt sync data. This gets invoked last, relative to other
@@ -123,8 +117,9 @@ class SyncEncryptionHandler {
   // OnPassphraseAccepted() or OnPassphraseRequired() and triggers re-encryption
   // as appropriate. It is an error to call this when we don't have pending
   // keys.
-  virtual void SetExplicitPassphraseDecryptionKey(
-      std::unique_ptr<Nigori> key) = 0;
+  virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
+  virtual void SetDecryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token) = 0;
 
   // Analogous to SetExplicitPassphraseDecryptionKey() but specifically for
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could
