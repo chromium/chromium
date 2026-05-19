@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/ply/ply.gni")
+
 # This file contains templates for generating static libraries based on the
 # corresponding output of the schema compiler tools. The output can be either
 # the generated C++ types (generated_types template), the bundled extension
@@ -40,18 +42,57 @@
 compiler_root = "//tools/json_schema_compiler"
 compiler_script = "$compiler_root/compiler.py"
 compiler_sources = [
-  "$compiler_root/cc_generator.py",
-  "$compiler_root/code_util.py",
-  "$compiler_root/compiler.py",
-  "$compiler_root/cpp_bundle_generator.py",
-  "$compiler_root/cpp_generator.py",
-  "$compiler_root/cpp_type_generator.py",
-  "$compiler_root/cpp_util.py",
-  "$compiler_root/h_generator.py",
-  "$compiler_root/idl_schema.py",
-  "$compiler_root/model.py",
-  "$compiler_root/util_cc_helper.py",
-]
+                     "$compiler_root/cc_generator.py",
+                     "$compiler_root/code_util.py",
+                     "$compiler_root/compiler.py",
+                     "$compiler_root/cpp_bundle_generator.py",
+                     "$compiler_root/cpp_generator.py",
+                     "$compiler_root/cpp_namespace_environment.py",
+                     "$compiler_root/cpp_type_generator.py",
+                     "$compiler_root/cpp_util.py",
+                     "$compiler_root/feature_compiler.py",
+                     "$compiler_root/features_cc_generator.py",
+                     "$compiler_root/features_compiler.py",
+                     "$compiler_root/features_h_generator.py",
+                     "$compiler_root/h_generator.py",
+                     "$compiler_root/idl_schema.py",
+                     "$compiler_root/js_externs_generator.py",
+                     "$compiler_root/js_interface_generator.py",
+                     "$compiler_root/js_util.py",
+                     "$compiler_root/json_parse.py",
+                     "$compiler_root/json_schema.py",
+                     "$compiler_root/memoize.py",
+                     "$compiler_root/model.py",
+                     "$compiler_root/namespace_resolver.py",
+                     "$compiler_root/schema_loader.py",
+                     "$compiler_root/schema_util.py",
+                     "$compiler_root/ts_definition_generator.py",
+                     "$compiler_root/util_cc_helper.py",
+                     "$compiler_root/web_idl_schema.py",
+
+                     # json_comment_eater dependency
+                     "//tools/json_comment_eater/json_comment_eater.py",
+
+                     # idl_parser dependency
+                     "//tools/idl_parser/__init__.py",
+                     "//tools/idl_parser/idl_lexer.py",
+                     "//tools/idl_parser/idl_node.py",
+                     "//tools/idl_parser/idl_parser.py",
+
+                     # ppapi/generators dependency
+                     "$compiler_root/ppapi/generators/idl_ast.py",
+                     "$compiler_root/ppapi/generators/idl_lexer.py",
+                     "$compiler_root/ppapi/generators/idl_lint.py",
+                     "$compiler_root/ppapi/generators/idl_log.py",
+                     "$compiler_root/ppapi/generators/idl_namespace.py",
+                     "$compiler_root/ppapi/generators/idl_node.py",
+                     "$compiler_root/ppapi/generators/idl_option.py",
+                     "$compiler_root/ppapi/generators/idl_outfile.py",
+                     "$compiler_root/ppapi/generators/idl_parser.py",
+                     "$compiler_root/ppapi/generators/idl_propertynode.py",
+                     "$compiler_root/ppapi/generators/idl_release.py",
+                     "$compiler_root/ppapi/generators/idl_visitor.py",
+                   ] + ply_sources
 
 # Outputs the bundle of generated JSON strings for each API.
 #
