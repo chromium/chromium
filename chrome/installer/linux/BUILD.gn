@@ -325,6 +325,7 @@ copy("common_packaging_files") {
   visibility = [ ":*" ]
   sources = [
     "//chrome/app/resources/manpage.1.in",
+    "common/apparmor.template",
     "common/appdata.xml.template",
     "common/apt.include",
     "common/default-app-block.template",

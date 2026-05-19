@@ -11,3 +11,14 @@ done
 
 # Update cache of .desktop file MIME types. Non-fatal since it's just a cache.
 update-desktop-database > /dev/null 2>&1 || true
+
+# Unload AppArmor profile
+# "remove" is for Debian/Ubuntu, "0" is for RPM distributions.
+if [ "$1" = "remove" ] || [ "$1" = "0" ]; then
+  if [ -f "/etc/apparmor.d/@@usr_bin_symlink_name" ]; then
+    if [ -x /sbin/apparmor_parser ]; then
+      /sbin/apparmor_parser -R "/etc/apparmor.d/@@usr_bin_symlink_name" || true
+    fi
+    rm -f "/etc/apparmor.d/@@usr_bin_symlink_name"
+  fi
+fi

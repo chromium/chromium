@@ -758,6 +758,15 @@ class InstallerConfig:
         else:
             self.uri_scheme = "x-scheme-handler/chromium;"
 
+        # apparmor profile
+        artifacts.append(
+            Artifact(
+                "installer/common/apparmor.template",
+                pathlib.Path("apparmor.d") / self.usr_bin_symlink_name,
+                ArtifactType.TEMPLATE,
+                StandardPermissions.REGULAR,
+            ))
+
         # appdata.xml
         artifacts.append(
             Artifact(
@@ -877,6 +886,7 @@ class Installer:
             (self.config.staging_dir /
              "usr/share/gnome-control-center/default-apps"),
             self.config.staging_dir / "usr/share/man/man1",
+            install_dir / "apparmor.d",
         ]
         for d in dirs:
             d.mkdir(parents=True, exist_ok=True)
