@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <tuple>
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -29,6 +30,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -42,8 +44,13 @@ void OverviewTestBase::EnterTabletMode() {
   // we detach all mouse devices.
   TabletModeControllerTestApi test_api;
   test_api.DetachAllMice();
+  if (display::Screen::Get()->InTabletMode()) {
+    return;
+  }
+
+  TabletMode::Waiter waiter(/*enable=*/true);
   test_api.EnterTabletMode();
-  base::RunLoop().RunUntilIdle();
+  waiter.Wait();
 }
 
 void OverviewTestBase::LeaveTabletMode() {
