@@ -17,13 +17,10 @@ class ColorFilter;
 
 namespace blink {
 
-struct DarkModeSettings;
-
 // Contains logic specific to modifying colors drawn when dark mode is active.
 class PLATFORM_EXPORT DarkModeColorFilter {
  public:
-  static std::unique_ptr<DarkModeColorFilter> FromSettings(
-      const DarkModeSettings& settings);
+  static std::unique_ptr<DarkModeColorFilter> Create();
 
   virtual ~DarkModeColorFilter();
   virtual SkColor4f InvertColor(const SkColor4f& color) const = 0;

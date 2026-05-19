@@ -124,10 +124,8 @@ DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
       image_classifier(nullptr),
       color_filter(nullptr),
       image_filter(nullptr) {
-  color_filter = DarkModeColorFilter::FromSettings(settings);
-  if (!color_filter)
-    return;
-
+  color_filter = DarkModeColorFilter::Create();
+  CHECK(color_filter);
   image_filter = color_filter->ToColorFilter();
 
   foreground_classifier =

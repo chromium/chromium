@@ -21,21 +21,6 @@ bool IsWithinEpsilon(float a, float b) {
   return std::abs(a - b) < std::numeric_limits<float>::epsilon();
 }
 
-class ColorFilterWrapper : public DarkModeColorFilter {
- public:
-  explicit ColorFilterWrapper(sk_sp<cc::ColorFilter> filter)
-      : filter_(std::move(filter)) {}
-
-  SkColor4f InvertColor(const SkColor4f& color) const override {
-    return filter_->FilterColor(color);
-  }
-
-  sk_sp<cc::ColorFilter> ToColorFilter() const override { return filter_; }
-
- private:
-  sk_sp<cc::ColorFilter> filter_;
-};
-
 class LABColorFilter : public DarkModeColorFilter {
  public:
   LABColorFilter() : transformer_(lab::DarkModeSRGBLABTransformer()) {
@@ -141,8 +126,7 @@ class LABColorFilter : public DarkModeColorFilter {
 
 }  // namespace
 
-std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
-    const DarkModeSettings&) {
+std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::Create() {
   return std::make_unique<LABColorFilter>();
 }
 
