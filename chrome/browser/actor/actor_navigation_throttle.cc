@@ -24,19 +24,24 @@
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/page_transition_types.h"
 
 namespace actor {
 namespace {
-constexpr auto kBlockedMimeTypes = base::MakeFixedFlatSet<std::string_view>({
-    "application/javascript",
-    "application/json",
-    "application/xml",
-    "text/javascript",
-    "text/csv",
-    "text/json",
-    "text/xml",
-});
+bool IsDangerousMimeType(std::string_view mime_type) {
+  static constexpr auto kBlockedTabularTypes =
+      base::MakeFixedFlatSet<std::string_view>({
+          "text/csv",
+          "text/comma-separated-values",
+          "text/tsv",
+          "text/tab-separated-values",
+      });
+  return kBlockedTabularTypes.contains(mime_type) ||
+         blink::IsJSONMimeType(mime_type) ||
+         blink::IsXMLMimeType(mime_type) ||
+         blink::IsSupportedJavascriptMimeType(mime_type);
+}
 }  // namespace
 
 // static
@@ -119,8 +124,7 @@ ActorNavigationThrottle::WillProcessResponse() {
             navigation_handle()->GetResponseHeaders();
         headers) {
       std::string mime_type;
-      if (headers->GetMimeType(&mime_type) &&
-          kBlockedMimeTypes.contains(mime_type)) {
+      if (headers->GetMimeType(&mime_type) && IsDangerousMimeType(mime_type)) {
         GetJournal().Log(navigation_handle()->GetURL(), task_id_, "NavThrottle",
                          JournalDetailsBuilder()
                              .AddError("Navigate to disallowed content-type")
