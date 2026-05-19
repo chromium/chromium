@@ -22,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -514,6 +515,10 @@ public class TabBottomSheetCoordinator {
 
                 // Record current state hit
                 TabBottomSheetMetrics.recordStateHit(clientType, state);
+
+                if (state == SheetState.PEEK && clientType == TabBottomSheetClientType.GLIC) {
+                    GlicMetrics.recordShowPeekView();
+                }
 
                 // Record transition if between open stable states (PEEK, HALF, FULL)
                 TabBottomSheetMetrics.recordTransition(clientType, mLastStableState, state);

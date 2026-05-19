@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.actor.ActorTaskId;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.glic.GlicInstanceHelper;
+import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
@@ -347,6 +348,7 @@ public class ActorControlCoordinator
     /** Called when the close button is clicked. */
     /* package */ void onCloseClicked() {
         assert mTabBottomSheetManager.isSheetInitialized();
+        GlicMetrics.recordClosePeekView();
         mTabBottomSheetManager.tryToCloseBottomSheet(/* animate= */ true);
     }
 

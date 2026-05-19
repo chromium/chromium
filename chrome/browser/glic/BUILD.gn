@@ -190,6 +190,16 @@ if (is_android) {
     ]
     srcjar_deps = [ ":glic_pref_names_srcjar" ]
   }
+
+  android_library("metrics_java") {
+    sources =
+        [ "android/java/src/org/chromium/chrome/browser/glic/GlicMetrics.java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
 }
 
 source_set("enum") {

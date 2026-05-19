@@ -15270,6 +15270,13 @@ should be able to be added at any place in this file.
   <description>Logged when Close is called on an instance.</description>
 </action>
 
+<action name="Glic.Instance.Close.PeekView">
+  <owner>lindaywang@chromium.org</owner>
+  <description>
+    Logged when a Glic instance peek view is closed on Android.
+  </description>
+</action>
+
 <action name="Glic.Instance.Created">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
@@ -15450,6 +15457,13 @@ should be able to be added at any place in this file.
   <owner>perrier@google.com</owner>
   <description>
     Logged when a Glic instance is shown in a floating window.
+  </description>
+</action>
+
+<action name="Glic.Instance.Show.PeekView">
+  <owner>lindaywang@chromium.org</owner>
+  <description>
+    Logged when a Glic instance is shown in peek view on Android.
   </description>
 </action>
 

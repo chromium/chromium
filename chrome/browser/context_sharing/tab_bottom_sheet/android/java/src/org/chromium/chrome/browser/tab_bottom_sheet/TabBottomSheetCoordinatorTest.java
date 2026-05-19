@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -52,6 +53,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
@@ -141,8 +143,13 @@ public class TabBottomSheetCoordinatorTest {
         when(mMockWebUi.getWebUiView()).thenReturn(webUiView);
 
         mCoBrowseViews =
-                new CoBrowseViews(
-                        containerView, TabBottomSheetClientType.UNKNOWN, mMockWebUi, null, 0);
+                spy(
+                        new CoBrowseViews(
+                                containerView,
+                                TabBottomSheetClientType.UNKNOWN,
+                                mMockWebUi,
+                                null,
+                                0));
         mView = containerView;
         assertNotNull(
                 "actor_control_container should be found in CoBrowseViews",
@@ -417,6 +424,19 @@ public class TabBottomSheetCoordinatorTest {
         // Passing event should not crash and should return false
         MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
         assertFalse(touchEventObserver.onInterceptTouchEvent(event));
+    }
+
+    @Test
+    public void testOnSheetStateChanged_Peek_recordsMetric() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        UserActionTester userActionTester = new UserActionTester();
+        doReturn(TabBottomSheetClientType.GLIC).when(mCoBrowseViews).getClientType();
+        try {
+            observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+            assertEquals(1, userActionTester.getActionCount("Glic.Instance.Show.PeekView"));
+        } finally {
+            userActionTester.tearDown();
+        }
     }
 
     @Test

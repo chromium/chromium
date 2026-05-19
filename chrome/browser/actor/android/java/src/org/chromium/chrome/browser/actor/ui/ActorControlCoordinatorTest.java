@@ -33,6 +33,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
@@ -582,6 +583,18 @@ public class ActorControlCoordinatorTest {
         performCloseClick();
 
         verify(mTabBottomSheetManager).tryToCloseBottomSheet(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnCloseClick_recordsMetric() {
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        UserActionTester userActionTester = new UserActionTester();
+        try {
+            performCloseClick();
+            assertEquals(1, userActionTester.getActionCount("Glic.Instance.Close.PeekView"));
+        } finally {
+            userActionTester.tearDown();
+        }
     }
 
     @Test
