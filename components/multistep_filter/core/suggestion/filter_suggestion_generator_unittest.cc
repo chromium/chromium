@@ -73,7 +73,8 @@ class FilterSuggestionGeneratorTest : public testing::Test {
   void DestroyGenerator() { generator_.reset(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockAnnotationIndexClient> mock_client_;
   std::unique_ptr<FilterStore> store_;
   std::unique_ptr<FilterSuggestionGenerator> generator_;
@@ -135,6 +136,69 @@ TEST_F(FilterSuggestionGeneratorTest,
                                   kTestDomain);
 
   EXPECT_EQ(future.Get(), expected_suggestion);
+}
+
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_FiltersOldAnnotations) {
+  const GURL url(kTestUrl);
+
+  EXPECT_CALL(mock_client(),
+              GetSupportedTaskTypesForDomain(kTestDomain, _, kTestNavigationId))
+      .WillOnce(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 callback,
+             int64_t navigation_id) {
+            std::move(callback).Run(std::vector<std::string>{kShoppingTask});
+          });
+
+  std::vector<FilterAttribute> attributes = {
+      {kTestAttributeKey, kTestAttributeValue}};
+
+  // Create an old annotation (older than 30 minutes).
+  FilterAnnotation old_annotation(
+      base::Uuid::GenerateRandomV4(), kShoppingTask, kTestDomain,
+      base::Time::Now() - base::Minutes(31), attributes);
+
+  // Create a recent annotation.
+  FilterAnnotation recent_annotation(base::Uuid::GenerateRandomV4(),
+                                     kShoppingTask, kTestDomain,
+                                     base::Time::Now(), attributes);
+
+  base::test::TestFuture<bool> store_future1;
+  base::test::TestFuture<bool> store_future2;
+  store()->StoreAnnotation(old_annotation, store_future1.GetCallback());
+  store()->StoreAnnotation(recent_annotation, store_future2.GetCallback());
+  ASSERT_TRUE(store_future1.Get());
+  ASSERT_TRUE(store_future2.Get());
+
+  // The candidate matches the recent annotation.
+  FilterSuggestionCandidate candidate(
+      recent_annotation.id, GURL(kTestSuggestionUrl),
+      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
+                                          kTestAttributeValue16)});
+
+  EXPECT_CALL(mock_client(),
+              GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))
+      .WillOnce([candidate, recent_annotation](
+                    const GURL& u,
+                    base::span<const FilterAnnotation> filter_annotations,
+                    base::OnceCallback<void(
+                        std::optional<std::vector<FilterSuggestionCandidate>>)>
+                        callback,
+                    int64_t navigation_id) {
+        // Verify that the old annotation is NOT passed to the client.
+        EXPECT_EQ(filter_annotations.size(), 1u);
+        EXPECT_EQ(filter_annotations[0].id, recent_annotation.id);
+        std::move(callback).Run(
+            std::vector<FilterSuggestionCandidate>{candidate});
+      });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+  generator()->GenerateSuggestion(url, future.GetCallback(), kTestNavigationId,
+                                  kTestDomain);
+
+  ASSERT_TRUE(future.Get().has_value());
 }
 
 // Tests that only attributes with matching keys in the annotation are included

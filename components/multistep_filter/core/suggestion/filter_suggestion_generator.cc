@@ -29,6 +29,8 @@ namespace multistep_filter {
 
 namespace {
 
+constexpr size_t kDefaultMaxResults = 100;
+
 void LogServerRequestSent(MultistepFilterLogRouter* log_router,
                           int64_t navigation_id,
                           std::string_view domain,
@@ -137,11 +139,13 @@ void FilterSuggestionGenerator::OnSupportedTaskTypesFetched(
                      std::move(success_callback), std::move(failure_callback),
                      navigation_id, std::string(domain)));
 
+  const base::Time min_creation_time =
+      base::Time::Now() - kMultistepFilterSessionDuration.Get();
   // TODO(crbug.com/493485174): Filter supported task types to only include
   // filtering tasks.
   for (const std::string& task_type : *supported_task_types) {
     filter_store_->GetAnnotationsForTaskSortedByCreationTimestamp(
-        task_type, barrier_callback);
+        task_type, barrier_callback, kDefaultMaxResults, min_creation_time);
   }
 }
 

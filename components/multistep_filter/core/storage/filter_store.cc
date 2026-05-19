@@ -17,6 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/storage/filter_store_backend.h"
 
@@ -44,11 +45,12 @@ void FilterStore::StoreAnnotation(const FilterAnnotation& annotation,
 void FilterStore::GetAnnotationsForTaskSortedByCreationTimestamp(
     std::string task_type,
     base::OnceCallback<void(std::vector<FilterAnnotation>)> callback,
-    size_t max_count) {
+    size_t max_count,
+    base::Time min_creation_time) {
   backend_
       .AsyncCall(
           &FilterStoreBackend::GetAnnotationsForTaskSortedByCreationTimestamp)
-      .WithArgs(std::move(task_type), max_count)
+      .WithArgs(std::move(task_type), max_count, min_creation_time)
       .Then(std::move(callback));
 }
 

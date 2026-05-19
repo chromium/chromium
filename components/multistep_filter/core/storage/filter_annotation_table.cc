@@ -135,7 +135,8 @@ bool FilterAnnotationTable::StoreAnnotation(
 std::vector<FilterAnnotation>
 FilterAnnotationTable::GetAnnotationsForTaskSortedByCreationTimestamp(
     std::string_view task_type,
-    size_t max_count) {
+    size_t max_count,
+    base::Time min_creation_time) {
   std::vector<FilterAnnotation> annotations;
 
   sql::Statement select_annotations(db_->GetCachedStatement(
@@ -145,10 +146,12 @@ FilterAnnotationTable::GetAnnotationsForTaskSortedByCreationTimestamp(
                     filter_annotations::kSourceDomain, ", ",
                     filter_annotations::kCreationTimestamp, " FROM ",
                     filter_annotations::kTableName, " WHERE ",
-                    filter_annotations::kTaskType, " = ? ORDER BY ",
+                    filter_annotations::kTaskType, " = ? AND ",
+                    filter_annotations::kCreationTimestamp, " >= ? ORDER BY ",
                     filter_annotations::kCreationTimestamp, " DESC LIMIT ?"})));
   select_annotations.BindString(0, task_type);
-  select_annotations.BindInt64(1, max_count);
+  select_annotations.BindTime(1, min_creation_time);
+  select_annotations.BindInt64(2, max_count);
 
   while (select_annotations.Step()) {
     std::string id_str = select_annotations.ColumnString(0);

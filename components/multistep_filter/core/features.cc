@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace multistep_filter {
 
@@ -37,5 +38,12 @@ BASE_FEATURE_PARAM(std::string,
                    &kMultistepFilter,
                    "api_url",
                    "");
+
+// The duration for which filter annotations are considered valid.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMultistepFilterSessionDuration,
+                   &kMultistepFilter,
+                   "filter_session_duration",
+                   base::Minutes(30));
 
 }  // namespace multistep_filter

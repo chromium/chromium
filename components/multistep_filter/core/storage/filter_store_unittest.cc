@@ -23,6 +23,8 @@ namespace {
 
 using testing::SizeIs;
 
+constexpr size_t kMaxResults = 100;
+
 class FilterStoreTest : public testing::Test {
  public:
   void SetUp() override { store_ = std::make_unique<FilterStore>(); }
@@ -37,7 +39,8 @@ class FilterStoreTest : public testing::Test {
   FilterStore* store() { return store_.get(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FilterStore> store_;
 };
 
@@ -53,12 +56,39 @@ TEST_F(FilterStoreTest, StoreAndRetrieveAnnotation) {
 
   store()->StoreAnnotation(annotation, store_future.GetCallback());
   store()->GetAnnotationsForTaskSortedByCreationTimestamp(
-      "task1", get_future.GetCallback());
+      "task1", get_future.GetCallback(), kMaxResults, base::Time());
 
   std::vector<FilterAnnotation> result = get_future.Get();
   ASSERT_THAT(result, SizeIs(1));
 
   EXPECT_EQ(result.front(), annotation);
+}
+
+TEST_F(FilterStoreTest, StoreAndRetrieveAnnotation_FiltersByCreationTime) {
+  base::test::TestFuture<bool> store_future1;
+  base::test::TestFuture<bool> store_future2;
+  base::test::TestFuture<std::vector<FilterAnnotation>> get_future;
+
+  base::Uuid id1 = base::Uuid::GenerateRandomV4();
+  FilterAnnotation old_annotation(id1, "task1", "example.com",
+                                  base::Time::Now() - base::Minutes(31), {});
+
+  base::Uuid id2 = base::Uuid::GenerateRandomV4();
+  FilterAnnotation recent_annotation(id2, "task1", "example.com",
+                                     base::Time::Now(), {});
+
+  store()->StoreAnnotation(old_annotation, store_future1.GetCallback());
+  store()->StoreAnnotation(recent_annotation, store_future2.GetCallback());
+  ASSERT_TRUE(store_future1.Get());
+  ASSERT_TRUE(store_future2.Get());
+
+  store()->GetAnnotationsForTaskSortedByCreationTimestamp(
+      "task1", get_future.GetCallback(), kMaxResults,
+      base::Time::Now() - base::Minutes(30));
+
+  std::vector<FilterAnnotation> result = get_future.Get();
+  ASSERT_THAT(result, SizeIs(1));
+  EXPECT_EQ(result.front(), recent_annotation);
 }
 
 }  // namespace
