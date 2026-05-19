@@ -478,5 +478,14 @@ enum ContentSettingsType {
   // when suspicious warning is shown. If the user has selected this, the
   // notification permission will not be revoked based on suspicious verdict.
   SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
+
+  // Setting to control whether an Isolated Web App (IWA) can add Sub
+  // Apps without prompting users.
+  // https://github.com/explainers-by-googlers/sub-apps
+  // Possible values:
+  // - ASK: Prompt the user for confirmation (default).
+  // - ALLOW: Skip the prompt and allow adding sub apps.
+  // - BLOCK: Skip the prompt and block adding sub apps.
+  SUB_APPS_WITHOUT_PROMPTS,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

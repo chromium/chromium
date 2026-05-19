@@ -165,6 +165,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL, 142},
     {ContentSettingsType::LOCAL_NETWORK, 143},
     {ContentSettingsType::LOOPBACK_NETWORK, 144},
+    {ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS, 145},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

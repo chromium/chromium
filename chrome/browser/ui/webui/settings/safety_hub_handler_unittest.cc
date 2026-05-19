@@ -1050,6 +1050,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
           ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
           ContentSettingsType::POINTER_LOCK,
           ContentSettingsType::LOCAL_NETWORK_ACCESS,
+          ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS,
           // clang-format on
       });
 

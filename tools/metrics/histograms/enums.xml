@@ -2480,6 +2480,7 @@ Called by update_net_error_codes.py.-->
   <int value="142" label="Suspicious notification show original"/>
   <int value="143" label="Local network access - Local"/>
   <int value="144" label="Local network access - Loopback"/>
+  <int value="145" label="Add Sub Apps without prompts"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->

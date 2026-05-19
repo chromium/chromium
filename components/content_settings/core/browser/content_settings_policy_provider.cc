@@ -151,6 +151,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedSubAppsWithoutPromptsAllowedForOrigins,
+         ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedSubAppsWithoutPromptsBlockedForOrigins,
+         ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS, CONTENT_SETTING_BLOCK},
 #if BUILDFLAG(IS_CHROMEOS)
         {prefs::kManagedSmartCardConnectAllowedForUrls,
          ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_ALLOW},
@@ -419,6 +423,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting},
         {ContentSettingsType::CONTROLLED_FRAME,
          prefs::kManagedDefaultControlledFrameSetting},
+        {ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS,
+         prefs::kManagedDefaultSubAppsWithoutPromptsSetting},
 #if BUILDFLAG(IS_CHROMEOS)
         {ContentSettingsType::SMART_CARD_GUARD,
          prefs::kManagedDefaultSmartCardConnectSetting},

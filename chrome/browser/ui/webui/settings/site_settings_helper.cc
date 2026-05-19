@@ -259,6 +259,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL, nullptr},
     {ContentSettingsType::DEPRECATED_SUB_APP_INSTALLATION_PROMPTS, nullptr},
     {ContentSettingsType::LOCAL_NETWORK_ACCESS, nullptr},
+    {ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS, nullptr},
 });
 
 static_assert(
