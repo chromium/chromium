@@ -105,11 +105,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
 
-        assertEquals("Should have 1 action", 1, notification.actions.length);
-        assertEquals(
-                "First action should be 'View task'",
-                mContext.getString(R.string.actor_notification_button_view_task),
-                notification.actions[0].title);
+        assertAction(notification);
     }
 
     @Test
@@ -139,11 +135,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
 
-        assertEquals("Should have 1 action", 1, notification.actions.length);
-        assertEquals(
-                "First action should be 'View task'",
-                mContext.getString(R.string.actor_notification_button_view_task),
-                notification.actions[0].title);
+        assertAction(notification);
     }
 
     @Test
@@ -174,11 +166,7 @@ public class ActorNotificationFactoryTest {
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         assertNotNull("Content intent should not be null", notification.contentIntent);
 
-        assertEquals("Should have 1 action", 1, notification.actions.length);
-        assertEquals(
-                "First action should be 'View task'",
-                mContext.getString(R.string.actor_notification_button_view_task),
-                notification.actions[0].title);
+        assertAction(notification);
     }
 
     @Test
@@ -233,11 +221,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should have auto-cancel enabled",
                 (notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
 
-        assertEquals("Should have 1 action", 1, notification.actions.length);
-        assertEquals(
-                "First action should be 'View task'",
-                mContext.getString(R.string.actor_notification_button_view_task),
-                notification.actions[0].title);
+        assertAction(notification);
     }
 
     @Test
@@ -253,11 +237,7 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(R.string.actor_notification_title_working_on_task),
                 shadowOf(notification).getContentTitle());
         assertNotNull("Content intent should be set", notification.contentIntent);
-        assertEquals("Should have 1 action", 1, notification.actions.length);
-        assertEquals(
-                "First action should be 'View task'",
-                mContext.getString(R.string.actor_notification_button_view_task),
-                notification.actions[0].title);
+        assertAction(notification);
     }
 
     @Test
@@ -273,11 +253,7 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(R.string.actor_notification_title_task_paused),
                 shadowOf(notification).getContentTitle());
         assertNotNull("Content intent should be set", notification.contentIntent);
-        assertEquals("Should have 1 action", 1, notification.actions.length);
-        assertEquals(
-                "First action should be 'View task'",
-                mContext.getString(R.string.actor_notification_button_view_task),
-                notification.actions[0].title);
+        assertAction(notification);
     }
 
     @Test
@@ -308,6 +284,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should not be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         assertNotNull("Content intent should be set", notification.contentIntent);
+        assertNoActions(notification);
     }
 
     @Test
@@ -320,5 +297,20 @@ public class ActorNotificationFactoryTest {
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         assertTrue("Notification should be silent", wrapper.isSilent());
+    }
+
+    private void assertAction(Notification notification) {
+        assertNotNull("Actions should not be null", notification.actions);
+        assertEquals("Should have 1 action", 1, notification.actions.length);
+        assertEquals(
+                "Action title should match",
+                mContext.getString(R.string.actor_notification_button_go_to_chrome),
+                notification.actions[0].title);
+    }
+
+    private void assertNoActions(Notification notification) {
+        assertTrue(
+                "Should have no actions",
+                notification.actions == null || notification.actions.length == 0);
     }
 }

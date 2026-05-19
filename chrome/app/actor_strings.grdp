@@ -98,8 +98,8 @@
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_COMPLETE" desc="Notification title when a task has finished successfully." formatter_data="android_java">
    Task complete
   </message>
-  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_VIEW_TASK" desc="Label for the notification button that takes the user to the tab where the task is running." formatter_data="android_java">
-    View task
+  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_GO_TO_CHROME" desc="Label for the notification button for the user to go to chrome." formatter_data="android_java">
+    Go to Chrome
   </message>
   <message name="IDS_ACTOR_NOTIFICATION_BODY_WORKING" desc="Notification body text when the actor is working on a task." formatter_data="android_java">
     <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>\nGemini is working on your task, and will let you know if more action is needed.

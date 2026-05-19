@@ -186,7 +186,7 @@ public class ActorNotificationFactory {
 
         builder.addAction(
                 R.drawable.ic_spark_24dp,
-                context.getString(R.string.actor_notification_button_view_task),
+                context.getString(R.string.actor_notification_button_go_to_chrome),
                 intent,
                 NotificationUmaTracker.ActionType.ACTOR_VIEW);
     }
