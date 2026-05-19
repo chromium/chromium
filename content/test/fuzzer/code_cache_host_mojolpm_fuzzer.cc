@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
@@ -185,15 +186,24 @@ void CodeCacheHostTestcase::TearDown(base::OnceClosure done_closure) {
 
 void CodeCacheHostTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
   code_cache_host_receivers_.clear();
+
+  scoped_refptr<base::SequencedTaskRunner> context_runner =
+      generated_code_cache_context_->GetTaskRunner(
+          generated_code_cache_context_);
   generated_code_cache_context_->Shutdown();
   generated_code_cache_context_.reset();
   cache_storage_control_wrapper_.reset();
   browser_context_.reset();
 
-  GetFuzzerTaskRunner()->PostTask(
+  // GeneratedCodeCacheContext::Shutdown posts a task to the code cache thread
+  // to do its work. Continue with tear down on the fuzzer thread after it
+  // completes.
+  context_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&CodeCacheHostTestcase::TearDownOnFuzzerThread,
-                     base::Unretained(this), std::move(done_closure)));
+      base::BindPostTask(
+          GetFuzzerTaskRunner(),
+          base::BindOnce(&CodeCacheHostTestcase::TearDownOnFuzzerThread,
+                         base::Unretained(this), std::move(done_closure))));
 }
 
 void CodeCacheHostTestcase::TearDownOnFuzzerThread(
