@@ -7,28 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// A model representing an item in the accordion.
-@interface GeminiConsentRow : NSObject
-
-// Icon displayed to the left. Always present.
-@property(nonatomic, strong, readonly) UIImage* icon;
-// Title displayed regardless of the collapsed state.
-@property(nonatomic, copy, readonly) NSString* title;
-// Body text that gets shown or hidden based on the collapsed state.
-@property(nonatomic, copy, readonly) NSAttributedString* body;
-// Whether the current item is collapsed and its body is visible.
-@property(nonatomic, assign) BOOL collapsed;
-
-- (instancetype)initWithIcon:(UIImage*)icon
-                       title:(NSString*)title
-                        body:(NSAttributedString*)body
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-@end
-
 @class GeminiConsentAccordionView;
+@class GeminiConsentRow;
 
 // Delegate protocol to handle user interactions in the accordion view.
 @protocol GeminiConsentAccordionViewDelegate <NSObject>

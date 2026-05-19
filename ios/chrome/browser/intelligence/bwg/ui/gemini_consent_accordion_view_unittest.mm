@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_accordion_view.h"
 
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

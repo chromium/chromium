@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_accordion_view.h"
 
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -42,26 +43,6 @@ const NSTimeInterval kAnimationDuration = 0.3;
 - (void)didTapLink:(NSURL*)url;
 // Handle row tap that toggles between collapsed/expanded states.
 - (void)didToggleRow:(GeminiConsentRow*)row;
-
-@end
-
-#pragma mark - GeminiConsentRow
-
-@implementation GeminiConsentRow
-
-// Initializes the row data model, defaulting to a collapsed state.
-- (instancetype)initWithIcon:(UIImage*)icon
-                       title:(NSString*)title
-                        body:(NSAttributedString*)body {
-  self = [super init];
-  if (self) {
-    _icon = icon;
-    _title = [title copy];
-    _body = [body copy];
-    _collapsed = YES;
-  }
-  return self;
-}
 
 @end
 

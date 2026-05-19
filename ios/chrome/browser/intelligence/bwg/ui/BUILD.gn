@@ -6,6 +6,8 @@ source_set("ui") {
   sources = [
     "gemini_consent_accordion_view.h",
     "gemini_consent_accordion_view.mm",
+    "gemini_consent_configuration.h",
+    "gemini_consent_configuration.mm",
     "gemini_consent_mutator.h",
     "gemini_consent_view_controller.h",
     "gemini_consent_view_controller.mm",
