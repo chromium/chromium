@@ -959,10 +959,6 @@ BASE_DECLARE_FEATURE(kDisableFeedbackForIneligibleUsers);
 // Returns true if the DisableFeedbackForIneligibleUsers feature is enabled.
 bool IsDisableFeedbackForIneligibleUsersEnabled();
 
-// Returns true if the DisableFeedbackForIneligibleUsers feature is enabled.
-// DEPRECATED.
-bool IsDisableU18FeedbackIosEnabled();
-
 // Enables the FullscreenRefactoring feature.
 BASE_DECLARE_FEATURE(kFullscreenRefactoring);
 

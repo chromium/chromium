@@ -1180,10 +1180,6 @@ bool IsDisableFeedbackForIneligibleUsersEnabled() {
   return base::FeatureList::IsEnabled(kDisableFeedbackForIneligibleUsers);
 }
 
-bool IsDisableU18FeedbackIosEnabled() {
-  return IsDisableFeedbackForIneligibleUsersEnabled();
-}
-
 BASE_FEATURE(kFullscreenRefactoring, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsFullscreenRefactoringEnabled() {
