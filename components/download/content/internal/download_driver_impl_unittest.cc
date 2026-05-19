@@ -155,11 +155,13 @@ TEST_F(DownloadDriverImplTest, DownloadItemUpdateEvents) {
       .RetiresOnSaturation();
   static_cast<AllDownloadEventNotifier::Observer*>(driver_.get())
       ->OnDownloadUpdated(&coordinator_, &fake_item);
+  task_runner_->RunUntilIdle();
 
   // Nothing happens for cancelled state.
   fake_item.SetState(DownloadState::CANCELLED);
   static_cast<AllDownloadEventNotifier::Observer*>(driver_.get())
       ->OnDownloadUpdated(&coordinator_, &fake_item);
+  task_runner_->RunUntilIdle();
 
   fake_item.SetReceivedBytes(1024);
   fake_item.SetState(DownloadState::COMPLETE);
@@ -170,6 +172,7 @@ TEST_F(DownloadDriverImplTest, DownloadItemUpdateEvents) {
       .RetiresOnSaturation();
   static_cast<AllDownloadEventNotifier::Observer*>(driver_.get())
       ->OnDownloadUpdated(&coordinator_, &fake_item);
+  task_runner_->RunUntilIdle();
 
   fake_item.SetState(DownloadState::INTERRUPTED);
   fake_item.SetLastReason(
@@ -181,6 +184,7 @@ TEST_F(DownloadDriverImplTest, DownloadItemUpdateEvents) {
       .RetiresOnSaturation();
   static_cast<AllDownloadEventNotifier::Observer*>(driver_.get())
       ->OnDownloadUpdated(&coordinator_, &fake_item);
+  task_runner_->RunUntilIdle();
 }
 
 TEST_F(DownloadDriverImplTest, TestGetActiveDownloadsCall) {

@@ -71,6 +71,11 @@ class DownloadDriverImpl : public DownloadDriver,
   void OnDownloadRemoved(SimpleDownloadManagerCoordinator* coordinator,
                          download::DownloadItem* item) override;
 
+  void NotifyClientOfUpdatedState(const DriverEntry& entry,
+                                  download::DownloadItem::DownloadState state,
+                                  download::DownloadInterruptReason reason);
+  void NotifyClientOfCreatedState(const DriverEntry& entry);
+
   void OnUploadProgress(const std::string& guid, uint64_t bytes_uploaded);
 
   void OnHardRecoverComplete(bool success);
