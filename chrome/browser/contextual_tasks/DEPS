@@ -7,6 +7,7 @@ include_rules = [
 
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/sync/data_type_store_service_factory.h",
+  "+chrome/browser/ui/webui",
 
    # No files in this directory can use TabStripModel. This ensures
    # platform-agnosticism for Android support.

@@ -506,6 +506,7 @@ static_library("ui") {
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/accessibility:impl",
     "//chrome/browser/ui/webui/bluetooth_internals",
+    "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/undo",
     "//chrome/browser/updates/announcement_notification",
@@ -1023,7 +1024,6 @@ static_library("ui") {
       "//chrome/browser/search/background",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/webui:webui_util",
-      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//components/themes",
     ]
   }
@@ -5311,7 +5311,8 @@ static_library("ui") {
     ]
   }
 
-  if (enable_extensions_core || enable_webui_ntp) {
+  if (enable_extensions_core || enable_webui_ntp ||
+      enable_webui_contextual_tasks_composebox) {
     sources += [
       "webui/favicon_source.cc",
       "webui/favicon_source.h",

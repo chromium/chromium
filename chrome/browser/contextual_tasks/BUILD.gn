@@ -8,6 +8,7 @@ import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//ui/webui/webui_features.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -353,11 +354,13 @@ source_set("ui_impl") {
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//components/application_locale_storage",
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public:feature_list",
     "//components/embedder_support:user_agent",
+    "//components/favicon_base",
     "//components/keyed_service/core",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",

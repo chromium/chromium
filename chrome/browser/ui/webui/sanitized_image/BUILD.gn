@@ -5,8 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(!is_android || enable_webui_ntp)
-
 source_set("sanitized_image_source") {
   sources = [
     "sanitized_image_source.cc",
