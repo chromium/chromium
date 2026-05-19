@@ -1668,6 +1668,17 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   if (!bwi) {
                     return;
                   }
+
+                  // Close the IPH if the user clicks the "Autofill payment"
+                  // chip displayed on the omnibox.
+                  if (auto* user_education =
+                          BrowserUserEducationInterface::From(bwi)) {
+                    user_education->NotifyFeaturePromoFeatureUsed(
+                        feature_engagement::
+                            kIPHAutofillOmniboxPaymentChipFeature,
+                        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+                  }
+
                   auto* tab = bwi->GetActiveTabInterface();
                   if (!tab) {
                     return;

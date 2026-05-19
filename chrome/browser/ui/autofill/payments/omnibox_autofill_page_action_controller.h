@@ -41,6 +41,8 @@ class OmniboxAutofillPageActionController {
   void Hide();
 
  private:
+  const raw_ref<tabs::TabInterface> tab_interface_;
+
   const raw_ref<page_actions::PageActionController> page_action_controller_;
 
   ui::ScopedUnownedUserData<OmniboxAutofillPageActionController>

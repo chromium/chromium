@@ -563,6 +563,19 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered when the user copy-pasted info from another tab "
               "within a specific time window.")));
 
+  // kIPHAutofillOmniboxPaymentChipFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillOmniboxPaymentChipFeature,
+          kAutofillPaymentIconElementId,
+          IDS_AUTOFILL_IPH_OMNIBOX_PAYMENT_CHIP_LABEL,
+          IDS_AUTOFILL_IPH_OMNIBOX_PAYMENT_CHIP_LABEL_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(150, "ferny@google.com",
+                       "Triggered when the Autofill payment omnibox chip "
+                       "is shown.")));
+
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForLegacyPromo(

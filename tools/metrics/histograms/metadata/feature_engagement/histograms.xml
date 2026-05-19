@@ -110,6 +110,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillHomeWorkProfileSuggestion"
       summary="message shown along with the home and work profile suggestion
                option in the Autofill dropdown"/>
+  <variant name="IPH_AutofillOmniboxPaymentChip"
+      summary="the Autofill payment omnibox page action chip"/>
   <variant name="IPH_AutofillVirtualCardCVCSuggestion"
       summary="message shown to users that have saved a virtual card on an
                online merchant website to educate users on how to fill in

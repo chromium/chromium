@@ -1784,5 +1784,11 @@
   <message name="IDS_AUTOFILL_PAYMENT_TEXT" desc="Text for the 'Autofill payment' chip displayed on the omnibox.">
     Autofill payment
   </message>
+  <message name="IDS_AUTOFILL_IPH_OMNIBOX_PAYMENT_CHIP_LABEL" desc="Text shown in the IPH bubble for the Autofill payment omnibox page action chip.">
+    Autofill using a saved payment method
+  </message>
+  <message name="IDS_AUTOFILL_IPH_OMNIBOX_PAYMENT_CHIP_LABEL_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for the Autofill payment omnibox page action chip.">
+    To autofill using a saved payment method, select the Autofill payment button.
+  </message>
 
 </grit-part>

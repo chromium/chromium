@@ -266,6 +266,8 @@ should be able to be added at any place in this file.
       summary="For AutofillExternalAccountProfileSuggestion feature."/>
   <variant name="_AutofillHomeWorkProfileSuggestion"
       summary="For AutofillHomeWorkProfileSuggestion feature."/>
+  <variant name="_AutofillOmniboxPaymentChip"
+      summary="For Autofill payment omnibox page action chip."/>
   <variant name="_AutofillVirtualCardCVCSuggestion"
       summary="For autofill suggestion of virtual cards."/>
   <variant name="_AutofillVirtualCardSuggestion"
