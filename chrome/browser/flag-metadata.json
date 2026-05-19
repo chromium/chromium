@@ -6500,7 +6500,7 @@
   {
     "name": "metrickit-non-crash-reports",
     "owners": [ "olivierrobin@chromium.org", "justincohen@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 173
   },
   {
     "name": "microphone-mute-switch-device",
