@@ -418,8 +418,10 @@ void FFmpegAudioDecoder::ResetTimestampState(const AudioDecoderConfig& config) {
   // Opus codec delay is handled by ffmpeg.
   const int codec_delay =
       config.codec() == AudioCodec::kOpus ? 0 : config.codec_delay();
+  // TODO(crbug.com/498560799): Remove delayed discard functionality now that
+  // it's no loner used.
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config.samples_per_second(), codec_delay);
+      config.samples_per_second(), codec_delay, /*delayed_discard=*/false);
   discard_helper_->Reset(codec_delay);
 }
 

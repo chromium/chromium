@@ -424,7 +424,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
   }
 
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      input_format.mSampleRate, config.codec_delay());
+      input_format.mSampleRate, config.codec_delay(), false);
   discard_helper_->Reset(config.codec_delay());
 
   // Create staging structures we'll give to macOS for writing data into.

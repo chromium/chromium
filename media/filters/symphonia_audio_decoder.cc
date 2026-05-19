@@ -602,7 +602,8 @@ void SymphoniaAudioDecoder::ResetTimestampState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config.samples_per_second(), config.codec_delay());
+      config.samples_per_second(), config.codec_delay(),
+      /*delayed_discard=*/false);
   discard_helper_->Reset(config.codec_delay());
 }
 
