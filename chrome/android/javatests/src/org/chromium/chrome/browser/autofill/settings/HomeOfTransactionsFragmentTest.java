@@ -45,6 +45,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -459,6 +460,7 @@ public class HomeOfTransactionsFragmentTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/514727834")
     @SmallTest
     @EnableFeatures({
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
@@ -484,6 +486,7 @@ public class HomeOfTransactionsFragmentTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/514727834")
     @SmallTest
     @EnableFeatures({
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
