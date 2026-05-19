@@ -1117,4 +1117,28 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, MAYBE_ReceiveCallback) {
   EXPECT_FALSE(checker.stats().has_interned_log_messages);
 }
 
+// This tests that browser shutdown with an active scenario and trigger rules
+// (which register with TracingAgentObserverManager) does not crash.
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       ShutdownWithActiveScenario) {
+  TestBackgroundTracingHelper background_tracing_helper;
+  constexpr const char kScenarioConfig[] = R"pb(
+    scenarios: {
+      scenario_name: "test_scenario"
+      start_rules: { manual_trigger_name: "start_trigger" }
+      upload_rules: { histogram: { histogram_name: "fake" min_value: 1 } }
+      trace_config: {
+        data_sources: { config: { name: "org.chromium.trace_metadata2" } }
+      }
+    }
+  )pb";
+  tracing::BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
+      ParseFieldTracingConfigFromText(kScenarioConfig),
+      tracing::BackgroundTracingManager::NO_DATA_FILTERING, false, 0);
+
+  background_tracing_helper.ExpectOnScenarioActive("test_scenario");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  background_tracing_helper.WaitForTraceStarted();
+}
+
 }  // namespace content

@@ -67,6 +67,7 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl(
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   DCHECK_EQ(this, g_background_tracing_manager_impl);
   g_background_tracing_manager_impl = nullptr;
+  DisableScenarios();
   TracingAgentObserverManager::SetInstance(nullptr);
 }
 
