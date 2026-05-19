@@ -51,6 +51,9 @@ void TranslatePDFMetricLogger::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (!navigation_context->IsSameDocument()) {
+    bool is_first_navigation = is_first_navigation_;
+    is_first_navigation_ = false;
+
     if (web_state_->GetContentsMimeType() != kPDFMimeType) {
       return;
     }
@@ -58,8 +61,15 @@ void TranslatePDFMetricLogger::DidFinishNavigation(
     if (was_translated_at_navigation_start_) {
       was_source_translated = true;
     } else if (delegate_) {
-      was_source_translated =
-          delegate_->IsOpenerTabTranslatedForWebState(web_state_);
+      ui::PageTransition transition = navigation_context->GetPageTransition();
+      bool is_reload =
+          ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD);
+      bool is_back_forward =
+          (transition & ui::PAGE_TRANSITION_FORWARD_BACK) != 0;
+      if (is_first_navigation && !is_reload && !is_back_forward) {
+        was_source_translated =
+            delegate_->IsOpenerTabTranslatedForWebState(web_state_);
+      }
     }
     base::UmaHistogramBoolean("Translate.IOS.PDF.OpenedFromTranslatedPage",
                               was_source_translated);

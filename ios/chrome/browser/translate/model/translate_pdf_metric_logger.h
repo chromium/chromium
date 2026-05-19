@@ -44,6 +44,7 @@ class TranslatePDFMetricLogger
       web_state_observation_{this};
   raw_ptr<TranslatePDFDelegate> delegate_ = nullptr;
   bool was_translated_at_navigation_start_ = false;
+  bool is_first_navigation_ = true;
 };
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_PDF_METRIC_LOGGER_H_
