@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -33,6 +32,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -102,13 +101,14 @@ public class SigninPromoMediatorTest {
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         lenient().doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
-        lenient().doReturn(true).when(mPromoDelegate).canShowPromo();
     }
 
     @Test
     public void testSecondaryButtonHiddenByDelegate() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
         doReturn(true).when(mPromoDelegate).shouldHideSecondaryButton();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
         createSigninPromoMediator(mPromoDelegate);
 
@@ -119,6 +119,8 @@ public class SigninPromoMediatorTest {
 
     @Test
     public void testSecondaryButtonHiddenByNullProfileData() {
+        doReturn(true).when(mPromoDelegate).canShowPromo();
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
         createSigninPromoMediator(mPromoDelegate);
 
         boolean isSecondaryButtonHidden =
@@ -129,7 +131,6 @@ public class SigninPromoMediatorTest {
     @Test
     public void testSecondaryButtonShown_visibleAccountFromIdentityManager() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(false).when(mPromoDelegate).shouldHideSecondaryButton();
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
         createSigninPromoMediator(mPromoDelegate);
 
@@ -140,7 +141,6 @@ public class SigninPromoMediatorTest {
 
     @Test
     public void testSecondaryButtonShown_visibleAccountFromAccountManager() {
-        doReturn(false).when(mPromoDelegate).shouldHideSecondaryButton();
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         createSigninPromoMediator(mPromoDelegate);
 
@@ -151,18 +151,27 @@ public class SigninPromoMediatorTest {
 
     @Test
     public void testDefaultAccountRemoved() {
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         createSigninPromoMediator(mPromoDelegate);
-        verify(mProfileDataCache, atLeastOnce()).getById(TestAccounts.ACCOUNT1.getId());
+        assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
+                mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mProfileDataCache).getById(TestAccounts.ACCOUNT2.getId());
+        assertEquals(
+                TestAccounts.ACCOUNT2.getEmail(),
+                mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
     }
 
     @Test
     public void testDelegateUpdated_defaultAccountRemoved() {
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createSigninPromoMediator(mPromoDelegate);
 
@@ -179,6 +188,7 @@ public class SigninPromoMediatorTest {
         doReturn(newSecondaryButtonText).when(mPromoDelegate).getTextForSecondaryButton();
         // Remove the default account to trigger a promo content refresh.
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify that the promo's model uses the new values returned by the delegate.
         boolean shouldHideDismissButton =
@@ -204,6 +214,7 @@ public class SigninPromoMediatorTest {
     })
     public void testModelValuesNtp_noAccountsOnDevice() {
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
+        when(mSigninManager.didAccountsFetchSucceed()).thenReturn(true);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         NtpSigninPromoDelegate delegate =
                 new NtpSigninPromoDelegate(
@@ -237,6 +248,7 @@ public class SigninPromoMediatorTest {
     public void testModelValuesNtp_accountAvailableOnDevice() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
+        when(mSigninManager.didAccountsFetchSucceed()).thenReturn(true);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         NtpSigninPromoDelegate delegate =
                 new NtpSigninPromoDelegate(
@@ -293,6 +305,7 @@ public class SigninPromoMediatorTest {
     public void testHideDismissButtonInLoadingState_Ntp() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
+        when(mSigninManager.didAccountsFetchSucceed()).thenReturn(true);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         NtpSigninPromoDelegate delegate =
                 new NtpSigninPromoDelegate(
@@ -340,6 +353,7 @@ public class SigninPromoMediatorTest {
     public void testHideDismissButtonInLoadingState_RecentTabs() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
+        when(mSigninManager.didAccountsFetchSucceed()).thenReturn(true);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         RecentTabsSigninPromoDelegate delegate =
                 new RecentTabsSigninPromoDelegate(
@@ -382,8 +396,8 @@ public class SigninPromoMediatorTest {
         mMediator =
                 new SigninPromoMediator(
                         mIdentityManager,
+                        mSigninManager,
                         mSyncService,
-                        AccountManagerFacadeProvider.getInstance(),
                         mProfileDataCache,
                         delegate,
                         mMediatorDelegate);

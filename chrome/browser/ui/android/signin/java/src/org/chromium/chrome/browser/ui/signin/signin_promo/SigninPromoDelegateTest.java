@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -166,7 +166,9 @@ public class SigninPromoDelegateTest {
     public void testBookmarkAccountSettingsPromoShown_hasPrimaryAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
-        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(mDelegate.getTitle(), mContext.getString(R.string.sync_promo_title_bookmarks));
@@ -183,7 +185,9 @@ public class SigninPromoDelegateTest {
         doReturn(true).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.READING_LIST);
         doReturn(false).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
         doReturn(Set.of(UserSelectableType.BOOKMARKS)).when(mSyncService).getSelectedTypes();
-        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertFalse(mDelegate.canShowPromo());
     }
@@ -199,7 +203,9 @@ public class SigninPromoDelegateTest {
                 .isTypeManagedByPolicy(UserSelectableType.READING_LIST);
         doReturn(false).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
         doReturn(Collections.emptySet()).when(mSyncService).getSelectedTypes();
-        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertTrue(mDelegate.canShowPromo());
     }
@@ -208,7 +214,9 @@ public class SigninPromoDelegateTest {
     public void testNtpPromoHidden_hasPrimaryAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
-        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertFalse(mDelegate.canShowPromo());
     }
@@ -304,16 +312,9 @@ public class SigninPromoDelegateTest {
     public void testBookmarkPromoShown_accountAvailableOnDevice() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        DisplayableProfileData profileData =
-                new DisplayableProfileData(
-                        TestAccounts.ACCOUNT1.getId(),
-                        TestAccounts.ACCOUNT1.getEmail(),
-                        mock(Drawable.class),
-                        TestAccounts.ACCOUNT1.getFullName(),
-                        TestAccounts.ACCOUNT1.getGivenName(),
-                        true);
+        DisplayableProfileData profileData = createDisplayableProfileData(TestAccounts.ACCOUNT1);
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, profileData);
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
@@ -343,7 +344,9 @@ public class SigninPromoDelegateTest {
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
-        setupDelegate(SigninAccessPoint.HISTORY_PAGE, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.HISTORY_PAGE,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertTrue(mDelegate.canShowPromo());
     }
@@ -382,7 +385,7 @@ public class SigninPromoDelegateTest {
                         mLauncher,
                         mOnPromoStateChange,
                         /* isCreatedInCct= */ true);
-        mDelegate.refreshPromoState(TestAccounts.ACCOUNT1);
+        mDelegate.refreshPromoState(createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertFalse(mDelegate.canShowPromo());
     }
@@ -419,7 +422,9 @@ public class SigninPromoDelegateTest {
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
                 .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
-        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertTrue(mDelegate.canShowPromo());
     }
@@ -458,7 +463,9 @@ public class SigninPromoDelegateTest {
     public void testNtpPromoHidden_extendedAccountInfoNotAvailable() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertFalse(mDelegate.canShowPromo());
     }
@@ -479,7 +486,8 @@ public class SigninPromoDelegateTest {
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
-        setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.RECENT_TABS, createDisplayableProfileData(TestAccounts.ACCOUNT1));
 
         assertTrue(mDelegate.canShowPromo());
     }
@@ -511,17 +519,10 @@ public class SigninPromoDelegateTest {
     public void testRecentTabsPromoShown_accountAvailableOnDevice() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        DisplayableProfileData profileData =
-                new DisplayableProfileData(
-                        TestAccounts.ACCOUNT1.getId(),
-                        TestAccounts.ACCOUNT1.getEmail(),
-                        new BitmapDrawable(TestAccounts.ACCOUNT1.getAccountImage()),
-                        TestAccounts.ACCOUNT1.getFullName(),
-                        TestAccounts.ACCOUNT1.getGivenName(),
-                        true);
+        DisplayableProfileData profileData = createDisplayableProfileData(TestAccounts.ACCOUNT1);
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
+        setupDelegate(SigninAccessPoint.RECENT_TABS, profileData);
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
@@ -544,11 +545,12 @@ public class SigninPromoDelegateTest {
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
+        DisplayableProfileData profileData = createDisplayableProfileData(TestAccounts.ACCOUNT1);
+        setupDelegate(SigninAccessPoint.RECENT_TABS, profileData);
         assertTrue(mDelegate.canShowPromo());
 
         BottomSheetSigninAndHistorySyncConfig config =
-                mDelegate.getConfigForPrimaryButtonClick(TestAccounts.ACCOUNT1);
+                mDelegate.getConfigForPrimaryButtonClick(profileData);
         assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
     }
 
@@ -556,11 +558,12 @@ public class SigninPromoDelegateTest {
     public void testBookmarkPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
+        DisplayableProfileData profileData = createDisplayableProfileData(TestAccounts.ACCOUNT1);
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, profileData);
         assertTrue(mDelegate.canShowPromo());
 
         BottomSheetSigninAndHistorySyncConfig config =
-                mDelegate.getConfigForPrimaryButtonClick(TestAccounts.ACCOUNT1);
+                mDelegate.getConfigForPrimaryButtonClick(profileData);
         assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
     }
 
@@ -571,11 +574,12 @@ public class SigninPromoDelegateTest {
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
                 .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
-        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
+        DisplayableProfileData profileData = createDisplayableProfileData(TestAccounts.ACCOUNT1);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, profileData);
         assertTrue(mDelegate.canShowPromo());
 
         BottomSheetSigninAndHistorySyncConfig config =
-                mDelegate.getConfigForPrimaryButtonClick(TestAccounts.ACCOUNT1);
+                mDelegate.getConfigForPrimaryButtonClick(profileData);
         assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
     }
 
@@ -598,7 +602,9 @@ public class SigninPromoDelegateTest {
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
                 .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
-        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
+        setupDelegate(
+                SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                createDisplayableProfileData(TestAccounts.ACCOUNT1));
         assertTrue(mDelegate.canShowPromo());
 
         BottomSheetSigninAndHistorySyncConfig config = mDelegate.getConfigForSecondaryButtonClick();
@@ -689,13 +695,13 @@ public class SigninPromoDelegateTest {
     }
 
     private void setupDelegate(
-            @SigninAccessPoint int accessPoint, @Nullable CoreAccountInfo visibleAccount) {
+            @SigninAccessPoint int accessPoint, @Nullable DisplayableProfileData visibleAccount) {
         setupDelegate(accessPoint, visibleAccount, /* isSetupListActive= */ false);
     }
 
     private void setupDelegate(
             @SigninAccessPoint int accessPoint,
-            @Nullable CoreAccountInfo visibleAccount,
+            @Nullable DisplayableProfileData visibleAccount,
             boolean isSetupListActive) {
         mDelegate =
                 switch (accessPoint) {
@@ -726,5 +732,18 @@ public class SigninPromoDelegateTest {
                     default -> throw new IllegalArgumentException();
                 };
         mDelegate.refreshPromoState(visibleAccount);
+    }
+
+    private DisplayableProfileData createDisplayableProfileData(@Nullable AccountInfo accountInfo) {
+        if (accountInfo == null) {
+            return null;
+        }
+        return new DisplayableProfileData(
+                accountInfo.getId(),
+                accountInfo.getEmail(),
+                new BitmapDrawable(accountInfo.getAccountImage()),
+                accountInfo.getFullName(),
+                accountInfo.getGivenName(),
+                true);
     }
 }

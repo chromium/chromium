@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -19,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -30,7 +32,6 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -79,15 +80,16 @@ public class SigninPromoCoordinator
         mDelegate = delegate;
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        assumeNonNull(identityManager);
         ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, identityManager);
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        mContext, assertNonNull(identityManager));
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         mMediator =
                 new SigninPromoMediator(
                         identityManager,
+                        assertNonNull(signinManager),
                         syncService,
-                        AccountManagerFacadeProvider.getInstance(),
                         profileDataCache,
                         delegate,
                         this);

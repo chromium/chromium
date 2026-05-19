@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -103,7 +102,7 @@ public abstract class SigninPromoDelegate {
      *     (e.g. title, description, buttons...) for a visible promo, by updating the promo's model
      *     with new values retrieved from the delegate.
      */
-    abstract boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount);
+    abstract boolean refreshPromoState(@Nullable DisplayableProfileData visibleAccount);
 
     /** Returns the background color for the account picker in seamless sign-in layout `compact` */
     abstract @ColorInt int getAccountPickerBackgroundColor();
@@ -201,10 +200,10 @@ public abstract class SigninPromoDelegate {
      * This primary button handler can, for instance, initiate a sign-in flow for signed-out users
      * or enable history and tabs sync for signed-in users, depending on the promo's context.
      *
-     * @param visibleAccount The {@link CoreAccountInfo} of the account displayed in the promo, or
-     *     {@code null} if no account is currently available on the device.
+     * @param visibleAccount The {@link DisplayableProfileData} of the account displayed in the
+     *     promo, or {@code null} if no account is currently available on the device.
      */
-    void onPrimaryButtonClicked(@Nullable CoreAccountInfo visibleAccount) {
+    void onPrimaryButtonClicked(@Nullable DisplayableProfileData visibleAccount) {
         @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
                         mContext,
@@ -257,7 +256,7 @@ public abstract class SigninPromoDelegate {
 
     /** Returns the configuration for the flow started by the secondary button. */
     BottomSheetSigninAndHistorySyncConfig getConfigForPrimaryButtonClick(
-            @Nullable CoreAccountInfo visibleAccount) {
+            @Nullable DisplayableProfileData visibleAccount) {
         return isSeamlessSigninAllowed() && visibleAccount != null
                 ? getConfigForSeamlessSignin(visibleAccount)
                 : getConfigForCollapsedBottomSheet();
@@ -281,9 +280,9 @@ public abstract class SigninPromoDelegate {
     }
 
     private BottomSheetSigninAndHistorySyncConfig getConfigForSeamlessSignin(
-            CoreAccountInfo visibleAccount) {
+            DisplayableProfileData visibleAccount) {
         return getBaseConfigBuilder(WithAccountSigninMode.SEAMLESS_SIGNIN)
-                .useSeamlessWithAccountSignin(visibleAccount.getId())
+                .useSeamlessWithAccountSignin(visibleAccount.getAccountId())
                 .build();
     }
 
