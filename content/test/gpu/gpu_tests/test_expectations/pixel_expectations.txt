@@ -550,6 +550,9 @@ crbug.com/286989320 [ linux amd-0x7340 ] Pixel_MeetEffects_rainbow_wig_and_eyela
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects_NoOverlays [ Slow ]
 
+# Linux AMD flakes
+crbug.com/494242715 [ linux amd-0x7480 ] Pixel_PaintWorkletTransform [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
