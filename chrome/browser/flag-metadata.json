@@ -983,11 +983,11 @@
     "name": "autofill-enable-separate-pix-preference-item",
     "owners": [
       "tushartushar@google.com",
-      "junhuihe@google.com",
-      "joshuatan@google.com",
+      "nicluo@google.com",
+      "siashah@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 149
+    "expiry_milestone": 154
   },
   {
     "name": "autofill-enable-support-for-name-and-email-profile",
