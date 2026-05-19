@@ -2306,14 +2306,6 @@ class CONTENT_EXPORT NavigationRequest
   void StopCommitTimeout();
   void RestartCommitTimeout();
 
-  std::vector<std::string> TakeRemovedRequestHeaders() {
-    return std::move(removed_request_headers_);
-  }
-
-  net::HttpRequestHeaders TakeModifiedRequestHeaders() {
-    return std::move(modified_request_headers_);
-  }
-
   // Returns true if the contents of |common_params_| requires
   // |source_site_instance_| to be set. This is used to ensure that data: and
   // about:blank URLs with valid initiator origins always have
@@ -3017,11 +3009,7 @@ class CONTENT_EXPORT NavigationRequest
   // start, the headers will be applied to the initial network request. When
   // modified during a redirect, the headers will be applied to the redirected
   // request.
-  net::HttpRequestHeaders modified_request_headers_;
-
-  // Set of headers to remove during the redirect phase. This can only be
-  // modified during the redirect phase.
-  std::vector<std::string> removed_request_headers_;
+  network::HttpRequestHeadersUpdateParams headers_update_params_;
 
   // The RenderFrameHost that is being restored from the back/forward cache.
   // This can be null if this navigation is not restoring a page from the
