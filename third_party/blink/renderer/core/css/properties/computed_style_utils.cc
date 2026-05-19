@@ -2124,12 +2124,19 @@ ValueForGridTrackList(GridTrackSizingDirection direction,
   // https://www.w3.org/TR/css-grid-2/#subgrid-listing
   //
   // Interestingly, specifying `subgrid` on a non-grid *will* compute to
-  // `subgrid` syntax.
+  // `subgrid` syntax. A `subgrid` specified on a grid container that cannot
+  // validly subgrid in this direction (e.g., the parent is not a grid, or
+  // the parent is a grid-lanes container and this is the standalone axis)
+  // has a used value of `none` per the spec.
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (is_subgrid || (is_subgrid_specified && !container)) {
-    list->Append(
-        *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kSubgrid));
-  } else if (!is_subgrid_specified && is_track_list_empty) {
+  if (is_subgrid_specified) {
+    if (is_subgrid_valid || !container) {
+      list->Append(
+          *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kSubgrid));
+    } else {
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    }
+  } else if (is_track_list_empty) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
