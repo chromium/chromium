@@ -52,6 +52,7 @@ class IndigoAgent : public content::RenderFrameObserver,
       mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost> host,
       base::OnceClosure done) override;
   void Invoke(base::OnceClosure done) override;
+  void Reset(base::OnceClosure done) override;
 
   chrome::mojom::IndigoAgentHost& GetHost() { return *host_.get(); }
 

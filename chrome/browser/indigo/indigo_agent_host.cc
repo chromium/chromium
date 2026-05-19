@@ -49,7 +49,7 @@ bool IndigoAgentHost::Invoke() {
   }
 
   if (injection_state_ == InjectionState::kInjecting) {
-    pending_invoke_count_++;
+    pending_operations_.push_back(PendingOperation::kInvoke);
     return true;
   }
 
@@ -59,7 +59,7 @@ bool IndigoAgentHost::Invoke() {
   }
 
   injection_state_ = InjectionState::kInjecting;
-  pending_invoke_count_++;
+  pending_operations_.push_back(PendingOperation::kInvoke);
 
   GURL script_url = net::FilePathToFileURL(*script_path);
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -70,13 +70,21 @@ bool IndigoAgentHost::Invoke() {
   return true;
 }
 
+void IndigoAgentHost::Reset() {
+  if (injection_state_ == InjectionState::kInjected) {
+    GetAgent().Reset(base::DoNothing());
+  } else if (injection_state_ == InjectionState::kInjecting) {
+    pending_operations_.push_back(PendingOperation::kReset);
+  }
+}
+
 void IndigoAgentHost::OnScriptLoaded(
     const GURL& script_url,
     std::optional<std::string> script_content) {
   if (!script_content.has_value()) {
     LOG(ERROR) << "Failed to load Indigo script.";
     injection_state_ = InjectionState::kNotInjected;
-    pending_invoke_count_ = 0;
+    pending_operations_.clear();
     return;
   }
 
@@ -85,10 +93,17 @@ void IndigoAgentHost::OnScriptLoaded(
                           base::DoNothing());
 
   injection_state_ = InjectionState::kInjected;
-  while (pending_invoke_count_ > 0) {
-    GetAgent().Invoke(base::DoNothing());
-    pending_invoke_count_--;
+  for (const auto& op : pending_operations_) {
+    switch (op) {
+      case PendingOperation::kInvoke:
+        GetAgent().Invoke(base::DoNothing());
+        break;
+      case PendingOperation::kReset:
+        GetAgent().Reset(base::DoNothing());
+        break;
+    }
   }
+  pending_operations_.clear();
 }
 
 void IndigoAgentHost::StartImageReplacement(

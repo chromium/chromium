@@ -243,6 +243,10 @@ void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
   }
   content::WebContents* web_contents = tab().GetContents();
   if (web_contents) {
+    auto* host = IndigoAgentHost::GetForPage(web_contents->GetPrimaryPage());
+    if (host) {
+      host->Reset();
+    }
     auto* manager = IndigoImageReplacementManager::GetForPage(
         web_contents->GetPrimaryPage());
     if (manager) {

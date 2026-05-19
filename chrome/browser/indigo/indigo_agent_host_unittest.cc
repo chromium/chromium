@@ -17,6 +17,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/page.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,6 +49,7 @@ class MockIndigoAgent : public chrome::mojom::IndigoAgent {
                InjectScriptCallback),
               (override));
   MOCK_METHOD(void, Invoke, (InvokeCallback), (override));
+  MOCK_METHOD(void, Reset, (ResetCallback), (override));
 
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
     receivers_.Add(this,
@@ -156,6 +158,50 @@ TEST_F(IndigoAgentHostTest, MultipleInvokesDuringInjectionAreQueued) {
 
   // Wait for both Invoke calls to finish.
   EXPECT_TRUE(invokes_future.Wait());
+}
+
+TEST_F(IndigoAgentHostTest, ResetDuringInjectionIsQueued) {
+  SetIndigoScriptSwitch(script_path_);
+  NavigateAndCommit(GURL("https://example.com"));
+  OverrideAgentBinder();
+  content::Page& page = main_rfh()->GetPage();
+  IndigoAgentHost* host = IndigoAgentHost::GetOrCreateForPage(page);
+
+  chrome::mojom::IndigoAgent::InjectScriptCallback saved_inject_callback;
+  base::test::TestFuture<void> inject_called_future;
+  EXPECT_CALL(mock_agent_, InjectScript(_, _, _, _, _))
+      .WillOnce(
+          [&](const std::string&, const GURL&, const url::Origin&,
+              mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost>,
+              chrome::mojom::IndigoAgent::InjectScriptCallback callback) {
+            saved_inject_callback = std::move(callback);
+            inject_called_future.SetValue();
+          });
+
+  base::test::TestFuture<void> reset_future;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(mock_agent_, Invoke(_)).WillOnce(RunOnceCallback<0>());
+    EXPECT_CALL(mock_agent_, Reset(_))
+        .WillOnce([&](chrome::mojom::IndigoAgent::ResetCallback callback) {
+          std::move(callback).Run();
+          reset_future.SetValue();
+        });
+  }
+
+  // First invoke starts injection.
+  EXPECT_TRUE(host->Invoke());
+  // Reset should be queued.
+  host->Reset();
+
+  // Wait for script loading to happen and InjectScript to be called.
+  EXPECT_TRUE(inject_called_future.Wait());
+
+  ASSERT_TRUE(saved_inject_callback);
+  std::move(saved_inject_callback).Run();
+
+  // Wait for Reset call to finish.
+  EXPECT_TRUE(reset_future.Wait());
 }
 
 TEST_F(IndigoAgentHostTest, StateIsClearedOnCrossDocumentNavigation) {

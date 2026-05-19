@@ -184,6 +184,46 @@ TEST_F(IndigoAgentBrowserTest, SetupAndInvoke) {
   EXPECT_EQ(2, EvaluateAs<int32_t>("window.invoked_count"));
 }
 
+TEST_F(IndigoAgentBrowserTest, InvokeResetInvoke) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  // Inject a script that sets up the indigo agent.
+  const std::string kScript = R"(
+    window.invoked_count = 0;
+    window.reset_count = 0;
+    window.indigo.setup({
+      invoke: function() {
+        window.invoked_count++;
+      },
+      reset: function() {
+        window.reset_count++;
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> done;
+  remote->Invoke(done.GetCallback());
+  ASSERT_TRUE(done.Wait());
+  EXPECT_EQ(1, EvaluateAs<int32_t>("window.invoked_count"));
+
+  done.Clear();
+  remote->Reset(done.GetCallback());
+  ASSERT_TRUE(done.Wait());
+  EXPECT_EQ(1, EvaluateAs<int32_t>("window.reset_count"));
+
+  done.Clear();
+  remote->Invoke(done.GetCallback());
+  ASSERT_TRUE(done.Wait());
+  EXPECT_EQ(2, EvaluateAs<int32_t>("window.invoked_count"));
+}
+
 TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithNullThrows) {
   mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
 
