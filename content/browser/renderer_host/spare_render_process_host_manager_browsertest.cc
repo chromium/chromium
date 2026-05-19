@@ -21,6 +21,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/public/test/test_utils.h"
@@ -1194,5 +1195,97 @@ IN_PROC_BROWSER_TEST_F(LowMemoryExtraSpareRenderProcessHostManagerTest,
   // ready.
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
 }
+
+struct MemoryPressureTestParams {
+  bool enable_multiple_spares;
+  bool keep_one_alive;
+  size_t expected_spares_after_pressure;
+};
+
+class SpareRenderProcessHostManagerMemoryPressureParamTest
+    : public SpareRenderProcessHostManagerTest,
+      public testing::WithParamInterface<MemoryPressureTestParams> {
+ public:
+  SpareRenderProcessHostManagerMemoryPressureParamTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back({kKillSpareRenderOnMemoryPressure, {}});
+
+    if (GetParam().keep_one_alive) {
+      enabled_features.push_back({kSpareRPHKeepOneAliveOnMemoryPressure, {}});
+    } else {
+      disabled_features.push_back(kSpareRPHKeepOneAliveOnMemoryPressure);
+    }
+
+    if (GetParam().enable_multiple_spares) {
+      enabled_features.push_back(
+          {features::kMultipleSpareRPHs,
+           {{features::kMultipleSpareRPHsCount.name, "2"}}});
+      memory_override_.emplace(base::GiBU(8));
+    } else {
+      disabled_features.push_back(features::kMultipleSpareRPHs);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+
+  void WaitForNextSpareReady() {
+    auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+    auto& spares = spare_manager.GetSpares();
+    ASSERT_FALSE(spares.empty());
+    RenderProcessHost* next_spare_rph = spares.back();
+    ASSERT_FALSE(next_spare_rph->IsReady());
+
+    RenderProcessHostWatcher watcher(
+        next_spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+    watcher.Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Simulates sufficient physical memory (8GB) to allow extra spares
+  // allocation.
+  std::optional<base::test::ScopedAmountOfPhysicalMemoryOverride>
+      memory_override_;
+};
+
+// Verifies that memory pressure destroys spare renderers based on parameters.
+IN_PROC_BROWSER_TEST_P(SpareRenderProcessHostManagerMemoryPressureParamTest,
+                       PressureResponse) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  spare_manager.WarmupSpare(browser_context());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+
+  if (GetParam().enable_multiple_spares) {
+    WaitForNextSpareReady();
+    ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
+    WaitForNextSpareReady();
+  }
+
+  // Trigger memory pressure (moderate pressure -> 50% limit).
+  content::test::ScopedMemoryLimitOverride memory_override(
+      "SpareRenderProcessHostManagerImpl");
+  memory_override.SetLimit(50);
+  memory_override.NotifyReleaseMemory();
+
+  EXPECT_EQ(spare_manager.GetSpares().size(),
+            GetParam().expected_spares_after_pressure);
+  if (GetParam().expected_spares_after_pressure > 0) {
+    EXPECT_TRUE(spare_manager.GetSpares()[0]->IsReady());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SpareRenderProcessHostManagerMemoryPressureParamTest,
+    testing::Values(
+        MemoryPressureTestParams{/*enable_multiple_spares=*/false,
+                                 /*keep_one_alive=*/false,
+                                 /*expected_spares_after_pressure=*/0u},
+        MemoryPressureTestParams{/*enable_multiple_spares=*/true,
+                                 /*keep_one_alive=*/true,
+                                 /*expected_spares_after_pressure=*/1u}));
 
 }  // namespace content

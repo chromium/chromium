@@ -7,9 +7,10 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -69,11 +70,14 @@ enum class NoSpareRendererReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kKillSpareRenderOnMemoryPressure);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure);
+
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
       public RenderProcessHostObserver,
       public performance_scenarios::PerformanceScenarioObserver,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
  public:
   SpareRenderProcessHostManagerImpl();
   ~SpareRenderProcessHostManagerImpl() override;
@@ -191,8 +195,9 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   bool DestroyTimerWillFireBefore(base::TimeDelta timeout);
 
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   // Returns true if an extra spare should be created.
   bool ShouldCreateExtraSpare() const;
@@ -221,8 +226,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   DoesEmbedderAllowSpareUsage(BrowserContext* browser_context,
                               SiteInstanceImpl* site_instance);
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   // The clients who want to know when the spare render process host has
   // changed.
