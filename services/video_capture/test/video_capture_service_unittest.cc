@@ -211,7 +211,6 @@ TEST_F(VideoCaptureServiceTest, CreateDeviceSuccessForVirtualDevice) {
       create_push_subscription_remote_callback;
 
   EXPECT_CALL(create_push_subscription_remote_callback, Run)
-      .Times(1)
       .WillOnce(
           [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,
                        const media::VideoCaptureParams& param) {
@@ -229,6 +228,181 @@ TEST_F(VideoCaptureServiceTest, CreateDeviceSuccessForVirtualDevice) {
       create_push_subscription_remote_callback.Get());
 
   wait_loop.Run();
+}
+
+// Tests that a virtual device cannot be added with the same ID as an active
+// physical device.
+TEST_F(VideoCaptureServiceTest,
+       CannotAddVirtualDeviceWhilePhysicalDeviceActive) {
+  // Retrieve the active physical devices.
+  base::RunLoop get_infos_loop;
+  std::vector<media::VideoCaptureDeviceInfo> physical_devices;
+  EXPECT_CALL(device_info_receiver_, Run)
+      .WillOnce([&get_infos_loop, &physical_devices](
+                    GetSourceInfosResult result,
+                    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        physical_devices = infos;
+        get_infos_loop.Quit();
+      });
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  get_infos_loop.Run();
+  const std::string physical_device_id =
+      physical_devices[0].descriptor.device_id;
+
+  // Start the physical device by creating a subscription.
+  mojo::Remote<mojom::VideoSource> video_source_remote;
+  video_source_provider_->GetVideoSource(
+      physical_device_id, video_source_remote.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber;
+  MockVideoFrameHandler mock_video_frame_handler(
+      subscriber.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+
+  base::RunLoop start_device_loop;
+  base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
+      create_push_subscription_callback;
+  EXPECT_CALL(create_push_subscription_callback, Run)
+      .WillOnce([&start_device_loop](
+                    mojom::CreatePushSubscriptionResultCodePtr result_code,
+                    const media::VideoCaptureParams& param) {
+        start_device_loop.Quit();
+      });
+
+  video_source_remote->CreatePushSubscription(
+      std::move(subscriber), requestable_settings_,
+      /*force_reopen_with_new_settings=*/false,
+      subscription.BindNewPipeAndPassReceiver(),
+      create_push_subscription_callback.Get());
+  start_device_loop.Run();
+
+  // Attempt to add a virtual device with the same ID.
+  auto virtual_device_context =
+      AddSharedMemoryVirtualDevice(physical_device_id);
+
+  // Verify that the virtual device is rejected and its pipe is disconnected.
+  base::RunLoop disconnect_loop;
+  virtual_device_context->device.set_disconnect_handler(
+      disconnect_loop.QuitClosure());
+  disconnect_loop.Run();
+
+  EXPECT_FALSE(virtual_device_context->device.is_connected());
+
+  // Verify that GetSourceInfos() returns ONLY 1 entry for the device ID
+  // (registration failed).
+  base::RunLoop verify_infos_loop;
+  EXPECT_CALL(device_info_receiver_, Run)
+      .WillOnce([&verify_infos_loop, physical_device_id](
+                    GetSourceInfosResult result,
+                    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        size_t occurrences = 0;
+        for (const auto& info : infos) {
+          if (info.descriptor.device_id == physical_device_id) {
+            occurrences++;
+          }
+        }
+        EXPECT_EQ(1u, occurrences);
+        verify_infos_loop.Quit();
+      });
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  verify_infos_loop.Run();
+
+  // Cleanup
+  subscription.reset();
+  video_source_remote.reset();
+  base::RunLoop cleanup_loop;
+  video_source_provider_->GetSourceInfos(base::BindOnce(
+      [](base::RunLoop* run_loop, GetSourceInfosResult result,
+         const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        run_loop->Quit();
+      },
+      &cleanup_loop));
+  cleanup_loop.Run();
+}
+
+// Tests that a virtual device cannot be added with the same ID as an idle
+// physical device.
+TEST_F(VideoCaptureServiceTest, CannotAddVirtualDeviceWhilePhysicalDeviceIdle) {
+  // Retrieve physical device IDs.
+  base::RunLoop get_infos_loop;
+  std::vector<media::VideoCaptureDeviceInfo> physical_devices;
+  EXPECT_CALL(device_info_receiver_, Run)
+      .WillOnce([&get_infos_loop, &physical_devices](
+                    GetSourceInfosResult result,
+                    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        physical_devices = infos;
+        get_infos_loop.Quit();
+      });
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  get_infos_loop.Run();
+  const std::string physical_device_id =
+      physical_devices[0].descriptor.device_id;
+
+  // Add a virtual device with the same ID.
+  auto virtual_device_context =
+      AddSharedMemoryVirtualDevice(physical_device_id);
+
+  // Verify that the virtual device is rejected and its pipe is disconnected.
+  base::RunLoop disconnect_loop;
+  virtual_device_context->device.set_disconnect_handler(
+      disconnect_loop.QuitClosure());
+  disconnect_loop.Run();
+
+  EXPECT_FALSE(virtual_device_context->device.is_connected());
+
+  // Verify that GetSourceInfos() returns ONLY 1 entry for the device ID
+  // (registration failed).
+  base::RunLoop verify_infos_loop;
+  EXPECT_CALL(device_info_receiver_, Run)
+      .WillOnce([&verify_infos_loop, physical_device_id](
+                    GetSourceInfosResult result,
+                    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        size_t occurrences = 0;
+        for (const auto& info : infos) {
+          if (info.descriptor.device_id == physical_device_id) {
+            occurrences++;
+          }
+        }
+        EXPECT_EQ(1u, occurrences);
+        verify_infos_loop.Quit();
+      });
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  verify_infos_loop.Run();
+}
+
+// Tests that a texture virtual device cannot be added with the same ID as an
+// idle physical device.
+TEST_F(VideoCaptureServiceTest,
+       CannotAddTextureVirtualDeviceWhilePhysicalDeviceIdle) {
+  // Retrieve physical device IDs.
+  base::RunLoop get_infos_loop;
+  std::vector<media::VideoCaptureDeviceInfo> physical_devices;
+  EXPECT_CALL(device_info_receiver_, Run)
+      .WillOnce([&get_infos_loop, &physical_devices](
+                    GetSourceInfosResult result,
+                    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+        physical_devices = infos;
+        get_infos_loop.Quit();
+      });
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  get_infos_loop.Run();
+
+  ASSERT_FALSE(physical_devices.empty());
+  const std::string physical_device_id =
+      physical_devices[0].descriptor.device_id;
+
+  // Add a texture virtual device with the same ID.
+  auto texture_device = AddTextureVirtualDevice(physical_device_id);
+
+  // Verify that the texture virtual device is rejected and its pipe is
+  // disconnected.
+  mojo::Remote<mojom::TextureVirtualDevice> remote_device(
+      std::move(texture_device));
+  base::RunLoop disconnect_loop;
+  remote_device.set_disconnect_handler(disconnect_loop.QuitClosure());
+  disconnect_loop.Run();
+
+  EXPECT_FALSE(remote_device.is_connected());
 }
 
 }  // namespace video_capture
