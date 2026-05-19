@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -4175,6 +4176,30 @@ TEST_F(StyleResolverTest,
   // "target" ancestor node requires re-computing the base style for the
   // pseudo-element and skip the optimization for animation style change.
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(StyleResolverTest, CustomScrollbarStyleAfterInitialStyleInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::-webkit-scrollbar { width: 12px; }
+      ::-webkit-scrollbar-thumb { background: #888; }
+      ::-webkit-scrollbar-thumb:window-inactive { background: #ccc; }
+      body { height: 200vh; overflow: scroll; }
+    </style>
+    <div>content</div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Invalidate the initial style (simulates what happens during a zoom or
+  // settings change).
+  GetDocument().GetStyleEngine().InvalidateInitialStyle();
+
+  // Trigger a window active state change, which forces custom scrollbars
+  // to be invalidated and then re-resolved.
+  // This should not crash.
+  GetPage().GetFocusController().SetActive(false);
+  GetPage().GetFocusController().SetActive(true);
 }
 
 TEST_F(StyleResolverTestCQ, ContainerUnitContext) {

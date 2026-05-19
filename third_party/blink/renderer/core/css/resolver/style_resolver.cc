@@ -2837,14 +2837,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // style and inheritance accounted for. We'll return a cache
     // miss, which will cause the caller to apply all the matched
     // properties on top of it.
-    //
-    // We use a different initial_style for <img> elements to match the
-    // overrides in html.css. This avoids allocation overhead from copy-on-write
-    // when these properties are set only via UA styles. The overhead shows up
-    // on MotionMark, which stress-tests this code. See crbug.com/1369454 for
-    // details.
-    const ComputedStyle& initial_style = *initial_style_;
-    InitStyle(element, style_request, initial_style, state.ParentStyle(),
+    InitStyle(element, style_request, InitialStyle(), state.ParentStyle(),
               state.OriginatingElementStyle(), state);
 
     ExpandInheritedVisitedProperties(state);
@@ -3318,7 +3311,7 @@ void StyleResolver::ExpandInheritedVisitedProperties(
 ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
-  ComputedStyleBuilder builder(*initial_style_, parent_style);
+  ComputedStyleBuilder builder(InitialStyle(), parent_style);
   builder.SetUnicodeBidi(parent_style.GetUnicodeBidi());
   builder.SetBaseTextDecorationData(parent_style.AppliedTextDecorationData());
   builder.SetDisplay(display);
