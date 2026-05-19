@@ -936,7 +936,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     base::HistogramTester histogram_tester;
 
     broker_.model_provider().RemoveModel(
-        proto::OPTIMIZATION_TARGET_TEXT_SAFETY);
+        features::ShouldUseGeneralizedSafetyModel()
+            ? proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY
+            : proto::OPTIMIZATION_TARGET_TEXT_SAFETY);
     EXPECT_TRUE(CreateSession(SessionConfigParams{}));
 
     histogram_tester.ExpectUniqueSample(

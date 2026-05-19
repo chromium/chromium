@@ -172,6 +172,7 @@ FakeSafetyModelAsset::FakeSafetyModelAsset(
   CHECK(base::WriteFile(data_path, on_device_model::FakeTsData()));
   CHECK(base::WriteFile(model_path, on_device_model::FakeTsSpModel()));
   model_info_ = TestModelInfoBuilder()
+                    .SetModelFilePath(data_path)
                     .SetVersion(content.model_info_version)
                     .SetAdditionalFiles({data_path, model_path})
                     .SetModelMetadata(AnyWrapProto(content.metadata))

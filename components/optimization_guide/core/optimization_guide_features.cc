@@ -554,7 +554,7 @@ bool ShouldUseTextSafetyClassifierModel() {
 
 bool ShouldUseGeneralizedSafetyModel() {
   static const base::FeatureParam<bool> kUseGeneralizedSafetyModel{
-      &kTextSafetyClassifier, "use_generalized_safety_model", false};
+      &kTextSafetyClassifier, "use_generalized_safety_model", true};
   return kUseGeneralizedSafetyModel.Get();
 }
 

@@ -62,6 +62,13 @@ class OnDeviceAssetManagerTest : public testing::Test {
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
+  void UpdateSafetyTarget(const ModelInfo& info) {
+    UpdateTarget(features::ShouldUseGeneralizedSafetyModel()
+                     ? proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY
+                     : proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+                 info);
+  }
+
   PrefService* local_state() { return &broker_.local_state(); }
 
   bool IsSupplementalModelRegistered() {
@@ -121,8 +128,7 @@ TEST_F(OnDeviceAssetManagerTest, NotifiesServiceController) {
   InstallBaseModel();
   CreateAssetManager();
   FakeSafetyModelAsset fake_safety(ComposeSafetyConfig());
-  UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
-               fake_safety.model_info());
+  UpdateSafetyTarget(fake_safety.model_info());
   ASSERT_TRUE(broker_.GetOrCreateBrokerState()
                   .base_model_controller()
                   .GetSafetyClientForTesting()
@@ -154,7 +160,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
             .SetVersion(10)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .Build();
-    UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
+    UpdateSafetyTarget(*model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -173,7 +179,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(any)
             .Build();
-    UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
+    UpdateSafetyTarget(*model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -191,7 +197,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
+    UpdateSafetyTarget(*model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -211,7 +217,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
+    UpdateSafetyTarget(*model_info);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
         "OnDeviceTextSafetyModelMetadataValidity",
@@ -231,7 +237,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
+    UpdateSafetyTarget(*model_info);
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution.OnDeviceTextSafetyUpdateSkipped", 1);
   }

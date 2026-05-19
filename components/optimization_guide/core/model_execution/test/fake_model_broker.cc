@@ -90,7 +90,10 @@ void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
 }
 
 void FakeModelBroker::UpdateSafetyModel(const FakeSafetyModelAsset& asset) {
-  UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, asset.model_info());
+  UpdateTarget(features::ShouldUseGeneralizedSafetyModel()
+                   ? proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY
+                   : proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+               asset.model_info());
 }
 
 void FakeModelBroker::UpdateLanguageDetectionModel(
