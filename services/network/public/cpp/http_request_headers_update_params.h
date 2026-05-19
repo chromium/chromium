@@ -37,6 +37,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) HttpRequestHeadersUpdateParams final {
   void Apply(net::HttpRequestHeaders& headers,
              net::HttpRequestHeaders& cors_exempt_headers) const;
 
+  // Merges `other` into `this`, i.e. merging each of the members.
+  // TODO(crbug.com/511306597): This is for migrating the existing behavior and
+  // is NOT composition: for given `HttpRequestHeadersUpdateParams` `a` and `b`,
+  // `a.MergeFrom(b); a.Apply();` isn't identical to `a.Apply(); b.Apply();`.
+  // Consider migrating this to composition.
+  void MergeFrom(HttpRequestHeadersUpdateParams other);
+
+  void Clear();
+
   std::vector<std::string> removed_headers;
   net::HttpRequestHeaders modified_headers;
   net::HttpRequestHeaders modified_cors_exempt_headers;

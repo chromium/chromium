@@ -61,16 +61,16 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
   }
 
   const std::vector<std::string>& headers_removed_on_redirect() const {
-    return headers_removed_on_redirect_;
+    return headers_update_params_.removed_headers;
   }
 
   const net::HttpRequestHeaders& headers_modified_on_redirect() const {
-    return headers_modified_on_redirect_;
+    return headers_update_params_.modified_headers;
   }
 
   const net::HttpRequestHeaders& cors_exempt_headers_modified_on_redirect()
       const {
-    return cors_exempt_headers_modified_on_redirect_;
+    return headers_update_params_.modified_cors_exempt_headers;
   }
 
   void NotifyClientOnReceiveResponse() {
@@ -133,18 +133,17 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    headers_removed_on_redirect_ = removed_headers;
-    headers_modified_on_redirect_ = modified_headers;
-    cors_exempt_headers_modified_on_redirect_ = modified_cors_exempt_headers;
+    headers_update_params_.removed_headers = removed_headers;
+    headers_update_params_.modified_headers = modified_headers;
+    headers_update_params_.modified_cors_exempt_headers =
+        modified_cors_exempt_headers;
   }
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
 
   size_t create_loader_and_start_called_ = 0;
-  std::vector<std::string> headers_removed_on_redirect_;
-  net::HttpRequestHeaders headers_modified_on_redirect_;
-  net::HttpRequestHeaders cors_exempt_headers_modified_on_redirect_;
+  network::HttpRequestHeadersUpdateParams headers_update_params_;
 
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_{this};
   mojo::Receiver<network::mojom::URLLoader> url_loader_receiver_{this};
@@ -574,7 +573,7 @@ TEST_F(ThrottlingURLLoaderTest,
                 expected_redirected_isolation_info));
       }));
 
-  loader_->FollowRedirect({}, {}, {});
+  loader_->FollowRedirect(/*headers_update_params=*/{});
 
   run_loop.Run();
 }
@@ -822,15 +821,13 @@ TEST_F(ThrottlingURLLoaderTest, ModifyHeadersBeforeRedirect) {
       }));
 
   client_.set_on_received_redirect_callback(base::BindLambdaForTesting([&]() {
-    net::HttpRequestHeaders modified_headers;
-    modified_headers.SetHeader("X-Test-Header-3", "Client Value");
-    modified_headers.SetHeader("X-Test-Header-4", "Bar");
-    net::HttpRequestHeaders modified_cors_exempt_headers;
-    modified_cors_exempt_headers.SetHeader("X-Test-Cors-Exempt-Header-1",
-                                           "Bobble");
-    loader_->FollowRedirect({} /* removed_headers */,
-                            std::move(modified_headers),
-                            std::move(modified_cors_exempt_headers));
+    network::HttpRequestHeadersUpdateParams headers_update_params;
+    headers_update_params.modified_headers.SetHeader("X-Test-Header-3",
+                                                     "Client Value");
+    headers_update_params.modified_headers.SetHeader("X-Test-Header-4", "Bar");
+    headers_update_params.modified_cors_exempt_headers.SetHeader(
+        "X-Test-Cors-Exempt-Header-1", "Bobble");
+    loader_->FollowRedirect(std::move(headers_update_params));
   }));
 
   CreateLoaderAndStart();
@@ -877,7 +874,7 @@ TEST_F(ThrottlingURLLoaderTest, MultipleThrottlesModifyHeadersBeforeRedirect) {
       }));
 
   client_.set_on_received_redirect_callback(base::BindLambdaForTesting(
-      [&]() { loader_->FollowRedirect({}, {}, {}); }));
+      [&]() { loader_->FollowRedirect(/*headers_update_params=*/{}); }));
 
   CreateLoaderAndStart();
   factory_.NotifyClientOnReceiveRedirect();
@@ -1456,13 +1453,8 @@ TEST_F(ThrottlingURLLoaderTest, RestartWithURLReset) {
 
   // Set the client to actually follow redirects to allow URL resetting to
   // occur.
-  client_.set_on_received_redirect_callback(
-      base::BindLambdaForTesting([this]() {
-        net::HttpRequestHeaders modified_headers;
-        loader_->FollowRedirect({} /* removed_headers */,
-                                std::move(modified_headers),
-                                {} /* modified_cors_exempt_headers */);
-      }));
+  client_.set_on_received_redirect_callback(base::BindLambdaForTesting(
+      [this]() { loader_->FollowRedirect(/*headers_update_params=*/{}); }));
 
   CreateLoaderAndStart();
   run_loop1.Run();
@@ -1552,13 +1544,8 @@ TEST_F(ThrottlingURLLoaderTest, MultipleRestartWithURLReset) {
 
   // Set the client to actually follow redirects to allow URL resetting to
   // occur.
-  client_.set_on_received_redirect_callback(
-      base::BindLambdaForTesting([this]() {
-        net::HttpRequestHeaders modified_headers;
-        loader_->FollowRedirect({} /* removed_headers */,
-                                std::move(modified_headers),
-                                {} /* modified_cors_exempt_headers */);
-      }));
+  client_.set_on_received_redirect_callback(base::BindLambdaForTesting(
+      [this]() { loader_->FollowRedirect(/*headers_update_params=*/{}); }));
 
   CreateLoaderAndStart();
   run_loop1.Run();
@@ -1644,13 +1631,8 @@ TEST_F(ThrottlingURLLoaderTest, RestartWithURLResetBeforeWillRedirectRequest) {
 
   // Set the client to actually follow redirects to allow URL resetting to
   // occur.
-  client_.set_on_received_redirect_callback(
-      base::BindLambdaForTesting([this]() {
-        net::HttpRequestHeaders modified_headers;
-        loader_->FollowRedirect({} /* removed_headers */,
-                                std::move(modified_headers),
-                                {} /* modified_cors_exempt_headers */);
-      }));
+  client_.set_on_received_redirect_callback(base::BindLambdaForTesting(
+      [this]() { loader_->FollowRedirect(/*headers_update_params=*/{}); }));
 
   // Restart the request with URL reset when processing
   // BeforeWillRedirectRequest().

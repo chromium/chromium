@@ -20,8 +20,8 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
-#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -197,17 +197,11 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     // used/cleared in `ResourceRequestSender::FollowPendingRedirect()`.
     bool has_pending_redirect = false;
 
-    // The Client Hints headers that need to be removed from a redirect.
-    //
-    // May also include the `Shared-Storage-Writable` header in the case that
-    // permission has been revoked on a redirect.
-    std::vector<std::string> removed_headers
-        ALLOW_DISCOURAGED_TYPE("Matches Chrome net API");
-
-    // Headers that need to be added or updated, e.g. the
-    // `Shared-Storage-Writable` header in the case that permission has been
-    // restored on a redirect.
-    net::HttpRequestHeaders modified_headers;
+    // Headers that need to be added or updated upon the pending redirect.
+    // Used for Client Hints headers, `Shared-Storage-Writable` header in the
+    // case that permission has been restored/revoked on a redirect, while this
+    // comment might be outdated.
+    network::HttpRequestHeadersUpdateParams headers_update_params;
 
     // Used to notify the loading stats.
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>

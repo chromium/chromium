@@ -24,4 +24,26 @@ void HttpRequestHeadersUpdateParams::Apply(
   cors_exempt_headers.MergeFrom(modified_cors_exempt_headers);
 }
 
+void HttpRequestHeadersUpdateParams::MergeFrom(
+    HttpRequestHeadersUpdateParams other) {
+  for (std::string& removed_header : other.removed_headers) {
+    // TODO(crbug.com/511306597): To turn this into composition, we have to do:
+    // ```
+    // modified_headers.RemoveHeader(removed_header);
+    // modified_cors_exempt_headers.RemoveHeader(removed_header);
+    // ```
+    if (!std::ranges::contains(removed_headers, removed_header)) {
+      removed_headers.emplace_back(std::move(removed_header));
+    }
+  }
+  modified_headers.MergeFrom(other.modified_headers);
+  modified_cors_exempt_headers.MergeFrom(other.modified_cors_exempt_headers);
+}
+
+void HttpRequestHeadersUpdateParams::Clear() {
+  removed_headers.clear();
+  modified_headers.Clear();
+  modified_cors_exempt_headers.Clear();
+}
+
 }  // namespace network

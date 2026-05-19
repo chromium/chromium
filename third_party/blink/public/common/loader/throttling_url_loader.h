@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
@@ -150,19 +151,15 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // implementing similar logic to FollowRedirectForcingRestart(). If this is
   // called, a future request for the redirect should be guaranteed to be sent
   // with the same request_id.
-  // `removed_headers`, `modified_headers` and `modified_cors_exempt_headers`
-  // will be merged to corresponding members in the ThrottlingURLLoader, and
-  // then apply updates against `resource_request`.
+  // `headers_update_params` will be merged to
+  // `ThrottlingURLLoader::headers_update_params_`, and then apply updates
+  // against `resource_request`.
   void ResetForFollowRedirect(
       network::ResourceRequest& resource_request,
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers);
+      network::HttpRequestHeadersUpdateParams headers_update_params);
 
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers);
+      network::HttpRequestHeadersUpdateParams headers_update_params);
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
 
   // Disconnect the forwarding URLLoaderClient and the URLLoader. Returns the
@@ -225,9 +222,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   void Resume();
   void SetPriority(net::RequestPriority priority);
   void MergeRequestHeaders(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers);
+      network::HttpRequestHeadersUpdateParams headers_update_params);
   void UpdateRequestHeaders(network::ResourceRequest& resource_request);
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
@@ -372,9 +367,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // called at most once. It is added to debug crbug.com/463388771.
   bool has_forwarded_response_ = false;
 
-  std::vector<std::string> removed_headers_;
-  net::HttpRequestHeaders modified_headers_;
-  net::HttpRequestHeaders modified_cors_exempt_headers_;
+  network::HttpRequestHeadersUpdateParams headers_update_params_;
 
   base::TimeTicks critical_ch_restart_time_;
 

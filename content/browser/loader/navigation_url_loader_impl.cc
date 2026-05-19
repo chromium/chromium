@@ -1148,10 +1148,8 @@ void NavigationURLLoaderImpl::LoaderHolder::ResetForFollowRedirect(
     network::ResourceRequest& resource_request) {
   if (url_loader_) {
     CHECK(headers_update_params_);
-    url_loader_->ResetForFollowRedirect(
-        resource_request, headers_update_params_->removed_headers,
-        headers_update_params_->modified_headers,
-        headers_update_params_->modified_cors_exempt_headers);
+    url_loader_->ResetForFollowRedirect(resource_request,
+                                        std::move(*headers_update_params_));
   }
   Reset();
 }
@@ -1159,10 +1157,7 @@ void NavigationURLLoaderImpl::LoaderHolder::ResetForFollowRedirect(
 void NavigationURLLoaderImpl::LoaderHolder::FollowRedirect() {
   CHECK(url_loader_);
   CHECK(headers_update_params_);
-  url_loader_->FollowRedirect(
-      std::move(headers_update_params_->removed_headers),
-      std::move(headers_update_params_->modified_headers),
-      std::move(headers_update_params_->modified_cors_exempt_headers));
+  url_loader_->FollowRedirect(std::move(*headers_update_params_));
   headers_update_params_.reset();
 }
 

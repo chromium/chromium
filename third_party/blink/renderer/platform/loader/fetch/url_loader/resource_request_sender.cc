@@ -409,15 +409,14 @@ void ResourceRequestSender::FollowPendingRedirect() {
     // Redirect URL may not be handled by the network service, so force a
     // restart in case another URLLoaderFactory should handle the URL.
     if (request_info_->redirect_requires_loader_restart) {
-      request_info_->removed_headers.clear();
-      request_info_->modified_headers.Clear();
+      request_info_->headers_update_params.Clear();
       request_info_->url_loader->FollowRedirectForcingRestart();
     } else {
+      network::HttpRequestHeadersUpdateParams headers_update_params =
+          std::move(request_info_->headers_update_params);
+      request_info_->headers_update_params.Clear();
       request_info_->url_loader->FollowRedirect(
-          request_info_->removed_headers, request_info_->modified_headers,
-          {} /* modified_cors_exempt_headers */);
-      request_info_->removed_headers.clear();
-      request_info_->modified_headers.Clear();
+          std::move(headers_update_params));
     }
   }
 }
@@ -576,12 +575,14 @@ void ResourceRequestSender::OnFollowRedirectCallback(
   }
 
   CHECK(!request_info_->has_pending_redirect);
-  request_info_->removed_headers = std::move(removed_headers);
+  request_info_->headers_update_params.removed_headers =
+      std::move(removed_headers);
   request_info_->response_url = KURL(redirect_info.new_url);
   request_info_->has_pending_redirect = true;
   request_info_->resource_load_info_notifier_wrapper
       ->NotifyResourceRedirectReceived(redirect_info, std::move(response_head));
-  request_info_->modified_headers = std::move(modified_headers);
+  request_info_->headers_update_params.modified_headers =
+      std::move(modified_headers);
 
   if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
     FollowPendingRedirect();

@@ -689,9 +689,10 @@ void KeepAliveURLLoader::EndReceiveRedirect(
   // Ask the network service to follow the redirect.
   last_url_ = GURL(redirect_info.new_url);
 
-  std::vector<std::string> removed_headers;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
   if (is_cross_origin) {
-    removed_headers.push_back(net::HttpRequestHeaders::kAuthorization);
+    headers_update_params.removed_headers.push_back(
+        net::HttpRequestHeaders::kAuthorization);
   }
 
   if (observer_for_testing_) {
@@ -705,8 +706,7 @@ void KeepAliveURLLoader::EndReceiveRedirect(
   // Note: there may be throttles running in IO thread, which may send signals
   // in between `FollowRedirect()` and the next `OnReceiveRedirect()` or
   // `OnReceiveResponse()`.
-  url_loader_->FollowRedirect(removed_headers, /*modified_headers=*/{},
-                              /*modified_cors_exempt_headers=*/{});
+  url_loader_->FollowRedirect(std::move(headers_update_params));
 }
 
 void KeepAliveURLLoader::OnReceiveResponse(

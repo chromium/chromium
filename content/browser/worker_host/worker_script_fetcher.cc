@@ -779,9 +779,7 @@ void WorkerScriptFetcher::OnReceiveRedirect(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   redirect_infos_.push_back(redirect_info);
   redirect_response_heads_.push_back(std::move(response_head));
-  url_loader_->FollowRedirect({}, /* removed_headers */
-                              {}, /* modified_headers */
-                              {} /* modified_cors_exempt_headers */);
+  url_loader_->FollowRedirect(/*headers_update_params=*/{});
 }
 
 void WorkerScriptFetcher::OnUploadProgress(int64_t current_position,
