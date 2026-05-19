@@ -92,6 +92,19 @@ bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
 
 }  // namespace
 
+// NSGlassEffectView intercepts hit testing even when added below the
+// WebContents NSViews. Returning nil here lets clicks pass through to the
+// sibling subviews that are supposed to receive them.
+API_AVAILABLE(macos(26.0))
+@interface GlassFrameBackgroundView : NSGlassEffectView
+@end
+
+@implementation GlassFrameBackgroundView
+- (NSView*)hitTest:(NSPoint)point {
+  return nil;
+}
+@end
+
 // Bridge Obj-C class for WindowTouchBarDelegate and
 // BrowserWindowTouchBarController.
 @interface BrowserWindowTouchBarViewsDelegate
@@ -695,7 +708,7 @@ void BrowserNativeWidgetMac::UpdateBackground() {
     NSView* content_view = [ns_window contentView];
 
     NSGlassEffectView* glass_view =
-        [[NSGlassEffectView alloc] initWithFrame:content_view.bounds];
+        [[GlassFrameBackgroundView alloc] initWithFrame:content_view.bounds];
     glass_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     glass_view.style = NSGlassEffectViewStyleRegular;
 

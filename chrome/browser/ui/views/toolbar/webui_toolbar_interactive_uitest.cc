@@ -40,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -1071,3 +1072,45 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   EXPECT_EQ(observer.num_finished_navigations(), 3u);
   EXPECT_EQ(observer.num_committed_navigations(), 2u);
 }
+
+#if BUILDFLAG(IS_MAC)
+// Regression test for the GlassFrame click-through bug: NSGlassEffectView
+// was intercepting clicks on the WebUI reload button.
+class WebUIToolbarGlassFrameInteractiveUiTest
+    : public WebUIToolbarViewsInteractiveUiTest {
+ public:
+  WebUIToolbarGlassFrameInteractiveUiTest() {
+    additional_features_.InitAndEnableFeature(features::kGlassFrame);
+  }
+
+  void SetUp() override {
+    if (!features::IsGlassFrameEnabled()) {
+      GTEST_SKIP() << "GlassFrame requires macOS 26.0+";
+    }
+    WebUIToolbarViewsInteractiveUiTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList additional_features_;
+};
+
+// Only the WebUI reload button path is affected.
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUIToolbarGlassFrameInteractiveUiTest,
+                         testing::Values(true));
+
+IN_PROC_BROWSER_TEST_P(WebUIToolbarGlassFrameInteractiveUiTest, ReloadButton) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  ReloadButtonTestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  RunTestSequence(SetUpReloadButtonTest(), NavigateWebContents(kTabId, url),
+                  WaitForReloadButtonReady(), MoveMouseOverReloadButton(),
+                  ClickMouse(), WaitForWebContentsNavigation(kTabId, url));
+
+  EXPECT_EQ(observer.num_started_navigations(), 2u);
+  EXPECT_EQ(observer.num_finished_navigations(), 2u);
+  EXPECT_EQ(observer.num_committed_navigations(), 2u);
+}
+#endif  // BUILDFLAG(IS_MAC)
