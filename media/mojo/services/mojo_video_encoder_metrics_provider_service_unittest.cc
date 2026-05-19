@@ -240,7 +240,14 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
   EXPECT_UMA("SVC", svc_mode);
   EXPECT_UMA("Width", encode_size.width());
   EXPECT_UMA("Height", encode_size.height());
-  EXPECT_UMA("Area", encode_size.GetArea() / 100);
+
+  constexpr int kMaxResolutionBucket = 8200;
+  constexpr int kMaxArea = kMaxResolutionBucket * kMaxResolutionBucket;
+  const int expected_area =
+      std::min<int>(encode_size.GetCheckedArea().ValueOrDefault(kMaxArea),
+                    kMaxArea) /
+      100;
+  EXPECT_UMA("Area", expected_area);
   EXPECT_UMA("Status", encoder_status.code());
 
 #undef EXPECT_UMA
@@ -277,7 +284,8 @@ INSTANTIATE_TEST_SUITE_P(
                        })));
 
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
-       InitializeWithVerfiyLargeResoloution_ReportCappedResolutionUKM) {
+       InitializeWithVerifyLargeResolution_ReportCappedResolutionUKM) {
+  base::HistogramTester histogram_tester;
   auto [test_recorder, provider] = Create(kTestURL);
   constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
@@ -306,6 +314,37 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
   EXPECT_UKM(UkmEntry::kSVCModeName, static_cast<int64_t>(kSVCMode));
   EXPECT_UKM(UkmEntry::kUseCaseName, static_cast<int64_t>(kEncoderUseCase));
   EXPECT_UKM(UkmEntry::kWidthName, kWidth);
+
+  const std::string uma_prefix = "Media.VideoEncoder.WebRTC.HW.";
+  constexpr int kMaxResolutionBucket = 8200;
+  constexpr int kMaxArea = kMaxResolutionBucket * kMaxResolutionBucket / 100;
+  histogram_tester.ExpectUniqueSample(base::StrCat({uma_prefix, "Area"}),
+                                      kMaxArea, 1);
+}
+
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
+       InitializeWithVeryLargeResolution_ReportCappedAreaUMA) {
+  base::HistogramTester histogram_tester;
+  auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
+  constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
+  constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
+  // Use a resolution that will overflow int when calculating area (width *
+  // height).
+  // 100000 * 100000 = 10,000,000,000 > 2^31 - 1
+  constexpr gfx::Size kLargeEncodeSize(100000, 100000);
+  constexpr bool kIsHardwareEncoder = true;
+  constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile,
+                       kLargeEncodeSize, kIsHardwareEncoder, kSVCMode);
+  provider.reset();
+  base::RunLoop().RunUntilIdle();
+
+  const std::string uma_prefix = "Media.VideoEncoder.WebRTC.HW.";
+  constexpr int kMaxResolutionBucket = 8200;
+  constexpr int kMaxArea = kMaxResolutionBucket * kMaxResolutionBucket / 100;
+  histogram_tester.ExpectUniqueSample(base::StrCat({uma_prefix, "Area"}),
+                                      kMaxArea, 1);
 }
 
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
