@@ -1098,19 +1098,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
                   testing::UnorderedElementsAre(testing::Key("thirdparty"))));
 }
 
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/372780565): TODO(crbug.com/390648566): All 3 of the
-// CookiePolicyStorageBrowserTest tests have timeouts with the kWorker
-// variant when running on win-asan, so disable it for now.
-INSTANTIATE_TEST_SUITE_P(,
-                         CookiePolicyStorageBrowserTest,
-                         testing::Values(ContextType::kFrame));
-#else
 INSTANTIATE_TEST_SUITE_P(,
                          CookiePolicyStorageBrowserTest,
                          testing::Values(ContextType::kFrame,
                                          ContextType::kWorker));
-#endif
 
 INSTANTIATE_TEST_SUITE_P(,
                          ThirdPartyPartitionedStorageAccessibilityTest,
