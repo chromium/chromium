@@ -700,7 +700,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
                         item(R.id.ntp_customization_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id))));
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id))));
 
         assertMenuItemsAreEqual(modelList, expectedItems);
     }
@@ -790,7 +793,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.open_with_id),
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id))));
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id))));
 
         assertMenuItemsAreEqual(modelList, expectedItems);
     }
@@ -973,8 +979,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.preferences_id));
         expectedTitles.add(item(R.string.menu_settings));
 
-        expectedItems.add(item(R.id.help_parent_menu_id, item(R.id.help_id)));
-        expectedTitles.add(item(R.string.menu_help, item(R.string.menu_help_center)));
+        expectedItems.add(
+                item(
+                        R.id.help_parent_menu_id,
+                        item(R.id.help_id),
+                        item(R.id.report_issue_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_help,
+                        item(R.string.menu_help_center),
+                        item(R.string.menu_report_issue)));
 
         Integer[] expectedActionBarItems =
                 ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()
@@ -1174,8 +1188,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.preferences_id));
         expectedTitles.add(item(R.string.menu_settings));
 
-        expectedItems.add(item(R.id.help_parent_menu_id, item(R.id.help_id)));
-        expectedTitles.add(item(R.string.menu_help, item(R.string.menu_help_center)));
+        expectedItems.add(
+                item(
+                        R.id.help_parent_menu_id,
+                        item(R.id.help_id),
+                        item(R.id.report_issue_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_help,
+                        item(R.string.menu_help_center),
+                        item(R.string.menu_report_issue)));
 
         assertMenuItemsAreEqual(modelList, expectedItems);
         assertMenuTitlesAreEqual(modelList, expectedTitles);
@@ -1387,8 +1409,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.preferences_id));
         expectedTitles.add(item(R.string.menu_settings));
 
-        expectedItems.add(item(R.id.help_parent_menu_id, item(R.id.help_id)));
-        expectedTitles.add(item(R.string.menu_help, item(R.string.menu_help_center)));
+        expectedItems.add(
+                item(
+                        R.id.help_parent_menu_id,
+                        item(R.id.help_id),
+                        item(R.id.report_issue_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_help,
+                        item(R.string.menu_help_center),
+                        item(R.string.menu_report_issue)));
 
         Integer[] expectedActionBarItems =
                 ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()
@@ -1500,7 +1530,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.auto_dark_web_contents_id),
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id))));
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id))));
 
         assertMenuItemsAreEqual(modelList, expectedItems);
     }
@@ -1597,7 +1630,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.reader_mode_prefs_id),
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id))));
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id))));
 
         assertMenuItemsHaveIcons(modelList, expectedItems);
     }
@@ -1944,7 +1980,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.get_image_descriptions_id),
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id))));
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id))));
 
         assertMenuItemsAreEqual(modelList, expectedItems);
 
@@ -2071,7 +2110,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.auto_dark_web_contents_id),
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id)),
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id)),
                         item(R.id.managed_by_divider_line_id),
                         item(R.id.managed_by_menu_id)));
 
@@ -2173,7 +2215,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.auto_dark_web_contents_id),
                         item(R.id.divider_line_id),
                         item(R.id.preferences_id),
-                        item(R.id.help_parent_menu_id, item(R.id.help_id)),
+                        item(
+                                R.id.help_parent_menu_id,
+                                item(R.id.help_id),
+                                item(R.id.report_issue_menu_id)),
                         item(R.id.menu_item_content_filter_divider_line_id),
                         item(R.id.menu_item_content_filter_help_center_id)));
         assertMenuItemsAreEqual(modelList, expectedItems);

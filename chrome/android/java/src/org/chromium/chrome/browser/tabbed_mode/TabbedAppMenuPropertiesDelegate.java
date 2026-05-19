@@ -1761,6 +1761,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildHelpParentItem() {
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(buildHelpCenterItem());
+        submenuItems.add(buildReportIssueItem());
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
@@ -1778,6 +1779,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.help_id,
                         R.string.menu_help_center,
                         shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : 0));
+    }
+
+    private ListItem buildReportIssueItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.report_issue_menu_id,
+                        R.string.menu_report_issue,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_feedback_24dp : 0));
     }
 
     private boolean shouldShowQuickDeleteItem() {

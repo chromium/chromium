@@ -4342,6 +4342,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_HELP_CENTER" desc="Menu item for opening the help center. [CHAR_LIMIT=27]">
         Help center
       </message>
+      <message name="IDS_MENU_REPORT_ISSUE" desc="Menu item for reporting an issue. [CHAR_LIMIT=27]">
+        Report an issue...
+      </message>
       <message name="IDS_MENU_EMPTY_SUBMENU" desc="Menu item to show when a folder doesn't contain any items.">
         (empty)
       </message>

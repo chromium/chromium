@@ -2822,7 +2822,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
-        if (id == R.id.feedback_form) {
+        if (id == R.id.feedback_form || id == R.id.report_issue_menu_id) {
             String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
             String helpContextId =
                     HelpAndFeedbackLauncherImpl.getHelpContextIdFromUrl(
