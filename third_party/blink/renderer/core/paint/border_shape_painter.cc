@@ -25,6 +25,14 @@
 namespace blink {
 namespace {
 
+// The default miter limit is 4.0, which can cause polygon corners to be
+// unexpectedly cut off into bevels. We use a large finite value to prevent
+// this.
+// Note: using an infinite or maximum float miter limit is not supported
+// by Skia, as squaring it during internal miter length calculations causes
+// floating-point overflow and fails internal finiteness validation checks.
+constexpr float kBorderShapeMiterLimit = 1e10f;
+
 Path OuterPathWithoutStroke(const ComputedStyle& style,
                             const PhysicalRect& outer_reference_rect) {
   CHECK(style.HasBorderShape());
@@ -38,6 +46,7 @@ StrokeData GetStrokeData(const StyleBorderShape& border_shape,
                          float thickness) {
   StrokeData stroke_data;
   stroke_data.SetThickness(thickness);
+  stroke_data.SetMiterLimit(kBorderShapeMiterLimit);
 
   // If the shape is a polygon, check if the CSS `round <length>` modifier was
   // used. If so, we change the join type to round to handle two scenarios:
