@@ -414,6 +414,62 @@ public class NavigateApiTest extends AwParameterizedTest {
                         });
     }
 
+    // crbug:513520883 - Ensure that save/restore state doesn't leak headers
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate, WebViewSaveStateIncludeHeaders"})
+    public void extraHeaders_saveRestoreState_redirects() throws Throwable {
+        int currentCallCount = mOnPageLoadFinished.getCallCount();
+
+        // Load the page with headers via navigate.
+        AwNavigationParams params = paramsWithExtraHeader(mPage1Url, HEADER_NAME, HEADER_VALUE);
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.navigate(params));
+        mOnPageLoadFinished.waitForCallback(currentCallCount);
+
+        // Create variables to restore state.
+        TestAwContentsClient restoredStateContentsClient = new TestAwContentsClient();
+        AwTestContainerView restoredStateTestView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(restoredStateContentsClient);
+        CallbackHelper restoredStateOnPageFinishedHelper =
+                restoredStateContentsClient.getOnPageFinishedHelper();
+        int restoredStateCurrentCallCount = restoredStateOnPageFinishedHelper.getCallCount();
+
+        // Disable caches so restore will trigger a network request.
+        mActivityTestRule
+                .getAwSettingsOnUiThread(restoredStateTestView.getAwContents())
+                .setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+        try (TestWebServer serverB = TestWebServer.startAdditional()) {
+            // Save and restore state
+            InstrumentationRegistry.getInstrumentation()
+                    .runOnMainSync(
+                            () -> {
+                                Bundle bundle = new Bundle();
+                                boolean result = mAwContents.saveState(bundle);
+                                Assert.assertTrue(result);
+
+                                // Change the saved page to redirect to a cross origin url
+                                String crossOriginUrl =
+                                        serverB.setResponse(
+                                                PAGE2_PATH, "Done!", Collections.emptyList());
+                                mWebServer.setRedirect(PAGE1_PATH, crossOriginUrl);
+
+                                result = restoredStateTestView.getAwContents().restoreState(bundle);
+                                Assert.assertTrue(result);
+                            });
+
+            restoredStateOnPageFinishedHelper.waitForCallback(restoredStateCurrentCallCount);
+
+            // Check for redirect
+            Assert.assertEquals(1, serverB.getRequestCount(PAGE2_PATH));
+            // Check restored network request excluded headers
+            Assert.assertNull(
+                    "Header leaked to cross-origin redirect target after saveState/restoreState",
+                    getHeader(serverB.getLastRequest(PAGE2_PATH), HEADER_NAME));
+        }
+    }
+
     @Nullable
     private static String getHeader(HTTPRequest request, String key) {
         HTTPHeader[] headers = request.getHeaders();

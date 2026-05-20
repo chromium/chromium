@@ -6051,7 +6051,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     // Update the NavigationEntry so that history navigations don't include the
     // extra headers.
     nav_entry->set_extra_headers(std::string());
-    nav_entry->set_remove_extra_headers_on_cross_origin_redirect(false);
+    nav_entry->SetRemoveExtraHeadersOnCrossOriginRedirect(false);
   }
 
   // The topics a request is allowed to see can change within its redirect

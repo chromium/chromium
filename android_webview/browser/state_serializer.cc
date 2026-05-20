@@ -486,6 +486,7 @@ bool RestoreNavigationEntryFromPickle(
         base::FeatureList::IsEnabled(
             features::kWebViewSaveStateIncludeHeaders)) {
       entry->AddExtraHeaders(extra_headers);
+      entry->SetRemoveExtraHeadersOnCrossOriginRedirect(true);
     }
   }
 

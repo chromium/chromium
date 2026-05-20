@@ -254,6 +254,14 @@ class NavigationEntry : public base::SupportsUserData {
   // Adds more extra headers (separated by \r\n) to send during the request.
   virtual void AddExtraHeaders(const std::string& extra_headers) = 0;
 
+  // Returns whether extra headers set on this entry are stripped when a
+  // cross-origin redirect is followed.
+  virtual bool GetRemoveExtraHeadersOnCrossOriginRedirect() const = 0;
+
+  // Sets whether extra headers set on this entry should be stripped when a
+  // cross-origin redirect is followed.
+  virtual void SetRemoveExtraHeadersOnCrossOriginRedirect(bool value) = 0;
+
   // Returns a unique value identifying the main document for this navigation.
   // This persists across same-document navigations and stays the same after
   // a history navigation to an already visited document.

@@ -829,6 +829,15 @@ void NavigationEntryImpl::AddExtraHeaders(
   extra_headers_ += more_extra_headers;
 }
 
+bool NavigationEntryImpl::GetRemoveExtraHeadersOnCrossOriginRedirect() const {
+  return remove_extra_headers_on_cross_origin_redirect_;
+}
+
+void NavigationEntryImpl::SetRemoveExtraHeadersOnCrossOriginRedirect(
+    bool value) {
+  remove_extra_headers_on_cross_origin_redirect_ = value;
+}
+
 int64_t NavigationEntryImpl::GetMainFrameDocumentSequenceNumber() const {
   return frame_tree_->frame_entry->document_sequence_number();
 }

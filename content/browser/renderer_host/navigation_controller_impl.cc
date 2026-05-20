@@ -4509,7 +4509,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   // started_from_context_menu. Move started_from_context_menu to
   // NavigationUIData.
   entry->set_started_from_context_menu(params.started_from_context_menu);
-  entry->set_remove_extra_headers_on_cross_origin_redirect(
+  entry->SetRemoveExtraHeadersOnCrossOriginRedirect(
       params.remove_extra_headers_on_cross_origin_redirect);
 
   return entry;
@@ -4891,7 +4891,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       false /* is_pdf */);
 
   request->set_remove_extra_headers_on_cross_origin_redirect(
-      entry->remove_extra_headers_on_cross_origin_redirect());
+      entry->GetRemoveExtraHeadersOnCrossOriginRedirect());
   return request;
 }
 

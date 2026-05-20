@@ -182,6 +182,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   bool IsRestored() const override;
   std::string GetExtraHeaders() const override;
   void AddExtraHeaders(const std::string& extra_headers) override;
+  bool GetRemoveExtraHeadersOnCrossOriginRedirect() const override;
+  void SetRemoveExtraHeadersOnCrossOriginRedirect(bool value) override;
   int64_t GetMainFrameDocumentSequenceNumber() const override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
@@ -555,14 +557,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   }
   const NavigationTransitionData& navigation_transition_data() const {
     return navigation_transition_data_;
-  }
-
-  void set_remove_extra_headers_on_cross_origin_redirect(bool value) {
-    remove_extra_headers_on_cross_origin_redirect_ = value;
-  }
-
-  bool remove_extra_headers_on_cross_origin_redirect() const {
-    return remove_extra_headers_on_cross_origin_redirect_;
   }
 
  private:
