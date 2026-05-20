@@ -4,6 +4,7 @@
 
 #include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -40,7 +41,20 @@ using WebAppBackgroundAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool accepted)>;
 
 namespace {
+
 bool g_auto_accept_launch_for_testing = false;
+
+constexpr int kMinBoundsForInstallDialog = 50;
+
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
+  const gfx::Size& current_size = widget->GetSize();
+  const gfx::Size& preferred_size =
+      widget->GetContentsView()->GetPreferredSize();
+  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
+  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
+  return current_size.width() < min_width || current_size.height() < min_height;
+}
+
 }  // namespace
 
 class WebAppLaunchDialogDelegate : public WebAppModalDialogDelegate {
@@ -79,6 +93,17 @@ class WebAppLaunchDialogDelegate : public WebAppModalDialogDelegate {
   void OnDestroyed() {
     if (!callback_.is_null()) {
       std::move(callback_).Run(/*accepted=*/false);
+    }
+  }
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override {
+    if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WebAppLaunchDialogDelegate::CloseDialogAsIgnored,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -159,6 +184,10 @@ void ShowWebInstallAppLaunchDialog(
   views::Widget* launch_dialog_widget =
       constrained_window::ShowWebModalDialogViews(dialog.release(),
                                                   web_contents);
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(launch_dialog_widget)) {
+    delegate_weak_ptr->CloseDialogAsIgnored();
+    return;
+  }
   delegate_weak_ptr->OnWidgetShownStartTracking(launch_dialog_widget);
 
   if (g_auto_accept_launch_for_testing) {
