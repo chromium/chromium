@@ -3045,7 +3045,7 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
 }
 
 void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
-    const std::vector<std::string>& blocks) {
+    const std::vector<std::u16string>& blocks) {
   if (!IsReadabilitySelectTextEnabled()) {
     return;
   }
