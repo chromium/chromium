@@ -46,7 +46,7 @@ class ClipboardProvider : public AutocompleteProvider {
 
   using ClipboardMatchCallback = base::OnceCallback<void()>;
   // Update clipboard match |match| with the current clipboard content.
-  void UpdateClipboardMatchWithContent(AutocompleteMatch* match,
+  void UpdateClipboardMatchWithContent(base::WeakPtr<AutocompleteMatch> match,
                                        ClipboardMatchCallback callback);
 
   // AutocompleteProvider implementation.
@@ -113,28 +113,28 @@ class ClipboardProvider : public AutocompleteProvider {
   // Called when url data is received from clipboard for creating match with
   // content.
   void OnReceiveURLForMatchWithContent(ClipboardMatchCallback callback,
-                                       AutocompleteMatch* match,
+                                       base::WeakPtr<AutocompleteMatch> match,
                                        std::optional<GURL> optional_gurl);
 
   // Called when text data is received from clipboard for creating match with
   // content.
   void OnReceiveTextForMatchWithContent(
       ClipboardMatchCallback callback,
-      AutocompleteMatch* match,
+      base::WeakPtr<AutocompleteMatch> match,
       std::optional<std::u16string> optional_text);
 
   // Called when image data is received from clipboard for creating match with
   // content.
   void OnReceiveImageForMatchWithContent(
       ClipboardMatchCallback callback,
-      AutocompleteMatch* match,
+      base::WeakPtr<AutocompleteMatch> match,
       std::optional<gfx::Image> optional_image);
 
   // Called when image match is received from clipboard for creating match with
   // content.
   void OnReceiveImageMatchForMatchWithContent(
       ClipboardMatchCallback callback,
-      AutocompleteMatch* match,
+      base::WeakPtr<AutocompleteMatch> match,
       std::optional<AutocompleteMatch> optional_match);
 
   // Updated clipboard |match| with |url|.

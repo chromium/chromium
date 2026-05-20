@@ -1134,6 +1134,11 @@ struct AutocompleteMatch {
       const ACMatchClassifications& classifications,
       const std::string& provider_name = "");
 
+  // Acquires weak instance.
+  base::WeakPtr<AutocompleteMatch> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.
@@ -1147,9 +1152,8 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
-
-  base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif
+  base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 };
 
 typedef AutocompleteMatch::ACMatchClassification ACMatchClassification;

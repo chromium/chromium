@@ -399,24 +399,30 @@ void ClipboardProvider::NewClipboardImageMatch(
 }
 
 void ClipboardProvider::UpdateClipboardMatchWithContent(
-    AutocompleteMatch* match,
+    base::WeakPtr<AutocompleteMatch> match,
     ClipboardMatchCallback callback) {
   DCHECK(match);
   if (match->type == AutocompleteMatchType::CLIPBOARD_URL) {
-    clipboard_content_->GetRecentURLFromClipboard(base::BindOnce(
-        &ClipboardProvider::OnReceiveURLForMatchWithContent,
-        callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback), match));
+    clipboard_content_->GetRecentURLFromClipboard(
+        base::BindOnce(&ClipboardProvider::OnReceiveURLForMatchWithContent,
+                       callback_weak_ptr_factory_.GetWeakPtr(),
+                       std::move(callback), std::move(match)));
     return;
   } else if (match->type == AutocompleteMatchType::CLIPBOARD_TEXT) {
-    clipboard_content_->GetRecentTextFromClipboard(base::BindOnce(
-        &ClipboardProvider::OnReceiveTextForMatchWithContent,
-        callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback), match));
+    clipboard_content_->GetRecentTextFromClipboard(
+        base::BindOnce(&ClipboardProvider::OnReceiveTextForMatchWithContent,
+                       callback_weak_ptr_factory_.GetWeakPtr(),
+                       std::move(callback), std::move(match)));
     return;
   } else if (match->type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
-    clipboard_content_->GetRecentImageFromClipboard(base::BindOnce(
-        &ClipboardProvider::OnReceiveImageForMatchWithContent,
-        callback_weak_ptr_factory_.GetWeakPtr(), std::move(callback), match));
+    clipboard_content_->GetRecentImageFromClipboard(
+        base::BindOnce(&ClipboardProvider::OnReceiveImageForMatchWithContent,
+                       callback_weak_ptr_factory_.GetWeakPtr(),
+                       std::move(callback), std::move(match)));
     return;
+  } else {
+    // No updates, but don't keep the caller hanging.
+    std::move(callback).Run();
   }
 }
 
@@ -458,57 +464,67 @@ void ClipboardProvider::ConstructImageMatchCallback(
 
 void ClipboardProvider::OnReceiveURLForMatchWithContent(
     ClipboardMatchCallback callback,
-    AutocompleteMatch* match,
+    base::WeakPtr<AutocompleteMatch> weak_match,
     std::optional<GURL> optional_gurl) {
-  if (!optional_gurl)
+  if (!optional_gurl || !weak_match) {
+    std::move(callback).Run();
     return;
+  }
 
   GURL url = std::move(optional_gurl).value();
-  UpdateClipboardURLContent(url, match);
+  UpdateClipboardURLContent(url, weak_match.get());
 
   std::move(callback).Run();
 }
 
 void ClipboardProvider::OnReceiveTextForMatchWithContent(
     ClipboardMatchCallback callback,
-    AutocompleteMatch* match,
+    base::WeakPtr<AutocompleteMatch> weak_match,
     std::optional<std::u16string> optional_text) {
-  if (!optional_text)
+  if (!optional_text || !weak_match) {
+    std::move(callback).Run();
     return;
+  }
 
   std::u16string text = std::move(optional_text).value();
-  if (!UpdateClipboardTextContent(text, match))
+  if (!UpdateClipboardTextContent(text, weak_match.get())) {
     return;
+  }
 
   std::move(callback).Run();
 }
 
 void ClipboardProvider::OnReceiveImageForMatchWithContent(
     ClipboardMatchCallback callback,
-    AutocompleteMatch* match,
+    base::WeakPtr<AutocompleteMatch> weak_match,
     std::optional<gfx::Image> optional_image) {
-  if (!optional_image)
+  if (!optional_image || !weak_match) {
+    std::move(callback).Run();
     return;
+  }
 
   gfx::Image image = std::move(optional_image).value();
   NewClipboardImageMatch(
       image,
       base::BindOnce(&ClipboardProvider::OnReceiveImageMatchForMatchWithContent,
                      callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback), match));
+                     std::move(callback), std::move(weak_match)));
 }
 
 void ClipboardProvider::OnReceiveImageMatchForMatchWithContent(
     ClipboardMatchCallback callback,
-    AutocompleteMatch* match,
+    base::WeakPtr<AutocompleteMatch> weak_match,
     std::optional<AutocompleteMatch> optional_match) {
-  DCHECK(match);
-  if (!optional_match)
+  if (!optional_match || !weak_match) {
+    // Always run to notify the caller of completion even if we have no image to
+    // serve, or the match no longer exists.
+    std::move(callback).Run();
     return;
+  }
 
-  match->destination_url = std::move(optional_match->destination_url);
-  match->post_content = std::move(optional_match->post_content);
-  match->search_terms_args = std::move(optional_match->search_terms_args);
+  weak_match->destination_url = std::move(optional_match->destination_url);
+  weak_match->post_content = std::move(optional_match->post_content);
+  weak_match->search_terms_args = std::move(optional_match->search_terms_args);
 
   std::move(callback).Run();
 }

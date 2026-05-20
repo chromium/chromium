@@ -153,7 +153,7 @@ void AutocompleteMatch::UpdateWithClipboardContent(
   ClipboardProvider* clipboard_provider =
       static_cast<ClipboardProvider*>(provider);
   clipboard_provider->UpdateClipboardMatchWithContent(
-      this,
+      weak_ptr_factory_.GetWeakPtr(),
       base::BindOnce(&AutocompleteMatch::OnClipboardSuggestionContentUpdated,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));

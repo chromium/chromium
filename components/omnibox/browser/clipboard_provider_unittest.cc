@@ -50,8 +50,9 @@ class CreateMatchWithContentCallbackWaiter {
       AutocompleteMatch* match)
       : received_(false) {
     provider->UpdateClipboardMatchWithContent(
-        match, base::BindOnce(&CreateMatchWithContentCallbackWaiter::OnComplete,
-                              weak_ptr_factory_.GetWeakPtr()));
+        match->GetWeakPtr(),
+        base::BindOnce(&CreateMatchWithContentCallbackWaiter::OnComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void WaitForMatchUpdated() {
@@ -296,6 +297,18 @@ TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
     EXPECT_EQ(u"alert()", match.fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
   }
+  {
+    SCOPED_TRACE("Match destroyed");
+    SetClipboardUrl(GURL(kClipboardURL));
+    EXPECT_CALL(*client_.get(), GetSchemeClassifier())
+        .WillOnce(testing::ReturnRef(classifier_));
+    auto match =
+        std::make_unique<AutocompleteMatch>(provider_->NewBlankURLMatch());
+    CreateMatchWithContentCallbackWaiter waiter(provider_, match.get());
+    match.reset();
+    // Should be fine.
+    waiter.WaitForMatchUpdated();
+  }
 }
 
 TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
@@ -349,20 +362,46 @@ TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
     EXPECT_EQ(u"alert()", match.fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
   }
+  {
+    SCOPED_TRACE("Match destroyed");
+    SetClipboardText(u"text");
+    auto match =
+        std::make_unique<AutocompleteMatch>(provider_->NewBlankTextMatch());
+    CreateMatchWithContentCallbackWaiter waiter(provider_, match.get());
+    match.reset();
+    // Should be fine.
+    waiter.WaitForMatchUpdated();
+  }
 }
 
 TEST_F(ClipboardProviderTest, CreateImageMatchWithContent) {
-  gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
-  SetClipboardImage(test_image);
-  client_->set_template_url_service(
-      search_engines_test_environment_.template_url_service());
-  AutocompleteMatch match = provider_->NewBlankImageMatch();
-  CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
-  waiter.WaitForMatchUpdated();
+  {
+    SCOPED_TRACE("Copy Image");
+    gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
+    SetClipboardImage(test_image);
+    client_->set_template_url_service(
+        search_engines_test_environment_.template_url_service());
+    AutocompleteMatch match = provider_->NewBlankImageMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
 
-  EXPECT_FALSE(match.post_content->first.empty());
-  EXPECT_FALSE(match.post_content->second.empty());
-  EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_IMAGE, match.type);
+    EXPECT_FALSE(match.post_content->first.empty());
+    EXPECT_FALSE(match.post_content->second.empty());
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_IMAGE, match.type);
+  }
+  {
+    SCOPED_TRACE("Match destroyed");
+    gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
+    SetClipboardImage(test_image);
+    client_->set_template_url_service(
+        search_engines_test_environment_.template_url_service());
+    auto match =
+        std::make_unique<AutocompleteMatch>(provider_->NewBlankImageMatch());
+    CreateMatchWithContentCallbackWaiter waiter(provider_, match.get());
+    match.reset();
+    // Should be fine.
+    waiter.WaitForMatchUpdated();
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
