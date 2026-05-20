@@ -9,7 +9,10 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 /**
  * A lightweight tab helper that tracks the showing state of the Lens Overlay. This allows
@@ -20,6 +23,29 @@ import org.chromium.chrome.browser.tab.Tab;
 public class LensOverlayTabHelper implements UserData {
     private final SettableNonNullObservableSupplier<Boolean> mIsShowingSupplier =
             ObservableSuppliers.createNonNull(false);
+
+    /**
+     * @param tab The tab to check.
+     * @return Whether the Lens Overlay is eligible to be shown.
+     */
+    public static boolean shouldShowLensOverlay(@Nullable Tab tab) {
+        if (tab == null || tab.getWebContents() == null) {
+            return false;
+        }
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.LENS_OVERLAY_ANDROID)) {
+            return false;
+        }
+
+        // Disable in Incognito for now since the prototype delegates to an external app.
+        if (tab.isIncognito()) {
+            return false;
+        }
+
+        GURL url = tab.getUrl();
+        // This also filters out NTPs and internal pages.
+        return url != null && UrlUtilities.isHttpOrHttps(url);
+    }
 
     /**
      * @param tab The tab to check.

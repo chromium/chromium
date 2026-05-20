@@ -59,6 +59,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -88,6 +89,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -118,7 +120,10 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
-@DisableFeatures(ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS)
+@DisableFeatures({
+    ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS,
+    ChromeFeatureList.LENS_OVERLAY_ANDROID
+})
 public class ChromeContextMenuPopulatorTest {
     private static final String DATA_URL = "data:encodedstringblahblah";
     private static final String PAGE_URL = "http://www.blah.com/page_url";
@@ -149,6 +154,8 @@ public class ChromeContextMenuPopulatorTest {
 
     @Mock private Activity mActivity;
     @Mock private TabContextMenuItemDelegate mItemDelegate;
+    @Mock private Tab mTab;
+    private UserDataHost mUserDataHost;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
@@ -182,6 +189,18 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsSendTextMessage()).thenReturn(true);
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
         when(mItemDelegate.getWebContents()).thenReturn(mWebContents);
+        when(mItemDelegate.getTab()).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(pageUrl);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getUserDataHost())
+                .thenAnswer(
+                        (invocation) -> {
+                            if (mUserDataHost == null) {
+                                mUserDataHost = new UserDataHost();
+                            }
+                            return mUserDataHost;
+                        });
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mItemDelegate.canCurrentTabGoBack()).thenReturn(true);
         when(mItemDelegate.canCurrentTabGoForward()).thenReturn(true);
@@ -332,6 +351,29 @@ public class ChromeContextMenuPopulatorTest {
 
     private void checkMenuOptions(int[]... groups) {
         checkMenuOptions(/* disabled= */ new ArrayList<>(), groups);
+    }
+
+    private ContextMenuParams getPageParams() {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.NONE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                GURL.emptyGURL(),
+                "",
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                "",
+                null,
+                false,
+                0,
+                0,
+                MenuSourceType.TOUCH,
+                false,
+                false,
+                0,
+                /* additionalNavigationParams= */ null);
     }
 
     private ContextMenuParams getHttpLinkParams() {
@@ -2390,29 +2432,48 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void testPage_LensOverlay() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams params = getPageParams();
+
+        int[][] expected = {
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_lens_overlay
+            },
+        };
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        checkMenuOptions(expected);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void testPage_LensOverlay_Incognito() {
+        setAllMandatoryFlowsComplete();
+        when(mItemDelegate.isIncognito()).thenReturn(true);
+        when(mTab.isIncognito()).thenReturn(true);
+        ContextMenuParams params = getPageParams();
+
+        int[][] expected = {
+            {R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page},
+        };
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        checkMenuOptions(expected);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testPage() {
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.NONE,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
-                        new GURL(PAGE_URL),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        MenuSourceType.TOUCH,
-                        false,
-                        false,
-                        0,
-                        /* additionalNavigationParams= */ null);
+        ContextMenuParams params = getPageParams();
 
         int[][] expected = {
             {R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page},
@@ -2439,27 +2500,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     public void testPageWithDevMenu() {
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.NONE,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
-                        new GURL(PAGE_URL),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        MenuSourceType.TOUCH,
-                        false,
-                        false,
-                        0,
-                        /* additionalNavigationParams= */ null);
+        ContextMenuParams params = getPageParams();
 
         int[][] expected = {
             {R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page},
@@ -2501,27 +2542,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     public void testPageDownloadRestricted() {
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.NONE,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
-                        new GURL(PAGE_URL),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        MenuSourceType.TOUCH,
-                        false,
-                        false,
-                        0,
-                        /* additionalNavigationParams= */ null);
+        ContextMenuParams params = getPageParams();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
 
         int[] expectedPage = {
@@ -2550,27 +2571,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     public void testPagePrintNotSupported() {
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.NONE,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
-                        new GURL(PAGE_URL),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        MenuSourceType.TOUCH,
-                        false,
-                        false,
-                        0,
-                        /* additionalNavigationParams= */ null);
+        ContextMenuParams params = getPageParams();
 
         int[][] expected = {
             {R.id.contextmenu_save_page, R.id.contextmenu_share_page},

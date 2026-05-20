@@ -109,6 +109,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         return assumeNonNull(mTab.getWebContents());
     }
 
+    public Tab getTab() {
+        return mTab;
+    }
+
     @Override
     public boolean isIncognito() {
         return mTab.isIncognito();

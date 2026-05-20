@@ -1851,20 +1851,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowLensOverlayItem(@Nullable Tab currentTab) {
-        if (currentTab == null
-                || currentTab.getWebContents() == null
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.LENS_OVERLAY_ANDROID)) {
-            return false;
-        }
-
-        // Disable in Incognito for now since the prototype delegates to an external app.
-        if (currentTab.isIncognito()) {
-            return false;
-        }
-
-        GURL url = currentTab.getUrl();
-        // This also filters out NTPs and internal pages.
-        return url != null && UrlUtilities.isHttpOrHttps(url);
+        return LensOverlayTabHelper.shouldShowLensOverlay(currentTab);
     }
 
     private MVCListAdapter.ListItem buildLensOverlayItem(@Nullable Tab currentTab) {
@@ -1872,7 +1859,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         PropertyModel model =
                 buildModelForStandardMenuItem(
                         R.id.lens_overlay_menu_id,
-                        R.string.lens_overlay_app_menu,
+                        R.string.menu_search_tab_with_google_lens,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.lens_camera_icon
                                 : Resources.ID_NULL);
