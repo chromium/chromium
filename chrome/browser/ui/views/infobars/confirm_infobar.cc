@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar_with_styled_label.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
@@ -22,12 +24,48 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kOkButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kCancelButtonElementId);
+
+// static
+std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
+  if (!delegate->GetMessageTextTemplate().empty() &&
+      base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
+    return std::make_unique<ConfirmInfoBarWithStyledLabel>(std::move(delegate));
+  }
+  return std::make_unique<ConfirmInfoBarWithNormalLabel>(std::move(delegate));
+}
+
+template <typename T>
+T* ConfirmInfoBar::AssignMessageLabel(std::unique_ptr<T> view) {
+  auto* message_label = content_container()->AddChildViewAt(std::move(view), 0);
+  int kHorizontalDistanceLabel = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+  if (GetDelegate()->ShouldShowLinkBeforeButton()) {
+    kHorizontalDistanceLabel = 4;
+  }
+  // Set horizontal distance for label for flex layout.
+  message_label->SetProperty(views::kMarginsKey,
+                             std::make_unique<gfx::Insets>(gfx::Insets::TLBR(
+                                 0, 0, 0, kHorizontalDistanceLabel)));
+  message_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithWeight(1));
+  return message_label;
+}
+
+template views::Label* ConfirmInfoBar::AssignMessageLabel(
+    std::unique_ptr<views::Label>);
+template views::StyledLabel* ConfirmInfoBar::AssignMessageLabel(
+    std::unique_ptr<views::StyledLabel>);
 
 ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     : InfoBarView(std::move(delegate)) {
@@ -40,26 +78,6 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-
-  // Create the label and set the eliding behaviour.
-  label_ = AddContentChildView(CreateLabel(delegate_ptr->GetMessageText()));
-  label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
-
-  // Set properties on the created label_ for flex layout.
-  int kHorizontalDistanceLabel = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
-  if (GetDelegate()->ShouldShowLinkBeforeButton()) {
-    kHorizontalDistanceLabel = 4;
-  }
-  // Set horizontal distance for label for flex layout.
-  label_->SetProperty(views::kMarginsKey,
-                      std::make_unique<gfx::Insets>(gfx::Insets::TLBR(
-                          0, 0, 0, kHorizontalDistanceLabel)));
-  label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithWeight(1));
 
   const views::FlexSpecification kRigidFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -132,25 +150,23 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   auto link_unique_ptr = CreateLink(delegate_ptr->GetLinkText(),
                                     delegate_ptr->GetLinkAccessibleText());
 
-  if (!link_unique_ptr) {
-    return;
+  if (link_unique_ptr) {
+    link_ = link_unique_ptr.get();
+
+    // Add the link to the infobar view and reorder it to be placed before the
+    // close button.
+    if (GetDelegate()->ShouldShowLinkBeforeButton()) {
+      AddContentChildView(std::move(link_unique_ptr));
+    } else {
+      AddViewBeforeCloseButton(std::move(link_unique_ptr));
+    }
+    link_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
+    // Add margins for spacing for flex layout.
+    link_->SetProperty(views::kMarginsKey, std::make_unique<gfx::Insets>(
+                                               gfx::Insets::TLBR(0, 0, 0, 0)));
   }
-
-  link_ = link_unique_ptr.get();
-
-  // Add the link to the infobar view and reorder it to be placed before the
-  // close button.
-  if (GetDelegate()->ShouldShowLinkBeforeButton()) {
-    AddContentChildView(std::move(link_unique_ptr));
-  } else {
-    AddViewBeforeCloseButton(std::move(link_unique_ptr));
-  }
-
-  link_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
-  // Add margins for spacing for flex layout.
-  link_->SetProperty(views::kMarginsKey, std::make_unique<gfx::Insets>(
-                                             gfx::Insets::TLBR(0, 0, 0, 0)));
 }
+
 ConfirmInfoBar::~ConfirmInfoBar() = default;
 
 void ConfirmInfoBar::Layout(PassKey) {
@@ -191,6 +207,10 @@ int ConfirmInfoBar::GetContentMinimumWidth() const {
 int ConfirmInfoBar::GetContentPreferredWidth() const {
   // With using flex layout, no manual calculations are needed.
   return 0;
+}
+
+views::Label* ConfirmInfoBar::label_for_testing() {
+  return nullptr;
 }
 
 BEGIN_METADATA(ConfirmInfoBar)

@@ -18,6 +18,6 @@ std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate));
 #else
-  return std::make_unique<ConfirmInfoBar>(std::move(delegate));
+  return ConfirmInfoBar::Create(std::move(delegate));
 #endif
 }

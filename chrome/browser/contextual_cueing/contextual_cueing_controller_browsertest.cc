@@ -782,8 +782,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  infobar_manager->AddInfoBar(std::make_unique<ConfirmInfoBar>(
-      std::make_unique<TestInfoBarDelegate>()));
+  infobar_manager->AddInfoBar(
+      ConfirmInfoBar::Create(std::make_unique<TestInfoBarDelegate>()));
   ASSERT_FALSE(infobar_manager->infobars().empty());
 
   SimulateFilterPassed();

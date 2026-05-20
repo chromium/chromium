@@ -3,11 +3,21 @@
 # found in the LICENSE file.
 
 source_set("infobars") {
-  sources = [
+  friend = [
+    ":unit_tests",
+    ":impl",
+  ]
+
+  public = [
     "alternate_nav_infobar_view.h",
     "confirm_infobar.h",
     "infobar_container_view.h",
     "infobar_view.h",
+  ]
+
+  sources = [
+    "confirm_infobar_with_normal_label.h",
+    "confirm_infobar_with_styled_label.h",
   ]
 
   public_deps = [
@@ -21,6 +31,8 @@ source_set("impl") {
   sources = [
     "alternate_nav_infobar_view.cc",
     "confirm_infobar.cc",
+    "confirm_infobar_with_normal_label.cc",
+    "confirm_infobar_with_styled_label.cc",
     "infobar_container_view.cc",
     "infobar_view.cc",
   ]
@@ -60,6 +72,24 @@ source_set("browser_tests") {
     "//components/infobars/core",
     "//content/test:test_support",
     "//ui/base",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "confirm_infobar_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    ":infobars",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//components/infobars/core",
+    "//testing/gtest",
     "//ui/views",
     "//ui/views:test_support",
   ]

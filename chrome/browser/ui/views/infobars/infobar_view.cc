@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -51,11 +51,27 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_view.h"
+
+template <typename T>
+void InfoBarView::AssignLabelDetails(T* view) const {
+  view->SizeToPreferredSize();
+  view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  view->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_TOAST_LABEL_VERTICAL),
+                      0));
+}
+
+template void InfoBarView::AssignLabelDetails(views::Label*) const;
+template void InfoBarView::AssignLabelDetails(views::StyledLabel*) const;
+template void InfoBarView::AssignLabelDetails(views::Link*) const;
 
 // Helpers --------------------------------------------------------------------
 
@@ -286,6 +302,10 @@ void InfoBarView::OnThemeChanged() {
         label->SetAutoColorReadabilityEnabled(false);
       }
     }
+    auto* styled_label = views::AsViewClass<views::StyledLabel>(child);
+    if (styled_label) {
+      styled_label->SetDisplayedOnBackgroundColor(background_theme_color);
+    }
   }
 
   // Set dark mode status so that it can be used to set a different icon image
@@ -312,7 +332,16 @@ std::unique_ptr<views::Label> InfoBarView::CreateLabel(
     const std::u16string& text) const {
   auto label = std::make_unique<views::Label>(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  SetLabelDetails(label.get());
+  AssignLabelDetails(label.get());
+  return label;
+}
+
+std::unique_ptr<views::StyledLabel> InfoBarView::CreateStyledLabel(
+    const std::u16string& text) const {
+  auto label = std::make_unique<views::StyledLabel>();
+  label->SetText(text);
+  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  AssignLabelDetails(label.get());
   return label;
 }
 
@@ -321,7 +350,7 @@ std::unique_ptr<views::Link> InfoBarView::CreateLink(
     const std::optional<std::u16string>& accessible_text) {
   auto link = std::make_unique<views::Link>(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  SetLabelDetails(link.get());
+  AssignLabelDetails(link.get());
   link->SetCallback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
 
@@ -439,16 +468,6 @@ void InfoBarView::AssignWidthsSorted(Views* views, int available_width) {
   views->back()->SetSize(back_view_size);
   views->pop_back();
   AssignWidthsSorted(views, available_width - back_view_size.width());
-}
-
-void InfoBarView::SetLabelDetails(views::Label* label) const {
-  label->SizeToPreferredSize();
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_TOAST_LABEL_VERTICAL),
-                      0));
 }
 
 void InfoBarView::LinkClicked(const ui::Event& event) {

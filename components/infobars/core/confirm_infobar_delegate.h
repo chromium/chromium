@@ -7,12 +7,14 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
@@ -22,6 +24,25 @@ class InfoBar;
 namespace ui {
 class ImageModel;
 }
+
+// Represents a single substitution element for a localized template string.
+// Used by ConfirmInfoBarDelegate to provide structured metadata about
+// parts of the message string that require special styling (e.g., links)
+// or custom accessibility handling.
+struct MessageSubstitution {
+  MessageSubstitution(std::u16string text,
+                      bool is_link,
+                      std::optional<std::u16string> accessible_name);
+  MessageSubstitution(const MessageSubstitution& other);
+  MessageSubstitution(MessageSubstitution&& other);
+  MessageSubstitution& operator=(const MessageSubstitution& other);
+  MessageSubstitution& operator=(MessageSubstitution&& other);
+  ~MessageSubstitution();
+
+  std::u16string text;
+  bool is_link = false;
+  std::optional<std::u16string> accessible_name;
+};
 
 // An interface derived from InfoBarDelegate implemented by objects wishing to
 // control a ConfirmInfoBar.
@@ -54,6 +75,16 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Returns the message string to be displayed for the InfoBar.
   virtual std::u16string GetMessageText() const = 0;
+
+  // Returns the localized template string to be displayed for the InfoBar.
+  // This string can contain placeholders (e.g. "$1", "$2") that will be
+  // replaced by the strings returned by GetMessageSubstitutions().
+  // If this returns an empty string, GetMessageText() is used instead.
+  virtual std::u16string GetMessageTextTemplate() const;
+
+  // Returns the list of substitutions to be used with the template
+  // returned by GetMessageTextTemplate().
+  virtual std::vector<MessageSubstitution> GetMessageSubstitutions() const;
 
   // Returns the elide behavior for the message string.
   // Not supported on Android.
@@ -106,6 +137,13 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // the infobar is then immediately closed. Subclasses MUST NOT return true if
   // in handling this call something triggers the infobar to begin closing.
   virtual bool Cancel();
+
+  // Called when an inline link created via the substitution system is clicked.
+  // The |disposition| specifies how the resulting document should be loaded
+  // (based on the event flags present when the link was clicked).
+  // If this function returns true, the infobar is then immediately closed.
+  virtual bool InlineSubstitutionLinkClicked(size_t index,
+                                             WindowOpenDisposition disposition);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);

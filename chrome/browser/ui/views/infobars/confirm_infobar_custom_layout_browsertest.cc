@@ -96,8 +96,7 @@ class ConfirmInfobarCustomLayoutBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(infobar_manager);
     auto delegate = std::make_unique<CustomLayoutTestConfirmInfoBarDelegate>(
         show_link_before_button);
-    infobar_manager->AddInfoBar(
-        std::make_unique<ConfirmInfoBar>(std::move(delegate)));
+    infobar_manager->AddInfoBar(ConfirmInfoBar::Create(std::move(delegate)));
   }
 
   ConfirmInfoBar* GetActiveConfirmInfoBar() {

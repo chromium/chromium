@@ -18,10 +18,12 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 class ImageButton;
@@ -29,6 +31,7 @@ class ImageView;
 class Label;
 class Link;
 class MenuRunner;
+class StyledLabel;
 }  // namespace views
 
 class InfoBarView : public infobars::InfoBar,
@@ -64,6 +67,10 @@ class InfoBarView : public infobars::InfoBar,
 
   // Creates a label with the appropriate font and color for an infobar.
   std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) const;
+
+  // Creates a styled label with the appropriate font and color for an infobar.
+  std::unique_ptr<views::StyledLabel> CreateStyledLabel(
+      const std::u16string& text) const;
 
   // Creates a link with the appropriate font and color for an infobar.
   // By default, `text` will be used as a accessible text if it's not explicitly
@@ -133,9 +140,10 @@ class InfoBarView : public infobars::InfoBar,
   // decreasing preferred width.
   static void AssignWidthsSorted(Views* views, int available_width);
 
-  // Sets various attributes on |label| that are common to all child links and
-  // labels.
-  void SetLabelDetails(views::Label* label) const;
+  // Sets various attributes on |view| that are common to all child links,
+  // labels, and styled labels.
+  template <typename T>
+  void AssignLabelDetails(T* view) const;
 
   // Callback used by the link created by CreateLink().
   void LinkClicked(const ui::Event& event);

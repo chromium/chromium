@@ -86,7 +86,7 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
     auto delegate = std::make_unique<PriorityInfoBarDelegate>(
         priority, base::UTF8ToUTF16(message));
     return GetInfoBarManager()->AddInfoBar(
-        std::make_unique<ConfirmInfoBar>(std::move(delegate)));
+        ConfirmInfoBar::Create(std::move(delegate)));
   }
 
   // Returns the message text of all currently visible infobar views.

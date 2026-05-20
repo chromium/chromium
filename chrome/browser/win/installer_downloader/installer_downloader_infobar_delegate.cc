@@ -37,7 +37,7 @@ infobars::InfoBar* InstallerDownloaderInfoBarDelegate::Show(
       std::make_unique<InstallerDownloaderInfoBarDelegate>(std::move(accept_cb),
                                                            std::move(close_cb));
   return infobar_manager->AddInfoBar(
-      std::make_unique<ConfirmInfoBar>(std::move(delegate)));
+      ConfirmInfoBar::Create(std::move(delegate)));
 }
 
 InstallerDownloaderInfoBarDelegate::InstallerDownloaderInfoBarDelegate(
