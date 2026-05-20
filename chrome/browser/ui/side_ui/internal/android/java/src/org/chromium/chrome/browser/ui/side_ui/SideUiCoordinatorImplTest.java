@@ -158,31 +158,6 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testAddObserver_NotifyCurrentSpecs() {
-        int startContainerWidth = 25;
-        int endContainerWidth = 75;
-        mStartAnchorContainer.setMinimumWidth(startContainerWidth);
-        mEndAnchorContainer.setMinimumWidth(endContainerWidth);
-
-        // Add the observer after requesting an update.
-        mCoordinator.addObserver(mSideUiObserver);
-
-        // Verify the observer is still notified.
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
-        verify(mSideUiObserver).onSideUiSpecsChanged(expectedSideUiSpecs);
-    }
-
-    @Test
-    public void testRemoveObserver_NotifyEmptySpecs() {
-        mCoordinator.addObserver(mSideUiObserver);
-        clearInvocations(mSideUiObserver);
-
-        // Verify the observer is notified with empty specs on removal.
-        mCoordinator.removeObserver(mSideUiObserver);
-        verify(mSideUiObserver).onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
-    }
-
-    @Test
     public void testRequestUpdateContainer_AnchorSideIsStart() {
         mCoordinator.registerSideUiContainer(mSideUiContainer);
         mCoordinator.addObserver(mSideUiObserver);
@@ -336,50 +311,6 @@ public class SideUiCoordinatorImplTest {
         MarginLayoutParams endLayoutParams =
                 ((MarginLayoutParams) mEndAnchorContainer.getLayoutParams());
         assertEquals("Unexpected top margin.", topMarginPx, endLayoutParams.topMargin);
-    }
-
-    @Test
-    public void testMeasureSideUiSpecs_AfterTopMarginChange() {
-        int sideUiTopMargin = 100;
-        mTopMarginSupplier.set(sideUiTopMargin);
-
-        mCoordinator.measureSideUiSpecs();
-
-        assertEquals(
-                "Unexpected measured height.",
-                mAnchorContainerParent.getHeight() - sideUiTopMargin,
-                mStartAnchorContainer.getMeasuredHeight());
-        assertEquals(
-                "Unexpected measured height.",
-                mAnchorContainerParent.getHeight() - sideUiTopMargin,
-                mEndAnchorContainer.getMeasuredHeight());
-    }
-
-    @Test
-    public void testMeasureSideUiSpecs_AfterParentResize() {
-        // Simulate the measure pass for when side UI's parent is resized.
-        int newParentHeight = mAnchorContainerParent.getHeight() - 100;
-        mAnchorContainerParent.measure(
-                View.MeasureSpec.makeMeasureSpec(
-                        mAnchorContainerParent.getWidth(), View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(newParentHeight, View.MeasureSpec.EXACTLY));
-
-        // Call measureSideUiSpecs() before the layout pass.
-        mCoordinator.measureSideUiSpecs();
-
-        // The anchor containers should use newParentHeight (the new measured height).
-        assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
-        assertEquals(newParentHeight, mEndAnchorContainer.getMeasuredHeight());
-
-        // Now simulate the layout pass.
-        mAnchorContainerParent.layout(0, 0, mAnchorContainerParent.getWidth(), newParentHeight);
-
-        // Call measureSideUiSpecs() again.
-        mCoordinator.measureSideUiSpecs();
-
-        // The anchor containers' measured height should remain unchanged.
-        assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
-        assertEquals(newParentHeight, mEndAnchorContainer.getMeasuredHeight());
     }
 
     @Test

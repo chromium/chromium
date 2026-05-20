@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
-
 import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.EMPTY_SIDE_UI_SPECS;
 
 import android.app.Activity;
@@ -16,14 +13,12 @@ import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.ViewStub;
 
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
@@ -57,10 +52,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
     // TODO(crbug.com/478338737): Update to account for multiple side containers.
     @Nullable private SideUiContainer mSideUiContainer;
-
-    // TODO(crbug.com/478338737): Update to account for multiple side UIs with different top
-    // margins.
-    private @Px int mSideUiTopMargin;
 
     /**
      * Constructor for a {@link SideUiCoordinatorImpl}.
@@ -146,16 +137,12 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
     @Override
     public void addObserver(SideUiObserver observer) {
-        if (mSideUiObservers.addObserver(observer)) {
-            observer.onSideUiSpecsChanged(measureSideUiSpecs());
-        }
+        mSideUiObservers.addObserver(observer);
     }
 
     @Override
     public void removeObserver(SideUiObserver observer) {
-        if (mSideUiObservers.removeObserver(observer)) {
-            observer.onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
-        }
+        mSideUiObservers.removeObserver(observer);
     }
 
     @Override
@@ -294,27 +281,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
     private ViewGroup getRootView() {
         return (ViewGroup) mAnchorContainerParent.getRootView();
-    }
-
-    @VisibleForTesting
-    SideUiSpecs measureSideUiSpecs() {
-        View sideUiParent = (View) mStartAnchorContainer.getParent();
-        assert sideUiParent == mEndAnchorContainer.getParent()
-                : "Anchor containers should have the same parent.";
-
-        int sideUiParentHeight = sideUiParent != null ? sideUiParent.getMeasuredHeight() : 0;
-        int sideUiHeight = sideUiParentHeight - mSideUiTopMargin;
-        int sideUiHeightSpec =
-                sideUiHeight > 0
-                        ? makeMeasureSpec(sideUiHeight, EXACTLY)
-                        : makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-        int sideUiWidthSpec = makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-
-        mStartAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
-        mEndAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
-
-        return new SideUiSpecs(
-                mStartAnchorContainer.getMeasuredWidth(), mEndAnchorContainer.getMeasuredWidth());
     }
 
     /**
@@ -563,8 +529,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      * @param tabStripBottomPx The tab strip's bottom in relation to the top of the window in px.
      */
     private void onTopMarginChanged(@Px int tabStripBottomPx) {
-        mSideUiTopMargin = tabStripBottomPx;
-
         MarginLayoutParams startLayoutParams =
                 ((MarginLayoutParams) mStartAnchorContainer.getLayoutParams());
         startLayoutParams.topMargin = tabStripBottomPx;
