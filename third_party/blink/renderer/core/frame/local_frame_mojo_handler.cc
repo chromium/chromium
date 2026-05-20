@@ -1411,6 +1411,7 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
     base::TimeTicks redirect_time,
     base::TimeTicks request_start,
     base::TimeTicks response_start,
+    base::TimeTicks completion_time,
     uint32_t response_code,
     const String& mime_type,
     network::mojom::blink::LoadTimingInfoPtr load_timing_info,
@@ -1419,7 +1420,7 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
     bool is_secure_transport,
     bool is_validated,
     const String& normalized_server_timing,
-    const network::URLLoaderCompletionStatus& completion_status) {
+    mojom::blink::SubframeResourceLengthsPtr resource_lengths) {
   Frame* subframe = Frame::ResolveFrame(subframe_token);
   if (!subframe || !subframe->Owner()) {
     return;
@@ -1431,9 +1432,18 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
   response.SetConnectionReused(load_timing_info->socket_reused);
   response.SetTimingAllowPassed(true);
   response.SetIsValidated(is_validated);
-  response.SetDecodedBodyLength(completion_status.decoded_body_length);
-  response.SetEncodedBodyLength(completion_status.encoded_body_length);
-  response.SetEncodedDataLength(completion_status.encoded_data_length);
+  if (resource_lengths) {
+    response.SetDecodedBodyLength(
+        resource_lengths->decoded_body_length.InBytes());
+    response.SetEncodedBodyLength(
+        resource_lengths->encoded_body_length.InBytes());
+    response.SetEncodedDataLength(
+        resource_lengths->encoded_data_length.InBytes());
+  } else {
+    // Use -1 as a code for "no data received", and leave the body length
+    // fields at their default values.
+    response.SetEncodedDataLength(-1);
+  }
   response.SetHttpStatusCode(response_code);
   if (!normalized_server_timing.empty()) {
     response.SetHttpHeaderField(http_names::kServerTiming,
@@ -1442,7 +1452,7 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
 
   mojom::blink::ResourceTimingInfoPtr info =
       CreateResourceTimingInfo(start_time, initial_url, &response);
-  info->response_end = completion_status.completion_time;
+  info->response_end = completion_time;
   info->last_redirect_end_time = redirect_time;
   info->is_secure_transport = is_secure_transport;
   info->timing = std::move(load_timing_info);

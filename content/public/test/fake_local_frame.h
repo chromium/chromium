@@ -182,6 +182,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       base::TimeTicks redirect_time,
       base::TimeTicks request_start,
       base::TimeTicks response_start,
+      base::TimeTicks completion_time,
       uint32_t response_code,
       const std::string& mime_type,
       const net::LoadTimingInfo& load_timing_info,
@@ -190,7 +191,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       bool is_secure_transport,
       bool is_validated,
       const std::string& normalized_server_timing,
-      const ::network::URLLoaderCompletionStatus& completion_status) override;
+      blink::mojom::SubframeResourceLengthsPtr resource_lengths) override;
   void UpdatePrerenderURL(const ::GURL& matched_url,
                           UpdatePrerenderURLCallback callback) override;
   void GetScrollPosition(GetScrollPositionCallback callback) override;

@@ -83,6 +83,7 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/confidence_level.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -2616,6 +2617,16 @@ class CONTENT_EXPORT NavigationRequest
   // resources were generated from a different origin with the given origin.
   // This is because we disallow cross origin view transitions.
   void UpdateViewTransitionStateForDestinationOrigin(const url::Origin& origin);
+
+  // Shared implementation of
+  // AddResourceTimingEntryForFailedSubframeNavigation() and
+  // MaybeAddResourceTimingEntryForCancelledNavigation(). `completion_time` is
+  // the timestamp when the navigation finished or was cancelled, and
+  // `resource_lengths` is the amount of data received, or nullptr if the
+  // navigation was cancelled before starting to read data.
+  void AddResourceTimingEntryForFailedSubframeNavigation(
+      base::TimeTicks completion_time,
+      blink::mojom::SubframeResourceLengthsPtr resource_lengths);
 
   // Used for short-lived NavigationRequest created at DidCommit time for the
   // purpose of committing navigation that were not driven by the browser

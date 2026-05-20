@@ -1661,11 +1661,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
       FrameTreeNode* child_frame,
       base::TimeTicks start_time,
       base::TimeTicks redirect_time,
+      base::TimeTicks completion_time,
       const GURL& initial_url,
       const GURL& final_url,
       network::mojom::URLResponseHeadPtr response_head,
       bool allow_response_details,
-      const network::URLLoaderCompletionStatus& completion_status);
+      blink::mojom::SubframeResourceLengthsPtr resource_lengths);
 
   // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);

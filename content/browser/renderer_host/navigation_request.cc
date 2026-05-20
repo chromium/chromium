@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -33,6 +34,7 @@
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/state_transitions.h"
 #include "base/strings/strcat.h"
@@ -220,6 +222,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -5917,14 +5920,42 @@ void NavigationRequest::MaybeAddResourceTimingEntryForCancelledNavigation() {
     return;
   }
 
-  network::URLLoaderCompletionStatus status;
-  status.encoded_data_length = response()->encoded_data_length;
-  status.completion_time = base::TimeTicks::Now();
-  AddResourceTimingEntryForFailedSubframeNavigation(status);
+  blink::mojom::SubframeResourceLengthsPtr resource_lengths;
+  // response() uses -1 to mean a missing response and 0 for a response with
+  // headers but no body.
+  if (response()->encoded_data_length >= 0) {
+    resource_lengths = blink::mojom::SubframeResourceLengths::New();
+    resource_lengths->encoded_data_length =
+        base::ByteSize(base::as_unsigned(response()->encoded_data_length));
+  }
+  AddResourceTimingEntryForFailedSubframeNavigation(
+      base::TimeTicks::Now(), std::move(resource_lengths));
 }
 
 void NavigationRequest::AddResourceTimingEntryForFailedSubframeNavigation(
     const network::URLLoaderCompletionStatus& status) {
+  auto resource_lengths = blink::mojom::SubframeResourceLengths::New();
+  // TODO(crbug.com/448661443): Remove signedness checks once
+  // URLLoaderCompletionStatus uses ByteSize.
+  if (status.encoded_data_length >= 0) {
+    resource_lengths->encoded_data_length =
+        base::ByteSize(base::as_unsigned(status.encoded_data_length));
+  }
+  if (status.encoded_body_length >= 0) {
+    resource_lengths->encoded_body_length =
+        base::ByteSize(base::as_unsigned(status.encoded_body_length));
+  }
+  if (status.decoded_body_length >= 0) {
+    resource_lengths->decoded_body_length =
+        base::ByteSize(base::as_unsigned(status.decoded_body_length));
+  }
+  AddResourceTimingEntryForFailedSubframeNavigation(
+      status.completion_time, std::move(resource_lengths));
+}
+
+void NavigationRequest::AddResourceTimingEntryForFailedSubframeNavigation(
+    base::TimeTicks completion_time,
+    blink::mojom::SubframeResourceLengthsPtr resource_lengths) {
   // For TAO-fail navigations, we would resort to fallback timing.
   // See HTMLFrameOwnerElement::ReportFallbackResourceTimingIfNeeded().
   CHECK(response());
@@ -5941,9 +5972,10 @@ void NavigationRequest::AddResourceTimingEntryForFailedSubframeNavigation(
 
   GetParentFrame()->AddResourceTimingEntryForFailedSubframeNavigation(
       frame_tree_node(), common_params().navigation_start,
-      commit_params().navigation_timing->redirect_end,
+      commit_params().navigation_timing->redirect_end, completion_time,
       commit_params().original_url, common_params().url,
-      std::move(response_head), allow_response_details, status);
+      std::move(response_head), allow_response_details,
+      std::move(resource_lengths));
 }
 
 void NavigationRequest::OnRedirectChecksComplete(

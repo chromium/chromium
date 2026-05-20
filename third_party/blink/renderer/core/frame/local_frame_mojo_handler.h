@@ -232,6 +232,7 @@ class LocalFrameMojoHandler
       base::TimeTicks redirect_time,
       base::TimeTicks request_start,
       base::TimeTicks response_start,
+      base::TimeTicks completion_time,
       uint32_t response_code,
       const String& mime_type,
       network::mojom::blink::LoadTimingInfoPtr load_timing_info,
@@ -240,7 +241,7 @@ class LocalFrameMojoHandler
       bool is_secure_transport,
       bool is_validated,
       const String& normalized_server_timing,
-      const ::network::URLLoaderCompletionStatus& completion_status) final;
+      mojom::blink::SubframeResourceLengthsPtr resource_lengths) final;
   void GetScrollPosition(GetScrollPositionCallback callback) final;
 
   // blink::mojom::LocalMainFrame overrides:

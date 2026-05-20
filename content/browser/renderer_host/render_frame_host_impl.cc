@@ -13208,11 +13208,12 @@ void RenderFrameHostImpl::AddResourceTimingEntryForFailedSubframeNavigation(
     FrameTreeNode* child_frame,
     base::TimeTicks start_time,
     base::TimeTicks redirect_time,
+    base::TimeTicks completion_time,
     const GURL& initial_url,
     const GURL& final_url,
     network::mojom::URLResponseHeadPtr response_head,
     bool allow_response_details,
-    const network::URLLoaderCompletionStatus& completion_status) {
+    blink::mojom::SubframeResourceLengthsPtr resource_lengths) {
   uint32_t status_code = 0;
   std::string mime_type;
   std::string normalized_server_timing =
@@ -13237,12 +13238,13 @@ void RenderFrameHostImpl::AddResourceTimingEntryForFailedSubframeNavigation(
 
   GetAssociatedLocalFrame()->AddResourceTimingEntryForFailedSubframeNavigation(
       child_token_in_parent.value(), initial_url, start_time, redirect_time,
-      response_head->request_start, response_head->response_start, status_code,
-      mime_type, response_head->load_timing, response_head->connection_info,
-      response_head->alpn_negotiated_protocol,
+      response_head->request_start, response_head->response_start,
+      completion_time, status_code, mime_type, response_head->load_timing,
+      response_head->connection_info, response_head->alpn_negotiated_protocol,
       std::ranges::contains(url::GetSecureSchemes(),
                             url::Origin::Create(final_url).scheme()),
-      response_head->is_validated, normalized_server_timing, completion_status);
+      response_head->is_validated, normalized_server_timing,
+      std::move(resource_lengths));
 }
 
 void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
