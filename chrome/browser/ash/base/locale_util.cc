@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -183,7 +184,7 @@ void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
       base::BindOnce(&FinishSwitchLanguage, application_locale_storage));
 }
 
-bool IsAllowedLanguage(const std::string& language, const PrefService* prefs) {
+bool IsAllowedLanguage(std::string_view language, const PrefService* prefs) {
   const base::ListValue& allowed_languages =
       prefs->GetList(ash::prefs::kAllowedLanguages);
 
@@ -195,13 +196,12 @@ bool IsAllowedLanguage(const std::string& language, const PrefService* prefs) {
   return allowed_languages.contains(language);
 }
 
-bool IsAllowedUILanguage(const std::string& language,
-                         const PrefService* prefs) {
+bool IsAllowedUILanguage(std::string_view language, const PrefService* prefs) {
   return IsAllowedLanguage(language, prefs) && IsNativeUILanguage(language);
 }
 
-bool IsNativeUILanguage(const std::string& locale) {
-  std::string resolved_locale = locale;
+bool IsNativeUILanguage(std::string_view locale) {
+  std::string resolved_locale(locale);
 
   // The locale is a UI locale or can be converted to a UI locale.
   return language::ConvertToActualUILocale(&resolved_locale);
@@ -259,13 +259,13 @@ std::string GetAllowedFallbackUILanguage(const PrefService* prefs) {
   return kAllowedUILanguageFallback;
 }
 
-bool AddLocaleToPreferredLanguages(const std::string& locale,
+bool AddLocaleToPreferredLanguages(std::string_view locale,
                                    PrefService* prefs) {
   std::string preferred_languages_string =
       prefs->GetString(language::prefs::kPreferredLanguages);
-  std::vector<std::string> preferred_languages =
-      base::SplitString(preferred_languages_string, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> preferred_languages =
+      base::SplitStringPiece(preferred_languages_string, ",",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (!std::ranges::contains(preferred_languages, locale)) {
     preferred_languages.push_back(locale);
     prefs->SetString(language::prefs::kPreferredLanguages,

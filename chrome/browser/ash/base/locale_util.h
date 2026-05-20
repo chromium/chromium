@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 
@@ -60,17 +61,17 @@ void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
 // This function checks if the given language is allowed according to the list
 // of allowed languages (stored in |prefs|, managed by 'AllowedLanguages'
 // policy). If the list is empty, every language is allowed.
-bool IsAllowedLanguage(const std::string& language, const PrefService* prefs);
+bool IsAllowedLanguage(std::string_view language, const PrefService* prefs);
 
 // This function checks if the given language is allowed
 // by 'AllowedLanguages' and also can be used as a UI locale.
 // (see |IsAllowedLanguage|).
-bool IsAllowedUILanguage(const std::string& language, const PrefService* prefs);
+bool IsAllowedUILanguage(std::string_view language, const PrefService* prefs);
 
 // This functions checks if the given language is a native UI language or can be
 // converted to one. (e.g., 'en-US', 'fr', 'de', 'de-CH', 'fr-CH' etc. are all
 // valid, but 'az' is not.
-bool IsNativeUILanguage(const std::string& locale);
+bool IsNativeUILanguage(std::string_view locale);
 
 // This function removes languages that are disallowed by the
 // 'AllowedLanguages' policy from the list of preferred languages.
