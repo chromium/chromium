@@ -72,6 +72,9 @@ bool g_signature_verification_enabled = true;
 // source.
 const char* const kNonembeddedLowEntropySourceAllowlist[] = {
     "DefaultPassthroughCommandDecoder",
+    "WebViewFasterGetDefaultUserAgent",
+    "WebViewStartupNonBlockingWebViewConstructor",
+    "WebViewStaticMethodsNotTriggerStartup",
     "WebViewTestNonembeddedLowEntropySource",
 };
 
