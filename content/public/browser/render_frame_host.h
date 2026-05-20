@@ -419,7 +419,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // The callback returns a FrameIterationAction which determines if/how
   // iteration on subsequent frames continues. The FrameIterationAction may be
   // omitted, in which case kContinue will be assumed.
-  enum class FrameIterationAction {
+  enum class [[nodiscard]] FrameIterationAction {
     // Includes the children of the visited frame for subsequent traversal and
     // continues traversal to the next frame.
     kContinue,

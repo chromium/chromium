@@ -335,10 +335,10 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     }
 
     // Retrieve prerendering root frames.
-    web_contents->ForEachRenderFrameHostImpl(
+    web_contents->ForEachRenderFrameHostImplWithAction(
         [web_contents, &prerender_root_frames = info->prerender_root_frames](
             RenderFrameHostImpl* rfh) {
-          CollectPrerenders(web_contents, rfh, prerender_root_frames);
+          return CollectPrerenders(web_contents, rfh, prerender_root_frames);
         });
 
     infos.push_back(std::move(info));
