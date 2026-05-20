@@ -22,7 +22,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -190,12 +190,12 @@ public class TabStripContextMenuCoordinator {
                             .build());
         }
         // Add "Pin Gemini" option with divider
-        if (ChromeFeatureList.sGlic.isEnabled()) {
-            if (!isIncognito) {
+        if (!isIncognito) {
+            Profile profile = mTabModel.getProfile();
+            if (profile != null && GlicEnabling.isEnabledForProfile(profile)) {
                 itemList.add(BasicListMenu.buildMenuDivider(/* isIncognito= */ false));
 
-                Profile profile = mTabModel.getProfile();
-                boolean isPinned = profile != null && GlicUtils.isButtonPinnedToTabStrip(profile);
+                boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(profile);
                 if (isPinned) {
                     itemList.add(
                             new ListItemBuilder()

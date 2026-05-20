@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
@@ -284,8 +284,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 (time, view, motionEventButtonState, modifiers) ->
                         mGlicClickHandler.onResult(/* result= */ false);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)
-                && AndroidSidePanelEnabledFn.isEnabled()) {
+        if (GlicEnabling.isEnabledByFlags() && AndroidSidePanelEnabledFn.isEnabled()) {
             mGlicDismissNudgeButton =
                     new TintedCompositorButton(
                             mContext,
@@ -1049,7 +1048,8 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mGlicButton == null || mIsIncognitoSupplier.get() || mProfile == null) {
             return false;
         }
-        return GlicUtils.isButtonPinnedToTabStrip(mProfile);
+        return GlicEnabling.isEnabledForProfile(mProfile)
+                && GlicUtils.isButtonPinnedToTabStrip(mProfile);
     }
 
     /**
