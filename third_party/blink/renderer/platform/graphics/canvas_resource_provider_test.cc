@@ -40,7 +40,8 @@ using testing::Test;
 namespace blink {
 namespace {
 
-SkImageInfo GetSkImageInfo(CanvasResourceProvider* provider) {
+template <typename T>
+SkImageInfo GetSkImageInfo(T* provider) {
   return SkImageInfo::Make(
       provider->Size().width(), provider->Size().height(),
       viz::ToClosestSkColorType(provider->GetSharedImageFormat()),
