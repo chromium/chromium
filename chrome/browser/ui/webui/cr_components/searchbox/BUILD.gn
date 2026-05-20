@@ -92,6 +92,7 @@ source_set("searchbox_impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/views/drive_picker_host",
+      "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
     ]
   }
 }

@@ -11,6 +11,19 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
+source_set("drive_picker_host_request") {
+  sources = [
+    "drive_picker_host_request.cc",
+    "drive_picker_host_request.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 source_set("drive_picker_host") {
   sources = [
     "drive_picker_host_ui.cc",
@@ -18,6 +31,7 @@ source_set("drive_picker_host") {
   ]
 
   public_deps = [
+    ":drive_picker_host_request",
     ":mojo_bindings",
     "untrusted",
     "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",

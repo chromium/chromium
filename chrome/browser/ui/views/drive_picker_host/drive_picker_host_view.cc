@@ -65,20 +65,27 @@ gfx::Size DrivePickerHostView::CalculatePreferredSize(
 }
 
 void DrivePickerHostView::TriggerDrivePickerHostUi(
-    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-        result_handler) {
+    std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
   if (!view_tracker_.view()) {
-    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-        std::move(result_handler))
-        ->OnError(drive_picker_host::mojom::DrivePickerError::kViewNotFound);
+    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+        handler = request->TakeResultHandler();
+    if (handler) {
+      SendErrorToRequest(
+          std::move(request),
+          drive_picker_host::mojom::DrivePickerError::kViewNotFound);
+    }
     return;
   }
   views::WebView* web_view =
       views::AsViewClass<views::WebView>(view_tracker_.view());
   if (!web_view) {
-    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-        std::move(result_handler))
-        ->OnError(drive_picker_host::mojom::DrivePickerError::kViewNotFound);
+    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+        handler = request->TakeResultHandler();
+    if (handler) {
+      SendErrorToRequest(
+          std::move(request),
+          drive_picker_host::mojom::DrivePickerError::kViewNotFound);
+    }
     return;
   }
   content::WebContents* contents = web_view->GetWebContents();
@@ -86,14 +93,28 @@ void DrivePickerHostView::TriggerDrivePickerHostUi(
     auto* drive_picker_host_ui =
         contents->GetWebUI()->GetController()->GetAs<DrivePickerHostUI>();
     if (drive_picker_host_ui) {
-      drive_picker_host_ui->TriggerDrivePickerHost(std::move(result_handler));
+      drive_picker_host_ui->TriggerDrivePickerHost(std::move(request));
       return;
     }
   }
 
-  mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-      std::move(result_handler))
-      ->OnError(drive_picker_host::mojom::DrivePickerError::kWebUINotFound);
+  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+      handler = request->TakeResultHandler();
+  if (handler) {
+    SendErrorToRequest(
+        std::move(request),
+        drive_picker_host::mojom::DrivePickerError::kWebUINotFound);
+  }
+}
+
+void DrivePickerHostView::SendErrorToRequest(
+    std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request,
+    drive_picker_host::mojom::DrivePickerError error) {
+  if (request && request->has_result_handler()) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        request->TakeResultHandler())
+        ->OnError(error);
+  }
 }
 
 BEGIN_METADATA(DrivePickerHostView)

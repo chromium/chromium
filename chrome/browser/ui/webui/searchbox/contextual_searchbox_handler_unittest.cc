@@ -38,9 +38,9 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
-#include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -188,11 +188,10 @@ class MockDrivePickerHostController : public DrivePickerHostController {
       BrowserWindowInterface* browser_window_interface)
       : DrivePickerHostController(browser_window_interface) {}
   ~MockDrivePickerHostController() override = default;
-  MOCK_METHOD(
-      void,
-      ShowDrivePickerHost,
-      (mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>),
-      (override));
+  MOCK_METHOD(void,
+              ShowDrivePickerHost,
+              (std::unique_ptr<drive_picker_host::DrivePickerHostRequest>),
+              (override));
 };
 
 class MockBaseWindow : public ui::BaseWindow {
@@ -1534,10 +1533,8 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
       pending_remote;
   EXPECT_CALL(*mock_ptr, ShowDrivePickerHost(testing::_))
       .WillOnce(
-          [&](mojo::PendingRemote<
-              drive_picker_host::mojom::DrivePickerResultHandler> remote) {
-            pending_remote = std::move(remote);
-          });
+          [&](std::unique_ptr<drive_picker_host::DrivePickerHostRequest>
+                  request) { pending_remote = request->TakeResultHandler(); });
 
   base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
   handler().OnDriveUploadClicked(future.GetCallback());

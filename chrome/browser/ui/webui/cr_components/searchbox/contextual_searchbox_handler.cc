@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -917,8 +918,14 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
         std::make_unique<DrivePickerHostController>(browser_window_interface);
   }
 
-  drive_picker_controller_->ShowDrivePickerHost(
+  drive_picker_result_handler_receiver_.reset();
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
       drive_picker_result_handler_receiver_.BindNewPipeAndPassRemote());
+
+  drive_picker_controller_->ShowDrivePickerHost(std::move(request));
+
   drive_picker_result_handler_receiver_.set_disconnect_handler(
       base::BindOnce(&ContextualSearchboxHandler::OnDrivePickerDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));

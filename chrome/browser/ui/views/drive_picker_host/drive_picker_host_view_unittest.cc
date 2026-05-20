@@ -26,11 +26,10 @@ class MockDrivePickerHostUI : public DrivePickerHostUI {
  public:
   explicit MockDrivePickerHostUI(content::WebUI* web_ui)
       : DrivePickerHostUI(web_ui) {}
-  MOCK_METHOD(
-      void,
-      TriggerDrivePickerHost,
-      (mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>),
-      (override));
+  MOCK_METHOD(void,
+              TriggerDrivePickerHost,
+              (std::unique_ptr<drive_picker_host::DrivePickerHostRequest>),
+              (override));
 };
 
 class MockDrivePickerHostUIConfig : public DrivePickerHostUIConfig {
@@ -113,7 +112,11 @@ TEST_F(DrivePickerHostViewTest, TriggerDrivePickerHostUi) {
       contents->GetWebUI()->GetController()->GetAs<MockDrivePickerHostUI>();
   ASSERT_TRUE(mock_controller);
   EXPECT_CALL(*mock_controller, TriggerDrivePickerHost(testing::_));
-  view->TriggerDrivePickerHostUi(mojo::NullRemote());
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  view->TriggerDrivePickerHostUi(std::move(request));
 
   // Clean up the view to avoid dangling references.
   view.reset();

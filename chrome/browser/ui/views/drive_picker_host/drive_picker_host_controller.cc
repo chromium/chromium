@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -31,13 +32,12 @@ DrivePickerHostController::~DrivePickerHostController() {
 }
 
 void DrivePickerHostController::ShowDrivePickerHost(
-    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-        result_handler) {
+    std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
   // Ensure that we only have one Drive Picker Host view at a time.
   if (view_tracker_.view()) {
-    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-        std::move(result_handler))
-        ->OnError(drive_picker_host::mojom::DrivePickerError::kAlreadyActive);
+    SendErrorToRequest(
+        std::move(request),
+        drive_picker_host::mojom::DrivePickerError::kAlreadyActive);
     return;
   }
 
@@ -51,9 +51,9 @@ void DrivePickerHostController::ShowDrivePickerHost(
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_window_interface_);
   if (!browser_view) {
-    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-        std::move(result_handler))
-        ->OnError(drive_picker_host::mojom::DrivePickerError::kWindowNotFound);
+    SendErrorToRequest(
+        std::move(request),
+        drive_picker_host::mojom::DrivePickerError::kWindowNotFound);
     return;
   }
 
@@ -92,9 +92,19 @@ void DrivePickerHostController::ShowDrivePickerHost(
   // If the document is already loaded, trigger the picker UI immediately.
   // Otherwise, store the result handler and wait for the document to load.
   if (is_picker_document_loaded_) {
-    view_ptr->TriggerDrivePickerHostUi(std::move(result_handler));
+    view_ptr->TriggerDrivePickerHostUi(std::move(request));
   } else {
-    pending_picker_result_handler_ = std::move(result_handler);
+    pending_request_ = std::move(request);
+  }
+}
+
+void DrivePickerHostController::SendErrorToRequest(
+    std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request,
+    drive_picker_host::mojom::DrivePickerError error) {
+  if (request && request->has_result_handler()) {
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
+        request->TakeResultHandler())
+        ->OnError(error);
   }
 }
 
@@ -103,7 +113,7 @@ void DrivePickerHostController::ResetControllerState() {
     view_tracker_.view()->parent()->RemoveChildViewT(view_tracker_.view());
   }
   is_picker_document_loaded_ = false;
-  pending_picker_result_handler_.reset();
+  pending_request_.reset();
   browser_window_observation_.Reset();
   Observe(nullptr);
 }
@@ -136,11 +146,11 @@ void DrivePickerHostController::UpdatePickerViewBounds() {
 void DrivePickerHostController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   is_picker_document_loaded_ = true;
 
-  // We use `pending_picker_result_handler_` to check if there was a request to
+  // We use `pending_request_` to check if there was a request to
   // trigger the picker UI before the document finished loading. This controller
   // only manages a single active picker session at a time.
-  if (pending_picker_result_handler_ && view_tracker_.view()) {
+  if (pending_request_ && view_tracker_.view()) {
     views::AsViewClass<DrivePickerHostView>(view_tracker_.view())
-        ->TriggerDrivePickerHostUi(std::move(pending_picker_result_handler_));
+        ->TriggerDrivePickerHostUi(std::move(pending_request_));
   }
 }

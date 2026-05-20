@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "chrome/test/base/testing_profile.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,9 +42,11 @@ class DrivePickerHostControllerTest : public TestWithBrowserView {
 };
 
 TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostCreatesView) {
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      remote;
-  controller_->ShowDrivePickerHost(std::move(remote));
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  controller_->ShowDrivePickerHost(std::move(request));
 
   // Process any pending tasks (like view addition or initial WebUI setup).
   base::RunLoop().RunUntilIdle();
@@ -56,9 +59,11 @@ TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostCreatesView) {
 }
 
 TEST_F(DrivePickerHostControllerTest, PickerCoversBrowserContents) {
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      remote;
-  controller_->ShowDrivePickerHost(std::move(remote));
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  controller_->ShowDrivePickerHost(std::move(request));
 
   base::RunLoop().RunUntilIdle();
 
@@ -71,9 +76,11 @@ TEST_F(DrivePickerHostControllerTest, PickerCoversBrowserContents) {
 }
 
 TEST_F(DrivePickerHostControllerTest, PickerResizesWithWindow) {
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      remote;
-  controller_->ShowDrivePickerHost(std::move(remote));
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  controller_->ShowDrivePickerHost(std::move(request));
 
   base::RunLoop().RunUntilIdle();
 
@@ -90,9 +97,11 @@ TEST_F(DrivePickerHostControllerTest, PickerResizesWithWindow) {
 }
 
 TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      remote;
-  controller_->ShowDrivePickerHost(std::move(remote));
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  controller_->ShowDrivePickerHost(std::move(request));
 
   base::RunLoop().RunUntilIdle();
 

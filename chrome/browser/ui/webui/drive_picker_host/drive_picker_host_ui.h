@@ -10,8 +10,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host.mojom.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -56,8 +56,7 @@ class DrivePickerHostUI
   // Triggers the Drive Picker host logic to display the picker UI and relay
   // results to `result_handler`.
   virtual void TriggerDrivePickerHost(
-      mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-          result_handler);
+      std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request);
 
   // Sets the untrusted bridge that will be used to display the picker UI and
   // handle communication with the picker UI.
@@ -99,8 +98,7 @@ class DrivePickerHostUI
   void MaybeBindUntrustedBridge(content::RenderFrameHost* render_frame_host);
 
   // Stores a single request that arrived before the untrusted bridge was bound.
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      pending_result_handler_;
+  std::unique_ptr<drive_picker_host::DrivePickerHostRequest> pending_request_;
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;

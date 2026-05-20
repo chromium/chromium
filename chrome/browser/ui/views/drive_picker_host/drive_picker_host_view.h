@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_VIEW_H_
 
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -59,8 +59,7 @@ class DrivePickerHostView : public views::View {
   // Calls into the WebUI to trigger the Drive Picker UI and relays results to
   // the provided result handler.
   void TriggerDrivePickerHostUi(
-      mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-          result_handler);
+      std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request);
 
   // views::View:
   gfx::Size CalculatePreferredSize(
@@ -69,6 +68,11 @@ class DrivePickerHostView : public views::View {
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, Initialization);
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, TriggerDrivePickerHostUi);
+
+  // Reports an error back to the result handler in the request.
+  void SendErrorToRequest(
+      std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request,
+      drive_picker_host::mojom::DrivePickerError error);
 
   views::ViewTracker view_tracker_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;

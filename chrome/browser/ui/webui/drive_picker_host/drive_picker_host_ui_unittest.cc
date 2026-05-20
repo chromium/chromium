@@ -140,12 +140,15 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {
   controller.SetBridge(mock_bridge.BindAndGetRemote());
 
   MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      result_handler.BindAndGetRemote());
   EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
       .WillOnce(testing::WithArg<1>(
           [](drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
             EXPECT_EQ(keys->oauth_token, kAccessToken);
           }));
-  controller.TriggerDrivePickerHost(result_handler.BindAndGetRemote());
+  controller.TriggerDrivePickerHost(std::move(request));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kAccessToken, base::Time::Now() + base::Hours(1));
@@ -166,7 +169,10 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostQueuesUntilBridgeBound) {
 
   MockResultHandler result_handler;
   // Trigger before bridge is set.
-  controller.TriggerDrivePickerHost(result_handler.BindAndGetRemote());
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      result_handler.BindAndGetRemote());
+  controller.TriggerDrivePickerHost(std::move(request));
 
   MockDrivePickerBridge mock_bridge;
   // Setting bridge should flush the pending request and initiate the token
@@ -202,7 +208,10 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostReportsTokenFetchFailure) {
       result_handler,
       OnError(drive_picker_host::mojom::DrivePickerError::kTokenFetchFailure));
 
-  controller.TriggerDrivePickerHost(result_handler.BindAndGetRemote());
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      result_handler.BindAndGetRemote());
+  controller.TriggerDrivePickerHost(std::move(request));
 
   MockDrivePickerBridge mock_bridge;
   // Binding the bridge should now trigger the fetch because a request is

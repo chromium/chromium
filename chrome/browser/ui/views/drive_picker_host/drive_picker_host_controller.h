@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/views/view_tracker.h"
@@ -57,10 +58,9 @@ class DrivePickerHostController : public content::WebContentsObserver,
   ~DrivePickerHostController() override;
 
   // Shows the Drive Picker Host (either a consent dialog or the picker
-  // UI), and relays results to the provided result handler.
+  // UI), and relays results to the provided result handler in the request.
   virtual void ShowDrivePickerHost(
-      mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-          result_handler);
+      std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostControllerTest,
@@ -74,6 +74,11 @@ class DrivePickerHostController : public content::WebContentsObserver,
 
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+
+  // Reports an error back to the result handler in the request.
+  void SendErrorToRequest(
+      std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request,
+      drive_picker_host::mojom::DrivePickerError error);
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
@@ -96,10 +101,9 @@ class DrivePickerHostController : public content::WebContentsObserver,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_window_observation_{this};
 
-  // Stores the result handler if the picker document is not yet loaded when
+  // Stores the request if the picker document is not yet loaded when
   // ShowDrivePickerHost is called.
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      pending_picker_result_handler_;
+  std::unique_ptr<drive_picker_host::DrivePickerHostRequest> pending_request_;
 
   base::WeakPtrFactory<DrivePickerHostController> weak_ptr_factory_{this};
 };

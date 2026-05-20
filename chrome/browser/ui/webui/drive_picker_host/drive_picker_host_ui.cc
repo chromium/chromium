@@ -111,18 +111,21 @@ void DrivePickerHostUI::MaybeBindUntrustedBridge(
 }
 
 void DrivePickerHostUI::TriggerDrivePickerHost(
-    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-        result_handler) {
+    std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
   if (untrusted_bridge_remote_.is_bound() &&
       untrusted_bridge_remote_.is_connected()) {
-    FetchTokenAndShowPicker(std::move(result_handler));
+    if (request->type() ==
+        drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi) {
+      FetchTokenAndShowPicker(request->TakeResultHandler());
+    }
+    // TODO(b/393116812): Implement kConsentDialog.
   } else {
-    if (pending_result_handler_) {
+    if (pending_request_ && pending_request_->has_result_handler()) {
       mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-          std::move(pending_result_handler_))
+          pending_request_->TakeResultHandler())
           ->OnCancel();
     }
-    pending_result_handler_ = std::move(result_handler);
+    pending_request_ = std::move(request);
   }
 }
 
@@ -133,17 +136,22 @@ void DrivePickerHostUI::SetBridge(
   untrusted_bridge_remote_.Bind(std::move(untrusted_bridge));
   untrusted_bridge_remote_.set_disconnect_handler(base::BindOnce(
       [](base::WeakPtr<DrivePickerHostUI> self) {
-        if (self && self->pending_result_handler_) {
+        if (self && self->pending_request_ &&
+            self->pending_request_->has_result_handler()) {
           mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
-              std::move(self->pending_result_handler_))
+              self->pending_request_->TakeResultHandler())
               ->OnError(drive_picker_host::mojom::DrivePickerError::
                             kMojoDisconnected);
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
 
-  if (pending_result_handler_) {
-    FetchTokenAndShowPicker(std::move(pending_result_handler_));
+  if (pending_request_) {
+    if (pending_request_->type() ==
+        drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi) {
+      FetchTokenAndShowPicker(pending_request_->TakeResultHandler());
+    }
+    // TODO(b/511233595): Implement kConsentDialog case.
   }
 }
 
@@ -204,7 +212,10 @@ void DrivePickerHostUI::OnAccessTokenFetched(
     untrusted_bridge_remote_->ShowDrivePicker(std::move(result_handler),
                                               std::move(keys));
   } else {
-    pending_result_handler_ = std::move(result_handler);
+    mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler> handler(
+        std::move(result_handler));
+    handler->OnError(
+        drive_picker_host::mojom::DrivePickerError::kMojoDisconnected);
   }
 }
 
