@@ -90,7 +90,6 @@ per-file chromeos/assistant/internal=*
 per-file clank=*
 per-file clusterfuzz-data=*
 per-file components/accessibility/internal=*
-per-file components/accessibility_annotator/core/resources/internal=*
 per-file components/activity_reporter/internal=*
 per-file components/autofill/core/browser/form_parsing/internal_resources=*
 per-file components/autofill/core/browser/geo/chrome_alternative_state_name_maps=*
