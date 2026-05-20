@@ -7,7 +7,7 @@ load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
-load("@chromium-luci//html.star", "linkify_builder")
+load("@chromium-luci//html.star", "linkify", "linkify_builder")
 load("@chromium-luci//targets.star", "targets")
 load("//lib/ci_constants.star", "ci_constants")
 load("//lib/siso.star", "siso")
@@ -184,4 +184,31 @@ But, the tests are built by {}.\
         category = "mac",
         short_name = "test",
     ),
+)
+
+ci.builder(
+    name = "Linux Builder Default Remote Build",
+    description_html = (
+        "FYI variant of " + linkify_builder("ci", "Linux Builder", "chromium") +
+        " that enables remote execution for all actions by default. <br>" +
+        "It is used to identify build steps with missing input specifications, ensuring " +
+        linkify("https://source.chromium.org/chromium/chromium/src/+/main:build/config/siso/denylist.star", "denylist.star") +
+        " remains exhaustive."
+    ),
+    builder_spec = builder_config.copy_from("ci/Linux Builder"),
+    gn_args = "ci/Linux Builder",
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "remote",
+    ),
+    contact_team_email = "chrome-build-team@google.com",
+    siso_configs = ["builder", "remote-link", "default-remote"],
 )

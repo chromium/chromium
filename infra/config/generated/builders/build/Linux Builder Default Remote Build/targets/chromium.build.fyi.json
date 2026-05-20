@@ -1,0 +1,7 @@
+{
+  "Linux Builder Default Remote Build": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}
