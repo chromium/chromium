@@ -805,6 +805,77 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*label, "Direct Label");
 }
 
+// Test that -webkit-text-security is respected for ARIA label and table name
+// extraction.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_TextSecurityBypass) {
+  const std::string html =
+      "<html><body>"
+      "  <span id=\"secret\" style=\"-webkit-text-security: "
+      "disc\">9999-8888</span>"
+      "  <button id=\"btn\" aria-labelledby=\"secret\">Submit</button>"
+      "  <table>"
+      "    <caption style=\"-webkit-text-security: disc\">My Secret "
+      "Table</caption>"
+      "    <thead><tr><th>Header</th></tr></thead>"
+      "    <tbody><tr><td>Body</td></tr></tbody>"
+      "  </table>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(4));
+
+  ASSERT_TRUE(result_value);
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  // Expected children:
+  // 1. Span container (with the masked text inside)
+  // 2. Button (referencing the span via aria-labelledby)
+  // 3. Table (with the caption)
+  ASSERT_EQ(children->size(), 3u);
+
+  const std::string expected_mask =
+      "\u2022\u2022\u2022\u2022\u2022\u2022\u2022";
+
+  // Verify Span's text node is masked correctly.
+  const base::DictValue& text_node = (*children)[0].GetDict();
+  const std::string* span_text = text_node.FindStringByDottedPath(
+      "contentAttributes.textInfo.textContent");
+  ASSERT_TRUE(span_text);
+  EXPECT_EQ(*span_text, expected_mask);
+
+  // Verify Button's ARIA label is masked correctly.
+  const base::DictValue& button_node = (*children)[1].GetDict();
+  const std::string* button_label =
+      button_node.FindStringByDottedPath("contentAttributes.label");
+  ASSERT_TRUE(button_label);
+  EXPECT_EQ(*button_label, expected_mask);
+
+  // Verify Table's caption is masked correctly.
+  const base::DictValue& table_node = (*children)[2].GetDict();
+  std::optional<double> attribute_type =
+      table_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(attribute_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE));
+  const std::string* table_name = table_node.FindStringByDottedPath(
+      "contentAttributes.tableData.tableName");
+  ASSERT_TRUE(table_name);
+  EXPECT_EQ(*table_name, expected_mask);
+}
+
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_AriaRoles) {
   const std::string html =

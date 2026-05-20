@@ -472,7 +472,7 @@ const HEADING_6_FONT_SIZE_MULTIPLIER = 0.67;
  *
  * @param fontSize The font size string (e.g., "16px").
  * @param doc The document to use for root font size reference.
- * @param styleCache The style cache to use for computing styles.
+ * @param styleCache The style cache to use for computed styles.
  * @return The corresponding PageContentTextSize category.
  */
 function getTextSizeCategory(
@@ -1699,9 +1699,11 @@ function getContentForIframeNode(
  * these two fields if both are present.
  *
  * @param element - The DOM element to extract labels from.
+ * @param styleCache - Optional style cache for computing styles.
  * @returns The resulting string or undefined if none found.
  */
-function getAriaLabel(element: HTMLElement): string | undefined {
+function getAriaLabel(element: HTMLElement, styleCache?: StyleCache): string|
+    undefined {
   const accumulatedTexts: string[] = [];
 
   // Process aria-labelledby.
@@ -1721,8 +1723,15 @@ function getAriaLabel(element: HTMLElement): string | undefined {
       const labelElement = rootNode.getElementById?.(id);
       // We use textContent instead of innerText
       // because elements referenced by aria-labelledby may not be visible.
-      const textContent = labelElement?.textContent;
-      if (textContent && textContent.trim().length > 0) {
+      let textContent = labelElement?.textContent;
+      if (labelElement && textContent && textContent.trim().length > 0) {
+        const style = getComputedStyleForElement(labelElement, styleCache);
+        // TODO(crbug.com/513835087): Consider covering nested blocks with
+        // similar text protections. Though note that this would appear to go
+        // beyond the Blink APC implementation.
+        if (style) {
+          textContent = applyTextTransformAndMasking(textContent, style);
+        }
         accumulatedTexts.push(textContent);
       }
     }
@@ -1730,8 +1739,12 @@ function getAriaLabel(element: HTMLElement): string | undefined {
 
   // Process aria-label if aria-labelledby is not present.
   if (accumulatedTexts.length === 0) {
-    const ariaLabel = element.getAttribute(ARIA_LABEL);
+    let ariaLabel = element.getAttribute(ARIA_LABEL);
     if (ariaLabel && ariaLabel.trim().length > 0) {
+      const style = getComputedStyleForElement(element, styleCache);
+      if (style) {
+        ariaLabel = applyTextTransformAndMasking(ariaLabel, style);
+      }
       accumulatedTexts.push(ariaLabel);
     }
   }
@@ -2014,17 +2027,29 @@ function getFormControlData(
  * Extracts table name from a given table DOM Node.
  *
  * @param domNode The table element to process.
+ * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentTableData.
  */
-function getTableNameForTableNode(domNode: HTMLElement): PageContentTableData {
+function getTableNameForTableNode(
+    domNode: HTMLElement, styleCache?: StyleCache): PageContentTableData {
   const tableData: PageContentTableData = {};
   const tableElement = domNode as HTMLTableElement;
   // NOTE: Table names will appear twice in the APC tree(once as a part of a
   // table node and once as a part of a text node). This matches Blink's
   // behavior.
-  const tableName = tableElement.caption?.innerText?.trim();
-  if (tableName) {
-    tableData.tableName = tableName;
+  const caption = tableElement.caption;
+  if (caption) {
+    let tableName = caption.innerText?.trim();
+    if (tableName) {
+      const style = getComputedStyleForElement(caption, styleCache);
+      if (style) {
+        // TODO(crbug.com/513835087): Consider covering nested blocks with
+        // similar text protections. Though note that this would appear to go
+        // beyond the Blink APC implementation.
+        tableName = applyTextTransformAndMasking(tableName, style);
+      }
+      tableData.tableName = tableName;
+    }
   }
   return tableData;
 }
@@ -2131,7 +2156,7 @@ function getBasicContentForNonGenericElement(
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.TABLE,
-          tableData: getTableNameForTableNode(domNode),
+          tableData: getTableNameForTableNode(domNode, styleCache),
         },
       };
     }
@@ -2289,7 +2314,7 @@ function populateCommonAttributes(
         roleStr ? getAXRoleForAriaRole(roleStr) : AxRole.AX_ROLE_UNKNOWN;
   }
 
-  const ariaLabel = getAriaLabel(element);
+  const ariaLabel = getAriaLabel(element, styleCache);
   if (ariaLabel) {
     attributes.label = ariaLabel;
   }
