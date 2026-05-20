@@ -20,6 +20,9 @@
 // 4. See //docs/flag_guarding_guidelines.md and //docs/configuration.md for
 //    general best practices and advice for the Chromium repo.
 
+// TODO: crbug.com/514743962 - All of these constants should be moved to more
+// specific files and out of this file.  Do not add anything here.
+
 #include <map>
 #include <optional>
 #include <set>

@@ -53,8 +53,12 @@ mojom("interfaces") {
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
+# TODO(crbug.com/514743962): This target should be broken up and have its
+# code moved into appropriate subcomponents.
 component("features") {
   sources = [
+    # All of these feature_registry targets are related to
+    # remote model execution / MQLS.
     "feature_registry/enterprise_policy_registry.cc",
     "feature_registry/enterprise_policy_registry.h",
     "feature_registry/feature_registration.cc",
@@ -63,11 +67,18 @@ component("features") {
     "feature_registry/mqls_feature_registry.h",
     "feature_registry/settings_ui_registry.cc",
     "feature_registry/settings_ui_registry.h",
+
+    # TODO(crbug.com/514743962): This belongs with remote model execution.
     "model_execution/feature_keys.h",
+
+    # TODO(crbug.com/514743962): This is mostly on-device model things,
+    # with a couple stray remote model execution things.
     "model_execution/model_execution_prefs.cc",
     "model_execution/model_execution_prefs.h",
     "model_execution/on_device_features.cc",
     "model_execution/on_device_features.h",
+
+    # TODO(crbug.com/514743962): These should all be broken up and removed.
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",
