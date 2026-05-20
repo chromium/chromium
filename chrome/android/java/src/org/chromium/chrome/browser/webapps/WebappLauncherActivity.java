@@ -81,6 +81,7 @@ public class WebappLauncherActivity extends Activity {
         public final boolean isForWebApk;
         public final @Nullable String webApkPackageName;
         public final boolean isSplashProvidedByWebApk;
+        public boolean isIconTrusted;
 
         public LaunchData(
                 @Nullable String id,
@@ -251,11 +252,32 @@ public class WebappLauncherActivity extends Activity {
         ComponentName component = intent.getComponent();
         assumeNonNull(component);
         if (component.equals(new ComponentName(appContext, SECURE_WEBAPP_LAUNCHER))) {
+            launchData.isIconTrusted = true;
+            return true;
+        }
+
+        if (wasIntentFromChrome(intent)) {
+            launchData.isIconTrusted = true;
             return true;
         }
 
         String webappMac = IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_MAC);
-        return (isValidMacForUrl(launchData.url, webappMac) || wasIntentFromChrome(intent));
+        if (webappMac == null) {
+            return false;
+        }
+        byte[] macBytes = Base64.decode(webappMac, Base64.DEFAULT);
+        String encodedIcon = IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_ICON);
+
+        int verificationResult =
+                WebappAuthenticator.verifyMac(launchData.url, encodedIcon, macBytes);
+        if (verificationResult == WebappAuthenticator.MAC_TRUSTED) {
+            launchData.isIconTrusted = true;
+            return true;
+        } else if (verificationResult == WebappAuthenticator.MAC_LEGACY) {
+            launchData.isIconTrusted = false;
+            return true;
+        }
+        return false;
     }
 
     private static void launchWebapp(
@@ -333,11 +355,6 @@ public class WebappLauncherActivity extends Activity {
      * @param mac MAC to compare the URL against. See {@link WebappAuthenticator}.
      * @return Whether the MAC is valid for the URL.
      */
-    private static boolean isValidMacForUrl(String url, @Nullable String mac) {
-        return mac != null
-                && WebappAuthenticator.isUrlValid(url, Base64.decode(mac, Base64.DEFAULT));
-    }
-
     private static boolean wasIntentFromChrome(Intent intent) {
         return IntentHandler.wasIntentSenderChrome(intent);
     }
@@ -365,6 +382,7 @@ public class WebappLauncherActivity extends Activity {
             WebappIntentUtils.copyWebApkLaunchIntentExtras(intent, launchIntent);
         } else {
             WebappIntentUtils.copyWebappLaunchIntentExtras(intent, launchIntent);
+            launchIntent.putExtra(WebappConstants.EXTRA_IS_ICON_TRUSTED, launchData.isIconTrusted);
         }
 
         // Setting FLAG_ACTIVITY_CLEAR_TOP handles 2 edge cases:
