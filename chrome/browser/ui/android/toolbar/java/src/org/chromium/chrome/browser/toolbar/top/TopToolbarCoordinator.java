@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopContro
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -358,6 +359,11 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Add the layer after toolbar / control container is initialized.
         mTopControlsStacker.addControl(this);
         mTopControlsStacker.requestLayerUpdatePost(false);
+
+        if (ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()) {
+            // Remove the top margin directly from the toolbar.
+            mControlContainer.mutateToolbarLayoutParams().topMargin = 0;
+        }
     }
 
     /**
@@ -1006,7 +1012,11 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Skip the layout params in non-resting position to avoid trigger layout during browser
         // controls reposition.
         if (reachRestingPosition) {
-            mControlContainer.mutateToolbarLayoutParams().topMargin = getTabStripHeight();
+            if (ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()) {
+                mControlContainer.mutateToolbarLayoutParams().topMargin = 0;
+            } else {
+                mControlContainer.mutateToolbarLayoutParams().topMargin = getTabStripHeight();
+            }
         }
     }
 

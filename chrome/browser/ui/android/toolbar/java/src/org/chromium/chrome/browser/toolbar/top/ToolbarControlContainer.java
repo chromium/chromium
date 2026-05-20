@@ -349,6 +349,35 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()) {
+            View toolbar = findViewById(R.id.toolbar);
+            View hairline = findViewById(R.id.toolbar_hairline);
+
+            if (toolbar != null && hairline != null) {
+                int tabStripHeight = mToolbar.getTabStripHeight();
+
+                // Set the hairline's top margin to toolbar view to avoid the hairline's top
+                // margin from becoming too big (e.g. toolbar height + tab strip height).
+                MarginLayoutParams hairlineParams = (MarginLayoutParams) hairline.getLayoutParams();
+                if (hairlineParams.topMargin != mToolbarLayoutHeight) {
+                    hairlineParams.topMargin = mToolbarLayoutHeight;
+                }
+
+                // Set a top margin of tab strip height to the toolbar_container.
+                MarginLayoutParams containerParams =
+                        (MarginLayoutParams) mToolbarContainer.getLayoutParams();
+                if (containerParams.topMargin != tabStripHeight) {
+                    containerParams.topMargin = tabStripHeight;
+                }
+            }
+        }
+
+        // Run the measure pass once with the correct params already in place.
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
     public void onHeightTransitionFinished(boolean success) {
         if (!success) return;
 
