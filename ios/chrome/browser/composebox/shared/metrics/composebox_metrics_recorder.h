@@ -9,6 +9,9 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/composebox/public/composebox_mode.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+
 // LINT.IfChange(AiModeActivationSource)
 enum class AiModeActivationSource {
   kToolMenu = 0,
@@ -140,6 +143,12 @@ class ContextualSearchMetricsRecorder;
 
 // Records whether the user edited the text before entering AI Mode.
 - (void)recordTextEditedBeforeAiMode:(BOOL)edited;
+
+// Records the tool explicitly selected in the menu.
+- (void)recordToolSelected:(ComposeboxMode)tool;
+
+// Records the model explicitly selected in the menu.
+- (void)recordModelSelected:(ComposeboxModelOption)model;
 
 @end
 

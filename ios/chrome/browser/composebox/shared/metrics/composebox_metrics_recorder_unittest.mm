@@ -241,3 +241,17 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
   histogram_tester_.ExpectBucketCount(
       "ContextualSearch.Query.AttachmentCount.Pdf.Unknown", 3, 2);
 }
+
+TEST_F(ComposeboxMetricsRecorderTest, ToolSelected) {
+  [recorder_ recordToolSelected:ComposeboxMode::kCanvas];
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.Tools.Selected.Unknown",
+      static_cast<int>(omnibox::ToolMode::TOOL_MODE_CANVAS), 1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, ModelSelected) {
+  [recorder_ recordModelSelected:ComposeboxModelOption::kThinking];
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.Models.Selected.Unknown",
+      static_cast<int>(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO), 1);
+}

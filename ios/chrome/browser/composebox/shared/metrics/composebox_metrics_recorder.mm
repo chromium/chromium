@@ -104,6 +104,39 @@ lens::MimeType MimeTypeFromMetricsAttachmentType(
   }
 }
 
+/// Converts ComposeboxMode to omnibox::ToolMode.
+omnibox::ToolMode ToolModeFromComposeboxMode(ComposeboxMode tool) {
+  switch (tool) {
+    case ComposeboxMode::kCanvas:
+      return omnibox::ToolMode::TOOL_MODE_CANVAS;
+    case ComposeboxMode::kDeepSearch:
+      return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+    case ComposeboxMode::kImageGeneration:
+      return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+    case ComposeboxMode::kAIM:
+      return omnibox::ToolMode::TOOL_MODE_AIM;
+    case ComposeboxMode::kRegularSearch:
+      return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  }
+}
+
+/// Converts ComposeboxModelOption to omnibox::ModelMode.
+omnibox::ModelMode ModelModeFromComposeboxModelOption(
+    ComposeboxModelOption model) {
+  switch (model) {
+    case ComposeboxModelOption::kNone:
+      return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
+    case ComposeboxModelOption::kRegular:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
+    case ComposeboxModelOption::kAuto:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
+    case ComposeboxModelOption::kThinking:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
+    case ComposeboxModelOption::kThinkingNoGenUI:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
+  }
+}
+
 }  // namespace
 
 @implementation ComposeboxMetricsRecorder {
@@ -280,6 +313,20 @@ lens::MimeType MimeTypeFromMetricsAttachmentType(
 - (void)recordTextEditedBeforeAiMode:(BOOL)edited {
   base::UmaHistogramBoolean("Omnibox.MobileFusebox.TextEditedBeforeAiMode",
                             edited);
+}
+
+- (void)recordToolSelected:(ComposeboxMode)tool {
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordToolSelected(
+        ToolModeFromComposeboxMode(tool));
+  }
+}
+
+- (void)recordModelSelected:(ComposeboxModelOption)model {
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordModelSelected(
+        ModelModeFromComposeboxModelOption(model));
+  }
 }
 
 #pragma mark - private

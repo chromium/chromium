@@ -11,6 +11,8 @@ source_set("metrics") {
     "//base",
     "//base:i18n",
     "//components/contextual_search:public",
+    "//ios/chrome/browser/composebox/public:composebox_mode",
+    "//ios/chrome/browser/composebox/public:model_options",
     "//skia",
   ]
 }

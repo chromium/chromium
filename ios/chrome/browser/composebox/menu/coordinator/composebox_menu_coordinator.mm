@@ -225,7 +225,14 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
                     didTapTool:(ComposeboxMode)toolMode {
   _successfulActionPerformed = YES;
+
   if (_isStandaloneMenu) {
+    [_metricsRecorder recordToolSelected:toolMode];
+    if (toolMode == ComposeboxMode::kAIM) {
+      [_metricsRecorder
+          recordAiModeActivationSource:AiModeActivationSource::kToolMenu];
+    }
+
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
                      query:nil
@@ -248,7 +255,9 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
                    didTapModel:(ComposeboxModelOption)modelMode {
   _successfulActionPerformed = YES;
+
   if (_isStandaloneMenu) {
+    [_metricsRecorder recordModelSelected:modelMode];
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
                      query:nil

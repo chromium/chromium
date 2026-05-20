@@ -846,12 +846,14 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   } else {
     _modeHolder.mode = toolMode;
+    [_metricsRecorder recordToolSelected:toolMode];
   }
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
                       didTapModel:(ComposeboxModelOption)modelMode {
   [_mediator setModelOption:modelMode explicitUserAction:YES];
+  [_metricsRecorder recordModelSelected:modelMode];
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
