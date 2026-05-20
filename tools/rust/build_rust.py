@@ -236,11 +236,10 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
     # Pull the stage0 to find the package intended to be used to build this
     # version of the Rust compiler.
     STAGE0_JSON_URL = (
-        'https://chromium.googlesource.com/external/github.com/'
-        'rust-lang/rust/+/{GIT_HASH}/src/stage0?format=TEXT')
-    base64_text = urllib.request.urlopen(
+        'https://raw.githubusercontent.com/'
+        'rust-lang/rust/{GIT_HASH}/src/stage0')
+    stage0 = urllib.request.urlopen(
         STAGE0_JSON_URL.format(GIT_HASH=rust_git_hash)).read().decode("utf-8")
-    stage0 = base64.b64decode(base64_text).decode("utf-8")
     lines = stage0.splitlines()
 
     # The stage0 file contains the path to all tarballs it uses binaries from.
