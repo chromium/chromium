@@ -260,6 +260,13 @@ targets.mixin(
 targets.mixin(
     name = "tfc-cq-tast",
     skylab = targets.skylab(
+        # All tests in tast_control_cq_tests.txt must have dep:chrome,
+        # !dep:chrome tests will be filtered out. !group:mainline tests will be
+        # kept and run if they are in tast_control_cq_tests.txt
+        cros_test_tags = ["dep:chrome"],
+        # cros_test_tags_exclude will honor the suite's settings. for
+        # chrome_all_tast_tests suite, all informational or
+        # dep:no_chrome_dcheck tests will be filtered out.
         cros_test_names_from_file = ["chromeos/tast_control_cq_tests.txt"],
         cros_test_max_in_shard = 20,
     ),
