@@ -24,6 +24,8 @@ Status ExecuteAlertCommand(const AlertCommand& alert_command,
   if (status.IsError())
     return status;
 
+  std::unique_ptr<WebViewHolder> scoped_web_view_lock = web_view->GetHolder();
+
   status = web_view->HandleReceivedEvents();
   if (status.IsError())
     return status;

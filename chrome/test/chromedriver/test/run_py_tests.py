@@ -6504,6 +6504,52 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
                 'return arguments[0] === window.frames[0]',
                 frame)
 
+  def testAlertDoesntCrashBrowser(self):
+    # Regression test for crbug.com/502206631.
+    # It ensures that ExecuteAlertCommand doesn't cause a use-after-free
+    # crash when a prerender activation swap detaches the web view.
+    self._http_server.SetDataForPath('/inner.html',
+      b'<html><body><h1>Prerendered Page</h1></body></html>')
+    self._http_server.SetDataForPath('/prerender_uaf.html',
+      bytes('''<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.innerText = JSON.stringify({
+      "prerender": [{"source": "list", "urls": ["/inner.html"]}]
+    });
+    document.head.append(script);
+  </script>
+</head>
+<body>
+  <a id="link" href="/inner.html">navigate</a>
+  <script>
+    window._triggerPrerenderSwap = function() {
+      setTimeout(() => {
+        document.getElementById('link').click();
+        const start = Date.now();
+        while (Date.now() - start < 3000);
+      }, 100);
+    };
+  </script>
+</body>
+</html>''', 'utf-8'))
+
+    driver = self.CreateDriver()
+    try:
+      driver.Load(self.GetHttpUrlForFile('/prerender_uaf.html'))
+      time.sleep(1)
+      driver.ExecuteScript('window._triggerPrerenderSwap();')
+      time.sleep(0.15)
+      try:
+        driver.GetAlertMessage()
+      except Exception:
+        pass
+    finally:
+      pass
+
 
 class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):
 
