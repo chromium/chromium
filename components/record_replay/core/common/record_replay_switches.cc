@@ -7,5 +7,6 @@
 namespace record_replay::switches {
 
 const char kTaskDefinitionFile[] = "task-definition-file";
+const char kWipeRecordings[] = "wipe-recordings";
 
 }  // namespace record_replay::switches

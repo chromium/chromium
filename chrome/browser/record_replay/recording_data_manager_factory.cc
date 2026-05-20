@@ -4,10 +4,12 @@
 
 #include "chrome/browser/record_replay/recording_data_manager_factory.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/record_replay/core/browser/recording_data_manager_impl.h"
 #include "components/record_replay/core/common/record_replay_features.h"
+#include "components/record_replay/core/common/record_replay_switches.h"
 
 namespace record_replay {
 
@@ -25,14 +27,24 @@ RecordingDataManagerFactory* RecordingDataManagerFactory::GetInstance() {
 }
 
 RecordingDataManagerFactory::RecordingDataManagerFactory()
-    : ProfileKeyedServiceFactory(
-          "RecordingDataManager",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+    : ProfileKeyedServiceFactory("RecordingDataManager",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 RecordingDataManagerFactory::~RecordingDataManagerFactory() = default;
 
 bool RecordingDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {
-  return base::FeatureList::IsEnabled(features::kRecordReplayBase);
+  if (!base::FeatureList::IsEnabled(features::kRecordReplayBase)) {
+    return false;
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_seeding_file =
+      command_line->HasSwitch(switches::kTaskDefinitionFile);
+  bool has_seeding_param =
+      !features::kRecordReplayTaskDefinitionSeed.Get().empty();
+  bool has_wipe_switch = command_line->HasSwitch(switches::kWipeRecordings);
+
+  return has_seeding_file || has_seeding_param || has_wipe_switch;
 }
 
 std::unique_ptr<KeyedService>

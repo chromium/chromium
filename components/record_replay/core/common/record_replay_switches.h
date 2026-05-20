@@ -8,6 +8,7 @@
 namespace record_replay::switches {
 
 extern const char kTaskDefinitionFile[];
+extern const char kWipeRecordings[];
 
 }  // namespace record_replay::switches
 

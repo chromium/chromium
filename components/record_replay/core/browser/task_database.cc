@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/record_replay/core/browser/parsing_utils.h"
 #include "components/record_replay/core/browser/task_definition_parsing_utils.h"
+#include "components/record_replay/core/common/record_replay_switches.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -74,7 +75,8 @@ void TaskDatabase::Init(base::FilePath profile_path) {
     return;
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch("wipe-recordings")) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWipeRecordings)) {
     // Drop tables in the reverse order of dependencies (leaf to root).
     // Since foreign key constraints are active, SQLite would reject dropping
     // parent tables (like Recordings) if their children are still active.
