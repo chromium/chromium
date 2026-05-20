@@ -320,4 +320,10 @@ GURL AppendInvocationSourceParamToURL(
       url_to_modify, kInvocationSourceParameterKey, param_value);
 }
 
+const std::string ExtractTextQueryParameterValue(const GURL& url) {
+  std::string param_value = "";
+  net::GetValueForKeyInQuery(url, kTextQueryParameterKey, &param_value);
+  return param_value;
+}
+
 }  // namespace lens

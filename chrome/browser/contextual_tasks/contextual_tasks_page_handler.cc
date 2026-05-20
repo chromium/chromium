@@ -237,18 +237,37 @@ void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
 
 void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
                                                GetUrlForTaskCallback callback) {
+  // Wrap the callback to ensure previous_query is set on the session handle
+  // regardless of whether the URL is returned synchronously or asynchronously.
+  auto wrapped_callback = base::BindOnce(
+      [](base::WeakPtr<ContextualTasksPageHandler> self,
+         GetUrlForTaskCallback original_callback, const GURL& url) {
+        if (self && self->web_ui_controller_) {
+          if (auto* session_handle =
+                  self->web_ui_controller_
+                      ->GetOrCreateContextualSessionHandle()) {
+            std::string query = lens::ExtractTextQueryParameterValue(url);
+            if (!query.empty()) {
+              session_handle->set_previous_query(query);
+            }
+          }
+        }
+        std::move(original_callback).Run(url);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
   // First check if there's an initial URL.
   std::optional<GURL> initial_url = ui_service_->GetInitialUrlForTask(uuid);
   if (initial_url) {
-    std::move(callback).Run(
-        contextual_tasks::ContextualTasksUiService::CopyParamsFromWebUIUrl(
+    std::move(wrapped_callback)
+        .Run(contextual_tasks::ContextualTasksUiService::CopyParamsFromWebUIUrl(
             initial_url.value(), web_ui_controller_->GetWebUiUrl()));
     return;
   }
 
   // If the task is waiting for a URL to be generated, register a callback.
   if (ui_service_->IsTaskWaitingForUrl(uuid)) {
-    ui_service_->AddPendingUrlCallback(uuid, std::move(callback));
+    ui_service_->AddPendingUrlCallback(uuid, std::move(wrapped_callback));
     return;
   }
 
@@ -263,7 +282,7 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
             std::move(callback).Run(contextual_tasks::ContextualTasksUiService::
                                         GetAiUrlFromWebUIUrl(url, webui_url));
           },
-          std::move(callback), web_ui_controller_->GetWebUiUrl()));
+          std::move(wrapped_callback), web_ui_controller_->GetWebUiUrl()));
 }
 
 void ContextualTasksPageHandler::SetTaskId(const base::Uuid& uuid) {

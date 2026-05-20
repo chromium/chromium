@@ -500,6 +500,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
           lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
 
   handler_->SubmitQuery("test query", 0, false, false, false, false);
+  EXPECT_EQ(session_handle_->previous_query(), "test query");
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, CloseLensOverlayFromWebUI) {

@@ -110,6 +110,10 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // Append the dark mode param to the provided |url_to_modify|.
 GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
 
+// Returns the value of the text query parameter value from the provided search
+// URL if any. Empty string otherwise.
+const std::string ExtractTextQueryParameterValue(const GURL& url);
+
 // Remove parameters that cause the SRP to be rendered for the side panel. Used
 // when opening the SRP in a new tab.
 GURL RemoveSidePanelURLParameters(const GURL& url);

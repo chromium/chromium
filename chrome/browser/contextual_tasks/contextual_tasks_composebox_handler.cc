@@ -480,6 +480,7 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
   }
   // Create a client to aim message and send it to the page.
   if (auto* session_handle = GetContextualSessionHandle()) {
+    session_handle->set_previous_query(query);
     // If there is an auto-added tab, the user sending the query means the
     // system should upload it.
     UploadSnapshotTabContextIfPresent();

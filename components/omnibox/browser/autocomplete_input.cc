@@ -968,6 +968,7 @@ void AutocompleteInput::Clear() {
   use_fake_https_for_https_upgrade_testing_ = false;
   context_tab_title_.clear();
   context_tab_url_ = GURL();
+  previous_query_.clear();
 }
 
 size_t AutocompleteInput::EstimateMemoryUsage() const {
@@ -984,6 +985,7 @@ size_t AutocompleteInput::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(input_state_);
   res += base::trace_event::EstimateMemoryUsage(context_tab_title_);
   res += base::trace_event::EstimateMemoryUsage(context_tab_url_);
+  res += base::trace_event::EstimateMemoryUsage(previous_query_);
 
   return res;
 }

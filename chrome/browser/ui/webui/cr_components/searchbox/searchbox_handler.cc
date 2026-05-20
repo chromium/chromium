@@ -1060,6 +1060,7 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
   }
 
   autocomplete_input.set_input_state(GetInputState());
+  autocomplete_input.set_previous_query(GetPreviousQuery());
 
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -1428,6 +1429,10 @@ const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
 
 omnibox::InputState SearchboxHandler::GetInputState() const {
   return omnibox::InputState();
+}
+
+std::string SearchboxHandler::GetPreviousQuery() {
+  return std::string();
 }
 
 void SearchboxHandler::ShouldShowDriveDisclaimer(

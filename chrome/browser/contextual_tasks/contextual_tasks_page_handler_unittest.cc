@@ -265,10 +265,16 @@ TEST_F(ContextualTasksPageHandlerTest, GetUrlForTask_InitialUrlExists) {
   EXPECT_CALL(*mock_contextual_tasks_ui_service_, GetInitialUrlForTask(task_id))
       .WillOnce(Return(expected_url));
 
+  contextual_search::MockContextualSearchSessionHandle mock_session;
+  EXPECT_CALL(*contextual_tasks_ui_, GetOrCreateContextualSessionHandle())
+      .WillOnce(Return(&mock_session));
+
   base::RunLoop run_loop;
   page_handler_->GetUrlForTask(task_id,
                                base::BindLambdaForTesting([&](const GURL& url) {
                                  EXPECT_EQ(url, expected_url);
+                                 EXPECT_EQ(mock_session.previous_query(),
+                                           "test");
                                  run_loop.Quit();
                                }));
   run_loop.Run();

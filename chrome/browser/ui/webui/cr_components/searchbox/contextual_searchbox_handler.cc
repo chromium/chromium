@@ -517,6 +517,12 @@ omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
   return omnibox::InputState();
 }
 
+std::string ContextualSearchboxHandler::GetPreviousQuery() {
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  return contextual_session_handle ? contextual_session_handle->previous_query()
+                                   : std::string();
+}
+
 bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
   if (smart_tab_sharing_active_for_thread_.has_value()) {
     return *smart_tab_sharing_active_for_thread_;

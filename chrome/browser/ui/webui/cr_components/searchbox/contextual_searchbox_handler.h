@@ -219,6 +219,7 @@ class ContextualSearchboxHandler
  protected:
   // SearchboxHandler:
   omnibox::InputState GetInputState() const override;
+  std::string GetPreviousQuery() override;
 
   virtual void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 

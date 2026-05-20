@@ -200,6 +200,12 @@ class ContextualSearchSessionHandle {
   // Returns whether the current session_id is part of the uploaded context.
   bool IsTabInContext(SessionID session_id) const;
 
+  // Accessors for the last query submitted in this contextual session.
+  const std::string& previous_query() const { return previous_query_; }
+  void set_previous_query(const std::string& previous_query) {
+    previous_query_ = previous_query;
+  }
+
  private:
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
@@ -241,6 +247,10 @@ class ContextualSearchSessionHandle {
   // apply to entrypoints like contextual suggestions in the Omnibox or the
   // contextual searchbox within the Lens overlay.
   bool is_contextual_lens_session_ = false;
+
+  // TODO(crbug.com/511274967): Remove this when contextual_tasks::ThreadTurn
+  // is fully implemented.
+  std::string previous_query_;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

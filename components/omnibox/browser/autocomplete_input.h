@@ -394,6 +394,12 @@ class AutocompleteInput {
 
   void set_context_tab_url(GURL url) { context_tab_url_ = url; }
 
+  const std::string& previous_query() const { return previous_query_; }
+
+  void set_previous_query(const std::string& previous_query) {
+    previous_query_ = previous_query;
+  }
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -480,6 +486,9 @@ class AutocompleteInput {
   bool use_fake_https_for_https_upgrade_testing_;
   std::u16string context_tab_title_;
   GURL context_tab_url_;
+  // This is only relevant for contextual tasks where a previous query might
+  // be submitted and follow-up queries can be asked in the same thread.
+  std::string previous_query_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_
