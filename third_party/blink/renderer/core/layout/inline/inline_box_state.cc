@@ -38,6 +38,7 @@ InlineBoxState::InlineBoxState(const InlineBoxState&& state)
       font(state.font),
       scaled_font(state.scaled_font),
       scaling_factor(state.scaling_factor),
+      text_fit_scale(state.text_fit_scale),
       metrics(state.metrics),
       text_metrics(state.text_metrics),
       text_top(state.text_top),
@@ -59,6 +60,7 @@ void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
                                 const LayoutObject& layout_object) {
   style = &style_ref;
   is_svg_text = is_svg;
+  text_fit_scale = 1.0f;
   if (!is_svg_text) {
     scaling_factor = 1.0f;
     scaled_font = nullptr;
@@ -340,10 +342,11 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
+    auto text_scale = FindTextScale(should_scale_line_height, line_items,
+                                    /* start_index */ 0,
+                                    /* initial_nesting_level */ 0);
+    line_box_state.text_fit_scale = text_scale.TotalScale(*line_box_state.font);
     if (!line_height_quirk) {
-      auto text_scale = FindTextScale(should_scale_line_height, line_items,
-                                      /* start_index */ 0,
-                                      /* initial_nesting_level */ 0);
       line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
                                         baseline_type, &text_scale);
       // If ::first-line has a smaller computed line-height than its containing
@@ -377,6 +380,7 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
     LogicalLineItems* line_box) {
   InlineBoxState* box =
       OnOpenTag(space, item, item_result, baseline_type, *line_box);
+  box->text_fit_scale = text_scale.TotalScale(*box->font);
   box->needs_box_fragment = item.ShouldCreateBoxFragment();
   if (box->needs_box_fragment)
     AddBoxFragmentPlaceholder(box, text_scale, line_box, baseline_type);
@@ -395,6 +399,9 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
   InlineBoxState* box = &stack_.back();
   box->fragment_start = line_box.size();
   box->ResetStyle(style, is_svg_text_, *item.GetLayoutObject());
+  if (stack_.size() > 1) {
+    box->text_fit_scale = stack_[stack_.size() - 2].text_fit_scale;
+  }
   box->item = &item;
   box->has_start_edge = true;
   box->margins = item_result.margins;
@@ -1274,19 +1281,35 @@ InlineLayoutStateStack::ApplyBaselineShift(wtf_size_t stack_index,
   InlineBoxState& parent_box = stack_[stack_index - 1];
 
   switch (vertical_align) {
-    case EVerticalAlign::kSub:
-      baseline_shift = parent_box.style->ComputedFontSizeAsFixed() / 5 + 1;
+    case EVerticalAlign::kSub: {
+      LayoutUnit font_size = parent_box.style->ComputedFontSizeAsFixed();
+      if (parent_box.text_fit_scale != 1.0f) {
+        font_size = LayoutUnit(font_size.ToFloat() * parent_box.text_fit_scale);
+      }
+      baseline_shift = font_size / 5 + 1;
       break;
-    case EVerticalAlign::kSuper:
-      baseline_shift = -(parent_box.style->ComputedFontSizeAsFixed() / 3 + 1);
+    }
+    case EVerticalAlign::kSuper: {
+      LayoutUnit font_size = parent_box.style->ComputedFontSizeAsFixed();
+      if (parent_box.text_fit_scale != 1.0f) {
+        font_size = LayoutUnit(font_size.ToFloat() * parent_box.text_fit_scale);
+      }
+      baseline_shift = -(font_size / 3 + 1);
       break;
+    }
     case EVerticalAlign::kLength: {
       // 'Percentages: refer to the 'line-height' of the element itself'.
       // https://www.w3.org/TR/CSS22/visudet.html#propdef-vertical-align
+      LayoutUnit line_height;
       const Length& length = style.GetVerticalAlignLength();
-      LayoutUnit line_height = length.HasPercent()
-                                   ? style.ComputedLineHeightAsFixed()
-                                   : box->text_metrics.LineHeight();
+      if (length.HasPercent()) {
+        line_height = style.ComputedLineHeightAsFixed();
+        if (!style.LineHeight().IsFixed() && box->text_fit_scale != 1.0f) {
+          line_height = LayoutUnit(line_height.ToFloat() * box->text_fit_scale);
+        }
+      } else {
+        line_height = box->text_metrics.LineHeight();
+      }
       baseline_shift = -ValueForLength(length, line_height);
       break;
     }

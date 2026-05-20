@@ -60,6 +60,10 @@ struct InlineBoxState {
   // css-specified-size * scaling_factor.
   float scaling_factor;
 
+  // Scaling factor for text-fit. It's a "total" scaling factor, not a
+  // paint-time scaling factor.
+  float text_fit_scale = 1.0f;
+
   // The united metrics for the current box. This includes all objects in this
   // box, including descendants, and adjusted by placement properties such as
   // 'vertical-align'.

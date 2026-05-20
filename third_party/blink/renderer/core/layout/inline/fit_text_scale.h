@@ -30,6 +30,19 @@ struct FitTextBlockScale {
 
   constexpr static FitTextBlockScale* kFixed = nullptr;
 
+  float TotalScale(const Font& original_font) const {
+    if (!scaled_font) {
+      return paint_scale;
+    }
+    float original_font_size =
+        original_font.GetFontDescription().ComputedSize();
+    if (original_font_size > 0) {
+      return scaled_font->GetFontDescription().ComputedSize() /
+             original_font_size * paint_scale;
+    }
+    return paint_scale;
+  }
+
   STACK_ALLOCATED();
 };
 
