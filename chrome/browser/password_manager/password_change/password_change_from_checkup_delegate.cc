@@ -24,7 +24,6 @@
 #include "chrome/browser/password_manager/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
-#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
@@ -354,23 +353,23 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
     logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FOUND);
   }
 
-  submission_helper_ =
-      std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-          actuation_web_contents_.get(),
-          ChromePasswordManagerClient::FromWebContents(
-              actuation_web_contents_.get()),
-          base::BindOnce(
-              &PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted,
-              weak_ptr_factory_.GetWeakPtr()));
+  form_filler_ = std::make_unique<ChangePasswordFormFiller>(
+      actuation_web_contents_.get(),
+      ChromePasswordManagerClient::FromWebContents(
+          actuation_web_contents_.get()),
+      /*logs_uploader=*/nullptr);
 
-  submission_helper_->FillChangePasswordForm(
-      form_manager, username_, current_password_, generated_password_);
+  form_filler_->FillForm(
+      form_manager, username_, current_password_, generated_password_,
+      base::BindOnce(
+          &PasswordChangeFromCheckupDelegate::OnChangePasswordFormFilled,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
-    ChangePasswordFormFillingSubmissionHelper::SubmissionResult result) {
-  submission_helper_.reset();
-  // If the form submission failed, do not trigger a verification task.
+void PasswordChangeFromCheckupDelegate::OnChangePasswordFormFilled(
+    ChangePasswordFormFiller::FillingResult result) {
+  form_filler_.reset();
+
   if (!result.has_value()) {
     return;
   }
@@ -381,8 +380,7 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
   }
 
   if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(
-        Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_SUBMISSION);
+    logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FILLED);
   }
 
   glic::GlicKeyedService* glic_service = GetGlicService();

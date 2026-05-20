@@ -153,14 +153,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
-                       FormWaiterFindsFormAndSubmits) {
+                       FormWaiterFindsFormFillsAndSubmitsThroughGlic) {
   Profile* profile = browser()->profile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
-
-  // Grab the Optimization Guide Mock
-  auto* mock_opt_guide = static_cast<MockOptimizationGuideKeyedService*>(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
 
   content::WebContents* original_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -192,30 +188,26 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(new_web_contents, url));
 
-  base::RunLoop run_loop;
-  // Simulate the filler submitting the form with Model Execution Service.
-  EXPECT_CALL(*mock_opt_guide,
-              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
-                               kPasswordChangeSubmission,
-                           testing::_, testing::_, testing::_))
-      .WillOnce(testing::DoAll(
-          testing::Invoke(&run_loop, &base::RunLoop::Quit),
-          testing::WithArg<3>([&](auto callback) {
-            optimization_guide::proto::PasswordChangeResponse response;
-            response.mutable_submit_form_data()->set_dom_node_id_to_click(
-                GetDomNodeId(new_web_contents,
-                             "chg_submit_wo_username_button"));
-            auto result =
-                optimization_guide::OptimizationGuideModelExecutionResult(
-                    optimization_guide::AnyWrapProto(response), nullptr);
-            std::move(callback).Run(std::move(result), nullptr);
-          })));
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
-  run_loop.Run();
 
-  // After the form is submitted a verification task is created
-  // and finished.
+  // Wait for the form fields to be filled.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               new_web_contents,
+               "document.getElementById('new_password_1').value !== ''")
+        .ExtractBool();
+  }));
+
+  std::string new_password_value =
+      content::EvalJs(new_web_contents,
+                      "document.getElementById('new_password_1').value")
+          .ExtractString();
+  EXPECT_EQ(base::UTF8ToUTF16(new_password_value),
+            delegate->generated_password());
+
+  // After the form is filled, the delegate transitions to Glic verification.
+  // We simulate Glic completing the verification task.
   actor::TaskId verification_task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->StopTask(verification_task_id,

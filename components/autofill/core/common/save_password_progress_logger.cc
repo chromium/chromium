@@ -601,8 +601,8 @@ std::string_view SavePasswordProgressLogger::GetStringFromID(
         STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FOUND:
       return "Password change from checkup: form found";
     case SavePasswordProgressLogger::
-        STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_SUBMISSION:
-      return "Password change from checkup: form submission";
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FILLED:
+      return "Password change from checkup: form filled";
     case SavePasswordProgressLogger::
         STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT:
       return "Password change from checkup: timeout";

@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
 #include "url/gurl.h"
 
 class ChangePasswordFormWaiter;
@@ -65,8 +65,8 @@ class PasswordChangeFromCheckupDelegate {
 
   void OnChangePasswordFormManagerFound(
       password_manager::PasswordFormManager* form_manager);
-  void OnChangePasswordFormSubmitted(
-      ChangePasswordFormFillingSubmissionHelper::SubmissionResult result);
+  void OnChangePasswordFormFilled(
+      ChangePasswordFormFiller::FillingResult result);
 
   void OnVerificationTaskStateChanged(actor::ActorTask& task);
   void OnVerificationTimeout();
@@ -88,7 +88,7 @@ class PasswordChangeFromCheckupDelegate {
 
   base::CallbackListSubscription actor_task_state_subscription_;
 
-  std::unique_ptr<ChangePasswordFormFillingSubmissionHelper> submission_helper_;
+  std::unique_ptr<ChangePasswordFormFiller> form_filler_;
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
   std::optional<actor::ActorTask::State> find_form_task_state_ = std::nullopt;
