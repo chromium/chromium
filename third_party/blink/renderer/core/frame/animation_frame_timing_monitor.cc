@@ -738,8 +738,11 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
     return ScriptTimingInfo::ScriptSourceLocation();
   }
 
-  v8::Local<v8::Value> bound = value.As<v8::Function>()->GetBoundFunction();
-  if (!bound.IsEmpty() && bound->IsFunction()) {
+  while (value->IsFunction()) {
+    v8::Local<v8::Value> bound = value.As<v8::Function>()->GetBoundFunction();
+    if (bound.IsEmpty() || !bound->IsFunction()) {
+      break;
+    }
     value = bound;
   }
 
