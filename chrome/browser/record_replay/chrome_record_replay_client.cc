@@ -114,7 +114,7 @@ autofill::AutofillClient* ChromeRecordReplayClient::GetAutofillClient() {
 
 void ChromeRecordReplayClient::ReportToUser(std::string_view message) {
   ToastController* const toast_controller =
-      ToastController::MaybeGetForWebContents(tab().GetContents());
+      ToastController::MaybeGetForTabInterface(&tab());
   if (toast_controller) {
     ToastParams params(ToastId::kRecordReplay);
     params.body_string_override = base::UTF8ToUTF16(message);

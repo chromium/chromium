@@ -31,6 +31,10 @@ class Page;
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace toasts {
 enum class ToastCloseReason;
 class ToastView;
@@ -79,6 +83,11 @@ class ToastController : public views::WidgetObserver,
   // if none.
   static ToastController* MaybeGetForWebContents(
       content::WebContents* web_contents);
+
+  // Returns the controller for the browser that owns `tab_interface`, or
+  // nullptr if none.
+  static ToastController* MaybeGetForTabInterface(
+      tabs::TabInterface* tab_interface);
 
   void Init();
   bool IsShowingToast() const;

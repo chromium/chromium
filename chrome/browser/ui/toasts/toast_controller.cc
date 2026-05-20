@@ -71,7 +71,13 @@ ToastController* ToastController::MaybeGetForWebContents(
     return nullptr;
   }
 
-  auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return MaybeGetForTabInterface(
+      tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
+
+// static.
+ToastController* ToastController::MaybeGetForTabInterface(
+    tabs::TabInterface* tab_interface) {
   if (!tab_interface) {
     return nullptr;
   }
