@@ -5868,15 +5868,8 @@ crbug.com/1317067 [ Release ] external/wpt/html/browsers/browsing-the-web/naviga
 
 # Tests time out, and also give different results.
 crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screenx.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerheight.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-height.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-negative-top-left.html [ Skip Timeout ]
 crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-top.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-negative-screenx-screeny.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-negative-width-height.html [ Skip Timeout ]
 crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-left.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-features-negative-innerwidth-innerheight.html [ Skip Timeout ]
-crbug.com/1299834 external/wpt/html/browsers/windows/noreferrer-window-name.html [ Skip Timeout ]
 crbug.com/706350 external/wpt/html/browsers/windows/clear-window-name.https.html [ Skip Timeout ]
 
 # The wpt/html tests that are failing in some way
