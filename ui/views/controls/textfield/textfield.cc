@@ -428,10 +428,6 @@ bool Textfield::HasSelection(bool primary_only) const {
 }
 
 SkColor Textfield::GetTextColor() const {
-  if (!GetEnabled() && disabled_text_color_id_.has_value()) {
-    return GetColorProvider()->GetColor(disabled_text_color_id_.value());
-  }
-
   if (text_color_id_.has_value()) {
     return GetColorProvider()->GetColor(text_color_id_.value());
   }
@@ -442,15 +438,11 @@ SkColor Textfield::GetTextColor() const {
 
 void Textfield::SetTextColorId(std::optional<ui::ColorId> color_id) {
   text_color_id_ = color_id;
-  if (GetWidget()) {
-    SetColor(GetTextColor());
-  }
-}
-
-void Textfield::SetDisabledTextColorId(std::optional<ui::ColorId> color_id) {
-  disabled_text_color_id_ = color_id;
-  if (GetWidget()) {
-    SetColor(GetTextColor());
+  if (GetWidget() && color_id.has_value()) {
+    SetColor(GetColorProvider()->GetColor(color_id.value()));
+  } else if (GetWidget() && !color_id.has_value()) {
+    SetColor(GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
+        style::CONTEXT_TEXTFIELD, GetTextStyle())));
   }
 }
 
@@ -3301,10 +3293,6 @@ void Textfield::OnEnabledChanged() {
     GetInputMethod()->OnTextInputTypeChanged(this);
   }
   UpdateDefaultBorder();
-
-  if (GetWidget()) {
-    SetColor(GetTextColor());
-  }
 
   // Only expose readonly if enabled. Don't overwrite the disabled restriction.
   // However, if we re-enable a textfield that was already set to readonly,
