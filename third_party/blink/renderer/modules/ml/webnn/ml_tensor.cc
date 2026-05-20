@@ -268,6 +268,12 @@ void MLTensor::OnDidReadTensorByob(
 
   base::span<uint8_t> bytes = AsByteSpan(*dst_data);
   if (bytes.size() == 0) {
+    if (result->get_buffer().size() == 0 &&
+        ml_context_->read_tensor_consumer()) {
+      size_t bytes_discarded = 0;
+      ml_context_->read_tensor_consumer()->DiscardData(
+          descriptor_.PackedByteLength(), bytes_discarded);
+    }
     resolver->RejectWithTypeError("Buffer was detached.");
     return;
   }
