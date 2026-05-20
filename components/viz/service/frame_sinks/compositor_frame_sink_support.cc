@@ -624,6 +624,9 @@ bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
 void CompositorFrameSinkSupport::BindLayerContext(
     mojom::PendingLayerContext& context,
     mojom::LayerContextSettingsPtr settings) {
+  if (!base::FeatureList::IsEnabled(features::kTreesInViz)) {
+    return;
+  }
   layer_context_ =
       std::make_unique<LayerContextImpl>(this, context, std::move(settings));
 }

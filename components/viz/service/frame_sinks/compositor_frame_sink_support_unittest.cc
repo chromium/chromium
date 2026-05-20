@@ -2929,4 +2929,28 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
   support->SendCompositorFrameAck();
 }
 
+TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
+       TreesInVizDisabledDoesNotBindLayerContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kTreesInViz);
+  manager_->RegisterFrameSinkId(kAnotherArbitraryFrameSinkId,
+                                true /* report_activation */);
+  MockCompositorFrameSinkClient mock_client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &mock_client, manager_.get(), kAnotherArbitraryFrameSinkId, kIsRoot);
+
+  auto context = mojom::PendingLayerContext::New();
+  mojo::AssociatedRemote<mojom::LayerContext> layer_context;
+  context->receiver = layer_context.BindNewEndpointAndPassReceiver();
+  MockLayerContextClient mock_layer_context_client;
+  mojo::AssociatedReceiver<mojom::LayerContextClient>
+      layer_context_client_receiver(
+          &mock_layer_context_client,
+          context->client.InitWithNewEndpointAndPassReceiver());
+
+  auto settings = mojom::LayerContextSettings::New();
+  support->BindLayerContext(*context, std::move(settings));
+  EXPECT_EQ(support->layer_context_for_testing(), nullptr);
+}
+
 }  // namespace viz
