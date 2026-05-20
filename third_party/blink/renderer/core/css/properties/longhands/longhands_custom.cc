@@ -2437,8 +2437,8 @@ void Color::ApplyInitial(StyleResolverState& state) const {
 void Color::ApplyInherit(StyleResolverState& state) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (builder.ShouldPreserveParentColor()) {
-    builder.SetColor(StyleColor(
-        state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
+    builder.SetColor(StyleColor(GetCSSPropertyColor().ColorIncludingFallback(
+        /*visited_link=*/false, *state.ParentStyle())));
   } else {
     builder.SetColor(state.ParentStyle()->Color());
   }
