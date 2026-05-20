@@ -1777,6 +1777,7 @@ Unknown properties are collapsed to zero. -->
   <int value="62" label="Toggle multiselect"/>
   <int value="63" label="Zoom in (Visual/Legacy)"/>
   <int value="64" label="Zoom out (Visual/Legacy)"/>
+  <int value="65" label="Focus on the app menu button in toolbar"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->

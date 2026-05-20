@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -136,6 +137,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT,
         KeyboardShortcutsSemanticMeaning.ZOOM_IN_LEGACY,
         KeyboardShortcutsSemanticMeaning.ZOOM_OUT_LEGACY,
+        KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -243,8 +245,11 @@ public class KeyboardShortcuts {
         int ZOOM_IN_LEGACY = 63;
         int ZOOM_OUT_LEGACY = 64;
 
+        // App menu button keyboard shortcut.
+        int FOCUS_APP_MENU_BUTTON = 65;
+
         // Max value.
-        int MAX_VALUE = 65;
+        int MAX_VALUE = 66;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
@@ -583,7 +588,6 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_chrome_feature_group_header,
                 new KeyCombo[] {
                     new KeyCombo(KeyEvent.KEYCODE_F, KeyEvent.META_ALT_ON),
-                    new KeyCombo(KeyEvent.KEYCODE_F10, NO_MODIFIER),
                     new KeyCombo(KeyEvent.KEYCODE_BUTTON_Y, NO_MODIFIER)
                 });
         new KeyboardShortcutDefinition(
@@ -648,6 +652,9 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
                 new KeyCombo(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON,
+                new KeyCombo(KeyEvent.KEYCODE_F10, NO_MODIFIER));
 
         // Bookmark shortcuts.
         new KeyboardShortcutDefinition(
@@ -1280,8 +1287,14 @@ public class KeyboardShortcuts {
                     // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
-                case KeyboardShortcutsSemanticMeaning
-                        .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
+                case KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON:
+                    View menuButtonView = toolbarManager.getMenuButtonView();
+                    if (menuButtonView != null) {
+                        menuButtonView.requestFocus();
+                        return true;
+                    }
+                    return false;
+                case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT:
