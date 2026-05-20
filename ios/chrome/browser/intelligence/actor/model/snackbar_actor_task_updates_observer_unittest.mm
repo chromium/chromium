@@ -202,10 +202,10 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestWillExecuteTool) {
         return [message.title isEqualToString:@"Test Task"] &&
                [message.subtitle isEqualToString:@"Navigating..."] &&
                [message.secondarySubtitle
-                   isEqualToString:@"Executing: NavigateTool"];
+                   isEqualToString:@"Executing: Navigating"];
       }]];
   [observer_ actorTaskWithID:task_id
-             willExecuteTool:optimization_guide::proto::Action::kNavigate
+             willExecuteTool:actor::ToolType::kNavigate
                   taskUpdate:@"Navigating..."
                   onWebState:web_state_id];
   [mock_snackbar_commands_ verify];

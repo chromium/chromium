@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace base {
 class TimeDelta;

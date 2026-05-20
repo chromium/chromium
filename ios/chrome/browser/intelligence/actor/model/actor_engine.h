@@ -40,11 +40,10 @@ class ActorEngine {
     virtual ~ExecutionUpdatesDelegate() = default;
 
     // Called immediately before a tool is executed.
-    // `tool_case` is the proto representation of the tool to be executed,
-    // and `web_state_id` is the identifier of the target WebState.
-    virtual void OnWillExecuteTool(
-        optimization_guide::proto::Action::ActionCase tool_case,
-        web::WebStateID web_state_id) = 0;
+    // `tool_type` is the type of the tool to be executed, and `web_state_id` is
+    // the identifier of the target WebState.
+    virtual void OnWillExecuteTool(ToolType tool_type,
+                                   web::WebStateID web_state_id) = 0;
   };
 
   // Represents the current execution stage of the engine for the active

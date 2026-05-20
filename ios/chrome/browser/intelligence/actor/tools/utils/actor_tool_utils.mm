@@ -12,6 +12,31 @@ namespace actor {
 
 using optimization_guide::proto::Action;
 
+std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool) {
+  switch (tool) {
+    case ToolType::kClick:
+      return "Clicking";
+    case ToolType::kType:
+      return "Typing";
+    case ToolType::kScroll:
+      return "Scrolling";
+    case ToolType::kSelect:
+      return "Selecting";
+    case ToolType::kNavigate:
+      return "Navigating";
+    case ToolType::kBack:
+      return "Rewinding history";
+    case ToolType::kForward:
+      return "Forwarding history";
+    case ToolType::kWait:
+      return "Waiting";
+    case ToolType::kScrollTo:
+      return "Scrolling";
+    case ToolType::kUnknown:
+      return std::nullopt;
+  }
+}
+
 std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
   switch (tool) {
     case Action::kClick:

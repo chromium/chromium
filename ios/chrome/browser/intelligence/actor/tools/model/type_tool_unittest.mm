@@ -288,7 +288,7 @@ TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
   EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
-TEST_F(TypeToolTest, GetActionCase) {
+TEST_F(TypeToolTest, GetToolType) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -307,8 +307,7 @@ TEST_F(TypeToolTest, GetActionCase) {
   base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value()->GetActionCase(),
-            optimization_guide::proto::Action::kType);
+  EXPECT_EQ(result.value()->GetToolType(), ToolType::kType);
 }
 
 }  // namespace actor

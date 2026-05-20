@@ -11,9 +11,32 @@
 #import "base/functional/callback_forward.h"
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {
+
+// Represents the type of an ActorTool.
+enum class ToolType {
+  // An unknown or unsupported tool type.
+  kUnknown = 0,
+  // Tool for clicking on a specific web element.
+  kClick,
+  // Tool for typing text into an input field.
+  kType,
+  // Tool for scrolling the webpage.
+  kScroll,
+  // Tool for selecting an option or element.
+  kSelect,
+  // Tool for navigating to a specific URL.
+  kNavigate,
+  // Tool for navigating back in history.
+  kBack,
+  // Tool for navigating forward in history.
+  kForward,
+  // Tool for waiting for a specified period or event.
+  kWait,
+  // Tool for scrolling to a specific element or position.
+  kScrollTo,
+};
 
 // iOS-specific error codes for tool execution failures.
 enum class InternalToolErrorCode {
@@ -113,7 +136,7 @@ struct ToolExecutionResult {
     return ToolExecutionResult(mojom::ActionResultCode::kOk);
   }
   bool requires_page_stabilization() const {
-    return IsPageStabilityEnabled() && requires_page_stabilization_;
+    return requires_page_stabilization_;
   }
   std::optional<InternalToolErrorCode> internal_code() const {
     return internal_code_;

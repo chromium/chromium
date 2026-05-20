@@ -21,5 +21,9 @@ source_set("actor_tool_utils") {
     "actor_tool_utils.h",
     "actor_tool_utils.mm",
   ]
-  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+  ]
 }

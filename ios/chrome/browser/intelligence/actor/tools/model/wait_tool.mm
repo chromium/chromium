@@ -61,8 +61,8 @@ base::WeakPtr<web::WebState> WaitTool::GetTargetWebState() const {
   return observe_web_state_;
 }
 
-optimization_guide::proto::Action::ActionCase WaitTool::GetActionCase() const {
-  return optimization_guide::proto::Action::kWait;
+ToolType WaitTool::GetToolType() const {
+  return ToolType::kWait;
 }
 
 void WaitTool::OnDelayFinished(ToolExecutionCallback callback) {

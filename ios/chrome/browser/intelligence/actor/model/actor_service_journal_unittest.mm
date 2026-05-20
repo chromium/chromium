@@ -31,9 +31,7 @@ class MockActorTool : public ActorTool {
     return nullptr;
   }
 
-  optimization_guide::proto::Action::ActionCase GetActionCase() const override {
-    return optimization_guide::proto::Action::ACTION_NOT_SET;
-  }
+  ToolType GetToolType() const override { return ToolType::kUnknown; }
 };
 
 class MockActorToolFactory : public ActorToolFactory {

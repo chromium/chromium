@@ -93,9 +93,8 @@ base::WeakPtr<web::WebState> SelectTool::GetTargetWebState() const {
   return web_state_;
 }
 
-optimization_guide::proto::Action::ActionCase SelectTool::GetActionCase()
-    const {
-  return optimization_guide::proto::Action::kSelect;
+ToolType SelectTool::GetToolType() const {
+  return ToolType::kSelect;
 }
 
 SelectTool::SelectTool(const optimization_guide::proto::SelectAction& action,

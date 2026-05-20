@@ -228,7 +228,7 @@ TEST_F(ScrollToToolTest, Execute_NoMainFrame_ReturnsError) {
   EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
-TEST_F(ScrollToToolTest, GetActionCase) {
+TEST_F(ScrollToToolTest, GetToolType) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -244,8 +244,7 @@ TEST_F(ScrollToToolTest, GetActionCase) {
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
       ScrollToTool::Create(action.scroll_to(), profile_.get());
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value()->GetActionCase(),
-            optimization_guide::proto::Action::kScrollTo);
+  EXPECT_EQ(result.value()->GetToolType(), ToolType::kScrollTo);
 }
 
 }  // namespace actor

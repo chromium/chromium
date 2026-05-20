@@ -93,8 +93,8 @@ base::WeakPtr<web::WebState> TypeTool::GetTargetWebState() const {
   return web_state_;
 }
 
-optimization_guide::proto::Action::ActionCase TypeTool::GetActionCase() const {
-  return optimization_guide::proto::Action::kType;
+ToolType TypeTool::GetToolType() const {
+  return ToolType::kType;
 }
 
 TypeTool::TypeTool(const optimization_guide::proto::TypeAction& action,

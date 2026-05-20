@@ -20,11 +20,10 @@ namespace {
 // A mock tool for testing.
 class MockTool : public ActorTool {
  public:
-  MockTool(bool success,
-           optimization_guide::proto::Action::ActionCase action_case =
-               optimization_guide::proto::Action::ACTION_NOT_SET,
-           base::WeakPtr<web::WebState> web_state = nullptr)
-      : success_(success), action_case_(action_case), web_state_(web_state) {}
+  explicit MockTool(bool success,
+                    ToolType tool_type = ToolType::kUnknown,
+                    base::WeakPtr<web::WebState> web_state = nullptr)
+      : success_(success), tool_type_(tool_type), web_state_(web_state) {}
   ~MockTool() override = default;
 
   void Execute(ToolExecutionCallback callback) override {
@@ -40,18 +39,16 @@ class MockTool : public ActorTool {
     return web_state_;
   }
 
-  optimization_guide::proto::Action::ActionCase GetActionCase() const override {
-    return action_case_;
-  }
+  ToolType GetToolType() const override { return tool_type_; }
 
  private:
   bool success_;
-  optimization_guide::proto::Action::ActionCase action_case_;
+  ToolType tool_type_;
   base::WeakPtr<web::WebState> web_state_;
 };
 
 struct DelegateCall {
-  optimization_guide::proto::Action::ActionCase tool_case;
+  ToolType tool_type;
   web::WebStateID web_state_id;
 };
 
@@ -62,10 +59,9 @@ class MockActorEngineExecutionUpdatesDelegate
   MockActorEngineExecutionUpdatesDelegate() = default;
   ~MockActorEngineExecutionUpdatesDelegate() override = default;
 
-  void OnWillExecuteTool(
-      optimization_guide::proto::Action::ActionCase tool_case,
-      web::WebStateID web_state_id) override {
-    calls_.push_back({tool_case, web_state_id});
+  void OnWillExecuteTool(ToolType tool_type,
+                         web::WebStateID web_state_id) override {
+    calls_.push_back({tool_type, web_state_id});
     on_will_execute_called_ = true;
   }
 
@@ -285,12 +281,10 @@ TEST_F(ActorEngineTest, OnWillExecuteToolCalled) {
   web::FakeWebState web_state2;
 
   std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(
-      true, optimization_guide::proto::Action::kClick,
-      web_state1.GetWeakPtr()));
-  actions.push_back(std::make_unique<MockTool>(
-      true, optimization_guide::proto::Action::kNavigate,
-      web_state2.GetWeakPtr()));
+  actions.push_back(std::make_unique<MockTool>(true, ToolType::kClick,
+                                               web_state1.GetWeakPtr()));
+  actions.push_back(std::make_unique<MockTool>(true, ToolType::kNavigate,
+                                               web_state2.GetWeakPtr()));
 
   base::RunLoop run_loop;
   engine_.Act(
@@ -304,13 +298,11 @@ TEST_F(ActorEngineTest, OnWillExecuteToolCalled) {
   EXPECT_TRUE(mock_delegate_.on_will_execute_called_);
   ASSERT_EQ(mock_delegate_.calls_.size(), 2U);
 
-  EXPECT_EQ(mock_delegate_.calls_[0].tool_case,
-            optimization_guide::proto::Action::kClick);
+  EXPECT_EQ(mock_delegate_.calls_[0].tool_type, ToolType::kClick);
   EXPECT_EQ(mock_delegate_.calls_[0].web_state_id,
             web_state1.GetUniqueIdentifier());
 
-  EXPECT_EQ(mock_delegate_.calls_[1].tool_case,
-            optimization_guide::proto::Action::kNavigate);
+  EXPECT_EQ(mock_delegate_.calls_[1].tool_type, ToolType::kNavigate);
   EXPECT_EQ(mock_delegate_.calls_[1].web_state_id,
             web_state2.GetUniqueIdentifier());
 }

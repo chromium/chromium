@@ -87,8 +87,8 @@ base::WeakPtr<web::WebState> ClickTool::GetTargetWebState() const {
   return web_state_;
 }
 
-optimization_guide::proto::Action::ActionCase ClickTool::GetActionCase() const {
-  return optimization_guide::proto::Action::kClick;
+ToolType ClickTool::GetToolType() const {
+  return ToolType::kClick;
 }
 
 void ClickTool::OnTargetFrameResolved(

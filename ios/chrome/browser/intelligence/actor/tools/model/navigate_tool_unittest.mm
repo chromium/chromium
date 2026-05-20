@@ -295,7 +295,7 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
             result.internal_code().value());
 }
 
-TEST_F(NavigateToolTest, GetActionCase) {
+TEST_F(NavigateToolTest, GetToolType) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(
       std::make_unique<web::FakeNavigationManager>());
@@ -311,8 +311,7 @@ TEST_F(NavigateToolTest, GetActionCase) {
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
       NavigateTool::Create(action.navigate(), profile_.get());
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value()->GetActionCase(),
-            optimization_guide::proto::Action::kNavigate);
+  EXPECT_EQ(result.value()->GetToolType(), ToolType::kNavigate);
 }
 
 }  // namespace actor

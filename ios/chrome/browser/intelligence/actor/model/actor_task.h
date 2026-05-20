@@ -127,9 +127,8 @@ class ActorTask : public web::WebStateObserver,
   void OnPageLoadedTimeout();
 
   // ActorEngine::ExecutionUpdatesDelegate.
-  void OnWillExecuteTool(
-      optimization_guide::proto::Action::ActionCase tool_case,
-      web::WebStateID web_state_id) override;
+  void OnWillExecuteTool(ToolType tool_type,
+                         web::WebStateID web_state_id) override;
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;

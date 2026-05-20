@@ -81,9 +81,8 @@ base::WeakPtr<web::WebState> NavigateTool::GetTargetWebState() const {
   return web_state_;
 }
 
-optimization_guide::proto::Action::ActionCase NavigateTool::GetActionCase()
-    const {
-  return optimization_guide::proto::Action::kNavigate;
+ToolType NavigateTool::GetToolType() const {
+  return ToolType::kNavigate;
 }
 
 NavigateTool::NavigateTool(const std::string& url,

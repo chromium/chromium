@@ -284,11 +284,10 @@ void ActorTask::SetState(ActorTaskState new_state) {
                     fromState:old_state];
 }
 
-void ActorTask::OnWillExecuteTool(
-    optimization_guide::proto::Action::ActionCase tool_case,
-    web::WebStateID web_state_id) {
+void ActorTask::OnWillExecuteTool(ToolType tool_type,
+                                  web::WebStateID web_state_id) {
   [observers_ actorTaskWithID:task_id_
-              willExecuteTool:tool_case
+              willExecuteTool:tool_type
                    taskUpdate:base::SysUTF8ToNSString(last_task_update_)
                    onWebState:web_state_id];
 }

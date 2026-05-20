@@ -69,13 +69,12 @@ TEST_F(WaitToolTest, Create_SpecifiedDuration) {
   EXPECT_TRUE(future.Get().IsOk());
 }
 
-TEST_F(WaitToolTest, GetActionCase) {
+TEST_F(WaitToolTest, GetToolType) {
   optimization_guide::proto::WaitAction action;
   base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
       WaitTool::Create(action, profile_.get());
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value()->GetActionCase(),
-            optimization_guide::proto::Action::kWait);
+  EXPECT_EQ(result.value()->GetToolType(), ToolType::kWait);
 }
 
 }  // namespace

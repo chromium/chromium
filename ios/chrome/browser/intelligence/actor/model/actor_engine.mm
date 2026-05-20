@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -65,7 +66,7 @@ void WaitOrImmediatelyFinishTool(ActorTool* tool,
                                  ObservationDelayController* delay_controller) {
   // TODO(crbug.com/504625981): Move tool-specific state machine
   // into an iOS version of chrome/browser/actor/tools/tool_controller.h.
-  if (!tool || !delay_controller ||
+  if (!tool || !delay_controller || !IsPageStabilityEnabled() ||
       !tool_result.requires_page_stabilization()) {
     std::move(on_delay_complete).Run();
     return;
@@ -234,7 +235,7 @@ void ActorEngine::UiPreInvoke() {
     return;
   }
 
-  execution_updates_delegate_->OnWillExecuteTool(tool->GetActionCase(),
+  execution_updates_delegate_->OnWillExecuteTool(tool->GetToolType(),
                                                  GetWebStateIDForTool(tool));
 
   FinishedUiPreInvoke(ActionResult(ToolExecutionResult::Ok()));

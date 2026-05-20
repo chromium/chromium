@@ -140,16 +140,16 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
 }
 
 - (void)actorTaskWithID:(actor::ActorTaskId)taskID
-        willExecuteTool:(optimization_guide::proto::Action::ActionCase)toolCase
+        willExecuteTool:(actor::ToolType)toolType
              taskUpdate:(NSString*)taskUpdate
              onWebState:(web::WebStateID)webStateID {
   _lastTaskUpdate = [taskUpdate copy];
   // Do not show wait as it is always the last action in the list.
-  if (toolCase == optimization_guide::proto::Action::ActionCase::kWait) {
+  if (toolType == actor::ToolType::kWait) {
     return;
   }
   std::optional<std::string> toolNameOpt =
-      actor::ActorActionCaseToToolName(toolCase);
+      actor::ToolTypeToToolDisplayString(toolType);
   NSString* toolString =
       toolNameOpt ? base::SysUTF8ToNSString(*toolNameOpt) : kUnknownTool;
   NSString* leafText = [NSString stringWithFormat:kExecutingFormat, toolString];
