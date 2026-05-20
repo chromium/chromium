@@ -12,7 +12,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/device_statistics_scheduler.h"
-#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -28,7 +27,6 @@ SyncServiceImplBundle::SyncServiceImplBundle()
     : identity_test_env_(&test_url_loader_factory_, &pref_service_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   DeviceStatisticsScheduler::RegisterProfilePrefs(pref_service_.registry());
-  SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
 }
