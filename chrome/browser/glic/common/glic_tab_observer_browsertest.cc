@@ -360,6 +360,46 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabStripMerge) {
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
+                       TabMoveDoesNotClassifyAsNewCreation) {
+  Browser* browser2 = CreateBrowser(GetProfile());
+  GlicTabEventCollector collector(GetProfile());
+
+  // 1. Navigate browser2's tab so it has a visible, typed navigation entry.
+  tabs::TabInterface* tab_to_move =
+      TabListInterface::From(browser2)->GetActiveTab();
+  ASSERT_TRUE(tab_to_move);
+  NavigateTab(tab_to_move, GURL("about:blank"));
+  collector.WaitForMutation();
+  collector.ClearEvents();
+
+  // 2. Detach and insert into the first browser window. This is a move.
+  std::unique_ptr<tabs::TabModel> tab_model =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(0);
+
+  browser()->tab_strip_model()->InsertDetachedTabAt(0, std::move(tab_model),
+                                                    AddTabTypes::ADD_ACTIVE);
+
+  // 3. Wait for the tab creation event.
+  const TestTabCreationEvent* creation = collector.WaitForCreation();
+  ASSERT_TRUE(creation);
+
+  // 4. Verify that the creation_type is kUnknown because it was a tab move,
+  // not a newly created user link or typed tab.
+  EXPECT_EQ(creation->creation_type, TabCreationType::kUnknown);
+
+  // 5. Verify there was exactly one creation event in the collector's history.
+  int creation_event_count = 0;
+  for (const auto& event : collector.events()) {
+    if (std::holds_alternative<TestTabCreationEvent>(event)) {
+      creation_event_count++;
+    }
+  }
+  EXPECT_EQ(creation_event_count, 1);
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabNavigation) {
   GlicTabEventCollector collector(GetProfile());
 
@@ -452,5 +492,57 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickNewWindowTracking) {
 
   // Verify the opener is preserved
   EXPECT_EQ(creation->opener.get(), first_tab);
+  EXPECT_EQ(creation->creation_type, TabCreationType::kFromLink);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, WindowOpenTracking) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GlicTabEventCollector collector(GetProfile());
+
+  // 1. Get initial tab
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(first_tab);
+
+  NavigateTab(first_tab, embedded_test_server()->GetURL("/title1.html"));
+  collector.WaitForMutation();
+  collector.ClearEvents();
+
+  // 2. Simulate window.open()
+  std::string script = "window.open();";
+  EXPECT_TRUE(content::ExecJs(first_tab->GetContents(), script));
+
+  const TestTabCreationEvent* creation = collector.WaitForCreation();
+  ASSERT_TRUE(creation);
+  ASSERT_TRUE(creation->new_tab);
+
+  EXPECT_EQ(creation->creation_type, TabCreationType::kFromLink);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
+                       TargetBlankLinkClickTracking) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GlicTabEventCollector collector(GetProfile());
+
+  // 1. Get initial tab
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(first_tab);
+
+  NavigateTab(first_tab, embedded_test_server()->GetURL("/title1.html"));
+  collector.WaitForMutation();
+  collector.ClearEvents();
+
+  // 2. Simulate opening a link with target="_blank"
+  std::string script =
+      "var a = document.createElement('a');"
+      "a.href = 'http://example.com/title2.html';"
+      "a.target = '_blank';"
+      "document.body.appendChild(a);"
+      "a.click();";
+  EXPECT_TRUE(content::ExecJs(first_tab->GetContents(), script));
+
+  const TestTabCreationEvent* creation = collector.WaitForCreation();
+  ASSERT_TRUE(creation);
+  ASSERT_TRUE(creation->new_tab);
+
   EXPECT_EQ(creation->creation_type, TabCreationType::kFromLink);
 }

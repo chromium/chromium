@@ -4,9 +4,11 @@
 
 #include "chrome/browser/glic/common/glic_tab_observer_impl.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -58,6 +60,13 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
     for (const auto& content : insert.contents) {
       tabs::TabInterface* new_tab =
           tab_strip_model->GetTabAtIndex(content.index);
+      // Glic is only active in normal browser windows, and Glic-specific tab
+      // features are not initialized for non-normal windows (such as popups).
+      // Ignore them to prevent errors or crashes (e.g., missing
+      // GlicInstanceHelper).
+      if (!new_tab->IsInNormalWindow()) {
+        continue;
+      }
       TabCreationType type = DetermineTabCreationType(new_tab);
       tabs::TabInterface* opener =
           tab_strip_model->GetOpenerOfTabAt(content.index);
@@ -85,15 +94,30 @@ void GlicTabObserverImpl::OnTabChangedAt(tabs::TabInterface* tab,
 
 TabCreationType GlicTabObserverImpl::DetermineTabCreationType(
     tabs::TabInterface* new_tab) {
+  auto* attachment_tracker = tabs::TabAttachmentTracker::From(new_tab);
+  if (attachment_tracker && attachment_tracker->attachment_count() > 1) {
+    return TabCreationType::kUnknown;
+  }
+
   content::WebContents* new_contents = new_tab->GetContents();
   if (!new_contents) {
     return TabCreationType::kUnknown;
   }
 
   content::NavigationController& controller = new_contents->GetController();
+
   content::NavigationEntry* entry = controller.GetPendingEntry();
   if (!entry) {
-    // If there's no pending entry, it's not a user-initiated new tab
+    // For tabs opened without a browser-mediated transition (e.g.
+    // `target="_blank"` links or `window.open()`), the navigation may
+    // commit synchronously or skip the pending state. In these cases, the
+    // visible entry retains the initial properties, like the
+    // PAGE_TRANSITION_LINK.
+    entry = controller.GetVisibleEntry();
+  }
+
+  if (!entry) {
+    // If there's no entry at all, it's not a user-initiated new tab
     // in the way we're looking for.
     return TabCreationType::kUnknown;
   }
