@@ -32,7 +32,6 @@ public interface BackPressHandler {
         Type.TEXT_BUBBLE,
         Type.XR_DELEGATE,
         Type.SCENE_OVERLAY,
-        Type.ACTOR_OVERLAY,
         // Deprecated: Type.START_SURFACE,
         Type.SELECTION_POPUP,
         Type.MANUAL_FILLING,
@@ -43,6 +42,7 @@ public interface BackPressHandler {
         Type.CLOSE_WATCHER,
         Type.FIND_TOOLBAR,
         Type.LOCATION_BAR,
+        Type.ACTOR_OVERLAY,
         Type.BOTTOM_CONTROLS,
         Type.TAB_HISTORY,
         Type.BOTTOM_SHEET,
@@ -62,7 +62,6 @@ public interface BackPressHandler {
         int BOTTOM_SHEET = 3;
         int FUSEBOX_POPUP = 4;
         int CANCEL_TAB_SWITCHER_DRAG = 5;
-        int ACTOR_OVERLAY = 6;
         // Deprecated: int START_SURFACE = 5;
         // The archived tabs dialog is shown on top of the hub, so it must take priority.
         int ARCHIVED_TABS_DIALOG = 7;
@@ -74,14 +73,15 @@ public interface BackPressHandler {
         int MANUAL_FILLING = 12;
         int CANCEL_TAB_STRIP_DRAG = 13;
         int LOCATION_BAR = 15;
-        int TAB_MODAL_HANDLER = 16;
-        int CLOSE_WATCHER = 17;
-        int FIND_TOOLBAR = 18;
-        int BOTTOM_CONTROLS = 19;
-        int TAB_HISTORY = 20;
-        int NATIVE_PAGE = 21;
-        int SHOW_READING_LIST = 22;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 23;
+        int ACTOR_OVERLAY = 16;
+        int TAB_MODAL_HANDLER = 17;
+        int CLOSE_WATCHER = 18;
+        int FIND_TOOLBAR = 19;
+        int BOTTOM_CONTROLS = 20;
+        int TAB_HISTORY = 21;
+        int NATIVE_PAGE = 22;
+        int SHOW_READING_LIST = 23;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 24;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

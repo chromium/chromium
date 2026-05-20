@@ -833,29 +833,29 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="(02) SCENE_OVERLAY"/>
   <int value="4"
       label="(XX) START_SURFACE (with tab switcher if enabled. Deprecated)"/>
-  <int value="5" label="(10) SELECTION_POPUP"/>
-  <int value="6" label="(11) MANUAL_FILLING"/>
-  <int value="7" label="(09) FULLSCREEN"/>
+  <int value="5" label="(11) SELECTION_POPUP"/>
+  <int value="6" label="(12) MANUAL_FILLING"/>
+  <int value="7" label="(10) FULLSCREEN"/>
   <int value="8" label="(03) BOTTOM_SHEET"/>
-  <int value="9" label="(15) TAB_MODAL_HANDLER"/>
+  <int value="9" label="(17) TAB_MODAL_HANDLER"/>
   <int value="10"
       label="(XX) TAB_SWITCHER (if Start surface is disabled. Deprecated)"/>
-  <int value="11" label="(16) CLOSE_WATCHER"/>
-  <int value="12" label="(19) TAB_HISTORY"/>
+  <int value="11" label="(18) CLOSE_WATCHER"/>
+  <int value="12" label="(21) TAB_HISTORY"/>
   <int value="13" label="(XX) TAB_RETURN_TO_CHROME_START_SURFACE (Deprecated)"/>
-  <int value="14" label="(21) SHOW_READING_LIST"/>
-  <int value="15" label="(22) MINIMIZE_APP_AND_CLOSE_TAB"/>
-  <int value="16" label="(17) FIND_TOOLBAR"/>
-  <int value="17" label="(14) LOCATION_BAR"/>
+  <int value="14" label="(23) SHOW_READING_LIST"/>
+  <int value="15" label="(24) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="16" label="(19) FIND_TOOLBAR"/>
+  <int value="17" label="(15) LOCATION_BAR"/>
   <int value="18" label="(01) XR_DELEGATE"/>
   <int value="19" label="(XX) PAGE_INSIGHTS_BOTTOM_SHEET (Deprecated)"/>
-  <int value="20" label="(18) BOTTOM_CONTROLS"/>
-  <int value="21" label="(07) HUB"/>
-  <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
-  <int value="23" label="(20) NATIVE_PAGE"/>
-  <int value="24" label="(12) CANCEL_TAB_STRIP_DRAG"/>
-  <int value="25" label="(04) CANCEL_TAB_SWITCHER_DRAG"/>
-  <int value="26" label="(05) ACTOR_OVERLAY"/>
+  <int value="20" label="(20) BOTTOM_CONTROLS"/>
+  <int value="21" label="(09) HUB"/>
+  <int value="22" label="(07) ARCHIVED_TABS_DIALOG"/>
+  <int value="23" label="(22) NATIVE_PAGE"/>
+  <int value="24" label="(13) CANCEL_TAB_STRIP_DRAG"/>
+  <int value="25" label="(05) CANCEL_TAB_SWITCHER_DRAG"/>
+  <int value="26" label="(16) ACTOR_OVERLAY"/>
   <int value="27" label="(04) FUSEBOX_POPUP"/>
 </enum>
 

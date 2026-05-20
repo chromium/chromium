@@ -95,19 +95,19 @@ TODO(http://crbug.com/485940935): Delete this.
             android:inflatedId="@+id/bookmark_bar"
             android:layout="@layout/bookmark_bar" />
 
-        <org.chromium.ui.AsyncViewStub
-            android:id="@+id/omnibox_results_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/omnibox_results_container"
-            app:layout="@layout/omnibox_results_container" />
-
         <ViewStub
             android:id="@+id/actor_overlay_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inflatedId="@+id/actor_overlay"
             android:layout="@layout/actor_overlay" />
+
+        <org.chromium.ui.AsyncViewStub
+            android:id="@+id/omnibox_results_container_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inflatedId="@+id/omnibox_results_container"
+            app:layout="@layout/omnibox_results_container" />
 
         <org.chromium.chrome.browser.ui.BottomContainer
             android:id="@+id/bottom_container"
