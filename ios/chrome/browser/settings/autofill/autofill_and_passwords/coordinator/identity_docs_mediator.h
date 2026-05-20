@@ -16,6 +16,9 @@
 // Consumer for this mediator.
 @property(nonatomic, weak) id<IdentityDocsConsumer> consumer;
 
+- (instancetype)initWithEntityDataManager:
+    (autofill::EntityDataManager*)entityDataManager NS_DESIGNATED_INITIALIZER;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_COORDINATOR_IDENTITY_DOCS_MEDIATOR_H_

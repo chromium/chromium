@@ -9,10 +9,19 @@
 
 @class TableViewItem;
 
+namespace autofill {
+class EntityType;
+}  // namespace autofill
+
 // Mutator for actions in the Autofill AI base view.
 @protocol AutofillAIBaseMutator <NSObject>
 
+// Notifies the mutator that the user selected an existing entity `item`.
 - (void)didSelectEntityItem:(TableViewItem*)item;
+
+// Notifies the mutator that the user selected to add a new entity of the
+// specified `type`.
+- (void)didSelectAddEntityWithType:(autofill::EntityType)type;
 
 @end
 

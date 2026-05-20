@@ -91,6 +91,11 @@
   [self startEntityEditCoordinatorWithID:entityID];
 }
 
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
+    didRequestToCreateEntityWithType:(autofill::EntityType)entityType {
+  // TODO(crbug.com/491417039): Implement missing method.
+}
+
 #pragma mark - AutofillAIEntityEditCoordinatorDelegate
 
 - (void)autofillAIEntityEditCoordinatorDidFinish:

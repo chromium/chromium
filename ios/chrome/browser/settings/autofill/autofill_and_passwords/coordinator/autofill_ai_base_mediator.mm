@@ -70,6 +70,11 @@
   }
 }
 
+- (void)didSelectAddEntityWithType:(autofill::EntityType)type {
+  [self.delegate autofillAIBaseMediator:self
+       didRequestToCreateEntityWithType:type];
+}
+
 #pragma mark - Public
 
 + (CGFloat)entityIconPointSize {

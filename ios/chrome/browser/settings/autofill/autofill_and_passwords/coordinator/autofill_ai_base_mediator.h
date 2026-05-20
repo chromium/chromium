@@ -23,8 +23,15 @@ class EntityDataManager;
 // Delegate for AutofillAIBaseMediator.
 @protocol AutofillAIBaseMediatorDelegate <NSObject>
 
+// Notifies the delegate that the user requested to open the entity with
+// `entityID`.
 - (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
     didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID;
+
+// Notifies the delegate that the user requested to create a new entity of the
+// specified `entityType`.
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
+    didRequestToCreateEntityWithType:(autofill::EntityType)entityType;
 
 @end
 

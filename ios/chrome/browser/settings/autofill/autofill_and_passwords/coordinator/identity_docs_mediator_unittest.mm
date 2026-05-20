@@ -69,6 +69,10 @@ TEST_F(IdentityDocsMediatorTest, SetsConsumerValuesSafe) {
     didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID {
   _lastOpenedEntityID = entityID;
 }
+
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
+    didRequestToCreateEntityWithType:(autofill::EntityType)entityType {
+}
 @end
 
 // Tests that selecting an item triggers the mutator delegate.

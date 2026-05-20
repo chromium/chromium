@@ -69,6 +69,11 @@ TEST_F(TravelInfoMediatorTest, SetsConsumerValuesSafe) {
     didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID {
   _lastOpenedEntityID = entityID;
 }
+
+- (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
+    didRequestToCreateEntityWithType:(autofill::EntityType)entityType {
+  // TODO(crbug.com/491417039): Implement missing method.
+}
 @end
 
 // Tests that selecting an item triggers the mutator delegate.

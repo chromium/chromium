@@ -46,6 +46,8 @@ class IdentityDocsCoordinatorTest : public PlatformTest {
 
   void TearDown() override {
     [coordinator_ stop];
+    coordinator_ = nil;
+    navigation_controller_ = nil;
     PlatformTest::TearDown();
   }
 
