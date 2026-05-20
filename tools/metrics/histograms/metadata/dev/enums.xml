@@ -996,6 +996,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="104" label="timelineAlternativeNavigation"/>
   <int value="110" label="durableMessages"/>
   <int value="111" label="jpegXL"/>
+  <int value="112" label="plusButton"/>
 </enum>
 
 <enum name="DevToolsExtensionEvalTarget">
@@ -1191,6 +1192,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Hamburger Menu"/>
   <int value="4" label="Adorner"/>
   <int value="5" label="Command Menu"/>
+  <int value="6" label="More Tools Menu"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelResourceOpened">
