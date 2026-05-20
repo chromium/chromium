@@ -33,4 +33,8 @@ dictionary AuthenticationExtensionsClientOutputs {
   // Pseudo-random function support.
   // https://w3c.github.io/webauthn/#prf-extension
   AuthenticationExtensionsPRFOutputs prf;
+
+  // Credential Manager Trust Group (CMTG) key.
+  // https://github.com/w3c/webauthn/pull/2377
+  [RuntimeEnabled=WebAuthenticationCmtgKey] AuthenticationExtensionsCmtgKeyOutputs cmtgKey;
 };

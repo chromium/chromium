@@ -24,6 +24,7 @@ namespace blink {
 class AllAcceptedCredentialsOptions;
 class AuthenticationExtensionsClientInputs;
 class AuthenticationExtensionsClientOutputs;
+class AuthenticationExtensionsCmtgKeyOutputs;
 class AuthenticationExtensionsPRFInputs;
 class AuthenticationExtensionsPRFValues;
 class AuthenticationExtensionsPaymentOutputs;
@@ -93,6 +94,13 @@ struct TypeConverter<
     blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr> {
   static blink::AuthenticationExtensionsPaymentOutputs* Convert(
       const blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr&);
+};
+
+template <>
+struct TypeConverter<blink::AuthenticationExtensionsCmtgKeyOutputs*,
+                     blink::mojom::blink::CmtgKeyResponsePtr> {
+  static blink::AuthenticationExtensionsCmtgKeyOutputs* Convert(
+      const blink::mojom::blink::CmtgKeyResponsePtr&);
 };
 
 // blink::mojom::blink::Authenticator ---------------------------------------
@@ -351,7 +359,6 @@ struct MODULES_EXPORT TypeConverter<blink::mojom::blink::LoginStatusOptionsPtr,
   static blink::mojom::blink::LoginStatusOptionsPtr Convert(
       const blink::LoginStatusOptions&);
 };
-
 
 }  // namespace mojo
 

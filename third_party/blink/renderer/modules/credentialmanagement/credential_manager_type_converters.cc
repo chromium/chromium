@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_browser_bound_signature.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_identityproviderfield_usvstring.h"
 #include "third_party/blink/renderer/core/keywords.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -281,6 +283,11 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
     }
     extension_outputs->setPrf(prf_outputs);
   }
+  if (extensions->cmtg_key) {
+    extension_outputs->setCmtgKey(
+        ConvertTo<blink::AuthenticationExtensionsCmtgKeyOutputs*>(
+            extensions->cmtg_key));
+  }
   return extension_outputs;
 }
 
@@ -318,6 +325,20 @@ TypeConverter<blink::AuthenticationExtensionsPaymentOutputs*,
     payment_outputs->setBrowserBoundSignature(browser_bound_signature);
   }
   return payment_outputs;
+}
+
+// static
+blink::AuthenticationExtensionsCmtgKeyOutputs*
+TypeConverter<blink::AuthenticationExtensionsCmtgKeyOutputs*,
+              blink::mojom::blink::CmtgKeyResponsePtr>::
+    Convert(const blink::mojom::blink::CmtgKeyResponsePtr& cmtg_key) {
+  auto* cmtg_key_output =
+      blink::AuthenticationExtensionsCmtgKeyOutputs::Create();
+  cmtg_key_output->setCmtgKey(
+      blink::DOMArrayBuffer::Create(cmtg_key->cmtg_key));
+  cmtg_key_output->setSignature(
+      blink::DOMArrayBuffer::Create(cmtg_key->signature));
+  return cmtg_key_output;
 }
 
 // static
@@ -764,6 +785,9 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
             ConvertTo<PRFValuesPtr>(*extensions->prf()->eval());
       }
     }
+    if (extensions->hasCmtgKey()) {
+      mojo_options->cmtg_key = extensions->cmtgKey();
+    }
   }
 
   return mojo_options;
@@ -870,6 +894,9 @@ TypeConverter<AuthenticationExtensionsClientInputsPtr,
     mojo_inputs->prf = true;
     mojo_inputs->prf_inputs =
         ConvertTo<blink::Vector<PRFValuesPtr>>(*inputs.prf());
+  }
+  if (inputs.hasCmtgKey()) {
+    mojo_inputs->cmtg_key = inputs.cmtgKey();
   }
 
   return mojo_inputs;

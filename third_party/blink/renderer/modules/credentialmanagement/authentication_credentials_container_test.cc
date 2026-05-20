@@ -23,12 +23,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_ui_mode_requirement.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -47,6 +51,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -155,10 +160,21 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
     loop_ = std::make_unique<base::RunLoop>();
     last_mediation_ = std::nullopt;
     make_credential_callback_.Reset();
+    last_creation_options_.reset();
+    last_get_options_.reset();
   }
 
   std::optional<mojom::blink::Mediation> last_mediation() const {
     return last_mediation_;
+  }
+
+  const mojom::blink::PublicKeyCredentialCreationOptionsPtr&
+  last_creation_options() const {
+    return last_creation_options_;
+  }
+
+  const mojom::blink::GetCredentialOptionsPtr& last_get_options() const {
+    return last_get_options_;
   }
 
   void WaitForCallToMakeCredential() {
@@ -190,16 +206,66 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
              nullptr);
   }
 
+  void InvokeMakeCredentialSuccessWithCmtgKeyCallback(
+      Vector<uint8_t> cmtg_key_val,
+      Vector<uint8_t> signature_val) {
+    EXPECT_TRUE(receiver_.is_bound());
+    auto info = mojom::blink::CommonCredentialInfo::New();
+    info->id = "id";
+    info->raw_id = Vector<uint8_t>{1, 2, 3, 4};
+    info->client_data_json = Vector<uint8_t>{5, 6, 7, 8};
+    info->authenticator_data = Vector<uint8_t>{9, 10, 11, 12};
+    auto response = mojom::blink::MakeCredentialAuthenticatorResponse::New();
+    response->info = std::move(info);
+    response->attestation_object = Vector<uint8_t>{13, 14, 15, 16};
+    response->cmtg_key = mojom::blink::CmtgKeyResponse::New(
+        std::move(cmtg_key_val), std::move(signature_val));
+    std::move(make_credential_callback_)
+        .Run(mojom::blink::AuthenticatorStatus::SUCCESS, std::move(response),
+             nullptr);
+  }
+
+  void InvokeGetAssertionSuccessWithCmtgKeyCallback(
+      Vector<uint8_t> cmtg_key_val,
+      Vector<uint8_t> signature_val) {
+    EXPECT_TRUE(receiver_.is_bound());
+    auto info = mojom::blink::CommonCredentialInfo::New();
+    info->id = "id";
+    info->raw_id = Vector<uint8_t>{1, 2, 3, 4};
+    info->client_data_json = Vector<uint8_t>{5, 6, 7, 8};
+    info->authenticator_data = Vector<uint8_t>{9, 10, 11, 12};
+
+    auto response = mojom::blink::GetAssertionAuthenticatorResponse::New();
+    response->info = std::move(info);
+    response->signature = Vector<uint8_t>{13, 14, 15, 16};
+
+    auto cmtg_response = mojom::blink::CmtgKeyResponse::New(
+        std::move(cmtg_key_val), std::move(signature_val));
+    response->extensions =
+        mojom::blink::AuthenticationExtensionsClientOutputs::New();
+    response->extensions->cmtg_key = std::move(cmtg_response);
+
+    auto assertion_response = mojom::blink::GetAssertionResponse::New(
+        blink::mojom::blink::AuthenticatorStatus::SUCCESS, std::move(response),
+        nullptr);
+    auto credential_response =
+        mojom::blink::GetCredentialResponse::NewGetAssertionResponse(
+            std::move(assertion_response));
+    std::move(get_callback_).Run(std::move(credential_response));
+  }
+
  protected:
   void MakeCredential(
       blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override {
+    last_creation_options_ = std::move(options);
     make_credential_callback_ = std::move(callback);
     loop_->Quit();
   }
   void GetCredential(blink::mojom::blink::GetCredentialOptionsPtr options,
                      GetCredentialCallback callback) override {
-    last_mediation_ = options->mediation;
+    last_get_options_ = std::move(options);
+    last_mediation_ = last_get_options_->mediation;
     get_callback_ = std::move(callback);
     loop_->Quit();
   }
@@ -220,6 +286,8 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   MakeCredentialCallback make_credential_callback_;
   std::unique_ptr<base::RunLoop> loop_;
   std::optional<mojom::blink::Mediation> last_mediation_;
+  mojom::blink::PublicKeyCredentialCreationOptionsPtr last_creation_options_;
+  mojom::blink::GetCredentialOptionsPtr last_get_options_;
 };
 
 class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
@@ -478,7 +546,8 @@ TEST(AuthenticationCredentialsContainerTest,
   EXPECT_EQ(v8::Promise::kPending, promise.V8Promise()->State());
 }
 
-TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
+TEST(AuthenticationCredentialsContainerTest,
+     RejectPublicKeyCredentialStoreOperation) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
@@ -1060,6 +1129,121 @@ TEST(AuthenticationCredentialsContainerTest,
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
       WebFeature::kWebAuthnConditionalCreateSuccess));
+}
+
+TEST(AuthenticationCredentialsContainerTest, PublicKeyCreateCmtgKeyExtension) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationCmtgKeyForTest cmtg_key_enabled(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* creation_options = CredentialCreationOptions::Create();
+  auto* public_key_creation_options =
+      PublicKeyCredentialCreationOptions::Create();
+  auto* rp = PublicKeyCredentialRpEntity::Create();
+  rp->setId("example.test");
+  rp->setName("Example");
+  public_key_creation_options->setRp(rp);
+
+  auto* user = PublicKeyCredentialUserEntity::Create();
+  user->setId(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+  user->setName("user");
+  user->setDisplayName("User");
+  public_key_creation_options->setUser(user);
+
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_creation_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+
+  auto* extensions = AuthenticationExtensionsClientInputs::Create();
+  extensions->setCmtgKey(true);
+  public_key_creation_options->setExtensions(extensions);
+
+  creation_options->setPublicKey(public_key_creation_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->create(context.GetScriptState(), creation_options,
+                              IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToMakeCredential();
+
+  ASSERT_TRUE(mock_authenticator.last_creation_options());
+  EXPECT_TRUE(mock_authenticator.last_creation_options()->cmtg_key);
+
+  const Vector<uint8_t> expected_cmtg_key = {3, 3, 3};
+  const Vector<uint8_t> expected_signature = {4, 4, 4};
+  mock_authenticator.InvokeMakeCredentialSuccessWithCmtgKeyCallback(
+      expected_cmtg_key, expected_signature);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  auto* credential = To<PublicKeyCredential>(V8PublicKeyCredential::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value()));
+  auto* cmtg_outputs = credential->getClientExtensionResults()->cmtgKey();
+  ASSERT_TRUE(cmtg_outputs);
+  DOMArrayBuffer* cmtg_key_buffer = cmtg_outputs->cmtgKey();
+  EXPECT_EQ(cmtg_key_buffer->ByteSpan(), base::as_byte_span(expected_cmtg_key));
+  DOMArrayBuffer* signature_buffer = cmtg_outputs->signature();
+  EXPECT_EQ(signature_buffer->ByteSpan(),
+            base::as_byte_span(expected_signature));
+}
+
+TEST(AuthenticationCredentialsContainerTest, PublicKeyGetCmtgKeyExtension) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationCmtgKeyForTest cmtg_key_enabled(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* request_options = CredentialRequestOptions::Create();
+  auto* public_key_request_options =
+      PublicKeyCredentialRequestOptions::Create();
+  public_key_request_options->setRpId("example.test");
+
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_request_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+
+  auto* extensions = AuthenticationExtensionsClientInputs::Create();
+  extensions->setCmtgKey(true);
+  public_key_request_options->setExtensions(extensions);
+
+  request_options->setPublicKey(public_key_request_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), request_options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToGet();
+
+  EXPECT_TRUE(
+      mock_authenticator.last_get_options()->public_key->extensions->cmtg_key);
+
+  const Vector<uint8_t> expected_cmtg_key = {3, 3, 3};
+  const Vector<uint8_t> expected_signature = {4, 4, 4};
+  mock_authenticator.InvokeGetAssertionSuccessWithCmtgKeyCallback(
+      expected_cmtg_key, expected_signature);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  auto* credential = To<PublicKeyCredential>(V8PublicKeyCredential::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value()));
+  auto* cmtg_outputs = credential->getClientExtensionResults()->cmtgKey();
+  DOMArrayBuffer* cmtg_key_buffer = cmtg_outputs->cmtgKey();
+  EXPECT_EQ(cmtg_key_buffer->ByteSpan(), base::as_byte_span(expected_cmtg_key));
+  DOMArrayBuffer* signature_buffer = cmtg_outputs->signature();
+  EXPECT_EQ(signature_buffer->ByteSpan(),
+            base::as_byte_span(expected_signature));
 }
 
 }  // namespace blink

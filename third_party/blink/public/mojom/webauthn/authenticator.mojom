@@ -112,6 +112,12 @@ struct SupplementalPubKeysResponse {
   array<array<uint8>> signatures;
 };
 
+// The output for the CMTG key extension.
+struct CmtgKeyResponse {
+  array<uint8> cmtg_key;
+  array<uint8> signature;
+};
+
 // The `payment` extension response.
 struct AuthenticationExtensionsPaymentResponse {
   // The signature of the browser bound key corresponding to the public key in
@@ -179,6 +185,9 @@ struct MakeCredentialAuthenticatorResponse {
 
   // The response for the payment extension.
   AuthenticationExtensionsPaymentResponse? payment;
+
+  // The response for the Credential Manager Trust Group key extension.
+  CmtgKeyResponse? cmtg_key;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -247,6 +256,9 @@ struct AuthenticationExtensionsClientOutputs {
 
   // The response for the payment extension.
   AuthenticationExtensionsPaymentResponse? payment;
+
+  // The response for the Credential Manager Trust Group key extension.
+  CmtgKeyResponse? cmtg_key;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -449,6 +461,11 @@ struct AuthenticationExtensionsClientInputs {
   // Parameters defining the type of browser bound keys that the relying party
   // would accept.
   array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
+
+  // `cmtg_key` is true if the request contained a Credential Manager Trust
+  // Group key extension.
+  // https://github.com/w3c/webauthn/pull/2377
+  bool cmtg_key = false;
 };
 
 struct GetCredentialOptions {
@@ -597,6 +614,11 @@ struct PublicKeyCredentialCreationOptions {
   array<string> attestation_formats;
 
   bool is_conditional = false;
+
+  // `cmtg_key` is true if the request contained a Credential Manager Trust
+  // Group key extension.
+  // https://github.com/w3c/webauthn/pull/2377
+  bool cmtg_key = false;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

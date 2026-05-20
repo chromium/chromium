@@ -85,6 +85,9 @@ void OnGetClientCapabilitiesComplete(
       "extension:payment",
       RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled());
   results.emplace_back("extension:prf", true);
+  results.emplace_back(
+      "extension:cmtgKey",
+      RuntimeEnabledFeatures::WebAuthenticationCmtgKeyEnabled());
 
   // Results should be sorted lexicographically based on the keys.
   std::sort(
