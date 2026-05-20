@@ -953,6 +953,11 @@ if (_is_default_toolchain) {
     }
   }
 
+  android_assets("pinlist_assets") {
+    sources = [ "//android_webview/pinlist/pinlist.meta" ]
+    disable_compression = true
+  }
+
   android_assets("pak_file_assets") {
     sources = [
       "$target_gen_dir/chrome_100_percent.pak",
