@@ -1398,6 +1398,28 @@ void DownloadManagerImpl::GetAllDownloads(
   }
 }
 
+void DownloadManagerImpl::GetAllDownloadsAsync(
+    download::SimpleDownloadManager::GetAllDownloadsCallback callback) {
+  download::SimpleDownloadManager::DownloadVector downloads;
+  GetAllDownloads(&downloads);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(downloads)));
+}
+
+void DownloadManagerImpl::GetDownloadByGuidAsync(
+    const std::string& guid,
+    download::SimpleDownloadManager::GetDownloadCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), GetDownloadByGuid(guid)));
+}
+
+void DownloadManagerImpl::GetDownloadAsync(
+    uint32_t id,
+    download::SimpleDownloadManager::GetDownloadCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), GetDownload(id)));
+}
+
 void DownloadManagerImpl::GetUninitializedActiveDownloadsIfAny(
     download::SimpleDownloadManager::DownloadVector* downloads) {
   for (const auto& it : in_progress_downloads_)

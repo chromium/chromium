@@ -35,6 +35,16 @@ class MockSimpleDownloadManager : public SimpleDownloadManager {
   MOCK_METHOD1(DownloadUrlMock, void(DownloadUrlParameters*));
   MOCK_METHOD1(GetDownloadByGuid, DownloadItem*(const std::string&));
   MOCK_METHOD1(GetAllDownloads, void(DownloadVector* downloads));
+  void GetAllDownloadsAsync(GetAllDownloadsCallback callback) override {
+    GetAllDownloadsAsync_(callback);
+  }
+  MOCK_METHOD1(GetAllDownloadsAsync_, void(GetAllDownloadsCallback& callback));
+  void GetDownloadByGuidAsync(const std::string& guid,
+                              GetDownloadCallback callback) override {
+    GetDownloadByGuidAsync_(guid, callback);
+  }
+  MOCK_METHOD2(GetDownloadByGuidAsync_,
+               void(const std::string& guid, GetDownloadCallback& callback));
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

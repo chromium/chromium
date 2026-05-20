@@ -306,6 +306,14 @@ void InProgressDownloadManager::GetAllDownloads(
     downloads->push_back(item.get());
 }
 
+void InProgressDownloadManager::GetAllDownloadsAsync(
+    GetAllDownloadsCallback callback) {
+  DownloadVector downloads;
+  GetAllDownloads(&downloads);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(downloads)));
+}
+
 DownloadItem* InProgressDownloadManager::GetDownloadByGuid(
     const std::string& guid) {
   for (auto& item : in_progress_downloads_) {
@@ -313,6 +321,13 @@ DownloadItem* InProgressDownloadManager::GetDownloadByGuid(
       return item.get();
   }
   return nullptr;
+}
+
+void InProgressDownloadManager::GetDownloadByGuidAsync(
+    const std::string& guid,
+    SimpleDownloadManager::GetDownloadCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), GetDownloadByGuid(guid)));
 }
 
 void InProgressDownloadManager::BeginDownload(

@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/all_download_event_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
@@ -84,6 +86,17 @@ DownloadItem* SimpleDownloadManagerCoordinator::GetDownloadByGuid(
   if (simple_download_manager_)
     return simple_download_manager_->GetDownloadByGuid(guid);
   return nullptr;
+}
+
+void SimpleDownloadManagerCoordinator::GetDownloadByGuidAsync(
+    const std::string& guid,
+    SimpleDownloadManager::GetDownloadCallback callback) {
+  if (!simple_download_manager_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+  simple_download_manager_->GetDownloadByGuidAsync(guid, std::move(callback));
 }
 
 void SimpleDownloadManagerCoordinator::OnDownloadsInitialized() {

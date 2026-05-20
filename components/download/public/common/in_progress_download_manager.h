@@ -106,7 +106,10 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   bool CanDownload(DownloadUrlParameters* params) override;
   void GetAllDownloads(
       SimpleDownloadManager::DownloadVector* downloads) override;
+  void GetAllDownloadsAsync(GetAllDownloadsCallback callback) override;
   DownloadItem* GetDownloadByGuid(const std::string& guid) override;
+  void GetDownloadByGuidAsync(const std::string& guid,
+                              GetDownloadCallback callback) override;
 
   // Called to start a download.
   void BeginDownload(std::unique_ptr<DownloadUrlParameters> params,

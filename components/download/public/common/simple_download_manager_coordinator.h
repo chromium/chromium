@@ -79,6 +79,11 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   // Get the download item for |guid|.
   DownloadItem* GetDownloadByGuid(const std::string& guid);
 
+  // Asynchronously gets the download item for |guid| using a callback.
+  void GetDownloadByGuidAsync(
+      const std::string& guid,
+      SimpleDownloadManager::GetDownloadCallback callback);
+
   // Returns a non-empty notifier to be used for observing download events.
   AllDownloadEventNotifier* GetNotifier();
 

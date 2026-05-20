@@ -206,6 +206,17 @@ class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
   // (http://crbug.com/593020)
   virtual download::DownloadItem* GetDownload(uint32_t id) = 0;
 
+  // Asynchronously gets the download item for |id|.
+  virtual void GetDownloadAsync(
+      uint32_t id,
+      download::SimpleDownloadManager::GetDownloadCallback callback) = 0;
+
+  // Overridden from download::SimpleDownloadManager:
+  void GetDownloadByGuidAsync(
+      const std::string& guid,
+      download::SimpleDownloadManager::GetDownloadCallback callback) override =
+      0;
+
   using GetNextIdCallback = base::OnceCallback<void(uint32_t)>;
   // Called to get an ID for a new download. |callback| may be called
   // synchronously.

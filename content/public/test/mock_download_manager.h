@@ -105,6 +105,14 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD0(GetDelegate, DownloadManagerDelegate*());
   MOCK_METHOD0(Shutdown, void());
   MOCK_METHOD1(GetAllDownloads, void(DownloadVector* downloads));
+  void GetAllDownloadsAsync(
+      download::SimpleDownloadManager::GetAllDownloadsCallback callback)
+      override {
+    GetAllDownloadsAsync_(callback);
+  }
+  MOCK_METHOD1(
+      GetAllDownloadsAsync_,
+      void(download::SimpleDownloadManager::GetAllDownloadsCallback& callback));
   MOCK_METHOD1(GetUninitializedActiveDownloadsIfAny,
                void(DownloadVector* downloads));
   MOCK_METHOD1(Init, bool(BrowserContext* browser_context));
@@ -166,6 +174,24 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD0(CheckForHistoryFilesRemoval, void());
   MOCK_METHOD1(GetDownload, download::DownloadItem*(uint32_t id));
   MOCK_METHOD1(GetDownloadByGuid, download::DownloadItem*(const std::string&));
+  void GetDownloadByGuidAsync(
+      const std::string& guid,
+      download::SimpleDownloadManager::GetDownloadCallback callback) override {
+    GetDownloadByGuidAsync_(guid, callback);
+  }
+  MOCK_METHOD2(
+      GetDownloadByGuidAsync_,
+      void(const std::string& guid,
+           download::SimpleDownloadManager::GetDownloadCallback& callback));
+  void GetDownloadAsync(
+      uint32_t id,
+      download::SimpleDownloadManager::GetDownloadCallback callback) override {
+    GetDownloadAsync_(id, callback);
+  }
+  MOCK_METHOD2(
+      GetDownloadAsync_,
+      void(uint32_t id,
+           download::SimpleDownloadManager::GetDownloadCallback& callback));
   MOCK_METHOD1(GetNextId, void(base::OnceCallback<void(uint32_t)>));
   MOCK_METHOD1(CanDownload, bool(download::DownloadUrlParameters*));
   MOCK_METHOD1(GetStoragePartitionConfigForSiteUrl,
