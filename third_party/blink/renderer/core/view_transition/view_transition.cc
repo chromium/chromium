@@ -169,7 +169,7 @@ ViewTransition::ViewTransition(PassKey,
           MakeGarbageCollected<ViewTransitionStyleTracker>(*element,
                                                            transition_token_)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *element->GetExecutionContext(),
+          element->GetExecutionContext(),
           *this,
           update_dom_callback)) {
   InitTypes(types.value_or(Vector<String>()));
@@ -190,7 +190,7 @@ ViewTransition::ViewTransition(PassKey,
       scope_(element),
       has_document_scope_(element->IsDocumentElement()),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *element->GetExecutionContext(),
+          element->GetExecutionContext(),
           *this,
           update_dom_callback)) {
   SkipTransition();
@@ -234,7 +234,7 @@ ViewTransition::ViewTransition(PassKey,
                                                            transition_token_)),
       transition_state_callback_(std::move(callback)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *document_->GetExecutionContext(),
+          document_->GetExecutionContext(),
           *this)) {
   TRACE_EVENT0("blink", "ViewTransition::ViewTransition - CreatedForSnapshot");
   DCHECK(transition_state_callback_);
@@ -266,7 +266,7 @@ ViewTransition::ViewTransition(PassKey,
           *document_,
           std::move(transition_state))),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *document_->GetExecutionContext(),
+          document_->GetExecutionContext(),
           *this)) {
   TRACE_EVENT0("blink",
                "ViewTransition::ViewTransition - CreatingFromSnapshot");
@@ -289,7 +289,7 @@ ViewTransition::ViewTransition(PassKey,
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
                                                            transition_token_)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *document_->GetExecutionContext(),
+          document_->GetExecutionContext(),
           *this)) {
   InitTypes(types);
   ProcessCurrentState();

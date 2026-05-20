@@ -34,11 +34,11 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
 
  public:
   // Constructor for navigation-initiated view transition.
-  explicit DOMViewTransition(ExecutionContext&, ViewTransition&);
+  explicit DOMViewTransition(ExecutionContext*, ViewTransition&);
 
   // Constructor for script-initiated view transition. Also delegated from the
   // navigation-initiated constructor.
-  explicit DOMViewTransition(ExecutionContext&,
+  explicit DOMViewTransition(ExecutionContext*,
                              ViewTransition&,
                              V8ViewTransitionCallback*);
 

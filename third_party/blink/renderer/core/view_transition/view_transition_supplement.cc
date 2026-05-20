@@ -133,7 +133,8 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 
   // We need to be connected to a view to have a transition.
   if (!document.View()) {
-    return nullptr;
+    return ViewTransition::CreateSkipped(&element, callback)
+        ->GetScriptDelegate();
   }
 
   ViewTransition* transition = ViewTransition::CreateFromScript(
