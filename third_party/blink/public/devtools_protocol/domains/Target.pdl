@@ -36,6 +36,9 @@ domain Target
       # Provides additional details for specific target types. For example, for
       # the type of "page", this may be set to "prerender".
       experimental optional string subtype
+      # Embedder-specific target metadata. This is only set for targets of
+      # type "tab".
+      experimental optional object embedderData
 
   # A filter used by target query/discovery/auto-attach operations.
   experimental type FilterEntry extends object

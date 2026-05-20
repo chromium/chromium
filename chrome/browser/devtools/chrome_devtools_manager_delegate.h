@@ -76,6 +76,8 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
                      NotHandledCallback callback) override;
   std::string GetTargetType(content::WebContents* web_contents) override;
   std::string GetTargetTitle(content::WebContents* web_contents) override;
+  std::unique_ptr<base::DictValue> GetTargetEmbedderData(
+      content::DevToolsAgentHost* agent_host) override;
   std::optional<bool> ShouldReportAsTabTarget(
       content::WebContents* web_contents) override;
 

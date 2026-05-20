@@ -101,6 +101,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -2132,6 +2133,104 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   // CDP `Target.getTargets` result should contain the new target.
   SendCommandSync("Target.getTargets");
   EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       TargetGetTargetsIncludesTabEmbedderData) {
+  AttachToBrowserTarget();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+
+  // Open a background tab to cover active and inactive tab metadata.
+  SendCommandSync("Target.createTarget", base::DictValue()
+                                             .Set("url", "about:blank")
+                                             .Set("forTab", true)
+                                             .Set("background", true));
+  ASSERT_FALSE(error());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({1});
+
+  base::DictValue tab_filter;
+  tab_filter.Set("type", "tab");
+  tab_filter.Set("exclude", false);
+  base::ListValue target_filter =
+      base::ListValue().Append(std::move(tab_filter));
+  base::DictValue get_targets_params;
+  get_targets_params.Set("filter", std::move(target_filter));
+  SendCommandSync("Target.getTargets", std::move(get_targets_params));
+  ASSERT_TRUE(result());
+
+  const base::ListValue* target_infos = result()->FindList("targetInfos");
+  ASSERT_TRUE(target_infos);
+  ASSERT_EQ(2u, target_infos->size());
+
+  const base::DictValue* first_tab_data = nullptr;
+  const base::DictValue* second_tab_data = nullptr;
+  std::string first_tab_target_id;
+  std::string second_tab_target_id;
+  for (const auto& target_info : *target_infos) {
+    const base::DictValue& target_info_dict = target_info.GetDict();
+    EXPECT_EQ("tab", *target_info_dict.FindString("type"));
+    const std::string* browser_context_id =
+        target_info_dict.FindString("browserContextId");
+    ASSERT_TRUE(browser_context_id);
+    EXPECT_EQ(browser()->profile()->UniqueId(), *browser_context_id);
+    const std::string* target_id = target_info_dict.FindString("targetId");
+    ASSERT_TRUE(target_id);
+    const base::DictValue* embedder_data =
+        target_info_dict.FindDict("embedderData");
+    ASSERT_TRUE(embedder_data);
+    std::optional<int> tab_strip_index =
+        embedder_data->FindInt("tabStripIndex");
+    ASSERT_TRUE(tab_strip_index);
+    if (*tab_strip_index == 0) {
+      first_tab_data = embedder_data;
+      first_tab_target_id = *target_id;
+    } else if (*tab_strip_index == 1) {
+      second_tab_data = embedder_data;
+      second_tab_target_id = *target_id;
+    }
+  }
+
+  ASSERT_TRUE(first_tab_data);
+  EXPECT_EQ(true, *first_tab_data->FindBool("tabActive"));
+  EXPECT_EQ(true, *first_tab_data->FindBool("tabPinned"));
+
+  ASSERT_TRUE(second_tab_data);
+  EXPECT_EQ(false, *second_tab_data->FindBool("tabActive"));
+  EXPECT_EQ(false, *second_tab_data->FindBool("tabPinned"));
+  EXPECT_EQ(group_id.ToString(), *second_tab_data->FindString("tabGroupId"));
+
+  ASSERT_FALSE(first_tab_target_id.empty());
+  SendCommandSync("Target.getTargetInfo",
+                  base::DictValue().Set("targetId", first_tab_target_id));
+  ASSERT_TRUE(result());
+  const base::Value* first_target_info_embedder_data =
+      result()->FindByDottedPath("targetInfo.embedderData");
+  ASSERT_TRUE(first_target_info_embedder_data);
+  const base::DictValue& first_get_target_info_data =
+      first_target_info_embedder_data->GetDict();
+  EXPECT_EQ(0, *first_get_target_info_data.FindInt("tabStripIndex"));
+  EXPECT_EQ(true, *first_get_target_info_data.FindBool("tabActive"));
+  EXPECT_EQ(true, *first_get_target_info_data.FindBool("tabPinned"));
+
+  ASSERT_FALSE(second_tab_target_id.empty());
+  SendCommandSync("Target.getTargetInfo",
+                  base::DictValue().Set("targetId", second_tab_target_id));
+  ASSERT_TRUE(result());
+  const base::Value* second_target_info_embedder_data =
+      result()->FindByDottedPath("targetInfo.embedderData");
+  ASSERT_TRUE(second_target_info_embedder_data);
+  const base::DictValue& second_get_target_info_data =
+      second_target_info_embedder_data->GetDict();
+  EXPECT_EQ(1, *second_get_target_info_data.FindInt("tabStripIndex"));
+  EXPECT_EQ(false, *second_get_target_info_data.FindBool("tabActive"));
+  EXPECT_EQ(false, *second_get_target_info_data.FindBool("tabPinned"));
+  EXPECT_EQ(group_id.ToString(),
+            *second_get_target_info_data.FindString("tabGroupId"));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

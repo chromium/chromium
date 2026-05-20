@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -354,6 +356,46 @@ std::string ChromeDevToolsManagerDelegate::GetTargetTitle(
   }
 
   return extension_name;
+}
+
+std::unique_ptr<base::DictValue>
+ChromeDevToolsManagerDelegate::GetTargetEmbedderData(
+    content::DevToolsAgentHost* agent_host) {
+  if (agent_host->GetType() != DevToolsAgentHost::kTypeTab) {
+    return nullptr;
+  }
+
+  content::WebContents* web_contents = agent_host->GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return nullptr;
+  }
+
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  if (!browser) {
+    return nullptr;
+  }
+
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+  const int index = tab_strip_model->GetIndexOfTab(tab);
+  if (index == TabStripModel::kNoTab) {
+    return nullptr;
+  }
+
+  auto embedder_data = std::make_unique<base::DictValue>();
+  embedder_data->Set("tabStripIndex", index);
+  embedder_data->Set("tabActive", tab->IsActivated());
+  embedder_data->Set("tabPinned", tab->IsPinned());
+  std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
+  if (group_id.has_value()) {
+    embedder_data->Set("tabGroupId", group_id->ToString());
+  }
+  return embedder_data;
 }
 
 bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(

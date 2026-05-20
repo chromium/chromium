@@ -124,6 +124,17 @@ std::unique_ptr<Target::TargetInfo> BuildTargetInfo(
   if (!subtype.empty()) {
     target_info->SetSubtype(subtype);
   }
+  if (host->GetType() == DevToolsAgentHost::kTypeTab) {
+    DevToolsManagerDelegate* delegate =
+        DevToolsManager::GetInstance()->delegate();
+    if (delegate) {
+      std::unique_ptr<base::DictValue> embedder_data =
+          delegate->GetTargetEmbedderData(host);
+      if (embedder_data && !embedder_data->empty()) {
+        target_info->SetEmbedderData(std::move(embedder_data));
+      }
+    }
+  }
   return target_info;
 }
 

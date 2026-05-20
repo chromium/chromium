@@ -47,6 +47,11 @@ std::string DevToolsManagerDelegate::GetTargetDescription(WebContents* wc) {
   return std::string();
 }
 
+std::unique_ptr<base::DictValue> DevToolsManagerDelegate::GetTargetEmbedderData(
+    DevToolsAgentHost* agent_host) {
+  return nullptr;
+}
+
 bool DevToolsManagerDelegate::AllowInspectingRenderFrameHost(
     RenderFrameHost* rfh) {
   return true;
