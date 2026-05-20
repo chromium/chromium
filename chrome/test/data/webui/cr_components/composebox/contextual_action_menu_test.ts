@@ -1146,4 +1146,38 @@ suite('ContextualActionMenu', () => {
         HTMLButtonElement;
     assertTrue(regularModel.disabled);
   });
+
+  test('Recent tab suffix disabled state', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+    });
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    const tabInfo: TabInfo = {
+      tabId: 1,
+      title: 'Recent Tab',
+      url: 'https://example.com',
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    };
+    actionMenu.tabSuggestions = [tabInfo];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+      disabledInputTypes: [InputType.kBrowserTab],
+    });
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    trigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
+
+    const suffix = $$(actionMenu, '.recent-tabs-suffix');
+    assertTrue(isVisible(suffix));
+    assertTrue(suffix!.hasAttribute('disabled'));
+  });
 });

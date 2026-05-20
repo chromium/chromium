@@ -47,6 +47,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -141,6 +142,7 @@ class MockContextualTasksUI : public ContextualTasksUI {
               TakeInputStateModel,
               (),
               (override));
+  MOCK_METHOD(std::vector<int32_t>, GetRestoredTabIds, (), (override));
   MOCK_METHOD(bool, IsActiveTabContextSuggestionShowing, (), (const, override));
   MOCK_METHOD(contextual_tasks::ContextualTasksAutoSuggestionManager*,
               GetAutoSuggestionManager,
@@ -1504,6 +1506,30 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   handler_->CreateAndSendQueryMessage(kQuery);
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, RestoreTabIds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kContextManagementInComposebox);
+
+  std::vector<int32_t> restored_tab_ids = {1, 2};
+  EXPECT_CALL(*mock_ui_, GetRestoredTabIds())
+      .WillOnce(testing::Return(restored_tab_ids));
+  EXPECT_CALL(mock_searchbox_page_, SetRestoredTabIds(restored_tab_ids))
+      .Times(1);
+
+  handler_->InitializeInputStateModel();
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, GetSelectedTabIds) {
+  int32_t tab_id = 15;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  handler_->AddTabContext(tab_id, /*delay_upload=*/true, callback.Get());
+
+  std::vector<int32_t> selected_tab_ids = handler_->GetSelectedTabIds();
+  EXPECT_THAT(selected_tab_ids, testing::Contains(tab_id));
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_WaitsForUpload) {

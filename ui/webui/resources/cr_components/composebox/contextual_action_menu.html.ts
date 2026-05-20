@@ -58,7 +58,8 @@ export function getHtml(this: ContextualActionMenuElement) {
                     role="${this.enableMultiTabSelection_ ?
                         'menuitemcheckbox' : 'menuitem'}"
                     aria-checked="${this.enableMultiTabSelection_ &&
-                        this.isTabSelected_(tab.tabId)}"
+                        (this.isTabSelected_(tab.tabId) ||
+                         this.restoredTabIds.includes(tab.tabId))}"
                     title="${tab.title}" data-index="${index}"
                     aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
                         tab.title}"
@@ -68,13 +69,15 @@ export function getHtml(this: ContextualActionMenuElement) {
                 </cr-composebox-tab-favicon>
                 <span class="tab-title-group">
                   <span class="tab-title">${tab.title}</span>
-                  ${index === 0 ? html`
-                    <span class="recent-tabs-suffix">${
+                  ${this.isRecentTab_(index) ? html`
+                    <span class="recent-tabs-suffix"
+                        ?disabled="${this.isTabDisabled_(tab)}">${
                         this.i18n('recentTabsSuffix')}</span>
                   ` : ''}
                 </span>
-                ${this.enableMultiTabSelection_ &&
-                    this.isTabSelected_(tab.tabId) ? html`
+                ${(this.enableMultiTabSelection_ &&
+                    (this.isTabSelected_(tab.tabId) ||
+                     this.restoredTabIds.includes(tab.tabId))) ? html`
                   <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
                 ` : ''}
                 </button>
@@ -91,7 +94,8 @@ export function getHtml(this: ContextualActionMenuElement) {
             <button class="dropdown-item"
                 role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox' : 'menuitem'}"
                 aria-checked="${this.enableMultiTabSelection_ &&
-                    this.isTabSelected_(tab.tabId)}"
+                  (this.isTabSelected_(tab.tabId) ||
+                  this.restoredTabIds.includes(tab.tabId))}"
                 title="${tab.title}" data-index="${index}"
                 aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
                     tab.title}"
@@ -101,8 +105,10 @@ export function getHtml(this: ContextualActionMenuElement) {
               <cr-composebox-tab-favicon .url="${tab.url}">
               </cr-composebox-tab-favicon>
               <span class="tab-title">${tab.title}</span>
-              ${this.enableMultiTabSelection_ ? html`
-                ${this.isTabSelected_(tab.tabId) ? html`
+              ${this.enableMultiTabSelection_ ||
+                this.restoredTabIds.includes(tab.tabId) ? html`
+                ${(this.isTabSelected_(tab.tabId) ||
+                  this.restoredTabIds.includes(tab.tabId)) ? html`
                   <cr-icon class="multi-tab-icon"
                       icon="composebox:checkCircle" id="multi-tab-check"></cr-icon>
                 ` : html`

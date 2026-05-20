@@ -39,6 +39,7 @@ export function getHtml(this: ComposeboxElement) {
         .tabSuggestions="${this.tabSuggestions}"
         .hasImageFiles="${this.hasImageFiles()}"
         .disabledTabIds="${this.addedTabsIds}"
+        .restoredTabIds="${this.restoredTabIds}"
         .fileNum="${this.files.size}"
         .sharedTabs="${this.getSharedTabs()}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
@@ -54,6 +55,7 @@ export function getHtml(this: ComposeboxElement) {
         .isOblongShape="${this.isOblongShape}"
         .applyContextButtonBackground="${this.applyContextButtonBackground}"
         .sharedTabs="${this.getSharedTabs()}"
+        .restoredTabs="${this.getRestoredTabs()}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
         ?show-context-menu-description="${this.showContextMenuDescription}">
     </cr-composebox-contextual-entrypoint-button>

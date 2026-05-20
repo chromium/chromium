@@ -24,18 +24,24 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           ${this.showSuggestionLabel ?
              this.i18n('searchBoxHintMultimodal') : this.i18n('addContext')}
         </span>
-        ${this.tabFaviconChipsToCoinsEnabled_ && this.sharedTabs && this.sharedTabs.length > 0 ? html`
-          <composebox-favicon-group .tabs="${this.sharedTabs}" title="${this.i18n('sharingTabsWithGoogle')}"></composebox-favicon-group>
+        ${this.tabFaviconChipsToCoinsEnabled_ &&
+          this.getTabs_().length > 0 ? html`
+          <composebox-favicon-group .tabs="${this.getTabs_()}"
+          title="${this.i18n('sharingTabsWithGoogle')}">
+          </composebox-favicon-group>
         ` : ''}
       </cr-button>
-    ` : (this.tabFaviconChipsToCoinsEnabled_ && this.sharedTabs && this.sharedTabs.length > 0) ? html`
+    ` : (this.tabFaviconChipsToCoinsEnabled_ &&
+          this.getTabs_().length > 0) ? html`
       <cr-button id="entrypoint" class="ai-mode-button pill-button" part="entrypoint-button"
           @click="${this.onEntrypointClick_}"
           title="${this.i18n('addContextTitle')}"
           ?disabled="${this.uploadButtonDisabled}" noink
           aria-label="${this.i18n('addContextTitle')}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-        <composebox-favicon-group .tabs="${this.sharedTabs}" title="${this.i18n('sharingTabsWithGoogle')}"></composebox-favicon-group>
+        <composebox-favicon-group .tabs="${this.getTabs_()}"
+        title="${this.i18n('sharingTabsWithGoogle')}">
+        </composebox-favicon-group>
       </cr-button>
     ` : html`
       <cr-icon-button id="entrypoint" class="ai-mode-button"

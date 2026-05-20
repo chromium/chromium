@@ -120,6 +120,10 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   virtual std::unique_ptr<contextual_search::InputStateModel>
   TakeInputStateModel() = 0;
 
+  // Fetches the restored tab IDs attached to the WebContents for the
+  // current task.
+  virtual std::vector<int32_t> GetRestoredTabIds() = 0;
+
   // Registers the composebox handler with this UI.
   virtual void SetComposeboxHandler(
       ContextualTasksComposeboxHandlerInterface* handler) = 0;

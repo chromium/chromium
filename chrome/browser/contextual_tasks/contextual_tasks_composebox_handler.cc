@@ -45,6 +45,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
@@ -434,6 +435,16 @@ void ContextualTasksComposeboxHandler::OnTaskChanged() {
   InitializeInputStateModel();
 }
 
+std::vector<int32_t> ContextualTasksComposeboxHandler::GetSelectedTabIds()
+    const {
+  std::vector<int32_t> tab_ids =
+      ContextualSearchboxHandler::GetSelectedTabIds();
+  for (const auto& [token, tab_id] : delayed_tabs_) {
+    tab_ids.push_back(tab_id);
+  }
+  return tab_ids;
+}
+
 void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
   if (take_input_model_callback_) {
     std::unique_ptr<contextual_search::InputStateModel> current_input_state =
@@ -469,6 +480,12 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
   } else {
     ResetInputStateModel();
     ContextualSearchboxHandler::InitializeInputStateModel();
+  }
+
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    std::vector<int32_t> restored_tab_ids =
+        web_ui_interface_->GetRestoredTabIds();
+    SearchboxHandler::page_->SetRestoredTabIds(restored_tab_ids);
   }
 
   if (input_state_model_) {

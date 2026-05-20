@@ -215,6 +215,7 @@ class ContextualTasksUI
 
   std::unique_ptr<contextual_search::InputStateModel> TakeInputStateModel()
       override;
+  std::vector<int32_t> GetRestoredTabIds() override;
   void SetComposeboxHandler(
       contextual_tasks::ContextualTasksComposeboxHandlerInterface* handler)
       override;

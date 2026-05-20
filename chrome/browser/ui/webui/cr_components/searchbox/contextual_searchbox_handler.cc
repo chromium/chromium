@@ -542,6 +542,14 @@ void ContextualSearchboxHandler::GetSmartTabSharingActive(
   std::move(callback).Run(IsSmartTabSharingActive());
 }
 
+std::vector<int32_t> ContextualSearchboxHandler::GetSelectedTabIds() const {
+  std::vector<int32_t> ids;
+  for (const auto& entry : selected_tabs_) {
+    ids.push_back(entry.second);
+  }
+  return ids;
+}
+
 void ContextualSearchboxHandler::NotifySessionStarted() {
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
@@ -735,6 +743,8 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   }
 
   RecordTabAddedMetric(tab, /*is_tab_suggestion_chip=*/delay_upload);
+
+  selected_tabs_[context_token] = tab_id;
 
   lens::TabContextualizationController* tab_contextualization_controller =
       lens::TabContextualizationController::From(tab);
@@ -1156,6 +1166,7 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,
     bool from_automatic_chip) {
+  selected_tabs_.erase(context_token);
   auto* contextual_session_handle = GetContextualSessionHandle();
   int num_files = 0;
   if (contextual_session_handle) {
@@ -1180,6 +1191,7 @@ void ContextualSearchboxHandler::DeleteContext(
 
 void ContextualSearchboxHandler::ClearFiles(
     bool should_block_auto_suggested_tabs) {
+  selected_tabs_.clear();
   if (auto* contextual_session_handle = GetContextualSessionHandle()) {
     contextual_session_handle->ClearFiles();
   }
@@ -1537,20 +1549,27 @@ void ContextualSearchboxHandler::OpenUrl(
             *input_state_model_, *new_contextual_session_handle);
   }
 
+  std::vector<int32_t> selected_tab_ids;
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    selected_tab_ids = GetSelectedTabIds();
+  }
+
   auto navigation_handle_callback = base::BindOnce(
       [](std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
              handle,
          std::unique_ptr<contextual_search::InputStateModel> input_state_model,
+         std::vector<int32_t> selected_tab_ids,
          content::NavigationHandle& navigation_handle) {
         content::WebContents* new_web_contents =
             navigation_handle.GetWebContents();
         ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
             new_web_contents)
             ->SetTaskSession(std::nullopt, std::move(handle),
-                             std::move(input_state_model));
+                             std::move(input_state_model),
+                             std::move(selected_tab_ids));
       },
       std::move(new_contextual_session_handle),
-      std::move(new_input_state_model));
+      std::move(new_input_state_model), std::move(selected_tab_ids));
   // TODO(crbug.com/469137247): Consider moving this logic to the specific
   // subclasses that have aim navigation.
   bool should_open_url = true;

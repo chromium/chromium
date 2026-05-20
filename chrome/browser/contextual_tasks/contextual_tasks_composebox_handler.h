@@ -107,6 +107,8 @@ class ContextualTasksComposeboxHandler
       const contextual_tasks::SuggestedTabInfo* suggested_tab) override;
   void OnTaskChanged() override;
 
+  std::vector<int32_t> GetSelectedTabIds() const override;
+
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
 #if !BUILDFLAG(IS_ANDROID)
   void HandleLensButtonClick() override;

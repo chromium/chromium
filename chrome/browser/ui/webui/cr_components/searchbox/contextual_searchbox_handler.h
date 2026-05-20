@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -173,6 +174,9 @@ class ContextualSearchboxHandler
   virtual void GetSmartTabSharingActive(
       composebox::mojom::PageHandler::GetSmartTabSharingActiveCallback
           callback);
+
+  // Returns the list of selected tab IDs that should be transferred.
+  virtual std::vector<int32_t> GetSelectedTabIds() const;
 
   // Continues the process of adding tab context for a given `tab_id`.
   // This method is used when a `context_token` has already been generated
@@ -375,6 +379,9 @@ class ContextualSearchboxHandler
 
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
+
+  // Map of context tokens to tab IDs for tabs that have been added.
+  std::map<base::UnguessableToken, int32_t> selected_tabs_;
 
  protected:
   std::optional<bool> smart_tab_sharing_active_for_thread_;

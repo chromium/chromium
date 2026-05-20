@@ -57,6 +57,7 @@ export class ContextualEntrypointButtonElement extends
       isOblongShape: {type: Boolean, reflect: true},
       windowWidthBelowThreshold_: {type: Boolean},
       sharedTabs: {type: Array},
+      restoredTabs: {type: Array},
       tabFaviconChipsToCoinsEnabled_: {type: Boolean},
     };
   }
@@ -65,6 +66,7 @@ export class ContextualEntrypointButtonElement extends
   accessor showSuggestionLabel: boolean = false;
   accessor inputState: InputState|null = null;
   accessor sharedTabs: TabInfo[] = [];
+  accessor restoredTabs: TabInfo[] = [];
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
@@ -81,6 +83,10 @@ export class ContextualEntrypointButtonElement extends
 
   constructor() {
     super();
+  }
+
+  protected getTabs_(): TabInfo[] {
+    return this.sharedTabs.concat(this.restoredTabs || []);
   }
 
   override connectedCallback() {

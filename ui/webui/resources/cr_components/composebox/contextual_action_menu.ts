@@ -62,6 +62,7 @@ export class ContextualActionMenuElement extends
     return {
       fileNum: {type: Number},
       disabledTabIds: {type: Object},
+      restoredTabIds: {type: Array},
       tabSuggestions: {type: Array},
       inputState: {type: Object},
       smartTabSharingActive: {type: Boolean},
@@ -84,6 +85,7 @@ export class ContextualActionMenuElement extends
 
   accessor fileNum: number = 0;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
+  accessor restoredTabIds: number[] = [];
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
   accessor smartTabSharingActive: boolean = false;
@@ -183,7 +185,8 @@ export class ContextualActionMenuElement extends
     super.updated(changedProperties);
 
     if (this.contextManagementInComposeboxEnabled_) {
-      if (changedProperties.has('disabledTabIds')) {
+      if (changedProperties.has('disabledTabIds') ||
+          changedProperties.has('restoredTabIds')) {
         this.updateSharingTabsText_();
       }
       this.manageShareTabsInitialFocus_(changedProperties);
@@ -205,7 +208,9 @@ export class ContextualActionMenuElement extends
 
   showAt(anchor: HTMLElement) {
     this.$.menu.showAt(anchor, {
-      width: this.contextManagementInComposeboxEnabled_ ? SHARE_TABS_MENU_WIDTH_PX : MENU_WIDTH_PX,
+      width: this.contextManagementInComposeboxEnabled_ ?
+          SHARE_TABS_MENU_WIDTH_PX :
+          MENU_WIDTH_PX,
       anchorAlignmentX: AnchorAlignment.AFTER_START,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
@@ -242,15 +247,15 @@ export class ContextualActionMenuElement extends
   }
 
   private updateSharingTabsText_() {
-    if (!this.contextManagementInComposeboxEnabled_ ||
-        this.disabledTabIds.size === 0) {
+    const totalTabs = this.disabledTabIds.size + this.restoredTabIds.length;
+    if (!this.contextManagementInComposeboxEnabled_ || totalTabs === 0) {
       this.sharingTabsText_ = this.i18n('shareTabs');
       return;
     }
 
     PluralStringProxyImpl.getInstance()
-        .getPluralString('sharingTabs', this.disabledTabIds.size)
-        .then(s => {
+        .getPluralString('sharingTabs', totalTabs)
+        .then((s: string) => {
           this.sharingTabsText_ = s;
         });
   }
@@ -396,6 +401,9 @@ export class ContextualActionMenuElement extends
     const noNewContextAllowed =
         this.isInputTypeDisabled_(InputType.kBrowserTab);
     const isTabInContext = this.isTabSelected_(tab.tabId);
+    if (this.restoredTabIds.includes(tab.tabId)) {
+      return true;
+    }
     if (this.enableMultiTabSelection_) {
       return noNewContextAllowed && !isTabInContext;
     }
@@ -403,7 +411,13 @@ export class ContextualActionMenuElement extends
   }
 
   protected getSelectedTabs_(): TabInfo[] {
-    return this.tabSuggestions.filter(tab => this.isTabSelected_(tab.tabId));
+    return this.tabSuggestions.filter(
+        tab => this.isTabSelected_(tab.tabId) ||
+            this.restoredTabIds.includes(tab.tabId));
+  }
+
+  protected isRecentTab_(index: number): boolean {
+    return index === 0;
   }
 
   protected onSmartTabSharingToggleChange_(e: Event) {

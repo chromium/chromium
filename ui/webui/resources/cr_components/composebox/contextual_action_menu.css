@@ -246,7 +246,6 @@ composebox-favicon-group {
 }
 
 .recent-tabs-suffix {
-  color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -258,6 +257,10 @@ composebox-favicon-group {
   line-height: var(--cr-composebox-context-menu-line-height, 18px);
   white-space: nowrap;
   width: 72px;
+}
+
+.recent-tabs-suffix[disabled] {
+  color: var(--color-composebox-context-entrypoint-text-disabled);
 }
 
 .share-tabs-check {

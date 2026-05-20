@@ -1002,6 +1002,18 @@ ContextualTasksUI::TakeInputStateModel() {
   return helper->TakeInputStateModelForTask(task_id_.value());
 }
 
+std::vector<int32_t> ContextualTasksUI::GetRestoredTabIds() {
+  if (!task_id_.has_value()) {
+    return {};
+  }
+
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents);
+
+  return helper->GetSelectedTabIdsForTask(task_id_.value());
+}
+
 void ContextualTasksUI::SetComposeboxHandler(
     contextual_tasks::ContextualTasksComposeboxHandlerInterface* handler) {
   composebox_handler_ = handler;
