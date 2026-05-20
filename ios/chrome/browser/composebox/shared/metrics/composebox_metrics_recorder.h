@@ -144,6 +144,12 @@ class ContextualSearchMetricsRecorder;
 // Records whether the user edited the text before entering AI Mode.
 - (void)recordTextEditedBeforeAiMode:(BOOL)edited;
 
+// Records that the given tool mode option was displayed.
+- (void)recordToolModeShown:(ComposeboxMode)tool;
+
+// Records that the given model option was displayed.
+- (void)recordModelModeShown:(ComposeboxModelOption)model;
+
 // Records the tool explicitly selected in the menu.
 - (void)recordToolSelected:(ComposeboxMode)tool;
 

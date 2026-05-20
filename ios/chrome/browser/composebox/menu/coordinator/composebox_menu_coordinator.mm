@@ -432,6 +432,14 @@ CGFloat const kSheetTopPadding = 40.0f;
     visibleButtons.push_back(FuseboxAttachmentButtonType::kFiles);
   }
 
+  for (const auto& tool : _inputState.allowedTools) {
+    [_metricsRecorder recordToolModeShown:tool];
+  }
+
+  for (const auto& model : _inputState.allowedModels) {
+    [_metricsRecorder recordModelModeShown:model];
+  }
+
   [_metricsRecorder
       recordAttachmentsMenuOpenedWithVisibleButtons:visibleButtons];
 }

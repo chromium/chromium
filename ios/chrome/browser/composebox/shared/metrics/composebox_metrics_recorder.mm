@@ -315,6 +315,20 @@ omnibox::ModelMode ModelModeFromComposeboxModelOption(
                             edited);
 }
 
+- (void)recordToolModeShown:(ComposeboxMode)tool {
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordToolModeShown(
+        ToolModeFromComposeboxMode(tool));
+  }
+}
+
+- (void)recordModelModeShown:(ComposeboxModelOption)model {
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordModelModeShown(
+        ModelModeFromComposeboxModelOption(model));
+  }
+}
+
 - (void)recordToolSelected:(ComposeboxMode)tool {
   if (_contextualSearchMetricsRecorder) {
     _contextualSearchMetricsRecorder->RecordToolSelected(
