@@ -13812,7 +13812,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PageActionMenuAuthFlow"
+                        "PageActionMenuAuthFlow",
+                        "PageToolsFeatureUnavailability"
                     ]
                 }
             ]
