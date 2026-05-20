@@ -46,10 +46,13 @@ public class ExclusiveAccessBubble {
         if (snackbarManager != null) {
             mSnackbar =
                     Snackbar.make(
-                            mText,
-                            mSnackbarController,
-                            Snackbar.TYPE_ACTION,
-                            Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE);
+                                    mText,
+                                    mSnackbarController,
+                                    Snackbar.TYPE_ACTION,
+                                    Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                            // The exclusive access notice is security-critical and should not
+                            // be discarded by the timeout of other action snackbars in the queue.
+                            .setHighPriority(true);
             snackbarManager.showSnackbar(mSnackbar);
         }
     }

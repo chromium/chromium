@@ -1429,6 +1429,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ui/BottomSheetManagerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/ChromeActivitySnackbarHelperUnitTest.java",
       "src/org/chromium/chrome/browser/ui/ExclusiveAccessBubbleTest.java",
+      "src/org/chromium/chrome/browser/ui/ExclusiveAccessContextTest.java",
       "src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
       "src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationControllerUnitTest.java",

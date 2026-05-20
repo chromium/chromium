@@ -106,14 +106,18 @@ class SnackbarCollection {
 
     void removeCurrentDueToTimeout() {
         Snackbar current = getCurrent();
-        if (current.isTypePersistent()) {
+        if (current == null || current.isTypePersistent()) {
             // In theory, this method should never be called on a persistent snackbar as the
             // dismissal handler is disabled. As a precaution, we exit early if the snackbar is
             // meant to be persistent.
             return;
         }
         removeCurrent(DismissalReason.TIMEOUT);
-        while ((current = getCurrent()) != null && current.isTypeAction()) {
+        // Security-sensitive snackbars (High Priority) are shielded from the timeout-induced
+        // purge of action-type snackbars to ensure they are not accidentally suppressed.
+        while ((current = getCurrent()) != null
+                && current.isTypeAction()
+                && !current.isHighPriority()) {
             removeCurrent(DismissalReason.TIMEOUT);
         }
     }

@@ -55,6 +55,8 @@ class ExclusiveAccessContextAndroid : public ExclusiveAccessContext {
   // internal timers and/or re-display the bubble.
   void OnExclusiveAccessUserInput() override;
 
+  void OnExclusiveAccessUserInput(JNIEnv* env);
+
   // Returns the currently active WebContents, or nullptr if there is none.
   content::WebContents* GetWebContentsForExclusiveAccess() override;
 
