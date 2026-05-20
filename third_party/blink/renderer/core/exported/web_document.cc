@@ -406,8 +406,6 @@ WebString WebDocument::OutgoingReferrer() const {
   return WebString(ConstUnwrap<Document>()->domWindow()->OutgoingReferrer());
 }
 
-void WebDocument::InitiatePreview(const WebURL& url) {}
-
 void WebDocument::SnapshotAccessibilityTree(
     size_t max_nodes,
     base::TimeDelta timeout,

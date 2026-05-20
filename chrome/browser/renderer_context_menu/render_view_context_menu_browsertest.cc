@@ -3880,16 +3880,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_FALSE(menu1->IsItemEnabled(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       LinkPreviewInvisibleForIWALinks) {
-  std::unique_ptr<TestRenderViewContextMenu> menu1 =
-      CreateContextMenuMediaTypeNone(
-          /*unfiltered_url=*/GURL(
-              "isolated-app://"
-              "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai/"),
-          /*url=*/GURL(""));
-}
-
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DoNotShowSplitTabInWebApp) {
   const GURL test_url("http://www.example.com/");
   const AppId app_id = InstallTestWebApp(GURL(kAppUrl1));

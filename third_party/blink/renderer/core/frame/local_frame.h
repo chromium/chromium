@@ -1058,8 +1058,6 @@ class CORE_EXPORT LocalFrame final
   void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;
   void MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
 
-  void EnsureLinkPreviewTriggererInitialized();
-
   void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
                                mojom::blink::StorageTypeAccessed storage_type,
                                bool isAllowed);

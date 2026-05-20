@@ -104,8 +104,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   // Create FormSubmission
   //
   // This returns nullptr if form submission is not allowed for the given
-  // arguments. For example, if navigation policy for the event is
-  // `kNavigationPolicyLinkPreview`.
+  // arguments.
   static FormSubmission* Create(HTMLFormElement*,
                                 const Attributes&,
                                 const Event*,
