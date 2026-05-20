@@ -28,4 +28,32 @@ suite('SkillCard', function() {
     assertTrue(!!cardBody);
     assertEquals('Test prompt', cardBody.textContent.trim());
   });
+
+  test('IllustrationUrlResizing', async function() {
+    // Test with non-gstatic URL
+    skillCard.skill = {
+      ...skillCard.skill,
+      imageUrl: 'https://example.com/image.png',
+    };
+    await microtasksFinished();
+    let img = skillCard.shadowRoot.querySelector('#illustrationImage');
+    assertTrue(!!img);
+    assertEquals('https://example.com/image.png', img.getAttribute('auto-src'));
+
+    // Test with gstatic URL
+    skillCard.skill = {
+      ...skillCard.skill,
+      imageUrl: 'https://www.gstatic.com/chrome/skills/images/test.png',
+    };
+    await microtasksFinished();
+    img = skillCard.shadowRoot.querySelector('#illustrationImage');
+    assertTrue(!!img);
+    const dpr = window.devicePixelRatio || 1;
+    const expectedWidth = Math.round(238 * dpr);
+    const expectedHeight = Math.round(119 * dpr);
+    assertEquals(
+        `https://www.gstatic.com/chrome/skills/images/test.png=w${
+            expectedWidth}-h${expectedHeight}-rw`,
+        img.getAttribute('auto-src'));
+  });
 });
