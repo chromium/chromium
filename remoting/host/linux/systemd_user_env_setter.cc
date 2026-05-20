@@ -74,6 +74,42 @@ base::expected<base::EnvironmentMap, Loggable> ParseEnvironment(
   return env_map;
 }
 
+base::FilePath GetPipeWireSocketPath(const base::EnvironmentMap& env_map) {
+  // The default PipeWire socket is $XDG_RUNTIME_DIR/pipewire-0, but it may be
+  // overridden by $PIPEWIRE_REMOTE and $PIPEWIRE_RUNTIME_DIR.
+  std::string socket_name = "pipewire-0";
+  auto pipewire_remote_it = env_map.find("PIPEWIRE_REMOTE");
+  if (pipewire_remote_it != env_map.end() &&
+      !pipewire_remote_it->second.empty()) {
+    socket_name = pipewire_remote_it->second;
+  }
+
+  base::FilePath socket_path(socket_name);
+  if (socket_path.IsAbsolute()) {
+    return socket_path;
+  }
+
+  base::FilePath runtime_dir;
+  auto pipewire_runtime_dir_it = env_map.find("PIPEWIRE_RUNTIME_DIR");
+  if (pipewire_runtime_dir_it != env_map.end() &&
+      !pipewire_runtime_dir_it->second.empty()) {
+    runtime_dir = base::FilePath(pipewire_runtime_dir_it->second);
+  } else {
+    auto xdg_runtime_dir_it = env_map.find("XDG_RUNTIME_DIR");
+    if (xdg_runtime_dir_it != env_map.end() &&
+        !xdg_runtime_dir_it->second.empty()) {
+      runtime_dir = base::FilePath(xdg_runtime_dir_it->second);
+    }
+  }
+
+  if (runtime_dir.empty()) {
+    LOG(WARNING) << "Cannot determine runtime directory for PipeWire socket.";
+    return base::FilePath();
+  }
+
+  return runtime_dir.Append(socket_name);
+}
+
 }  // namespace
 
 base::expected<void, Loggable> SetSystemdUserEnvironment() {
@@ -139,6 +175,20 @@ base::expected<void, Loggable> SetSystemdUserEnvironment() {
                       session_type_it->second == "wayland";
     if ((is_wayland && env_map.contains("WAYLAND_DISPLAY")) ||
         (!is_wayland && env_map.contains("DISPLAY"))) {
+      if (is_wayland) {
+        base::FilePath pw_socket = GetPipeWireSocketPath(env_map);
+        if (!pw_socket.empty()) {
+          if (!base::PathExists(pw_socket)) {
+            HOST_LOG << "PipeWire socket " << pw_socket
+                     << " not ready. Retrying in " << kPollInterval;
+            continue;
+          }
+        } else {
+          LOG(WARNING) << "Could not determine PipeWire socket path, "
+                       << "skipping PipeWire readiness check.";
+        }
+      }
+
       for (const auto& [key, value] : env_map) {
         setenv(key.c_str(), value.c_str(), /*replace=*/true);
       }
@@ -149,9 +199,10 @@ base::expected<void, Loggable> SetSystemdUserEnvironment() {
              << "Retrying in " << kPollInterval;
   }
 
-  return base::unexpected(Loggable(FROM_HERE,
-                                   "Timeout waiting for DISPLAY or "
-                                   "WAYLAND_DISPLAY in systemd environment."));
+  return base::unexpected(Loggable(
+      FROM_HERE,
+      "Timeout waiting for DISPLAY, WAYLAND_DISPLAY, or PipeWire socket in "
+      "systemd environment."));
 }
 
 }  // namespace remoting
