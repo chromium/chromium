@@ -116,7 +116,10 @@ class ContextualSearchSessionHandle;
 // Records that the plus menu opened with the given visible attachment buttons,
 // and maps dynamically injected Tools and Models to metrics.
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
-    (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons;
+            (const std::vector<FuseboxAttachmentButtonType>&)
+                visibleInternalButtons
+                                          uiInputState:
+                                              (ComposeboxUIInputState*)state;
 
 // Unpacks and attaches all items within the selection wrapper.
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments;

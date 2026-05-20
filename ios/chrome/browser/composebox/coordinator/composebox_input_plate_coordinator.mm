@@ -439,10 +439,11 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
     didOpenPlusMenuWithVisibleInternalButtons:
-        (const std::vector<FuseboxAttachmentButtonType>&)
-            visibleInternalButtons {
+        (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons
+                                 uiInputState:(ComposeboxUIInputState*)state {
   [_mediator
-      recordPlusMenuOpenedWithVisibleInternalButtons:visibleInternalButtons];
+      recordPlusMenuOpenedWithVisibleInternalButtons:visibleInternalButtons
+                                        uiInputState:state];
 }
 
 - (void)composeboxViewControllerDidTapPlusButton:

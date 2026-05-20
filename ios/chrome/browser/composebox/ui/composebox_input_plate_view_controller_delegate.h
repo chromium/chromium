@@ -50,7 +50,8 @@ enum class FuseboxAttachmentButtonType;
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
     didOpenPlusMenuWithVisibleInternalButtons:
-        (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons;
+        (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons
+                                 uiInputState:(ComposeboxUIInputState*)state;
 
 /// Informs the delegate that a user did tap on the file button.
 - (void)composeboxViewControllerDidTapFileButton:

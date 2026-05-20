@@ -678,7 +678,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     visibleButtons.push_back(FuseboxAttachmentButtonType::kFiles);
   }
   [self.delegate composeboxViewController:self
-      didOpenPlusMenuWithVisibleInternalButtons:visibleButtons];
+      didOpenPlusMenuWithVisibleInternalButtons:visibleButtons
+                                   uiInputState:_state];
 }
 
 - (void)micButtonTapped {

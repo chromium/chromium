@@ -1089,28 +1089,19 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
-    (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons {
+            (const std::vector<FuseboxAttachmentButtonType>&)
+                visibleInternalButtons
+                                          uiInputState:
+                                              (ComposeboxUIInputState*)state {
   [self.metricsRecorder
       recordAttachmentsMenuOpenedWithVisibleButtons:visibleInternalButtons];
 
-  contextual_search::ContextualSearchMetricsRecorder* recorder =
-      _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
-                               : nullptr;
-  if (!recorder) {
-    return;
+  for (const auto& tool : state.allowedTools) {
+    [self.metricsRecorder recordToolModeShown:tool];
   }
 
-  std::optional<contextual_search::InputState> inputState =
-      _stateManager.inputState;
-  if (!inputState.has_value()) {
-    return;
-  }
-
-  for (const auto& tool : inputState->allowed_tools) {
-    recorder->RecordToolModeShown(tool);
-  }
-  for (const auto& model : inputState->allowed_models) {
-    recorder->RecordModelModeShown(model);
+  for (const auto& model : state.allowedModels) {
+    [self.metricsRecorder recordModelModeShown:model];
   }
 }
 
