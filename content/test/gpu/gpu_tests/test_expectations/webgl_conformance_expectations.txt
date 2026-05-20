@@ -502,7 +502,6 @@ crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-arr
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
-crbug.com/420455918 [ amd-0x7340 angle-opengl debug mac no-asan ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 ## Apple M2 ##
@@ -524,7 +523,6 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 ## Linux / OpenGL / GTX 1660 ##
 crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
 
-crbug.com/510410317 [ linux nvidia passthrough ] conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ RetryOnFailure ]
 
 ####################
 # Android failures #
@@ -567,7 +565,8 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/465162387 [ android android-pixel-6 ] conformance/extensions/oes-element-index-uint.html [ Failure ]
+crbug.com/465162387 [ android android-pixel-6 angle-opengles passthrough ] conformance/extensions/oes-element-index-uint.html [ Failure ]
+crbug.com/465162387 [ android-14 android-pixel-6 angle-disabled graphite-disabled no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-element-index-uint.html [ Failure ]
 
 ## Pixel 10 ##
 
