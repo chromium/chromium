@@ -448,7 +448,6 @@ ci.builder(
     ),
     cores = 32,
     ssd = True,
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "arm64",
         short_name = "bld",
@@ -512,7 +511,6 @@ ci.thin_tester(
         browser_config = targets.browser_config.DEBUG,
         os_type = targets.os_type.LINUX,
     ),
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "arm64",
         short_name = "dbg",
