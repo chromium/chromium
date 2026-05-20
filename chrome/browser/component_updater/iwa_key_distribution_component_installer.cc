@@ -136,7 +136,13 @@ bool IwaKeyDistributionComponentInstallerPolicy::VerifyInstallation(
 
 bool IwaKeyDistributionComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return true;
+  // Returning `false` here means that updates to this component cannot be
+  // disabled by the `ComponentUpdatesEnabled` policy. This exemption is
+  // warranted for IWA key distribution because this component is essential for
+  // securely installing and managing only legitimate Isolated Web Apps.
+  // The component is data-only (not executable code) and includes crucial
+  // allowlist, blocklist and key rotation information.
+  return false;
 }
 
 bool IwaKeyDistributionComponentInstallerPolicy::RequiresNetworkEncryption()
