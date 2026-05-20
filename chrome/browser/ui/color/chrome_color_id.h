@@ -811,8 +811,8 @@
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
-  /* Settings AI History colors. */ \
-  E_CPONLY(kColorSettingsAiHistoryDescriptionHeader) \
+  /* Settings columned section colors. */ \
+  E_CPONLY(kColorSettingsColumnedSectionDescriptionHeader) \
   /* Settings info card colors. */ \
   E_CPONLY(kColorSettingsInfoCardBackground) \
   /* Privacy Settings delete browsing dialog container colors. */ \

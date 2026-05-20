@@ -398,8 +398,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground] = {
       ui::kColorSysError};
 
-  // Settings AI History colors.
-  mixer[kColorSettingsAiHistoryDescriptionHeader] = {ui::kColorSysPrimary};
+  // Settings columned header colors.
+  mixer[kColorSettingsColumnedSectionDescriptionHeader] = {
+      ui::kColorSysPrimary};
 
   // Settings info card colors.
   mixer[kColorSettingsInfoCardBackground] = {ui::kColorSysBaseContainer};

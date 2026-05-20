@@ -25,6 +25,12 @@ settings-collapse-radio-button .settings-columned-section {
   color: var(--google-blue-600);
 }
 
+:host-context([webui-refresh-2026]) {
+  .settings-columned-section .description-header {
+    color: var(--color-settings-columned-section-description-header);
+  }
+}
+
 .settings-columned-section h2.description-header,
 .settings-columned-section h3.description-header,
 .settings-columned-section h4.description-header {
