@@ -46,6 +46,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
@@ -121,6 +122,7 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
         mModel.set(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON, false);
         mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.TOOLBAR);
 
         PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
     }
@@ -263,6 +265,17 @@ public class FuseboxViewBinderUnitTest {
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
         assertEquals(R.id.url_bar, lp.topToBottom);
+        assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
+    }
+
+    @Test
+    public void reanchorViewsForCompactFusebox_popoverLayoutMode() {
+        configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
+        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        assertEquals(ConstraintSet.UNSET, lp.topToTop);
+        assertEquals(R.id.omnibox_suggestions_dropdown, lp.topToBottom);
         assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
     }
 

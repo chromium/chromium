@@ -176,6 +176,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         mModel =
                 new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
+                        .with(FuseboxProperties.FUSEBOX_LAYOUT_MODE, getFuseboxLayoutMode())
                         .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED)
                         .with(
                                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,

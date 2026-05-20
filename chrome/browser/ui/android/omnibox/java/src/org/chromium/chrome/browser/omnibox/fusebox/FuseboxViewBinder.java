@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
@@ -96,7 +97,8 @@ class FuseboxViewBinder {
                     v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
-        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE) {
+        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE
+                || propertyKey == FuseboxProperties.FUSEBOX_LAYOUT_MODE) {
             reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
@@ -699,10 +701,22 @@ class FuseboxViewBinder {
 
     private static void reanchorViewsForCompactFusebox(
             PropertyModel model, FuseboxViewHolder view) {
+
         boolean singleLine = model.get(FuseboxProperties.FUSEBOX_STATE) != FuseboxState.EXPANDED;
-        int topToTop = singleLine ? R.id.url_bar : ConstraintSet.UNSET;
-        int topToBottom = singleLine ? ConstraintSet.UNSET : R.id.url_bar;
-        int bottomToBottom = singleLine ? ConstraintSet.UNSET : ConstraintSet.PARENT_ID;
+        int topToTop;
+        int topToBottom;
+        int bottomToBottom;
+
+        if (model.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
+                == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            topToTop = ConstraintSet.UNSET;
+            topToBottom = R.id.omnibox_suggestions_dropdown;
+            bottomToBottom = ConstraintSet.PARENT_ID;
+        } else {
+            topToTop = singleLine ? R.id.url_bar : ConstraintSet.UNSET;
+            topToBottom = singleLine ? ConstraintSet.UNSET : R.id.url_bar;
+            bottomToBottom = singleLine ? ConstraintSet.UNSET : ConstraintSet.PARENT_ID;
+        }
 
         var cs = new ConstraintSet();
         cs.clone(view.parentView);

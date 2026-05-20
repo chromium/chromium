@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -117,7 +118,11 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<@BrandedColorScheme Integer> COLOR_SCHEME =
             new WritableObjectPropertyKey<>();
 
-    /** The state the the UI of the fusebox should currently be in. */
+    /** The layout mode of fusebox views; see {@link FuseboxLayoutMode}. */
+    public static final WritableObjectPropertyKey<@FuseboxLayoutMode Integer> FUSEBOX_LAYOUT_MODE =
+            new WritableObjectPropertyKey<>();
+
+    /** The state of the UI of the fusebox should currently be in. */
     public static final WritableObjectPropertyKey<@FuseboxState Integer> FUSEBOX_STATE =
             new WritableObjectPropertyKey<>();
 
@@ -268,6 +273,7 @@ class FuseboxProperties {
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
         COLOR_SCHEME,
+        FUSEBOX_LAYOUT_MODE,
         FUSEBOX_STATE,
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
