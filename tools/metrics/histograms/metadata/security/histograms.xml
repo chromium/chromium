@@ -198,17 +198,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="OSCrypt.Linux.DecryptedWithEmptyKey" enum="Boolean"
-    expires_after="2026-06-30">
-  <owner>thestig@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    True, iff the data was not decryptable with the stored encryption key, but
-    was decryptable with a key generated from an empty string. This is emitted
-    every time OSCrypt attempts to decrypt a value.
-  </summary>
-</histogram>
-
 <histogram name="OSCrypt.Mac.FindGenericPasswordError"
     enum="MacSecurityFrameworkOSStatus" expires_after="2026-10-11">
   <owner>avi@chromium.org</owner>
