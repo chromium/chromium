@@ -27,6 +27,7 @@
 }
 
 #composebox {
+  border-radius: inherit;
   display: flex;
   flex-direction: column;
   height: calc-size(auto, size);
@@ -47,4 +48,13 @@
 
 cr-composebox-input::part(cancel) {
   opacity: 1;
+}
+
+:host([show-dropdown][searchbox-next-enabled][searchbox-layout-mode='Compact']) cr-composebox-dropdown {
+  padding-bottom: 0;
+  padding-top: 4px;
+}
+
+:host([searchbox-next-enabled]) #composebox {
+  padding-bottom: 10px;
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -20,6 +21,7 @@ export interface NtpComposeboxElement {
   $: {
     composeboxInput: ComposeboxInputElement,
     composebox: HTMLElement,
+    matches: ComposeboxDropdownElement,
   };
 }
 
@@ -62,14 +64,8 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return this.$.composeboxInput;
   }
 
-  // Mock Object to prevent crashes.
-  // TODO(crbug.com/512604547): Implement dropdown element.
   override getDropdownElement(): ComposeboxDropdownElement {
-    return {
-      unselect: () => {},
-      selectIndex: () => {},
-      focusSelected: () => {},
-    } as unknown as ComposeboxDropdownElement;
+    return this.$.matches;
   }
 
   constructor() {
