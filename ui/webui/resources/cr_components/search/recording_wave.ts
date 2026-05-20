@@ -96,11 +96,6 @@ export interface RecordingWaveElement {
   };
 }
 
-interface Rgb {
-  r: number;
-  g: number;
-  b: number;
-}
 
 // ======Physics and visual parameters======
 // The time (in milliseconds) between rendering new volume bars.
@@ -147,19 +142,6 @@ const MINIMUM_VOLUME_LEVEL = 0.1;
 const DEFAULT_STARTING_HEIGHT = 8;
 
 // ======Smaller parameters for fine tuning of shadows/color======:
-// Color changes from right to mid to left.
-const COLORS = {
-  START: {r: 43, g: 130, b: 255},  // 0%
-  MID: {r: 193, g: 181, b: 254},   // Threshold
-  END: {r: 248, g: 241, b: 255},   // 100%
-};
-// Dissapation energy used as an exponent to determine the amount each pill
-// fades as it moves left.
-const DISSIPATION_EXPONENT = 2.1;
-
-// Ratio of first color to second color:
-const COLOR_RATIO_THRESHOLD = 0.6;
-
 // Ratio of each pill's height used to determine the shadow offset of each pill.
 const HEIGHT_TO_OFFSET_RATIO = 0.214;
 
@@ -176,17 +158,82 @@ const SHADOW_SIDE_OFFSET_RATIO = 0.33;
 // Ratio to decrease blur each pill's shadow by.
 const SHADOW_SIDE_BLUR_RATIO = 0.5;
 
+// The ratio (0.0 to 1.0) along the wave's width at which the pill shadow
+// should be completely faded out (transparent).
+const SHADOW_FULLY_FADED_RATIO = 0.85;
+
+// RGB channels for the pill shadow color (light purple).
+const SHADOW_COLOR_RGB = '224, 165, 255';
+
 // Linear interpolation.
 const lerp = (start: number, end: number, t: number) =>
     start + (end - start) * t;
 
-// Right to left colors in red green blue:
-// First 60% is perwinkle blue. The last 40% should become more lavender.
-const lerpColor = (color1: Rgb, color2: Rgb, t: number) => ({
-  r: Math.round(lerp(color1.r, color2.r, t)),
-  g: Math.round(lerp(color1.g, color2.g, t)),
-  b: Math.round(lerp(color1.b, color2.b, t)),
-});
+interface ColorStop {
+  ratio: number;
+  r: number;
+  g: number;
+  b: number;
+}
+
+// Points to change color at:
+const LIGHT_STOPS: ColorStop[] = [
+  {ratio: 0.0, r: 201, g: 210, b: 255},  // #C9D2FF
+  {ratio: 0.03, r: 49, g: 134, b: 255},  // #3186FF
+  {ratio: 0.4, r: 23, g: 116, b: 255},   // #1774FF
+  {ratio: 0.7, r: 169, g: 168, b: 255},  // #A9A8FF
+  {ratio: 0.9, r: 201, g: 210, b: 255},  // #C9D2FF
+  {ratio: 1.0, r: 236, g: 240, b: 255},  // #ECF0FF
+];
+
+// Points to change color at in dark mode:
+const DARK_STOPS: ColorStop[] = [
+  {ratio: 0.0, r: 55, g: 70, b: 109},    // #37466D
+  {ratio: 0.03, r: 49, g: 134, b: 255},  // #3186FF
+  {ratio: 0.4, r: 23, g: 116, b: 255},   // #1774FF
+  {ratio: 0.7, r: 118, g: 117, b: 212},  // #7675D4
+  {ratio: 0.9, r: 76, g: 86, b: 143},    // #4C568F
+  {ratio: 1.0, r: 55, g: 70, b: 109},    // #37466D
+];
+
+
+// Computes the color at a given ratio along a multi-stop (point) gradient.
+// A ratio is essentially the current progress the pill has made when traversing
+// right to left. This function finds the two color stops, the current ratio
+// (progress made), and linearly interpolates between them to blend the two
+// stop's colors.
+function getGradientColor(ratio: number, stops: ColorStop[]): string {
+  const clampedRatio = Math.max(0, Math.min(1, ratio));
+
+  // Surrounding color stops (initialized to temporary values).
+  let left = stops[0]!;
+  let right = stops[stops.length - 1]!;
+
+  // Linearly search with two variables for the two adjacent stops
+  // that the ratio (progress) belongs in. Avoid binary search since
+  // array is effectively O(1) since there is a constant number of stops
+  // relative to input.
+  for (let i = 0; i < stops.length - 1; i++) {
+    const currentStop = stops[i]!;
+    const nextStop = stops[i + 1]!;
+    if (clampedRatio >= currentStop.ratio && clampedRatio <= nextStop.ratio) {
+      left = currentStop;
+      right = nextStop;
+      break;
+    }
+  }
+
+  const range = right.ratio - left.ratio;
+  // Calculate progress of ratio within the given range.
+  const progress = range > 0 ? (clampedRatio - left.ratio) / range : 0;
+
+  // Mix the RGB channels of the left and right stops based on the progress.
+  const r = Math.round(left.r + (right.r - left.r) * progress);
+  const g = Math.round(left.g + (right.g - left.g) * progress);
+  const b = Math.round(left.b + (right.b - left.b) * progress);
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
 
 // Solves the closed-form analytical position of an under-damped harmonic
 // spring at continuous time t (seconds), assuming initial position 0, target
@@ -327,6 +374,9 @@ export class RecordingWaveElement extends CrLitElement {
       return;
     }
 
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const stops = isDark ? DARK_STOPS : LIGHT_STOPS;
+
     const now = performance.now();
 
     // Time elapsed since the last bar was created. Note that this is used solely
@@ -436,31 +486,9 @@ export class RecordingWaveElement extends CrLitElement {
         bar.isSpawning = !isDone;
       }
 
-      // Determine colors (the further left, the more lavender it is).
-      // It starts off as perwinkle blue when the bar spawns in on the right.
+      // Determine colors using gradient stops based on progressRatio.
       const progressRatio = index / Math.max(this.barsData_.length - 1, 1);
-
-      // Colors change from right to mid (set threshold) to left. See if are
-      // before/after threshold.
-      const isBeforeThreshold = progressRatio <= COLOR_RATIO_THRESHOLD;
-
-      const startColor = isBeforeThreshold ? COLORS.START : COLORS.MID;
-      const endColor = isBeforeThreshold ? COLORS.MID : COLORS.END;
-
-      // Calculate normalized ratio based on if it is before or after threshold.
-      // Want ratio normalized based on the section that is being focused on
-      // (before, or after):
-      const normRatio = isBeforeThreshold ?
-          progressRatio / COLOR_RATIO_THRESHOLD :
-          (progressRatio - COLOR_RATIO_THRESHOLD) / (1 - COLOR_RATIO_THRESHOLD);
-
-      // Final red green blue:
-      const {r, g, b} = lerpColor(startColor, endColor, normRatio);
-
-      // Apply a color gradient and 'glow' depth/shadow based on the
-      // bar's horizontal position. Bars start of as blue, and older bars (left)
-      // become more purple and transparent to simulate energy dissipation.
-      const color = bar.isUnspawned ? '#8ab4f8' : `rgb(${r}, ${g}, ${b})`;
+      const color = getGradientColor(progressRatio, stops);
 
       const jitter = bar.jitterFactor || 0;
 
@@ -477,17 +505,18 @@ export class RecordingWaveElement extends CrLitElement {
       // Specifically to define the edges (shadows on the side):
       const sideBlurRadius = blurRadius * SHADOW_SIDE_BLUR_RATIO;
 
-      // Non linear ease-out formula to decide fade out:
-      // max(0.1, (1-progress)^2.1). Floor is 10% (0.1).
-      const shadowOpacity =
-          Math.max(Math.pow(1 - progressRatio, DISSIPATION_EXPONENT), 0.1);
-      const shadowColor = `rgba(237, 202, 255, ${shadowOpacity})`;
+      // Shadow's progress relative to its final ratio (percentage) at which the
+      // shadow should be fully transparent.
+      const shadowProgress = progressRatio / SHADOW_FULLY_FADED_RATIO;
+      // Linear fade-out: full opacity (1.0) on the right, fading to
+      // transparent (0.0) at the fade threshold.
+      const shadowOpacity = Math.max(0, 1.0 - shadowProgress);
+      const shadowColor = `rgba(${SHADOW_COLOR_RGB}, ${shadowOpacity})`;
 
       // Create 4 shadows:
       // - Top Shadow: creates a "cap" of light at the top.
       // - Side Shadows: These create the "rounded" tube effect by creating 3D
-      // rounded
-      //   corners on left/right of bar.
+      // rounded corners on left/right of bar.
       // - Bottom Shadow: Adds a subtle base glow.
       const boxShadow = bar.isUnspawned ?
           'none' :
