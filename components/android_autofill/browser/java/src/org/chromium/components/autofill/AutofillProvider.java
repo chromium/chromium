@@ -258,7 +258,8 @@ public class AutofillProvider {
     }
 
     public boolean shouldOfferPasskeyEntry() {
-        return AutofillProviderJni.get().hasPasskeyRequest(mNativeAutofillProvider);
+        return mNativeAutofillProvider != 0
+                && AutofillProviderJni.get().hasPasskeyRequest(mNativeAutofillProvider);
     }
 
     public void triggerPasskeyRequest() {
@@ -895,28 +896,29 @@ public class AutofillProvider {
         }
     }
 
-    /**
-     * Inform native provider to autofill.
-     *
-     * @param nativeAutofillProvider the native autofill provider.
-     */
     private void autofill(long nativeAutofillProvider) {
-        AutofillProviderJni.get().onAutofillAvailable(nativeAutofillProvider);
+        if (nativeAutofillProvider != 0) {
+            AutofillProviderJni.get().onAutofillAvailable(nativeAutofillProvider);
+        }
     }
 
     private void acceptDataListSuggestion(long nativeAutofillProvider, String value) {
-        AutofillProviderJni.get().onAcceptDataListSuggestion(nativeAutofillProvider, value);
+        if (nativeAutofillProvider != 0) {
+            AutofillProviderJni.get().onAcceptDataListSuggestion(nativeAutofillProvider, value);
+        }
     }
 
     private void setAnchorViewRect(long nativeAutofillProvider, View anchorView, RectF rect) {
-        AutofillProviderJni.get()
-                .setAnchorViewRect(
-                        nativeAutofillProvider,
-                        anchorView,
-                        rect.left,
-                        rect.top,
-                        rect.width(),
-                        rect.height());
+        if (nativeAutofillProvider != 0) {
+            AutofillProviderJni.get()
+                    .setAnchorViewRect(
+                            nativeAutofillProvider,
+                            anchorView,
+                            rect.left,
+                            rect.top,
+                            rect.width(),
+                            rect.height());
+        }
     }
 
     @CalledByNative

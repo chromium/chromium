@@ -534,6 +534,13 @@ public class AutofillProviderTest {
         assertEquals(new Rect(0, 0, 100, 30), mFocusBounds);
     }
 
+    @Test
+    public void testCallsNativeToProvidePasskeyAvailability_nativeNull() {
+        mAutofillProvider.setNativeAutofillProvider(0);
+        assertFalse(mAutofillProvider.shouldOfferPasskeyEntry());
+        verify(mNativeMock, never()).hasPasskeyRequest(anyLong());
+    }
+
     FormData setupPrefillRequest(int sessionId) {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =
