@@ -5,19 +5,12 @@
 #include <inttypes.h>
 
 #include <algorithm>
-#include <memory>
 #include <string>
-#include <tuple>
 #include <type_traits>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/memory_mapped_file.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "puffin/memory_stream.h"
@@ -31,7 +24,6 @@
 #include "puffin/src/logging.h"
 #include "puffin/src/puffin.pb.h"
 #include "puffin/src/puffin_stream.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "zucchini/patch_reader.h"
 #include "zucchini/zucchini.h"
 
@@ -109,53 +101,6 @@ Status DecodePatch(const uint8_t* patch,
   return Status::P_OK;
 }
 
-// Creates a memory-mapped temporary file of the specified size. Returns a
-// unique pointer to the memory-mapped file on success, or nullptr if temporary
-// file creation or memory mapping fails.
-std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedTemporaryFile(
-    size_t size) {
-  base::FilePath temp_path;
-  if (!base::CreateTemporaryFile(&temp_path)) {
-    return nullptr;
-  }
-
-  base::File temp_file(
-      temp_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                     base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
-                     base::File::FLAG_WIN_SHARE_DELETE |
-                     base::File::FLAG_DELETE_ON_CLOSE);
-
-  if (!temp_file.IsValid()) {
-    base::DeleteFile(temp_path);
-    return nullptr;
-  }
-
-  auto mapped_file = std::make_unique<base::MemoryMappedFile>();
-  if (!mapped_file->Initialize(std::move(temp_file), {0, size},
-                               base::MemoryMappedFile::READ_WRITE_EXTEND)) {
-    return nullptr;
-  }
-
-  return mapped_file;
-}
-
-using PatchBufferBacking =
-    std::variant<std::unique_ptr<base::MemoryMappedFile>, Buffer>;
-
-PatchBufferBacking AllocatePatchBuffer(size_t size) {
-  // The minimum size in bytes at which memory-mapped file backing is attempted.
-  constexpr size_t kMemoryMappedFileCutoff = 1024 * 1024;
-  if (size < kMemoryMappedFileCutoff) {
-    return Buffer(size);
-  }
-
-  if (std::unique_ptr<base::MemoryMappedFile> mapped_file =
-          CreateMemoryMappedTemporaryFile(size)) {
-    return std::move(mapped_file);
-  }
-  return Buffer(size);
-}
-
 Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
                           size_t src_size,
                           const uint8_t* patch_start,
@@ -191,23 +136,14 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
 
   // TODO(197361113) Stream the patched result once zucchini supports it. So we
   // can save some memory when applying patch on device.
-  PatchBufferBacking buffer_backing =
-      AllocatePatchBuffer(patch_reader->header().new_size);
-  base::span<uint8_t> patched_span = std::visit(
-      absl::Overload{
-          [](const std::unique_ptr<base::MemoryMappedFile>& backing) {
-            return backing->mutable_bytes();
-          },
-          [](Buffer& backing) { return base::span<uint8_t>(backing); }},
-      buffer_backing);
-
+  Buffer patched_data(patch_reader->header().new_size);
   auto status = zucchini::ApplyBuffer(
       {puffed_src.data(), puffed_src.size()}, *patch_reader,
-      {patched_span.data(), patched_span.size()});
+      {patched_data.data(), patched_data.size()});
   Status result = Status::P_OK;
   switch (status) {
     case zucchini::status::kStatusSuccess:
-      if (!dst_stream->Write(patched_span.data(), patched_span.size())) {
+      if (!dst_stream->Write(patched_data.data(), patched_data.size())) {
         result = Status::P_WRITE_ERROR;
       }
       break;
