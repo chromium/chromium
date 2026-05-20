@@ -16,6 +16,7 @@ import("//testing/test.gni")
 # - frameworks - Apple-only. Additional frameworks to link.
 # - additional_configs - additional configs to be used for compilation
 # - dict - a dictionary file for the fuzzer.
+# - dict_deps - targets that generate the dictionary file, if applicable.
 # - libfuzzer_options - options for the fuzzer (e.g. close_fd_mask=N).
 #   These are mostly applied only when the fuzzer is being run using the
 #   libfuzzer fuzzing engine, but a few of these may be interpreted by
@@ -184,6 +185,9 @@ template("fuzzer_test") {
         copy(target_name + "_dict_copy") {
           sources = [ invoker.dict ]
           outputs = [ "$root_build_dir/" + target_name + ".dict" ]
+          if (defined(invoker.dict_deps)) {
+            deps = invoker.dict_deps
+          }
         }
         test_data_deps += [ ":" + target_name + "_dict_copy" ]
         supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
