@@ -1687,6 +1687,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.RtpHeaderExtensionRedefinition"
+    enum="Boolean" expires_after="2027-05-20">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Records whether an RTP header extension is redefined in a PeerConnection.
+    Redefinition happens when the same extension URI is assigned to different
+    IDs, or the same ID is assigned to different URIs, within the same session.
+    Logged when such a redefinition is detected during SDP negotiation.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.RtpTransportCount" units="counts"
     expires_after="2026-10-25">
   <owner>hta@chromium.org</owner>
