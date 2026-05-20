@@ -216,7 +216,7 @@ class LocalDeviceEnvironment(environment.Environment):
 
       # There is a change in soft keyboard behavior since Android 16.
       # See https://crbug.com/443782461 for more details.
-      if d.build_version_sdk >= version_codes.BAKLAVA:
+      if d.build_version_sdk >= version_codes.BAKLAVA and d.HasRoot():
         # On desktop, we do not want to force the soft keyboard.
         if not d.is_desktop:
           with d.GboardPreferences() as gboard_prefs:
