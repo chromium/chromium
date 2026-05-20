@@ -14,6 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -21,6 +23,10 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.sync.SyncService;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the bottom bar */
@@ -54,6 +60,24 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
     private final boolean mShouldIncludeGlic;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<@Nullable Profile> mProfileObserver = this::updateGlicVisibility;
+    private final IdentityManager.Observer mIdentityManagerObserver =
+            new IdentityManager.Observer() {
+                @Override
+                public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+                    updateGlicVisibility(mProfileSupplier.get());
+                }
+            };
+    private @Nullable IdentityManager mIdentityManager;
+
+    private final SyncService.SyncStateChangedListener mSyncStateListener =
+            new SyncService.SyncStateChangedListener() {
+                @Override
+                public void syncStateChanged() {
+                    updateGlicVisibility(mProfileSupplier.get());
+                }
+            };
+    private @Nullable SyncService mSyncService;
+    private @Nullable Profile mOriginalProfile;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable Boolean mIsVisible;
@@ -143,11 +167,65 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
     }
 
     private void updateGlicVisibility(@Nullable Profile profile) {
-        // We only care about whether the original profile allows GLIC. To disable on OTR profiles
-        // we rely on the button state which is set elsewhere.
-        boolean shouldBeVisible =
-                profile != null && GlicEnabling.isEnabledForProfile(profile.getOriginalProfile());
+        if (profile == null) {
+            setButtonVisibility(ActionId.GLIC, false);
+            return;
+        }
+
+        Profile originalProfile = profile.getOriginalProfile();
+
+        // Manage observers for dynamic updates.
+        updateObservers(originalProfile);
+
+        // Calculate and set visibility.
+        boolean shouldBeVisible = shouldShowGlicButton(originalProfile);
         setButtonVisibility(ActionId.GLIC, shouldBeVisible);
+    }
+
+    private void updateObservers(Profile originalProfile) {
+        if (mOriginalProfile == originalProfile) {
+            return;
+        }
+        mOriginalProfile = originalProfile;
+
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(originalProfile);
+        if (mIdentityManager != identityManager) {
+            if (mIdentityManager != null) {
+                mIdentityManager.removeObserver(mIdentityManagerObserver);
+            }
+            mIdentityManager = identityManager;
+            if (mIdentityManager != null) {
+                mIdentityManager.addObserver(mIdentityManagerObserver);
+            }
+        }
+
+        SyncService syncService = SyncServiceFactory.getForProfile(originalProfile);
+        if (mSyncService != syncService) {
+            if (mSyncService != null) {
+                mSyncService.removeSyncStateChangedListener(mSyncStateListener);
+            }
+            mSyncService = syncService;
+            if (mSyncService != null) {
+                mSyncService.addSyncStateChangedListener(mSyncStateListener);
+            }
+        }
+    }
+
+    private boolean shouldShowGlicButton(Profile originalProfile) {
+        if (!GlicEnabling.isEnabledForProfile(originalProfile)) {
+            return false;
+        }
+
+        if (mIdentityManager == null || !mIdentityManager.hasPrimaryAccount()) {
+            return false;
+        }
+
+        // Only show the button if there are no authentication errors (e.g. account paused).
+        if (mSyncService == null) {
+            return true;
+        }
+        return mSyncService.getAuthError().getState() == GoogleServiceAuthErrorState.NONE;
     }
 
     private void onHomepageEnabledChanged(boolean isEnabled) {
@@ -194,6 +272,14 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         }
         if (mShouldIncludeGlic) {
             mProfileSupplier.removeObserver(mProfileObserver);
+        }
+        if (mIdentityManager != null) {
+            mIdentityManager.removeObserver(mIdentityManagerObserver);
+            mIdentityManager = null;
+        }
+        if (mSyncService != null) {
+            mSyncService.removeSyncStateChangedListener(mSyncStateListener);
+            mSyncService = null;
         }
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
     }

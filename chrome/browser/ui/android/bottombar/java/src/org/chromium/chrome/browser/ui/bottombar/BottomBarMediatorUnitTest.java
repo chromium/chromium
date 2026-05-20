@@ -35,11 +35,18 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.sync.SyncService;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -57,9 +64,12 @@ public class BottomBarMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private BottomBarButtonManager mButtonManager;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SyncService mSyncService;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomBarButtonManager.Listener> mButtonManagerListenerCaptor;
+    @Captor private ArgumentCaptor<IdentityManager.Observer> mIdentityObserverCaptor;
 
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
 
@@ -83,6 +93,11 @@ public class BottomBarMediatorUnitTest {
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         GlicEnabling.setEnabledForTesting(false);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getAuthError())
+                .thenReturn(new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE));
     }
 
     @After
@@ -313,6 +328,66 @@ public class BottomBarMediatorUnitTest {
         createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
 
         verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, false);
+    }
+
+    @Test
+    public void testGlicButtonVisibility_NotSignedIn() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+    }
+
+    @Test
+    public void testGlicButtonVisibility_AuthError() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+
+        when(mSyncService.getAuthError())
+                .thenReturn(
+                        new GoogleServiceAuthError(
+                                GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+    }
+
+    @Test
+    public void testGlicButtonVisibility_SignInChange() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+
+        verify(mIdentityManager).addObserver(mIdentityObserverCaptor.capture());
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+
+        // Simulate sign in
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        mIdentityObserverCaptor
+                .getValue()
+                .onPrimaryAccountChanged(
+                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
     }
 
     @Test
