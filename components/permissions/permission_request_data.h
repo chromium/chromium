@@ -24,11 +24,16 @@ struct PermissionRequestDescription;
 
 namespace permissions {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GeolocationPromptType)
 enum class GeolocationPromptType {
-  kApproximateOrPrecise,
-  kApproximateOnly,
-  kUpgradeToPrecise
+  kApproximateOrPrecise = 0,
+  kApproximateOnly = 1,
+  kUpgradeToPrecise = 2,
+  kMaxValue = kUpgradeToPrecise,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:GeolocationPromptType)
 
 // Holds information about `permissions::PermissionRequest`
 struct PermissionRequestData {

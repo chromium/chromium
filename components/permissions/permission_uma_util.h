@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
@@ -1043,6 +1044,7 @@ class PermissionUmaUtil {
       std::optional<bool> prediction_decision_held_back,
       const PromptOptions& prompt_options,
       std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection,
+      std::optional<GeolocationPromptType> geolocation_prompt_type,
       std::optional<ukm::SourceId> source_id);
 
   // Records |count| total prior actions for a prompt of type |permission|

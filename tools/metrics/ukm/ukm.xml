@@ -19216,6 +19216,16 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="GeolocationPromptType" enum="GeolocationPromptType">
+    <summary>
+      An enum of type GeolocationPromptType (see
+      https://source.chromium.org/search?q=class:%5CbGeolocationPromptType%5Cb).
+      This is only emitted for geolocation permission prompts if approximate
+      geolocation is enabled. In that case, it encodes the variant of the
+      geolocation prompt type and it is either 0 (kApproximateOrPrecise), 1
+      (kApproximateOnly) or 2 (kUpgradeToPrecise).
+    </summary>
+  </metric>
   <metric name="Gesture">
     <summary>
       An enum of type PermissionRequestGestureType, whether the prompt was

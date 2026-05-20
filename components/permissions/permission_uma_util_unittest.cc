@@ -53,6 +53,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -357,10 +358,12 @@ TEST_F(PermissionUmaUtilTest, GeolocationPermissionPromptResolved) {
                            "GeolocationUpgrade"),
        }) {
     base::HistogramTester histograms;
+    ukm::TestAutoSetUkmRecorder recorder;
 
     std::vector<std::unique_ptr<PermissionRequest>> requests;
     requests.push_back(
         CreateRequest(RequestType::kGeolocation, kTopLevelUrl, prompt_type));
+    requests[0]->set_ukm_source_id(ukm::AssignNewSourceId());
 
     PermissionUmaUtil::PermissionPromptResolved(
         requests, &browser_context, PermissionAction::GRANTED,
@@ -385,6 +388,11 @@ TEST_F(PermissionUmaUtilTest, GeolocationPermissionPromptResolved) {
                                   1);
     histograms.ExpectTotalCount(
         base::StrCat({"Permissions.Engagement.Accepted.", prompt_type_str}), 1);
+    const auto entries = recorder.GetEntriesByName("Permission");
+    ASSERT_EQ(1u, entries.size());
+    const auto* entry = entries.back().get();
+    EXPECT_EQ(*recorder.GetEntryMetric(entry, "GeolocationPromptType"),
+              static_cast<int64_t>(prompt_type));
   }
 }
 

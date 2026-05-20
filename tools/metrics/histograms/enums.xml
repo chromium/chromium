@@ -4530,6 +4530,16 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="FIS auth error"/>
 </enum>
 
+<!-- LINT.IfChange(GeolocationPromptType) -->
+
+<enum name="GeolocationPromptType">
+  <int value="0" label="Approximate or precise"/>
+  <int value="1" label="Approximate only"/>
+  <int value="2" label="Upgrade to precise"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_data.h:GeolocationPromptType) -->
+
 <enum name="GestureNavigationDirection">
   <int value="0" label="Gesture navigation back"/>
   <int value="1" label="Gesture navigation forward"/>

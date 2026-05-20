@@ -31,6 +31,7 @@
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/prediction_service/prediction_common.h"
@@ -117,6 +118,7 @@ struct PermissionActionUkmParams {
   std::optional<bool> prediction_decision_held_back;
   std::optional<UkmPromptOptions> prompt_options;
   std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection;
+  std::optional<GeolocationPromptType> geolocation_prompt_type;
 };
 
 // LINT.IfChange(GetPermissionRequestString)
@@ -396,6 +398,11 @@ void RecordPermissionActionUkm(
   if (params->initial_geolocation_accuracy_selection) {
     builder.SetInitialGeolocationAccuracySelection(static_cast<int64_t>(
         params->initial_geolocation_accuracy_selection.value()));
+  }
+
+  if (params->geolocation_prompt_type) {
+    builder.SetGeolocationPromptType(
+        static_cast<int64_t>(params->geolocation_prompt_type.value()));
   }
 
   builder
@@ -939,6 +946,7 @@ void PermissionUmaUtil::PermissionRevoked(
       /*permission_ai_relevance_model=*/std::nullopt,
       /*prediction_decision_held_back=*/std::nullopt, std::monostate(),
       /*initial_geolocation_accuracy_selection=*/std::nullopt,
+      /*geolocation_prompt_type=*/std::nullopt,
       /*source_id=*/std::nullopt);
 }
 
@@ -1124,7 +1132,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         predicted_grant_likelihood, permission_request_relevance,
         permission_ai_relevance_model, prediction_decision_held_back,
         prompt_options, initial_geolocation_accuracy_selection,
-        request->get_ukm_source_id());
+        request->GetGeolocationPromptType(), request->get_ukm_source_id());
 
     std::string priorDismissPrefix = base::StrCat(
         {"Permissions.Prompt.", action_string, ".PriorDismissCount2."});
@@ -1464,6 +1472,7 @@ void PermissionUmaUtil::RecordPermissionAction(
     std::optional<bool> prediction_decision_held_back,
     const PromptOptions& prompt_options,
     std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection,
+    std::optional<GeolocationPromptType> geolocation_prompt_type,
     std::optional<ukm::SourceId> source_id) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
@@ -1555,6 +1564,7 @@ void PermissionUmaUtil::RecordPermissionAction(
           .prompt_options = ukm_prompt_options,
           .initial_geolocation_accuracy_selection =
               initial_geolocation_accuracy_selection,
+          .geolocation_prompt_type = geolocation_prompt_type,
       });
 
   if (source_id.has_value() && source_id.value() != ukm::kInvalidSourceId) {
