@@ -3960,13 +3960,12 @@ void Animation::CompositorAnimationHolder::Detach() {
 void Animation::ResetPlayback() {
   bool advances_backwards = playbackRate() < 0;
 
-  AnimationTimeDelta reset_time =
-      advances_backwards ? EffectEnd() : AnimationTimeDelta();
-
-  setCurrentTime(ConvertTimeToCSSNumberish(reset_time), ASSERT_NO_EXCEPTION);
-
   // We must pause the animation, otherwise it will just continue playing.
   pause();
+
+  AnimationTimeDelta reset_time =
+      advances_backwards ? EffectEnd() : AnimationTimeDelta();
+  setCurrentTime(ConvertTimeToCSSNumberish(reset_time), ASSERT_NO_EXCEPTION);
 
   SetPausedForTrigger(true);
 }
