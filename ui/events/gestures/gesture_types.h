@@ -64,6 +64,8 @@ class EVENTS_EXPORT GestureEventHelper {
   virtual ~GestureEventHelper() {
   }
 
+  virtual base::WeakPtr<GestureEventHelper> GetWeakPtr() = 0;
+
   // Returns true if this helper can dispatch events to |consumer|.
   virtual bool CanDispatchToConsumer(GestureConsumer* consumer) = 0;
   virtual void DispatchGestureEvent(GestureConsumer* raw_input_consumer,
