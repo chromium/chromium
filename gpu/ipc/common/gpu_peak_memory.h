@@ -17,6 +17,24 @@ enum class GpuPeakMemoryAllocationSource {
   GPU_PEAK_MEMORY_ALLOCATION_SOURCE_MAX = WEBNN,
 };
 
+constexpr const char* GetAllocationSourceName(
+    GpuPeakMemoryAllocationSource source) {
+  switch (source) {
+    case GpuPeakMemoryAllocationSource::UNKNOWN:
+      return "Unknown";
+    case GpuPeakMemoryAllocationSource::COMMAND_BUFFER:
+      return "CommandBuffer";
+    case GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE:
+      return "SharedContextState";
+    case GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB:
+      return "SharedImageStub";
+    case GpuPeakMemoryAllocationSource::SKIA:
+      return "Skia";
+    case GpuPeakMemoryAllocationSource::WEBNN:
+      return "WebNN";
+  }
+}
+
 }  // namespace gpu
 
 #endif  // GPU_IPC_COMMON_GPU_PEAK_MEMORY_H_

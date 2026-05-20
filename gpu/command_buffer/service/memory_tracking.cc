@@ -4,6 +4,11 @@
 
 #include "gpu/command_buffer/service/memory_tracking.h"
 
+#include <cinttypes>
+
+#include "base/format_macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 
 namespace gpu {
@@ -16,16 +21,30 @@ MemoryTracker::MemoryTracker(
     : command_buffer_id_(command_buffer_id),
       client_tracing_id_(client_tracing_id),
       peak_memory_monitor_(std::move(peak_memory_monitor)),
-      allocation_source_(source) {}
+      allocation_source_(source),
+      tracing_track_name_(
+          GetTracingTrackName(client_tracing_id, command_buffer_id, source)),
+      tracing_track_(perfetto::DynamicString(tracing_track_name_),
+                     perfetto::ProcessTrack::Current()) {}
 
 MemoryTracker::MemoryTracker()
-    : command_buffer_id_(0),
-      client_tracing_id_(0),
-      peak_memory_monitor_(nullptr),
-      allocation_source_(GpuPeakMemoryAllocationSource::UNKNOWN) {}
+    : MemoryTracker(CommandBufferId(),
+                    0,
+                    nullptr,
+                    GpuPeakMemoryAllocationSource::UNKNOWN) {}
 
 MemoryTracker::~MemoryTracker() {
   DCHECK_EQ(mem_traker_size_, 0u);
+}
+
+// static
+std::string MemoryTracker::GetTracingTrackName(
+    uint64_t client_tracing_id,
+    CommandBufferId command_buffer_id,
+    GpuPeakMemoryAllocationSource source) {
+  return base::StringPrintf(
+      "MemoryTracker-0x%" PRIx64 "-0x%" PRIx64 " (%s)", client_tracing_id,
+      command_buffer_id.GetUnsafeValue(), GetAllocationSourceName(source));
 }
 
 void MemoryTracker::TrackMemoryAllocatedChange(int64_t delta) {
@@ -34,6 +53,8 @@ void MemoryTracker::TrackMemoryAllocatedChange(int64_t delta) {
 
   uint64_t old_size = mem_traker_size_;
   mem_traker_size_ += delta;
+
+  TRACE_COUNTER("gpu", tracing_track_, mem_traker_size_);
 
   if (peak_memory_monitor_) {
     peak_memory_monitor_->OnMemoryAllocatedChange(

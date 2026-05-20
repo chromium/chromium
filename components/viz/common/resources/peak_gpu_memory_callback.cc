@@ -47,24 +47,6 @@ constexpr const char* GetUsageName(PeakGpuMemoryTracker::Usage usage) {
   }
 }
 
-constexpr const char* GetAllocationSourceName(
-    gpu::GpuPeakMemoryAllocationSource source) {
-  switch (source) {
-    case gpu::GpuPeakMemoryAllocationSource::UNKNOWN:
-      return "Unknown";
-    case gpu::GpuPeakMemoryAllocationSource::COMMAND_BUFFER:
-      return "CommandBuffer";
-    case gpu::GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE:
-      return "SharedContextState";
-    case gpu::GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB:
-      return "SharedImageStub";
-    case gpu::GpuPeakMemoryAllocationSource::SKIA:
-      return "Skia";
-    case gpu::GpuPeakMemoryAllocationSource::WEBNN:
-      return "WebNN";
-  }
-}
-
 std::string GetPeakMemoryUsageUMAName(PeakGpuMemoryTracker::Usage usage) {
   return base::StrCat({"Memory.GPU.PeakMemoryUsage2.", GetUsageName(usage)});
 }
@@ -74,7 +56,7 @@ std::string GetPeakMemoryAllocationSourceUMAName(
     gpu::GpuPeakMemoryAllocationSource source) {
   return base::StrCat({"Memory.GPU.PeakMemoryAllocationSource2.",
                        GetUsageName(usage), ".",
-                       GetAllocationSourceName(source)});
+                       gpu::GetAllocationSourceName(source)});
 }
 
 }  // namespace

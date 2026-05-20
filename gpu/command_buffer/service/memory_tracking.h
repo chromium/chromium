@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace gpu {
 class MockMemoryTracker;
@@ -78,8 +79,15 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT MemoryTracker
   const scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
   const GpuPeakMemoryAllocationSource allocation_source_;
 
+  const std::string tracing_track_name_;
+  const perfetto::CounterTrack tracing_track_;
+
   uint64_t mem_traker_size_ GUARDED_BY(memory_tracker_lock_) = 0;
   mutable base::Lock memory_tracker_lock_;
+
+  static std::string GetTracingTrackName(uint64_t client_tracing_id,
+                                         CommandBufferId command_buffer_id,
+                                         GpuPeakMemoryAllocationSource source);
 };
 
 // A MemoryTypeTracker tracks the use of a particular type of memory (buffer,
