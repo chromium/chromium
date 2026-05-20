@@ -4,8 +4,10 @@
 
 #include "components/update_client/request_sender.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -20,6 +22,7 @@
 #include "components/update_client/network.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "url/gurl.h"
 
 namespace update_client {
 
@@ -40,6 +43,18 @@ constexpr auto kPublicKey = std::to_array<uint8_t>({
 
 // The content type for all protocol requests.
 constexpr char kContentType[] = "application/json";
+
+// The maximum value honored for the `X-Retry-After` response header.
+// By design, HTTP response headers are not covered by CUP signing. This is
+// necessary for reverse proxies which cannot sign responses with CUP to
+// instruct clients to back off even if backends are unavailable. Instead,
+// response headers are protected by HTTPS. While some clients (namely, the
+// Component Updater) support fallback to plaintext HTTP, the `X-Retry-After`
+// header is only honored for secure connections.
+// To mitigate the risk of a misconfigured server injecting a huge backoff value
+// that suppresses updates indefinitely, the value is clamped to a reasonable
+// maximum. See: crbug.com/513396526
+constexpr int kMaxRetryAfterSec = 24 * 60 * 60;  // 24 hours.
 
 // Returns the value of |response_cup_server_proof| or the value of
 // |response_etag|, if the former value is empty.
@@ -198,7 +213,8 @@ void RequestSender::OnNetworkFetcherComplete(
 
   int retry_after_sec = -1;
   if (original_url.SchemeIsCryptographic() && error >= 0) {
-    retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
+    retry_after_sec = std::min(
+        base::saturated_cast<int>(xheader_retry_after_sec), kMaxRetryAfterSec);
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
