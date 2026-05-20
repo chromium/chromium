@@ -676,13 +676,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
 
   // Start loading a favicon.
+  int64_t nodeId = node->id();
   __weak BookmarksHomeViewController* weakSelf = self;
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     [weakSelf didFetchFaviconAttributes:attributes
                                  cached:cached
                                    item:URLItem
                               indexPath:indexPath
-                                   node:node];
+                                 nodeId:nodeId];
   };
 
   GURL blockURL(node->url());
@@ -1545,11 +1546,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                            cached:(bool)cached
                              item:(BookmarksHomeNodeItem*)item
                         indexPath:(NSIndexPath*)indexPath
-                             node:(const BookmarkNode*)node {
+                           nodeId:(int64_t)nodeId {
+  const BookmarkNode* node = [self hasItemAtIndexPath:indexPath]
+                                 ? [self nodeAtIndexPath:indexPath]
+                                 : nil;
   // Due to search filtering, we also need to validate the indexPath
   // requested versus what is in the table now.
-  if (![self hasItemAtIndexPath:indexPath] ||
-      [self nodeAtIndexPath:indexPath] != node) {
+  if (!node || node->id() != nodeId) {
     return;
   }
   item.faviconAttributes = attributes;
