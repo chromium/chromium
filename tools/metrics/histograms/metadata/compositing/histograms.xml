@@ -583,6 +583,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.ResourcePool.PeakMemoryUsage.NonZero" units="MB"
+    expires_after="2027-05-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    The maximum memory usage of the ResourcePool during its lifetime, reported
+    only when it is not 0. Recorded when the ResourcePool is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.ResourcePool.PeakResourceCount" units="resources"
     expires_after="2027-05-08">
   <owner>lizeb@chromium.org</owner>

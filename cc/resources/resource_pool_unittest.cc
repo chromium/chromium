@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -973,6 +974,47 @@ TEST_F(ResourcePoolTest, PeakMetrics) {
   resource_pool_->ReduceResourceUsage();
   EXPECT_EQ(0u, resource_pool_->GetTotalMemoryUsageForTesting());
   EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
+}
+
+TEST_F(ResourcePoolTest, PeakMemoryUsageHistograms) {
+  base::HistogramTester histogram_tester;
+
+  gfx::Size size(100, 100);
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  {
+    std::unique_ptr<ResourcePool> pool = std::make_unique<ResourcePool>(
+        resource_provider_.get(), context_provider_.get(), test_task_runner_,
+        ResourcePool::kDefaultExpirationDelay, false);
+    ResourcePool::InUsePoolResource resource =
+        pool->AcquireResource(size, format, color_space);
+    auto backing = std::make_unique<ResourcePool::Backing>(
+        resource.size(), resource.format(), resource.color_space());
+    backing->CreateSharedImageForTesting();
+    resource.set_backing(std::move(backing));
+    pool->ReleaseResource(std::move(resource));
+  }
+
+  histogram_tester.ExpectTotalCount("Compositing.ResourcePool.PeakMemoryUsage",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Compositing.ResourcePool.PeakMemoryUsage.NonZero", 1);
+}
+
+TEST_F(ResourcePoolTest, PeakMemoryUsageHistogramsZero) {
+  base::HistogramTester histogram_tester;
+
+  {
+    std::unique_ptr<ResourcePool> pool = std::make_unique<ResourcePool>(
+        resource_provider_.get(), context_provider_.get(), test_task_runner_,
+        ResourcePool::kDefaultExpirationDelay, false);
+  }
+
+  histogram_tester.ExpectTotalCount("Compositing.ResourcePool.PeakMemoryUsage",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Compositing.ResourcePool.PeakMemoryUsage.NonZero", 0);
 }
 
 }  // namespace cc

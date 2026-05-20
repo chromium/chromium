@@ -214,6 +214,11 @@ ResourcePool::~ResourcePool() {
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
       "Compositing.ResourcePool.PeakMemoryUsage",
       peak_total_memory_usage_bytes_ / (1024 * 1024));
+  if (peak_total_memory_usage_bytes_ > 0) {
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+        "Compositing.ResourcePool.PeakMemoryUsage.NonZero",
+        peak_total_memory_usage_bytes_ / (1024 * 1024));
+  }
   UMA_HISTOGRAM_COUNTS_10000("Compositing.ResourcePool.PeakResourceCount",
                              peak_total_resource_count_);
 
