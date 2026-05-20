@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -30,7 +32,7 @@ ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
     std::string data;
     base::ReadFileToString(use_flags_path, &data);
 
-    std::vector<std::string> flags = base::SplitString(
+    std::vector<std::string_view> flags = base::SplitStringPiece(
         data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (std::find(flags.begin(), flags.end(), kMojoIpczUseFlag) !=
         flags.end()) {
