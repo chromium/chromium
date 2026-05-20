@@ -465,12 +465,10 @@ void NativeScreenCapturePickerMac::ScheduleCleanup(DesktopMediaID::Id id) {
   // restarted, e.g., when ApplyConstraints is called on a MediaStreamTrack.
   GetOrCreateCaptureSession(id).cleanup_timer.Start(
       FROM_HERE, base::Seconds(60),
-      base::BindPostTask(
-          device_task_runner_,
-          base::BindOnce(
-              &NativeScreenCapturePickerMac::CleanupContentFilter,
-              // Passing `this` is safe since `sessions_` is owned by `this`.
-              base::Unretained(this), id)));
+      base::BindOnce(
+          &NativeScreenCapturePickerMac::CleanupContentFilter,
+          // Passing `this` is safe since `sessions_` is owned by `this`.
+          base::Unretained(this), id));
 }
 
 void NativeScreenCapturePickerMac::CleanupContentFilter(DesktopMediaID::Id id) {
