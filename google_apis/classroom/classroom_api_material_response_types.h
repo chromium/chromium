@@ -26,6 +26,7 @@ class Material {
     kLink,
     kForm,
     kUnknown,
+    kGuidedLearning,
   };
 
   Material();
