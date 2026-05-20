@@ -5,6 +5,7 @@
 #include "device/fido/enclave/enclave_protocol_utils.h"
 
 #include <array>
+#include <string_view>
 #include <variant>
 
 #include "base/compiler_specific.h"
@@ -91,6 +92,12 @@ const char kLargeBlobDataKey[] = "largeBlobData";
 const char kLargeBlobSizeKey[] = "largeBlobSize";
 const char kLargeBlobWrittenKey[] = "largeBlobWritten";
 const char kEncryptedKey[] = "encrypted";
+
+// JSON request keys to copy into requests to the cloud enclave.
+constexpr std::array<std::string_view, 2> kGetAssertionKeys = {"rpId",
+                                                               "extensions"};
+constexpr std::array<std::string_view, 2> kMakeCredentialKeys = {
+    "pubKeyCredParams", "extensions"};
 
 const cbor::Value::MapValue* cborFindMap(const cbor::Value::MapValue& map,
                                          std::string key) {
@@ -533,7 +540,20 @@ cbor::Value BuildGetAssertionCommand(
 
   entry_map.emplace(cbor::Value(kRequestCommandKey),
                     cbor::Value(kGetAssertionCommandName));
-  entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnStripUnusedEnclaveParameters)) {
+    base::DictValue request_dict;
+    const base::DictValue& original_dict = request->value->GetDict();
+    for (std::string_view key : kGetAssertionKeys) {
+      if (const base::Value* val = original_dict.Find(key)) {
+        request_dict.Set(key, val->Clone());
+      }
+    }
+    entry_map.emplace(cbor::Value(kRequestDataKey),
+                      toCbor(base::Value(std::move(request_dict))));
+  } else {
+    entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
+  }
 
   if (wrapped_secret.has_value()) {
     entry_map.emplace(cbor::Value(kRequestWrappedSecretKey),
@@ -572,7 +592,20 @@ cbor::Value BuildMakeCredentialCommand(
 
   entry_map.emplace(cbor::Value(kRequestCommandKey),
                     cbor::Value(kMakeCredentialCommandName));
-  entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnStripUnusedEnclaveParameters)) {
+    base::DictValue request_dict;
+    const base::DictValue& original_dict = request->value->GetDict();
+    for (std::string_view key : kMakeCredentialKeys) {
+      if (const base::Value* val = original_dict.Find(key)) {
+        request_dict.Set(key, val->Clone());
+      }
+    }
+    entry_map.emplace(cbor::Value(kRequestDataKey),
+                      toCbor(base::Value(std::move(request_dict))));
+  } else {
+    entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
+  }
   if (wrapped_secret.has_value()) {
     entry_map.emplace(cbor::Value(kRequestWrappedSecretKey),
                       cbor::Value(std::move(*wrapped_secret)));

@@ -279,11 +279,35 @@ class EnclaveProtocolUtilsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
+class EnclaveProtocolUtilsTestStripParameters
+    : public EnclaveProtocolUtilsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    EnclaveProtocolUtilsTest::SetUp();
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          device::kWebAuthnStripUnusedEnclaveParameters);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          device::kWebAuthnStripUnusedEnclaveParameters);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         EnclaveProtocolUtilsTestStripParameters,
+                         testing::Bool());
+
 }  // namespace
 
 namespace enclave {
 
-TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
+TEST_P(EnclaveProtocolUtilsTestStripParameters,
+       BuildGetAssertionRequest_Success) {
   BuildCommandCompletionWaiter waiter;
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
@@ -320,6 +344,18 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
       command_map.find(cbor::Value("request"))->second.GetMap();
   EXPECT_EQ(request_value_map.find(cbor::Value("rpId"))->second.GetString(),
             "test.example");
+
+  if (GetParam()) {
+    EXPECT_EQ(request_value_map.find(cbor::Value("challenge")),
+              request_value_map.end());
+    EXPECT_EQ(request_value_map.find(cbor::Value("allowCredentials")),
+              request_value_map.end());
+  } else {
+    EXPECT_NE(request_value_map.find(cbor::Value("challenge")),
+              request_value_map.end());
+    EXPECT_NE(request_value_map.find(cbor::Value("allowCredentials")),
+              request_value_map.end());
+  }
 
   auto& serialized_passkey_entity =
       command_map.find(cbor::Value("protobuf"))->second.GetBytestring();
@@ -367,7 +403,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
             4u);
 }
 
-TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
+TEST_P(EnclaveProtocolUtilsTestStripParameters,
+       BuildMakeCredentialRequest_Success) {
   BuildCommandCompletionWaiter waiter;
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
       kMakeCredentialRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -396,11 +433,25 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
               command_map.end());
   auto& request_value_map =
       command_map.find(cbor::Value("request"))->second.GetMap();
-  EXPECT_EQ(request_value_map.find(cbor::Value("rp"))
-                ->second.GetMap()
-                .find(cbor::Value("id"))
-                ->second.GetString(),
-            "test.example");
+
+  if (GetParam()) {
+    EXPECT_EQ(request_value_map.find(cbor::Value("rp")),
+              request_value_map.end());
+    EXPECT_EQ(request_value_map.find(cbor::Value("challenge")),
+              request_value_map.end());
+    EXPECT_NE(request_value_map.find(cbor::Value("pubKeyCredParams")),
+              request_value_map.end());
+  } else {
+    EXPECT_EQ(request_value_map.find(cbor::Value("rp"))
+                  ->second.GetMap()
+                  .find(cbor::Value("id"))
+                  ->second.GetString(),
+              "test.example");
+    EXPECT_NE(request_value_map.find(cbor::Value("challenge")),
+              request_value_map.end());
+    EXPECT_NE(request_value_map.find(cbor::Value("pubKeyCredParams")),
+              request_value_map.end());
+  }
 }
 
 TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_WithPIN) {

@@ -208,6 +208,10 @@ BASE_DECLARE_FEATURE(kWebAuthnSocketMaxPriorityMode);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnGpmPinResetUsesAccountIndex);
 
+// Omit unused parameters when building requests to the cloud enclave.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnStripUnusedEnclaveParameters);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_
