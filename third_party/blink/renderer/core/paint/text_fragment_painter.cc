@@ -548,8 +548,13 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       InlineCursor prev = cursor_;
       prev.MoveToPreviousInlineLeaf();
       while (prev) {
+        // Atomic inlines (e.g. <img>) are not text — treat them as non-space
+        // content that breaks the "all spaces" chain.
+        if (!prev.Current().IsText()) {
+          return false;
+        }
         const StringView prev_text = prev.CurrentText();
-        if (prev_text.IsAllSpecialCharacters<IsDecorationSkipSpace>()) {
+        if (!prev_text.IsAllSpecialCharacters<IsDecorationSkipSpace>()) {
           return false;
         }
         prev.MoveToPreviousInlineLeaf();
@@ -560,6 +565,11 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       InlineCursor next = cursor_;
       next.MoveToNextInlineLeaf();
       while (next) {
+        // Atomic inlines (e.g. <img>) are not text — treat them as non-space
+        // content that breaks the "all spaces" chain.
+        if (!next.Current().IsText()) {
+          return false;
+        }
         const StringView next_text = next.CurrentText();
         if (!next_text.IsAllSpecialCharacters<IsDecorationSkipSpace>()) {
           return false;
