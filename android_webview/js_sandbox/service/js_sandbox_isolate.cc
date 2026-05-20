@@ -484,66 +484,6 @@ void JsSandboxIsolate::NotifyInitComplete() {
   isolate_init_complete = true;
 }
 
-// Called from control sequence.
-void JsSandboxIsolate::ConvertPromiseToArrayBufferInControlSequence(
-    std::string name,
-    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver) {
-  cancelable_task_tracker_->PostTask(
-      isolate_task_runner_.get(), FROM_HERE,
-      base::BindOnce(
-          &JsSandboxIsolate::ConvertPromiseToArrayBufferInIsolateSequence,
-          base::Unretained(this), std::move(name), std::move(array_buffer),
-          std::move(resolver)));
-}
-
-// Called from control sequence.
-//
-// The array_buffer's API must only be used from the isolate thread.
-void JsSandboxIsolate::ConvertPromiseToFailureInControlSequence(
-    std::string name,
-    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
-    std::string reason) {
-  cancelable_task_tracker_->PostTask(
-      isolate_task_runner_.get(), FROM_HERE,
-      base::BindOnce(
-          &JsSandboxIsolate::ConvertPromiseToFailureInIsolateSequence,
-          base::Unretained(this), std::move(name), std::move(array_buffer),
-          std::move(resolver), std::move(reason)));
-}
-
-// Called from Thread pool.
-//
-// The array_buffer's API must only be used from the isolate thread, but the
-// internal data (inner_buffer) may be accessed in whatever thread is currently
-// processing the task, so long as array_buffer remains alive.
-void JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool(
-    base::ScopedFD fd,
-    ssize_t length,
-    std::string name,
-    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
-    void* inner_buffer) {
-  if (base::ReadFromFD(fd.get(), UNSAFE_TODO(base::span(
-                                     static_cast<char*>(inner_buffer),
-                                     base::checked_cast<size_t>(length))))) {
-    control_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &JsSandboxIsolate::ConvertPromiseToArrayBufferInControlSequence,
-            base::Unretained(this), std::move(name), std::move(array_buffer),
-            std::move(resolver)));
-  } else {
-    std::string failure_reason = "Reading data failed.";
-    control_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &JsSandboxIsolate::ConvertPromiseToFailureInControlSequence,
-            base::Unretained(this), std::move(name), std::move(array_buffer),
-            std::move(resolver), std::move(failure_reason)));
-  }
-}
 
 // Called from isolate thread.
 v8::Local<v8::ObjectTemplate> JsSandboxIsolate::CreateAndroidNamespaceTemplate(
@@ -801,41 +741,6 @@ void JsSandboxIsolate::PromiseRejectCallback(
       JsSandboxIsolateCallback::ErrorType::kJsEvaluationError, error_message);
 }
 
-// Called from isolate thread.
-void JsSandboxIsolate::ConvertPromiseToArrayBufferInIsolateSequence(
-    std::string name,
-    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver) {
-  v8::HandleScope handle_scope(isolate_holder_->isolate());
-  v8::Context::Scope scope(context_holder_->context());
-
-  resolver->Get(isolate_holder_->isolate())
-      ->Resolve(context_holder_->context(),
-                array_buffer->Get(isolate_holder_->isolate()))
-      .ToChecked();
-}
-
-// Called from isolate thread.
-//
-// We pass the array_buffer to the isolate thread so that it (or the handle)
-// only gets destructed from the isolate thread.
-void JsSandboxIsolate::ConvertPromiseToFailureInIsolateSequence(
-    std::string name,
-    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
-    std::string reason) {
-  v8::HandleScope handle_scope(isolate_holder_->isolate());
-  v8::Context::Scope scope(context_holder_->context());
-
-  // Allow array buffer to be garbage collectable before further V8 calls.
-  array_buffer = nullptr;
-
-  resolver->Get(isolate_holder_->isolate())
-      ->Reject(context_holder_->context(),
-               v8::Exception::Error(
-                   gin::StringToV8(isolate_holder_->isolate(), reason)))
-      .ToChecked();
-}
 
 // Called from isolate thread.
 void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
@@ -900,22 +805,20 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
 
   v8::Local<v8::ArrayBuffer> local_array_buffer =
       maybe_array_buffer.ToLocalChecked();
-  void* const inner_buffer = local_array_buffer->Data();
-  // V8 documentation provides no guarantees about the thread-safety of Globals
-  // - even move construction/destruction. Wrap it in a unique_ptr so that it
-  // can be treated as an opaque pointer until it's handed back to the isolate
-  // thread.
-  std::unique_ptr<v8::Global<v8::ArrayBuffer>> global_array_buffer(
-      std::make_unique<v8::Global<v8::ArrayBuffer>>(
-          isolate, std::move(local_array_buffer)));
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool,
-                     base::Unretained(this), std::move(fd), length,
-                     std::move(name), std::move(global_array_buffer),
-                     std::make_unique<v8::Global<v8::Promise::Resolver>>(
-                         std::move(global_resolver)),
-                     inner_buffer));
+  gin::ArrayBuffer gin_array_buffer(local_array_buffer);
+  if (base::ReadFromFD(fd.get(),
+                       base::as_writable_chars(gin_array_buffer.span()))) {
+    global_resolver.Get(isolate_holder_->isolate())
+        ->Resolve(context_holder_->context(), local_array_buffer)
+        .ToChecked();
+  } else {
+    std::string reason = "Reading data failed.";
+    global_resolver.Get(isolate_holder_->isolate())
+        ->Reject(context_holder_->context(),
+                 v8::Exception::Error(
+                     gin::StringToV8(isolate_holder_->isolate(), reason)))
+        .ToChecked();
+  }
   args->Return(promise);
 }
 

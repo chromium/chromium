@@ -126,31 +126,6 @@ class JsSandboxIsolate {
       base::android::ScopedJavaGlobalRef<jobject> pfd,
       scoped_refptr<JsSandboxIsolateCallback> callback,
       std::string errorMessage);
-  void ConvertPromiseToArrayBufferInThreadPool(
-      base::ScopedFD fd,
-      ssize_t length,
-      std::string name,
-      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
-      void* inner_buffer);
-  void ConvertPromiseToArrayBufferInControlSequence(
-      std::string name,
-      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver);
-  void ConvertPromiseToFailureInControlSequence(
-      std::string name,
-      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
-      std::string reason);
-  void ConvertPromiseToFailureInIsolateSequence(
-      std::string name,
-      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
-      std::string reason);
-  void ConvertPromiseToArrayBufferInIsolateSequence(
-      std::string name,
-      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
-      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver);
 
   void ConsumeNamedDataAsArrayBuffer(gin::Arguments* args);
 
