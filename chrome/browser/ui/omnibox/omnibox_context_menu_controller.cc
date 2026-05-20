@@ -55,6 +55,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
@@ -186,6 +187,12 @@ OmniboxContextMenuController::OmniboxContextMenuController(
       GetOmniboxPopupUI() ? GetOmniboxPopupUI()->composebox_handler() : nullptr;
   if (composebox_handler &&
       base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    // Pre-populate `input_state_` synchronously from the cached model state
+    // so dynamic items like recent tabs are available during initial menu
+    // build. Otherwise, menu will not have tabs.
+    if (composebox_handler->input_state_model()) {
+      input_state_ = composebox_handler->input_state_model()->GetInputState();
+    }
     composebox_handler->GetInputState(
         base::BindOnce(&OmniboxContextMenuController::OnGetInputState,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -281,32 +288,62 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     return;
   }
 
-  if (omnibox::kShowContextMenuHeaders.Get()) {
-    AddTitleWithStringId(IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE);
-  }
   std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
+  if (tabs.empty()) {
+    return;
+  }
 
-  const size_t first_tab_index = menu_model_->GetItemCount();
+  const bool include_tabs_submenu =
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox);
+
+  ui::SimpleMenuModel* target_menu_model;
+  size_t first_tab_index;
+
+  // `target_menu_model` will either become the submenu, or a section in main
+  // menu.
+  if (include_tabs_submenu) {
+    // Add shared tabs submenu to main menu and make submenu the tabs
+    // `target_menu_model`.
+    shared_tabs_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+    target_menu_model = shared_tabs_menu_model_.get();
+    first_tab_index = 0;
+  } else {
+    // Add default title for 'Recent tabs' when there is no shared tabs menu.
+    if (omnibox::kShowContextMenuHeaders.Get()) {
+      AddTitleWithStringId(IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE);
+    }
+    // Part of screen where the tabs will be placed in.
+    target_menu_model = menu_model_.get();
+    // The first tab will be appended at the current item count index.
+    first_tab_index = menu_model_->GetItemCount();
+  }
+
+  // Add tabs to the target destination in UI.
   for (const auto& tab : tabs) {
-    AddItemWithIcon(next_command_id_, tab.title,
-                    favicon::GetDefaultFaviconModel());
+    target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
+                                       favicon::GetDefaultFaviconModel());
     AddTabFavicon(next_command_id_, tab.url, tab.title);
     input_type_for_command_id_[next_command_id_] =
         omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
     next_command_id_ += 1;
   }
-  if (!tabs.empty()) {
-    menu_model_->SetElementIdentifierAt(first_tab_index,
-                                        kFirstTabMenuItemIdForTesting);
+
+  // Add submenu name and icon.
+  if (include_tabs_submenu) {
+    menu_model_->AddSubMenuWithStringIdAndIcon(
+        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU, IDS_NTP_COMPOSEBOX_SHARE_TABS,
+        shared_tabs_menu_model_.get(),
+        ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+    // Update next id for menu items.
+    min_tools_and_models_command_id_ =
+        std::max(min_tools_and_models_command_id_, next_command_id_);
   }
-  // Remove header if no tabs to show.
-  if (tabs.empty()) {
-    auto index = menu_model_->GetIndexOfCommandId(ui::MenuModel::kTitleId);
-    if (index) {
-      menu_model_->RemoveItemAt(index.value());
-      return;
-    }
-  }
+
+  // ID for testing tab section.
+  target_menu_model->SetElementIdentifierAt(first_tab_index,
+                                            kFirstTabMenuItemIdForTesting);
+
   if (!base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     AddSeparator();
   }
@@ -537,13 +574,21 @@ void OmniboxContextMenuController::OnFaviconDataAvailable(
     return;
   }
 
-  const std::optional<size_t> index_in_menu =
-      menu_model_->GetIndexOfCommandId(command_id);
+  // Look through particular menu model (either tab submenu, or recent
+  // tabs section).
+  ui::SimpleMenuModel* target_menu_model = menu_model_.get();
+  std::optional<size_t> index_in_menu =
+      target_menu_model->GetIndexOfCommandId(command_id);
+  if (!index_in_menu && shared_tabs_menu_model_) {  // Target submenu instead.
+    target_menu_model = shared_tabs_menu_model_.get();
+    index_in_menu = target_menu_model->GetIndexOfCommandId(command_id);
+  }
   DCHECK(index_in_menu.has_value());
-  menu_model_->SetIcon(index_in_menu.value(),
-                       ui::ImageModel::FromImage(image_result.image));
-  if (menu_model_->menu_model_delegate()) {
-    menu_model_->menu_model_delegate()->OnIconChanged(command_id);
+  target_menu_model->SetIcon(index_in_menu.value(),
+                             ui::ImageModel::FromImage(image_result.image));
+  // Update the screen after updating the icon.
+  if (target_menu_model->menu_model_delegate()) {
+    target_menu_model->menu_model_delegate()->OnIconChanged(command_id);
   }
 }
 
@@ -645,6 +690,7 @@ int OmniboxContextMenuController::GetMaxTabSuggestions() const {
 
 omnibox::ContextType OmniboxContextMenuController::CommandIdToEnum(
     int command_id) const {
+  // Translate to generic omnibox type for logging, etc.
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     if (auto it = input_type_for_command_id_.find(command_id);
         it != input_type_for_command_id_.end()) {
@@ -963,6 +1009,10 @@ raw_ptr<OmniboxPopupUI> OmniboxContextMenuController::GetOmniboxPopupUI()
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
+  if (id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+    // Shared tabs does not do anything as a button.
+    return;
+  }
   auto omnibox_controller = GetOmniboxController();
   bool is_aim_popup_open =
       omnibox_controller &&
@@ -1118,6 +1168,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 }
 
 bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
+  // `IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU` is a structural submenu item
+  // that behaves as a placeholder rather than an actionable clickable command.
+  // It must be handled early to bypass the standard actionable command
+  // verification logic below.
+  if (command_id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+    CHECK(
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
+    return true;
+  }
   if (command_id == ui::MenuModel::kTitleId) {
     return false;
   }
@@ -1265,6 +1324,16 @@ bool OmniboxContextMenuController::IsCommandIdEnabledHelper(
 }
 
 bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
+  // `IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU` is a structural submenu item
+  // that behaves as a placeholder rather than a clickable command. It must be
+  // handled early to bypass the standard actionable command verification
+  // logic below.
+  if (command_id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+    CHECK(
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
+    return true;
+  }
+
   // When using the PEC API, whether or not an item is visible is controlled
   // purely by server-side logic (see `InitializeMenuItemInfo()` for details).
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {

@@ -626,6 +626,7 @@
 #define IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING                54016
 #define IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR                 54017
 #define IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI           54018
+#define IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU               54019
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

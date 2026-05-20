@@ -108,6 +108,7 @@ source_set("impl") {
     "//components/omnibox/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common",
+    "//components/omnibox/common:features",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
     "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
     "//components/prefs",

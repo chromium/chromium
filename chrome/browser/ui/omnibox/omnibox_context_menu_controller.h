@@ -81,6 +81,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   ~OmniboxContextMenuController() override;
 
   ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
+  ui::SimpleMenuModel* shared_tabs_menu_model() {
+    return shared_tabs_menu_model_.get();
+  }
 
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
@@ -209,6 +212,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<ui::SimpleMenuModel> shared_tabs_menu_model_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<OmniboxEditModel> edit_model_;

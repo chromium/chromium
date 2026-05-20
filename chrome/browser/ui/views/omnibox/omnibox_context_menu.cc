@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/buildflags.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/menus/simple_menu_model.h"
@@ -24,6 +26,13 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
+
+namespace {
+// New main menu width.
+constexpr int kMainMenuWidthWithSubmenuEnabled = 240;
+// Default menu width for all menus, unless specified.
+constexpr int kDefaultMenuWidth = 320;
+}  // namespace
 
 OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
                                        OmniboxPopupFileSelector* file_selector,
@@ -42,26 +51,72 @@ OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
                            views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   menu_model->SetMenuModelDelegate(this);
+  // Register `this` to listen for live icon updates on the secondary submenu.
+  if (controller_->shared_tabs_menu_model()) {
+    controller_->shared_tabs_menu_model()->SetMenuModelDelegate(this);
+  }
+
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    views::MenuModelAdapter::AppendMenuItemFromModel(
-        menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+    views::MenuItemView* item =
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+    if (item) {
+      // Add margins between menu items if they exist:
+      item->set_vertical_margin(6);
+    }
+    // If the top-level item is a real submenu container, recursively append its
+    // underlying child items (tabs) to ensure the menu tree is fully populated.
+    if (item && menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
+      ui::MenuModel* submodel = menu_model->GetSubmenuModelAt(i);
+      CHECK(submodel);
+      for (size_t j = 0; j < submodel->GetItemCount(); ++j) {
+        // Add margins between submenu items:
+        views::MenuItemView* subitem =
+            views::MenuModelAdapter::AppendMenuItemFromModel(
+                submodel, j, item, submodel->GetCommandIdAt(j));
+        if (subitem) {
+          subitem->set_vertical_margin(6);
+        }
+      }
+    }
   }
 }
 
 int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
-  return 320;
+  if (!base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    return kDefaultMenuWidth;
+  }
+  // If is top level menu, return main menu's width;
+  // otherwise it is the submenu, so return submenu's (default width).
+  return (menu == menu_) ? kMainMenuWidthWithSubmenuEnabled : kDefaultMenuWidth;
 }
 
 OmniboxContextMenu::~OmniboxContextMenu() {
   if (controller_ && controller_->menu_model()) {
     controller_->menu_model()->SetMenuModelDelegate(nullptr);
+    if (controller_->shared_tabs_menu_model()) {
+      controller_->shared_tabs_menu_model()->SetMenuModelDelegate(nullptr);
+    }
   }
 }
 
 void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
                                    ui::mojom::MenuSourceType source_type) {
   if (menu_ && menu_->HasSubmenu()) {
-    menu_->GetSubmenu()->set_minimum_preferred_width(320);
+    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+      // Set menu smaller if there is a submenu. Submenu will have default
+      // width.
+      menu_->GetSubmenu()->set_minimum_preferred_width(
+          kMainMenuWidthWithSubmenuEnabled);
+      views::MenuItemView* tab_submenu_item =
+          menu_->GetMenuItemByID(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU);
+      if (tab_submenu_item && tab_submenu_item->HasSubmenu()) {
+        tab_submenu_item->GetSubmenu()->set_minimum_preferred_width(
+            kDefaultMenuWidth);
+      }
+    } else {
+      menu_->GetSubmenu()->set_minimum_preferred_width(kDefaultMenuWidth);
+    }
   }
 
   menu_runner_->RunMenuAt(parent_widget_, nullptr,
@@ -134,12 +189,18 @@ void OmniboxContextMenu::OnMenuClosed(views::MenuItemView* menu) {
 }
 
 void OmniboxContextMenu::OnIconChanged(int command_id) {
-  const std::optional<size_t> index =
-      controller_->menu_model()->GetIndexOfCommandId(command_id);
+  ui::SimpleMenuModel* model = controller_->menu_model();
+  std::optional<size_t> index = model->GetIndexOfCommandId(command_id);
+  // Update either 'tab section' or 'tab submenu':
+  if (!index && controller_->shared_tabs_menu_model()) {
+    model = controller_->shared_tabs_menu_model();
+    index = model->GetIndexOfCommandId(command_id);
+  }
   DCHECK(index.has_value());
-  views::MenuItemView* menu_item =
-      menu_->GetSubmenu()->GetMenuItemAt(index.value());
+  // Use `command_id` to find the item since the array indices have duplicates
+  // due to container-relative indexing and do not map directly across submenus.
+  views::MenuItemView* menu_item = menu_->GetMenuItemByID(command_id);
   if (menu_item) {
-    menu_item->SetIcon(controller_->menu_model()->GetIconAt(index.value()));
+    menu_item->SetIcon(model->GetIconAt(index.value()));
   }
 }
