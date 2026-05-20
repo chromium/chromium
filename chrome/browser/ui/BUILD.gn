@@ -844,6 +844,21 @@ static_library("ui") {
     deps += [ "//chrome/browser/rlz" ]
   }
 
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/views/relaunch_notification",
+      "//chrome/browser/ui/views/relaunch_notification:impl",
+    ]
+  }
+
+  # //chrome/browser/ui/views/relaunch_notification:impl sources include
+  # :ui headers (browser.h, views/frame/browser_view.h,
+  # views/chrome_layout_provider.h).
+  if (!is_android && !is_chromeos) {
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views/relaunch_notification:impl" ]
+  }
+
   # TODO(crbug.com/41437292): Remove this circular dependency. Any circular
   # includes must depend on the target
   # "//chrome/browser:browser_public_dependencies". These are all-platform
@@ -2201,8 +2216,6 @@ static_library("ui") {
       "views/platform_keys_certificate_selector_chromeos.h",
       "views/profiles/profile_indicator_icon.cc",
       "views/profiles/profile_indicator_icon.h",
-      "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.cc",
-      "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h",
       "views/web_apps/protocol_handler_picker_coordinator.cc",
       "views/web_apps/protocol_handler_picker_coordinator.h",
       "views/web_apps/protocol_handler_picker_dialog.cc",
@@ -4459,12 +4472,6 @@ static_library("ui") {
       "views/record_replay/replay_recording_bubble_view.h",
       "views/record_replay/save_recording_bubble_view.cc",
       "views/record_replay/save_recording_bubble_view.h",
-      "views/relaunch_notification/relaunch_notification_controller.cc",
-      "views/relaunch_notification/relaunch_notification_controller.h",
-      "views/relaunch_notification/relaunch_required_timer.cc",
-      "views/relaunch_notification/relaunch_required_timer.h",
-      "views/relaunch_notification/relaunch_required_timer_internal.cc",
-      "views/relaunch_notification/relaunch_required_timer_internal.h",
       "views/sad_tab_view.cc",
       "views/sad_tab_view.h",
       "views/safe_browsing/password_reuse_modal_warning_dialog.cc",
@@ -5235,14 +5242,6 @@ static_library("ui") {
         "views/policy/enterprise_startup_dialog_view.h",
         "views/policy/idle_dialog_view.cc",
         "views/policy/idle_dialog_view.h",
-        "views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.cc",
-        "views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.h",
-        "views/relaunch_notification/relaunch_recommended_bubble_view.cc",
-        "views/relaunch_notification/relaunch_recommended_bubble_view.h",
-        "views/relaunch_notification/relaunch_recommended_timer.cc",
-        "views/relaunch_notification/relaunch_recommended_timer.h",
-        "views/relaunch_notification/relaunch_required_dialog_view.cc",
-        "views/relaunch_notification/relaunch_required_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.h",

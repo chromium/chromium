@@ -5440,11 +5440,10 @@ if (!is_android) {
           "../browser/ui/views/profiles/batch_upload_dialog_view_pixel_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
-          "../browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view_browsertest.cc",
-          "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
         ]
         deps += [
           "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils",
+          "//chrome/browser/ui/views/relaunch_notification:browser_tests",
           "//chrome/browser/ui/views/shortcuts:browser_tests",
         ]
       }
@@ -10594,8 +10593,6 @@ test("unit_tests") {
       "../browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation_unittest.cc",
       "../browser/ui/views/picture_in_picture/picture_in_picture_tucker_unittest.cc",
       "../browser/ui/views/qrcode_generator/qrcode_generator_bubble_unittest.cc",
-      "../browser/ui/views/relaunch_notification/relaunch_notification_controller_unittest.cc",
-      "../browser/ui/views/relaunch_notification/relaunch_required_timer_internal_unittest.cc",
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view_unittest.cc",
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view_unittest.cc",
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view_unittest.cc",
@@ -10639,6 +10636,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:tab_list_bridge",
+      "//chrome/browser/ui/views/relaunch_notification:unit_tests",
     ]
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/test:test_support" ]
@@ -12132,20 +12130,16 @@ if (!is_android && !is_chromeos_device) {
         sources += [
           "../browser/ui/views/download/bubble/download_bubble_interactive_uitest.cc",
           "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc",
-          "../browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop_browsertest.cc",
         ]
 
         deps += [
           "../browser/media/router:test_support",
           "../browser/ui/views:test_support",
           "//chrome/browser/ui/global_media_controls",
+          "//chrome/browser/ui/views/relaunch_notification:interactive_ui_tests",
           "//chrome/browser/ui/views/shortcuts:interactive_ui_tests",
           "//components/media_router/browser:test_support",
         ]
-
-        if (enable_update_notifications) {
-          sources += [ "../browser/ui/views/relaunch_notification/relaunch_notification_controller_interactive_uitest.cc" ]
-        }
       }
 
       if (is_linux) {

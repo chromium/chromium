@@ -20,6 +20,7 @@ static_library("device_scheduled_reboot") {
     "//base",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui/views/relaunch_notification",
     "//components/constrained_window",
     "//components/strings:components_strings_grit",
     "//components/user_manager",

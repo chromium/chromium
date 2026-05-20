@@ -1,0 +1,183 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("relaunch_notification") {
+  public = [
+    "relaunch_notification_controller.h",
+    "relaunch_required_timer.h",
+    "relaunch_required_timer_internal.h",
+  ]
+
+  if (is_chromeos) {
+    public += [ "relaunch_notification_controller_platform_impl_chromeos.h" ]
+  } else {
+    public += [
+      "relaunch_notification_controller_platform_impl_desktop.h",
+      "relaunch_recommended_bubble_view.h",
+      "relaunch_recommended_timer.h",
+      "relaunch_required_dialog_view.h",
+    ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/upgrade_detector",
+    "//ui/views",
+  ]
+
+  if (is_chromeos) {
+    public_deps += [
+      "//ash/public/cpp",
+      "//components/session_manager/core",
+      "//ui/display/manager",
+    ]
+  } else {
+    public_deps += [
+      # RelaunchRecommendedBubbleView inherits from LocationBarBubbleDelegateView.
+      "//chrome/browser/ui/views/location_bar",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "relaunch_notification_controller.cc",
+    "relaunch_required_timer.cc",
+    "relaunch_required_timer_internal.cc",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "relaunch_notification_controller_platform_impl_chromeos.cc" ]
+  } else {
+    sources += [
+      "relaunch_notification_controller_platform_impl_desktop.cc",
+      "relaunch_recommended_bubble_view.cc",
+      "relaunch_recommended_timer.cc",
+      "relaunch_required_dialog_view.cc",
+    ]
+  }
+
+  public_deps = [
+    ":relaunch_notification",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/lifetime:lifetime",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//ui/base",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//chrome/browser/ui/ash/system",
+    ]
+  } else {
+    deps += [
+      "//chrome/app/vector_icons",
+      "//chrome/browser/ui/views/toolbar",
+      "//components/constrained_window",
+      "//components/vector_icons",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "relaunch_notification_controller_unittest.cc",
+    "relaunch_required_timer_internal_unittest.cc",
+  ]
+
+  deps = [
+    ":relaunch_notification",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:features",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash:test_support",
+      "//components/account_id",
+      "//components/session_manager/core",
+      "//components/user_manager",
+      "//components/user_manager:test_support",
+      "//ui/display:test_support",
+      "//ui/display/manager",
+    ]
+  }
+}
+
+if (!is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "relaunch_recommended_bubble_view_browsertest.cc",
+      "relaunch_required_dialog_view_browsertest.cc",
+    ]
+
+    deps = [
+      ":relaunch_notification",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "relaunch_notification_controller_platform_impl_desktop_browsertest.cc",
+    ]
+
+    deps = [
+      ":relaunch_notification",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//testing/gtest",
+      "//ui/views",
+    ]
+
+    if (enable_update_notifications) {
+      sources += [ "relaunch_notification_controller_interactive_uitest.cc" ]
+      deps += [
+        "//chrome/browser",
+        "//chrome/browser/policy:test_support",
+        "//chrome/browser/upgrade_detector",
+        "//chrome/common:version_header",
+      ]
+    }
+  }
+}
