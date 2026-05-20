@@ -158,9 +158,6 @@ class BrowsingDataRemoverBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-    enabled_features.push_back(browsing_data::features::kDbdRevampDesktop);
-#endif  // !BUILDFLAG(IS_ANDROID)
     InitFeatureLists(std::move(enabled_features), std::move(disabled_features));
   }
 
@@ -1483,9 +1480,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                    ->GetClearUserCredentialsCount());
 }
 
-// Test that removing cookies, when System-proxy is enabled on Chrome OS and
-// kDbdRevampDesktop is enabled, sends a request to System-proxy to clear the
-// cached user credentials.
+// Test that removing cookies, when System-proxy is enabled on Chrome OS,
+// sends a request to System-proxy to clear the cached user credentials.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        SystemProxyClearsUserCredentials_RemoveCookies) {
   ash::SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);

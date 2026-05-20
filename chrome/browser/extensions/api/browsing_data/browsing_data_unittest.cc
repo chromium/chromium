@@ -61,8 +61,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{browsing_data::features::kDbdRevampDesktop,
-                              browsing_data::features::
+        /*enabled_features=*/{browsing_data::features::
                                   kPasswordRemovalExtensionErrorKillSwitch},
         /*disabled_features=*/{});
 #endif  // !BUILDFLAG(IS_ANDROID)

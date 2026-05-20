@@ -289,29 +289,9 @@ std::u16string GetCounterTextFromResult(
   }
 
   if (pref_name == prefs::kDeleteBrowsingHistory) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // History counter.
     return CreateHistoryCounterString(
-        static_cast<const HistoryCounter::HistoryResult*>(result));
-#else   // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
-    // History counter.
-    if (base::FeatureList::IsEnabled(features::kDbdRevampDesktop)) {
-      return CreateHistoryCounterString(
           static_cast<const HistoryCounter::HistoryResult*>(result));
-    }
-
-    // TODO(crbug.com/397187800): Clean up item count strings logic once
-    // kDbdRevampDesktop is launched.
-    const HistoryCounter::HistoryResult* history_result =
-        static_cast<const HistoryCounter::HistoryResult*>(result);
-    BrowsingDataCounter::ResultInt local_item_count = history_result->Value();
-    bool has_synced_visits = history_result->has_synced_visits();
-    return has_synced_visits
-               ? l10n_util::GetPluralStringFUTF16(
-                     IDS_DEL_BROWSING_HISTORY_COUNTER_SYNCED, local_item_count)
-               : l10n_util::GetPluralStringFUTF16(
-                     IDS_DEL_BROWSING_HISTORY_COUNTER, local_item_count);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
 
   if (pref_name == prefs::kDeleteFormData) {

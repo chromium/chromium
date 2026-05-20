@@ -485,13 +485,6 @@ inline constexpr char kDataSharingSharedDataTypesEnabledWithUi[] =
     "Version out-of-date, show UI ";
 // LINT.ThenChange(//ios/chrome/browser/flags/ios_chrome_flag_descriptions.cc:DataSharingVersioning)
 
-inline constexpr char kDbdRevampDesktopName[] =
-    "Revamped Delete Browsing Data dialog";
-inline constexpr char kDbdRevampDesktopDescription[] =
-    "Enables a revamped Delete Browsing Data dialog on Desktop. This includes "
-    "UI changes and removal of the bulk password deletion option from the "
-    "dialog.";
-
 inline constexpr char kDefaultBrowserChangedOsNotificationDescription[] =
     "Enables the framework to show OS Notification when Chrome is no longer "
     "the default browser.";

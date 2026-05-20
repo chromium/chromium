@@ -114,12 +114,7 @@ bool IsRemovalPermitted(uint64_t removal_mask, PrefService* prefs) {
 bool BrowsingDataSettingsFunction::isDataTypeSelected(
     BrowsingDataType data_type,
     ClearBrowsingDataTab tab) {
-  if (data_type == BrowsingDataType::PASSWORDS
-#if !BUILDFLAG(IS_ANDROID)
-      &&
-      base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop)
-#endif  // !BUILDFLAG(IS_ANDROID)
-  ) {
+  if (data_type == BrowsingDataType::PASSWORDS) {
     return false;
   }
 

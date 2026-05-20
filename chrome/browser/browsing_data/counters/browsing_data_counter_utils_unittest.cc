@@ -480,39 +480,6 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
 };
 
 TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(browsing_data::features::kDbdRevampDesktop);
-  // This test assumes that the strings are served exactly as defined, i.e. that
-  // the locale is set to the default "en".
-  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
-
-  // Test the output for various forms of cookie results.
-  std::vector<TestCase> test_cases = {
-      {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
-      {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
-      {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
-      {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 1, SigninState::kSignin,
-       "From 1 site (you'll stay signed in to your Google Account)"},
-  };
-
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    test_cases.push_back(
-        {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
-    test_cases.push_back(
-        {/*num_sites= */ 42, SigninState::kSyncing,
-         "From 42 sites (you'll stay signed in to your Google Account)"});
-    test_cases.push_back({/*num_sites= */ 0, SigninState::kSyncing, "None"});
-  }
-
-  for (const TestCase& test_case : test_cases) {
-    VerifyTestCase(test_case);
-  }
-}
-
-TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
-  base::test::ScopedFeatureList feature(
-      browsing_data::features::kDbdRevampDesktop);
   // This test assumes that the strings are served exactly as defined, i.e. that
   // the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());

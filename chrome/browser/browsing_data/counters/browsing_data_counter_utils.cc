@@ -170,33 +170,27 @@ std::u16string GetChromeCounterTextFromResult(
 #if BUILDFLAG(IS_ANDROID)
     return l10n_util::GetPluralStringFUTF16(
         IDS_ANDROID_DEL_COOKIES_COUNTER_ADVANCED, origins);
-#else
+#elif BUILDFLAG(IS_CHROMEOS)
     // Determines whether or not to show the count with exception message.
-
-#if !BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kDbdRevampDesktop)) {
-      std::u16string cookies_counter_text = l10n_util::GetPluralStringFUTF16(
-          IDS_DEL_COOKIES_COUNTER_ADVANCED, origins);
-
-      if (origins > 0 &&
-          ChromeSigninClientFactory::GetForProfile(profile)
-              ->IsClearPrimaryAccountAllowed() &&
-          ShouldShowCookieException(profile)) {
-        cookies_counter_text +=
-            (l10n_util::GetStringUTF16(IDS_SENTENCE_END) + u" " +
-             l10n_util::GetStringUTF16(IDS_DEL_GOOGLE_COOKIES_SIGNOUT_LINK));
-      }
-      return cookies_counter_text;
-    }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
     int del_cookie_counter_msg_id =
         ShouldShowCookieException(profile)
             ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
             : IDS_DEL_COOKIES_COUNTER_ADVANCED;
 
     return l10n_util::GetPluralStringFUTF16(del_cookie_counter_msg_id, origins);
+#else
+    std::u16string cookies_counter_text = l10n_util::GetPluralStringFUTF16(
+        IDS_DEL_COOKIES_COUNTER_ADVANCED, origins);
+
+    if (origins > 0 &&
+        ChromeSigninClientFactory::GetForProfile(profile)
+            ->IsClearPrimaryAccountAllowed() &&
+        ShouldShowCookieException(profile)) {
+      cookies_counter_text +=
+          (l10n_util::GetStringUTF16(IDS_SENTENCE_END) + u" " +
+           l10n_util::GetStringUTF16(IDS_DEL_GOOGLE_COOKIES_SIGNOUT_LINK));
+    }
+    return cookies_counter_text;
 #endif
   }
 

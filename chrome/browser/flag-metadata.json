@@ -2178,11 +2178,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "dbd-revamp-desktop",
-    "owners": [ "zalmashni@google.com", "chrome-browser-privacy-team@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "dcheck-is-fatal",
     "owners": [ "wez@chromium.org" ],
     // Used to debug failed assertions in environments where debug builds cannot
