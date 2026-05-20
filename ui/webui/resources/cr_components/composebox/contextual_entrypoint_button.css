@@ -342,3 +342,16 @@ cr-icon-button {
     transform: none;
   }
 }
+
+.pill-button {
+  --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-hover-background, rgba(0, 0, 0, 0.05));
+  min-width: auto;
+  padding: 0 10px 0 8px;
+}
+
+.pill-button cr-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+}
+

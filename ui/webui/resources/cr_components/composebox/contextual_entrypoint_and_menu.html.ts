@@ -14,6 +14,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
       <cr-composebox-contextual-entrypoint-button id="entrypointButton"
           exportparts="context-menu-entrypoint-icon, entrypoint-button"
           .inputState="${this.inputState}"
+          .sharedTabs="${this.sharedTabs}"
           @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
           ?upload-button-disabled="${this.uploadButtonDisabled}"
           ?show-context-menu-description="${this.showContextMenuDescription}"

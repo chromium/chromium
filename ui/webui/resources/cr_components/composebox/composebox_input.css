@@ -46,6 +46,16 @@
   display: none;
 }
 
+:host-context([searchbox-next-enabled][searchbox-layout-mode='Compact']):host(.has-tabs:not([entrypoint-name='Omnibox'])) #iconContainer {
+  display: flex;
+  margin-inline-start: -24px;
+}
+
+:host-context([searchbox-next-enabled][searchbox-layout-mode='Compact']):host(.has-tabs:not([entrypoint-name='Omnibox'])) #aimIcon {
+  width: 24px;
+  height: 24px;
+}
+
 :host-context([searchbox-next-enabled]) #iconContainer {
   height: 44px;
 }
