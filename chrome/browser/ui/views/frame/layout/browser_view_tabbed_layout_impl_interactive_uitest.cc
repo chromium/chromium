@@ -595,9 +595,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
 }
 
 enum class TopContainerBackgroundTestMode {
+  kDefault,
   kTouch,
   kImmersive,
-  kDefault,
 };
 
 class BrowserViewTabbedLayoutImplTopContainerBackgroundUiTest
@@ -623,18 +623,27 @@ IN_PROC_BROWSER_TEST_P(BrowserViewTabbedLayoutImplTopContainerBackgroundUiTest,
   }
   RunScheduledLayouts();
 
-  auto* top_container = browser()->GetBrowserView().top_container();
-  auto* background =
+  auto* const top_container = browser()->GetBrowserView().top_container();
+  auto* const background =
       top_container->background()->AsA<CustomCornersBackground>();
-  ASSERT_TRUE(background);
-  if (GetParam() == TopContainerBackgroundTestMode::kDefault) {
-    EXPECT_EQ(background->primary_color(),
-              CustomCornersBackground::ColorChoice(
-                  CustomCornersBackground::ToolbarTheme()));
-  } else {
-    EXPECT_EQ(background->primary_color(),
-              CustomCornersBackground::ColorChoice(ui::kColorFrameActive));
+  ASSERT_NE(nullptr, background);
+  CustomCornersBackground::ColorChoice expected;
+  switch (GetParam()) {
+    case TopContainerBackgroundTestMode::kDefault:
+      expected = CustomCornersBackground::ToolbarTheme();
+      break;
+    case TopContainerBackgroundTestMode::kTouch:
+    case TopContainerBackgroundTestMode::kImmersive:
+#if BUILDFLAG(IS_CHROMEOS)
+      // On ChromeOS in these modes, the top container contains the tabstrip, so
+      // it must paint with the frame color.
+      expected = ui::kColorFrameActive;
+#else
+      expected = CustomCornersBackground::ToolbarTheme();
+#endif
+      break;
   }
+  EXPECT_EQ(expected, background->primary_color());
 }
 
 INSTANTIATE_TEST_SUITE_P(
