@@ -459,7 +459,7 @@ try_.builder(
     name = "win10-code-coverage",
     mirrors = ["ci/win10-code-coverage"],
     gn_args = "ci/win10-code-coverage",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
 )
 
 try_.builder(

@@ -1182,14 +1182,14 @@ try_.builder(
     name = "linux-code-coverage",
     mirrors = ["ci/linux-code-coverage"],
     gn_args = "ci/linux-code-coverage",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 12 * time.hour,
 )
 
 try_.builder(
     name = "linux-chromeos-code-coverage",
     mirrors = ["ci/linux-chromeos-code-coverage"],
     gn_args = "ci/linux-chromeos-code-coverage",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
 )
 
 # This builder serves a different purpose than try/linux-js-coverage-rel
@@ -1198,7 +1198,7 @@ try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
     gn_args = "ci/linux-js-code-coverage",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
     use_javascript_coverage = True,
 )
 
@@ -1206,7 +1206,7 @@ try_.builder(
     name = "chromeos-js-code-coverage",
     mirrors = ["ci/chromeos-js-code-coverage"],
     gn_args = "ci/chromeos-js-code-coverage",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
     use_javascript_coverage = True,
 )
 ############### Coverage Builders End ##################

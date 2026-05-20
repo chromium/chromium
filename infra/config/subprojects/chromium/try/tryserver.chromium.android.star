@@ -1566,14 +1566,14 @@ try_.builder(
     name = "android-code-coverage",
     mirrors = ["ci/android-code-coverage"],
     gn_args = "ci/android-code-coverage",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
 )
 
 try_.builder(
     name = "android-code-coverage-native",
     mirrors = ["ci/android-code-coverage-native"],
     gn_args = "ci/android-code-coverage-native",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
 )
 
 try_.builder(
@@ -1581,5 +1581,5 @@ try_.builder(
     mirrors = ["ci/android-x86-code-coverage"],
     gn_args = "ci/android-x86-code-coverage",
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 20 * time.hour,
+    execution_timeout = 10 * time.hour,
 )
