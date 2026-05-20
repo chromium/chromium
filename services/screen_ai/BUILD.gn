@@ -50,10 +50,6 @@ source_set("screen_ai") {
     ]
   }
 
-  if (!use_fake_screen_ai) {
-    deps += [ "//components/crash/core/common:crash_key" ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -86,7 +82,6 @@ if (is_linux || is_chromeos) {
     deps = [
       "//base",
       "//components/component_updater",
-      "//components/crash/core/common:crash_key",
       "//sandbox/linux:sandbox_services",
       "//services/screen_ai/buildflags",
       "//services/screen_ai/public/cpp:utilities",

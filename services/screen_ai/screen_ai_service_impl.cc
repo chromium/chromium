@@ -17,11 +17,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
-#include "components/crash/core/common/crash_key.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
@@ -561,15 +559,7 @@ bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
     const ui::AXTreeUpdate& snapshot,
     ui::AXTree& tree,
     std::optional<std::vector<int32_t>>& content_node_ids) {
-  CHECK(mce_client_types_.contains(
-      screen2x_main_content_extractors_.current_receiver()));
   mce_last_used_ = base::TimeTicks::Now();
-  mojom::MceClientType client_type =
-      mce_client_types_[screen2x_main_content_extractors_.current_receiver()];
-
-  static crash_reporter::CrashKeyString<2> mce_client(
-      "main_content_extraction_client");
-  mce_client.Set(base::StringPrintf("%i", static_cast<int>(client_type)));
 
   // Early return if input is empty.
   if (snapshot.nodes.empty()) {
