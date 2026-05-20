@@ -217,12 +217,12 @@
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.12.0-alpha02"
+        "version": "1.12.0-alpha03"
     },
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.12.0-alpha02"
+        "version": "1.12.0-alpha03"
     },
     {
         "name": "runtime-retain",
@@ -362,7 +362,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.19.0-alpha02"
+        "version": "1.19.0-rc01"
     },
     {
         "name": "core-animation",
@@ -377,7 +377,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.19.0-alpha02"
+        "version": "1.19.0-rc01"
     },
     {
         "name": "core-pip",
@@ -672,17 +672,17 @@
     {
         "name": "lifecycle-common",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-common-java8",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-livedata",
@@ -692,7 +692,7 @@
     {
         "name": "lifecycle-livedata-core",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-livedata-core-ktx",
@@ -707,17 +707,17 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-runtime",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -747,12 +747,12 @@
     {
         "name": "lifecycle-viewmodel",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -772,12 +772,12 @@
     {
         "name": "lifecycle-viewmodel-savedstate",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta01"
+        "version": "2.11.0-beta02"
     },
     {
         "name": "loader",
@@ -1012,27 +1012,27 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.5.0-rc01"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.5.0-rc01"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-compose",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-compose-android",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "slidingpanelayout",
@@ -1152,12 +1152,12 @@
     {
         "name": "tracing",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha07"
+        "version": "2.0.0-alpha08"
     },
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha07"
+        "version": "2.0.0-alpha08"
     },
     {
         "name": "tracing-ktx",
@@ -1342,7 +1342,7 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.3.0"
+        "version": "1.4.0-alpha01"
     },
     {
         "name": "layoutlib-api",
