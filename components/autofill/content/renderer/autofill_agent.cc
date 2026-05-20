@@ -845,45 +845,11 @@ void AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent(
     return;
   }
 
-  auto is_hidden_input = [](const WebFormControlElement& control) {
-    return control.FormControlTypeForAutofill() ==
-           blink::mojom::FormControlType::kInputHidden;
-  };
-
-  auto has_email_verification_autocomplete =
-      [](const WebFormControlElement& control) {
-        std::string autocomplete_attr =
-            base::ToLowerASCII(control.GetAttribute("autocomplete").Utf8());
-        std::vector<std::string_view> tokens = base::SplitStringPiece(
-            autocomplete_attr, " ", base::TRIM_WHITESPACE,
-            base::SPLIT_WANT_NONEMPTY);
-        return std::ranges::contains(tokens, "email-verification-token");
-      };
-
-  WebFormControlElement field;
-  for (const WebFormControlElement& control :
-       form.GetFormControlElements()) {  // nocheck
-    if (is_hidden_input(control) &&
-        has_email_verification_autocomplete(control)) {
-      field = control;
-      break;
-    }
-  }
-
-  if (!field) {
-    return;
-  }
-
-  // The verification token is associated with the <input type="email"> that
-  // triggered the verification. We loop through the form controls to find the
-  // email field associated with the token, and if one is found we fill the
-  // token into the hidden field before the form is submitted.
-  for (const WebFormControlElement& control :
-       form.GetFormControlElements()) {  // nocheck
-    auto it =
-        email_verification_tokens_.find(form_util::GetFieldRendererId(control));
-    if (it != email_verification_tokens_.end()) {
-      field.SetValue(WebString::FromUtf8(it->second));
+  for (const auto& [field_id, token] : email_verification_tokens_) {
+    WebFormControlElement element =
+        form_util::GetFormControlByRendererId(field_id);
+    if (element && element.GetOwningFormForAutofill() == form) {
+      element.SetValue(WebString::FromUtf8(token));
 
       if (auto* driver = agent_->unsafe_autofill_driver()) {
         driver->OnEmailVerificationTokenShared();

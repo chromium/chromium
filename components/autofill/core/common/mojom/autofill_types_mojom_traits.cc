@@ -97,6 +97,7 @@ bool StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
     return false;
   out->webauthn = data.webauthn();
   out->webidentity = data.webidentity();
+  out->email_verification_token = data.email_verification_token();
   return true;
 }
 

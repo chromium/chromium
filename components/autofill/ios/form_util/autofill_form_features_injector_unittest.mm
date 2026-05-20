@@ -64,7 +64,7 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
        autofill::features::kAutofillDisallowMoreHyphenLikeLabels,
        kAutofillSupportDateInput, kAutofillCorrectUserEditedBitInParsedField,
        kAutofillAllowDefaultPreventedSubmission, kAutofillDedupeFormSubmission,
-       kAutofillReportFormSubmissionErrors,
+       kAutofillEmailVerification, kAutofillReportFormSubmissionErrors,
        kAutofillCountFormSubmissionInRenderer},
       /* disabled_features= */ {});
 
@@ -93,6 +93,8 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
                     u"'setAutofillAllowDefaultPreventedSubmission', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
                     u"'setAutofillDedupeFormSubmission', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillEmailVerification', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
                     u"'setAutofillReportFormSubmissionErrors', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "

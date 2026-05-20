@@ -124,6 +124,15 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillDedupeFormSubmission(
       base::ListValue().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::SetAutofillEmailVerification(
+    web::WebFrame* frame,
+    bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillEmailVerification",
+      base::ListValue().Append(enabled));
+}
+
 // Enables/disables reporting form submission errors.
 void AutofillFormFeaturesJavaScriptFeature::
     SetAutofillReportFormSubmissionErrors(web::WebFrame* frame, bool enabled) {

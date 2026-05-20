@@ -29,6 +29,9 @@ BASE_DECLARE_FEATURE(kAutofillCountFormSubmissionInRenderer);
 // prevented.
 BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
 
+// Enables Email Verification Protocol on iOS.
+BASE_DECLARE_FEATURE(kAutofillEmailVerification);
+
 // Fix for XHR form submission detection when autofill across iframes is
 // enabled.
 BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);

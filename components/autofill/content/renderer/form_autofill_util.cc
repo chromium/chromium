@@ -53,6 +53,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -277,6 +278,7 @@ bool IsTextInput(const WebFormControlElement& element) {
   switch (*type) {
     case FormControlType::kContentEditable:
     case FormControlType::kInputCheckbox:
+    case FormControlType::kInputHiddenEmailVerification:
     case FormControlType::kInputMonth:
     case FormControlType::kInputDate:
     case FormControlType::kInputRadio:
@@ -1351,6 +1353,7 @@ void FillFormField(const FormFieldData::FillData& data,
   switch (*type) {
     case FormControlType::kInputCheckbox:
     case FormControlType::kInputRadio:
+    case FormControlType::kInputHiddenEmailVerification:
       return;
     case FormControlType::kContentEditable:
       NOTREACHED();
@@ -1424,6 +1427,7 @@ void PreviewFormField(const FormFieldData::FillData& data,
   switch (*type) {
     case FormControlType::kInputCheckbox:
     case FormControlType::kInputRadio:
+    case FormControlType::kInputHiddenEmailVerification:
       return;
     case FormControlType::kContentEditable:
       NOTREACHED();
@@ -2357,8 +2361,11 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
   return GetAutofillFormControlType(element).has_value();
 }
 
-std::optional<FormControlType> ToAutofillFormControlType(
-    blink::mojom::FormControlType type) {
+std::optional<FormControlType> GetAutofillFormControlType(
+    const WebFormControlElement& element) {
+  if (!element) {
+    return std::nullopt;
+  }
   // We cache this for performance reasons (crbug.com/428506178). This should
   // not affect tests because the only tests that explicitly set the feature are
   // two browser tests (form_autofill_util_browsertest.cc and
@@ -2366,10 +2373,12 @@ std::optional<FormControlType> ToAutofillFormControlType(
   // shared with other tests.
   static const bool g_autofill_ignore_checkable_elements_enabled =
       base::FeatureList::IsEnabled(features::kAutofillIgnoreCheckableElements);
+  static const bool g_email_verification_protocol_enabled =
+      base::FeatureList::IsEnabled(::features::kEmailVerificationProtocol);
 
   // Note that adding a new field type here automatically makes
   // IsAutofillableElement() return true.
-  switch (type) {
+  switch (element.FormControlTypeForAutofill()) {
     case blink::mojom::FormControlType::kInputCheckbox:
       if (!g_autofill_ignore_checkable_elements_enabled) {
         return FormControlType::kInputCheckbox;
@@ -2377,6 +2386,15 @@ std::optional<FormControlType> ToAutofillFormControlType(
       break;
     case blink::mojom::FormControlType::kInputEmail:
       return FormControlType::kInputEmail;
+    case blink::mojom::FormControlType::kInputHidden:
+      if (g_email_verification_protocol_enabled) {
+        std::optional<AutocompleteParsingResult> parsed =
+            ParseAutocompleteAttribute(GetAutocompleteAttribute(element));
+        if (parsed && parsed->email_verification_token) {
+          return FormControlType::kInputHiddenEmailVerification;
+        }
+      }
+      break;
     case blink::mojom::FormControlType::kInputMonth:
       return FormControlType::kInputMonth;
     case blink::mojom::FormControlType::kInputNumber:
@@ -2411,7 +2429,6 @@ std::optional<FormControlType> ToAutofillFormControlType(
     case blink::mojom::FormControlType::kInputColor:
     case blink::mojom::FormControlType::kInputDatetimeLocal:
     case blink::mojom::FormControlType::kInputFile:
-    case blink::mojom::FormControlType::kInputHidden:
     case blink::mojom::FormControlType::kInputImage:
     case blink::mojom::FormControlType::kInputRange:
     case blink::mojom::FormControlType::kInputReset:
@@ -2423,13 +2440,6 @@ std::optional<FormControlType> ToAutofillFormControlType(
       break;
   }
   return std::nullopt;
-}
-
-std::optional<FormControlType> GetAutofillFormControlType(
-    const WebFormControlElement& element) {
-  return element
-             ? ToAutofillFormControlType(element.FormControlTypeForAutofill())
-             : std::nullopt;
 }
 
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {

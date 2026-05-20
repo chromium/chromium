@@ -70,6 +70,13 @@ Dedupes form submission by only allowing one submission per form.
 let autofillDedupeFormSubmission: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_dedupe_form_submission)
 
+// LINT.IfChange(autofill_email_verification)
+/**
+Whether or not the Email Verification Protocol is enabled.
+*/
+let autofillEmailVerification: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_email_verification)
+
 // LINT.IfChange(autofill_report_form_submission_errors)
 /**
  * Reports JS errors that occur upon handling form submission in the renderer.
@@ -198,6 +205,20 @@ function isAutofillDedupeFormSubmissionEnabled(): boolean {
 }
 
 /**
+ * @see autofillEmailVerification
+ */
+function setAutofillEmailVerification(enabled: boolean): void {
+  autofillEmailVerification = enabled;
+}
+
+/**
+ * @see autofillEmailVerification
+ */
+function isAutofillEmailVerificationEnabled(): boolean {
+  return autofillEmailVerification;
+}
+
+/**
  * @see autofillReportFormSubmissionErrors
  */
 function setAutofillReportFormSubmissionErrors(enabled: boolean): void {
@@ -271,6 +292,11 @@ autofillFormFeatures.addFunction(
 autofillFormFeatures.addFunction(
     'isAutofillDedupeFormSubmissionEnabled',
     isAutofillDedupeFormSubmissionEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillEmailVerification', setAutofillEmailVerification);
+autofillFormFeatures.addFunction(
+    'isAutofillEmailVerificationEnabled',
+    isAutofillEmailVerificationEnabled);
 autofillFormFeatures.addFunction(
     'setAutofillReportFormSubmissionErrors',
     setAutofillReportFormSubmissionErrors);

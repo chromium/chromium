@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -45,6 +46,16 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
   return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
 }
 
+const AutofillField* FindField(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::FunctionRef<bool(const AutofillField&)> predicate) {
+  auto iter = std::ranges::find_if(
+      fields, [&](const std::unique_ptr<AutofillField>& field) {
+        return predicate(*field);
+      });
+  return iter != std::ranges::end(fields) ? iter->get() : nullptr;
+}
+
 }  // namespace
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client) {
@@ -80,46 +91,58 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   }
 
   const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
-  auto it = std::ranges::find_if(
-      fields, [&](const std::unique_ptr<AutofillField>& field) {
-        return !field->challenge().empty() &&
-               field->autofilled_type() == EMAIL_ADDRESS &&
-               filled_field_ids.contains(field->global_id());
+  const AutofillField* email_field =
+      FindField(fields, [&](const AutofillField& field) {
+        return field.autofilled_type() == EMAIL_ADDRESS &&
+               filled_field_ids.contains(field.global_id());
       });
 
-  if (it == std::ranges::end(fields)) {
+  if (!email_field) {
     return;
   }
 
-  const AutofillField& email_field = *it->get();
+  const AutofillField* challenge_field =
+      FindField(fields, [](const AutofillField& field) {
+        return field.parsed_autocomplete() &&
+               field.parsed_autocomplete()->email_verification_token &&
+               !field.challenge().empty();
+      });
+
+  if (!challenge_field) {
+    return;
+  }
 
   content::webid::EmailVerifier* verifier =
-      GetOrCreateEmailVerifier(manager.client(), email_field.host_frame());
+      GetOrCreateEmailVerifier(manager.client(), email_field->host_frame());
   if (!verifier) {
     return;
   }
 
-  // TODO(crbug.com/446288895): Use email_field->value() when we fix the
-  // OnFillOrPreviewForm callback.
+  // TODO(crbug.com/446288895): Currently, when filling a form, the browser
+  // notifies observers via OnFillOrPreviewForm() **before** it sends the fill
+  // request to the renderer and **before** it updates its own cache with the
+  // newly filled values. Because of this timing, if we try to read
+  // email_field->value() inside the callback, we will get the old value
+  // (before filling), not the new email address. So, we extract it manually
+  // from the profile instead.
+  // We should introduce OnFilledOrPreviewedForm and move the notification to a
+  // later stage (specifically after the renderer confirms the fill and the
+  // browser updates its cache) so we can use the email_field->value() instead.
   std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
 
   verifier->Verify(
-      base::UTF16ToUTF8(email), base::UTF16ToUTF8(email_field.challenge()),
+      base::UTF16ToUTF8(email), base::UTF16ToUTF8(challenge_field->challenge()),
       base::BindOnce(
           [](base::WeakPtr<AutofillManager> manager, FieldGlobalId field_id,
              std::optional<std::string> presentation_token) {
-            if (!manager) {
-              return;
-            }
-
-            if (!presentation_token) {
+            if (!manager || !presentation_token) {
               return;
             }
 
             manager->driver().SendEmailVerificationToken(field_id,
                                                          *presentation_token);
           },
-          manager.GetWeakPtr(), email_field.global_id()));
+          manager.GetWeakPtr(), challenge_field->global_id()));
 }
 
 }  // namespace autofill

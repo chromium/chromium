@@ -163,11 +163,12 @@ std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
 }  // namespace
 
 std::string AutocompleteParsingResult::ToString() const {
-  return base::StrCat({"section='", section, "' ", "mode='",
-                       HtmlFieldModeToStringView(mode), "' ", "field_type='",
-                       FieldTypeToStringView(field_type), "' ", "webauthn='",
-                       base::ToString(webauthn), "webidentity='",
-                       base::ToString(webidentity), "'"});
+  return base::StrCat(
+      {"section='", section, "' ", "mode='", HtmlFieldModeToStringView(mode),
+       "' ", "field_type='", FieldTypeToStringView(field_type), "' ",
+       "webauthn='", base::ToString(webauthn), "webidentity='",
+       base::ToString(webidentity), "email_verification_token='",
+       base::ToString(email_verification_token), "'"});
 }
 
 bool AutocompleteParsingResult::operator==(
@@ -217,9 +218,11 @@ std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     } else if (tokens.back() == "webidentity") {
       result.webidentity = true;
       tokens.pop_back();
+    } else if (tokens.back() == "email-verification-token") {
+      result.email_verification_token = true;
+      tokens.pop_back();
     } else {
-      // If the last token is neither "webauthn" nor "webidentity",
-      // stop processing these specific tokens.
+      // If the last token is neither of these, stop processing.
       break;
     }
   }

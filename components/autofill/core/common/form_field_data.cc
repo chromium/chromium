@@ -439,6 +439,8 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "text";
     case FormControlType::kInputUrl:
       return "url";
+    case FormControlType::kInputHiddenEmailVerification:
+      return "hidden-email-verification";
     case FormControlType::kSelectOne:
       return "select-one";
     case FormControlType::kTextArea:

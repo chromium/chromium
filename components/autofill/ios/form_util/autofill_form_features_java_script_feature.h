@@ -61,6 +61,9 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // Enables/disables deduping form submission for Autofill.
   void SetAutofillDedupeFormSubmission(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables Email Verification Protocol on iOS.
+  void SetAutofillEmailVerification(web::WebFrame* frame, bool enabled);
+
   // Enables/disables reporting form submission errors.
   void SetAutofillReportFormSubmissionErrors(web::WebFrame* frame,
                                              bool enabled);

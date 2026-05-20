@@ -180,6 +180,10 @@ export function webFormControlElementToFormField(
   }
 
   field.pattern_attribute = element.getAttribute('pattern') ?? '';
+  const challenge = element.getAttribute('challenge');
+  if (challenge !== null) {
+    field.challenge = challenge;
+  }
 
   field.placeholder_attribute = element.getAttribute('placeholder') || '';
   if (field.placeholder_attribute != null &&

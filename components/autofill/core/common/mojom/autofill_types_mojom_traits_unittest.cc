@@ -469,6 +469,7 @@ TEST(AutofillTypesMojomTraitsTest, AutocompleteParsingResult) {
   original.field_type = HtmlFieldType::kName;
   original.webauthn = true;
   original.webidentity = true;
+  original.email_verification_token = true;
 
   autofill::AutocompleteParsingResult copy;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<

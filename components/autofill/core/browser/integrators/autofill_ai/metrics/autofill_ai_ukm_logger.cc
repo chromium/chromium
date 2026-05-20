@@ -111,6 +111,8 @@ optimization_guide::proto::FormControlType GetFormControlType(
       return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
     case mojom::FormControlType::kInputDate:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
+    case mojom::FormControlType::kInputHiddenEmailVerification:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_HIDDEN;
   }
   NOTREACHED();
 }

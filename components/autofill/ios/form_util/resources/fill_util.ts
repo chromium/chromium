@@ -54,6 +54,7 @@ export class AutofillFormFieldData extends JsonSafeObject {
   name_attribute?: string;
   id_attribute?: string;
   pattern_attribute?: string;
+  challenge?: string;
 }
 
 export class AutofillFormData extends JsonSafeObject {

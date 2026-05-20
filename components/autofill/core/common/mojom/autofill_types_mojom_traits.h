@@ -128,6 +128,11 @@ struct StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
     return r.webidentity;
   }
 
+  static bool email_verification_token(
+      const autofill::AutocompleteParsingResult& r) {
+    return r.email_verification_token;
+  }
+
   static bool Read(autofill::mojom::AutocompleteParsingResultDataView data,
                    autofill::AutocompleteParsingResult* out);
 };

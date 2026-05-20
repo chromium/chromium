@@ -87,6 +87,22 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
      {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnspecified,
        /*webauthn=*/false, /*webidentity=*/true}}},
 
+    // "email-verification-token" token:
+    {"name email-verification-token",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kName, /*webauthn=*/false,
+       /*webidentity=*/false, /*email_verification_token=*/true}}},
+    {"section-one shipping home tel email-verification-token",
+     {{"one", HtmlFieldMode::kShipping, HtmlFieldType::kTel,
+       /*webauthn=*/false, /*webidentity=*/false,
+       /*email_verification_token=*/true}}},
+    {"email-verification-token",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnspecified,
+       /*webauthn=*/false, /*webidentity=*/false,
+       /*email_verification_token=*/true}}},
+    {"name webauthn webidentity email-verification-token",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kName, /*webauthn=*/true,
+       /*webidentity=*/true, /*email_verification_token=*/true}}},
+
     // Too many tokens.
     {"hello section-one shipping home tel webauthn", std::nullopt}};
 

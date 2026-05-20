@@ -119,13 +119,20 @@ class EmailVerifierDelegateTest : public content::RenderViewHostTestHarness {
 
   FormData ValidForm() {
     return test::GetFormData(
-        {.fields =
+        {.description_for_logging = "ValidForm",
+         .fields =
              {
                  {.label = u"Email",
                   .name = u"email",
                   .challenge = u"test_nonce",
                   .value = u"Triggering field (filled)",
                   .form_control_type = FormControlType::kInputEmail},
+                 {.label = u"Verification Token",
+                  .name = u"verification_token",
+                  .challenge = u"test_nonce",
+                  .autocomplete_attribute = "email-verification-token",
+                  .form_control_type =
+                      FormControlType::kInputHiddenEmailVerification},
              },
          .host_frame = driver().GetFrameToken()});
   }
@@ -148,7 +155,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 
   FormData form_data = ValidForm();
 
-  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
   FormStructure* form =
       test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -157,14 +164,14 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
       .WillOnce(RunOnceCallback<2>("test_token"));
 
-  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(0)->global_id(),
+  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(1)->global_id(),
                                                    "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
-      form->field(0)->global_id()};
+      form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
@@ -177,7 +184,7 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
 
   FormData form_data = ValidForm();
 
-  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
   const FormStructure* form =
       manager().FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -200,7 +207,7 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
 
   FormData form_data = ValidForm();
 
-  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
   const FormStructure* form =
       manager().FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -290,7 +297,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
 
   FormData form_data = ValidForm();
 
-  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
   FormStructure* form =
       test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -305,7 +312,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
-      form->field(0)->global_id()};
+      form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
@@ -329,7 +336,7 @@ TEST_F(EmailVerifierDelegateTest, OriginTrialNotEnabled) {
 
   FormData form_data = ValidForm();
 
-  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
   FormStructure* form =
       test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);

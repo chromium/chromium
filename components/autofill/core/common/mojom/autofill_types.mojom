@@ -31,6 +31,7 @@ enum FormControlType {
   // deprecated: kSelectList = 13
   kTextArea = 14,
   kInputDate = 15,
+  kInputHiddenEmailVerification = 16,
 };
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.
@@ -237,13 +238,16 @@ struct SelectOption {
 
 // autofill::AutocompleteParsingResult
 // (components/autofill/core/common/autocomplete_parsing_util.h)
+// LINT.IfChange(AutocompleteParsingResult)
 struct AutocompleteParsingResult {
   string section;
   HtmlFieldMode mode;
   HtmlFieldType field_type;
   bool webauthn;
   bool webidentity;
+  bool email_verification_token;
 };
+// LINT.ThenChange(//components/autofill/core/common/autocomplete_parsing_util.h)
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
 struct FormFieldData {

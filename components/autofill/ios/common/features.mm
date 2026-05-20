@@ -25,6 +25,10 @@ BASE_FEATURE(kAutofillCountFormSubmissionInRenderer,
 BASE_FEATURE(kAutofillDedupeFormSubmission, base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_dedupe_form_submission)
 
+// LINT.IfChange(autofill_email_verification)
+BASE_FEATURE(kAutofillEmailVerification, base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_email_verification)
+
 BASE_FEATURE(kAutofillFixXhrForXframe, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillExtractFullUrlOnIOs, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -40,8 +40,10 @@ struct AutocompleteParsingResult {
   bool webauthn = false;
   // Whether the field has a `webidentity` token.
   bool webidentity = false;
+  // Whether the field has an `email-verification-token` token.
+  bool email_verification_token = false;
 
-  // LINT.ThenChange(components/autofill/core/common/mojom/autofill_types.mojom)
+  // LINT.ThenChange(//components/autofill/core/common/mojom/autofill_types.mojom)
 };
 
 std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(

@@ -38,6 +38,12 @@ export function hasTagName(node: Element, tag: string): boolean {
  *     autofilled.
  */
 export function isAutofillableElement(element: Element): boolean {
+  if (element instanceof HTMLInputElement && element.type === 'hidden' &&
+      element.getAttribute('autocomplete') === 'email-verification-token' &&
+      autofillFormFeaturesApi.getFunction(
+          'isAutofillEmailVerificationEnabled')()) {
+    return true;
+  }
   return isAutofillableInputElement(element) || isSelectElement(element) ||
       isTextAreaElement(element);
 }

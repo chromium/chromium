@@ -74,6 +74,10 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
           base::FeatureList::IsEnabled(kAutofillDedupeFormSubmission));
 
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillEmailVerification(
+          web_frame, base::FeatureList::IsEnabled(kAutofillEmailVerification));
+
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillReportFormSubmissionErrors(
           web_frame,
           base::FeatureList::IsEnabled(kAutofillReportFormSubmissionErrors));
