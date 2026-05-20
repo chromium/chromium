@@ -131,6 +131,8 @@ Other relevant classes:
 - [WebUI Web App](docs/webui_web_app.md)
 - [Why is this test failing?](docs/why-is-this-test-failing.md)
 - [How to create WebAppIntegration Tests](docs/how-to-create-webapp-integration-tests.md)
+- [Navigation Capturing](docs/navigation_capturing.md)
+
 
 ## Testing
 

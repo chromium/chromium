@@ -202,11 +202,24 @@ Utilities in `chrome/test/base/ui_test_utils.h` are often helpful. Examples:
 - `content::TestNavigationObserver` - Waits for a navigation anywhere or in
   given WebContents. See StartWatchingNewWebContents to watch all web contents.
 
-The web_applications system
+For waiting that includes page loading, document load (`onload` event), manifest
+processing, and flushing pending WebAppProvider commands, use:
+
+- **`WebAppPageWaiter`** (defined in
+  [web_app_page_waiter.h](/chrome/browser/web_applications/test/web_app_page_waiter.h))
+  - It allows expecting specific URLs, expecting manifests (or no manifests),
+    and ensures the system is stable before test assertions.
+  - Example:
+    ```cpp
+    WebAppPageWaiter waiter(web_contents);
+    waiter.ExpectUrl(url).ExpectManifest(manifest_id);
+    // Perform action that triggers navigation...
+    ASSERT_TRUE(waiter.WaitAndFlushCommands());
+    ```
+
+Legacy/simpler utilities in the web_applications system
 [web_app_browsertest_util.h file](https://source.chromium.org/search?q=web_app_browsertest_util.h)
-provides the best approximations of waiting for all web app "activity" to be at
-least scheduled per `WebContents` (e.g., waiting for the tab helper to see
-manifests & schedule an update):
+provide approximations of waiting:
 
 - `test::WaitForLoadCompleteAndMaybeManifestSeen(WebContents&)`
 - `test::CompletePageLoadForAllWebContents()`
