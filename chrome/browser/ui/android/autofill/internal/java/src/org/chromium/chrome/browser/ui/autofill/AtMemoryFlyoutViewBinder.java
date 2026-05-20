@@ -20,6 +20,14 @@ class AtMemoryFlyoutViewBinder {
             view.setSourceText(model.get(AtMemoryFlyoutProperties.SOURCE_TEXT));
         } else if (propertyKey == AtMemoryFlyoutProperties.CHIPS_DATA) {
             view.setChipsData(model.get(AtMemoryFlyoutProperties.CHIPS_DATA));
+        } else if (propertyKey == AtMemoryFlyoutProperties.ON_BACK_CLICKED) {
+            view.setBackButtonCallback(model.get(AtMemoryFlyoutProperties.ON_BACK_CLICKED));
+        } else if (propertyKey == AtMemoryFlyoutProperties.ON_SOURCE_CLICKED) {
+            view.setSourceClickCallback(model.get(AtMemoryFlyoutProperties.ON_SOURCE_CLICKED));
+        } else if (propertyKey == AtMemoryFlyoutProperties.ON_MANAGE_CLICKED) {
+            view.setManageClickCallback(model.get(AtMemoryFlyoutProperties.ON_MANAGE_CLICKED));
+        } else if (propertyKey == AtMemoryFlyoutProperties.ON_CHIP_CLICKED) {
+            view.setChipClickCallback(model.get(AtMemoryFlyoutProperties.ON_CHIP_CLICKED));
         } else {
             assert false : "Unhandled property: " + propertyKey;
         }

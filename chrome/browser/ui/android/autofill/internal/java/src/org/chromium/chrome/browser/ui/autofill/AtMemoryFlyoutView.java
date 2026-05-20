@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 import androidx.constraintlayout.helper.widget.Flow;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -27,11 +31,14 @@ import java.util.Map;
 @NullMarked
 class AtMemoryFlyoutView {
     private final View mContentView;
+    private final View mBackButton;
     private final TextView mTitleView;
-    private final TextView mSourceView;
+    private final TextView mSourceButton;
+    private final TextView mManageButton;
     private final ConstraintLayout mChipsContainer;
     private final Flow mChipsFlow;
     private final List<ChipView> mActiveChips = new ArrayList<>();
+    private @MonotonicNonNull Callback<String> mChipClickCallback;
 
     private final View.OnLayoutChangeListener mChipsLayoutListener =
             new View.OnLayoutChangeListener() {
@@ -55,8 +62,10 @@ class AtMemoryFlyoutView {
     AtMemoryFlyoutView(Context context) {
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.at_memory_flyout_bottom_sheet, null);
+        mBackButton = mContentView.findViewById(R.id.flyout_back_button);
         mTitleView = mContentView.findViewById(R.id.flyout_title);
-        mSourceView = mContentView.findViewById(R.id.flyout_source_row);
+        mSourceButton = mContentView.findViewById(R.id.flyout_source_button);
+        mManageButton = mContentView.findViewById(R.id.flyout_manage_button);
         mChipsContainer = mContentView.findViewById(R.id.flyout_chips_container);
         mChipsFlow = mContentView.findViewById(R.id.chips_flow);
 
@@ -72,7 +81,25 @@ class AtMemoryFlyoutView {
     }
 
     void setSourceText(String sourceText) {
-        mSourceView.setText(sourceText);
+        mSourceButton.setText(sourceText);
+    }
+
+    void setBackButtonCallback(Runnable callback) {
+        mBackButton.setOnClickListener(v -> callback.run());
+    }
+
+    void setSourceClickCallback(Runnable callback) {
+        mSourceButton.setOnClickListener(v -> callback.run());
+    }
+
+    void setManageClickCallback(Runnable callback) {
+        mManageButton.setOnClickListener(v -> callback.run());
+    }
+
+    void setChipClickCallback(Callback<String> callback) {
+        assert mChipClickCallback == null;
+        assert mActiveChips.isEmpty();
+        mChipClickCallback = callback;
     }
 
     void setChipsData(List<Pair<String, String>> chipsData) {
@@ -99,13 +126,18 @@ class AtMemoryFlyoutView {
         ChipView chip =
                 (ChipView)
                         LayoutInflater.from(context)
-                                .inflate(R.layout.at_memory_flyout_chip, parent, false);
+                                .inflate(
+                                        R.layout.at_memory_flyout_chip,
+                                        parent,
+                                        /* attachToRoot= */ false);
         int id = View.generateViewId();
         chip.setId(id);
 
         chip.getPrimaryTextView().setText(data.first);
 
-        if (data.second != null && !data.second.isEmpty()) {
+        chip.setOnClickListener(v -> assumeNonNull(mChipClickCallback).onResult(data.first));
+
+        if (!data.second.isEmpty()) {
             TextView secondaryTextView = chip.getSecondaryTextView();
             secondaryTextView.setText(data.second);
             secondaryTextView.setVisibility(View.VISIBLE);
@@ -129,9 +161,9 @@ class AtMemoryFlyoutView {
                 primaryText.getPaddingStart(),
                 paddingVerticalPx,
                 primaryText.getPaddingEnd(),
-                data.second == null || data.second.isEmpty() ? paddingVerticalPx : 0);
+                data.second.isEmpty() ? paddingVerticalPx : 0);
 
-        if (data.second != null && !data.second.isEmpty()) {
+        if (!data.second.isEmpty()) {
             TextView secondaryText = chip.getSecondaryTextView();
             secondaryText.setPaddingRelative(
                     secondaryText.getPaddingStart(),
