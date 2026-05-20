@@ -11,6 +11,8 @@
 #include "base/values.h"
 #include "ui/gfx/vector_icon_types.h"
 
+class PrefChangeRegistrar;
+
 namespace views {
 class View;
 class Widget;
@@ -46,6 +48,7 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictDialog
       std::unique_ptr<AccessibilityPrefsMergeConflictController> controller,
       base::OnceCallback<void()> on_dismissed);
 
+  void BuildDialog();
   void BuildResolutionList(views::View* main_container);
   HoverHighlightView* AddScrollListToggleItem(views::View* container,
                                               const gfx::VectorIcon& icon,
@@ -64,9 +67,18 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictDialog
   void OnShowAccessibilitySettings();
   void OnPrefRowPressed(HoverHighlightView* item, std::string_view pref_name);
 
+  void OnPrefChanged(std::string_view pref_name);
+
   std::unique_ptr<AccessibilityPrefsMergeConflictController> controller_;
 
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
   base::OnceCallback<void()> on_dismissed_;
+
+  std::unordered_map<std::string_view, HoverHighlightView*>
+      pref_name_to_widget_row_;
+
+  bool in_update_ = false;
 
   base::WeakPtrFactory<AccessibilityPrefsMergeConflictDialog> weak_factory_{
       this};

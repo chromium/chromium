@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_prefs_merge_conflict_dialog.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_prefs_merge_conflict_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/controls/rounded_scroll_bar.h"
@@ -18,8 +19,12 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -121,6 +126,19 @@ AccessibilityPrefsMergeConflictDialog::AccessibilityPrefsMergeConflictDialog(
     base::OnceCallback<void()> on_dismissed)
     : controller_(std::move(controller)),
       on_dismissed_(std::move(on_dismissed)) {
+  auto* prefs = AccessibilityController::Get()->GetActiveUserPrefs();
+  CHECK(prefs);
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs);
+
+  BuildDialog();
+}
+
+AccessibilityPrefsMergeConflictDialog::
+    ~AccessibilityPrefsMergeConflictDialog() = default;
+
+void AccessibilityPrefsMergeConflictDialog::BuildDialog() {
   views::Builder<SystemDialogDelegateView>(this)
       .SetTitleText(l10n_util::GetStringUTF16(
           IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_TITLE))
@@ -188,9 +206,6 @@ AccessibilityPrefsMergeConflictDialog::AccessibilityPrefsMergeConflictDialog(
                                        views::MaximumFlexSizeRule::kUnbounded));
 }
 
-AccessibilityPrefsMergeConflictDialog::
-    ~AccessibilityPrefsMergeConflictDialog() = default;
-
 void AccessibilityPrefsMergeConflictDialog::BuildResolutionList(
     views::View* main_container) {
   bool added_resolution_item = false;
@@ -212,10 +227,16 @@ void AccessibilityPrefsMergeConflictDialog::BuildResolutionList(
 
       found_ui_config = true;
       added_resolution_item = true;
-      AddScrollListToggleItem(main_container, *config.icon,
-                              l10n_util::GetStringUTF16(config.label_id),
-                              conflict.pref_name,
-                              conflict.local_value.GetBool());
+      auto* item = AddScrollListToggleItem(
+          main_container, *config.icon,
+          l10n_util::GetStringUTF16(config.label_id), conflict.pref_name,
+          conflict.local_value.GetBool());
+      pref_change_registrar_->Add(
+          conflict.pref_name,
+          base::BindRepeating(
+              &AccessibilityPrefsMergeConflictDialog::OnPrefChanged,
+              weak_factory_.GetWeakPtr()));
+      pref_name_to_widget_row_[conflict.pref_name] = item;
       break;
     }
 
@@ -297,6 +318,9 @@ HoverHighlightView* AccessibilityPrefsMergeConflictDialog::AddScrollListItem(
 }
 
 void AccessibilityPrefsMergeConflictDialog::WindowClosing() {
+  pref_change_registrar_->Reset();
+
+  // In production, the execution of this callback deletes `this`.
   if (on_dismissed_) {
     std::move(on_dismissed_).Run();
   }
@@ -322,7 +346,22 @@ void AccessibilityPrefsMergeConflictDialog::OnPrefRowPressed(
       new_state ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
                 : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
 
+  base::AutoReset<bool> reset{&in_update_, true};
   controller_->UpdateConflict(pref_name, base::Value(new_state));
+}
+
+void AccessibilityPrefsMergeConflictDialog::OnPrefChanged(
+    std::string_view pref_name) {
+  if (in_update_) {
+    return;
+  }
+
+  auto it = pref_name_to_widget_row_.find(pref_name);
+  if (it == pref_name_to_widget_row_.end()) {
+    NOTREACHED();
+  }
+
+  OnPrefRowPressed(it->second, pref_name);
 }
 
 BEGIN_METADATA(AccessibilityPrefsMergeConflictDialog)

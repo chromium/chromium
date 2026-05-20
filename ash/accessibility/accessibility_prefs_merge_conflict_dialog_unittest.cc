@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_prefs_merge_conflict_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "ash/style/switch.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
@@ -49,7 +50,10 @@ class FakeController : public AccessibilityPrefsMergeConflictController {
 
   void UpdateConflict(std::string_view pref_name, base::Value value) override {
     last_updated_pref = pref_name;
-    last_updated_value = std::move(value);
+    last_updated_value = value.Clone();
+
+    AccessibilityPrefsMergeConflictController::UpdateConflict(pref_name,
+                                                              std::move(value));
   }
 
   std::string last_updated_pref;
@@ -153,6 +157,32 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
   EXPECT_FALSE(toggle->GetIsOn());
   EXPECT_EQ(controller_ptr->last_updated_pref,
             prefs::kAccessibilityHighContrastEnabled);
+}
+
+TEST_F(AccessibilityPrefsMergeConflictDialogTest,
+       PrefChangeUpdatesRowTogglesAndController) {
+  std::vector<FakeController::PrefConflict> conflicts;
+  conflicts.emplace_back(prefs::kAccessibilityHighContrastEnabled,
+                         /*local_value=*/base::Value(true),
+                         /*pending_value=*/base::Value(false),
+                         /*needs_resolution_dialog=*/true);
+
+  auto controller = std::make_unique<FakeController>(std::move(conflicts));
+  auto* controller_ptr = controller.get();
+
+  auto* dialog = ShowDialog(std::move(controller));
+
+  auto* item = GetAllChildrenOfType<HoverHighlightView>(dialog)[0];
+  auto* toggle = views::AsViewClass<Switch>(item->right_view());
+  EXPECT_TRUE(toggle->GetIsOn());
+
+  auto* prefs = Shell::Get()->accessibility_controller()->GetActiveUserPrefs();
+  prefs->Set(prefs::kAccessibilityHighContrastEnabled, base::Value(false));
+
+  EXPECT_FALSE(toggle->GetIsOn());
+  EXPECT_EQ(controller_ptr->last_updated_pref,
+            prefs::kAccessibilityHighContrastEnabled);
+  EXPECT_EQ(controller_ptr->last_updated_value, base::Value(false));
 }
 
 TEST_F(AccessibilityPrefsMergeConflictDialogTest,
