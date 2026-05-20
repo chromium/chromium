@@ -25,7 +25,10 @@ constexpr int kDbQueryId = 100;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsTrue;
+using ::testing::Pair;
+using ::testing::SaveArg;
 using DbCallback = base::OnceCallback<void(WebDataServiceBase::Handle,
                                            std::unique_ptr<WDTypedResult>)>;
 
@@ -99,12 +102,11 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
       });
 
   EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                  testing::UnorderedElementsAre(
-                      HasSingleSuggestionWithMainText(u"SomePrefixOne"),
-                      HasSingleSuggestionWithMainText(u"SomePrefixTwo")))))
-      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       testing::UnorderedElementsAre(
+                           HasSingleSuggestionWithMainText(u"SomePrefixOne"),
+                           HasSingleSuggestionWithMainText(u"SomePrefixTwo")))))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form_data, field_data,
                                   /*form_structure=*/nullptr,
                                   /*trigger_autofill_field=*/nullptr, client(),
@@ -142,10 +144,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
       });
 
   EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                  testing::IsEmpty())))
-      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form_data, field_data,
                                   /*form_structure=*/nullptr,
                                   /*trigger_autofill_field=*/nullptr, client(),
@@ -174,9 +175,8 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
 
   EXPECT_CALL(*web_data_service(), GetFormValuesForElementName).Times(0);
   EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                  testing::IsEmpty())));
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())));
   generator().GenerateSuggestions(form, form.fields()[1], &form_structure,
                                   form_structure.field(1), client(),
                                   suggestions_generated_callback.Get());
@@ -236,14 +236,13 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   // 2. Set up expectations for GenerateSuggestions and execute it.
   // We expect that the generated suggestions include a visual separator
   // followed by an AtMemory button (since both flags are enabled!).
-  EXPECT_CALL(
-      suggestions_generated_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                        testing::UnorderedElementsAre(
-                            HasSingleSuggestionWithMainText(u"SomePrefixOne"),
-                            HasSingleSuggestionWithMainText(u"SomePrefixTwo"),
-                            IsSeparator(), IsAtMemoryButton()))))
-      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       testing::UnorderedElementsAre(
+                           HasSingleSuggestionWithMainText(u"SomePrefixOne"),
+                           HasSingleSuggestionWithMainText(u"SomePrefixTwo"),
+                           IsSeparator(), IsAtMemoryButton()))))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
 
   generator().GenerateSuggestions(form_data, field_data,
                                   /*form_structure=*/nullptr,
@@ -252,6 +251,62 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
         return saved_on_suggestions_generated_argument.second.size() == 4;
+      }));
+}
+
+// Tests that if there are no autocomplete suggestions returned from the
+// database, we do not generate any suggestions at all, even if the "At Memory"
+// promo button feature is enabled. We should not show a popup containing only
+// the promo button.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       EmptyResultWithAtMemoryButtonEnabled_NoSuggestions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory},
+      /*disabled_features=*/{});
+
+  FormFieldData field_data =
+      test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
+                                FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  std::vector<AutocompleteEntry> expected_values = {};
+  std::unique_ptr<WDTypedResult> mocked_results =
+      std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
+          AUTOFILL_VALUE_RESULT, expected_values);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+  SuggestionGenerator::ReturnedSuggestions
+      saved_on_suggestions_generated_argument;
+
+  EXPECT_CALL(
+      *web_data_service(),
+      GetFormValuesForElementName(field_data.name(), field_data.value(), _, _))
+      .WillOnce([&](auto, auto, int, DbCallback callback) {
+        task_environment().GetMainThreadTaskRunner()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
+                                      std::move(mocked_results)));
+        return kDbQueryId;
+      });
+
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
+                                  suggestions_generated_callback.Get());
+  EXPECT_TRUE(
+      base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
+        return saved_on_suggestions_generated_argument.first ==
+               SuggestionGenerator::SuggestionDataSource::kAutocomplete;
       }));
 }
 

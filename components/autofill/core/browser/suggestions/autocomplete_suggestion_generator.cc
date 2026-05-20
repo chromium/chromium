@@ -161,6 +161,12 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
           result.get());
   std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
 
+  if (entries.empty()) {
+    std::move(query_handler.on_suggestions_returned)
+        .Run({SuggestionDataSource::kAutocomplete, {}});
+    return;
+  }
+
   // If there is only one entry that is the exact same string as what is in the
   // input box, then don't offer it as a suggestion.
   if (entries.size() == 1 &&
