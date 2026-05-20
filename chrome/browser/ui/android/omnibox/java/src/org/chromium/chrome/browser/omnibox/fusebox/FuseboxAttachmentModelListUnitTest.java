@@ -51,6 +51,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private FuseboxAttachmentModelList.FuseboxAttachmentChangeListener mListener;
+    @Mock private Tab mTab;
 
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -669,5 +670,22 @@ public class FuseboxAttachmentModelListUnitTest {
 
         mFuseboxAttachmentModelList.removeTabsNotInSet(Set.of());
         assertThat(mFuseboxAttachmentModelList.getAttachedTabIds()).isEmpty();
+    }
+
+    @Test
+    public void testRetryTabUpload_failedSynchronously_removesAttachment() {
+        doReturn(1).when(mTab).getId();
+        doReturn(true).when(mTab).isInitialized();
+        doReturn(false).when(mTab).isFrozen();
+        doReturn(null).when(mTab).getWebContents();
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1, false)).thenReturn("token");
+        FuseboxAttachment tabAttachment = createTabAttachment(mTab);
+        mFuseboxAttachmentModelList.add(tabAttachment);
+
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
+                "token", ContextUploadStatus.VALIDATION_FAILED);
+
+        assertTrue(mFuseboxAttachmentModelList.isEmpty());
+        verify(mComposeboxQueryControllerBridge).removeAttachment("token");
     }
 }

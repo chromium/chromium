@@ -177,4 +177,41 @@ public class FuseboxAttachmentUnitTest {
         verify(mBridge).addTabContext(mTab, false);
         verify(mBridge, never()).addTabContextFromCache(anyLong(), anyBoolean());
     }
+
+    @Test
+    public void retryUpload_tabAttachment_activeTab_succeeds() {
+        setTabActive(false);
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forTab(
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false);
+        when(mBridge.addTabContextFromCache(TAB_ID, false)).thenReturn(CACHE_TOKEN);
+        assertTrue(attachment.uploadToBackend(mBridge, false));
+        setTabActive(true);
+        when(mBridge.addTabContext(mTab, false)).thenReturn(CAPTURE_TOKEN);
+
+        assertTrue(attachment.retryUpload(mBridge));
+        assertEquals(CAPTURE_TOKEN, attachment.getToken());
+        verify(mBridge).addTabContext(mTab, false);
+    }
+
+    @Test
+    public void retryUpload_tabAttachment_inactiveTab_fails() {
+        setTabActive(false);
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forTab(
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false);
+        when(mBridge.addTabContextFromCache(TAB_ID, false)).thenReturn(CACHE_TOKEN);
+        assertTrue(attachment.uploadToBackend(mBridge, false));
+
+        assertFalse(attachment.retryUpload(mBridge));
+        assertEquals(CACHE_TOKEN, attachment.getToken());
+    }
 }

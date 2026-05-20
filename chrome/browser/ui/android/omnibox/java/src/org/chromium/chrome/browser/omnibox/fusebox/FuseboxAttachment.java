@@ -270,10 +270,9 @@ public final class FuseboxAttachment extends ListItem {
 
     public boolean retryUpload(ComposeboxQueryControllerBridge composeBoxQueryControllerBridge) {
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB && mIsFetchingTabDataFromCache) {
-            uploadToBackend(
+            return uploadToBackend(
                     assumeNonNull(composeBoxQueryControllerBridge),
                     /* bypassTabCacheThisTime= */ true);
-            return true;
         }
         return false;
     }
