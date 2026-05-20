@@ -14,6 +14,8 @@ import static org.chromium.ui.base.KeyNavigationUtil.isButtonActivate;
 import static org.chromium.ui.base.KeyNavigationUtil.isMoveFocusBackward;
 import static org.chromium.ui.base.KeyNavigationUtil.isMoveFocusForward;
 
+import static java.util.Collections.emptySet;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -23,7 +25,9 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.transition.ChangeBounds;
 import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.DragAndDropPermissions;
@@ -115,6 +119,7 @@ import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1422,18 +1427,38 @@ public class CompositorViewHolder extends FrameLayout
         int startWidth = ViewUtils.dpToPx(mActivity, webContents.getWidth());
         int targetWidth = viewportSize.x - sideUiTotalWidth;
 
-        return new IntegerValueTransition(
-                this,
-                startWidth,
-                targetWidth,
-                (desiredWidth) -> updateWebContentsSize(getCurrentTab(), desiredWidth));
+        TransitionSet transitionSet = new TransitionSet();
+
+        // TODO(crbug.com/513304704): Add tests covering the Java View Transitions.
+        if (mView != null) {
+            // Apply a ChangeBounds() to the view and all its descendants to make sure any changes
+            // are properly animated. If this isn't applied to all the descendant Views, the
+            // animation may not be triggered at all.
+            ChangeBounds changeBounds = new ChangeBounds();
+            Collection<View> descendants = new ArrayList<>();
+            changeBounds.addTarget(mView);
+            ViewUtils.getAllDescendants(mView, descendants, emptySet());
+            for (View view : descendants) {
+                changeBounds.addTarget(view);
+            }
+            transitionSet.addTransition(changeBounds);
+        }
+
+        transitionSet.addTransition(
+                new IntegerValueTransition(
+                        this,
+                        startWidth,
+                        targetWidth,
+                        (desiredWidth) -> updateWebContentsSize(getCurrentTab(), desiredWidth)));
+        return transitionSet;
     }
 
     @Override
     public void onTransitionBegun(SideUiSpecs sideUiSpecs) {
-        // #onSideUiSpecsChanged() should be delayed until after the Transition is complete, as this
-        // observer is only dealing with a composited view.
         mIsAnimating = true;
+        // Trigger changes to Java Views, but delay any direct changes to composited views until
+        // #onSideUiSpecsChanged().
+        repositionTabViewForSideUi(sideUiSpecs);
     }
 
     @Override
@@ -1446,6 +1471,7 @@ public class CompositorViewHolder extends FrameLayout
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
         updateWebContentsSize(getCurrentTab());
 
+        // TODO(crbug.com/514774842): Account for offset X for animations.
         @Px
         int contentOffsetX =
                 LocalizationUtils.isLayoutRtl()
@@ -1453,7 +1479,7 @@ public class CompositorViewHolder extends FrameLayout
                         : sideUiSpecs.mStartContainerWidth;
         mLayoutManager.setContentOffsetX(contentOffsetX);
 
-        repositionTabViewForSideUi();
+        repositionTabViewForSideUi(sideUiSpecs);
         onViewportChanged();
         // TODO(crbug.com/483748424): Update #getWindowViewport and #getVisibleViewport through
         //  #onViewportChanged as well. This change is not trivial, since other items, such as
@@ -1467,13 +1493,18 @@ public class CompositorViewHolder extends FrameLayout
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void repositionTabViewForSideUi() {
+        if (mSideUiStateProvider != null) {
+            repositionTabViewForSideUi(mSideUiStateProvider.getCurrentSideUiSpecs());
+        }
+    }
+
+    private void repositionTabViewForSideUi(SideUiSpecs sideUiSpecs) {
         Tab currentTab = getCurrentTab();
         if (mSideUiStateProvider == null || mView == null || currentTab == null) return;
 
         // Only reposition custom views and native pages. Do not reposition ContentView.
         if (!currentTab.isShowingCustomView() && !currentTab.isNativePage()) return;
 
-        SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
         MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
         // Layout parameters can be null if the view is not yet attached to the view hierarchy
         // or fully initialized (e.g. during tab reparenting).
