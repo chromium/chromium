@@ -42,7 +42,6 @@ import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
@@ -93,9 +92,6 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     /** Duration of the animation to hide the UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
-
-    private static final String DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM =
-            "Autofill.Deletion.Settings.ConfirmationDialogShown";
 
     protected @Nullable static EditorObserverForTest sObserverForTest;
 
@@ -649,10 +645,10 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     private void handleDeleteWithConfirmation(
             String confirmationTitle, CharSequence confirmationText, int primaryButtonText) {
-        boolean canShowConfirmation = mActivity instanceof ModalDialogManagerHolder;
-        RecordHistogram.recordBooleanHistogram(
-                DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM, canShowConfirmation);
-        if (!canShowConfirmation) return;
+        assert mActivity instanceof ModalDialogManagerHolder
+                : "Activity hosting EditorViewBase must implement ModalDialogManagerHolder to show"
+                        + " confirmation dialogs.";
+        if (!(mActivity instanceof ModalDialogManagerHolder)) return;
 
         ModalDialogManager modalDialogManager =
                 ((ModalDialogManagerHolder) mActivity).getModalDialogManager();

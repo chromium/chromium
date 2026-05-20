@@ -3777,17 +3777,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Deletion.Settings.ConfirmationDialogShown"
-    enum="Boolean" expires_after="2026-06-01">
-  <owner>lwojtach@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records true when the confirmation dialog for data deletion was shown and
-    false when it failed to show up due to the host activity not being an
-    instance of ModalDialogManagerHolder.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.DOMContentLoadedInOutermostMainFrame" enum="Boolean"
     expires_after="2027-02-22">
   <owner>schwering@google.com</owner>
