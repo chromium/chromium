@@ -42,8 +42,10 @@ constexpr optimization_guide::proto::IsLoggedInResponseData::ErrorCase
         IsLoggedInResponseData_ErrorCase_NO_ERROR;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  return optimization_guide::DefaultAIPageContentOptions(
+  auto options = optimization_guide::DefaultAIPageContentOptions(
       /* on_critical_path =*/false);
+  options->include_same_site_only = true;
+  return options;
 }
 
 }  // namespace

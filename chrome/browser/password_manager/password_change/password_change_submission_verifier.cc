@@ -112,6 +112,7 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // on_critical_path is set to true.
   auto options = optimization_guide::ActionableAIPageContentOptions(
       /*on_critical_path =*/true);
+  options->include_same_site_only = true;
   return options;
 }
 
