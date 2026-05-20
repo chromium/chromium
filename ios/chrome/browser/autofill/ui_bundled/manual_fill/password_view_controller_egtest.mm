@@ -4,6 +4,7 @@
 
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -254,7 +256,9 @@ void CheckKeyboardIsUpAndNotCovered() {
 }  // namespace
 
 // Integration Tests for Mannual Fallback Passwords View Controller.
-@interface PasswordViewControllerTestCase : ChromeTestCase
+@interface PasswordViewControllerTestCase : ChromeTestCase {
+  std::unique_ptr<net::test_server::EmbeddedTestServer> _HTTPSServer;
+}
 
 // URL of the current page.
 @property(assign) GURL URL;
@@ -265,6 +269,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 - (void)setUp {
   [super setUp];
+  _HTTPSServer = nil;
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   self.URL = self.testServer->GetURL(kFormHTMLFile);
   [self loadLoginPage];
@@ -293,6 +298,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       [MetricsAppInterface releaseUserActionTester]);
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
+  _HTTPSServer = nil;
   [super tearDownHelper];
 }
 
@@ -318,6 +324,34 @@ void CheckKeyboardIsUpAndNotCovered() {
 - (void)loadLoginPage {
   [ChromeEarlGrey loadURL:self.URL];
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+}
+
+// Loads the page over HTTPS and proceeds past the SSL warning interstitial if
+// present.
+- (void)loadHTTPSLoginPage {
+  [ChromeEarlGrey loadURL:self.URL];
+
+  // Check if the SSL warning page is displayed by verifying if the
+  // "details-button" element exists on the page.
+  base::Value result = [ChromeEarlGrey
+      evaluateJavaScript:@"document.getElementById('details-button') !== null"];
+  if (result.is_bool() && result.GetBool()) {
+    [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
+  }
+
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+}
+
+// Starts the dedicated HTTPS test server.
+- (void)startHTTPSServer {
+  _HTTPSServer = std::make_unique<net::test_server::EmbeddedTestServer>(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  _HTTPSServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("ios/testing/data/http_server_files/"));
+  RegisterDefaultHandlers(_HTTPSServer.get());
+  GREYAssertTrue(_HTTPSServer->Start(), @"HTTPS Test server failed to start.");
 }
 
 // Opens the "Other Passwords" screen.
@@ -1172,11 +1206,14 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
+  [self startHTTPSServer];
+  self.URL = _HTTPSServer->GetURL(kFormHTMLFile);
+
   // Save password for site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
   [AutofillAppInterface savePasswordFormForURLSpec:URLString];
 
-  [self loadLoginPage];
+  [self loadHTTPSLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -1283,11 +1320,15 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
+  [self startHTTPSServer];
+
+  self.URL = _HTTPSServer->GetURL(kFormHTMLFile);
+
   // Save a credential with a backup password for the current site.
   NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
   [AutofillAppInterface savePasswordFormWithBackupForURLSpec:URLString];
 
-  [self loadLoginPage];
+  [self loadHTTPSLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]

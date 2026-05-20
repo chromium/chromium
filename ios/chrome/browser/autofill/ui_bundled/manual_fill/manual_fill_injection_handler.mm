@@ -197,6 +197,10 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
 
 - (void)autofillFormWithCredential:(ManualFillCredential*)credential
                       shouldReauth:(BOOL)shouldReauth {
+  if (![self canUserInjectInPasswordField:NO requiresHTTPS:YES]) {
+    return;
+  }
+
   if (shouldReauth && [self.reauthenticationModule canAttemptReauth]) {
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
     __weak __typeof(self) weakSelf = self;

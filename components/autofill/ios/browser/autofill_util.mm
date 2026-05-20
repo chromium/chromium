@@ -83,8 +83,13 @@ bool IsContextSecureForWebState(web::WebState* web_state) {
     return false;
   }
 
+  const GURL& url = nav_item->GetURL();
+  if (net::IsLocalhost(url)) {
+    return true;
+  }
+
   const web::SSLStatus& ssl = nav_item->GetSSL();
-  return nav_item->GetURL().SchemeIsCryptographic() && ssl.certificate &&
+  return url.SchemeIsCryptographic() && ssl.certificate &&
          !net::IsCertStatusError(ssl.cert_status);
 }
 
