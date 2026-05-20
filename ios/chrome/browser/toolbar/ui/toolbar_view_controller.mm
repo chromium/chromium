@@ -1422,6 +1422,9 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
     _locationBarContainer.transform = CGAffineTransformIdentity;
     _locationBarContainer.alpha = 1.0;
     self.view.alpha = 1.0;
+    if (_fakeOmniboxTarget) {
+      _fakeOmniboxTarget.hidden = YES;
+    }
   }
 
   [self.toolbarHeightDelegate toolbarsHeightChanged];
