@@ -4561,9 +4561,10 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.StartupPagesOverrides2" units="units"
-    expires_after="2026-05-24">
+    expires_after="2027-05-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
+  <owner>junhaohuang@microsoft.com</owner>
   <summary>
     The number of enabled extensions with startup page overrides specified in
     their manifest. Recorded once per &quot;user profile&quot; (profiles where
