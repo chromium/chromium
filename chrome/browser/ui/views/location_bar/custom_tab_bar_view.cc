@@ -337,6 +337,15 @@ void CustomTabBarView::OnTabChangedAt(tabs::TabInterface* tab,
   }
 }
 
+void CustomTabBarView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed()) {
+    UpdateContents();
+  }
+}
+
 void CustomTabBarView::UpdateContents() {
   // If the toolbar should not be shown don't update the UI, as the toolbar may
   // be animating out and it looks messy.

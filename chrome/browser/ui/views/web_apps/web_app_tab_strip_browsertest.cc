@@ -58,6 +58,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -225,6 +226,54 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
       app.browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       out_of_scope_url);
   EXPECT_TRUE(custom_tab_bar->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
+                       CustomTabBarStaleOriginOnTabSwitchSpoof) {
+  App app = InstallAndLaunch();
+
+  CustomTabBarView* custom_tab_bar =
+      app.browser_view->toolbar()->custom_tab_bar();
+  EXPECT_FALSE(custom_tab_bar->GetVisible());
+
+  // Add second tab.
+  chrome::NewTab(app.browser);
+  ASSERT_EQ(app.browser->tab_strip_model()->count(), 2);
+
+  GURL out_of_scope_url1 =
+      embedded_test_server()->GetURL("a.com", "/banners/theme-color.html");
+  GURL out_of_scope_url2 =
+      embedded_test_server()->GetURL("b.com", "/banners/theme-color.html");
+
+  // Navigate Tab 1 (active) to out_of_scope_url2.
+  content::WebContents* tab2 =
+      app.browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(tab2, out_of_scope_url2));
+  EXPECT_TRUE(custom_tab_bar->GetVisible());
+  std::u16string expected_loc2 = web_app::AppBrowserController::FormatUrlOrigin(
+      out_of_scope_url2, url_formatter::kFormatUrlOmitDefaults);
+  EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc2);
+
+  // Switch to Tab 0.
+  app.browser->tab_strip_model()->ActivateTabAt(0);
+  content::WebContents* tab1 =
+      app.browser->tab_strip_model()->GetActiveWebContents();
+  // Navigate Tab 0 to out_of_scope_url1.
+  ASSERT_TRUE(content::NavigateToURL(tab1, out_of_scope_url1));
+  EXPECT_TRUE(custom_tab_bar->GetVisible());
+  std::u16string expected_loc1 = web_app::AppBrowserController::FormatUrlOrigin(
+      out_of_scope_url1, url_formatter::kFormatUrlOmitDefaults);
+  EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc1);
+
+  // Now switch back to Tab 1.
+  app.browser->tab_strip_model()->ActivateTabAt(1);
+  // Custom tab bar should update to show expected_loc2.
+  EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc2);
+
+  // Switch back to Tab 0.
+  app.browser->tab_strip_model()->ActivateTabAt(0);
+  // Custom tab bar should update to show expected_loc1.
+  EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc1);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
