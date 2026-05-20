@@ -49,6 +49,7 @@
 #include "net/base/task/task_runner.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/simple/simple_version_upgrade.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_network_layer.h"
@@ -217,7 +218,16 @@ void HttpCache::DefaultBackend::HasExistingFileToLoad(
 // the directory is enough and we should minimize file operations
 // as much as possible during browser startup.
 #else
-            return ops->PathExists(path);
+            if (!ops->PathExists(path)) {
+              return false;
+            }
+            bool did_delete_empty_index =
+                disk_cache::DeleteIndexFilesIfCacheIsEmpty(path);
+            if (did_delete_empty_index) {
+              ops->DeleteFile(path);
+              return false;
+            }
+            return true;
 #endif
           },
           std::move(file_ops), path_),
