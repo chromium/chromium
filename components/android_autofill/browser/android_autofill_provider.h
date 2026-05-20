@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -336,6 +337,10 @@ class AndroidAutofillProvider : public AutofillProvider,
   // sessions because passkey authentication can happen without autofill.
   CredManBottomSheetLifecycle credman_sheet_status_ =
       CredManBottomSheetLifecycle::kNotShown;
+
+  // The RenderFrameHost ID of the frame that is currently showing the CredMan
+  // sheet. Used to reset the delegate callback on the correct frame.
+  content::GlobalRenderFrameHostId credman_sheet_rfh_id_;
 
   // This is used by the keyboard suppressor. We update it with the result of
   // the platform method call `showAutofillDialog`. Since we are not notified
