@@ -956,6 +956,22 @@ TEST_F(
             {"vit", "vit"},
             {"vsrid", "vsrid"},
             {"gsessionid", "gsessionid"}});
+
+  search_terms_args.input_state.image_gen_upload_active = true;
+  search_terms_args.input_state.active_tool =
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+
+  // When image_gen_upload_active is true, client=chrome-contextual is omitted,
+  // but vsrid, gsessionid, vit, gs_ps, and azm=7 (IMAGE_GEN_UPLOAD) are sent.
+  CheckUrl(endpoint_url, "https://www.google.com/suggest",
+           {{"q", "query"},
+            {"gs_ps", "1"},
+            {"vit", "vit"},
+            {"vsrid", "vsrid"},
+            {"gsessionid", "gsessionid"},
+            {"azm", "7"}});
 }
 
 TEST_F(

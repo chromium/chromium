@@ -1988,7 +1988,9 @@ TEST_F(ContextualSearchboxHandlerTest,
         std::move(autocomplete_controller));
 
     handler().QueryAutocomplete(u"test", false);
-    EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
+    EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
+              "xyz");
   }
 
   // 2. Case: `active_tool = TOOL_MODE_CANVAS`.

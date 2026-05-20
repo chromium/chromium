@@ -676,28 +676,29 @@ DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
     size_t max_suggestions,
     size_t max_aim_suggestions,
     size_t max_contextual_suggestions)
-    : ZpsSectionWithLocalHistory(max_suggestions,
-                 {
-                     Group(max_suggestions,
-                           {
-                               {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
-                                max_aim_suggestions},
-                               {omnibox::GROUP_MIA_RECOMMENDATIONS,
-                                max_aim_suggestions},
-                           }),
-                     Group(max_suggestions,
-                           {
-                               {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
-                                max_aim_suggestions},
-                           }),
-                     Group(max_suggestions,
-                           {
-                               {omnibox::GROUP_SEARCH, 1},
-                               {omnibox::GROUP_CONTEXTUAL_SEARCH,
-                                max_contextual_suggestions},
-                           }),
-                 },
-                 group_configs) {}
+    : ZpsSectionWithLocalHistory(
+          max_suggestions,
+          {
+              Group(
+                  max_suggestions,
+                  {
+                      {omnibox::GROUP_SEARCH, 1},
+                      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
+                       max_aim_suggestions},
+                      {omnibox::GROUP_MIA_RECOMMENDATIONS, max_aim_suggestions},
+                  }),
+              Group(max_suggestions,
+                    {
+                        {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+                         max_aim_suggestions},
+                    }),
+              Group(max_suggestions,
+                    {
+                        {omnibox::GROUP_CONTEXTUAL_SEARCH,
+                         max_contextual_suggestions},
+                    }),
+          },
+          group_configs) {}
 
 ToolbeltSection::ToolbeltSection(const omnibox::GroupConfigMap& group_configs)
     : ZpsSection(1,
