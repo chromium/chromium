@@ -331,6 +331,13 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(base::DictValue message,
                                                   base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
+#if BUILDFLAG(IS_LINUX)
+  // See: b/215406223, crbug.com/514525547
+  // TODO: yuweih - consider re-enabling starting host via native messaging once
+  // the GDM-managed host becomes the default.
+  LOG(ERROR) << "Starting host is not supported on Linux.";
+  SendAsyncResult(std::move(response), DaemonController::RESULT_FAILED);
+#else
   if (!daemon_controller_->is_privileged()) {
     DelegationResult result = DelegateToElevatedHost(std::move(message));
     switch (result) {
@@ -363,6 +370,7 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(base::DictValue message,
       std::move(*config_dict), *consent,
       base::BindOnce(&Me2MeNativeMessagingHost::SendAsyncResult, weak_ptr_,
                      std::move(response)));
+#endif  // !BUILDFLAG(IS_LINUX)
 }
 
 void Me2MeNativeMessagingHost::ProcessStopDaemon(base::DictValue message,

@@ -141,7 +141,11 @@ void VerifyStartDaemonResponse(const base::DictValue& response) {
   EXPECT_EQ(*value, "startDaemonResponse");
   value = response.FindString("result");
   ASSERT_TRUE(value);
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(*value, "FAILED");
+#else
   EXPECT_EQ(*value, "OK");
+#endif
 }
 
 void VerifyGetCredentialsFromAuthCodeResponse(const base::DictValue& response) {
@@ -643,6 +647,7 @@ TEST_F(Me2MeNativeMessagingHostTest, UpdateDaemonConfigInvalidConfig) {
   TestBadRequest(base::Value(std::move(message)));
 }
 
+#if !BUILDFLAG(IS_LINUX)
 // Verify rejection if startDaemon request has invalid config.
 TEST_F(Me2MeNativeMessagingHostTest, StartDaemonInvalidConfig) {
   base::DictValue message;
@@ -659,6 +664,7 @@ TEST_F(Me2MeNativeMessagingHostTest, StartDaemonNoConsent) {
   message.Set("config", base::DictValue());
   TestBadRequest(base::Value(std::move(message)));
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 // Verify rejection if getCredentialsFromAuthCode has no auth code.
 TEST_F(Me2MeNativeMessagingHostTest, GetCredentialsFromAuthCodeNoAuthCode) {
