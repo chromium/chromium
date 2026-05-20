@@ -6,6 +6,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 
 // This is a workaround for https://crbug.com/778929.
 struct Environment {
@@ -13,9 +14,8 @@ struct Environment {
   base::AtExitManager at_exit_manager;
 };
 
-Environment* environment = new Environment();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<Environment> environment;
   const std::string test_data(reinterpret_cast<const char*>(data), size);
   network::ParseClientHintToDelegatedThirdPartiesHeader(
       test_data, network::MetaCHType::HttpEquivDelegateCH);
