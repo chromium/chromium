@@ -613,38 +613,56 @@ TEST_P(AutofillEntityInstanceTest, IsSubsetOf_BothMasked_OneIsSuffixOfOther) {
   EXPECT_FALSE(entity2.IsSubsetOf(entity1));
 }
 
-// Tests that entity types that support masked storage have at least one
-// obfuscated attribute. Masked storage only makes sense for entities that have
-// obfuscated attributes since all unobfuscated attributes are already
-// transmitted via sync and therefore stored locally.
-TEST_P(AutofillEntityInstanceTest, IsMaskedStorageSupported) {
+// Tests that Google Wallet private passes have at least one
+// obfuscated attribute. Private passes should only be used for entities
+// with obfuscated attributes, since entities without them can be safely stored
+// locally.
+TEST_P(AutofillEntityInstanceTest, GetWalletPassType) {
   for (EntityType t : DenseSet<EntityType>::all()) {
     EXPECT_TRUE(
-        !IsMaskedStorageSupported(t,
-                                  EntityInstance::RecordType::kServerWallet) ||
+        GetWalletPassType(t, EntityInstance::RecordType::kServerWallet) !=
+            EntityInstance::WalletPassType::kPrivate ||
         std::ranges::any_of(t.attributes(),
                             [](AttributeType a) { return a.is_obfuscated(); }))
         << t;
-    EXPECT_FALSE(
-        IsMaskedStorageSupported(t, EntityInstance::RecordType::kLocal))
+    EXPECT_EQ(GetWalletPassType(t, EntityInstance::RecordType::kLocal),
+              EntityInstance::WalletPassType::kUnsupported)
         << t;
   }
 }
 
-// Tests explicitly for some entity types that they support masked storage.
-TEST_P(AutofillEntityInstanceTest, IsMaskedStorageSupportedSelectTypes) {
+// Tests explicitly for the expected WalletPassType of some entity types.
+TEST_P(AutofillEntityInstanceTest, GetWalletPassTypeExpectedTypes) {
   using enum EntityTypeName;
-  EXPECT_TRUE(IsMaskedStorageSupported(
-      EntityType(kDriversLicense), EntityInstance::RecordType::kServerWallet));
-  EXPECT_TRUE(
-      IsMaskedStorageSupported(EntityType(kKnownTravelerNumber),
-                               EntityInstance::RecordType::kServerWallet));
-  EXPECT_TRUE(IsMaskedStorageSupported(
-      EntityType(kNationalIdCard), EntityInstance::RecordType::kServerWallet));
-  EXPECT_TRUE(IsMaskedStorageSupported(
-      EntityType(kPassport), EntityInstance::RecordType::kServerWallet));
-  EXPECT_TRUE(IsMaskedStorageSupported(
-      EntityType(kRedressNumber), EntityInstance::RecordType::kServerWallet));
+  EXPECT_EQ(GetWalletPassType(EntityType(kDriversLicense),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPrivate);
+  EXPECT_EQ(GetWalletPassType(EntityType(kKnownTravelerNumber),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPrivate);
+  EXPECT_EQ(GetWalletPassType(EntityType(kNationalIdCard),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPrivate);
+  EXPECT_EQ(GetWalletPassType(EntityType(kPassport),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPrivate);
+  EXPECT_EQ(GetWalletPassType(EntityType(kRedressNumber),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPrivate);
+
+  EXPECT_EQ(GetWalletPassType(EntityType(kFlightReservation),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPublic);
+  EXPECT_EQ(GetWalletPassType(EntityType(kVehicle),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kPublic);
+
+  EXPECT_EQ(GetWalletPassType(EntityType(kOrder),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kUnsupported);
+  EXPECT_EQ(GetWalletPassType(EntityType(kShipment),
+                              EntityInstance::RecordType::kServerWallet),
+            EntityInstance::WalletPassType::kUnsupported);
 }
 
 // Tests that all obfuscated attributes of entity types that can be stored in
@@ -662,10 +680,11 @@ TEST_P(AutofillEntityInstanceTest, IsMaskedStorageSupportedSelectTypes) {
 // Should this test start to fail, then the form import logic must be updated.
 // For example, you might need to fetch the unmasked entity from the Wallet
 // server before sending the update request.
-TEST_P(AutofillEntityInstanceTest, ObfuscatedAttributesAreImportonstraints) {
+TEST_P(AutofillEntityInstanceTest, ObfuscatedAttributesAreImportConstraints) {
   for (const EntityType entity_type : DenseSet<EntityType>::all()) {
-    if (!IsMaskedStorageSupported(entity_type,
-                                  EntityInstance::RecordType::kServerWallet)) {
+    if (GetWalletPassType(entity_type,
+                          EntityInstance::RecordType::kServerWallet) !=
+        EntityInstance::WalletPassType::kPrivate) {
       continue;
     }
     for (const AttributeType attribute_type : entity_type.attributes()) {

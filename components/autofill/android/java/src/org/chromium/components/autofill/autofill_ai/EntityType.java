@@ -33,6 +33,7 @@ public class EntityType {
     // Note, this is currently behind `kAutofillAiWalletPrivatePasses` feature flag.
     private final boolean mIsEligibleForWalletStorage;
     // Whether this entity type supports masked storage.
+    // TODO(crbug.com/501037715): Rename to `mIsWalletPrivatePass`.
     private final boolean mIsMaskedStorageSupported;
     private final String mTypeNameAsString;
     // Used for histogram recording.

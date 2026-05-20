@@ -87,8 +87,8 @@ std::string GetTestSuffix(
 DenseSet<EntityType> GetPrivatePasses() {
   DenseSet<EntityType> private_passes;
   for (const EntityType type : DenseSet<EntityType>::all()) {
-    if (IsMaskedStorageSupported(type,
-                                 EntityInstance::RecordType::kServerWallet)) {
+    if (GetWalletPassType(type, EntityInstance::RecordType::kServerWallet) ==
+        EntityInstance::WalletPassType::kPrivate) {
       private_passes.insert(type);
     }
   }

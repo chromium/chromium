@@ -279,7 +279,8 @@ class BaseAutofillAiTest : public testing::Test {
       }
       NOTREACHED();
     }();
-    return IsMaskedStorageSupported(type, record_type)
+    return GetWalletPassType(type, record_type) ==
+                   EntityInstance::WalletPassType::kPrivate
                ? test::MaskEntityInstance(entity)
                : entity;
   }

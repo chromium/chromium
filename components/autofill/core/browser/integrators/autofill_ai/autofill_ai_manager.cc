@@ -401,7 +401,7 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
       old_entity = *client_->GetEntityDataManager()->GetEntityInstance(
           candidate_entity.guid());
     }
-    const bool is_save_synchronous = !IsMaskedStorageSupported(
+    const bool is_save_synchronous = !IsSaveAsynchronous(
         candidate_entity.type(), candidate_entity.record_type());
     client_->ShowEntityImportBubble(std::move(candidate_entity),
                                     std::move(old_entity), is_save_synchronous,
@@ -457,14 +457,12 @@ void AutofillAiManager::HandlePromptResult(
     return;
   }
 
-  bool is_save_asynchronous =
-      IsMaskedStorageSupported(entity.type(), entity.record_type());
-  if (!is_save_asynchronous) {
+  if (!IsSaveAsynchronous(entity.type(), entity.record_type())) {
     entity_manager.AddOrUpdateEntityInstance(std::move(entity));
     return;
   }
 
-  // Accessibility Annotator entities do not support saving,
+  // PersonalContext entities do not support saving,
   // thus the record type must be `kServerWallet`.
   CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
 

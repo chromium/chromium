@@ -65,8 +65,9 @@ EntityInstanceAndroid::EntityInstanceAndroid(
     : entity_type(entity_instance.type(),
                   is_enabled,
                   is_eligible_for_wallet_storage,
-                  IsMaskedStorageSupported(entity_instance.type(),
-                                           entity_instance.record_type())),
+                  GetWalletPassType(entity_instance.type(),
+                                    entity_instance.record_type()) ==
+                      EntityInstance::WalletPassType::kPrivate),
       record_type(entity_instance.record_type()),
       nickname(entity_instance.nickname()),
       metadata(entity_instance.guid().value(),

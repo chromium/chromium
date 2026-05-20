@@ -726,29 +726,5 @@ bool EntityInstance::FrecencyOrder::operator()(
          std::tuple(get_ranking_score(rhs), rhs.use_date());
 }
 
-bool IsMaskedStorageSupported(EntityType type,
-                              EntityInstance::RecordType record_type) {
-  switch (record_type) {
-    case EntityInstance::RecordType::kLocal:
-    case EntityInstance::RecordType::kPersonalContext:
-      return false;
-    case EntityInstance::RecordType::kServerWallet:
-      break;
-  }
-  switch (type.name()) {
-    case EntityTypeName::kDriversLicense:
-    case EntityTypeName::kKnownTravelerNumber:
-    case EntityTypeName::kNationalIdCard:
-    case EntityTypeName::kPassport:
-    case EntityTypeName::kRedressNumber:
-      return true;
-    case EntityTypeName::kFlightReservation:
-    case EntityTypeName::kVehicle:
-    case EntityTypeName::kOrder:
-    case EntityTypeName::kShipment:
-      return false;
-  }
-  NOTREACHED();
-}
 
 }  // namespace autofill

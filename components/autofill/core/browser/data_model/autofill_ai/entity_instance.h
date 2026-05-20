@@ -280,6 +280,17 @@ class EntityInstance final {
     kMaxValue = kPersonalContext,
   };
 
+  // Categorizes different types of Google Wallet passes.
+  enum class WalletPassType {
+    // The entity is not supported as a Wallet pass (e.g., local entities, or
+    // server types that are not supported by the Wallet integration).
+    kUnsupported,
+    // A private pass containing sensitive information (e.g. passport).
+    kPrivate,
+    // A public pass without sensitive information (e.g. flight reservation).
+    kPublic,
+  };
+
   // `attributes` must be non-empty and their type must be identical to `type`.
   EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
@@ -493,18 +504,41 @@ struct EntityInstance::CompareByGuid {
   }
 };
 
-// Returns whether this (entity type, record type) combination supports
-// restricting local storage of obfuscated attributes to "masks" (e.g., the last
-// x digits/characters).
-//
-// If this is `true`, the full entity information can be stored on a server and
-// can be retrieved by the client only on demand. It is not persisted locally on
-// disk. However, note that even if this is `true` users may not be eligible for
-// creating masked server entities depending on their sync settings or their
-// locale. See `MayPerformAutofillAiAction`
-//   for the relevant permission checks.
-bool IsMaskedStorageSupported(EntityType type,
-                              EntityInstance::RecordType record_type);
+// Returns the EntityInstance::WalletPassType of an entity with the given
+// (`type`, `record_type`) combination.
+constexpr EntityInstance::WalletPassType GetWalletPassType(
+    EntityType type,
+    EntityInstance::RecordType record_type) {
+  if (record_type != EntityInstance::RecordType::kServerWallet) {
+    return EntityInstance::WalletPassType::kUnsupported;
+  }
+
+  switch (type.name()) {
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kRedressNumber:
+      return EntityInstance::WalletPassType::kPrivate;
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kVehicle:
+      return EntityInstance::WalletPassType::kPublic;
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      return EntityInstance::WalletPassType::kUnsupported;
+  }
+
+  return EntityInstance::WalletPassType::kUnsupported;
+}
+
+// Returns whether saving an entity with the given (`type`, `record_type`)
+// combination is asynchronous. If saving an entity of the given
+// (`type`, `record_type`) is not supported, the function returns false.
+constexpr bool IsSaveAsynchronous(EntityType type,
+                                  EntityInstance::RecordType record_type) {
+  return GetWalletPassType(type, record_type) ==
+         EntityInstance::WalletPassType::kPrivate;
+}
 
 }  // namespace autofill
 

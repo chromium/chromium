@@ -77,9 +77,8 @@ void HandleWalletUpsertResponse(
   using enum AutofillClient::AutofillAiImportPromptType;
   using enum UiAction;
 
-  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
-  CHECK(IsMaskedStorageSupported(entity.type(),
-                                 EntityInstance::RecordType::kServerWallet));
+  CHECK_EQ(GetWalletPassType(entity.type(), entity.record_type()),
+           EntityInstance::WalletPassType::kPrivate);
   CHECK(!entity.IsMaskedEntity());
 
   if (!entity_manager) {
@@ -124,22 +123,25 @@ void HandleWalletUpsertResponse(
 }
 
 std::string GetWalletManagementURL(const EntityInstance& entity) {
-  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
-  bool is_private_pass = IsMaskedStorageSupported(
-      entity.type(), EntityInstance::RecordType::kServerWallet);
-  // TODO(crbug.com/454899556): Implement a deep link for public passes. This is
-  // not supported by the backend yet.
-  if (!is_private_pass) {
-    return kWalletPassesPageURL;
+  switch (GetWalletPassType(entity.type(), entity.record_type())) {
+    case EntityInstance::WalletPassType::kUnsupported:
+      NOTREACHED();
+    case EntityInstance::WalletPassType::kPublic:
+      // TODO(crbug.com/454899556): Implement a deep link for public passes.
+      // This is not supported by the backend yet.
+      return kWalletPassesPageURL;
+    case EntityInstance::WalletPassType::kPrivate:
+      // Only deep link for private passes if the corresponding feature is
+      // enabled.
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillAiWalletPrivatePassesDeepLink)) {
+        return kWalletPassesPageURL;
+      }
+      return base::StringPrintf(
+          kWalletPrivatePassPageURL,
+          base::EscapeQueryParamValue(entity.guid().value(),
+                                      /*use_plus=*/false));
   }
-  // Only deep link for private passes if the corresponding feature is enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAiWalletPrivatePassesDeepLink)) {
-    return kWalletPassesPageURL;
-  }
-  return base::StringPrintf(
-      kWalletPrivatePassPageURL,
-      base::EscapeQueryParamValue(entity.guid().value(), /*use_plus=*/false));
 }
 
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(

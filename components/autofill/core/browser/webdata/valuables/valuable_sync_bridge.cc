@@ -124,9 +124,9 @@ bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
     case EntityInstance::RecordType::kServerWallet:
       // Only public passes are uploaded. For private passes, the
       // AUTOFILL_VALUABLE sync bridge is read-only.
-      return !IsMaskedStorageSupported(
-          change.data_model().type(),
-          EntityInstance::RecordType::kServerWallet);
+      return GetWalletPassType(change.data_model().type(),
+                               EntityInstance::RecordType::kServerWallet) ==
+             EntityInstance::WalletPassType::kPublic;
     case EntityInstance::RecordType::kPersonalContext:
       // Personal context entities are not uploaded as AUTOFILL_VALUABLE.
       return false;

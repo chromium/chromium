@@ -666,16 +666,16 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     }
   }
 
-  const bool mask_obfuscated_attributes =
-      IsMaskedStorageSupported(*entity_type, *record_type);
-  if (mask_obfuscated_attributes &&
-      *record_type == EntityInstance::RecordType::kServerWallet &&
+  const bool is_wallet_private_pass =
+      GetWalletPassType(*entity_type, *record_type) ==
+      EntityInstance::WalletPassType::kPrivate;
+  if (is_wallet_private_pass &&
       !base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     return std::nullopt;
   }
   for (AttributeInstance& attribute : attributes) {
     attribute.FinalizeInfo();
-    if (mask_obfuscated_attributes && attribute.type().is_obfuscated()) {
+    if (is_wallet_private_pass && attribute.type().is_obfuscated()) {
       attribute.mark_as_masked({});
     }
   }

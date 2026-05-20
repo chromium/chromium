@@ -1167,10 +1167,9 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   // Wallet passes are strictly read-only from the client's perspective in
   // settings. Therefore, we only ever "Save" them. Any downstream "Update"
   // attempts are inapplicable.
-  if (entity_instance->record_type() ==
-          EntityInstance::RecordType::kServerWallet &&
-      IsMaskedStorageSupported(entity_instance->type(),
-                               EntityInstance::RecordType::kServerWallet)) {
+  if (GetWalletPassType(entity_instance->type(),
+                        entity_instance->record_type()) ==
+      EntityInstance::WalletPassType::kPrivate) {
     // If the request is successfully started, the callback will handle the
     // response.
     if (TrySavePrivatePassWithWalletAPI(*entity_instance)) {

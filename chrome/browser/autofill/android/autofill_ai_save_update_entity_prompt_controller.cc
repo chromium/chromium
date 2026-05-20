@@ -139,11 +139,16 @@ AutofillAiSaveUpdateEntityPromptController::GetJavaObject() const {
 
 void AutofillAiSaveUpdateEntityPromptController::OnWalletLinkClicked(
     JNIEnv* env) {
-  if (IsMaskedStorageSupported(entity_instance_.type(),
-                               EntityInstance::RecordType::kServerWallet)) {
-    ShowGoogleWallePrivatePassesHelpCenterPageInCct(*web_contents_);
-  } else {
-    ShowGoogleWalletPassesPage(*web_contents_);
+  switch (GetWalletPassType(entity_instance_.type(),
+                            entity_instance_.record_type())) {
+    case EntityInstance::WalletPassType::kUnsupported:
+      NOTREACHED();
+    case EntityInstance::WalletPassType::kPrivate:
+      ShowGoogleWallePrivatePassesHelpCenterPageInCct(*web_contents_);
+      break;
+    case EntityInstance::WalletPassType::kPublic:
+      ShowGoogleWalletPassesPage(*web_contents_);
+      break;
   }
 }
 

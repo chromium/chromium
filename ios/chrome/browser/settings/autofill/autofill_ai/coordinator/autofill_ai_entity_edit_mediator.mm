@@ -232,17 +232,15 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
 
   _entityInstance = builder.Build();
 
-  BOOL isSaveAsynchronous = autofill::IsMaskedStorageSupported(
-      _entityInstance->type(), _entityInstance->record_type());
+  BOOL isWalletPrivatePass =
+      autofill::GetWalletPassType(_entityInstance->type(),
+                                  _entityInstance->record_type()) ==
+      autofill::EntityInstance::WalletPassType::kPrivate;
 
-  if (isSaveAsynchronous) {
-    // Accessibility Annotator entities do not support saving,
-    // thus the record type must be `kServerWallet`.
-    CHECK_EQ(_entityInstance->record_type(),
-             autofill::EntityInstance::RecordType::kServerWallet);
-  }
-
-  if (!isSaveAsynchronous || !_walletPassManager) {
+  if (!isWalletPrivatePass || !_walletPassManager) {
+    // Personal Context entities do not support saving.
+    CHECK_NE(_entityInstance->record_type(),
+             autofill::EntityInstance::RecordType::kPersonalContext);
     LogEntitySaveOrUpdate(self.consumer.mode, *_entityInstance);
     _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
     [self.consumer didFinishSavingWithLocalFallback:NO];

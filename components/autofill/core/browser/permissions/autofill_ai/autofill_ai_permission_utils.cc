@@ -107,12 +107,16 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     return true;
   }
 
+  if (GetWalletPassType(*entity_type,
+                        EntityInstance::RecordType::kServerWallet) !=
+      EntityInstance::WalletPassType::kPrivate) {
+    return true;
+  }
+
   // List of countries in which private passes are not supported.
   constexpr static auto kPrivatePassExclusions =
       base::MakeFixedFlatSet<std::string_view>({"FR", "OM"});
-  return !IsMaskedStorageSupported(*entity_type,
-                                   EntityInstance::RecordType::kServerWallet) ||
-         !kPrivatePassExclusions.contains(country_code.value());
+  return !kPrivatePassExclusions.contains(country_code.value());
 }
 
 // Checks whether `country_code` belongs to a permitted GeoIp.
@@ -398,8 +402,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       // If `*entity_type` is a public pass, respect
       // `is_wallet_public_pass_storage_enabled`.
       if (!is_wallet_public_pass_storage_enabled &&
-          !IsMaskedStorageSupported(
-              *entity_type, EntityInstance::RecordType::kServerWallet)) {
+          GetWalletPassType(*entity_type,
+                            EntityInstance::RecordType::kServerWallet) ==
+              EntityInstance::WalletPassType::kPublic) {
         return false;
       }
       if (base::FeatureList::IsEnabled(
@@ -460,11 +465,13 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kImportToWallet:
       CHECK(entity_type) << "An entity type is required to check if an entity "
                             "can be upstreamed";
-      if (!IsMaskedStorageSupported(
-              *entity_type, EntityInstance::RecordType::kServerWallet)) {
-        // For public passes, there are no additional account requirements.
+      if (GetWalletPassType(*entity_type,
+                            EntityInstance::RecordType::kServerWallet) !=
+          EntityInstance::WalletPassType::kPrivate) {
+        // For non-private passes, there are no additional account requirements.
         break;
       }
+
       // For private passes, underaged users are not allowed to save.
       // TODO(crbug.com/495779639): This `can_use_model_execution_features()`
       // check is a very hacky way to check whether the user is underaged.
@@ -570,8 +577,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       // Importing Wallet private passes is only supported on devices with
       // re-auth.
       if (!supports_reauth &&
-          IsMaskedStorageSupported(*entity_type,
-                                   EntityInstance::RecordType::kServerWallet) &&
+          GetWalletPassType(*entity_type,
+                            EntityInstance::RecordType::kServerWallet) ==
+              EntityInstance::WalletPassType::kPrivate &&
           !base::FeatureList::IsEnabled(
               features::debug::kAutofillAiDisableReauthRequirement)) {
         return false;

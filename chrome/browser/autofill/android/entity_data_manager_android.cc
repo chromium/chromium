@@ -238,12 +238,12 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
 
   if (targeted_record_type == EntityInstance::RecordType::kServerWallet &&
       base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
-    const bool is_masked_storage_supported = IsMaskedStorageSupported(
-        entity_instance.type(), entity_instance.record_type());
     // Wallet passes are strictly read-only from the client's perspective in
     // settings. Therefore, we only ever "Save" them. Any downstream "Update"
     // attempts are inapplicable.
-    if (is_masked_storage_supported) {
+    if (GetWalletPassType(entity_instance.type(),
+                          entity_instance.record_type()) ==
+        EntityInstance::WalletPassType::kPrivate) {
       consent_auditor::ConsentAuditor::SessionId session_id;
       if (base::FeatureList::IsEnabled(
               wallet::features::kWalletApiPrivatePassesConsent)) {
@@ -258,12 +258,12 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
               weak_ptr_factory_.GetWeakPtr(), std::move(on_local_save_fallback),
               entity_instance));
     } else {
-      // If `IsMaskedStorageSupported` returns true for
-      // `entity_instance.type()` and `targeted_record_type` the user
+      // If `GetWalletPassType()` returns `kPrivate` for
+      // `entity_instance.type()` and `targeted_record_type`, the user
       // initially wanted to store the entity on the server but became
       // ineligible.
-      if (IsMaskedStorageSupported(entity_instance.type(),
-                                   targeted_record_type)) {
+      if (GetWalletPassType(entity_instance.type(), targeted_record_type) ==
+          EntityInstance::WalletPassType::kPrivate) {
         std::move(on_local_save_fallback).Run();
       }
       entity_data_manager().AddOrUpdateEntityInstance(
@@ -307,7 +307,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
               type,
               type.enabled(entity_data_manager_->GetVariationCountryCode()),
               IsEligibleForWalletStorage(type),
-              IsMaskedStorageSupported(type, entity->record_type())),
+              GetWalletPassType(type, entity->record_type()) ==
+                  EntityInstance::WalletPassType::kPrivate),
           entity->type().GetNameForI18n(),
           base::JoinString(label, kLabelSeparator), stored_in_wallet,
           stored_in_wallet ? std::make_optional(GetWalletManagementURL(*entity))
@@ -326,8 +327,9 @@ std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
         entity_type,
         entity_type.enabled(entity_data_manager_->GetVariationCountryCode()),
         IsEligibleForWalletStorage(entity_type),
-        IsMaskedStorageSupported(entity_type,
-                                 EntityInstance::RecordType::kServerWallet));
+        GetWalletPassType(entity_type,
+                          EntityInstance::RecordType::kServerWallet) ==
+            EntityInstance::WalletPassType::kPrivate);
   }
   return entity_types;
 }
@@ -342,8 +344,8 @@ EntityDataManagerAndroid::GetSortedEntityTypesForListDisplay(
     return EntityTypeAndroid(
         type, type.enabled(entity_data_manager_->GetVariationCountryCode()),
         IsEligibleForWalletStorage(type),
-        IsMaskedStorageSupported(type,
-                                 EntityInstance::RecordType::kServerWallet));
+        GetWalletPassType(type, EntityInstance::RecordType::kServerWallet) ==
+            EntityInstance::WalletPassType::kPrivate);
   });
 }
 
