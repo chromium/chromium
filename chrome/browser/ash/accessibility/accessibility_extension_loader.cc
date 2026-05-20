@@ -10,9 +10,17 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/service_worker_context.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -58,6 +66,12 @@ void AccessibilityExtensionLoader::Load(
     content::BrowserContext* browser_context,
     base::OnceClosure done_cb) {
   browser_context_ = browser_context;
+
+  content::BrowserContext* signin_context =
+      BrowserContextHelper::Get()->GetSigninBrowserContext();
+  if (signin_context && browser_context_ != signin_context) {
+    UnloadExtension(signin_context);
+  }
 
   if (loaded_) {
     return;
@@ -131,6 +145,17 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
 void AccessibilityExtensionLoader::UnloadExtension(
     content::BrowserContext* browser_context) {
   extensions::ComponentLoader::Get(browser_context)->Remove(extension_id_);
+
+  if (browser_context && browser_context->IsOffTheRecord()) {
+    content::ServiceWorkerContext* service_worker_context =
+        extensions::util::GetServiceWorkerContextForExtensionId(
+            extension_id_, browser_context);
+    GURL scope = extensions::Extension::GetServiceWorkerScopeFromExtensionId(
+        extension_id_);
+    service_worker_context->UnregisterServiceWorkerImmediately(
+        scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
+        base::DoNothing());
+  }
 }
 
 }  // namespace ash

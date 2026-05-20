@@ -50,6 +50,7 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
@@ -2679,7 +2680,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OrientationChanged) {
 }
 
 // Spoken feedback tests of the out-of-box experience.
-class OobeSpokenFeedbackTest : public OobeBaseTest {
+class OobeSpokenFeedbackTest
+    : public OobeBaseTest,
+      public ::testing::WithParamInterface<SpokenFeedbackTestConfig> {
  public:
   OobeSpokenFeedbackTest() = default;
   OobeSpokenFeedbackTest(const OobeSpokenFeedbackTest&) = delete;
@@ -2696,6 +2699,16 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
     // We only start the tutorial in OOBE if the device is a Chromebook, so set
     // the device type so tutorial-related behavior can be tested.
     command_line->AppendSwitchASCII(switches::kFormFactor, "CHROMEBOOK");
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().manifest_version() == ManifestVersion::kTwo) {
+      disabled_features.push_back(
+          ::features::kAccessibilityManifestV3ChromeVox);
+    } else if (GetParam().manifest_version() == ManifestVersion::kThree) {
+      enabled_features.push_back(::features::kAccessibilityManifestV3ChromeVox);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
@@ -2713,10 +2726,11 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<ChromeVoxTestUtils> chromevox_test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/1310682) - Re-enable this test.
-IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
+IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedbackWithTutorial();
 
@@ -2740,7 +2754,7 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
 }
 
 // TODO(akihiroota): fix flakiness: http://crbug.com/1172390
-IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest,
                        DISABLED_SpokenFeedbackTutorialInOobe) {
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
@@ -2759,6 +2773,34 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest,
   sm()->ExpectSpeechPattern("*To continue, press the left Shift key.");
   sm()->Replay();
 }
+
+IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, ChromeVoxReloadOnLoginScreen) {
+  ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+
+  // Enable ChromeVox.
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  sm()->ExpectSpeech("ChromeVox spoken feedback is ready");
+
+  // Disable and re-enable ChromeVox in sequence after hearing speech.
+  sm()->Call([&]() {
+    AccessibilityManager::Get()->EnableSpokenFeedback(false);
+    EXPECT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+    AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  });
+  sm()->ExpectSpeech("ChromeVox spoken feedback is ready");
+
+  sm()->Replay();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    OobeSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3,
+    OobeSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree)));
 
 class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
  public:
