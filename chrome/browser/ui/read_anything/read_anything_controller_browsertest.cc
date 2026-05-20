@@ -35,23 +35,29 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/pwn_open_url_helper.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
@@ -2780,4 +2786,194 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_EQ(
       controller->GetPresentationState(),
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CompromisedIRMRendererBypassesPopupBlocker) {
+  // User navigates to an attacker page and opens IRM on it.
+  GURL attacker_page = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), attacker_page));
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  CHECK(controller);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(true);
+  content::WebContents* irm_contents = GetImmersiveWebContents();
+  CHECK(irm_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(irm_contents));
+  content::RenderFrameHost* irm_rfh = irm_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(irm_rfh);
+  // Verify the exploit precondition: the IRM frame has a WebUI controller. This
+  // causes Navigator::RequestOpenURL to force is_renderer_initiated=false,
+  // making the downstream navigation pipeline trust the spoofed user gesture.
+  ASSERT_NE(nullptr, irm_rfh->GetWebUI());
+
+  const int tabs_before = browser()->tab_strip_model()->count();
+  ASSERT_EQ(1, tabs_before);
+
+  // Simulate a compromised renderer sending OpenURL IPCs with a spoofed user
+  // gesture. We primarily use NEW_BACKGROUND_TAB to ensure the WebUI remains
+  // foregrounded and attached while we simulate multiple rapid requests, and
+  // finish with one NEW_FOREGROUND_TAB to show both dispositions are handled.
+  // Our OpenURLFromTab delegate should evaluate the request against the lack
+  // of actual transient user activation, strip the spoofed gesture, and cause
+  // the popup blocker to block the requests.
+  GURL popup_target = embedded_test_server()->GetURL("/title2.html");
+  constexpr int kSpam = 3;
+  for (int i = 0; i < kSpam; ++i) {
+    WindowOpenDisposition d = (i < kSpam - 1)
+                                  ? WindowOpenDisposition::NEW_BACKGROUND_TAB
+                                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    content::PwnOpenURLWithDisposition(irm_rfh, popup_target, d,
+                                       /*user_gesture=*/true);
+  }
+
+  EXPECT_EQ(tabs_before, browser()->tab_strip_model()->count());
+
+  // Assert the popups were explicitly caught and blocked.
+  auto* popup_blocker = blocked_content::PopupBlockerTabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(static_cast<size_t>(kSpam), popup_blocker->GetBlockedPopupsCount());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CompromisedIRMRendererNavigatesActiveTab) {
+  GURL attacker_page = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), attacker_page));
+  content::WebContents* active_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(attacker_page, active_tab->GetLastCommittedURL());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  CHECK(controller);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(true);
+  content::WebContents* irm_contents = GetImmersiveWebContents();
+  CHECK(irm_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(irm_contents));
+  content::RenderFrameHost* irm_rfh = irm_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(irm_rfh);
+
+  GURL evil_target = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_NE(evil_target, active_tab->GetLastCommittedURL());
+
+  // Simulate a compromised renderer sending an OpenURL IPC with a spoofed user
+  // gesture and a CURRENT_TAB disposition to hijack the active tab.
+  content::PwnOpenURLWithDisposition(irm_rfh, evil_target,
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     /*user_gesture=*/true);
+
+  // The active tab was not hijacked. The navigation was converted to a
+  // popup and blocked.
+  EXPECT_EQ(attacker_page, active_tab->GetLastCommittedURL());
+
+  auto* popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(active_tab);
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CompromisedSidePanelRendererBypassesPopupBlocker) {
+  // Precondition: user navigates to an attacker page and opens the side panel
+  // on it.
+  GURL attacker_page = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), attacker_page));
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  CHECK(controller);
+
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  CHECK(side_panel_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(side_panel_contents));
+  content::RenderFrameHost* side_panel_rfh =
+      side_panel_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(side_panel_rfh);
+
+  // Verify the exploit precondition: the side panel frame has a WebUI
+  // controller. This causes Navigator::RequestOpenURL to force
+  // is_renderer_initiated=false, making the downstream navigation pipeline
+  // trust the spoofed user gesture.
+  ASSERT_NE(nullptr, side_panel_rfh->GetWebUI());
+
+  const int tabs_before = browser()->tab_strip_model()->count();
+  ASSERT_EQ(1, tabs_before);
+
+  // Simulate a compromised renderer sending OpenURL IPCs with a spoofed user
+  // gesture. We primarily use NEW_BACKGROUND_TAB to ensure the WebUI remains
+  // foregrounded and attached while we simulate multiple rapid requests, and
+  // finish with one NEW_FOREGROUND_TAB to show both dispositions are handled.
+  // Our OpenURLFromTab delegate should evaluate the request against the lack
+  // of actual transient user activation, strip the spoofed gesture, and cause
+  // the popup blocker to block the requests.
+  GURL popup_target = embedded_test_server()->GetURL("/title2.html");
+  constexpr int kSpam = 3;
+  for (int i = 0; i < kSpam; ++i) {
+    WindowOpenDisposition d = (i < kSpam - 1)
+                                  ? WindowOpenDisposition::NEW_BACKGROUND_TAB
+                                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    content::PwnOpenURLWithDisposition(side_panel_rfh, popup_target, d,
+                                       /*user_gesture=*/true);
+  }
+
+  const int tabs_after = browser()->tab_strip_model()->count();
+  EXPECT_EQ(tabs_before, tabs_after);
+
+  // Assert the popups were explicitly caught and blocked.
+  auto* popup_blocker = blocked_content::PopupBlockerTabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(static_cast<size_t>(kSpam), popup_blocker->GetBlockedPopupsCount());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CompromisedSidePanelRendererNavigatesActiveTab) {
+  GURL attacker_page = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), attacker_page));
+  content::WebContents* active_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(attacker_page, active_tab->GetLastCommittedURL());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  CHECK(controller);
+
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  CHECK(side_panel_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(side_panel_contents));
+  content::RenderFrameHost* side_panel_rfh =
+      side_panel_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(side_panel_rfh);
+
+  GURL evil_target = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_NE(evil_target, active_tab->GetLastCommittedURL());
+
+  // Simulate a compromised renderer sending an OpenURL IPC with a spoofed user
+  // gesture and a CURRENT_TAB disposition to hijack the active tab.
+  content::PwnOpenURLWithDisposition(side_panel_rfh, evil_target,
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     /*user_gesture=*/true);
+
+  // The active tab was not hijacked. The navigation was converted to a
+  // popup and blocked.
+  EXPECT_EQ(attacker_page, active_tab->GetLastCommittedURL());
+
+  auto* popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(active_tab);
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
 }
