@@ -415,6 +415,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return SessionError::kSessionProviderWellKnownHasProviderOrigin;
     }
 
+    // TODO(crbug.com/511776603): Evaluate whether to use the final redirect URL
+    // instead of the original URL here in a follow-up.
     std::string target_origin =
         url::Origin::Create(fetcher_endpoint_).Serialize();
     if (!maybe_params->relying_origins.has_value() ||
@@ -470,6 +472,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return SessionError::kRelyingPartyWellKnownHasRelyingOrigins;
     }
 
+    // TODO(crbug.com/511776603): Evaluate whether to use the final redirect URL
+    // instead of the original URL here in a follow-up.
     if (!maybe_params->provider_origin.has_value() ||
         url::Origin::Create(provider_url_).Serialize() !=
             *maybe_params->provider_origin) {
@@ -687,11 +691,15 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
     std::unique_ptr<Session> session = std::move(*session_or_error);
 
+    // Use the final URL after redirects for validation checks to ensure we
+    // validate the origin that actually served the response.
+    GURL final_registration_url = url_fetcher_->request().url();
+
     // Re-process challenge headers now that a session exists so that cached
     // challenges work for the registration case as well.
     auto challenge_params =
         device_bound_sessions::SessionChallengeParam::CreateIfValid(
-            fetcher_endpoint_, headers);
+            final_registration_url, headers);
     for (const SessionChallengeParam& challenge_param : challenge_params) {
       if (challenge_param.session_id() == *session->id()) {
         session->set_cached_challenge(challenge_param.challenge());
@@ -728,7 +736,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         // Skip all validations if the fetcher endpoint is not a subdomain but
         // rather the top-level site (which matches the origin when including
         // the site).
-        fetcher_endpoint_.GetHost() != session->origin().host()) {
+        final_registration_url.host() != session->origin().host()) {
       GURL::Replacements replacements;
       replacements.SetPathStr("/.well-known/device-bound-sessions");
       replacements.SetHostStr(session->origin().host());
@@ -742,10 +750,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           isolation_info_.site_for_cookies());
       url_fetcher_->request().set_initiator(original_request_initiator_);
       url_fetcher_->request().set_isolation_info(isolation_info_);
-      url_fetcher_->Start(
-          base::BindOnce(&RegistrationFetcherImpl::
-                             OnSubdomainRegistrationWellKnownRequestComplete,
-                         GetWeakPtr(), std::move(session)));
+      url_fetcher_->Start(base::BindOnce(
+          &RegistrationFetcherImpl::
+              OnSubdomainRegistrationWellKnownRequestComplete,
+          GetWeakPtr(), std::move(final_registration_url), std::move(session)));
       return;
     }
 
@@ -754,13 +762,15 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
   void OnSubdomainRegistrationWellKnownRequestComplete(
+      GURL final_registration_url,
       std::unique_ptr<Session> session) {
     RunCallback(OnSubdomainRegistrationWellKnownRequestCompleteInternal(
-        std::move(session)));
+        std::move(final_registration_url), std::move(session)));
     // `this` may be deleted.
   }
 
   RegistrationResult OnSubdomainRegistrationWellKnownRequestCompleteInternal(
+      GURL final_registration_url,
       std::unique_ptr<Session> session) {
     HttpResponseHeaders* headers = url_fetcher_->request().response_headers();
     const int response_code = headers ? headers->response_code() : 0;
@@ -788,7 +798,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (!maybe_params->registering_origins.has_value() ||
         !std::ranges::contains(
             *maybe_params->registering_origins,
-            url::Origin::Create(fetcher_endpoint_).Serialize())) {
+            url::Origin::Create(final_registration_url).Serialize())) {
       return CreateErrorRegistrationResult(
           SessionError(SessionError::kSubdomainRegistrationUnauthorized));
     }

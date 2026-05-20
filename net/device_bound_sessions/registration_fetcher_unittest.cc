@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2707,6 +2708,69 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_MultipleAllowed) {
     callback.WaitForCall();
     callback.outcome().SessionForTesting();
   }
+}
+
+TEST_F(RegistrationTest, RegistrationRedirectToSubdomain) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  bool well_known_fetched = false;
+
+  // 1. Redirect request
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        if (request.relative_url != "/") {
+          return nullptr;
+        }
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        response->set_code(HTTP_FOUND);
+        response->AddCustomHeader(
+            "Location", server_.GetURL("subdomain.a.test", "/dbsc").spec());
+        return response;
+      }));
+
+  // 2. Return config
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        if (request.relative_url != "/dbsc") {
+          return nullptr;
+        }
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+
+  // 3. Monitor well-known requests
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        if (request.relative_url != "/.well-known/device-bound-sessions") {
+          return nullptr;
+        }
+        well_known_fetched = true;
+        return ReturnResponse(HTTP_NOT_FOUND, "", request);
+      }));
+
+  ASSERT_TRUE(server_.Start());
+
+  GURL registration_url = server_.GetURL("a.test", "/");
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  // Verify well-known check is triggered and registration fails.
+  EXPECT_TRUE(well_known_fetched);
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kSubdomainRegistrationWellKnownUnavailable);
 }
 
 TEST_F(RegistrationTest, FederatedSuccess) {
