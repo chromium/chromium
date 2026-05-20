@@ -259,6 +259,35 @@ static Vector<double> ParseHTMLListOfFloatingPointNumbersInternal(
   return numbers;
 }
 
+// https://html.spec.whatwg.org/C/#rules-for-parsing-floating-point-number-values
+double ParseHTMLFloatingPointNumber(const String& input,
+                                    double fallback_value) {
+  unsigned length = input.length();
+  if (!length) {
+    return fallback_value;
+  }
+
+  double result = fallback_value;
+  VisitCharacters(input, [&](auto chars) {
+    using CharacterType = std::decay_t<decltype(*chars.data())>;
+    size_t position =
+        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(chars, 0);
+    if (position == chars.size()) {
+      return;
+    }
+
+    CharacterType c = chars[position];
+    if (!(c >= '0' && c <= '9') && c != '+' && c != '-' && c != '.') {
+      return;
+    }
+
+    size_t parsed_length = 0;
+    double value = CharactersToDouble(chars.subspan(position), parsed_length);
+    result = CheckDoubleValue(value, parsed_length != 0, fallback_value);
+  });
+  return result;
+}
+
 // https://html.spec.whatwg.org/C/#rules-for-parsing-a-list-of-floating-point-numbers
 Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
   Vector<double> numbers;

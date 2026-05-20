@@ -40,9 +40,9 @@ PASS p.max is 1
 PASS p.getAttribute('value') is 'ABC'
 PASS p.getAttribute('max') is '#'
 Set value and max to numbers with leading spaces
-PASS p.value is 0
-PASS p.max is 1
-PASS p.position is 0
+PASS p.value is 5
+PASS p.max is 10
+PASS p.position is 0.5
 PASS successfullyParsed is true
 
 TEST COMPLETE

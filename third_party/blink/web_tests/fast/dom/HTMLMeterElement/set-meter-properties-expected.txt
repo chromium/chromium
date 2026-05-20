@@ -65,12 +65,12 @@ PASS m.max is 1
 PASS m.getAttribute('value') is 'ABC'
 PASS m.getAttribute('max') is '#'
 Set attributes to numbers with leading spaces
-PASS m.value is 0
-PASS m.min is 0
-PASS m.max is 1
-PASS m.low is 0
-PASS m.high is 1
-PASS m.optimum is 0.5
+PASS m.value is 5
+PASS m.min is 5
+PASS m.max is 5
+PASS m.low is 5
+PASS m.high is 5
+PASS m.optimum is 5
 PASS successfullyParsed is true
 
 TEST COMPLETE

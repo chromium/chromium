@@ -93,7 +93,8 @@ void HTMLMeterElement::ParseAttribute(
 }
 
 double HTMLMeterElement::value() const {
-  double value = GetFloatingPointAttribute(html_names::kValueAttr, 0);
+  double value =
+      ParseHTMLFloatingPointNumber(getAttribute(html_names::kValueAttr), 0);
   return std::min(std::max(value, min()), max());
 }
 
@@ -102,7 +103,7 @@ void HTMLMeterElement::setValue(double value) {
 }
 
 double HTMLMeterElement::min() const {
-  return GetFloatingPointAttribute(html_names::kMinAttr, 0);
+  return ParseHTMLFloatingPointNumber(getAttribute(html_names::kMinAttr), 0);
 }
 
 void HTMLMeterElement::setMin(double min) {
@@ -110,9 +111,9 @@ void HTMLMeterElement::setMin(double min) {
 }
 
 double HTMLMeterElement::max() const {
-  return std::max(
-      GetFloatingPointAttribute(html_names::kMaxAttr, std::max(1.0, min())),
-      min());
+  return std::max(ParseHTMLFloatingPointNumber(
+                      getAttribute(html_names::kMaxAttr), std::max(1.0, min())),
+                  min());
 }
 
 void HTMLMeterElement::setMax(double max) {
@@ -120,7 +121,8 @@ void HTMLMeterElement::setMax(double max) {
 }
 
 double HTMLMeterElement::low() const {
-  double low = GetFloatingPointAttribute(html_names::kLowAttr, min());
+  double low =
+      ParseHTMLFloatingPointNumber(getAttribute(html_names::kLowAttr), min());
   return std::min(std::max(low, min()), max());
 }
 
@@ -129,7 +131,8 @@ void HTMLMeterElement::setLow(double low) {
 }
 
 double HTMLMeterElement::high() const {
-  double high = GetFloatingPointAttribute(html_names::kHighAttr, max());
+  double high =
+      ParseHTMLFloatingPointNumber(getAttribute(html_names::kHighAttr), max());
   return std::min(std::max(high, low()), max());
 }
 
@@ -138,8 +141,8 @@ void HTMLMeterElement::setHigh(double high) {
 }
 
 double HTMLMeterElement::optimum() const {
-  double optimum =
-      GetFloatingPointAttribute(html_names::kOptimumAttr, (max() + min()) / 2);
+  double optimum = ParseHTMLFloatingPointNumber(
+      getAttribute(html_names::kOptimumAttr), (max() + min()) / 2);
   return std::min(std::max(optimum, min()), max());
 }
 

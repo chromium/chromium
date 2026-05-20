@@ -71,9 +71,9 @@ shouldBe("p.getAttribute('max')", "'#'");
 debug("Set value and max to numbers with leading spaces");
 p.setAttribute("value", " 5");
 p.setAttribute("max", " 10");
-shouldBe("p.value", "0");
-shouldBe("p.max", "1");
-shouldBe("p.position", "0");
+shouldBe("p.value", "5");
+shouldBe("p.max", "10");
+shouldBe("p.position", "0.5");
 </script>
 </body>
 </html>

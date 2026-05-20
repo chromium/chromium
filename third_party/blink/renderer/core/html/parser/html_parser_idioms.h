@@ -74,6 +74,11 @@ bool ParseHTMLClampedNonNegativeInteger(const String&,
                                         unsigned max,
                                         unsigned&);
 
+// https://html.spec.whatwg.org/C/#rules-for-parsing-floating-point-number-values
+CORE_EXPORT double ParseHTMLFloatingPointNumber(
+    const String&,
+    double fallback_value = std::numeric_limits<double>::quiet_NaN());
+
 // https://html.spec.whatwg.org/C/#rules-for-parsing-a-list-of-floating-point-numbers
 CORE_EXPORT Vector<double> ParseHTMLListOfFloatingPointNumbers(const String&);
 
