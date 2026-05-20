@@ -84,6 +84,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -458,15 +459,13 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_STS_SETTINGS_ENTRYPOINT_GOOGLE_SEARCH_AI_MODE},
       {"stsSettingsEntrypointGetResponsesWithContext",
        IDS_STS_SETTINGS_ENTRYPOINT_GET_RESPONSES_WITH_CONTEXT},
-      {"stsSettingsOption1ShareOpenTabsForEveryThreadV2",
-       IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_FOR_EVERY_THREAD_V2},
-      {"stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV2",
-       IDS_STS_SETTINGS_OPTION_1_CHOOSE_HOW_RELEVANT_OPEN_TABS_CAN_BE_USED_V2},
+      {"stsSettingsOption1ShareOpenTabsForEveryThreadV3",
+       IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_FOR_EVERY_THREAD_V3},
+      {"stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3",
+       IDS_STS_SETTINGS_OPTION_1_CHOOSE_HOW_RELEVANT_OPEN_TABS_CAN_BE_USED_V3},
       {"stsSettingsOption1LearnMore", IDS_STS_SETTINGS_OPTION_1_LEARN_MORE},
       {"stsSettingsOption1NeverShareTheseSites",
        IDS_STS_SETTINGS_OPTION_1_NEVER_SHARE_THESE_SITES},
-      {"stsSettingsOption1SitesAddedHereWontBeReferencedV2",
-       IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V2},
 
       // Suggestions strings.
       {"aiSuggestionsLabel", IDS_CONTEXTUAL_CUEING_SETTINGS_PAGE_TITLE},
@@ -485,6 +484,15 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                                   features::IsWebuiRefresh2026Enabled()
                                       ? IDS_SETTINGS_AI_PAGE_TITLE
                                       : IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE);
+
+  int sts_option_1_sites_added_here_wont_be_referenced_string_id =
+      base::FeatureList::IsEnabled(
+          lens::features::kLensDeleteContextOnPageNavigation)
+          ? IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V2
+          : IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V3;
+  html_source->AddLocalizedString(
+      "stsSettingsOption1SitesAddedHereWontBeReferenced",
+      sts_option_1_sites_added_here_wont_be_referenced_string_id);
 
   html_source->AddString("aiPageMainManagedLearnMoreUrl",
                          chrome::kAiSettingsLearnMorePageManagedUrl);

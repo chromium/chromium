@@ -141,6 +141,9 @@ BASE_FEATURE(kLensSendUrlsInComposeboxes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensDeleteContextOnPageNavigation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<int> kLensUpdatedFeedbackToastTimeoutMs{
     &kLensUpdatedFeedbackEntrypoint, "feedback-toast-timeout-ms", 8000};
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",

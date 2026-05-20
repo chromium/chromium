@@ -218,6 +218,11 @@ COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(
     kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries);
 
+// Enables deletion of context if a previously uploaded context is associated
+// with a page that was navigated away from or tab that was closed.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensDeleteContextOnPageNavigation);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;

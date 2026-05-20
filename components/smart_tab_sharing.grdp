@@ -83,11 +83,17 @@
   <message name="IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_FOR_EVERY_THREAD_V2" desc="Label for a setting that allows users to share relevant tabs in every Google Search AI Mode thread.">
     Share relevant tabs in every thread
   </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_FOR_EVERY_THREAD_V3" desc="Label for a setting that allows users to share relevant tabs in every Google Search AI Mode thread.">
+    Automatically share relevant open tabs in every thread
+  </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_BY_DEFAULT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share relevant open tabs by default for faster, more tailored responses.
   </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_CHOOSE_HOW_RELEVANT_OPEN_TABS_CAN_BE_USED_V2" desc="This string is the subheading of a setting for 'Share relevant tabs in every thread'. This string explains what Chrome shares with Google Search AI Mode when turned on.">
     Chrome will share relevant open tabs by default to help you get more tailored answers to your questions.
+  </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_CHOOSE_HOW_RELEVANT_OPEN_TABS_CAN_BE_USED_V3" desc="This string is the subheading of a setting for 'Share relevant tabs in every thread'. This string explains what Chrome shares with Google Search AI Mode when turned on.">
+    Chrome will automatically send the page content and URLs of open tabs that may be relevant to your question to Google to get more personalized responses. Chrome will only share tabs from the window you're working in.
   </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_LEARN_MORE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Learn more
@@ -122,6 +128,9 @@
   <message name="IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V2" desc="This string is a subheading of a label for how a user can exclude certain sites from being shared with Google Search AI Mode when 'Share relevant tabs in every thread' is on.">
     Sites you add here won't be referenced for responses, even if the tab is open.
   </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V3" desc="This string is a subheading of a label for how a user can exclude certain sites from being shared with Google Search AI Mode when 'Share relevant tabs in every thread' is on.">
+    Sites you add here won't be referenced for responses, even if the tab is open. If a site you add is currently being used in a thread, it can take up to 30 minutes for the thread to stop referencing it.
+  </message>
 
   <!-- Settings: Option 2: Toggles -->
   <message name="IDS_STS_OPTION_2_SHARE_OPEN_TABS_FOR_EVERY_THREAD" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
@@ -153,9 +162,6 @@
   </message>
 
   <!-- Settings entrypoint -->
-  <message name="IDS_STS_SETTINGS_ENTRYPOINT_AI_MODE_SEARCH" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    AI Mode Search
-  </message>
   <message name="IDS_STS_SETTINGS_ENTRYPOINT_GOOGLE_SEARCH_AI_MODE" desc="Title of the page of the settings for Google Search AI Mode.">
     Google Search AI Mode
   </message>

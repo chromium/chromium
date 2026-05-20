@@ -25,10 +25,10 @@
     <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
         restamp>
       <cr-link-row
-          label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV2}"
+          label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}"
           on-click="onLearnMoreRowClick_" external>
         <div slot="sub-label">
-          <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV2}</span>
+          <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}</span>
           <a href="https://support.google.com/chrome?p=ai_mode_search"
               aria-label="$i18n{stsSettingsOption1LearnMore}"
               aria-description="$i18n{opensInNewTab}"
@@ -43,10 +43,10 @@
       <div class="cr-row first">
         <div class="flex cr-padded-text">
           <div id="stsLabel">
-            $i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV2}
+            $i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}
           </div>
           <div class="secondary">
-            <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV2}</span>
+            <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}</span>
             <a href="https://support.google.com/chrome?p=ai_mode_search"
                 aria-label="$i18n{stsSettingsOption1LearnMore}"
                 aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
@@ -64,7 +64,7 @@
     </template>
     <settings-toggle-button
         id="shareTabsEveryThreadToggle"
-        aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV2}"
+        aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}"
         pref="{{prefs.contextual_tasks.share_open_tabs_every_thread}}"
         disabled="[[isDisabledByPolicy_(enterprisePref_)]]">
     </settings-toggle-button>
@@ -74,7 +74,7 @@
     <div class="cr-padded-text">
       $i18n{stsSettingsOption1NeverShareTheseSites}
       <div class="secondary">
-        $i18n{stsSettingsOption1SitesAddedHereWontBeReferencedV2}
+        $i18n{stsSettingsOption1SitesAddedHereWontBeReferenced}
       </div>
     </div>
     <cr-button id="addSiteButton" on-click="onAddSiteClick_">
