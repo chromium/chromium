@@ -48,6 +48,7 @@ import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ImeEventObserver;
+import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ime.TextInputType;
@@ -72,6 +73,7 @@ public class ImeAdapterImplUnitTest {
     @Mock private ImeAdapterImpl.Natives mImeAdapterImplJni;
     @Mock private CorrectionInfo mCorrectionInfo;
     @Mock private AutocorrectManager mAutocorrectManager;
+    @Mock private InputMethodManagerWrapper mInputMethodManagerWrapper;
 
     @Before
     public void setUp() {
@@ -541,5 +543,45 @@ public class ImeAdapterImplUnitTest {
 
         Assert.assertTrue((outAttrs.imeOptions & EditorInfo.IME_FLAG_NO_FULLSCREEN) == 0);
         Assert.assertTrue((outAttrs.imeOptions & EditorInfo.IME_FLAG_NO_EXTRACT_UI) == 0);
+    }
+
+    @Test
+    public void testSetKeyboardSuppressed_BlocksShowKeyboard() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.setKeyboardSuppressed(true);
+
+        adapter.updateState(
+                /* textInputType= */ TextInputType.TEXT,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ true,
+                /* alwaysHide= */ false,
+                /* text= */ "",
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 0,
+                /* compositionStart= */ 0,
+                /* compositionEnd= */ 0,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ 0,
+                /* vkPolicy= */ 0,
+                /* imeTextSpans= */ null);
+
+        verify(mInputMethodManagerWrapper, never()).showSoftInput(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testSetKeyboardSuppressed_HidesActiveKeyboard() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+        when(mInputMethodManagerWrapper.isActive(any())).thenReturn(true);
+
+        adapter.setKeyboardSuppressed(true);
+
+        verify(mInputMethodManagerWrapper).hideSoftInputFromWindow(any(), eq(0), isNull());
     }
 }

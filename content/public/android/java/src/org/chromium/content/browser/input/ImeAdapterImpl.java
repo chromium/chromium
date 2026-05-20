@@ -200,6 +200,8 @@ public class ImeAdapterImpl
 
     private boolean mAllowFullscreenIme;
 
+    private boolean mKeyboardSuppressed;
+
     // Whether to force show keyboard during stylus handwriting. We do not show it when writing
     // system is active and stylus is used to edit input text. This is used to show the soft
     // keyboard from Direct writing toolbar.
@@ -621,6 +623,14 @@ public class ImeAdapterImpl
         mAllowFullscreenIme = allow;
     }
 
+    @Override
+    public void setKeyboardSuppressed(boolean suppressed) {
+        mKeyboardSuppressed = suppressed;
+        if (mKeyboardSuppressed) {
+            hideKeyboard();
+        }
+    }
+
     @VisibleForTesting
     void setInputConnectionFactory(ChromiumBaseInputConnection.Factory factory) {
         mInputConnectionFactory = factory;
@@ -893,6 +903,10 @@ public class ImeAdapterImpl
     /** Show soft keyboard only if it is the current keyboard configuration. */
     private void showSoftKeyboard() {
         if (!isValid()) return;
+        if (mKeyboardSuppressed) {
+            Log.d(TAG, "showSoftKeyboard: blocked because keyboard is suppressed");
+            return;
+        }
         if (DEBUG_LOGS) Log.i(TAG, "showSoftKeyboard");
         View containerView = getContainerView();
 

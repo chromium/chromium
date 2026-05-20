@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -186,10 +187,22 @@ public class ActorUiTabController implements UserData {
         return true;
     }
 
-    /** Instance method to update state and notify observers. */
+    /**
+     * Updates the tab's cached visual state, manages dynamic features like soft keyboard
+     * suppression based on actor ownership, and notifies all registered observers.
+     *
+     * @param state The new visual and control ownership state of the tab.
+     */
     @VisibleForTesting
     void onUiTabStateChange(UiTabState state) {
         mCurrentState = state;
+        if (mTab.getWebContents() != null) {
+            ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mTab.getWebContents());
+            if (imeAdapter != null) {
+                boolean isSuppressed = state.handoffButton.controller == ControlOwnership.ACTOR;
+                imeAdapter.setKeyboardSuppressed(isSuppressed);
+            }
+        }
         for (Observer observer : mObservers) {
             observer.onUiTabStateChanged(state);
         }

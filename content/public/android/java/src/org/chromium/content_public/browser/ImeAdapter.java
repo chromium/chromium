@@ -130,4 +130,12 @@ public interface ImeAdapter {
      * @param allow True to allow, false to prevent.
      */
     void setAllowFullscreenIme(boolean allow);
+
+    /**
+     * Sets whether the soft keyboard should be suppressed. When suppressed, calls to show the soft
+     * keyboard will be blocked, and any active keyboard will be immediately hidden.
+     *
+     * @param suppressed True to suppress the soft keyboard, false to allow it.
+     */
+    void setKeyboardSuppressed(boolean suppressed);
 }
