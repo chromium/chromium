@@ -16,6 +16,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/webui/help_app_ui/help_app_prefs.h"
@@ -248,7 +249,6 @@
 #include "chrome/browser/ui/webui/ash/login/wrong_hwid_screen_handler.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -3004,7 +3004,7 @@ void WizardController::OnRecommendAppsScreenExit(
 
 void WizardController::OnRemoteActivityNotificationScreenExit() {
   // Remember the user acknowledged the message.
-  GetLocalState()->SetBoolean(::prefs::kRemoteAdminWasPresent, false);
+  GetLocalState()->SetBoolean(ash::prefs::kRemoteAdminWasPresent, false);
 
   // Check if there are any local accounts present for the lock screen which
   // suggest that the OOBE flow was completed and the dialog should be hidden.

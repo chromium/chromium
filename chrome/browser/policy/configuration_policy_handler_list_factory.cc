@@ -1212,7 +1212,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     chromeos::prefs::kAutoSignOutEnabled,
     base::Value::Type::BOOLEAN },
   { key::kDeviceAllowEnterpriseRemoteAccessConnections,
-    prefs::kDeviceAllowEnterpriseRemoteAccessConnections,
+    ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections,
     base::Value::Type::BOOLEAN
   },
   { key::kChromeOsLockOnIdleSuspend,
@@ -2217,7 +2217,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kKioskTroubleshootingToolsEnabled,
     base::Value::Type::BOOLEAN },
   { key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
-    prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
+    ash::prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     base::Value::Type::BOOLEAN },
   { key::kKioskActiveWiFiCredentialsScopeChangeEnabled,
     ash::prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,

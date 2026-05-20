@@ -632,11 +632,6 @@ inline constexpr char kHasResetFirst7DaysSettingsUsedCount[] =
 inline constexpr char kHasEverRevokedMetricsConsent[] =
     "settings.has_ever_revoked_metrics_consent";
 
-// A boolean to store that an admin user accessed the host device remotely when
-// no user was present at the device. This boolean enables the device to display
-// a notification to the local user when the session was terminated.
-inline constexpr char kRemoteAdminWasPresent[] = "remote_admin_was_present";
-
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.
@@ -2268,10 +2263,6 @@ inline constexpr char kReportingUsers[] = "reporting_users";
 inline constexpr char kArcAppInstallEventLoggingEnabled[] =
     "arc.app_install_event_logging_enabled";
 
-// Whether we received the remove users remote command, and hence should proceed
-// with removing the users while at the login screen.
-inline constexpr char kRemoveUsersRemoteCommand[] =
-    "remove_users_remote_command";
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2337,22 +2328,6 @@ inline constexpr char kGlobalHardwareSecureDecryptionDisabledTimes[] =
 inline constexpr char kHardwareSecureDecryptionDisabledTimes[] =
     "hardware_secure_decryption.disabled_times";
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_CHROMEOS)
-
-// A boolean pref which determines whether a remote admin can start a CRD
-// connection through the 'start crd session' remote command.
-inline constexpr char
-    kRemoteAccessHostAllowEnterpriseRemoteSupportConnections[] =
-        "enterprise_remote_support_connections_allowed";
-
-// A boolean pref which determines whether a remote admin can start a CRD
-// connection through the 'start crd session' remote command when no local user
-// is present at the device.
-inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
-    "device_allow_enterprise_remote_access_connections";
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)

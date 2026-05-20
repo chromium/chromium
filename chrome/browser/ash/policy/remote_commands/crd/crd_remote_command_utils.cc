@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -208,14 +208,15 @@ bool UserSessionSupportsRemoteSupport(UserSessionType user_session) {
 
 bool IsRemoteAccessAllowedByPolicy(const PrefService& prefs) {
   return prefs.GetBoolean(
-             prefs::kDeviceAllowEnterpriseRemoteAccessConnections) &&
+             ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections) &&
          prefs.GetBoolean(
-             prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
+             ash::prefs::
+                 kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
 }
 
 bool IsRemoteSupportAllowedByPolicy(const PrefService& prefs) {
   return prefs.GetBoolean(
-      prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
+      ash::prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
 }
 
 const char* UserSessionTypeToString(UserSessionType value) {

@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_policy_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -167,7 +168,7 @@ void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   ReportingUserTracker::RegisterPrefs(registry);
 
   registry->RegisterDictionaryPref(::prefs::kServerBackedDeviceState);
-  registry->RegisterBooleanPref(::prefs::kRemoveUsersRemoteCommand, false);
+  registry->RegisterBooleanPref(ash::prefs::kRemoveUsersRemoteCommand, false);
   registry->RegisterStringPref(::prefs::kLastRsuDeviceIdUploaded,
                                std::string());
   registry->RegisterListPref(prefs::kStoreLogStatesAcrossReboots);

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/remote_activity_notification_controller.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -797,11 +797,12 @@ bool CrdAdminSessionController::IsCurrentSessionCurtained() const {
 // static
 void CrdAdminSessionController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kRemoteAdminWasPresent, false);
+  registry->RegisterBooleanPref(ash::prefs::kRemoteAdminWasPresent, false);
   registry->RegisterBooleanPref(
-      prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections, true);
+      ash::prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
+      true);
   registry->RegisterBooleanPref(
-      prefs::kDeviceAllowEnterpriseRemoteAccessConnections, true);
+      ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections, true);
 }
 
 }  // namespace policy

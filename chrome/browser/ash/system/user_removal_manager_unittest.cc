@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
@@ -82,7 +82,7 @@ TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
   EXPECT_TRUE(user_removal_manager::RemoveUsersIfNeeded(local_state()));
   EXPECT_TRUE(user_manager::UserManager::Get()->GetPersistedUsers().empty());
   EXPECT_TRUE(local_state()
-                  ->FindPreference(prefs::kRemoveUsersRemoteCommand)
+                  ->FindPreference(ash::prefs::kRemoveUsersRemoteCommand)
                   ->IsDefaultValue());
 }
 
@@ -91,7 +91,7 @@ TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
 TEST_F(UserRemovalManagerTest, TestUserRemovingDoNotRetryOnFailure) {
   // If explicitly set to false - it means chrome might've crashed during the
   // previous removal.
-  local_state()->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
+  local_state()->SetBoolean(ash::prefs::kRemoveUsersRemoteCommand, false);
   EXPECT_FALSE(user_removal_manager::RemoveUsersIfNeeded(local_state()));
   EXPECT_FALSE(user_manager::UserManager::Get()->GetPersistedUsers().empty());
 }

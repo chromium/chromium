@@ -2489,7 +2489,7 @@ class RemoteActivityNotificationTestWhenPrefIsSet
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     WizardControllerRemoteActivityNotificationTest::SetUpLocalStatePrefService(
         local_state);
-    local_state->SetBoolean(::prefs::kRemoteAdminWasPresent, true);
+    local_state->SetBoolean(ash::prefs::kRemoteAdminWasPresent, true);
   }
 };
 
@@ -2498,7 +2498,7 @@ class RemoteActivityNotificationTestWhenPrefIsNotSet
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     WizardControllerRemoteActivityNotificationTest::SetUpLocalStatePrefService(
         local_state);
-    local_state->SetBoolean(::prefs::kRemoteAdminWasPresent, false);
+    local_state->SetBoolean(ash::prefs::kRemoteAdminWasPresent, false);
   }
 };
 
@@ -2506,7 +2506,7 @@ IN_PROC_BROWSER_TEST_F(RemoteActivityNotificationTestWhenPrefIsSet,
                        ShouldSetPrefOnRemoteActivityScreenExit) {
   OobeScreenWaiter(RemoteActivityNotificationView::kScreenId).Wait();
   CheckCurrentScreen(RemoteActivityNotificationView::kScreenId);
-  ASSERT_TRUE(GetPref(::prefs::kRemoteAdminWasPresent));
+  ASSERT_TRUE(GetPref(ash::prefs::kRemoteAdminWasPresent));
   ASSERT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
   test::OobeJS().ClickOnPath({"remote-activity-notification", "cancelButton"});
@@ -2515,12 +2515,12 @@ IN_PROC_BROWSER_TEST_F(RemoteActivityNotificationTestWhenPrefIsSet,
     return !LoginScreenTestApi::IsOobeDialogVisible();
   })).Wait();
   EXPECT_FALSE(IsRemoteActivityScreenVisible());
-  EXPECT_FALSE(GetPref(::prefs::kRemoteAdminWasPresent));
+  EXPECT_FALSE(GetPref(ash::prefs::kRemoteAdminWasPresent));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteActivityNotificationTestWhenPrefIsNotSet,
                        NotificationShouldNotBeVisible) {
-  ASSERT_FALSE(GetPref(::prefs::kRemoteAdminWasPresent));
+  ASSERT_FALSE(GetPref(ash::prefs::kRemoteAdminWasPresent));
 
   EXPECT_FALSE(IsRemoteActivityScreenVisible());
 }
@@ -2552,7 +2552,7 @@ IN_PROC_BROWSER_TEST_F(
     PRE_ShouldGoToPreviousScreenWhenNotificationIsDismissed) {
   CheckCurrentScreen(UserCreationView::kScreenId);
 
-  local_state()->SetBoolean(::prefs::kRemoteAdminWasPresent, true);
+  local_state()->SetBoolean(ash::prefs::kRemoteAdminWasPresent, true);
 }
 
 IN_PROC_BROWSER_TEST_F(

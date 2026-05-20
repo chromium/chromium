@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -309,7 +309,8 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
        ShouldRespectDisabledByPolicy) {
   StartSessionOfType(kAnySessionType);
 
-  DisablePref(prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
+  DisablePref(
+      ash::prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
 
   Result result = CreateAndRunJob();
 
@@ -445,7 +446,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 TEST_P(
     DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
     DeviceRemoteAccessPolicyShouldNotEffectRemoteSupportAvailabilityIfDisabled) {
-  DisablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  DisablePref(ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
   TestSessionType session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(session_type)));
@@ -461,7 +462,7 @@ TEST_P(
 TEST_P(
     DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
     DeviceRemoteAccessPolicyShouldNotEffectRemoteSupportAvailabilityIfEnabled) {
-  EnablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  EnablePref(ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
   TestSessionType session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(session_type)));
@@ -476,7 +477,7 @@ TEST_P(
 
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldRespectDisabledByDeviceRemoteAccessPolicy) {
-  DisablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  DisablePref(ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
   TestSessionType session_type = GetParam();
   StartSessionOfType(session_type);
 
@@ -535,7 +536,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldReturnRemoteAccessAvailabilityWhenPolicyIsEnabled) {
-  EnablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  EnablePref(ash::prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
   TestSessionType session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(session_type)));

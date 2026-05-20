@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -14,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -40,7 +40,7 @@ base::OnceClosure& GetLogOutOverrideCallbackForTest() {
 
 bool RemoveUsersIfNeeded(PrefService* local_state) {
   const PrefService::Preference* pref =
-      local_state->FindPreference(prefs::kRemoveUsersRemoteCommand);
+      local_state->FindPreference(ash::prefs::kRemoveUsersRemoteCommand);
 
   if (pref->IsDefaultValue()) {
     // Nothing to be done.
@@ -53,7 +53,7 @@ bool RemoveUsersIfNeeded(PrefService* local_state) {
     return false;
   }
 
-  local_state->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
+  local_state->SetBoolean(ash::prefs::kRemoveUsersRemoteCommand, false);
   local_state->CommitPendingWrite();
   // TODO(https://crbug.com/1344832): Emit start metric here.
 
@@ -69,7 +69,7 @@ bool RemoveUsersIfNeeded(PrefService* local_state) {
   }
 
   // Revert to default value after removal is done.
-  local_state->ClearPref(prefs::kRemoveUsersRemoteCommand);
+  local_state->ClearPref(ash::prefs::kRemoveUsersRemoteCommand);
 
   // TODO(https://crbug.com/1344832): Emit finish metric here.
   return true;
@@ -91,7 +91,7 @@ void OverrideLogOutForTesting(base::OnceClosure callback) {
 
 void InitiateUserRemoval(PrefService* local_state,
                          base::OnceClosure on_pref_persisted_callback) {
-  local_state->SetBoolean(prefs::kRemoveUsersRemoteCommand, true);
+  local_state->SetBoolean(ash::prefs::kRemoveUsersRemoteCommand, true);
 
   local_state->CommitPendingWrite(base::BindOnce(
       [](base::OnceClosure on_pref_persisted_callback) {

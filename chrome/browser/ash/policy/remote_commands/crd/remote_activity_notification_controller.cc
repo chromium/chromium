@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 
@@ -23,7 +23,7 @@ RemoteActivityNotificationController::RemoteActivityNotificationController(
   observation_.Observe(session_manager::SessionManager::Get());
 
   remote_admin_was_present_.Init(
-      prefs::kRemoteAdminWasPresent, &local_state,
+      ash::prefs::kRemoteAdminWasPresent, &local_state,
       base::BindRepeating(&RemoteActivityNotificationController::
                               OnRemoteAdminWasPresentPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
