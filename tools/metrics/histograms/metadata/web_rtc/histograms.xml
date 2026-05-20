@@ -1601,6 +1601,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.NegotiatedSctpSnap" enum="Boolean"
+    expires_after="2027-05-30">
+  <owner>boivie@google.com</owner>
+  <owner>philipp.hancke@googlemail.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Measures whether SCTP SNAP (SCTP Negotiation Acceleration Protocol) was
+    negotiated for the data channel transport. Recorded during the first DTLS
+    connection establishment.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
     enum="PeerConnectionProvisionalAnswer" expires_after="2024-06-30">
   <owner>hta@chromium.org</owner>
