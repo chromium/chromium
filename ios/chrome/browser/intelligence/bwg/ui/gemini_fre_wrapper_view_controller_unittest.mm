@@ -8,6 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
@@ -27,13 +28,16 @@ class GeminiFREWrapperViewControllerTest : public PlatformTest {
       bool with_promo,
       bool is_account_managed,
       bool use_strict_consent = false) {
+    GeminiConsentConfiguration* consent_config = [GeminiConsentConfiguration
+        configurationForManaged:is_account_managed
+                         strict:use_strict_consent
+                           type:GeminiFREType::kNewUser
+                        country:@"us"];
     GeminiFREWrapperViewController* view_controller =
         [[GeminiFREWrapperViewController alloc]
-                    initWithPromo:with_promo
-                 isAccountManaged:is_account_managed
-            useStrictLegalConsent:use_strict_consent
-                          FREType:GeminiFREType::kNewUser
-                          country:@"us"];
+                   initWithPromo:with_promo
+                         FREType:GeminiFREType::kNewUser
+            consentConfiguration:consent_config];
     mock_mutator_ =
         [OCMockObject mockForProtocol:@protocol(GeminiConsentMutator)];
     [[[mock_mutator_ stub] andReturnValue:@NO] shouldShowImageRemixRow];

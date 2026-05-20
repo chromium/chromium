@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller_delegate.h"
@@ -65,12 +66,10 @@ const CGFloat kInsetAdjustment = 20;
   GeminiConsentViewController* _consentViewController;
   // If YES, the promo view is shown initially. Otherwise, we skip it.
   BOOL _showPromo;
-  // Whether the account is managed.
-  BOOL _isAccountManaged;
   // Type of Gemini FRE.
   GeminiFREType _FREType;
-  // The country of the FRE.
-  NSString* _country;
+  // Configuration for the Gemini Consent view.
+  GeminiConsentConfiguration* _consentConfiguration;
   // The main stack view containing the logos.
   UIStackView* _mainStackView;
   // Horizontal stack view holding the promo and consent views.
@@ -86,25 +85,20 @@ const CGFloat kInsetAdjustment = 20;
   NSLayoutConstraint* _contentHeightConstraint;
   // Whether an accordion item has been expanded at least once.
   BOOL _hasExpandedAccordion;
-  // Whether the UI must enforce strict legal consent requirements.
-  BOOL _useStrictLegalConsent;
 }
 
 - (instancetype)initWithPromo:(BOOL)showPromo
-             isAccountManaged:(BOOL)isAccountManaged
-        useStrictLegalConsent:(BOOL)useStrictLegalConsent
                       FREType:(GeminiFREType)FREType
-                      country:(NSString*)country {
+         consentConfiguration:
+             (GeminiConsentConfiguration*)consentConfiguration {
   ButtonStackConfiguration* configuration =
       [GeminiFREWrapperViewController buttonsConfigurationForPromo:showPromo];
 
   self = [super initWithConfiguration:configuration];
   if (self) {
     _showPromo = showPromo;
-    _isAccountManaged = isAccountManaged;
-    _useStrictLegalConsent = useStrictLegalConsent;
     _FREType = FREType;
-    _country = country;
+    _consentConfiguration = consentConfiguration;
   }
   return self;
 }
@@ -288,10 +282,7 @@ const CGFloat kInsetAdjustment = 20;
   }
 
   _consentViewController = [[GeminiConsentViewController alloc]
-      initWithIsAccountManaged:_isAccountManaged
-         useStrictLegalConsent:_useStrictLegalConsent
-                       FREType:_FREType
-                       country:_country];
+      initWithConfiguration:_consentConfiguration];
   _consentViewController.mutator = self.mutator;
   _consentViewController.delegate = self;
 

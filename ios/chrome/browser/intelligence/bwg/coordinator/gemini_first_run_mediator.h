@@ -21,6 +21,7 @@ class IdentityManager;
 }  // namespace signin
 
 @protocol GeminiFirstRunMediatorDelegate;
+@class GeminiConsentConfiguration;
 
 // Gemini First Run Mediator.
 @interface GeminiFirstRunMediator : NSObject <GeminiConsentMutator>
@@ -44,6 +45,13 @@ class IdentityManager;
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion;
+
+// Returns the consent configuration for the given FRE type, managed status, and
+// country.
+- (GeminiConsentConfiguration*)
+    consentConfigurationForFREType:(GeminiFREType)FREType
+                  isManagedAccount:(BOOL)isManagedAccount
+                           country:(NSString*)country;
 
 // Aborts the flow due to mic permission denial without resetting consent.
 - (void)didRefuseLiveMicPermission;

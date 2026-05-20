@@ -99,10 +99,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
         [self standardFirstRowForManaged:isManaged],
         [self standardSecondRowForManaged:isManaged],
       ];
-
       NSAttributedString* footnote = [self footnoteForCountry:country
                                                     useStrict:useStrict];
-
       return [[GeminiConsentConfiguration alloc] initWithRows:rows
                                                      footnote:footnote
                                                        header:nil

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -105,6 +106,17 @@ const CGFloat kPromoMaxImpressionCount = 3;
       kPromoMaxImpressionCount;
 
   return ShouldForceBWGPromo() || !promoImpressionsExhausted;
+}
+
+- (GeminiConsentConfiguration*)
+    consentConfigurationForFREType:(GeminiFREType)FREType
+                  isManagedAccount:(BOOL)isManagedAccount
+                           country:(NSString*)country {
+  return [GeminiConsentConfiguration
+      configurationForManaged:isManagedAccount
+                       strict:[self useStrictLegalConsent]
+                         type:FREType
+                      country:country];
 }
 
 #pragma mark - Private

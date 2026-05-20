@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -128,12 +129,14 @@
           ? base::ToLowerASCII(variations_service->GetStoredPermanentCountry())
           : "";
   NSString* nsCountry = base::SysUTF8ToNSString(country);
+  GeminiConsentConfiguration* consentConfig =
+      [_mediator consentConfigurationForFREType:_FREType
+                               isManagedAccount:[self isManagedAccount]
+                                        country:nsCountry];
   _viewController = [[GeminiFREWrapperViewController alloc]
-              initWithPromo:_mediator.shouldShowPromo
-           isAccountManaged:[self isManagedAccount]
-      useStrictLegalConsent:_mediator.useStrictLegalConsent
-                    FREType:_FREType
-                    country:nsCountry];
+             initWithPromo:_mediator.shouldShowPromo
+                   FREType:_FREType
+      consentConfiguration:consentConfig];
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 

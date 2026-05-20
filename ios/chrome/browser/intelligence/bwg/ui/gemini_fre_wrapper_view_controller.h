@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 
+@class GeminiConsentConfiguration;
 @protocol GeminiConsentMutator;
 
 // UIViewController that owns GeminiPromo and GeminiConsent view controllers and
@@ -30,16 +31,15 @@
 // +--------------------------------+
 @interface GeminiFREWrapperViewController : ButtonStackViewController
 
-// Initializes the navigation controller.
-// If `showPromo` is YES, the navigation controller will display the promo.
-// If NO, the navigation controller will display the consent view.
-// `isAccountManaged` indicates whether the account is managed.
+// Initializes the view controller.
+// If `showPromo` is YES, the view controller will display the promo.
+// If NO, the view controller will display the consent view.
 // `freType` specifies the type of Gemini FRE being shown.
+// `consentConfiguration` provides the configuration for the consent view.
 - (instancetype)initWithPromo:(BOOL)showPromo
-             isAccountManaged:(BOOL)isAccountManaged
-        useStrictLegalConsent:(BOOL)useStrictLegalConsent
                       FREType:(GeminiFREType)FREType
-                      country:(NSString*)country NS_DESIGNATED_INITIALIZER;
+         consentConfiguration:(GeminiConsentConfiguration*)consentConfiguration
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
     NS_UNAVAILABLE;
