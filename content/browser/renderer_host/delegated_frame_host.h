@@ -135,6 +135,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void EmbedSurface(const viz::LocalSurfaceId& local_surface_id,
                     const gfx::Size& dip_size,
                     cc::DeadlinePolicy deadline_policy);
+  void SetForceSpecifiedDeadline(std::optional<uint32_t> deadline_in_frames);
   bool HasSavedFrame() const;
   void AttachToCompositor(ui::Compositor* compositor);
   void DetachFromCompositor();
@@ -173,6 +174,10 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   gfx::Size CurrentFrameSizeInDipForTesting() const {
     return current_frame_size_in_dip_;
+  }
+
+  std::optional<uint32_t> GetForceSpecifiedDeadlineForTesting() const {
+    return force_specified_deadline_;
   }
 
   void DidNavigate();
@@ -296,6 +301,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   viz::LocalSurfaceId bfcache_fallback_;
 
   FrameEvictionState frame_eviction_state_ = FrameEvictionState::kNotStarted;
+
+  std::optional<uint32_t> force_specified_deadline_ = std::nullopt;
 
   // Layer responsible for displaying the stale content for the DFHC when the
   // actual web content frame has been evicted. This will be reset when a new

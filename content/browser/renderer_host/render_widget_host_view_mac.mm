@@ -1085,6 +1085,25 @@ void RenderWidgetHostViewMac::SetWindowFrameInScreen(const gfx::Rect& rect) {
   RenderWidgetHostViewBase::UpdateScreenInfo();
 }
 
+void RenderWidgetHostViewMac::SetForceSpecifiedDeadline(
+    std::optional<uint32_t> deadline_in_frames) {
+  if (browser_compositor_) {
+    if (auto* dfh = browser_compositor_->GetDelegatedFrameHost()) {
+      dfh->SetForceSpecifiedDeadline(deadline_in_frames);
+    }
+  }
+}
+
+std::optional<uint32_t>
+RenderWidgetHostViewMac::GetForceSpecifiedDeadlineForTesting() {
+  if (browser_compositor_) {
+    if (auto* dfh = browser_compositor_->GetDelegatedFrameHost()) {
+      return dfh->GetForceSpecifiedDeadlineForTesting();
+    }
+  }
+  return std::nullopt;
+}
+
 //
 // RenderWidgetHostViewCocoa uses the stored selection text,
 // which implements NSServicesRequests protocol.

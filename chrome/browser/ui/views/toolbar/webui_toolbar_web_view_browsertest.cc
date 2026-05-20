@@ -89,6 +89,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -3725,4 +3726,63 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
   histogram_tester_->ExpectUniqueSample(
       "InitialWebUI.Toolbar.ProcessAlreadyExistsForTheSameProfileOnCreation",
       false, 1);
+}
+
+class WebUIToolbarSurfaceSyncBrowserTest
+    : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIToolbarSurfaceSyncBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUIReloadButton,
+             features::kWebUISplitTabsButton, features::kWebUIHomeButton,
+             features::kSkipIPCChannelPausingForNonGuests,
+             features::kWebUIInProcessResourceLoadingV2,
+             features::kInitialWebUISyncNavStartToCommit,
+             blink::features::kInitialWebUISurfaceSync},
+            {}) {}
+};
+
+// Verifies that when `blink::features::kInitialWebUISurfaceSync` is enabled,
+// initializing the WebUI toolbar overrides the surface synchronization
+// deadlines of both the toolbar's native view and the active tab's main web
+// contents view to ensure initial UI elements sync without dropping frames.
+// Also verifies that these overrides automatically clear after the initial
+// paint completes.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarSurfaceSyncBrowserTest, SetsDeadlineOnInit) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  content::WebContents* web_ui_contents = web_view->GetWebContents();
+  ASSERT_TRUE(web_ui_contents);
+
+  content::RenderWidgetHostView* toolbar_rwhv =
+      web_ui_contents->GetRenderWidgetHostView();
+  ASSERT_TRUE(toolbar_rwhv);
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  content::RenderWidgetHostView* main_rwhv =
+      active_contents->GetRenderWidgetHostView();
+  ASSERT_TRUE(main_rwhv);
+
+  uint32_t expected_deadline = static_cast<uint32_t>(
+      blink::features::kInitialWebUISurfaceSyncDeadlineInFrames.Get());
+
+  // Simulate application of specified deadline upon toolbar initialization
+  // when active web contents are fully attached.
+  webui_toolbar_view->SetSurfaceSyncDeadline(expected_deadline);
+
+  EXPECT_EQ(toolbar_rwhv->GetForceSpecifiedDeadlineForTesting(),
+            std::make_optional(expected_deadline));
+  EXPECT_EQ(main_rwhv->GetForceSpecifiedDeadlineForTesting(),
+            std::make_optional(expected_deadline));
+
+  // Verify that deadlines reset to std::nullopt after the initial paint
+  // completion callback fires.
+  webui_toolbar_view->DidFirstVisuallyNonEmptyPaint();
+
+  EXPECT_EQ(toolbar_rwhv->GetForceSpecifiedDeadlineForTesting(), std::nullopt);
+  EXPECT_EQ(main_rwhv->GetForceSpecifiedDeadlineForTesting(), std::nullopt);
 }

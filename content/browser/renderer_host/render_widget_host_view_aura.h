@@ -138,6 +138,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Size GetVisibleViewportSize() override;
   gfx::Size GetVisibleViewportSizeDevicePx() override;
   void SetInsets(const gfx::Insets& insets) override;
+  void SetForceSpecifiedDeadline(
+      std::optional<uint32_t> deadline_in_frames) override;
+  std::optional<uint32_t> GetForceSpecifiedDeadlineForTesting() override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() override;

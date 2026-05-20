@@ -978,6 +978,21 @@ void RenderWidgetHostViewAura::SetInsets(const gfx::Insets& insets) {
   }
 }
 
+void RenderWidgetHostViewAura::SetForceSpecifiedDeadline(
+    std::optional<uint32_t> deadline_in_frames) {
+  if (delegated_frame_host_) {
+    delegated_frame_host_->SetForceSpecifiedDeadline(deadline_in_frames);
+  }
+}
+
+std::optional<uint32_t>
+RenderWidgetHostViewAura::GetForceSpecifiedDeadlineForTesting() {
+  if (delegated_frame_host_) {
+    return delegated_frame_host_->GetForceSpecifiedDeadlineForTesting();
+  }
+  return std::nullopt;
+}
+
 void RenderWidgetHostViewAura::UpdateCursor(const ui::Cursor& cursor) {
   GetCursorManager()->UpdateCursor(this, cursor);
 }

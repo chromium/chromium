@@ -85,6 +85,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   bool AllowScriptExtensions() override;
 
   bool HasWebView() const override;
+  bool IsForInitialWebUI() const override;
   bool InShadowTree() const override;
   void WillBeDetached() override;
   void Detached(FrameDetachType) override;
