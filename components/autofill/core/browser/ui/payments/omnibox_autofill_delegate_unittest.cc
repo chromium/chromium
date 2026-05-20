@@ -381,4 +381,43 @@ TEST_F(OmniboxAutofillDelegateTest,
       1);
 }
 
+TEST_F(OmniboxAutofillDelegateTest,
+       OnAutofillManagerStateChanged_WasActive_HideChip) {
+  payments_autofill_client().ShowOmniboxAutofillChip();
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnAutofillManagerStateChanged(
+      autofill_manager(), /*previous=*/AutofillManager::LifecycleState::kActive,
+      /*current=*/AutofillManager::LifecycleState::kInactive);
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_hidden());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_shown());
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnAutofillManagerStateChanged_WasNotActive_DoesNotHideChip) {
+  payments_autofill_client().ShowOmniboxAutofillChip();
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnAutofillManagerStateChanged(
+      autofill_manager(),
+      /*previous=*/AutofillManager::LifecycleState::kInactive,
+      /*current=*/AutofillManager::LifecycleState::kActive);
+
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+}
+
 }  // namespace autofill

@@ -121,6 +121,19 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
       OmniboxAutofillShowChipDecisionPart1::kSuccess);
 }
 
+void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    autofill::AutofillManager::LifecycleState previous,
+    autofill::AutofillManager::LifecycleState current) {
+  switch (previous) {
+    case autofill::AutofillManager::LifecycleState::kActive:
+      client_->GetPaymentsAutofillClient()->HideOmniboxAutofillChip();
+      break;
+    default:
+      break;
+  }
+}
+
 void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
   if (!is_visible) {
     return;

@@ -13,6 +13,7 @@
 namespace autofill {
 
 class AutofillClient;
+class AutofillDriver;
 
 class OmniboxAutofillDelegate : public AutofillManager::Observer {
  public:
@@ -28,6 +29,10 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer {
                               FormGlobalId form,
                               AutofillManager::Observer::FieldTypeSource source,
                               bool small_forms_were_parsed) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillDriver::LifecycleState previous,
+      AutofillDriver::LifecycleState current) override;
 
   void OnGetIntersectionObserverInfo(bool is_visible);
 

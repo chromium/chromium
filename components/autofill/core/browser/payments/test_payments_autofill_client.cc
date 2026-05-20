@@ -492,10 +492,12 @@ TestPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
 
 void TestPaymentsAutofillClient::ShowOmniboxAutofillChip() {
   omnibox_autofill_chip_shown_ = true;
+  omnibox_autofill_chip_hidden_ = false;
 }
 
 void TestPaymentsAutofillClient::HideOmniboxAutofillChip() {
   omnibox_autofill_chip_hidden_ = true;
+  omnibox_autofill_chip_shown_ = false;
 }
 #endif
 

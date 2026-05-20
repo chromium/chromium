@@ -353,6 +353,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     bnpl_ui_delegate_ = std::move(bnpl_ui_delegate);
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool omnibox_autofill_chip_shown() { return omnibox_autofill_chip_shown_; }
+
+  bool omnibox_autofill_chip_hidden() { return omnibox_autofill_chip_hidden_; }
+#endif
+
  private:
   const raw_ref<AutofillClient> client_;
 
