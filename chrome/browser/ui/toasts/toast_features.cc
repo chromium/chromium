@@ -32,7 +32,7 @@ BASE_FEATURE(kLensOverlayToast, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearBrowsingDataToast, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the translate toast.
-BASE_FEATURE(kTranslateToast, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateToast, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 bool IsEnabled(const base::Feature& feature) {
