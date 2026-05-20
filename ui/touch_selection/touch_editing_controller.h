@@ -106,6 +106,12 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditable
   // controller it owns.
   virtual void DestroyTouchSelection() = 0;
 
+  using ui::SimpleMenuModel::Delegate::IsCommandIdEnabled;
+
+  // Checks if the command is enabled. |can_paste| is provided by the caller
+  // based on the async clipboard read state.
+  virtual bool IsCommandIdEnabled(int command_id, bool can_paste) const = 0;
+
  protected:
   ~TouchEditable() override {}
 };

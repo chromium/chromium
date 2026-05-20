@@ -1609,6 +1609,14 @@ void Textfield::DestroyTouchSelection() {
   touch_selection_controller_.reset();
 }
 
+bool Textfield::IsCommandIdEnabled(int command_id, bool can_paste) const {
+  if (command_id ==
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
+    return !GetReadOnly() && can_paste;
+  }
+  return IsCommandIdEnabled(command_id);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, ui::SimpleMenuModel::Delegate overrides:
 
