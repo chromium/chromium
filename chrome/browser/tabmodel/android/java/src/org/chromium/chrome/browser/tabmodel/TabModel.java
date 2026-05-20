@@ -268,6 +268,13 @@ public interface TabModel extends TabList {
     int getMultiSelectedTabsCount();
 
     /**
+     * Gets the list of multi-selected tab ids in the order they were selected.
+     *
+     * @return The list of ordered selected tab ids.
+     */
+    List<Integer> getOrderedMultiSelectedTabIds();
+
+    /**
      * Gets the list of multi-selected tabs in the order they were selected.
      *
      * @return The list of ordered selected tabs.

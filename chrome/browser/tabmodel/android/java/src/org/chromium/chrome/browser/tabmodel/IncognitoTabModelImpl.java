@@ -456,6 +456,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public List<Integer> getOrderedMultiSelectedTabIds() {
+        return mDelegateModel.getOrderedMultiSelectedTabIds();
+    }
+
+    @Override
     public List<Tab> getOrderedMultiSelectedTabs() {
         return mDelegateModel.getOrderedMultiSelectedTabs();
     }

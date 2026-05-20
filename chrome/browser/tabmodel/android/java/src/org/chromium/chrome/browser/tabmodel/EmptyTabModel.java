@@ -280,6 +280,11 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
+    public List<Integer> getOrderedMultiSelectedTabIds() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public List<Tab> getOrderedMultiSelectedTabs() {
         return Collections.emptyList();
     }

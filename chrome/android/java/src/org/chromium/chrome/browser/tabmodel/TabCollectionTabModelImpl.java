@@ -770,6 +770,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    public List<Integer> getOrderedMultiSelectedTabIds() {
+        assertOnUiThread();
+        return new ArrayList<>(mMultiSelectedTabs);
+    }
+
+    @Override
     public List<Tab> getOrderedMultiSelectedTabs() {
         assertOnUiThread();
         List<Tab> orderedTabs = new ArrayList<>(mMultiSelectedTabs.size());
