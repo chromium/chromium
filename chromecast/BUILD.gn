@@ -605,7 +605,6 @@ buildflag_header("chromecast_buildflags") {
     "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
-    "IS_CAST_AUDIO_ONLY=0",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",

@@ -29,14 +29,7 @@
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/1293538): The IS_CAST_AUDIO_ONLY check should not need to be
-// nested inside of an IS_CASTOS check.
-#if BUILDFLAG(IS_CASTOS)
-#include "chromecast/chromecast_buildflags.h"  // nogncheck
-#if BUILDFLAG(IS_CAST_AUDIO_ONLY)
-#define CAST_AUDIO_ONLY
-#endif  // BUILDFLAG(IS_CAST_AUDIO_ONLY)
-#endif  // BUILDFLAG(IS_CASTOS)
+
 
 namespace content {
 namespace {
@@ -664,7 +657,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if !defined(CAST_AUDIO_ONLY) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({}, {
@@ -684,18 +677,11 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
-#endif  // !defined(CAST_AUDIO_ONLY) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_IOS)
 
-// Chromecast audio-only builds should not launch the GPU process.
-#if defined(CAST_AUDIO_ONLY)
-TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableGpu);
-  ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
-}
-#endif  // defined(CAST_AUDIO_ONLY)
+
 
 #if BUILDFLAG(ENABLE_VULKAN)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
