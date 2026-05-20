@@ -171,14 +171,12 @@ class PasswordImporter {
       ImportResultsCallback results_callback,
       ImportResults results,
       IncomingPasswords incoming_passwords,
-      std::vector<std::vector<password_manager::PasswordForm>> conflicts,
-      base::Time start_time);
+      std::vector<std::vector<password_manager::PasswordForm>> conflicts);
 
   // Triggers the processes for adding and updating `incoming_passwords`.
   void ExecuteImport(ImportResultsCallback results_callback,
                      ImportResults results,
                      IncomingPasswords incoming_passwords,
-                     base::Time start_time,
                      size_t conflicts_count);
 
   // Runs `results_callback` with aggregate results `results_` after all
@@ -186,7 +184,6 @@ class PasswordImporter {
   // Also, reports import results metrics.
   void ImportFinished(ImportResultsCallback results_callback,
                       ImportResults results,
-                      base::Time start_time,
                       size_t conflicts_count);
 
   const mojo::Remote<mojom::CSVPasswordParser>& GetParser();

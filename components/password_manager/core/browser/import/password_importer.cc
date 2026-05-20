@@ -39,12 +39,10 @@ struct ConflictsResolutionCache {
   ConflictsResolutionCache(
       IncomingPasswords incoming_passwords,
       std::vector<std::vector<password_manager::PasswordForm>> conflicts,
-      ImportResults results,
-      base::Time start_time)
+      ImportResults results)
       : incoming_passwords(std::move(incoming_passwords)),
         conflicts(std::move(conflicts)),
-        results(std::move(results)),
-        start_time(start_time) {}
+        results(std::move(results)) {}
   ~ConflictsResolutionCache() = default;
 
   // Aggregated passwords that need to be added or updated.
@@ -55,9 +53,6 @@ struct ConflictsResolutionCache {
   std::vector<std::vector<password_manager::PasswordForm>> conflicts;
   // Aggregated results of the current import.
   ImportResults results;
-  // Used to track the time needed to process the already parsed credentials,
-  // checking for conflicts, generating status and storing them.
-  base::Time start_time;
 };
 
 namespace {
@@ -301,7 +296,6 @@ void ReportNotesMetrics(const NotesImportMetrics& metrics) {
 }
 
 void ReportImportResultsMetrics(const ImportResults& results,
-                                base::Time start_time,
                                 size_t conflicts_count) {
   // Number of rows with missing password, but username and URL are non-empty.
   size_t missing_only_password_rows = 0;
@@ -325,9 +319,6 @@ void ReportImportResultsMetrics(const ImportResults& results,
     base::UmaHistogramEnumeration("PasswordManager.ImportEntryStatus",
                                   entry.status);
   }
-
-  base::UmaHistogramLongTimes("PasswordManager.ImportDuration",
-                              base::Time::Now() - start_time);
 
   const size_t all_errors_count = results.displayed_entries.size();
 
@@ -519,10 +510,10 @@ void PasswordImporter::ContinueImport(const std::vector<int>& selected_ids,
     }
   }
 
-  ExecuteImport(
-      std::move(results_callback), std::move(conflicts_cache_->results),
-      std::move(conflicts_cache_->incoming_passwords),
-      conflicts_cache_->start_time, conflicts_cache_->conflicts.size());
+  ExecuteImport(std::move(results_callback),
+                std::move(conflicts_cache_->results),
+                std::move(conflicts_cache_->incoming_passwords),
+                conflicts_cache_->conflicts.size());
 
   conflicts_cache_.reset();
 
@@ -568,8 +559,6 @@ void PasswordImporter::ConsumePasswords(
   ImportResults results;
   results.file_name = file_path_.BaseName().AsUTF8Unsafe();
 
-  // TODO(crbug.com/40225420): Either move to earlier point or update histogram.
-  base::Time start_time = base::Time::Now();
   // Used to compute conflicts and duplicates.
   std::map<std::u16string, std::vector<CredentialUIEntry>>
       credentials_by_username =
@@ -612,21 +601,19 @@ void PasswordImporter::ConsumePasswords(
 
   if (conflicts.empty() && !user_confirmation_required_) {
     ExecuteImport(std::move(results_callback), std::move(results),
-                  std::move(incoming_passwords), start_time, conflicts.size());
+                  std::move(incoming_passwords), conflicts.size());
     return;
   }
 
   ShowImportConflicts(std::move(results_callback), std::move(results),
-                      std::move(incoming_passwords), std::move(conflicts),
-                      start_time);
+                      std::move(incoming_passwords), std::move(conflicts));
 }
 
 void PasswordImporter::ShowImportConflicts(
     ImportResultsCallback results_callback,
     ImportResults results,
     IncomingPasswords incoming_passwords,
-    std::vector<std::vector<password_manager::PasswordForm>> conflicts,
-    base::Time start_time) {
+    std::vector<std::vector<password_manager::PasswordForm>> conflicts) {
   state_ = kUserInteractionRequired;
   ImportResults conflicts_results;
   conflicts_results.number_to_import = results.number_imported;
@@ -637,8 +624,7 @@ void PasswordImporter::ShowImportConflicts(
   }
 
   conflicts_cache_ = std::make_unique<ConflictsResolutionCache>(
-      std::move(incoming_passwords), std::move(conflicts), std::move(results),
-      start_time);
+      std::move(incoming_passwords), std::move(conflicts), std::move(results));
 
   std::move(results_callback).Run(std::move(conflicts_results));
 }
@@ -646,15 +632,13 @@ void PasswordImporter::ShowImportConflicts(
 void PasswordImporter::ExecuteImport(ImportResultsCallback results_callback,
                                      ImportResults results,
                                      IncomingPasswords incoming_passwords,
-                                     base::Time start_time,
                                      size_t conflicts_count) {
   // Run `results_callback` when both `AddCredentials` and
   // `UpdatePasswordForms` have finished running.
   auto barrier_done_callback = base::BarrierClosure(
-      2, base::BindOnce(&PasswordImporter::ImportFinished,
-                        weak_ptr_factory_.GetWeakPtr(),
-                        std::move(results_callback), std::move(results),
-                        start_time, conflicts_count));
+      2, base::BindOnce(
+             &PasswordImporter::ImportFinished, weak_ptr_factory_.GetWeakPtr(),
+             std::move(results_callback), std::move(results), conflicts_count));
 
   presenter_->AddCredentials(incoming_passwords.add_credentials,
                              password_manager::PasswordForm::Type::kImported,
@@ -665,9 +649,8 @@ void PasswordImporter::ExecuteImport(ImportResultsCallback results_callback,
 
 void PasswordImporter::ImportFinished(ImportResultsCallback results_callback,
                                       ImportResults results,
-                                      base::Time start_time,
                                       size_t conflicts_count) {
-  ReportImportResultsMetrics(results, start_time, conflicts_count);
+  ReportImportResultsMetrics(results, conflicts_count);
 
   if (results.displayed_entries.empty()) {
     // After successful import with no errors, the user has an option to delete

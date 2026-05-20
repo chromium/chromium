@@ -215,7 +215,6 @@ TEST_F(PasswordImporterTest, CSVImportBaseFields) {
       StartImportAndWaitForCompletion(input_path);
   AssertFinishedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
@@ -328,7 +327,6 @@ TEST_F(PasswordImporterTest, CSVImportAndroidCredential) {
       StartImportAndWaitForCompletion(input_path);
   AssertFinishedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
@@ -355,7 +353,6 @@ TEST_F(PasswordImporterTest, CSVImportBadHeaderReturnsBadFormat) {
       StartImportAndWaitForCompletion(input_path);
   AssertNotStartedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportFileSize2", 120,
@@ -509,7 +506,6 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileStore) {
       StartImportAndWaitForCompletion(input_path);
   AssertFinishedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -553,7 +549,6 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchAccountStore) {
       input_path, PasswordForm::Store::kAccountStore);
   AssertFinishedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -596,7 +591,6 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileAndAccountStore) {
       input_path, PasswordForm::Store::kAccountStore);
   AssertFinishedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 2, 1);
   histogram_tester.ExpectUniqueSample(
@@ -685,7 +679,6 @@ TEST_F(PasswordImporterTest, ContinueImportCanReplaceConflictingPassword) {
   ASSERT_NO_FATAL_FAILURE(TriggerDeleteFile());
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportEntryStatus", 0);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 2, 1);
   histogram_tester.ExpectUniqueSample(
@@ -733,7 +726,6 @@ TEST_F(PasswordImporterTest,
       input_path, password_manager::PasswordForm::Store::kAccountStore);
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportEntryStatus", 0);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 2, 1);
   histogram_tester.ExpectUniqueSample(
@@ -763,7 +755,6 @@ TEST_F(PasswordImporterTest, CSVImportEmptyPasswordReported) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::MISSING_PASSWORD, 3);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
   histogram_tester.ExpectUniqueSample(
@@ -796,7 +787,6 @@ TEST_F(PasswordImporterTest, CSVImportEmptyURLReported) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::MISSING_URL, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.AnyErrors", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -827,7 +817,6 @@ TEST_F(PasswordImporterTest, CSVImportLongURLReported) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::LONG_URL, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
 
@@ -859,7 +848,6 @@ TEST_F(PasswordImporterTest, CSVImportLongPassword) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::LONG_PASSWORD, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
 
@@ -890,7 +878,6 @@ TEST_F(PasswordImporterTest, CSVImportLongUsername) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::LONG_USERNAME, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
 
@@ -919,7 +906,6 @@ TEST_F(PasswordImporterTest, CSVImportInvalidURLReported) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::INVALID_URL, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
 
@@ -975,7 +961,6 @@ TEST_F(PasswordImporterTest, SingleFailedSingleSucceeds) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
                                       ImportEntry::Status::MISSING_URL, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
@@ -1010,7 +995,6 @@ TEST_F(PasswordImporterTest, PartialImportSucceeds) {
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportFileSize2",
                                       /*sample=*/104,
                                       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
@@ -1045,7 +1029,6 @@ TEST_F(PasswordImporterTest, CSVImportLargeFileShouldFail) {
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportFileSize2",
                                       /*sample=*/1024100,
                                       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
 
@@ -1068,7 +1051,6 @@ TEST_F(PasswordImporterTest, CSVImportLargeStringShouldFail) {
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportFileSize2",
                                       /*sample=*/1024100,
                                       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
 
@@ -1112,7 +1094,6 @@ TEST_F(PasswordImporterTest, CSVImportNonExistingFile) {
   AssertNotStartedState();
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportFileSize2", 0);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
   EXPECT_THAT(results.displayed_entries, IsEmpty());
@@ -1128,7 +1109,6 @@ TEST_F(PasswordImporterTest, ImportIOErrorDueToUnreadableFile) {
   AssertNotStartedState();
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportFileSize2", 0);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
   EXPECT_THAT(results.displayed_entries, IsEmpty());
@@ -1148,7 +1128,6 @@ TEST_F(PasswordImporterTest, VectorImport) {
       StartImportAndWaitForCompletion(passwords);
   AssertFinishedState();
 
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
