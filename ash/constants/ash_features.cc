@@ -2816,10 +2816,6 @@ bool IsLauncherContinueSectionWithRecentsEnabled() {
              kLauncherContinueSectionWithRecentsRollout);
 }
 
-bool IsLauncherNudgeShortIntervalEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherNudgeShortInterval);
-}
-
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kLinkCrossDeviceDogfoodFeedback);
 }

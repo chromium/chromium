@@ -65,9 +65,7 @@ class ASH_EXPORT LauncherNudgeController : public SessionObserver,
 
   // Returns the time delta between user's first login and the first time
   // showing the nudge if `is_first_time` is true. Otherwise, returns the time
-  // delta between each time showing the nudge to the user. If the
-  // `kLauncherNudgeShortInterval` feature is enabled, use a short interval for
-  // testing.
+  // delta between each time showing the nudge to the user.
   base::TimeDelta GetNudgeInterval(bool is_first_time) const;
 
   // Sets custom Clock and TickClock for testing. Note that this should be
