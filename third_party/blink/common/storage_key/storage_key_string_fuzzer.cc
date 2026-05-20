@@ -5,6 +5,7 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -15,9 +16,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> env;
   std::string serialized_storage_key(reinterpret_cast<const char*>(data), size);
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;

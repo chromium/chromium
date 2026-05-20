@@ -5,6 +5,7 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -18,9 +19,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 DEFINE_PROTO_FUZZER(const storage_key_proto::StorageKey& storage_key_proto) {
+  static const base::NoDestructor<IcuEnvironment> env;
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
