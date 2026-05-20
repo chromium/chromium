@@ -107,6 +107,24 @@ CharacterData* ProcessingInstruction::CloneWithData(Document& factory,
 
 void ProcessingInstruction::DidChangeData() {
   attributes_dirty_ = true;
+  bool was_xsl = is_xsl_;
+  String href;
+  String charset;
+  CheckStyleSheet(href, charset);
+  if (isConnected()) {
+    if (was_xsl && !is_xsl_) {
+      DocumentXSLT::ProcessingInstructionRemovedFromDocument(GetDocument(),
+                                                             this);
+      GetDocument().GetStyleEngine().AddStyleSheetCandidateNode(*this);
+    } else if (!was_xsl && is_xsl_) {
+      is_xsl_ = false;
+      GetDocument().GetStyleEngine().RemoveStyleSheetCandidateNode(
+          *this, *parentNode());
+      is_xsl_ = true;
+      DocumentXSLT::ProcessingInstructionInsertedIntoDocument(GetDocument(),
+                                                              this);
+    }
+  }
   UpdateStylesheetIfNeeded();
 }
 
@@ -129,59 +147,6 @@ void ProcessingInstruction::UpdateStylesheetIfNeeded() {
   }
 }
 
-namespace {
-void ParseAttributesUsingHTML(
-    Document& document,
-    const String& data,
-    Vector<KeyValuePair<AtomicString, AtomicString>>& attributes) {
-  StringBuilder fake_html;
-  fake_html.Append("<attrs ");
-  fake_html.Append(data);
-  fake_html.Append("></attrs>");
-  const DocumentFragment* fragment = CreateFragmentFromMarkup(
-      document.EnsureTemplateDocument(), fake_html.ToString(),
-      document.BaseURL(),
-      ParserContentPolicy::kDisallowScriptingAndPluginContent);
-  const Node* first = fragment->firstChild();
-  if (!first || !first->IsElementNode()) {
-    return;
-  }
-
-  const Element& fake_element = To<Element>(*first);
-
-  CHECK_EQ(fake_element.localName(), "attrs");
-
-  for (const auto& attribute : fake_element.Attributes()) {
-    attributes.push_back(KeyValuePair<AtomicString, AtomicString>(
-        attribute.GetName().ToString(), attribute.Value()));
-  }
-}
-
-void ParseAttributesUsingXML(
-    const String& data,
-    Vector<KeyValuePair<AtomicString, AtomicString>>& attributes) {
-  // see http://www.w3.org/TR/xml-stylesheet/
-  // ### support stylesheet included in a fragment of this (or another)
-  // document
-  // ### make sure this gets called when adding from javascript
-  bool attrs_ok;
-  HashMap<String, String> attrs;
-  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
-    attrs = blink::ParseAttributesRust(data, attrs_ok);
-  } else {
-    attrs = blink::ParseAttributes(data, attrs_ok);
-  }
-  if (!attrs_ok) {
-    return;
-  }
-
-  for (const auto& pair : attrs) {
-    attributes.push_back(
-        KeyValuePair<AtomicString, AtomicString>(pair.key, pair.value));
-  }
-}
-}  // namespace
-
 void ProcessingInstruction::ProcessAttributesIfNeeded() {
   if (!attributes_dirty_) {
     return;
@@ -189,10 +154,24 @@ void ProcessingInstruction::ProcessAttributesIfNeeded() {
 
   attributes_dirty_ = false;
   attributes_.clear();
-  if (RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled()) {
-    ParseAttributesUsingHTML(GetDocument(), data_, attributes_);
+  // see http://www.w3.org/TR/xml-stylesheet/
+  // ### support stylesheet included in a fragment of this (or another)
+  // document
+  // ### make sure this gets called when adding from javascript
+  bool attrs_ok;
+  HashMap<String, String> attrs;
+  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
+    attrs = blink::ParseAttributesRust(data_, attrs_ok);
   } else {
-    ParseAttributesUsingXML(data_, attributes_);
+    attrs = blink::ParseAttributes(data_, attrs_ok);
+  }
+  if (!attrs_ok) {
+    return;
+  }
+
+  for (const auto& pair : attrs) {
+    attributes_.push_back(
+        KeyValuePair<AtomicString, AtomicString>(pair.key, pair.value));
   }
 }
 
@@ -333,6 +312,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   DEFINE_STATIC_LOCAL(AtomicString, kMedia, ("media"));
 
   AtomicString type = GetAttributeValue(kType, g_empty_atom);
+
   is_css_ = type.empty() || type == "text/css";
   is_xsl_ = (type == "text/xml" || type == "text/xsl" ||
              type == "application/xml" || type == "application/xhtml+xml" ||

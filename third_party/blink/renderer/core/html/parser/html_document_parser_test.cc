@@ -387,8 +387,8 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionAttributeChange) {
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=\"n\"", pi->data());
   EXPECT_EQ("n", pi->getAttribute(AtomicString("name")));
-  pi->setData("name=\"m\" value=v");
-  EXPECT_EQ("name=\"m\" value=v", pi->data());
+  pi->setData("name=\"m\" value=\"v\"");
+  EXPECT_EQ("name=\"m\" value=\"v\"", pi->data());
   EXPECT_EQ("m", pi->getAttribute(AtomicString("name")));
   EXPECT_EQ("v", pi->getAttribute(AtomicString("value")));
 
@@ -407,11 +407,18 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionGTSign) {
   ASSERT_TRUE(last);
   EXPECT_EQ(Node::kProcessingInstructionNode, last->getNodeType());
   ProcessingInstruction* pi = To<ProcessingInstruction>(last);
+
+  // Unquoted attributes are invalid XML and fail to parse entirely.
   pi->setData("name=n > value=v");
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=n > value=v", pi->data());
-  EXPECT_EQ("n", pi->getAttribute(AtomicString("name")));
+  EXPECT_EQ(g_null_atom, pi->getAttribute(AtomicString("name")));
   EXPECT_EQ(g_null_atom, pi->getAttribute(AtomicString("value")));
+
+  // Quoted attribute containing '>' is valid XML.
+  pi->setData("name=\"n > value=v\"");
+  EXPECT_EQ("name=\"n > value=v\"", pi->data());
+  EXPECT_EQ("n > value=v", pi->getAttribute(AtomicString("name")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
@@ -435,7 +442,7 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionEmptyAttribute) {
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
 
-TEST_P(HTMLDocumentParserTest, ProcessingInstructionttributeNoQuotes) {
+TEST_P(HTMLDocumentParserTest, ProcessingInstructionAttributeNoQuotes) {
   auto& document = To<HTMLDocument>(GetDocument());
   HTMLDocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
@@ -449,7 +456,7 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionttributeNoQuotes) {
   ProcessingInstruction* pi = To<ProcessingInstruction>(last);
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=v", pi->data());
-  EXPECT_EQ("v", pi->getAttribute(AtomicString("name")));
+  EXPECT_EQ(g_null_atom, pi->getAttribute(AtomicString("name")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
