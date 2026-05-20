@@ -21,6 +21,7 @@ source_set("ui") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",
     "//components/url_formatter",
+    "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",

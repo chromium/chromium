@@ -22,6 +22,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -460,6 +461,29 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
        secondaryActionString:l10n_util::GetNSString(
                                  IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD)
         secondaryActionImage:[OCMArg any]];
+
+  [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       WithSuggestionsForConditionalPasskeyLogin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kIOSPasskeyShim,
+                            kIOSPasskeyConditionalLoginWithShim},
+      /*disabled_features=*/{});
+
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
+
+  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
+                            andDomain:[OCMArg isNotNil]]);
+  OCMExpect([consumer_
+      setPrimaryActionString:PrimaryActionLabelForUsernameFill()
+       secondaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD)
+        secondaryActionImage:[OCMArg any]]);
 
   [mediator_ setConsumer:consumer_];
   EXPECT_OCMOCK_VERIFY(consumer_);

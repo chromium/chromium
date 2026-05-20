@@ -24,6 +24,7 @@
 #import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/prefs/pref_service.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -56,6 +57,9 @@ constexpr CGFloat kProfileImageSize = 80.0;
 using PasswordSuggestionBottomSheetExitReason::kBadProvider;
 
 int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
+  if (IsConditionalPasskeyLoginEnabled()) {
+    return IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE;
+  }
   return suggestion.metadata.is_single_username_form
              ? IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE
              : IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD;

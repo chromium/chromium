@@ -72,6 +72,13 @@ id<GREYMatcher> SubtitleString(const GURL& url) {
           url)));
 }
 
+id<GREYMatcher> SubtitleWithPasskeysString(const GURL& url) {
+  return grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url)));
+}
+
 // Returns the matcher for the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -527,7 +534,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SubtitleWithPasskeysString([self
+                                              conditionalPasskeyLoginPageURL])];
+
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
       performAction:grey_tap()];
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];

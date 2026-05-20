@@ -2280,6 +2280,9 @@
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE" desc="Shown on the credential bottom sheet to inform users that, upon accepting the prompt, their username and password will be shared with the given website. [iOS only]" meaning="A string under the title logo of the credential bottom sheet.">
         You'll sign in to <ph name="URL">$1<ex>chromium.org</ex></ph>
       </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS" desc="Shown on the credential bottom sheet to inform users that, upon accepting the prompt, their username and password/passkey will be used to sign in to the given website. [iOS only]" meaning="A string under the title logo of the credential bottom sheet.">
+        Sign in to <ph name="URL">$1<ex>chromium.org</ex></ph>
+      </message>
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the credential bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
               Use keyboard
             </message>

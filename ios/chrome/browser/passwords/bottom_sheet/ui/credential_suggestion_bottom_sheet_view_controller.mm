@@ -15,6 +15,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/url_formatter/elide_url.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
@@ -142,7 +143,10 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
         url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
             _URL);
     self.subtitleString = l10n_util::GetNSStringF(
-        IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE, formattedURL);
+        IsConditionalPasskeyLoginEnabled()
+            ? IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS
+            : IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE,
+        formattedURL);
   }
 
   [super viewDidLoad];
