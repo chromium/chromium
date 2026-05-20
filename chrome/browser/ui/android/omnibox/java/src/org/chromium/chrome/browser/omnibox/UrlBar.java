@@ -21,8 +21,11 @@ import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -107,6 +110,7 @@ public class UrlBar extends AutocompleteEditText {
     private @Nullable UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private @Nullable Callback<Integer> mUrlDirectionListener;
     private @Nullable Callback<Boolean> mUrlTextWrappingChangeListener;
+    private @Nullable Runnable mManageSearchEnginesCallback;
 
     private final Rect mClipBounds = new Rect();
 
@@ -302,6 +306,7 @@ public class UrlBar extends AutocompleteEditText {
         setOnFocusChangeListener(null);
         mTextContextMenuDelegate = null;
         mTextChangeListener = null;
+        mManageSearchEnginesCallback = null;
     }
 
     /**
@@ -320,6 +325,11 @@ public class UrlBar extends AutocompleteEditText {
     /** Set the delegate to be used for text context menu actions. */
     public void setTextContextMenuDelegate(UrlBarTextContextMenuDelegate delegate) {
         mTextContextMenuDelegate = delegate;
+    }
+
+    /** Set the callback to trigger "Manage search engines" settings shortcut. */
+    public void setManageSearchEnginesCallback(@Nullable Runnable callback) {
+        mManageSearchEnginesCallback = callback;
     }
 
     @Override
@@ -775,6 +785,32 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         return super.onTextContextMenuItem(id);
+    }
+
+    @Override
+    protected void onCreateContextMenu(ContextMenu menu) {
+        super.onCreateContextMenu(menu);
+        if (mManageSearchEnginesCallback == null
+                || !OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
+            return;
+        }
+
+        if (menu.findItem(R.id.url_bar_manage_search_engines) != null) {
+            return;
+        }
+        MenuItem item =
+                menu.add(
+                        Menu.NONE,
+                        R.id.url_bar_manage_search_engines,
+                        Menu.CATEGORY_SECONDARY,
+                        getContext().getString(R.string.manage_search_engines_and_site_search));
+        item.setOnMenuItemClickListener(
+                clickedItem -> {
+                    if (mManageSearchEnginesCallback != null) {
+                        mManageSearchEnginesCallback.run();
+                    }
+                    return true;
+                });
     }
 
     /**
@@ -1475,5 +1511,9 @@ public class UrlBar extends AutocompleteEditText {
 
     /* package */ void setVisibleTextPrefixHintForTesting(CharSequence hintForTesting) {
         mVisibleTextPrefixHint = hintForTesting;
+    }
+
+    /* package */ @Nullable Runnable getManageSearchEnginesCallbackForTesting() {
+        return mManageSearchEnginesCallback;
     }
 }

@@ -164,4 +164,12 @@ public class UrlBarViewBinderUnitTest {
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
         assertTrue(mUrlBar.isHorizontallyScrollable());
     }
+
+    @Test
+    @SmallTest
+    public void testSetManageSearchEnginesCallback() {
+        Runnable mockCallback = mock(Runnable.class);
+        mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mockCallback);
+        assertEquals(mockCallback, mUrlBar.getManageSearchEnginesCallbackForTesting());
+    }
 }

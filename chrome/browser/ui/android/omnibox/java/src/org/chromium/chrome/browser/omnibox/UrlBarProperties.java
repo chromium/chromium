@@ -162,6 +162,14 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The callback to run when the "Manage search engines" menu item is clicked. */
+    public static final WritableObjectPropertyKey<Runnable> MANAGE_SEARCH_ENGINES_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
+    /** The callback to be notified on raw url text changes (rich context). */
+    public static final WritableObjectPropertyKey<Callback<UrlBarTextChangeInfo>>
+            RICH_TEXT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
+
     /** Specifies whether the text should be selected when the URL bar is focused. */
     public static final WritableBooleanPropertyKey SELECT_ALL_ON_FOCUS =
             new WritableBooleanPropertyKey();
@@ -176,10 +184,6 @@ class UrlBarProperties {
     /** The callback to be notified on url text changes. */
     public static final WritableObjectPropertyKey<Callback<String>> TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
-
-    /** The callback to be notified on raw url text changes (rich context). */
-    public static final WritableObjectPropertyKey<Callback<UrlBarTextChangeInfo>>
-            RICH_TEXT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
 
     /** Specifies the color for url bar text. */
     public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
@@ -218,6 +222,7 @@ class UrlBarProperties {
                 INCOGNITO_COLORS_ENABLED,
                 KEY_DOWN_LISTENER,
                 LONG_CLICK_LISTENER,
+                MANAGE_SEARCH_ENGINES_CALLBACK,
                 RICH_TEXT_CHANGE_LISTENER,
                 SELECT_ALL_ON_FOCUS,
                 SHOW_CURSOR,

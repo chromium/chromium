@@ -67,6 +67,9 @@ class UrlBarViewBinder {
             view.setCursorVisible(model.get(UrlBarProperties.SHOW_CURSOR));
         } else if (UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE.equals(propertyKey)) {
             view.setTextContextMenuDelegate(model.get(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE));
+        } else if (UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK.equals(propertyKey)) {
+            view.setManageSearchEnginesCallback(
+                    model.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK));
         } else if (UrlBarProperties.TEXT_STATE.equals(propertyKey)) {
             UrlBarTextState state = model.get(UrlBarProperties.TEXT_STATE);
             view.setIgnoreTextChangesForAutocomplete(true);

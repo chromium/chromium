@@ -24,8 +24,11 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -85,6 +88,11 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
         mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, keyDownListener);
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
+        if (OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
+            mModel.set(
+                    UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK,
+                    this::onManageSiteSearchClicked);
+        }
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel(/* originChanged= */ false);
     }
@@ -93,6 +101,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, null);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, null);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, null);
+        mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, null);
     }
 
     private void onTextChanged(String text) {
@@ -112,6 +121,11 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private void updateShowHintText(String text) {
         boolean showHintText = !mHasFocus || text.isEmpty();
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, showHintText);
+    }
+
+    private void onManageSiteSearchClicked() {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(mContext, SiteSearchSettings.class);
     }
 
     /**

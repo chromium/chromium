@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -35,8 +37,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -462,6 +470,26 @@ public class UrlBarMediatorUnitTest {
         mMediator.finishReparenting();
         mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
         verify(mFocusChangeCallback).onResult(true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void testManageSearchEnginesCallback_featureEnabled() {
+        SettingsNavigation settingsNavigation = mock(SettingsNavigation.class);
+        SettingsNavigationFactory.setInstanceForTesting(settingsNavigation);
+
+        Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
+        assertNotNull(callback);
+
+        callback.run();
+        verify(settingsNavigation).startSettings(eq(mContext), eq(SiteSearchSettings.class));
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void testManageSearchEnginesCallback_featureDisabled() {
+        Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
+        assertNull(callback);
     }
 
     private static SpannableStringBuilder spannable(String text) {
