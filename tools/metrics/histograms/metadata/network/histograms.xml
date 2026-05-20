@@ -5309,7 +5309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.Scheduler.IOThread.TaskOffCpuDuration"
-    units="ms" expires_after="2026-07-01">
+    units="ms" expires_after="2026-12-01">
   <owner>hayato@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -5320,7 +5320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.Scheduler.IOThread.TaskOnCpuDuration"
-    units="ms" expires_after="2026-07-01">
+    units="ms" expires_after="2026-12-01">
   <owner>hayato@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -5331,7 +5331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.Scheduler.IOThread.TaskOnCpuPercentage"
-    units="%" expires_after="2026-07-01">
+    units="%" expires_after="2026-12-01">
   <owner>hayato@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
