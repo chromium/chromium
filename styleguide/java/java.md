@@ -1,11 +1,11 @@
 # Chromium Java Style Guide
 
-_For other languages, please see the [Chromium style
-guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
+_For other languages, please see the
+[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
-Chromium follows the [Android Open Source style
-guide](http://source.android.com/source/code-style.html) unless an exception
-is listed below.
+Chromium follows the
+[Android Open Source style guide](http://source.android.com/source/code-style.html)
+unless an exception is listed below.
 
 You can propose changes to this style guide by sending an email to
 `java@chromium.org`. Ideally, the list will arrive at some consensus and you can
@@ -20,12 +20,12 @@ get to decide.
 ### Type Deduction using "var" {#var}
 
 A variable declaration can use the `var` keyword in place of the type (similar
-to the `auto` keyword in C++). In line with the [guidance for
-C++](https://google.github.io/styleguide/cppguide.html#Type_deduction), the
-`var` keyword may be used when it aids readability and the type of the value is
-already clear (ex. `var bundle = new Bundle()` is OK, but `var something =
-returnValueIsNotObvious()` may be unclear to readers who are new to this part of
-the code).
+to the `auto` keyword in C++). In line with the
+[guidance for C++](https://google.github.io/styleguide/cppguide.html#Type_deduction),
+the `var` keyword may be used when it aids readability and the type of the value
+is already clear (ex. `var bundle = new Bundle()` is OK, but
+`var something = returnValueIsNotObvious()` may be unclear to readers who are
+new to this part of the code).
 
 The `var` keyword may also be used in try-with-resources when the resource is
 not directly accessed (or when it falls under the previous guidance), such as:
@@ -41,30 +41,33 @@ try (var ignored = StrictModeContext.allowDiskWrites()) {
 
 A quick primer:
 
-* `Throwable`: Base class for all exceptions
-  * `Error`: Base class for exceptions which are meant to crash the app.
-  * `Exception`: Base class for exceptions that make sense the `catch`.
-    * `RuntimeException`: Base class for exceptions that do not need to be
-       declared as `throws` ("unchecked exceptions").
+- `Throwable`: Base class for all exceptions
+  - `Error`: Base class for exceptions which are meant to crash the app.
+  - `Exception`: Base class for exceptions that make sense the `catch`.
+    - `RuntimeException`: Base class for exceptions that do not need to be
+      declared as `throws` ("unchecked exceptions").
 
 #### Broad Catch Handlers {#broad-catches}
 
 Use catch statements that do not catch exceptions they are not meant to.
- * There is rarely a valid reason to `catch (Throwable t)`, since that
-   includes the (generally unrecoverable) `Error` types.
 
-Use `catch (Exception e)` when working with OS APIs that might throw
-(assuming the program can recover from them).
- * There have been many cases of crashes caused by `IllegalStateException` /
-   `IllegalArgumentException` / `SecurityException` being thrown where only
-   `RemoteException` was being caught. Unless catch handlers will differ
-   based on exception type, just catch `Exception`.
+- There is rarely a valid reason to `catch (Throwable t)`, since that includes
+  the (generally unrecoverable) `Error` types.
+
+Use `catch (Exception e)` when working with OS APIs that might throw (assuming
+the program can recover from them).
+
+- There have been many cases of crashes caused by `IllegalStateException` /
+  `IllegalArgumentException` / `SecurityException` being thrown where only
+  `RemoteException` was being caught. Unless catch handlers will differ based on
+  exception type, just catch `Exception`.
 
 Do not use `catch (RuntimeException e)`.
- * It is useful to extend `RuntimeException` to make unchecked exception
-   types, but the type does not make much sense in `catch` clauses, as
-   there are not times when you'd want to catch all unchecked exceptions,
-   but not also want to catch all checked exceptions.
+
+- It is useful to extend `RuntimeException` to make unchecked exception types,
+  but the type does not make much sense in `catch` clauses, as there are not
+  times when you'd want to catch all unchecked exceptions, but not also want to
+  catch all checked exceptions.
 
 #### Exception Messages {#exception-messages}
 
@@ -85,10 +88,10 @@ try {
 
 #### Wrapping with RuntimeException {#throw-unchecked}
 
-It is common to wrap a checked exception with a RuntimeException for cases
-where a checked exception is not recoverable, or not possible. In order to
-reduce the number of stack trace "caused by" clauses, and to save on binary
-size, use [`JavaUtils.throwUnchecked()`] instead.
+It is common to wrap a checked exception with a RuntimeException for cases where
+a checked exception is not recoverable, or not possible. In order to reduce the
+number of stack trace "caused by" clauses, and to save on binary size, use
+[`JavaUtils.throwUnchecked()`] instead.
 
 ```java
 try {
@@ -101,19 +104,18 @@ try {
 }
 ```
 
-*** note
-Do not use `throwUnchecked()` when the exception may want to be caught.
-***
+\*\*\* note Do not use `throwUnchecked()` when the exception may want to be
+caught.
 
-
-[`JavaUtils.throwUnchecked()`]: https://source.chromium.org/search?q=symbol:JavaUtils.throwUnchecked
+______________________________________________________________________
 
 ### Asserts
 
 The build system:
- * strips asserts in release builds (via R8),
- * enables them in debug builds,
- * and enables them in report-only mode for Canary builds.
+
+- strips asserts in release builds (via R8),
+- enables them in debug builds,
+- and enables them in report-only mode for Canary builds.
 
 ```java
 // Code for assert expressions & messages is removed when asserts are disabled.
@@ -147,23 +149,23 @@ if (BuildConfig.ENABLE_ASSERTS) {
 }
 ```
 
-[`BuildConfig.ENABLE_ASSERTS`]: https://source.chromium.org/search?q=symbol:BuildConfig%5C.ENABLE_ASSERTS
-
-#### DCHECKS vs Java Asserts  {#asserts}
+#### DCHECKS vs Java Asserts {#asserts}
 
 `DCHECK` and `assert` are similar, but our guidance for them differs:
- * CHECKs are preferred in C++, whereas asserts are preferred in Java.
+
+- CHECKs are preferred in C++, whereas asserts are preferred in Java.
 
 This is because as a memory-safe language, logic bugs in Java are much less
 likely to be exploitable.
 
-### toString()  {#toString}
+### toString() {#toString}
 
-Use explicit serialization methods (e.g. `toDebugString()` or `getDescription()`)
-instead of `toString()` when dynamic dispatch is not required.
+Use explicit serialization methods (e.g. `toDebugString()` or
+`getDescription()`) instead of `toString()` when dynamic dispatch is not
+required.
 
-1. R8 cannot detect when `toString()` is unused, so overrides will not be stripped
-   when unused.
+1. R8 cannot detect when `toString()` is unused, so overrides will not be
+   stripped when unused.
 2. R8 cannot optimize / inline these calls as well as non-overriding methods.
 
 ### Records & AutoValue {#records}
@@ -174,12 +176,13 @@ record Rectangle(float length, float width) {}
 ```
 
 **Rationale:**
- * To avoid dead code:
-   * Records and `@AutoValue` generate `equals()`, `hashCode()`, and `toString()`,
-     which `R8` is unable to remove when unused.
-   * When these methods are required, implement them explicitly so that the
-     intention is clear.
- * Also - supporting `record` requires build system work ([crbug/1493366]).
+
+- To avoid dead code:
+  - Records and `@AutoValue` generate `equals()`, `hashCode()`, and
+    `toString()`, which `R8` is unable to remove when unused.
+  - When these methods are required, implement them explicitly so that the
+    intention is clear.
+- Also - supporting `record` requires build system work ([crbug/1493366]).
 
 Example with `equals()` and `hashCode()`:
 
@@ -202,8 +205,6 @@ public class ValueClass {
 }
 ```
 
-[crbug/1493366]: https://crbug.com/1493366
-
 ### Enums
 
 Banned. Use [`@IntDef`](#intdefs) / `@LongDef` / `@StringDef` instead.
@@ -214,9 +215,9 @@ Java enums generate a lot of bytecode and some of their APIs rely on reflection
 under-the-hood. They also implement `Serializable`, which can lead to the
 inability to every change them.
 
-* Use constants where possible.
-* When a custom type is required, use explicit classes with inheritance.
-* When serialization is required, use explicit serialization / deserialization
+- Use constants where possible.
+- When a custom type is required, use explicit classes with inheritance.
+- When serialization is required, use explicit serialization / deserialization
   logic.
 
 ### Optional
@@ -226,29 +227,28 @@ Avoid it if possible. Use `@Nullable` instead.
 ## Rationale:
 
 `Optional` adds binary size overhead and requires an extra allocation for each
-use. It may still be a good choice if you need to distinguish between "null"
-and "unset", but prefer `null` or a sentinel value when possible. The same
-applies to `OptionalInt`, etc.
+use. It may still be a good choice if you need to distinguish between "null" and
+"unset", but prefer `null` or a sentinel value when possible. The same applies
+to `OptionalInt`, etc.
 
 [NullAway](#Nullability-Annotations) warnings will ensure that null checks are
 not missed.
 
 ### Finalizers
 
-In line with [Google's Java style guide] and [Android's Java style guide],
-never override `Object.finalize()`.
+In line with [Google's Java style guide] and [Android's Java style guide], never
+override `Object.finalize()`.
 
 Custom finalizers:
-* are called on a background thread, and at an unpredicatble point in time,
-* swallow all exceptions (asserts won't work),
-* causes additional garbage collector jank.
+
+- are called on a background thread, and at an unpredicatble point in time,
+- swallow all exceptions (asserts won't work),
+- causes additional garbage collector jank.
 
 Classes that need destructor logic should provide an explicit `destroy()`
-method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/lifetime/LifetimeAssert.java)
+method. Use
+[LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/lifetime/LifetimeAssert.java)
 to ensure in debug builds and tests that `destroy()` is called.
-
-[Google's Java style guide]: https://google.github.io/styleguide/javaguide.html#s6.4-finalizers
-[Android's Java style guide]: https://source.android.com/docs/setup/contribute/code-style#dont-use-finalizers
 
 ## Nullability Annotations
 
@@ -257,8 +257,6 @@ Tests are encouraged to use them, but there is currently no effort to annotate
 existing ones.
 
 See [nullaway.md] for how to use `@Nullable` and related annotations.
-
-[nullaway.md]: nullaway.md
 
 ## Java Library APIs
 
@@ -271,19 +269,15 @@ method is [directly backported by D8] (these are okay to use, since they are
 lightweight). Android Lint will fail if you try to use an API without a
 corresponding `Build.VERSION.SDK_INT` guard or `@RequiresApi` annotation.
 
-[Java Library Desugaring]: https://developer.android.com/studio/write/java8-support-table
-[when necessary]: https://developer.android.com/reference/packages
-[directly backported by D8]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/r8/backported_methods.txt
-
 ### Logging
 
-* Use `org.chromium.base.Log` instead of `android.util.Log`.
-  * It provides `%s` support, and ensures log stripping works correctly.
-* Minimize the use of `Log.w()` and `Log.e()`.
-  * Debug and Info log levels are stripped by ProGuard in release builds, and
-    so have no performance impact for shipping builds. However, Warning and
-    Error log levels are not stripped.
-* Function calls in log parameters are *not* stripped by ProGuard.
+- Use `org.chromium.base.Log` instead of `android.util.Log`.
+  - It provides `%s` support, and ensures log stripping works correctly.
+- Minimize the use of `Log.w()` and `Log.e()`.
+  - Debug and Info log levels are stripped by ProGuard in release builds, and so
+    have no performance impact for shipping builds. However, Warning and Error
+    log levels are not stripped.
+- Function calls in log parameters are *not* stripped by ProGuard.
 
 ```java
 Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
@@ -298,8 +292,8 @@ result in larger binary size than their loop equivalents (see
 [crbug.com/344943957] for examples).
 
 The `parallel()` and `parallelStream()` APIs are simpler than their loop
-equivalents, but are banned due to a lack of a compelling use case in Chrome.
-If you find one, please discuss on `java@chromium.org`.
+equivalents, but are banned due to a lack of a compelling use case in Chrome. If
+you find one, please discuss on `java@chromium.org`.
 
 Use of `stream()` without a lambda / method reference is allowed. E.g.:
 
@@ -315,22 +309,20 @@ private static List<String> readLines(BufferedReader bufferedReader) {
 }
 ```
 
-[Java streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
-[crbug.com/344943957]: https://crbug.com/344943957
-
 ### AndroidX Annotations {#annotations}
 
-* Use them liberally. They are [documented here](https://developer.android.com/studio/write/annotations).
-  * They generally improve readability.
-  * Many make lint more useful.
-* What about `androidx.annotation.Nullable`?
-  * We are migrating away from it (see [nullaway.md]).
-  * Keep using it in files that have not yet been migrated.
+- Use them liberally. They are
+  [documented here](https://developer.android.com/studio/write/annotations).
+  - They generally improve readability.
+  - Many make lint more useful.
+- What about `androidx.annotation.Nullable`?
+  - We are migrating away from it (see [nullaway.md]).
+  - Keep using it in files that have not yet been migrated.
 
 #### IntDefs {#intdefs}
 
-Values can be declared outside or inside the `@interface`. Chromium style is
-to declare inside.
+Values can be declared outside or inside the `@interface`. Chromium style is to
+declare inside.
 
 ```java
 @IntDef({ContactsPickerAction.CANCEL, ContactsPickerAction.CONTACTS_SELECTED,
@@ -350,20 +342,18 @@ void onContactsPickerUserAction(@ContactsPickerAction int action, ...);
 Values of `Integer` type are also supported, which allows using a sentinel
 `null` if needed.
 
-[@IntDef annotation]: https://developer.android.com/studio/write/annotations#enum-annotations
-[Android lint]: https://chromium.googlesource.com/chromium/src/+/HEAD/build/android/docs/lint.md
-
-
 ## Style / Formatting {#style}
 
 ### File Headers
-* Use the same format as in the [C++ style guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#File-headers).
+
+- Use the same format as in the
+  [C++ style guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#File-headers).
 
 ### TODOs
 
-* TODO should follow chromium convention. Examples:
-  * `TODO(username): Some sentence here.`
-  * `TODO(crbug.com/40192027): Even better to use a bug for context.`
+- TODO should follow chromium convention. Examples:
+  - `TODO(username): Some sentence here.`
+  - `TODO(crbug.com/40192027): Even better to use a bug for context.`
 
 ### Parameter Comments
 
@@ -375,11 +365,9 @@ E.g.:
 someMethod(/* enabled= */ true, /* target= */ null, defaultValue);
 ```
 
-[parameter comments]: https://errorprone.info/bugpattern/ParameterName
-
 ### Default Field Initializers
 
-* Fields should not be explicitly initialized to default values (see
+- Fields should not be explicitly initialized to default values (see
   [here](https://groups.google.com/a/chromium.org/d/topic/chromium-dev/ylbLOvLs0bs/discussion)).
 
 ### Curly Braces
@@ -411,32 +399,32 @@ if (someConditional)
 
 ### Import Order
 
-* Static imports go before other imports.
-* Each import group must be separated by an empty line.
+- Static imports go before other imports.
+- Each import group must be separated by an empty line.
 
 This is the order of the import groups:
 
-1. android
-1. androidx
-1. com (except com.google.android.apps.chrome)
-1. dalvik
-1. junit
-1. org
-1. com.google.android.apps.chrome
-1. org.chromium
-1. java
-1. javax
+01. android
+02. androidx
+03. com (except com.google.android.apps.chrome)
+04. dalvik
+05. junit
+06. org
+07. com.google.android.apps.chrome
+08. org.chromium
+09. java
+10. javax
 
 ### Class Qualification and Imports
 
-* Importing classes is preferred over inline fully qualified class names
+- Importing classes is preferred over inline fully qualified class names
   (`org.chromium.foo.Bar`). Only use fully qualified class names inline when
   absolutely necessary (e.g. to disambiguate name collisions).
-* Inner classes with descriptive names should be directly imported rather than
+- Inner classes with descriptive names should be directly imported rather than
   referenced via their outer class. E.g., prefer
   `import org.chromium.foo.OuterClass.DescriptiveInner;` and using
   `DescriptiveInner` over `OuterClass.DescriptiveInner`.
-* Outer-qualified naming (`OuterClass.InnerClass`) should be reserved for
+- Outer-qualified naming (`OuterClass.InnerClass`) should be reserved for
   generically named inner classes, such as `Observer`, where mentioning the
   outer class provides essential context.
 
@@ -446,68 +434,60 @@ Googlers, see [go/clank-test-strategy](http://go/clank-test-strategy).
 
 In summary:
 
-* Use real dependencies when feasible and fast. Use Mockito’s `@Mock` most
-  of the time, but write fakes for frequently used dependencies.
+- Use real dependencies when feasible and fast. Use Mockito’s `@Mock` most of
+  the time, but write fakes for frequently used dependencies.
 
-* Do not use Robolectric Shadows for Chromium code.
-  * Shadows make code harder to refactor.
-  * Prefer to refactor code to make it more testable.
-  * When you really need to use a test double for a static method, add a
+- Do not use Robolectric Shadows for Chromium code.
+
+  - Shadows make code harder to refactor.
+  - Prefer to refactor code to make it more testable.
+  - When you really need to use a test double for a static method, add a
     `setFooForTesting() [...]` method to make the test contract explicit.
-    * Use [`ResettersForTesting.register()`] from within `ForTesting()`
-      methods to ensure that state is reset between tests.
+    - Use [`ResettersForTesting.register()`] from within `ForTesting()` methods
+      to ensure that state is reset between tests.
 
-* Use Robolectric when possible (when tests do not require native). Other
-  times, use on-device tests with one of the following annotations:
-  * [`@Batch(UNIT_TESTS)`] for unit tests
-  * [`@Batch(PER_CLASS)`] for integration tests
-  * [`@DoNotBatch`] for when each test method requires an app restart
+- Use Robolectric when possible (when tests do not require native). Other times,
+  use on-device tests with one of the following annotations:
 
-[`ResettersForTesting.register()`]: https://source.chromium.org/search?q=symbol:ResettersForTesting.register
-[`@Batch(UNIT_TESTS)`]: https://source.chromium.org/search?q=symbol:Batch.UNIT_TESTS
-[`@Batch(PER_CLASS)`]: https://source.chromium.org/search?q=symbol:Batch.PER_CLASS
-[`@DoNotBatch`]: https://source.chromium.org/search?q=symbol:DoNotBatch
+  - [`@Batch(UNIT_TESTS)`] for unit tests
+  - [`@Batch(PER_CLASS)`] for integration tests
+  - [`@DoNotBatch`] for when each test method requires an app restart
 
 ### Test-only Code
 
-Functions and fields used only for testing should have `ForTesting` as a
-suffix so that:
+Functions and fields used only for testing should have `ForTesting` as a suffix
+so that:
 
-1. The `android-binary-size` trybot can [ensure they are removed] in
-   non-test optimized builds (by R8).
+1. The `android-binary-size` trybot can [ensure they are removed] in non-test
+   optimized builds (by R8).
 2. [`PRESUMBIT.py`] can ensure no calls are made to such methods outside of
    tests, and
 
 `ForTesting` methods that are `@CalledByNative` should use
 `@CalledByNativeForTesting` instead.
 
-Symbols that are made public (or package-private) for the sake of tests
-should be annotated with [`@VisibleForTesting`]. Android Lint will check
-that calls from non-test code respect the "otherwise" visibility.
+Symbols that are made public (or package-private) for the sake of tests should
+be annotated with [`@VisibleForTesting`]. Android Lint will check that calls
+from non-test code respect the "otherwise" visibility.
 
 Symbols with a `ForTesting` suffix **should not** be annotated with
-`@VisibleForTesting`. While `otherwise=VisibleForTesting.NONE` exists, it
-is redundant given the "ForTesting" suffix and the associated lint check
-is redundant given our trybot check. You should, however, use it for
-test-only constructors.
-
-[ensure they are removed]: /docs/speed/binary_size/android_binary_size_trybot.md#Added-Symbols-named-ForTest
-[`PRESUMBIT.py`]: https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py
-[`@VisibleForTesting`]: https://developer.android.com/reference/androidx/annotation/VisibleForTesting
+`@VisibleForTesting`. While `otherwise=VisibleForTesting.NONE` exists, it is
+redundant given the "ForTesting" suffix and the associated lint check is
+redundant given our trybot check. You should, however, use it for test-only
+constructors.
 
 ## Location
 
 "Top level directories" are defined as directories with a GN file, such as
-[//base](https://chromium.googlesource.com/chromium/src/+/main/base/)
-and
+[//base](https://chromium.googlesource.com/chromium/src/+/main/base/) and
 [//content](https://chromium.googlesource.com/chromium/src/+/main/content/),
 Chromium Java should live in a directory named
 `<top level directory>/android/java`, with a package name
-`org.chromium.<top level directory>`.  Each top level directory's Java should
+`org.chromium.<top level directory>`. Each top level directory's Java should
 build into a distinct JAR that honors the abstraction specified in a native
 [checkdeps](https://chromium.googlesource.com/chromium/buildtools/+/main/checkdeps/checkdeps.py)
-(e.g. `org.chromium.base` does not import `org.chromium.content`).  The full
-path of any java file should contain the complete package name.
+(e.g. `org.chromium.base` does not import `org.chromium.content`). The full path
+of any java file should contain the complete package name.
 
 For example, top level directory `//base` might contain a file named
 `base/android/java/org/chromium/base/Class.java`. This would get compiled into a
@@ -529,8 +509,27 @@ You can run `git cl format` to apply the automatic formatting.
 
 Chromium also makes use of several [static analysis] tools.
 
-[static analysis]: /build/android/docs/static_analysis.md
-
 ## Miscellany
 
-* Use UTF-8 file encodings and LF line endings.
+- Use UTF-8 file encodings and LF line endings.
+
+[android's java style guide]: https://source.android.com/docs/setup/contribute/code-style#dont-use-finalizers
+[crbug.com/344943957]: https://crbug.com/344943957
+[crbug/1493366]: https://crbug.com/1493366
+[directly backported by d8]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/r8/backported_methods.txt
+[ensure they are removed]: /docs/speed/binary_size/android_binary_size_trybot.md#Added-Symbols-named-ForTest
+[google's java style guide]: https://google.github.io/styleguide/javaguide.html#s6.4-finalizers
+[java library desugaring]: https://developer.android.com/studio/write/java8-support-table
+[java streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
+[nullaway.md]: nullaway.md
+[parameter comments]: https://errorprone.info/bugpattern/ParameterName
+[static analysis]: /build/android/docs/static_analysis.md
+[when necessary]: https://developer.android.com/reference/packages
+[`@batch(per_class)`]: https://source.chromium.org/search?q=symbol:Batch.PER_CLASS
+[`@batch(unit_tests)`]: https://source.chromium.org/search?q=symbol:Batch.UNIT_TESTS
+[`@donotbatch`]: https://source.chromium.org/search?q=symbol:DoNotBatch
+[`@visiblefortesting`]: https://developer.android.com/reference/androidx/annotation/VisibleForTesting
+[`buildconfig.enable_asserts`]: https://source.chromium.org/search?q=symbol:BuildConfig%5C.ENABLE_ASSERTS
+[`javautils.throwunchecked()`]: https://source.chromium.org/search?q=symbol:JavaUtils.throwUnchecked
+[`presumbit.py`]: https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py
+[`resettersfortesting.register()`]: https://source.chromium.org/search?q=symbol:ResettersForTesting.register
