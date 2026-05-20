@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {calculateTextBounds, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {calculateTextBounds, getMostCommonPitch, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {FakeReadingMode} from './fake_reading_mode.js';
 import {setWindowSize} from './common.js';
+import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('RectCalculations', () => {
   setup(() => {
@@ -265,6 +265,40 @@ suite('RectCalculations', () => {
       const result = calculateTextBounds(container, 500);
 
       assertEquals(1, result.bounds.length);
+    });
+  });
+
+  suite('getMostCommonPitch', () => {
+    test('empty bounds returns 0', () => {
+      assertEquals(0, getMostCommonPitch([]));
+    });
+
+    test('single bound returns its rounded height', () => {
+      const rect = new DOMRect(0, 0, 100, 20.44);
+      assertEquals(20.4, getMostCommonPitch([rect]));
+    });
+
+    test('multiple bounds with uniform pitch returns that pitch', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 40, 100, 20);
+      const rect3 = new DOMRect(0, 70, 100, 20);
+      assertEquals(30, getMostCommonPitch([rect1, rect2, rect3]));
+    });
+
+    test('multiple bounds with mixed pitches returns most common', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 40, 100, 20);   // pitch 30
+      const rect3 = new DOMRect(0, 70, 100, 20);   // pitch 30
+      const rect4 = new DOMRect(0, 110, 100, 20);  // pitch 40
+      assertEquals(30, getMostCommonPitch([rect1, rect2, rect3, rect4]));
+    });
+
+    test('floating point pitches are rounded to 1 decimal place', () => {
+      const rect1 = new DOMRect(0, 10.01, 100, 20);
+      const rect2 = new DOMRect(0, 40.02, 100, 20);   // pitch 30.01 -> 30.0
+      const rect3 = new DOMRect(0, 70.03, 100, 20);   // pitch 30.01 -> 30.0
+      const rect4 = new DOMRect(0, 100.05, 100, 20);  // pitch 30.02 -> 30.0
+      assertEquals(30, getMostCommonPitch([rect1, rect2, rect3, rect4]));
     });
   });
 });

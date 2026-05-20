@@ -102,3 +102,31 @@ function combineIntersectingRects(unsortedRects: DOMRect[]): DOMRect[] {
 
   return combinedRects;
 }
+
+// Returns the most common vertical distance between consecutive lines.
+// "Pitch" is the distance from the top of one line to the top of the next,
+// effectively representing the line height plus line spacing.
+export function getMostCommonPitch(bounds: DOMRect[]): number {
+  if (bounds.length === 0) {
+    return 0;
+  }
+  if (bounds.length === 1) {
+    return Number(bounds[0]!.height.toFixed(1));
+  }
+
+  const modeResult = bounds.reduce((acc, rect, i) => {
+    if (i < bounds.length - 1) {
+      const nextRect = bounds[i + 1]!;
+      const pitch = Number((nextRect.top - rect.top).toFixed(1));
+      const pCount = (acc.pitches.get(pitch) || 0) + 1;
+      acc.pitches.set(pitch, pCount);
+      if (pCount > acc.maxPCount) {
+        acc.maxPCount = pCount;
+        acc.modePitch = pitch;
+      }
+    }
+    return acc;
+  }, {pitches: new Map<number, number>(), maxPCount: 0, modePitch: 0});
+
+  return modeResult.modePitch;
+}

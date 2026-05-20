@@ -291,11 +291,26 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
   onTextLocationsChange(container: HTMLElement, height: number): void {
     const previousMaxY = this.model_.getMaxY();
     const previousMinY = this.model_.getMinY();
+    const previousBounds = this.model_.getTextBounds();
     this.updatePositions(container, height);
     this.updateScrollBuffer();
-    if (previousMaxY !== this.model_.getMaxY() ||
+    const newBounds = this.model_.getTextBounds();
+    const previousSpread = previousBounds.length > 0 ?
+        (previousBounds.at(-1)!.bottom - previousBounds.at(0)!.top) :
+        0;
+    const newSpread = newBounds.length > 0 ?
+        (newBounds.at(-1)!.bottom - newBounds.at(0)!.top) :
+        0;
+    // Recalculate the focus area if the window size changes or if the text line
+    // heights change (represented by the difference between the top of the
+    // first line and the bottom of the last line).
+    if (Math.abs(newSpread - previousSpread) > this.movementThreshold ||
+        previousMaxY !== this.model_.getMaxY() ||
         previousMinY !== this.model_.getMinY()) {
       this.setFocalPoint(this.getCenterY());
+      // Notify of a change even if it's less than the threshold so that the
+      // window adapts to the new line heights.
+      this.delegate_.notifyMove();
     }
   }
 

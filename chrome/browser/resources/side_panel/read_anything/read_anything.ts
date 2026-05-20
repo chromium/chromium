@@ -74,4 +74,4 @@ export {getNewIndex, isActivationKey, isArrow, isBackwardArrow, isForwardArrow, 
 export type {MetricsBrowserProxy} from './shared/metrics_browser_proxy.js';
 export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './shared/metrics_browser_proxy.js';
 export {LinkStatus, ReadAnythingLogger, SpeechControls, TimeFrom} from './shared/read_anything_logger.js';
-export {calculateTextBounds, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from './shared/rect_calculations.js';
+export {calculateTextBounds, getMostCommonPitch, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from './shared/rect_calculations.js';

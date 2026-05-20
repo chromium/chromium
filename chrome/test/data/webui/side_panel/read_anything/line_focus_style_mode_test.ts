@@ -150,23 +150,23 @@ suite('LineFocusStyleMode', () => {
       assertEquals(60, model.getWindowHeight());
     });
 
-    test('updateFocusBounds uses average line height when not adapting', () => {
+    test('updateFocusBounds uses most common pitch when not adapting', () => {
       const rect1 = new DOMRect(0, 10, 100, 20);
-      const rect2 = new DOMRect(0, 30, 100, 20);
-      const rect3 = new DOMRect(0, 50, 100, 20);
-      const rect4 = new DOMRect(0, 70, 100, 20);
-      const rect5 = new DOMRect(0, 90, 100, 20);
+      const rect2 = new DOMRect(0, 40, 100, 20);
+      const rect3 = new DOMRect(0, 70, 100, 20);
+      const rect4 = new DOMRect(0, 100, 100, 20);
+      const rect5 = new DOMRect(0, 130, 100, 20);
       model.setTextBounds([rect1, rect2, rect3, rect4, rect5]);
       model.setAdaptMultiLineWindow(false);
       model.setMaxY(200);
 
       largeMode.updateFocusBounds();
 
-      // Average height should be 20. With 3 lines, the total height should be
-      // 60. Since the middle of the viewport is at 100, the top of the focus
-      // area should be at 70 with the bottom at 130 (100 +/- 30).
-      assertEquals(70, model.getTop());
-      assertEquals(60, model.getWindowHeight());
+      // Most common pitch is 30. With 3 lines, the total height should be
+      // 30 * 3 = 90. Since the middle of the viewport is at 100, the top of the
+      // focus area should be at 100 - (90 / 2) = 55.
+      assertEquals(55, model.getTop());
+      assertEquals(90, model.getWindowHeight());
     });
 
     test('updateFocusBounds clamps top index at boundaries', () => {
