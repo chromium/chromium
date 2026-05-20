@@ -469,4 +469,220 @@ TEST_F(WebAppShortcutWinTest, GetIconFilePath) {
       base::FilePath(FILE_PATH_LITERAL("test\\web\\app\\dir\\_COM1.ico")));
 }
 
+TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts_PreventHijacking) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/web_app"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  // Create a shortcut for App A (kWebAppId) with name "old title.lnk".
+  const base::FilePath::StringType old_title = FILE_PATH_LITERAL("old title");
+  const base::FilePath old_shortcut_path =
+      GetShortcutPath(shortcut_dir, old_title);
+  ASSERT_TRUE(
+      CreateTestAppShortcut(old_shortcut_path, profile_name, kWebAppId));
+
+  // Create a colliding shortcut for App B (kWebAppId2) with name "new
+  // title.lnk".
+  const base::FilePath::StringType new_title = FILE_PATH_LITERAL("new title");
+  const base::FilePath colliding_shortcut_path =
+      GetShortcutPath(shortcut_dir, new_title);
+  ASSERT_TRUE(
+      CreateTestAppShortcut(colliding_shortcut_path, profile_name, kWebAppId2));
+
+  // Create an icon file for the web app (App A) with old title.
+  const base::FilePath icon_file = GetIconFilePath(shortcut_dir, u"old title");
+  gfx::ImageFamily image_family;
+  image_family.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
+  EXPECT_TRUE(CheckAndSaveIcon(icon_file, image_family,
+                               /*refresh_shell_icon_cache=*/false));
+
+  // Update App A (kWebAppId) with a new title "new title".
+  ShortcutInfo shortcut_info;
+  shortcut_info.title = u"new title";
+  shortcut_info.profile_path = profile_path;
+  shortcut_info.profile_name = base::WideToUTF8(profile_name);
+  shortcut_info.app_id = kWebAppId;
+  shortcut_info.favicon = std::move(image_family);
+
+  UpdatePlatformShortcuts(shortcut_dir, u"old title",
+                          /*user_specified_locations=*/std::nullopt,
+                          shortcut_info);
+
+  // Assert that App B's shortcut is not overwritten (still owned by
+  // kWebAppId2).
+  EXPECT_TRUE(base::PathExists(colliding_shortcut_path));
+  EXPECT_TRUE(IsAppShortcutForProfile(colliding_shortcut_path, profile_path,
+                                      kWebAppId2));
+
+  // Assert that App A's shortcut is renamed to "new title (1).lnk" (owned by
+  // kWebAppId).
+  const base::FilePath unique_shortcut_path =
+      GetShortcutPath(shortcut_dir, FILE_PATH_LITERAL("new title (1)"));
+  EXPECT_TRUE(base::PathExists(unique_shortcut_path));
+  EXPECT_TRUE(
+      IsAppShortcutForProfile(unique_shortcut_path, profile_path, kWebAppId));
+
+  // Assert that App A's old shortcut "old title.lnk" is deleted.
+  EXPECT_FALSE(base::PathExists(old_shortcut_path));
+}
+
+TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts_OverwriteOwnApp) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/web_app"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  // Create a shortcut for App A (kWebAppId) with name "old title.lnk".
+  const base::FilePath::StringType old_title = FILE_PATH_LITERAL("old title");
+  const base::FilePath old_shortcut_path =
+      GetShortcutPath(shortcut_dir, old_title);
+  ASSERT_TRUE(
+      CreateTestAppShortcut(old_shortcut_path, profile_name, kWebAppId));
+
+  // Create another shortcut for App A (kWebAppId) with name "new title.lnk".
+  const base::FilePath::StringType new_title = FILE_PATH_LITERAL("new title");
+  const base::FilePath colliding_shortcut_path =
+      GetShortcutPath(shortcut_dir, new_title);
+  ASSERT_TRUE(
+      CreateTestAppShortcut(colliding_shortcut_path, profile_name, kWebAppId));
+
+  // Create an icon file for the web app (App A) with old title.
+  const base::FilePath icon_file = GetIconFilePath(shortcut_dir, u"old title");
+  gfx::ImageFamily image_family;
+  image_family.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
+  EXPECT_TRUE(CheckAndSaveIcon(icon_file, image_family,
+                               /*refresh_shell_icon_cache=*/false));
+
+  // Update App A (kWebAppId) with a new title "new title".
+  ShortcutInfo shortcut_info;
+  shortcut_info.title = u"new title";
+  shortcut_info.profile_path = profile_path;
+  shortcut_info.profile_name = base::WideToUTF8(profile_name);
+  shortcut_info.app_id = kWebAppId;
+  shortcut_info.favicon = std::move(image_family);
+
+  UpdatePlatformShortcuts(shortcut_dir, u"old title",
+                          /*user_specified_locations=*/std::nullopt,
+                          shortcut_info);
+
+  // Assert that "new title.lnk" is overwritten and remains owned by kWebAppId.
+  EXPECT_TRUE(base::PathExists(colliding_shortcut_path));
+  EXPECT_TRUE(IsAppShortcutForProfile(colliding_shortcut_path, profile_path,
+                                      kWebAppId));
+
+  // Assert that no "new title (1).lnk" is created.
+  const base::FilePath unique_shortcut_path =
+      GetShortcutPath(shortcut_dir, FILE_PATH_LITERAL("new title (1)"));
+  EXPECT_FALSE(base::PathExists(unique_shortcut_path));
+
+  // Assert that App A's old shortcut "old title.lnk" is deleted.
+  EXPECT_FALSE(base::PathExists(old_shortcut_path));
+}
+
+TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts_RepeatedUpdateAndRename) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/web_app"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  // Create a shortcut for App A (kWebAppId) with name "old title.lnk".
+  const base::FilePath::StringType old_title = FILE_PATH_LITERAL("old title");
+  const base::FilePath old_shortcut_path =
+      GetShortcutPath(shortcut_dir, old_title);
+  ASSERT_TRUE(
+      CreateTestAppShortcut(old_shortcut_path, profile_name, kWebAppId));
+
+  // Create a colliding shortcut for App B (kWebAppId2) with name "new
+  // title.lnk".
+  const base::FilePath::StringType new_title = FILE_PATH_LITERAL("new title");
+  const base::FilePath colliding_shortcut_path =
+      GetShortcutPath(shortcut_dir, new_title);
+  ASSERT_TRUE(
+      CreateTestAppShortcut(colliding_shortcut_path, profile_name, kWebAppId2));
+
+  // Create an icon file for the web app (App A) with old title.
+  const base::FilePath icon_file = GetIconFilePath(shortcut_dir, u"old title");
+  gfx::ImageFamily image_family;
+  image_family.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
+  EXPECT_TRUE(CheckAndSaveIcon(icon_file, image_family,
+                               /*refresh_shell_icon_cache=*/false));
+
+  // Update App A (kWebAppId) with a new title "new title".
+  ShortcutInfo shortcut_info;
+  shortcut_info.title = u"new title";
+  shortcut_info.profile_path = profile_path;
+  shortcut_info.profile_name = base::WideToUTF8(profile_name);
+  shortcut_info.app_id = kWebAppId;
+  shortcut_info.favicon = std::move(image_family);
+
+  UpdatePlatformShortcuts(shortcut_dir, u"old title",
+                          /*user_specified_locations=*/std::nullopt,
+                          shortcut_info);
+
+  // Assert that App B's shortcut is not overwritten.
+  EXPECT_TRUE(base::PathExists(colliding_shortcut_path));
+  EXPECT_TRUE(IsAppShortcutForProfile(colliding_shortcut_path, profile_path,
+                                      kWebAppId2));
+
+  // Assert that App A's shortcut is renamed to "new title (1).lnk".
+  const base::FilePath unique_shortcut_path =
+      GetShortcutPath(shortcut_dir, FILE_PATH_LITERAL("new title (1)"));
+  EXPECT_TRUE(base::PathExists(unique_shortcut_path));
+  EXPECT_TRUE(
+      IsAppShortcutForProfile(unique_shortcut_path, profile_path, kWebAppId));
+  EXPECT_FALSE(base::PathExists(old_shortcut_path));
+
+  // --- Repeated Update ---
+  // Update App A (kWebAppId) with the same title "new title" again.
+  // We need to re-create the icon family because std::move emptied it.
+  gfx::ImageFamily image_family2;
+  image_family2.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
+  shortcut_info.favicon = std::move(image_family2);
+
+  // Note: old_app_title is now "new title" because that is the current title.
+  UpdatePlatformShortcuts(shortcut_dir, u"new title",
+                          /*user_specified_locations=*/std::nullopt,
+                          shortcut_info);
+
+  // Assert that we still use "new title (1).lnk" and NOT "new title (2).lnk".
+  EXPECT_TRUE(base::PathExists(unique_shortcut_path));
+  EXPECT_TRUE(
+      IsAppShortcutForProfile(unique_shortcut_path, profile_path, kWebAppId));
+
+  const base::FilePath unique_shortcut_path2 =
+      GetShortcutPath(shortcut_dir, FILE_PATH_LITERAL("new title (2)"));
+  EXPECT_FALSE(base::PathExists(unique_shortcut_path2));
+
+  // --- Rename ---
+  // Rename App A to "new new title".
+  shortcut_info.title = u"new new title";
+  gfx::ImageFamily image_family3;
+  image_family3.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
+  shortcut_info.favicon = std::move(image_family3);
+
+  UpdatePlatformShortcuts(shortcut_dir, u"new title",
+                          /*user_specified_locations=*/std::nullopt,
+                          shortcut_info);
+
+  // Assert that "new title (1).lnk" is deleted.
+  EXPECT_FALSE(base::PathExists(unique_shortcut_path));
+
+  // Assert that "new new title.lnk" is created.
+  const base::FilePath final_shortcut_path =
+      GetShortcutPath(shortcut_dir, FILE_PATH_LITERAL("new new title"));
+  EXPECT_TRUE(base::PathExists(final_shortcut_path));
+  EXPECT_TRUE(
+      IsAppShortcutForProfile(final_shortcut_path, profile_path, kWebAppId));
+}
+
 }  // namespace web_app::internals
