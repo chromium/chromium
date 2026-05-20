@@ -147,6 +147,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   specifics.mutable_address()->set_recipient_name("John");
   specifics.mutable_customer_data()->set_id("123456");
   specifics.mutable_cloud_token_data()->set_masked_card_id("1111");
+  specifics.mutable_payment_instrument()->set_instrument_id(12345);
+  specifics.mutable_payment_instrument_creation_option()->set_id("def");
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::UNKNOWN);
   base::DictValue value = AutofillWalletSpecificsToValue(specifics).TakeDict();
@@ -154,6 +156,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   EXPECT_FALSE(value.contains("address"));
   EXPECT_FALSE(value.contains("customer_data"));
   EXPECT_FALSE(value.contains("cloud_token_data"));
+  EXPECT_FALSE(value.contains("payment_instrument"));
+  EXPECT_FALSE(value.contains("payment_instrument_creation_option"));
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD);
   value = AutofillWalletSpecificsToValue(specifics).TakeDict();
@@ -161,6 +165,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   EXPECT_FALSE(value.contains("address"));
   EXPECT_FALSE(value.contains("customer_data"));
   EXPECT_FALSE(value.contains("cloud_token_data"));
+  EXPECT_FALSE(value.contains("payment_instrument"));
+  EXPECT_FALSE(value.contains("payment_instrument_creation_option"));
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS);
   value = AutofillWalletSpecificsToValue(specifics).TakeDict();
@@ -168,6 +174,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   EXPECT_TRUE(value.contains("address"));
   EXPECT_FALSE(value.contains("customer_data"));
   EXPECT_FALSE(value.contains("cloud_token_data"));
+  EXPECT_FALSE(value.contains("payment_instrument"));
+  EXPECT_FALSE(value.contains("payment_instrument_creation_option"));
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::CUSTOMER_DATA);
   value = AutofillWalletSpecificsToValue(specifics).TakeDict();
@@ -175,6 +183,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   EXPECT_FALSE(value.contains("address"));
   EXPECT_TRUE(value.contains("customer_data"));
   EXPECT_FALSE(value.contains("cloud_token_data"));
+  EXPECT_FALSE(value.contains("payment_instrument"));
+  EXPECT_FALSE(value.contains("payment_instrument_creation_option"));
 
   specifics.set_type(
       sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA);
@@ -183,6 +193,27 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   EXPECT_FALSE(value.contains("address"));
   EXPECT_FALSE(value.contains("customer_data"));
   EXPECT_TRUE(value.contains("cloud_token_data"));
+  EXPECT_FALSE(value.contains("payment_instrument"));
+  EXPECT_FALSE(value.contains("payment_instrument_creation_option"));
+
+  specifics.set_type(sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT);
+  value = AutofillWalletSpecificsToValue(specifics).TakeDict();
+  EXPECT_FALSE(value.contains("masked_card"));
+  EXPECT_FALSE(value.contains("address"));
+  EXPECT_FALSE(value.contains("customer_data"));
+  EXPECT_FALSE(value.contains("cloud_token_data"));
+  EXPECT_TRUE(value.contains("payment_instrument"));
+  EXPECT_FALSE(value.contains("payment_instrument_creation_option"));
+
+  specifics.set_type(
+      sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION);
+  value = AutofillWalletSpecificsToValue(specifics).TakeDict();
+  EXPECT_FALSE(value.contains("masked_card"));
+  EXPECT_FALSE(value.contains("address"));
+  EXPECT_FALSE(value.contains("customer_data"));
+  EXPECT_FALSE(value.contains("cloud_token_data"));
+  EXPECT_FALSE(value.contains("payment_instrument"));
+  EXPECT_TRUE(value.contains("payment_instrument_creation_option"));
 }
 
 TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {

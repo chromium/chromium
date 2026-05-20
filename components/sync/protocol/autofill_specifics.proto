@@ -663,7 +663,18 @@ message PaymentInstrumentCreationOption {
 
   oneof creation_option {
     BnplCreationOption buy_now_pay_later_option = 2;
+    EwalletCreationOption ewallet_creation_option = 3;
   }
+}
+
+// eWallet details that the user is eligible to create an instrument from.
+message EwalletCreationOption {
+  // Unique identifier for the eWallet issuer. Example: 'dana'.
+  optional string issuer_id = 1;
+  // Display name of the eWallet issuer.
+  optional string issuer_display_name = 2;
+  // Payment hyperlinks will be embedded in payment web pages.
+  repeated string supported_payment_link_uris = 3;
 }
 
 // Buy Now Pay Later details that the user is eligible to create an instrument

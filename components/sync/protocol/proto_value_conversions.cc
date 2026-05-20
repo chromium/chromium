@@ -277,6 +277,10 @@ class ToValueVisitor {
     if (proto.type() != sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT) {
       dict.Remove("payment_instrument");
     }
+    if (proto.type() !=
+        sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION) {
+      dict.Remove("payment_instrument_creation_option");
+    }
     return base::Value(std::move(dict));
   }
 

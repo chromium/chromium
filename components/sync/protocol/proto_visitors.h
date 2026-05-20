@@ -1856,6 +1856,13 @@ VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrumentCreationOption& proto) {
   VISIT(id);
   VISIT(buy_now_pay_later_option);
+  VISIT(ewallet_creation_option);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::EwalletCreationOption& proto) {
+  VISIT(issuer_id);
+  VISIT(issuer_display_name);
+  VISIT_REP(supported_payment_link_uris);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::BankAccountDetails& proto) {
