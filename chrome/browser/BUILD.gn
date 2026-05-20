@@ -5465,7 +5465,11 @@ static_library("browser") {
     ]
 
     if (!is_android) {
-      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
+      deps += [
+        "//chrome/browser/ui/webui/feature_showcase",
+        "//chrome/browser/ui/webui/feature_showcase:mojo_bindings",
+        "//chrome/browser/ui/webui/signin/signout_confirmation",
+      ]
     }
   }
 

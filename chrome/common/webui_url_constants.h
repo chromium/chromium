@@ -159,6 +159,8 @@ inline constexpr char kChromeUIFamilyLinkUserInternalsHost[] =
     "family-link-user-internals";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 inline constexpr char kChromeUIFeatureShowcaseHost[] = "feature-showcase";
+inline constexpr char kChromeUIFeatureShowcaseURL[] =
+    "chrome://feature-showcase/";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 inline constexpr char kChromeUIFavicon2Host[] = "favicon2";
 inline constexpr char kChromeUIFaviconHost[] = "favicon";

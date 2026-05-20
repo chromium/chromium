@@ -3,16 +3,25 @@
 # found in the LICENSE file.
 
 import("//components/signin/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_dice_support)
 
+mojom("mojo_bindings") {
+  sources = [ "feature_showcase.mojom" ]
+  webui_module_path = "/"
+}
+
 source_set("feature_showcase") {
   sources = [
+    "feature_showcase_handler.cc",
+    "feature_showcase_handler.h",
     "feature_showcase_ui.cc",
     "feature_showcase_ui.h",
   ]
 
   public_deps = [
+    ":mojo_bindings",
     "//chrome/common",
     "//content/public/browser",
   ]
@@ -24,8 +33,10 @@ source_set("feature_showcase") {
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/resources/feature_showcase:resources",
     "//chrome/browser/resources/intro:resources",
+    "//chrome/common:constants",
     "//components/regional_capabilities",
     "//components/signin/public/base:signin_switches",
+    "//content/public/browser",
     "//ui/webui",
   ]
 }

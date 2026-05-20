@@ -135,6 +135,7 @@ source_set("browser_tests") {
 
   if (enable_dice_support) {
     sources += [
+      "feature_showcase/feature_showcase_browsertest.cc",
       "intro/intro_browsertest.cc",
       "signin/batch_upload_view_browsertest.cc",
     ]
@@ -900,19 +901,20 @@ generate_grd("build_grd") {
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]
   } else if (!is_android) {
-    deps += [
-      "intro:build_grdp",
-      "signin:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/intro/resources.grdp",
-      "$target_gen_dir/signin/resources.grdp",
-    ]
+    deps += [ "signin:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/signin/resources.grdp" ]
 
     if (enable_dice_support) {
-      deps += [ "signin/signout_confirmation:build_grdp" ]
-      grdp_files +=
-          [ "$target_gen_dir/signin/signout_confirmation/resources.grdp" ]
+      deps += [
+        "feature_showcase:build_grdp",
+        "intro:build_grdp",
+        "signin/signout_confirmation:build_grdp",
+      ]
+      grdp_files += [
+        "$target_gen_dir/feature_showcase/resources.grdp",
+        "$target_gen_dir/intro/resources.grdp",
+        "$target_gen_dir/signin/signout_confirmation/resources.grdp",
+      ]
     }
   }
 

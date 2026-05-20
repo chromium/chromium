@@ -14,7 +14,7 @@ export function getHtml(this: FeatureShowcaseExampleStepElement) {
   <span slot="title">Feature Showcase Example title</span>
   <span slot="description">Feature Showcase Example description</span>
   <cr-button slot="button" id="confirm-button" class="action-button"
-      @click="${this.onButtonClick_}">
+      @click="${this.onButtonClick_}" ?disabled="${this.buttonsDisabled}">
     Feature Showcase Example button
   </cr-button>
 </feature-showcase-step>

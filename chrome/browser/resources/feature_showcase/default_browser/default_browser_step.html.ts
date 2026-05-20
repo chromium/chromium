@@ -15,10 +15,12 @@ export function getHtml(this: FeatureShowcaseDefaultBrowserStepElement) {
   <span slot="title">$i18n{refreshDefaultBrowserTitle}</span>
   <span slot="description">$i18n{refreshDefaultBrowserSubtitle}</span>
   <cr-button slot="button" id="confirm-button" class="action-button"
-      @click="${this.onConfirmButtonClick_}">
+      @click="${this.onConfirmButtonClick_}"
+      ?disabled="${this.buttonsDisabled}">
     $i18n{refreshDefaultBrowserSetAsDefault}
   </cr-button>
-  <cr-button slot="button" id="skip-button" @click="${this.onSkipButtonClick_}">
+  <cr-button slot="button" id="skip-button" @click="${this.onSkipButtonClick_}"
+      ?disabled="${this.buttonsDisabled}">
     $i18n{refreshDefaultBrowserNoThanks}
   </cr-button>
 </feature-showcase-step>

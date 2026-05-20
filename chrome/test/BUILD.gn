@@ -4731,6 +4731,7 @@ if (!is_android) {
       if (is_win || is_linux) {
         sources += [
           "../browser/ui/views/profiles/first_run_default_browser_ui_browsertest.cc",
+          "../browser/ui/views/profiles/first_run_feature_showcase_ui_browsertest.cc",
           "../browser/ui/views/profiles/first_run_intro_browsertest.cc",
           "../browser/ui/views/profiles/first_run_sign_in_celebration_ui_browsertest.cc",
         ]

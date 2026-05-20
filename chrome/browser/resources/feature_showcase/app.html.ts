@@ -21,13 +21,15 @@ export function getHtml(this: FeatureShowcaseAppElement) {
 <cr-view-manager id="viewManager">
   ${this.hasStep_('example') ? html`
       <feature-showcase-example-step id="example" slot="view"
-          @step-completed="${this.onStepCompleted_}">
+          @step-completed="${this.onStepCompleted_}"
+          ?buttons-disabled="${this.areButtonsDisabled_}">
       </feature-showcase-example-step>
   ` : ''}
 
   ${this.hasStep_('default-browser') ? html`
       <feature-showcase-default-browser-step id="default-browser" slot="view"
-          @step-completed="${this.onStepCompleted_}">
+          @step-completed="${this.onStepCompleted_}"
+          ?buttons-disabled="${this.areButtonsDisabled_}">
       </feature-showcase-default-browser-step>
   ` : ''}
 </cr-view-manager>

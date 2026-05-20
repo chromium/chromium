@@ -24,6 +24,14 @@ export class FeatureShowcaseDefaultBrowserStepElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      buttonsDisabled: {type: Boolean},
+    };
+  }
+
+  accessor buttonsDisabled: boolean = false;
+
   protected onConfirmButtonClick_() {
     // TODO(b/505629973): Add sending the event to the browser.
     this.fire('step-completed');

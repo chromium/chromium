@@ -65,7 +65,10 @@ class ProfileManagementFlowController
 
     kFinishFlow = 9,
 
-    kMaxValue = kFinishFlow,
+    // Renders the feature showcase single page app.
+    kFeatureShowcase = 10,
+
+    kMaxValue = kFeatureShowcase,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileManagementFlowStep)
 

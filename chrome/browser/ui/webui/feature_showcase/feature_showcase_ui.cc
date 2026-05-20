@@ -7,9 +7,11 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/ui/webui/feature_showcase/feature_showcase_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -63,8 +65,10 @@ bool FeatureShowcaseUIConfig::IsWebUIEnabled(
       is_in_search_engine_choice_region);
 }
 
+WEB_UI_CONTROLLER_TYPE_IMPL(FeatureShowcaseUI)
+
 FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIFeatureShowcaseHost);
 
@@ -79,3 +83,28 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
 }
 
 FeatureShowcaseUI::~FeatureShowcaseUI() = default;
+
+void FeatureShowcaseUI::SetFinishCallback(base::OnceClosure finish_callback) {
+  finish_callback_ = std::move(finish_callback);
+}
+
+void FeatureShowcaseUI::BindInterface(
+    mojo::PendingReceiver<
+        feature_showcase::mojom::FeatureShowcasePageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void FeatureShowcaseUI::CreatePageHandler(
+    mojo::PendingReceiver<feature_showcase::mojom::FeatureShowcasePageHandler>
+        handler) {
+  page_handler_ = std::make_unique<FeatureShowcaseHandler>(
+      std::move(handler), base::BindOnce(&FeatureShowcaseUI::OnShowcaseFinished,
+                                         base::Unretained(this)));
+}
+
+void FeatureShowcaseUI::OnShowcaseFinished() {
+  if (finish_callback_) {
+    std::move(finish_callback_).Run();
+  }
+}

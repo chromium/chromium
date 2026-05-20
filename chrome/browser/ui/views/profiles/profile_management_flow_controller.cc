@@ -47,6 +47,8 @@ std::string_view GetStepHistogramSuffix(
       return ".SearchEngineChoice";
     case ProfileManagementFlowController::Step::kFinishFlow:
       return ".FinishFlow";
+    case ProfileManagementFlowController::Step::kFeatureShowcase:
+      return ".FeatureShowcase";
   }
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/histograms.xml:StepName)

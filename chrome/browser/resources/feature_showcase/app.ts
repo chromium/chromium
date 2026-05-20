@@ -16,6 +16,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {FeatureShowcaseBrowserProxyImpl} from './feature_showcase_browser_proxy.js';
 
 export interface FeatureShowcaseAppElement {
   $: {
@@ -40,12 +41,14 @@ export class FeatureShowcaseAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      areButtonsDisabled_: {type: Boolean},
       isDarkMode_: {type: Boolean},
     };
   }
 
   private activeStepIndex_: number = 0;
   private steps_: string[];
+  protected accessor areButtonsDisabled_: boolean = false;
   protected accessor isDarkMode_: boolean = false;
   private matchMedia_: MediaQueryList;
   private darkModeListener_: (e: MediaQueryListEvent) => void;
@@ -81,7 +84,7 @@ export class FeatureShowcaseAppElement extends CrLitElement {
         this.steps_.length > 0, 'Feature showcase requires at least one step.');
 
     const step = this.steps_[this.activeStepIndex_]!;
-    this.$.viewManager.switchView(step, 'fade-in', 'fade-out');
+    this.$.viewManager.switchView(step);
   }
 
   protected getAnimationUrl_(position: 'right'|'bottom'): string {
@@ -94,13 +97,21 @@ export class FeatureShowcaseAppElement extends CrLitElement {
   }
 
   protected onStepCompleted_() {
+    assert(!this.areButtonsDisabled_, 'Buttons should not be disabled.');
+    this.areButtonsDisabled_ = true;
     this.activeStepIndex_++;
+
     if (this.activeStepIndex_ < this.steps_.length) {
       this.tryPlayingTransitionAnimations();
       const step = this.steps_[this.activeStepIndex_]!;
-      this.$.viewManager.switchView(step);
+      this.$.viewManager.switchView(step).then(() => {
+        this.areButtonsDisabled_ = false;
+      });
+      return;
     }
-    // TODO(crbug.com/507795442): Inform controller of showcase completion.
+
+    FeatureShowcaseBrowserProxyImpl.getInstance()
+        .handler.finishFeatureShowcase();
   }
 
   private tryPlayingTransitionAnimations() {

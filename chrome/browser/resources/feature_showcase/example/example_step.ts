@@ -23,6 +23,14 @@ export class FeatureShowcaseExampleStepElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      buttonsDisabled: {type: Boolean},
+    };
+  }
+
+  accessor buttonsDisabled: boolean = false;
+
   protected onButtonClick_() {
     this.fire('step-completed');
   }

@@ -405,6 +405,7 @@ chromium-metrics-reviews@google.com.
     Not an actual user facing step; the user has no input, it will open the
     browser.
   </int>
+  <int value="10" label="Feature Showcase"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_management_flow_controller.h:Step) -->
