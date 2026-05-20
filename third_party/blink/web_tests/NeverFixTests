@@ -1603,6 +1603,8 @@ external/wpt/worklets/animation-worklet-service-worker-interception.https.html [
 # Chrome for Testing specific tests that only run on Linux due to requiring FlagSpecific overrides.
 crbug.com/1446931 [ Android ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
 crbug.com/1446931 [ Fuchsia ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
+# Disable temporarily to switch behavior in V8 commit.
+crbug.com/1446931 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
 crbug.com/1446931 [ Mac ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
 crbug.com/1446931 [ Win ] inspector-protocol/heap-profiler/heap-snapshot-exposes-cpp-internals.js [ Skip ]
 
