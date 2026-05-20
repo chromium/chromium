@@ -49,12 +49,12 @@ std::u16string SplitTabSwapMenuModel::GetLabelForCommandId(
 
   if (id == CommandId::kSwapStartTab) {
     return l10n_util::GetStringUTF16(
-        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
             ? IDS_SPLIT_TAB_SWAP_LEFT_VIEW
             : IDS_SPLIT_TAB_SWAP_TOP_VIEW);
   } else if (id == CommandId::kSwapEndTab) {
     return l10n_util::GetStringUTF16(
-        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
             ? IDS_SPLIT_TAB_SWAP_RIGHT_VIEW
             : IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW);
   } else {
@@ -68,13 +68,13 @@ ui::ImageModel SplitTabSwapMenuModel::GetIconForCommandId(
   const CommandId id = static_cast<CommandId>(command_id);
   const gfx::VectorIcon* icon = nullptr;
   if (id == CommandId::kSwapStartTab) {
-    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
                ? &(features::IsRoundedIconsEnabled() ? kSplitSceneLeftIcon
                                                      : kSplitSceneLeftOldIcon)
                : &(features::IsRoundedIconsEnabled() ? kSplitSceneUpIcon
                                                      : kSplitSceneUpOldIcon);
   } else if (id == CommandId::kSwapEndTab) {
-    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
                ? &(features::IsRoundedIconsEnabled() ? kSplitSceneRightIcon
                                                      : kSplitSceneRightOldIcon)
                : &(features::IsRoundedIconsEnabled() ? kSplitSceneDownIcon

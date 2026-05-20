@@ -61,7 +61,7 @@ SplitTabActiveLocation GetLastActiveTabLocation(
   const bool first_tab_activated = last_active_index == first_tab_index;
 
   if (split_tab_data->visual_data()->split_layout() ==
-      SplitTabLayout::kVertical) {
+      SplitTabLayout::kSideBySide) {
     return first_tab_activated ? SplitTabActiveLocation::kStart
                                : SplitTabActiveLocation::kEnd;
   } else {

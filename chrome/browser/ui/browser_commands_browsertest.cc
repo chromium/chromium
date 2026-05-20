@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
   // Create a split tab.
   browser()->tab_strip_model()->AddToNewSplit(
       {3},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, OnlyCloseActiveTabInSplitView) {
   // Add second last tab to split view with the last tab.
   browser()->tab_strip_model()->AddToNewSplit(
       {kTabCount - 2},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CloseAllTabsInSelectionModel) {
   // Add second last tab to split view with the last tab.
   browser()->tab_strip_model()->AddToNewSplit(
       {kTabCount - 2},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -356,8 +356,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithSplitView) {
   const split_tabs::SplitTabId split_id =
       browser()->tab_strip_model()->AddToNewSplit(
           {1},
-          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
-                                         1.0f),
+          split_tabs::SplitTabVisualData(
+              split_tabs::SplitTabLayout::kSideBySide, 1.0f),
           split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Move both tabs in the split to a new window.
@@ -384,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   const split_tabs::SplitTabId split_id =
       browser()->tab_strip_model()->AddToNewSplit(
           {2},
-          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
-                                         1.0f),
+          split_tabs::SplitTabVisualData(
+              split_tabs::SplitTabLayout::kSideBySide, 1.0f),
           split_tabs::SplitTabCreatedSource::kToolbarButton);
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
@@ -586,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   const split_tabs::SplitTabId split_id =
       browser()->tab_strip_model()->AddToNewSplit(
           {1},
-          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
-                                         1.0f),
+          split_tabs::SplitTabVisualData(
+              split_tabs::SplitTabLayout::kSideBySide, 1.0f),
           split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Target browser: 0(active)

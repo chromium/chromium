@@ -972,7 +972,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     // Remove the insets on the shared edge between the start and end contents
     // views.
     if (views().multi_contents_view->GetSplitLayout() ==
-        split_tabs::SplitTabLayout::kVertical) {
+        split_tabs::SplitTabLayout::kSideBySide) {
       start_contents_view_inset.set_right(0);
       end_contents_view_inset.set_left(0);
     } else {

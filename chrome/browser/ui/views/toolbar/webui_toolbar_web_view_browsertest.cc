@@ -2058,7 +2058,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       &webui_toolbar_view->split_tabs_control_;
 
   // Create split [A, B].
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(
@@ -2231,7 +2231,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Create a split tab group manually to simulate being in split mode.
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(
@@ -2257,7 +2257,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Create split [A, B]. A is active.
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(

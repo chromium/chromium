@@ -323,7 +323,7 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest {
   void SplitTabWithActive(int index_to_split) {
     browser()->tab_strip_model()->AddToNewSplit(
         {index_to_split},
-        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5f),
         split_tabs::SplitTabCreatedSource::kToolbarButton);
   }

@@ -7,7 +7,7 @@
 namespace split_tabs {
 
 SplitTabVisualData::SplitTabVisualData()
-    : split_layout_(SplitTabLayout::kVertical) {}
+    : split_layout_(SplitTabLayout::kSideBySide) {}
 
 SplitTabVisualData::SplitTabVisualData(SplitTabLayout split_layout)
     : split_layout_(split_layout) {}

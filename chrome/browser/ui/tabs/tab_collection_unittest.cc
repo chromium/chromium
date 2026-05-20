@@ -293,8 +293,8 @@ TEST_F(PinnedTabCollectionTest, CollectionOperations) {
   std::unique_ptr<tabs::TabCollection> collection =
       std::make_unique<tabs::SplitTabCollection>(
           split_tabs::SplitTabId::GenerateNew(),
-          split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
-                                         0.5));
+          split_tabs::SplitTabVisualData(
+              split_tabs::SplitTabLayout::kSideBySide, 0.5));
   tabs::TabCollection* collection_ptr = collection.get();
   EXPECT_EQ(pinned_collection_instance->GetIndexOfCollection(collection_ptr),
             std::nullopt);
@@ -398,7 +398,7 @@ class SplitTabCollectionTest : public TabCollectionBaseTest {
   SplitTabCollectionTest() {
     split_collection_ = std::make_unique<tabs::SplitTabCollection>(
         split_tabs::SplitTabId::GenerateNew(),
-        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5));
   }
   SplitTabCollectionTest(const SplitTabCollectionTest&) = delete;
@@ -724,7 +724,7 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
         split_tabs::SplitTabId::GenerateNew();
     tab_strip_collection->CreateSplit(
         pinned_split_id, pinned_split_tabs,
-        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5));
 
     // 2 unpinned tabs.
@@ -753,7 +753,7 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
         split_tabs::SplitTabId::GenerateNew();
     tab_strip_collection->CreateSplit(
         grouped_split_id, grouped_split_tabs,
-        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5));
 
     // 2 more unpinned tabs.
@@ -886,7 +886,7 @@ TEST_F(TabStripCollectionTest, SplitOperations) {
     split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
     tab_strip_collection->CreateSplit(
         split_id, tabs,
-        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5));
     return std::tuple{
         tabs, tab_strip_collection->GetSplitTabCollection(split_id), split_id};
@@ -969,7 +969,7 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
     split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
     tab_strip_collection->CreateSplit(
         split_id, tabs,
-        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5));
     return std::tuple{
         tabs, tab_strip_collection->GetSplitTabCollection(split_id), split_id};
@@ -1312,7 +1312,7 @@ TEST_F(TabStripCollectionTest, UpdateProperties) {
           std::make_unique<tabs::SplitTabCollection>(
               split_tabs::SplitTabId::GenerateNew(),
               split_tabs::SplitTabVisualData(
-                  split_tabs::SplitTabLayout::kVertical, 0.5)),
+                  split_tabs::SplitTabLayout::kSideBySide, 0.5)),
           unpinned_collection->ChildCount());
   AppendTab(split_collection, std::make_unique<tabs::TabModel>(
                                   MakeWebContents(), GetTabStripModel()));

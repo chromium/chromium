@@ -2757,7 +2757,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
     case CommandAddToSplit: {
       ExecuteAddToNewSplitCommand(context_index,
-                                  split_tabs::SplitTabLayout::kVertical);
+                                  split_tabs::SplitTabLayout::kSideBySide);
       break;
     }
 

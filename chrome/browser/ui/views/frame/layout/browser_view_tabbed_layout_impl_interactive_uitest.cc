@@ -745,7 +745,7 @@ class BrowserViewTabbedLayoutImplContentLayoutUiTest
     return Steps(
         Do([this]() {
           chrome::NewSplitTab(
-              browser(), split_tabs::SplitTabLayout::kVertical,
+              browser(), split_tabs::SplitTabLayout::kSideBySide,
               split_tabs::SplitTabCreatedSource::kToolbarButton);
         }),
         WaitForShow(MultiContentsResizeArea::kMultiContentsResizeAreaElementId),

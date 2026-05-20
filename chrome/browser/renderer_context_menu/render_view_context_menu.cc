@@ -930,7 +930,7 @@ std::pair<int, const gfx::VectorIcon*> GetOpenLinkInSplitStringAndIcon(
     split_tabs::SplitTabData* split_data =
         browser->tab_strip_model()->GetSplitData(tab->GetSplit().value());
     switch (split_data->visual_data()->split_layout()) {
-      case split_tabs::SplitTabLayout::kVertical:
+      case split_tabs::SplitTabLayout::kSideBySide:
         if (split_data->ListTabs()[base::i18n::IsRTL() ? 1 : 0] == tab) {
           string_id = IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW;
           icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneRightIcon
@@ -941,7 +941,7 @@ std::pair<int, const gfx::VectorIcon*> GetOpenLinkInSplitStringAndIcon(
                                                      : kSplitSceneLeftOldIcon);
         }
         break;
-      case split_tabs::SplitTabLayout::kHorizontal:
+      case split_tabs::SplitTabLayout::kStacked:
         if (split_data->ListTabs()[0] == tab) {
           string_id = IDS_CONTENT_CONTEXT_OPENLINKBOTTOMVIEW;
           icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneDownIcon
@@ -3471,7 +3471,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW:
 #if !BUILDFLAG(IS_ANDROID)
-      OpenLinkInSplitView(split_tabs::SplitTabLayout::kVertical);
+      OpenLinkInSplitView(split_tabs::SplitTabLayout::kSideBySide);
 #endif  // !BUILDFLAG(IS_ANDROID)
       break;
     case IDC_CONTENT_CONTEXT_SAVELINKAS:

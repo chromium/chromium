@@ -22,8 +22,9 @@ class SplitViewLayoutMenuModel : public ui::SimpleMenuModel,
 
   // Start command IDs at 1901 to avoid conflicts with other submenus.
   enum class CommandId {
-    kVertical = ExistingBaseSubMenuModel::kMinSplitViewLayoutMenuModelCommandId,
-    kHorizontal,
+    kSideBySide =
+        ExistingBaseSubMenuModel::kMinSplitViewLayoutMenuModelCommandId,
+    kStacked,
   };
 
   using ExecuteCommandCallback =

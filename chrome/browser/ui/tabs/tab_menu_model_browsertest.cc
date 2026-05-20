@@ -406,15 +406,15 @@ class TabMenuModelSplitViewHorizontalDirectAccessBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalDirectAccessBrowserTest,
-                       NewVerticalSplit) {
-  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kVertical,
-               split_tabs::SplitTabLayout::kVertical);
+                       NewSideBySideSplit) {
+  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kSideBySide,
+               split_tabs::SplitTabLayout::kSideBySide);
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalDirectAccessBrowserTest,
-                       NewHorizontalSplit) {
-  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kHorizontal,
-               split_tabs::SplitTabLayout::kHorizontal);
+                       NewStackedSplit) {
+  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kStacked,
+               split_tabs::SplitTabLayout::kStacked);
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithActiveTab) {
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithActiveTab) {
   tab_strip_model->ActivateTabAt(0);
   tab_strip_model->AddToNewSplit(
       {1},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical),
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithInactiveTab) {
   // tab active.
   tab_strip_model->AddToNewSplit(
       {1},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical),
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
   EXPECT_FALSE(tab_strip_model->GetSplitForTab(0).has_value());
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());

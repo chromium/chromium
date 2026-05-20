@@ -27,7 +27,7 @@ namespace {
 int GetAccessibleTabLabelFormatStringForSplit(split_tabs::SplitTabLayout layout,
                                               int tab_index_in_split) {
   switch (layout) {
-    case split_tabs::SplitTabLayout::kVertical:
+    case split_tabs::SplitTabLayout::kSideBySide:
       switch (tab_index_in_split) {
         case 0:
           return IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT;
@@ -106,7 +106,7 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
         std::find(tabs_in_split.begin(), tabs_in_split.end(), tab));
     title = l10n_util::GetStringFUTF16(
         GetAccessibleTabLabelFormatStringForSplit(
-            split_tabs::SplitTabLayout::kVertical, tab_index_in_split),
+            split_tabs::SplitTabLayout::kSideBySide, tab_index_in_split),
         title);
   }
 

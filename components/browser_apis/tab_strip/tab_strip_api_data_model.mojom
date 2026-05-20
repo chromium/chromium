@@ -79,8 +79,8 @@ struct SplitTab {
 
 struct SplitTabVisualData {
   enum Layout {
-    kVertical,
-    kHorizontal,
+    kSideBySide,
+    kStacked,
   };
 
   Layout layout;

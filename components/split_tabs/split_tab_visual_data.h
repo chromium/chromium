@@ -8,12 +8,10 @@
 namespace split_tabs {
 
 enum class SplitTabLayout {
-  // A tab will stretch out vertically so one tab in the split will be next to
-  // the other.
-  kVertical,
-  // A tab will stretch out horizontally so one tab in the split will be on top
-  // of the other.
-  kHorizontal
+  // Two tabs will display next to each other, side-by-side.
+  kSideBySide,
+  // Two tabs will appear stacked, one above the other.
+  kStacked
 };
 
 // Represents the visual state of a split tab, including its layout type and the

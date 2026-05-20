@@ -152,9 +152,9 @@ class MultiContentsViewUiTest
                            ->parent()
                            ->size();
                    switch (multi_contents_view->GetSplitLayout()) {
-                     case split_tabs::SplitTabLayout::kVertical:
+                     case split_tabs::SplitTabLayout::kSideBySide:
                        return check.Run(start_size.width(), end_size.width());
-                     case split_tabs::SplitTabLayout::kHorizontal:
+                     case split_tabs::SplitTabLayout::kStacked:
                        return check.Run(start_size.height(), end_size.height());
                      default:
                        NOTREACHED();
@@ -213,7 +213,7 @@ class MultiContentsViewUiTest
     auto result = Steps(Do([size, this]() {
       auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
       auto bounds = browser_view->bounds();
-      if (GetParam() == split_tabs::SplitTabLayout::kVertical) {
+      if (GetParam() == split_tabs::SplitTabLayout::kSideBySide) {
         bounds.set_width(size);
         bounds.set_height(1000);
       } else {
@@ -230,7 +230,7 @@ class MultiContentsViewUiTest
   auto ResizeContents(int size) {
     auto result = Steps(Do([size, this]() {
       BrowserView::GetBrowserViewForBrowser(browser())->SetContentsSize(
-          GetParam() == split_tabs::SplitTabLayout::kVertical
+          GetParam() == split_tabs::SplitTabLayout::kSideBySide
               ? gfx::Size(size, 1000)
               : gfx::Size(1000, size));
     }));
@@ -248,14 +248,16 @@ class MultiContentsViewUiTest
 
   // Gets the size of a gfx::Rect along the resize axis.
   auto GetSize(gfx::Rect rect) {
-    return GetParam() == split_tabs::SplitTabLayout::kVertical ? rect.width()
-                                                               : rect.height();
+    return GetParam() == split_tabs::SplitTabLayout::kSideBySide
+               ? rect.width()
+               : rect.height();
   }
 
   // Gets the size of a gfx::Size along the resize axis.
   auto GetSize(gfx::Size size) {
-    return GetParam() == split_tabs::SplitTabLayout::kVertical ? size.width()
-                                                               : size.height();
+    return GetParam() == split_tabs::SplitTabLayout::kSideBySide
+               ? size.width()
+               : size.height();
   }
 
   auto CheckActiveContentsHasFocus() {
@@ -288,8 +290,8 @@ class MultiContentsViewUiTest
 INSTANTIATE_TEST_SUITE_P(
     SplitTabLayout,
     MultiContentsViewUiTest,
-    testing::Values(split_tabs::SplitTabLayout::kVertical,
-                    split_tabs::SplitTabLayout::kHorizontal));
+    testing::Values(split_tabs::SplitTabLayout::kSideBySide,
+                    split_tabs::SplitTabLayout::kStacked));
 
 // Check that MultiContentsView exists when the side by side flag is enabled
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
@@ -299,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
 // Check that resizing the browser window in split view correctly resizes
 // both content panes.
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
-  if (GetParam() == split_tabs::SplitTabLayout::kHorizontal) {
+  if (GetParam() == split_tabs::SplitTabLayout::kStacked) {
     // TODO(crbug.com/510832426): Re-enable this test once resize area supports
     // horizontal layout.
     GTEST_SKIP();
@@ -540,7 +542,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesToMinSize) {
 }
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesToSnapPointSize) {
-  if (GetParam() == split_tabs::SplitTabLayout::kHorizontal) {
+  if (GetParam() == split_tabs::SplitTabLayout::kStacked) {
     // TODO(crbug.com/510832426): Re-enable this test once resize area supports
     // horizontal layout.
     GTEST_SKIP();
@@ -593,18 +595,18 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
 // Check that the MultiContentsView resize area correctly resizes the start and
 // end contents views via key events.
 IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
-  if (GetParam() == split_tabs::SplitTabLayout::kHorizontal) {
+  if (GetParam() == split_tabs::SplitTabLayout::kStacked) {
     // TODO(crbug.com/510832426): Re-enable this test once resize area supports
     // horizontal layout.
     GTEST_SKIP();
   }
 
   auto increase_start_size_key =
-      GetParam() == split_tabs::SplitTabLayout::kVertical ? ui::VKEY_RIGHT
-                                                          : ui::VKEY_DOWN;
+      GetParam() == split_tabs::SplitTabLayout::kSideBySide ? ui::VKEY_RIGHT
+                                                            : ui::VKEY_DOWN;
   auto decrease_start_size_key =
-      GetParam() == split_tabs::SplitTabLayout::kVertical ? ui::VKEY_LEFT
-                                                          : ui::VKEY_UP;
+      GetParam() == split_tabs::SplitTabLayout::kSideBySide ? ui::VKEY_LEFT
+                                                            : ui::VKEY_UP;
   RunTestSequence(
       CreateTabsAndEnterSplitView(), Check([&]() {
         gfx::Size start_size =
@@ -640,7 +642,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, InsetsOnlyInSplit) {
   // When the layout is horizontal, also take into account the top separator
   // when comparing the height of the multi contents view to the contents views.
   const int kSeparatorThickness =
-      (GetParam() == split_tabs::SplitTabLayout::kHorizontal
+      (GetParam() == split_tabs::SplitTabLayout::kStacked
            ? views::Separator::kThickness
            : 0);
   RunTestSequence(
@@ -988,8 +990,8 @@ class MultiContentsViewOutlineHighlightUiTest : public MultiContentsViewUiTest {
 INSTANTIATE_TEST_SUITE_P(
     SplitTabLayout,
     MultiContentsViewOutlineHighlightUiTest,
-    testing::Values(split_tabs::SplitTabLayout::kVertical,
-                    split_tabs::SplitTabLayout::kHorizontal));
+    testing::Values(split_tabs::SplitTabLayout::kSideBySide,
+                    split_tabs::SplitTabLayout::kStacked));
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewOutlineHighlightUiTest,
                        ShowHighlightOnOmniboxDropDownOpen) {
@@ -1201,8 +1203,8 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
 INSTANTIATE_TEST_SUITE_P(
     SplitTabLayout,
     MultiContentsViewDragEntrypointsUiTest,
-    testing::Values(split_tabs::SplitTabLayout::kVertical,
-                    split_tabs::SplitTabLayout::kHorizontal));
+    testing::Values(split_tabs::SplitTabLayout::kSideBySide,
+                    split_tabs::SplitTabLayout::kStacked));
 
 // TODO(crbug.com/414590951): This test has been flaky on some MacOS versions,
 // and DnD testing isn't well-supported for other platforms.
@@ -1306,8 +1308,8 @@ class MultiContentsViewBookmarkDragEntrypointsUiTest
 INSTANTIATE_TEST_SUITE_P(
     SplitTabLayout,
     MultiContentsViewBookmarkDragEntrypointsUiTest,
-    testing::Values(split_tabs::SplitTabLayout::kVertical,
-                    split_tabs::SplitTabLayout::kHorizontal));
+    testing::Values(split_tabs::SplitTabLayout::kSideBySide,
+                    split_tabs::SplitTabLayout::kStacked));
 
 // TODO(crbug.com/414590951): This test has been flaky on some MacOS versions,
 // and DnD testing isn't well-supported for other platforms.

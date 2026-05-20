@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
   // Create a split view.
   const int active_index = browser()->tab_strip_model()->active_index();
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetWebContentsAt(active_index + 1)));

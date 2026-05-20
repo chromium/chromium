@@ -3850,7 +3850,7 @@ IN_PROC_BROWSER_TEST_F(SubframeContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SubframeContextMenuBrowserTest,
                        SubframeExistingSplitInitiator) {
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kLinkContextMenu);
   browser()->tab_strip_model()->ActivateTabAt(0);
   RunSubframeInitiatorTestForCommand(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
@@ -3982,7 +3982,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTab) {
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kLinkContextMenu);
   tab_strip_model->ActivateTabAt(0);
   ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
@@ -4011,7 +4011,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTabRTL) {
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kVertical,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kLinkContextMenu);
   tab_strip_model->ActivateTabAt(0);
   ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
@@ -4033,7 +4033,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kHorizontal,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kStacked,
                       split_tabs::SplitTabCreatedSource::kLinkContextMenu);
   tab_strip_model->ActivateTabAt(0);
   ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
@@ -4054,7 +4054,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTabTop) {
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kHorizontal,
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kStacked,
                       split_tabs::SplitTabCreatedSource::kLinkContextMenu);
   tab_strip_model->ActivateTabAt(1);
   ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
@@ -4117,15 +4117,15 @@ class ContextMenuSplitViewHorizontalDirectAccessBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
-                       OpenLinkNewSplitVertical) {
-  TestOpenLinkNewSplit(0, SplitViewLayoutMenuModel::CommandId::kVertical,
-                       split_tabs::SplitTabLayout::kVertical);
+                       OpenLinkNewSplitSideBySide) {
+  TestOpenLinkNewSplit(0, SplitViewLayoutMenuModel::CommandId::kSideBySide,
+                       split_tabs::SplitTabLayout::kSideBySide);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
-                       OpenLinkNewSplitHorizontal) {
-  TestOpenLinkNewSplit(1, SplitViewLayoutMenuModel::CommandId::kHorizontal,
-                       split_tabs::SplitTabLayout::kHorizontal);
+                       OpenLinkNewSplitStacked) {
+  TestOpenLinkNewSplit(1, SplitViewLayoutMenuModel::CommandId::kStacked,
+                       split_tabs::SplitTabLayout::kStacked);
 }
 
 }  // namespace

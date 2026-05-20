@@ -501,7 +501,7 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   ViewSizes sizes = GetViewSizes(available_space);
 
   gfx::Rect start_rect, resize_rect, end_rect;
-  if (GetSplitLayout() == split_tabs::SplitTabLayout::kVertical) {
+  if (GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide) {
     start_rect = gfx::Rect(available_space.origin(),
                            gfx::Size(sizes.start, available_space.height()));
     resize_rect = gfx::Rect(start_rect.top_right(),
@@ -708,14 +708,14 @@ gfx::Rect MultiContentsView::CalculateSeparatorLayouts(
 MultiContentsView::ViewSizes MultiContentsView::GetViewSizes(
     gfx::Rect available_space) const {
   const int available_size =
-      GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+      GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
           ? available_space.width()
           : available_space.height();
   ViewSizes sizes;
   if (IsInSplitView()) {
     CHECK(contents_container_views_[0]->GetVisible() &&
           contents_container_views_[1]->GetVisible());
-    sizes.resize = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+    sizes.resize = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
                        ? resize_area_->GetPreferredSize().width()
                        : resize_area_->GetPreferredSize().height();
     sizes.start = std::round(visual_data_.split_ratio() *
@@ -759,7 +759,7 @@ int MultiContentsView::GetMinViewSize(gfx::Rect available_space) const {
   // of kConstrainedMinWebContentsSize.
   const int min_percentage =
       kMinWebContentsSizePercentage *
-      (visual_data_.split_layout() == split_tabs::SplitTabLayout::kVertical
+      (visual_data_.split_layout() == split_tabs::SplitTabLayout::kSideBySide
            ? available_space.width()
            : available_space.height());
   const int min_fixed_value =

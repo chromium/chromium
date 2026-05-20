@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SadTabSplitViewBrowserTest,
   // Enter split view with Tab 0 as primary and Tab 1 (crashed) as secondary.
   browser()->tab_strip_model()->AddToNewSplit(
       {1},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 

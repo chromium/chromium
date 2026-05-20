@@ -185,12 +185,12 @@ std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
     return l10n_util::GetStringUTF16(IDS_SPLIT_TAB_REVERSE_VIEWS);
   } else if (id == CommandId::kCloseStartTab) {
     return l10n_util::GetStringUTF16(
-        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
             ? IDS_SPLIT_TAB_CLOSE_LEFT_VIEW
             : IDS_SPLIT_TAB_CLOSE_TOP_VIEW);
   } else if (id == CommandId::kCloseEndTab) {
     return l10n_util::GetStringUTF16(
-        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
             ? IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW
             : IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW);
   } else {
@@ -208,14 +208,14 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
   if (id == CommandId::kReversePosition) {
     icon = &GetReversePositionIcon(active_split_tab_location);
   } else if (id == CommandId::kCloseStartTab) {
-    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
                ? &(features::IsRoundedIconsEnabled() ? kLeftPanelCloseIcon
                                                      : kLeftPanelCloseOldIcon)
                : &(features::IsRoundedIconsEnabled() ? kTopPanelCloseIcon
                                                      : kTopPanelCloseOldIcon);
   } else if (id == CommandId::kCloseEndTab) {
     icon =
-        GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
             ? &(features::IsRoundedIconsEnabled() ? kRightPanelCloseIcon
                                                   : kRightPanelCloseOldIcon)
             : &(features::IsRoundedIconsEnabled() ? kBottomPanelCloseIcon

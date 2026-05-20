@@ -2768,13 +2768,13 @@ TEST_P(TabStripModelTest, SplitLayoutTest) {
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(
       tabstrip()->GetSplitData(split_tab_id)->visual_data()->split_layout(),
-      split_tabs::SplitTabLayout::kVertical);
+      split_tabs::SplitTabLayout::kSideBySide);
 
   tabstrip()->UpdateSplitLayout(split_tab_id,
-                                split_tabs::SplitTabLayout::kHorizontal);
+                                split_tabs::SplitTabLayout::kStacked);
   EXPECT_EQ(
       tabstrip()->GetSplitData(split_tab_id)->visual_data()->split_layout(),
-      split_tabs::SplitTabLayout::kHorizontal);
+      split_tabs::SplitTabLayout::kStacked);
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
@@ -2798,7 +2798,7 @@ TEST_P(TabStripModelTest, SplitRatioTest) {
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
   EXPECT_EQ(
       tabstrip()->GetSplitData(split_tab_id)->visual_data()->split_layout(),
-      split_tabs::SplitTabLayout::kVertical);
+      split_tabs::SplitTabLayout::kSideBySide);
 
   tabstrip()->UpdateSplitRatio(split_tab_id, 0.7);
   EXPECT_EQ(

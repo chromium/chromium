@@ -1308,9 +1308,9 @@ TEST_F(SessionServiceTest, SplitTabDataSaved) {
       split_tabs::SplitTabId::GenerateNew()};
 
   const std::array<split_tabs::SplitTabVisualData, kNumSplitTabs> visual_data =
-      {split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kHorizontal,
+      {split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kStacked,
                                       0.2),
-       split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+       split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                       0.7)};
 
   int tab_ndx = 0;

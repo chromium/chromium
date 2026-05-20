@@ -64,8 +64,8 @@ TEST(TabsStripServiceMojoTraitsTest, ConvertTabGroupVisualData) {
 }
 
 TEST(TabsStripServiceMojoTraitsTest, ConvertSplitTabVisualData) {
-  split_tabs::SplitTabVisualData original(split_tabs::SplitTabLayout::kVertical,
-                                          0.75);
+  split_tabs::SplitTabVisualData original(
+      split_tabs::SplitTabLayout::kSideBySide, 0.75);
 
   std::vector<uint8_t> serialized =
       mojom::SplitTabVisualData::Serialize(&original);

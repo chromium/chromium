@@ -7,10 +7,10 @@
 MojoSplitLayout mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout>::ToMojom(
     NativeSplitLayout input) {
   switch (input) {
-    case NativeSplitLayout::kVertical:
-      return MojoSplitLayout::kVertical;
-    case NativeSplitLayout::kHorizontal:
-      return MojoSplitLayout::kHorizontal;
+    case NativeSplitLayout::kSideBySide:
+      return MojoSplitLayout::kSideBySide;
+    case NativeSplitLayout::kStacked:
+      return MojoSplitLayout::kStacked;
   }
   NOTREACHED();
 }
@@ -19,10 +19,10 @@ NativeSplitLayout
 mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout>::FromMojom(
     MojoSplitLayout input) {
   switch (input) {
-    case MojoSplitLayout::kVertical:
-      return NativeSplitLayout::kVertical;
-    case MojoSplitLayout::kHorizontal:
-      return NativeSplitLayout::kHorizontal;
+    case MojoSplitLayout::kSideBySide:
+      return NativeSplitLayout::kSideBySide;
+    case MojoSplitLayout::kStacked:
+      return NativeSplitLayout::kStacked;
   }
   NOTREACHED();
 }

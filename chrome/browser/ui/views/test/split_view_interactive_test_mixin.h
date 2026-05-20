@@ -31,11 +31,11 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
   explicit SplitViewInteractiveTestMixin(Args&&... args)
       : SplitViewBrowserTestMixin<T>(std::forward<Args>(args)...) {}
 
-  auto EnterSplitView(
-      int active_tab,
-      std::optional<int> other_tab = std::nullopt,
-      split_tabs::SplitTabLayout layout = split_tabs::SplitTabLayout::kVertical,
-      double ratio = 0.5) {
+  auto EnterSplitView(int active_tab,
+                      std::optional<int> other_tab = std::nullopt,
+                      split_tabs::SplitTabLayout layout =
+                          split_tabs::SplitTabLayout::kSideBySide,
+                      double ratio = 0.5) {
     // MultiContentsView overrides Layout, causing an edge case where the
     // resize area gets set to visible but doesn't gain nonzero size until the
     // next layout pass. Use PollView and WaitForState to wait for a nonzero
