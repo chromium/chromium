@@ -2,36 +2,28 @@
     "0": {
         "benchmarks": {
             "blink_perf.dom": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "media.desktop": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "rendering.desktop": {
-                "abridged": true,
-                "pageset_repeat": 1
+                "abridged": true
             },
             "rendering.desktop.notracing": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "system_health.common_desktop": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "v8.browsing_desktop": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             }
         },
         "executables": {
@@ -71,25 +63,34 @@
         "crossbench": {
             "jetstream2.crossbench": {
                 "crossbench_name": "jetstream_2",
-                "arguments": []
+                "arguments": [
+                    "--enable-field-trials"
+                ]
             },
             "jetstream3-turbolev_future.crossbench": {
                 "crossbench_name": "jetstream_3",
                 "arguments": [
-                    "--js-flags=--turbolev-future"
+                    "--js-flags=--turbolev-future",
+                    "--enable-field-trials"
                 ]
             },
             "jetstream3.crossbench": {
                 "crossbench_name": "jetstream_3",
-                "arguments": []
+                "arguments": [
+                    "--enable-field-trials"
+                ]
             },
             "motionmark1.3.crossbench": {
                 "crossbench_name": "motionmark_1.3",
-                "arguments": []
+                "arguments": [
+                    "--enable-field-trials"
+                ]
             },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
-                "arguments": []
+                "arguments": [
+                    "--enable-field-trials"
+                ]
             }
         }
     },

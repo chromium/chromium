@@ -2,8 +2,7 @@
     "0": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             }
         }
     },
@@ -11,7 +10,9 @@
         "crossbench": {
             "jetstream2.crossbench": {
                 "crossbench_name": "jetstream_2",
-                "arguments": []
+                "arguments": [
+                    "--enable-field-trials"
+                ]
             }
         },
         "benchmarks": {}
@@ -19,29 +20,29 @@
     "2": {
         "benchmarks": {
             "speedometer2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             }
         },
         "crossbench": {
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
-                "arguments": []
+                "arguments": [
+                    "--enable-field-trials"
+                ]
             }
         }
     },
     "extra_infos": {
         "num_stories": 5,
-        "predicted_min_shard_time": 66.0,
+        "predicted_min_shard_time": 67.0,
         "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 180,
         "predicted_max_shard_index": 1,
-        "shard #0": 66.0,
+        "shard #0": 67.0,
         "shard #1": 180,
-        "shard #2": 122.0
+        "shard #2": 124.0
     }
 }

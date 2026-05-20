@@ -4,14 +4,14 @@
             "loadline_phone.crossbench": {
                 "crossbench_name": "loadline-phone-fast",
                 "arguments": [
-                    "--cool-down-threshold=moderate"
+                    "--cool-down-threshold=moderate",
+                    "--enable-field-trials"
                 ]
             }
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -24,14 +24,14 @@
             "loadline_phone.crossbench": {
                 "crossbench_name": "loadline-phone-fast",
                 "arguments": [
-                    "--cool-down-threshold=moderate"
+                    "--cool-down-threshold=moderate",
+                    "--enable-field-trials"
                 ]
             }
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -44,14 +44,14 @@
             "loadline_phone.crossbench": {
                 "crossbench_name": "loadline-phone-fast",
                 "arguments": [
-                    "--cool-down-threshold=moderate"
+                    "--cool-down-threshold=moderate",
+                    "--enable-field-trials"
                 ]
             }
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -64,14 +64,14 @@
             "loadline_phone.crossbench": {
                 "crossbench_name": "loadline-phone-fast",
                 "arguments": [
-                    "--cool-down-threshold=moderate"
+                    "--cool-down-threshold=moderate",
+                    "--enable-field-trials"
                 ]
             }
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -84,14 +84,14 @@
             "loadline_phone.crossbench": {
                 "crossbench_name": "loadline-phone-fast",
                 "arguments": [
-                    "--cool-down-threshold=moderate"
+                    "--cool-down-threshold=moderate",
+                    "--enable-field-trials"
                 ]
             }
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -102,99 +102,77 @@
     "5": {
         "benchmarks": {
             "ad_frames.fencedframe": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.accessibility": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.bindings": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.css": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.dom": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.events": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.image_decoder": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.layout": {
-                "end": 34,
-                "abridged": false,
-                "pageset_repeat": 1
+                "end": 41,
+                "abridged": false
             }
         }
     },
     "6": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 34,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 41,
+                "abridged": false
             },
             "blink_perf.owp_storage": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.parser": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.shadow_dom": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.webaudio": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.webcodecs": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.webgl": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.webgpu": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "blink_perf.webgpu_compat": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "dummy_benchmark.noisy_benchmark_1": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "dummy_benchmark.stable_benchmark_1": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "media.mobile": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "rasterize_and_record_micro.top_25": {
-                "end": 6,
-                "abridged": false,
-                "pageset_repeat": 1
+                "end": 21,
+                "abridged": false
             }
         },
         "executables": {
@@ -209,71 +187,63 @@
     "7": {
         "benchmarks": {
             "rasterize_and_record_micro.top_25": {
-                "begin": 6,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 21,
+                "abridged": false
             },
             "rendering.mobile": {
-                "end": 120,
-                "abridged": false,
-                "pageset_repeat": 1
+                "end": 121,
+                "abridged": false
             }
         }
     },
     "8": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 120,
-                "end": 245,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 121,
+                "end": 250,
+                "abridged": false
             }
         }
     },
     "9": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 245,
-                "end": 361,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 250,
+                "end": 359,
+                "abridged": false
             }
         }
     },
     "10": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 361,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 359,
+                "abridged": false
             },
             "rendering.mobile.notracing": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 4
             },
             "speedometer3-future": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "startup.mobile": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "system_health.common_mobile": {
                 "end": 57,
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             }
         },
         "crossbench": {
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
-                    "--fileserver"
+                    "--fileserver",
+                    "--enable-field-trials"
                 ]
             }
         }
@@ -282,8 +252,7 @@
         "benchmarks": {
             "system_health.common_mobile": {
                 "begin": 57,
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "system_health.memory_mobile": {
                 "end": 28,
@@ -296,7 +265,7 @@
         "benchmarks": {
             "system_health.memory_mobile": {
                 "begin": 28,
-                "end": 71,
+                "end": 70,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -305,55 +274,50 @@
     "13": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 71,
+                "begin": 70,
                 "abridged": false,
                 "pageset_repeat": 3
             },
             "system_health.scroll_jank_mobile": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "system_health.webview_startup": {
                 "abridged": false,
                 "pageset_repeat": 20
             },
             "v8.browsing_mobile": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "v8.browsing_mobile-future": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "wasmpspdfkit": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             },
             "webrtc": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 1141,
-        "predicted_min_shard_time": 3267.0,
+        "num_stories": 1144,
+        "predicted_min_shard_time": 3261.0,
         "predicted_min_shard_index": 12,
-        "predicted_max_shard_time": 7319.0,
+        "predicted_max_shard_time": 7317.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 7319.0,
-        "shard #1": 7319.0,
-        "shard #2": 7319.0,
-        "shard #3": 7319.0,
-        "shard #4": 7319.0,
-        "shard #5": 3312.0,
-        "shard #6": 3315.0,
-        "shard #7": 3308.0,
-        "shard #8": 3301.0,
-        "shard #9": 3319.0,
-        "shard #10": 3312.0,
-        "shard #11": 3301.0,
-        "shard #12": 3267.0,
-        "shard #13": 3666.0
+        "shard #0": 7317.0,
+        "shard #1": 7317.0,
+        "shard #2": 7317.0,
+        "shard #3": 7317.0,
+        "shard #4": 7317.0,
+        "shard #5": 3301.0,
+        "shard #6": 3305.0,
+        "shard #7": 3317.0,
+        "shard #8": 3318.0,
+        "shard #9": 3294.0,
+        "shard #10": 3308.0,
+        "shard #11": 3328.0,
+        "shard #12": 3261.0,
+        "shard #13": 3639.0
     }
 }

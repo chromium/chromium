@@ -2,68 +2,61 @@
     "0": {
         "benchmarks": {
             "rendering.mobile": {
-                "end": 102,
-                "abridged": false,
-                "pageset_repeat": 1
+                "end": 62,
+                "abridged": false
             }
         }
     },
     "1": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 102,
-                "end": 145,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 62,
+                "end": 122,
+                "abridged": false
             }
         }
     },
     "2": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 145,
-                "end": 188,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 122,
+                "end": 181,
+                "abridged": false
             }
         }
     },
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 188,
-                "end": 245,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 181,
+                "end": 240,
+                "abridged": false
             }
         }
     },
     "4": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 245,
-                "end": 303,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 240,
+                "end": 295,
+                "abridged": false
             }
         }
     },
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 303,
-                "end": 347,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 295,
+                "end": 346,
+                "abridged": false
             }
         }
     },
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 347,
-                "abridged": false,
-                "pageset_repeat": 1
+                "begin": 346,
+                "abridged": false
             }
         },
         "crossbench": {
@@ -71,23 +64,24 @@
                 "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
-                    "--debug"
+                    "--debug",
+                    "--enable-field-trials"
                 ]
             }
         }
     },
     "extra_infos": {
         "num_stories": 400,
-        "predicted_min_shard_time": 2492.0,
-        "predicted_min_shard_index": 6,
-        "predicted_max_shard_time": 2536.0,
-        "predicted_max_shard_index": 1,
-        "shard #0": 2504.0,
-        "shard #1": 2536.0,
-        "shard #2": 2534.0,
-        "shard #3": 2514.0,
-        "shard #4": 2528.0,
-        "shard #5": 2499.0,
-        "shard #6": 2492.0
+        "predicted_min_shard_time": 2722.0,
+        "predicted_min_shard_index": 3,
+        "predicted_max_shard_time": 2766.0,
+        "predicted_max_shard_index": 4,
+        "shard #0": 2727.0,
+        "shard #1": 2746.0,
+        "shard #2": 2760.0,
+        "shard #3": 2722.0,
+        "shard #4": 2766.0,
+        "shard #5": 2755.0,
+        "shard #6": 2725.0
     }
 }
