@@ -30,17 +30,13 @@ SupervisedUserVerificationPageForBlockedSites::
         std::unique_ptr<
             security_interstitials::SecurityInterstitialControllerClient>
             controller_client,
-        supervised_user::FilteringBehaviorReason block_reason,
-        bool is_main_frame,
-        bool has_second_custodian)
+        bool is_main_frame)
     : SupervisedUserVerificationPage(web_contents,
                                      email_to_reauth,
                                      request_url,
                                      child_account_service,
                                      std::move(controller_client)),
-      block_reason_(block_reason),
-      is_main_frame_(is_main_frame),
-      has_second_custodian_(has_second_custodian) {}
+      is_main_frame_(is_main_frame) {}
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SupervisedUserVerificationPageForBlockedSites::GetTypeForTesting() {
@@ -68,32 +64,7 @@ void SupervisedUserVerificationPageForBlockedSites::PopulateInterstitialStrings(
   load_time_data.Set("primaryParagraph",
                      l10n_util::GetStringUTF16(
                          IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN));
-  // Hide the block message to match the V3 block interstitial.
-  if (!supervised_user::IsBlockInterstitialV3Enabled()) {
-    load_time_data.Set("show_blocked_site_message", true);
-    load_time_data.Set("blockedSiteMessageHeader",
-                       l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
-    load_time_data.Set("blockedSiteMessageReason",
-                       l10n_util::GetStringUTF8(GetBlockMessageReasonId()));
-  }
   load_time_data.Set("primaryButtonText",
                      l10n_util::GetStringUTF16(
                          IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
-}
-
-int SupervisedUserVerificationPageForBlockedSites::GetBlockMessageReasonId() {
-  switch (block_reason_) {
-    case supervised_user::FilteringBehaviorReason::DEFAULT:
-      return has_second_custodian_
-                 ? IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT
-                 : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT;
-    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
-      return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
-    case supervised_user::FilteringBehaviorReason::MANUAL:
-      return has_second_custodian_
-                 ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT
-                 : IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT;
-    default:
-      NOTREACHED();
-  }
 }

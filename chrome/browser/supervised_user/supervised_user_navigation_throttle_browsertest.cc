@@ -920,12 +920,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   // Expect that the local approvals button is shown if the flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserBlockInterstitialV3)) {
-    // Expect that the "Block reason" is shown if we are in interstitial
-    // version 2. The field does not exist in interstitial version 3.
-    EXPECT_TRUE(IsBlockReasonBeingShown(blocked_frames[0]));
-  }
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -953,12 +947,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   // flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsInsteadButtonBeingShown(blocked_frames[0]));
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kSupervisedUserBlockInterstitialV3)) {
-    // Expect that the "Block reason" is not shown if we are in interstitial
-    // version 2. The field does not exist in interstitial version 3.
-    EXPECT_FALSE(IsBlockReasonBeingShown(blocked_frames[0]));
-  }
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1044,9 +1032,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
             IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
   // Expect that the "Details" link is no longer available for the new
   // interstitial UI.
-  EXPECT_NE(IsDetailsLinkAvailable(blocked_frames[0]),
-            base::FeatureList::IsEnabled(
-                supervised_user::kSupervisedUserBlockInterstitialV3));
+  EXPECT_FALSE(IsDetailsLinkAvailable(blocked_frames[0]));
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);

@@ -56,8 +56,7 @@ void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
 // Returns the html content of the reauthentication interstitial for blocked
 // sites. This interstitial is associated with the given NavigationHandle.
 std::string CreateReauthenticationInterstitialForBlockedSites(
-    content::NavigationHandle& navigation_handle,
-    FilteringBehaviorReason block_reason);
+    content::NavigationHandle& navigation_handle);
 
 std::string CreateReauthenticationInterstitialForYouTube(
     content::NavigationHandle& navigation_handle);

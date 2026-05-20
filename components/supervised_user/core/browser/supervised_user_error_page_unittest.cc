@@ -22,46 +22,8 @@
 
 namespace supervised_user {
 
-struct BlockMessageIDTestParameter {
-  FilteringBehaviorReason reason;
-  bool single_parent;
-  int expected_result;
-};
-
-class SupervisedUserErrorPageTest_GetBlockMessageID
-    : public ::testing::TestWithParam<BlockMessageIDTestParameter> {};
-
-TEST_P(SupervisedUserErrorPageTest_GetBlockMessageID, GetBlockMessageID) {
-  BlockMessageIDTestParameter param = GetParam();
-  EXPECT_EQ(param.expected_result,
-            GetBlockMessageID(param.reason, param.single_parent))
-      << "reason = " << int(param.reason)
-      << " single parent = " << param.single_parent;
-}
-
-BlockMessageIDTestParameter block_message_id_test_params[] = {
-    {FilteringBehaviorReason::DEFAULT, true,
-     IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT},
-    {FilteringBehaviorReason::DEFAULT, false,
-     IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT},
-    // SafeSites is not enabled for supervised users.
-    {FilteringBehaviorReason::ASYNC_CHECKER, true,
-     IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES},
-    {FilteringBehaviorReason::ASYNC_CHECKER, false,
-     IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES},
-    {FilteringBehaviorReason::MANUAL, true,
-     IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT},
-    {FilteringBehaviorReason::MANUAL, false,
-     IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT},
-};
-
-INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
-                         SupervisedUserErrorPageTest_GetBlockMessageID,
-                         ::testing::ValuesIn(block_message_id_test_params));
-
 struct InterstitialMessageIDTestParameter {
   FilteringBehaviorReason reason;
-  bool is_interstitial_v3_enabled;
   int expected_result;
 };
 
@@ -70,32 +32,18 @@ class SupervisedUserErrorPageTest_GetInterstitialMessageID
 
 TEST_P(SupervisedUserErrorPageTest_GetInterstitialMessageID,
        GetInterstitialMessageID) {
-  base::test::ScopedFeatureList scoped_feature_list_;
   InterstitialMessageIDTestParameter param = GetParam();
-  if (param.is_interstitial_v3_enabled) {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
-  }
   EXPECT_EQ(param.expected_result, GetInterstitialMessageID(param.reason))
       << "reason = " << int(param.reason);
 }
 
 InterstitialMessageIDTestParameter interstitial_message_id_test_params[] = {
-    {FilteringBehaviorReason::DEFAULT, true,
+    {FilteringBehaviorReason::DEFAULT,
      IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL},
-    {FilteringBehaviorReason::ASYNC_CHECKER, true,
+    {FilteringBehaviorReason::ASYNC_CHECKER,
      IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES},
-    {FilteringBehaviorReason::MANUAL, true,
+    {FilteringBehaviorReason::MANUAL,
      IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL},
-    {FilteringBehaviorReason::DEFAULT, false,
-     IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2},
-    {FilteringBehaviorReason::ASYNC_CHECKER, false,
-     IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2},
-    {FilteringBehaviorReason::MANUAL, false,
-     IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -108,7 +56,6 @@ struct BuildHtmlTestParameter {
   std::optional<Custodian> custodian;
   std::optional<Custodian> second_custodian;
   FilteringBehaviorReason reason;
-  bool is_interstitial_v3_enabled;
 };
 
 class SupervisedUserErrorPageTest_BuildHtml
@@ -132,26 +79,6 @@ class SupervisedUserErrorPageTest_BuildHtml
       EXPECT_THAT(
           html_error_page_,
           testing::HasSubstr(GetParam().second_custodian->GetEmailAddress()));
-    }
-  }
-
-  void VerifyBlockReasonStrings() {
-    if (GetParam().is_interstitial_v3_enabled) {
-      // The block reason components is not available for the V3 interstitial.
-      EXPECT_THAT(html_error_page_,
-                  testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-                      IDS_GENERIC_SITE_BLOCK_HEADER))));
-    } else {
-      // Verify that the HTML contains a block message that is specific to the
-      // number of parents who can approve and the reason that the site is
-      // blocked.
-      EXPECT_THAT(html_error_page_, testing::HasSubstr(l10n_util::GetStringUTF8(
-                                        IDS_GENERIC_SITE_BLOCK_HEADER)));
-      EXPECT_THAT(
-          html_error_page_,
-          testing::HasSubstr(l10n_util::GetStringUTF8(GetBlockMessageID(
-              GetParam().reason,
-              /*single_parent=*/!GetParam().second_custodian.has_value()))));
     }
   }
 
@@ -179,15 +106,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
 
   std::vector<base::test::FeatureRef> enabled_features = {
       supervised_user::kLocalWebApprovals};
-  std::vector<base::test::FeatureRef> disabled_features;
-  if (param.is_interstitial_v3_enabled) {
-    enabled_features.push_back(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
-  } else {
-    disabled_features.push_back(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
-  }
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, {});
 
   // BuildErrorPageHtml should returns the original HTML (with $i18n{}
   // replacements) plus scripts that plug values into it. The test can't
@@ -207,14 +126,10 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   // Messages containing parameters aren't tested since they get modified
   // before they are added to the result.
   if (param.allow_access_requests) {
-    VerifyBlockReasonStrings();
     EXPECT_THAT(html_error_page_, testing::HasSubstr(l10n_util::GetStringUTF8(
                                       IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
-    EXPECT_THAT(html_error_page_,
-                testing::HasSubstr(l10n_util::GetStringUTF8(
-                    param.is_interstitial_v3_enabled
-                        ? GetInterstitialMessageID(param.reason)
-                        : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2)));
+    EXPECT_THAT(html_error_page_, testing::HasSubstr(l10n_util::GetStringUTF8(
+                                      GetInterstitialMessageID(param.reason))));
     EXPECT_THAT(html_error_page_,
                 testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED))));
@@ -222,9 +137,6 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
     EXPECT_THAT(html_error_page_,
                 testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_CHILD_BLOCK_INTERSTITIAL_HEADER))));
-    EXPECT_THAT(html_error_page_,
-                testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-                    IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2))));
     EXPECT_THAT(html_error_page_,
                 testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED)));
@@ -248,50 +160,28 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
 
 BuildHtmlTestParameter build_html_test_parameter[] = {
     {true, Custodian("custodian", "custodian_email", "url1"), std::nullopt,
-     FilteringBehaviorReason::DEFAULT, false},
+     FilteringBehaviorReason::DEFAULT},
     {true, Custodian("custodian", "custodian_email", "url1"),
      Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, false},
+     FilteringBehaviorReason::DEFAULT},
     {false, Custodian("custodian", "custodian_email", "url1"),
      Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, false},
+     FilteringBehaviorReason::DEFAULT},
     {false, Custodian("custodian", "custodian_email", "url1"),
      Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, false},
+     FilteringBehaviorReason::DEFAULT},
     {true, Custodian("custodian", "custodian_email", "url1"),
      Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, false},
+     FilteringBehaviorReason::DEFAULT},
     {true, Custodian("custodian", "custodian_email", "url1"),
      Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::ASYNC_CHECKER, false},
+     FilteringBehaviorReason::ASYNC_CHECKER},
     {true, Custodian("custodian", "custodian_email", "url1"),
      Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::MANUAL, false},
-
-    // Test cases with the v3 interstitial enabled.
-    {true, Custodian("custodian", "custodian_email", "url1"), std::nullopt,
-     FilteringBehaviorReason::DEFAULT, true},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, true},
-    {false, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, true},
-    {false, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, true},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT, true},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::ASYNC_CHECKER, true},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::MANUAL, true},
+     FilteringBehaviorReason::MANUAL},
 };
 
-INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
+INSTANTIATE_TEST_SUITE_P(BuildHtmlParameterized,
                          SupervisedUserErrorPageTest_BuildHtml,
                          ::testing::ValuesIn(build_html_test_parameter));
 

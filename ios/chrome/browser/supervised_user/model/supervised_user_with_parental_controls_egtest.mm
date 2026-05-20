@@ -48,8 +48,6 @@ static const char* kDefaultPath = "/defaultresponse";
 static const char* kDefaultContent = "Default response";
 static const char* kInterstitialContent = "Ask your parent";
 static const char* kInterstitialWaitingContent = "Waiting for permission";
-static const char* kInterstitialBlockReason = "This site is blocked";
-static const char* kInterstitialDetails = "Details";
 }  // namespace
 
 // Tests the core user journeys of a supervised user with FamilyLink parental
@@ -77,31 +75,13 @@ static const char* kInterstitialDetails = "Details";
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "0"}}}});
-    config.features_enabled.push_back(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
-  } else if (
-      [self isRunningTest:@selector
-            (testSupervisedUserShowInterstitialDetailsLinkForNarrowScreen)] ||
-      [self
-          isRunningTest:@selector
-          (testSupervisedUserShowInterstitialDetailsLinkOnClickForNarrowScreen)] ||
-      [self isRunningTest:@selector
-            (MAYBE_testSupervisedUserInterstitialOnBackButton)] ||
-      [self isRunningTest:@selector
-            (testSupervisedUserInterstitialShowBlockReasonAndDetails)]) {
-    // Tests that apply only in blocked url interstitial V2.
-    config.features_disabled.push_back(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
-    if ([self isRunningTest:@selector
-              (MAYBE_testSupervisedUserInterstitialOnBackButton)]) {
-      config.features_disabled.push_back(supervised_user::kLocalWebApprovals);
-    }
+  } else if ([self isRunningTest:@selector
+                   (MAYBE_testSupervisedUserInterstitialOnBackButton)]) {
+    config.features_disabled.push_back(supervised_user::kLocalWebApprovals);
   } else {
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "5000"}}}});
-    config.features_enabled.push_back(
-        supervised_user::kSupervisedUserBlockInterstitialV3);
   }
   return config;
 }
@@ -553,113 +533,6 @@ static const char* kInterstitialDetails = "Details";
 #pragma mark - Interstitial UI Behaviour
 
 // Checks the behaviour of the "Details" link on click (expand/shrink details).
-- (void)testSupervisedUserShowInterstitialDetailsLinkOnClickForNarrowScreen {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"This is an iphone test case only.");
-#endif
-  // Compact width only.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    EARL_GREY_TEST_DISABLED(@"This is a narrow screen test case only.");
-  }
-
-  [self signInSupervisedUser];
-  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
-  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
-
-  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
-  [ChromeEarlGrey loadURL:blockedURL];
-  [self checkInterstitalIsShown];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
-  [self checkShowDetailsLinkVisibility:YES];
-  [self checkHideDetailsLinkVisibility:NO];
-
-  // Expand the Details link.
-  [ChromeEarlGrey tapWebStateElementWithID:@"block-reason-show-details-link"];
-  [ChromeEarlGrey waitForWebStateContainingText:"This site is blocked"];
-  [self checkShowDetailsLinkVisibility:NO];
-  [self checkHideDetailsLinkVisibility:YES];
-
-  // Shrink the Details link.
-  [ChromeEarlGrey tapWebStateElementWithID:@"block-reason-hide-details-link"];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
-  [self checkShowDetailsLinkVisibility:YES];
-  [self checkHideDetailsLinkVisibility:NO];
-}
-
-// Checks that we don't regress to b/290000817: The 'Details' link should
-// be absernt from the interstitial 'Waiting' screen bor both existing (updated)
-// intersitials and new interstitials for already requested hosts.
-- (void)testSupervisedUserShowInterstitialDetailsLinkForNarrowScreen {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"This is an iphone test case only.");
-#endif
-  // Compact width only.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    EARL_GREY_TEST_DISABLED(@"This is a narrow screen test case only.");
-  }
-
-  [self signInSupervisedUser];
-  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
-  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
-
-  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
-  [ChromeEarlGrey loadURL:blockedURL];
-  [self checkInterstitalIsShown];
-
-  // Details link must be visible.
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
-  [self checkShowDetailsLinkVisibility:YES];
-  [self checkHideDetailsLinkVisibility:NO];
-
-  // Case 1: Requested host on present (updated) intersitial:
-  // The Details link must not be visible on the
-  // "Waiting" screen on the existing interstitial.
-  [ChromeEarlGrey tapWebStateElementWithID:@"remote-approvals-button"];
-  [self checkInterstitalIsShownInWaitingScreen];
-  [self checkShowDetailsLinkVisibility:NO];
-  [self checkHideDetailsLinkVisibility:NO];
-
-  // Case 2: Already requested host on a new intersitial case:
-  // Tge Details link must not be visible on the
-  // "Waiting" screen on the new interstitial.
-  GURL otherURL = self.testServer->GetURL("other.host", kEchoPath);
-  [ChromeEarlGrey loadURL:otherURL];
-  [self checkInterstitalIsShown];
-
-  // Request the original blocked site. The interstitial "Waiting" screen is
-  // displayed without the Details.
-  [ChromeEarlGrey loadURL:blockedURL];
-  [self checkInterstitalIsShownInWaitingScreen];
-  [self checkShowDetailsLinkVisibility:NO];
-  [self checkHideDetailsLinkVisibility:NO];
-}
-
-// Tests that the that the Details link / Block reason is displayed on the
-// interstitial "Ask your parent" screen depending on the screen width.
-- (void)testSupervisedUserInterstitialShowBlockReasonAndDetails {
-  [self signInSupervisedUser];
-  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
-
-  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
-
-  [ChromeEarlGrey loadURL:blockedURL];
-  [self checkInterstitalIsShown];
-
-  if ([ChromeEarlGrey isCompactWidth]) {
-    // Narrow screen displays "Details" link ("Block reason" is hidden).
-    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
-    [self checkElementDisplayStyleVisibility:@"block-reason-show-details-link"
-                                   isVisible:YES];
-    [self checkElementDisplayStyleVisibility:@"block-reason" isVisible:NO];
-  } else {
-    // Wide screen displays "Block reason" ("Details" is hidden).
-    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialBlockReason];
-    [self checkElementDisplayStyleVisibility:@"block-reason-show-details-link"
-                                   isVisible:NO];
-    [self checkElementDisplayStyleVisibility:@"block-reason" isVisible:YES];
-  }
-}
-
 // Test that the when Local Web Approval is disabled, the "Back" button of the
 // interstitial gets us to the previous page.
 // TODO(crbug.com/435140688): Reenable this test.

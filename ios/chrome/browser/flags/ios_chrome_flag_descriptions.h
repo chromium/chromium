@@ -1787,11 +1787,6 @@ inline constexpr char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 inline constexpr char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";
 
-inline constexpr char kSupervisedUserBlockInterstitialV3Name[] =
-    "Enable URL filter interstitial V3";
-inline constexpr char kSupervisedUserBlockInterstitialV3Description[] =
-    "Enables URL filter interstitial V3 for Family Link users.";
-
 inline constexpr char kSupervisedUserEmitLogRecordSeparatelyName[] =
     "Emit supervised user log record separately";
 inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =

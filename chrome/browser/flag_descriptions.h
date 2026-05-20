@@ -8351,12 +8351,6 @@ inline constexpr char kEnableManagementPromotionBannerName[] =
 inline constexpr char kEnableManagementPromotionBannerDescription[] =
     "Enables showing the management promotion banner on chrome://management "
     "page.";
-
-inline constexpr char kSupervisedUserBlockInterstitialV3Name[] =
-    "Enable URL filter interstitial V3";
-inline constexpr char kSupervisedUserBlockInterstitialV3Description[] =
-    "Enables URL filter interstitial V3 for Family Link users.";
-
 inline constexpr char kSupervisedUserEmitLogRecordSeparatelyName[] =
     "Emit device log record separately";
 inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =

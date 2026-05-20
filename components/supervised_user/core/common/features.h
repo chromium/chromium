@@ -34,9 +34,6 @@ BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 // approval request.
 BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 
-// Whether supervised users see an updated URL filter interstitial.
-BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
-
 // SupervisedUserUrlFilteringService does not use the PrefService indirection
 // (specifically, the SupervisedUserPrefStore) to get the URL filtering
 // settings. When enabled, all url filtering settings are read directly from the
@@ -53,10 +50,6 @@ BASE_DECLARE_FEATURE(
 // log record separately. When disabled, the system assumes that the device log
 // record is mutually exclusive with the account/policy based log record.
 BASE_DECLARE_FEATURE(kSupervisedUserEmitLogRecordSeparately);
-
-// Returns whether the V3 version of the URL filter interstitial is
-// enabled.
-bool IsBlockInterstitialV3Enabled();
 
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.

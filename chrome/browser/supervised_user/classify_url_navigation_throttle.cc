@@ -226,7 +226,7 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
             content::NavigationThrottle::ThrottleCheckResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
                 CreateReauthenticationInterstitialForBlockedSites(
-                    *navigation_handle(), result.reason)));
+                    *navigation_handle())));
         return;
       }
 #endif

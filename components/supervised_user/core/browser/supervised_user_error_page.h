@@ -12,8 +12,6 @@
 namespace supervised_user {
 class Custodian;
 
-int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent);
-
 int GetInterstitialMessageID(FilteringBehaviorReason reason);
 
 #if BUILDFLAG(IS_ANDROID)

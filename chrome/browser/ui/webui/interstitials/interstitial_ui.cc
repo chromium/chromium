@@ -436,7 +436,7 @@ CreateSupervisedUserVerificationPageForBlockedSites(
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
           chrome::ChromeUINewTabURLAsGURL(), kRequestUrl),
-      supervised_user::FilteringBehaviorReason::DEFAULT, is_main_frame);
+      is_main_frame);
 }
 #endif
 

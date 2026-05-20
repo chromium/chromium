@@ -8759,14 +8759,6 @@
     "expiry_milestone": 159
   },
   {
-    "name": "supervised-user-block-interstitial-v3",
-    "owners": [
-      "ddac@google.com",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "supervised-user-emit-log-record-separately",
     "owners": [ "tju@google.com", "chrome-kids-eng@google.com" ],
     "expiry_milestone": 155

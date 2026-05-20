@@ -42,37 +42,19 @@ std::string BuildAvatarImageUrl(const std::string& url, int size) {
 
 }  //  namespace
 
-int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
+int GetInterstitialMessageID(FilteringBehaviorReason reason) {
+  // For the V3 interstitial, the filtering reason is included in the
+  // interstitial message.
   switch (reason) {
     case FilteringBehaviorReason::DEFAULT:
-      return single_parent ? IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT
-                           : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT;
+      return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL;
     case FilteringBehaviorReason::ASYNC_CHECKER:
-      return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
+      return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES;
     case FilteringBehaviorReason::MANUAL:
-      return single_parent ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT
-                           : IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT;
+      return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL;
     case FilteringBehaviorReason::FILTER_DISABLED:
       NOTREACHED() << "When filtering is disabled, nothing is blocked";
   }
-}
-
-int GetInterstitialMessageID(FilteringBehaviorReason reason) {
-  if (supervised_user::IsBlockInterstitialV3Enabled()) {
-    // For the V3 interstitial, the filtering reason is included in the
-    // interstitial message.
-    switch (reason) {
-      case FilteringBehaviorReason::DEFAULT:
-        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL;
-      case FilteringBehaviorReason::ASYNC_CHECKER:
-        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES;
-      case FilteringBehaviorReason::MANUAL:
-        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL;
-      case FilteringBehaviorReason::FILTER_DISABLED:
-        NOTREACHED() << "When filtering is disabled, nothing is blocked";
-    }
-  }
-  return IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -127,8 +109,8 @@ std::string BuildErrorPageHtmlWithApprovals(
         "avatarURL2x",
         BuildAvatarImageUrl(custodian->GetProfileImageUrl(), kAvatarSize2x));
   } else {
-    // empty custodianName denotes no custodian, see
-    // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.js
+    // empty custodianName denotes no custodian, see:
+    // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v3.js
     load_time_data.Set("custodianName", "");
   }
 
@@ -145,8 +127,8 @@ std::string BuildErrorPageHtmlWithApprovals(
         BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
                             kAvatarSize2x));
   } else {
-    // empty secondCustodianName denotes no second custodian, see
-    // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.js
+    // empty secondCustodianName denotes no second custodian, see:
+    // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v3.js
     load_time_data.Set("secondCustodianName", "");
   }
 
@@ -173,26 +155,6 @@ std::string BuildErrorPageHtmlWithApprovals(
 
   load_time_data.Set("blockPageHeader", block_page_header);
   load_time_data.Set("blockPageMessage", block_page_message);
-
-  if (!supervised_user::IsBlockInterstitialV3Enabled()) {
-    // For the V2 interstitial, the filtering reason is displayed in a
-    // separate UI component.
-    load_time_data.Set(
-        "blockReasonMessage",
-        l10n_util::GetStringUTF8(GetBlockMessageID(
-            reason, /*single_parent=*/!second_custodian.has_value())));
-    load_time_data.Set(
-        "blockReasonHeader",
-        l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
-    load_time_data.Set("siteBlockHeader",
-                       l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
-    load_time_data.Set(
-        "showDetailsLink",
-        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
-    load_time_data.Set(
-        "hideDetailsLink",
-        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
-  }
 
   load_time_data.Set(
       "remoteApprovalsButton",
@@ -234,9 +196,7 @@ std::string BuildErrorPageHtmlWithApprovals(
 
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          supervised_user::IsBlockInterstitialV3Enabled()
-              ? IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V3_HTML
-              : IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
+          IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V3_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
   std::string error_html = webui::GetI18nTemplateHtml(html, load_time_data);
   return error_html;

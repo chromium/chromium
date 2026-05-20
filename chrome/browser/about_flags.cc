@@ -10988,11 +10988,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          printing::features::kAlignPdfDefaultPrintSettingsWithHTML)},
 
-    {"supervised-user-block-interstitial-v3",
-     flag_descriptions::kSupervisedUserBlockInterstitialV3Name,
-     flag_descriptions::kSupervisedUserBlockInterstitialV3Description, kOsAll,
-     FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserBlockInterstitialV3)},
-
     {"supervised-user-emit-log-record-separately",
      flag_descriptions::kSupervisedUserEmitLogRecordSeparatelyName,
      flag_descriptions::kSupervisedUserEmitLogRecordSeparatelyDescription,
