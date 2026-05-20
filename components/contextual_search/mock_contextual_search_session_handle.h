@@ -47,7 +47,8 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
               (override));
   MOCK_METHOD(void,
               StartUrlContextUploadFlow,
-              (const base::UnguessableToken& file_token, const GURL& url),
+              (const base::UnguessableToken& file_token,
+               const std::string& url),
               (override));
   MOCK_METHOD(
       void,

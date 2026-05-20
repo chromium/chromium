@@ -122,7 +122,7 @@ class ContextualSearchSessionHandle {
   // token must have been previously returned by `CreateContextToken`.
   virtual void StartUrlContextUploadFlow(
       const base::UnguessableToken& file_token,
-      const GURL& url);
+      const std::string& url);
 
   // Starts the Drive context upload flow for the given file token. The file
   // token must have been previously returned by `CreateContextToken`.

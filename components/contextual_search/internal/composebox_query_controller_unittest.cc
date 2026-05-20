@@ -2850,7 +2850,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadUnknownMimeTypeFileRequestSuccess) {
   input_data->primary_content_type = lens::MimeType::kUnknown;
   input_data->context_input = std::vector<lens::ContextualInput>();
   input_data->page_title = "Title";
-  input_data->page_url = GURL("https://www.example.com");
+  input_data->parsed_url = "https://www.example.com";
 
   controller().StartFileUploadFlow(file_token, std::move(input_data),
                                    /*image_options=*/std::nullopt);
@@ -2874,7 +2874,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadUnknownMimeTypeFileRequestSuccess) {
                 .payload()
                 .content()
                 .webpage_url(),
-            GURL("https://www.example.com"));
+            "https://www.example.com");
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
@@ -4608,6 +4608,49 @@ TEST_F(ComposeboxQueryControllerTest, CreateSuggestInputsWithPageTitleAndUrl) {
   EXPECT_EQ(suggest_inputs->contextual_visual_input_type(), "wp");
 }
 
+TEST_F(ComposeboxQueryControllerTest, CreateSuggestInputsWithParsedUrl) {
+  // Arrange: Create controller with
+  // attach_page_title_and_url_to_suggest_requests enabled.
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/true);
+  StartSession();
+
+  // Act: Start the file upload flow with page title and raw parsed_url.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->parsed_url = "https://page.url";
+  input_data->page_title = "Page Title";
+  input_data->context_input->emplace_back(lens::ContextualInput(
+      std::vector<uint8_t>(), lens::MimeType::kAnnotatedPageContent));
+  input_data->is_page_context_eligible = true;
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   std::nullopt);
+
+  WaitForClusterInfo();
+
+  WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent);
+
+  // Act: Create suggest inputs.
+  auto suggest_inputs = controller().CreateSuggestInputs({file_token});
+
+  // Assert: Verify page title and raw parsed url are attached (without trailing
+  // slash!).
+  EXPECT_TRUE(suggest_inputs->send_page_title_and_url());
+  EXPECT_EQ(suggest_inputs->page_title(), "Page Title");
+  EXPECT_EQ(suggest_inputs->page_url(), "https://page.url");
+
+  // Assert: Visual input type is set for the suggest request.
+  EXPECT_EQ(suggest_inputs->contextual_visual_input_type(), "wp");
+}
+
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithInvocationSource) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
@@ -5093,7 +5136,7 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesUnresolvedUrl) {
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kUnknown;
-  input_data->page_url = GURL("https://example.com");
+  input_data->parsed_url = "https://example.com";
   controller().StartFileUploadFlow(file_token, std::move(input_data),
                                    /*image_options=*/std::nullopt);
 
@@ -5127,7 +5170,7 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesUnresolvedUrl) {
   EXPECT_EQ(added_inputs->added_inputs_size(), 0);
   EXPECT_EQ(added_inputs->turn_title_thumbnail_size(), 1);
   EXPECT_EQ(added_inputs->turn_title_thumbnail(0).title(),
-            "https://example.com/");
+            "https://example.com");
   EXPECT_EQ(added_inputs->turn_title_thumbnail(0).icon().type(),
             lens::AimIconType::ICON_TYPE_LINK);
 }
@@ -5151,7 +5194,7 @@ TEST_F(ComposeboxQueryControllerTest,
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kUnknown;
-  input_data->page_url = GURL("https://example.com");
+  input_data->parsed_url = "https://example.com";
   controller().StartFileUploadFlow(file_token_2, std::move(input_data),
                                    /*image_options=*/std::nullopt);
 
@@ -5183,7 +5226,7 @@ TEST_F(ComposeboxQueryControllerTest,
   std::unique_ptr<lens::ContextualInputData> input_data_1 =
       std::make_unique<lens::ContextualInputData>();
   input_data_1->primary_content_type = lens::MimeType::kUnknown;
-  input_data_1->page_url = GURL("https://example1.com");
+  input_data_1->parsed_url = "https://example1.com";
   controller().StartFileUploadFlow(file_token_1, std::move(input_data_1),
                                    /*image_options=*/std::nullopt);
 
@@ -5196,7 +5239,7 @@ TEST_F(ComposeboxQueryControllerTest,
   std::unique_ptr<lens::ContextualInputData> input_data_2 =
       std::make_unique<lens::ContextualInputData>();
   input_data_2->primary_content_type = lens::MimeType::kUnknown;
-  input_data_2->page_url = GURL("https://example2.com");
+  input_data_2->parsed_url = "https://example2.com";
   controller().StartFileUploadFlow(file_token_2, std::move(input_data_2),
                                    /*image_options=*/std::nullopt);
 
@@ -5231,11 +5274,11 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(added_inputs->added_inputs_size(), 0);
   EXPECT_EQ(added_inputs->turn_title_thumbnail_size(), 2);
   EXPECT_EQ(added_inputs->turn_title_thumbnail(0).title(),
-            "https://example1.com/");
+            "https://example1.com");
   EXPECT_EQ(added_inputs->turn_title_thumbnail(0).icon().type(),
             lens::AimIconType::ICON_TYPE_LINK);
   EXPECT_EQ(added_inputs->turn_title_thumbnail(1).title(),
-            "https://example2.com/");
+            "https://example2.com");
   EXPECT_EQ(added_inputs->turn_title_thumbnail(1).icon().type(),
             lens::AimIconType::ICON_TYPE_LINK);
 }
@@ -5259,7 +5302,7 @@ TEST_F(ComposeboxQueryControllerTest,
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kUnknown;
-  input_data->page_url = GURL("https://example.com");
+  input_data->parsed_url = "https://example.com";
   controller().StartFileUploadFlow(file_token_2, std::move(input_data),
                                    /*image_options=*/std::nullopt);
 
@@ -5290,7 +5333,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(added_inputs->added_inputs_size(), 1);
   EXPECT_EQ(added_inputs->turn_title_thumbnail_size(), 1);
   EXPECT_EQ(added_inputs->turn_title_thumbnail(0).title(),
-            "https://example.com/");
+            "https://example.com");
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -5303,7 +5346,7 @@ TEST_F(ComposeboxQueryControllerTest,
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kUnknown;
-  input_data->page_url = GURL("https://example.com");
+  input_data->parsed_url = "https://example.com";
   controller().StartFileUploadFlow(file_token, std::move(input_data),
                                    /*image_options=*/std::nullopt);
 
@@ -5336,7 +5379,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(added_inputs.added_inputs_size(), 0);
   EXPECT_EQ(added_inputs.turn_title_thumbnail_size(), 1);
   EXPECT_EQ(added_inputs.turn_title_thumbnail(0).title(),
-            "https://example.com/");
+            "https://example.com");
   EXPECT_EQ(added_inputs.turn_title_thumbnail(0).icon().type(),
             lens::AimIconType::ICON_TYPE_LINK);
 }
@@ -6039,7 +6082,7 @@ TEST_F(ComposeboxQueryControllerTest, MimeTypeStringFromFileInfo) {
   file_info.mime_type = lens::MimeType::kUnknown;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->primary_content_type = lens::MimeType::kUnknown;
-  file_info.input_data->page_url = GURL("https://example.com");
+  file_info.input_data->parsed_url = "https://example.com";
   EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             std::nullopt);
 }
@@ -6248,7 +6291,7 @@ TEST_F(ComposeboxQueryControllerTest, CreateAddedInputs_UnresolvedUrlUpload) {
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kUnknown;
-  input_data->page_url = GURL("https://example.com");
+  input_data->parsed_url = "https://example.com";
   input_data->has_lens_usage_intent = true;
 
   controller().StartFileUploadFlow(file_token, std::move(input_data),
@@ -6265,7 +6308,7 @@ TEST_F(ComposeboxQueryControllerTest, CreateAddedInputs_UnresolvedUrlUpload) {
   EXPECT_EQ(added_inputs.added_inputs_size(), 0);
   ASSERT_EQ(added_inputs.turn_title_thumbnail_size(), 1);
   EXPECT_EQ(added_inputs.turn_title_thumbnail(0).title(),
-            "https://example.com/");
+            "https://example.com");
   EXPECT_TRUE(added_inputs.turn_title_thumbnail(0).has_icon());
   EXPECT_EQ(added_inputs.turn_title_thumbnail(0).icon().type(),
             lens::AimIconType::ICON_TYPE_LINK);

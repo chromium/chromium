@@ -234,7 +234,7 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
 
 void ContextualSearchSessionHandle::StartUrlContextUploadFlow(
     const base::UnguessableToken& file_token,
-    const GURL& url) {
+    const std::string& url) {
   // Exit early if the file token is not in the list of uploaded context
   // tokens, i.e. it was deleted before the upload flow could start.
   auto it = std::find(uploaded_context_tokens_.begin(),
@@ -246,7 +246,7 @@ void ContextualSearchSessionHandle::StartUrlContextUploadFlow(
   if (auto* context_controller = GetController()) {
     auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
     contextual_input_data->primary_content_type = lens::MimeType::kUnknown;
-    contextual_input_data->page_url = url;
+    contextual_input_data->parsed_url = url;
     context_controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), std::nullopt);
   }
