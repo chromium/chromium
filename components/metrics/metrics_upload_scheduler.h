@@ -26,7 +26,7 @@ class MetricsUploadScheduler : public MetricsScheduler {
   ~MetricsUploadScheduler() override;
 
   // Callback from MetricsService when a triggered upload finishes.
-  void UploadFinished(bool server_is_healthy);
+  void UploadFinished(bool backoff);
 
   // Callback from MetricsService when an upload is cancelled.
   // Also stops the scheduler.

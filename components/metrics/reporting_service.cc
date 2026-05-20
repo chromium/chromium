@@ -238,7 +238,7 @@ void ReportingService::SendNextLogImpl(base::OnceClosure done_callback) {
     // Should only get here if serializing the log failed somehow.
     upload_scheduler_->Stop();
     // Reset backoff interval
-    upload_scheduler_->UploadFinished(true);
+    upload_scheduler_->UploadFinished(/*backoff=*/false);
     return;
   }
   if (!log_store()->has_staged_log()) {
@@ -262,7 +262,7 @@ void ReportingService::SendNextLogImpl(base::OnceClosure done_callback) {
       DVLOG(1) << "Stopping upload_scheduler_.";
       upload_scheduler_->Stop();
     }
-    upload_scheduler_->UploadFinished(true);
+    upload_scheduler_->UploadFinished(/*backoff=*/false);
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -448,7 +448,8 @@ void ReportingService::OnLogUploadComplete(
   log_upload_initiated_from_background_ = std::nullopt;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  upload_scheduler_->UploadFinished(server_is_healthy);
+  bool backoff = !server_is_healthy;
+  upload_scheduler_->UploadFinished(backoff);
 }
 
 }  // namespace metrics
