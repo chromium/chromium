@@ -54,6 +54,7 @@
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "keep_going": 0,
     "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250

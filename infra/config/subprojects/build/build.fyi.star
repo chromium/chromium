@@ -211,4 +211,5 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     siso_configs = ["builder", "remote-link", "default-remote"],
+    siso_keep_going = 0,
 )
