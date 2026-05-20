@@ -24,6 +24,9 @@ bool AdvanceToSdpType(const SDP_ELEMENT_DATA& sequence_data,
                       SDP_TYPE type,
                       HBLUETOOTH_CONTAINER_ELEMENT* element,
                       SDP_ELEMENT_DATA* sdp_data) {
+  if (sequence_data.type != SDP_TYPE_SEQUENCE) {
+    return false;
+  }
   while (ERROR_SUCCESS == BluetoothSdpGetContainerElementData(
       sequence_data.data.sequence.value,
       sequence_data.data.sequence.length,
