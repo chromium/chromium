@@ -120,10 +120,12 @@ void SimulateNotificationURLVisited(
         VisitResponseCodeCategory::kNot404) {
   std::vector<URLRow> rows;
   rows.push_back(*row1);
-  if (row2)
+  if (row2) {
     rows.push_back(*row2);
-  if (row3)
+  }
+  if (row3) {
     rows.push_back(*row3);
+  }
 
   for (const URLRow& row : rows) {
     observer->OnURLVisited(
@@ -141,10 +143,12 @@ void SimulateNotificationURLsModified(HistoryServiceObserver* observer,
                                       const URLRow* row3) {
   URLRows rows;
   rows.push_back(*row1);
-  if (row2)
+  if (row2) {
     rows.push_back(*row2);
-  if (row3)
+  }
+  if (row3) {
     rows.push_back(*row3);
+  }
 
   observer->OnURLsModified(nullptr, rows);
 }
@@ -322,8 +326,9 @@ class HistoryBackendTestBase : public testing::Test {
     favicon_changed_notifications_page_urls_.insert(
         favicon_changed_notifications_page_urls_.end(), page_urls.begin(),
         page_urls.end());
-    if (!icon_url.is_empty())
+    if (!icon_url.is_empty()) {
       favicon_changed_notifications_icon_urls_.push_back(icon_url);
+    }
   }
 
   void NotifyURLVisited(VisitedURLInfo visited_url_info) {
@@ -393,8 +398,9 @@ class HistoryBackendTestBase : public testing::Test {
   // testing::Test
   void SetUp() override {
     if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("BackendTest"),
-                                      &test_dir_))
+                                      &test_dir_)) {
       return;
+    }
     backend_ = base::MakeRefCounted<TestHistoryBackend>(
         std::make_unique<HistoryBackendTestDelegate>(this),
         history_client_.CreateBackendClient(),
@@ -403,8 +409,9 @@ class HistoryBackendTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    if (backend_)
+    if (backend_) {
       backend_->Closing();
+    }
     backend_ = nullptr;
     mem_backend_.reset();
     base::DeletePathRecursively(test_dir_);
@@ -506,8 +513,9 @@ class HistoryBackendTest : public HistoryBackendTestBase {
                                              ui::PageTransition transition,
                                              base::Time time) {
     RedirectList redirects;
-    for (int i = 0; sequence[i] != nullptr; ++i)
+    for (int i = 0; sequence[i] != nullptr; ++i) {
       redirects.push_back(GURL(sequence[i]));
+    }
 
     ContextID context_id = 1;
     HistoryAddPageArgs request(redirects.back(), time, context_id, nav_entry_id,
@@ -532,21 +540,25 @@ class HistoryBackendTest : public HistoryBackendTestBase {
                          int* transition2) {
     ContextID dummy_context_id = 0x87654321;
     RedirectList redirects;
-    if (url1.is_valid())
+    if (url1.is_valid()) {
       redirects.push_back(url1);
-    if (url2.is_valid())
+    }
+    if (url2.is_valid()) {
       redirects.push_back(url2);
+    }
     HistoryAddPageArgs request(
         url2, time, dummy_context_id, 0, std::nullopt, url1, redirects,
         ui::PAGE_TRANSITION_CLIENT_REDIRECT, false, SOURCE_BROWSED,
         VisitResponseCodeCategory::kNot404, did_replace, true);
     backend_->AddPage(request);
 
-    if (transition1)
+    if (transition1) {
       *transition1 = GetTransition(url1);
+    }
 
-    if (transition2)
+    if (transition2) {
       *transition2 = GetTransition(url2);
+    }
   }
 
   // Adds SERVER_REDIRECT page transition.
@@ -582,8 +594,9 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   }
 
   int GetTransition(const GURL& url) {
-    if (!url.is_valid())
+    if (!url.is_valid()) {
       return 0;
+    }
     URLRow row;
     URLID id = backend_->db()->GetRowForURL(url, &row);
     VisitVector visits;
@@ -618,8 +631,9 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   // ascending order. Returns true if there is at least one favicon bitmap.
   bool GetSortedFaviconBitmaps(favicon_base::FaviconID icon_id,
                                std::vector<FaviconBitmap>* favicon_bitmaps) {
-    if (!favicon_db()->GetFaviconBitmaps(icon_id, favicon_bitmaps))
+    if (!favicon_db()->GetFaviconBitmaps(icon_id, favicon_bitmaps)) {
       return false;
+    }
     std::sort(favicon_bitmaps->begin(), favicon_bitmaps->end(),
               [](const FaviconBitmap& a, const FaviconBitmap& b) {
                 return a.pixel_size.GetArea() < b.pixel_size.GetArea();
@@ -632,10 +646,12 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   bool GetOnlyFaviconBitmap(const favicon_base::FaviconID icon_id,
                             FaviconBitmap* favicon_bitmap) {
     std::vector<FaviconBitmap> favicon_bitmaps;
-    if (!favicon_db()->GetFaviconBitmaps(icon_id, &favicon_bitmaps))
+    if (!favicon_db()->GetFaviconBitmaps(icon_id, &favicon_bitmaps)) {
       return false;
-    if (favicon_bitmaps.size() != 1)
+    }
+    if (favicon_bitmaps.size() != 1) {
       return false;
+    }
     *favicon_bitmap = favicon_bitmaps[0];
     return true;
   }
@@ -740,8 +756,12 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase,
                                        const URLRow* row3 = nullptr) {
     URLRows rows;
     rows.push_back(*row1);
-    if (row2) rows.push_back(*row2);
-    if (row3) rows.push_back(*row3);
+    if (row2) {
+      rows.push_back(*row2);
+    }
+    if (row3) {
+      rows.push_back(*row3);
+    }
 
     NotifyDeletions(DeletionInfo::ForUrls(rows, std::set<GURL>()));
   }
@@ -1324,21 +1344,21 @@ TEST_F(HistoryBackendTest, ClientRedirect) {
 
   // Initial transition to page A.
   GURL url_a("http://google.com/a");
-  AddClientRedirect(GURL(), url_a, false, base::Time(),
-                    &transition1, &transition2);
+  AddClientRedirect(GURL(), url_a, false, base::Time(), &transition1,
+                    &transition2);
   EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
 
   // User initiated redirect to page B.
   GURL url_b("http://google.com/b");
-  AddClientRedirect(url_a, url_b, false, base::Time(),
-                    &transition1, &transition2);
+  AddClientRedirect(url_a, url_b, false, base::Time(), &transition1,
+                    &transition2);
   EXPECT_TRUE(transition1 & ui::PAGE_TRANSITION_CHAIN_END);
   EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
 
   // Non-user initiated redirect to page C.
   GURL url_c("http://google.com/c");
-  AddClientRedirect(url_b, url_c, true, base::Time(),
-                    &transition1, &transition2);
+  AddClientRedirect(url_b, url_c, true, base::Time(), &transition1,
+                    &transition2);
   EXPECT_FALSE(transition1 & ui::PAGE_TRANSITION_CHAIN_END);
   EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
 }
@@ -2649,8 +2669,9 @@ TEST_F(HistoryBackendTest, RemoveVisitsSource) {
   ASSERT_EQ(2U, visits.size());
   ASSERT_TRUE(backend_->GetVisitsSource(visits, &visit_sources));
   ASSERT_EQ(2U, visit_sources.size());
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++) {
     EXPECT_EQ(SOURCE_SYNCED, visit_sources[visits[i].visit_id]);
+  }
 }
 
 // Test for migration of adding visit_source table.
@@ -3037,7 +3058,6 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
   EXPECT_EQ(0u, favicon_changed_notifications_icon_urls().size());
 }
 
-
 // Test that CloneFaviconMappingsForPages() propagates favicon mappings to the
 // provided pages and their redirects.
 TEST_F(HistoryBackendTest, CloneFaviconMappingsForPages) {
@@ -3257,15 +3277,14 @@ TEST_F(HistoryBackendTest, MigrationVisitDuration) {
   int cur_version = HistoryDatabase::GetCurrentVersion();
   sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(new_history_file));
-  sql::Statement s(db.GetUniqueStatement(
-      "SELECT value FROM meta WHERE key = 'version'"));
+  sql::Statement s(
+      db.GetUniqueStatement("SELECT value FROM meta WHERE key = 'version'"));
   ASSERT_TRUE(s.Step());
   int file_version = s.ColumnInt(0);
   EXPECT_EQ(cur_version, file_version);
 
   // Check visit_duration column in visits table is created and set to 0.
-  s.Assign(db.GetUniqueStatement(
-      "SELECT visit_duration FROM visits LIMIT 1"));
+  s.Assign(db.GetUniqueStatement("SELECT visit_duration FROM visits LIMIT 1"));
   ASSERT_TRUE(s.Step());
   EXPECT_EQ(0, s.ColumnInt(0));
 }
@@ -3311,8 +3330,9 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
 
   URLRow row;
-  for (auto& arg : args)
+  for (auto& arg : args) {
     EXPECT_TRUE(backend_->GetURL(arg.url, &row));
+  }
 
   std::set<base::Time> times;
   times.insert(args[5].time);
@@ -3364,8 +3384,9 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
   }
 
   std::array<URLRow, 4> url_rows;
-  for (unsigned int i = 0; i < std::size(args); ++i)
+  for (unsigned int i = 0; i < std::size(args); ++i) {
     ASSERT_TRUE(backend_->GetURL(args[i].url, &url_rows[i]));
+  }
 
   std::vector<ExpireHistoryArgs> expire_list;
   VisitVector visits;
@@ -3426,8 +3447,8 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
 
   KeywordID keyword_id = 1;
   std::u16string keyword = u"bar";
-  ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(
-      url1_id, keyword_id, keyword));
+  ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(url1_id, keyword_id,
+                                                          keyword));
 
   GURL url2("https://www.google.com/?q=bar");
   URLRow url_info2(url2);
@@ -3439,8 +3460,8 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   EXPECT_NE(0, url2_id);
 
   KeywordID keyword_id2 = 2;
-  ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(
-      url2_id, keyword_id2, keyword));
+  ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(url2_id, keyword_id2,
+                                                          keyword));
 
   // Add another visit to the same URL
   URLRow url_info3(url2);
@@ -3450,8 +3471,8 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   url_info3.set_hidden(false);
   const URLID url3_id = backend_->db()->AddURL(url_info3);
   EXPECT_NE(0, url3_id);
-  ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(
-      url3_id, keyword_id2, keyword));
+  ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(url3_id, keyword_id2,
+                                                          keyword));
 
   // Test that deletion works correctly
   backend_->DeleteMatchingURLsForKeyword(keyword_id2, keyword);
