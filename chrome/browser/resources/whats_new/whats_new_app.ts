@@ -14,9 +14,9 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {handleBrowserCommand, handleModuleEvent, handlePageLoadMetric, handleScrollDepthMetric, handleTimeOnPageMetric} from './handlers.js';
 import {EventType} from './types.js';
 import type {BrowserCommand, DebugInfo, EventData} from './types.js';
+import {browserProxyFactory} from './whats_new.mojom-webui.js';
 import {getCss} from './whats_new_app.css.js';
 import {getHtml} from './whats_new_app.html.js';
-import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 
 declare const window: Window&{
   chromeWhatsNew: {
@@ -110,7 +110,7 @@ export class WhatsNewAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance()
+    browserProxyFactory.getInstance()
         .handler.getServerUrl(this.isStaging_)
         .then(({url}: {url: Url}) => this.handleUrlResult_(url));
 
@@ -188,10 +188,12 @@ export class WhatsNewAppElement extends CrLitElement {
         this.debugInfo_.renderedModules = data.spotlight_modules;
         break;
       case EventType.EXPLORE_MORE_OPEN:
-        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(true);
+        browserProxyFactory.getInstance().handler.recordExploreMoreToggled(
+            true);
         break;
       case EventType.EXPLORE_MORE_CLOSE:
-        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(false);
+        browserProxyFactory.getInstance().handler.recordExploreMoreToggled(
+            false);
         break;
       case EventType.SCROLL:
         handleScrollDepthMetric(data);
@@ -214,26 +216,26 @@ export class WhatsNewAppElement extends CrLitElement {
         handleModuleEvent(data);
         break;
       case EventType.QR_CODE_TOGGLE_OPEN:
-        WhatsNewProxyImpl.getInstance().handler.recordQrCodeToggled(true);
+        browserProxyFactory.getInstance().handler.recordQrCodeToggled(true);
         break;
       case EventType.QR_CODE_TOGGLE_CLOSE:
-        WhatsNewProxyImpl.getInstance().handler.recordQrCodeToggled(false);
+        browserProxyFactory.getInstance().handler.recordQrCodeToggled(false);
         break;
       case EventType.NAV_CLICK:
-        WhatsNewProxyImpl.getInstance().handler.recordNavClick();
+        browserProxyFactory.getInstance().handler.recordNavClick();
         break;
       case EventType.FEATURE_TILE_NAVIGATION:
-        WhatsNewProxyImpl.getInstance().handler.recordFeatureTileNavigation();
+        browserProxyFactory.getInstance().handler.recordFeatureTileNavigation();
         break;
       case EventType.CAROUSEL_SCROLL_BUTTON_CLICK:
-        WhatsNewProxyImpl.getInstance()
+        browserProxyFactory.getInstance()
             .handler.recordCarouselScrollButtonClick();
         break;
       case EventType.CTA_CLICK:
-        WhatsNewProxyImpl.getInstance().handler.recordCtaClick();
+        browserProxyFactory.getInstance().handler.recordCtaClick();
         break;
       case EventType.NEXT_BUTTON_CLICK:
-        WhatsNewProxyImpl.getInstance().handler.recordNextButtonClick();
+        browserProxyFactory.getInstance().handler.recordNextButtonClick();
         break;
       case EventType.TIME_ON_PAGE_HEARTBEAT_MS:
         if (Number.isInteger(data.time)) {

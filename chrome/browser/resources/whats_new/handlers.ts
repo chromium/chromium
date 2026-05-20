@@ -9,8 +9,7 @@ import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/tim
 import {formatModuleName} from './format_module_name.js';
 import {EventType, kModulePositionsMap, SectionType} from './types.js';
 import type {BrowserCommand, ModuleEvent, PageLoadedMetric, ScrollDepthMetric} from './types.js';
-import {ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
-import {WhatsNewProxyImpl} from './whats_new_proxy.js';
+import {browserProxyFactory, ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
 
 export function handleBrowserCommand(messageData: BrowserCommand) {
   if (!Object.values(Command).includes(messageData.commandId)) {
@@ -21,7 +20,7 @@ export function handleBrowserCommand(messageData: BrowserCommand) {
   handler.canExecuteCommand(commandId).then(({canExecute}) => {
     if (canExecute) {
       handler.executeCommand(commandId, messageData.clickInfo);
-      const pageHandler = WhatsNewProxyImpl.getInstance().handler;
+      const pageHandler = browserProxyFactory.getInstance().handler;
       pageHandler.recordBrowserCommandExecuted();
     } else {
       console.warn('Received invalid command: ' + commandId);
@@ -31,7 +30,7 @@ export function handleBrowserCommand(messageData: BrowserCommand) {
 
 export function handlePageLoadMetric(
     data: PageLoadedMetric, isAutoOpen: boolean) {
-  const {handler} = WhatsNewProxyImpl.getInstance();
+  const {handler} = browserProxyFactory.getInstance();
   const now = new Date();
   handler.recordTimeToLoadContent(now);
 
@@ -41,12 +40,12 @@ export function handlePageLoadMetric(
   switch (data.type) {
     case 'version':
       if (Number.isInteger(data.version)) {
-        const {handler} = WhatsNewProxyImpl.getInstance();
+        const {handler} = browserProxyFactory.getInstance();
         handler.recordVersionPageLoaded(isAutoOpen);
       }
       break;
     case 'edition':
-      const {handler} = WhatsNewProxyImpl.getInstance();
+      const {handler} = browserProxyFactory.getInstance();
       handler.recordEditionPageLoaded(data.page_uid, isAutoOpen);
       break;
     default:
@@ -76,7 +75,7 @@ export function handleScrollDepthMetric(data: ScrollDepthMetric) {
       break;
   }
   if (scrollDepth) {
-    const {handler} = WhatsNewProxyImpl.getInstance();
+    const {handler} = browserProxyFactory.getInstance();
     handler.recordScrollDepth(scrollDepth);
   } else {
     console.warn('Unrecognized scroll percentage: ', data.percent_scrolled);
@@ -114,7 +113,7 @@ export function handleModuleEvent(data: ModuleEvent) {
     return;
   }
   const position = parseOrder(data.section, data.order);
-  const {handler} = WhatsNewProxyImpl.getInstance();
+  const {handler} = browserProxyFactory.getInstance();
   switch (data.event) {
     case EventType.MODULE_IMPRESSION:
       handler.recordModuleImpression(
@@ -145,11 +144,11 @@ export function handleModuleEvent(data: ModuleEvent) {
           formatModuleName(data.module_name), position);
       break;
     case EventType.EXPEND_MEDIA:
-      WhatsNewProxyImpl.getInstance().handler.recordExpandMediaToggled(
+      browserProxyFactory.getInstance().handler.recordExpandMediaToggled(
           data.module_name, true);
       break;
     case EventType.CLOSE_EXPANDED_MEDIA:
-      WhatsNewProxyImpl.getInstance().handler.recordExpandMediaToggled(
+      browserProxyFactory.getInstance().handler.recordExpandMediaToggled(
           data.module_name, false);
       break;
     default:
@@ -160,7 +159,7 @@ export function handleModuleEvent(data: ModuleEvent) {
 // Handle the two types of time_on_page metrics.
 export function handleTimeOnPageMetric(time: number, isHeartbeat: boolean) {
   if (Number.isInteger(time) && time > 0) {
-    const {handler} = WhatsNewProxyImpl.getInstance();
+    const {handler} = browserProxyFactory.getInstance();
     // Event contains time in milliseconds. Convert to microseconds.
     const delta: TimeDelta = {microseconds: BigInt(time) * 1000n};
     handler.recordTimeOnPage(delta, isHeartbeat);

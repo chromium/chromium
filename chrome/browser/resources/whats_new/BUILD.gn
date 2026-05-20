@@ -13,7 +13,6 @@ build_webui("build") {
     "types.ts",
     "whats_new_app.html.ts",
     "whats_new_app.ts",
-    "whats_new_proxy.ts",
   ]
   css_files = [ "whats_new_app.css" ]
 

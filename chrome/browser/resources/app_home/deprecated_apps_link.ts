@@ -4,7 +4,7 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './app_home.mojom-webui.js';
 import {getCss} from './deprecated_apps_link.css.js';
 import {getHtml} from './deprecated_apps_link.html.js';
 
@@ -34,7 +34,7 @@ export class DeprecatedAppsLinkElement extends CrLitElement {
   constructor() {
     super();
 
-    BrowserProxy.getInstance().handler.getDeprecationLinkString().then(
+    browserProxyFactory.getInstance().handler.getDeprecationLinkString().then(
         result => {
           this.display = !!result.linkString && result.linkString.length > 0;
           this.deprecationLinkString = result.linkString;
@@ -42,7 +42,7 @@ export class DeprecatedAppsLinkElement extends CrLitElement {
   }
 
   protected onLinkClick_() {
-    BrowserProxy.getInstance().handler.launchDeprecatedAppDialog();
+    browserProxyFactory.getInstance().handler.launchDeprecatedAppDialog();
   }
 }
 

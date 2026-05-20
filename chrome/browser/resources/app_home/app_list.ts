@@ -11,11 +11,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {AppInfo, PageCallbackRouter} from './app_home.mojom-webui.js';
+import {browserProxyFactory} from './app_home.mojom-webui.js';
 import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import type {AppItemElement} from './app_item.js';
 import {getCss} from './app_list.css.js';
 import {getHtml} from './app_list.html.js';
-import {BrowserProxy} from './browser_proxy.js';
 
 export interface ActionMenuModel {
   appItem: AppItemElement;
@@ -55,9 +55,9 @@ export class AppListElement extends CrLitElement {
   constructor() {
     super();
 
-    this.mojoEventTarget_ = BrowserProxy.getInstance().callbackRouter;
+    this.mojoEventTarget_ = browserProxyFactory.getInstance().callbackRouter;
 
-    BrowserProxy.getInstance().handler.getApps().then(result => {
+    browserProxyFactory.getInstance().handler.getApps().then(result => {
       this.apps_ = result.appList;
     });
 
@@ -110,7 +110,8 @@ export class AppListElement extends CrLitElement {
     const activeElementId = this.shadowRoot.activeElement?.id;
     if (activeElementId !== undefined &&
         this.apps_.some(app => activeElementId === app.id)) {
-      BrowserProxy.getInstance().handler.launchApp(activeElementId, null);
+      browserProxyFactory.getInstance().handler.launchApp(
+          activeElementId, null);
     }
   }
 

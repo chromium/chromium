@@ -19,7 +19,6 @@ build_webui("build") {
     "app_item.ts",
     "app_list.html.ts",
     "app_list.ts",
-    "browser_proxy.ts",
     "deprecated_apps_link.html.ts",
     "deprecated_apps_link.ts",
   ]

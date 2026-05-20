@@ -10,7 +10,7 @@ build_webui_tests("build") {
   cc_test_files = [ "whats_new_browsertest.cc" ]
 
   files = [
-    "test_whats_new_browser_proxy.ts",
+    "test_whats_new_page_handler.ts",
     "test_with_command_4.ts",
     "test_with_metrics_carousel_scroll_button_click.ts",
     "test_with_metrics_cta_click.ts",

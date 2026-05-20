@@ -5,19 +5,17 @@
 import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {PageCallbackRouter} from 'chrome://whats-new/whats_new.mojom-webui.js';
 import type {ModulePosition, PageHandlerInterface, ScrollDepth} from 'chrome://whats-new/whats_new.mojom-webui.js';
-import type {WhatsNewProxy} from 'chrome://whats-new/whats_new_proxy.js';
 
 /**
  * Test version of the WhatsNewPageHandler used to verify calls to the
  * browser from WebUI.
  */
-class TestWhatsNewPageHandler extends TestBrowserProxy implements
+export class TestWhatsNewPageHandler extends TestBrowserProxy implements
     PageHandlerInterface {
   private url_: Url;
 
-  constructor(url: string) {
+  constructor(url: string = '') {
     super([
       'getServerUrl',
       'recordTimeToLoadContent',
@@ -43,6 +41,10 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordNextButtonClick',
     ]);
 
+    this.url_ = url;
+  }
+
+  setGetServerUrlResponse(url: string) {
     this.url_ = url;
   }
 
@@ -133,24 +135,5 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
 
   recordNextButtonClick() {
     this.methodCalled('recordNextButtonClick');
-  }
-}
-
-/**
- * Test version of the BrowserProxy used in connecting the What's New
- * page to the browser on start up.
- */
-export class TestWhatsNewBrowserProxy extends TestBrowserProxy implements
-    WhatsNewProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: TestWhatsNewPageHandler;
-
-  /**
-   * @param url The URL to load in the iframe.
-   */
-  constructor(url: string) {
-    super([]);
-    this.callbackRouter = new PageCallbackRouter();
-    this.handler = new TestWhatsNewPageHandler(url);
   }
 }

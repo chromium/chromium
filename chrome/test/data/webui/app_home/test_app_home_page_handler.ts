@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import type {AppInfo, ClickEvent, PageHandlerInterface, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
-import {AppType, PageCallbackRouter} from 'chrome://apps/app_home.mojom-webui.js';
-import type {BrowserProxy} from 'chrome://apps/browser_proxy.js';
+import {AppType} from 'chrome://apps/app_home.mojom-webui.js';
 import {UserDisplayMode} from 'chrome://apps/user_display_mode.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -14,9 +13,9 @@ interface AppList {
 export class FakePageHandler extends TestBrowserProxy implements
     PageHandlerInterface {
   private apps_: AppList;
-  private callbackRouterRemote_: PageRemote;
+  private callbackRouterRemote_: PageRemote|null = null;
 
-  constructor(apps: AppList, callbackRouterRemote: PageRemote) {
+  constructor(apps: AppList) {
     super([
       'uninstallApp',
       'showAppSettings',
@@ -26,7 +25,10 @@ export class FakePageHandler extends TestBrowserProxy implements
       'launchDeprecatedAppDialog',
     ]);
     this.apps_ = apps;
-    this.callbackRouterRemote_ = callbackRouterRemote;
+  }
+
+  setCallbackRouterRemote(remote: PageRemote) {
+    this.callbackRouterRemote_ = remote;
   }
 
   addAppToList(app: AppInfo) {
@@ -69,7 +71,7 @@ export class FakePageHandler extends TestBrowserProxy implements
     for (const app of this.apps_.appList) {
       if (app.id === appId) {
         app.runOnOsLoginMode = runOnOsLoginMode;
-        this.callbackRouterRemote_.addApp(app);
+        this.callbackRouterRemote_!.addApp(app);
         break;
       }
     }
@@ -84,7 +86,7 @@ export class FakePageHandler extends TestBrowserProxy implements
     for (const app of this.apps_.appList) {
       if (app.id === appId) {
         app.isLocallyInstalled = true;
-        this.callbackRouterRemote_.addApp(app);
+        this.callbackRouterRemote_!.addApp(app);
         break;
       }
     }
@@ -94,26 +96,9 @@ export class FakePageHandler extends TestBrowserProxy implements
     for (const app of this.apps_.appList) {
       if (app.id === appId) {
         app.openInWindow = (userDisplayMode !== UserDisplayMode.kBrowser);
-        this.callbackRouterRemote_.addApp(app);
+        this.callbackRouterRemote_!.addApp(app);
         break;
       }
     }
-  }
-}
-
-export class TestAppHomeBrowserProxy implements BrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  callbackRouterRemote: PageRemote;
-  handler: PageHandlerInterface;
-  fakeHandler: FakePageHandler;
-
-  constructor(app: AppList) {
-    this.callbackRouter = new PageCallbackRouter();
-
-    this.callbackRouterRemote =
-        this.callbackRouter.$.bindNewPipeAndPassRemote();
-
-    this.fakeHandler = new FakePageHandler(app, this.callbackRouterRemote);
-    this.handler = this.fakeHandler;
   }
 }
