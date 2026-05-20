@@ -196,7 +196,7 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
           frame, snapshot_provider_.get(), &video_renderer_);
     } else {
       image = CreateUnacceleratedImageFromVideoFrame(
-          frame, required_provider_info, nullptr, &video_renderer_);
+          frame, required_provider_info, &video_renderer_);
     }
   }
 

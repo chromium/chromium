@@ -1558,8 +1558,7 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
     auto* snapshot_provider_bitmap =
         static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
     return CreateUnacceleratedImageFromVideoFrame(
-        frame, snapshot_provider_bitmap->Info(),
-        /*cached_draw_surface=*/nullptr);
+        frame, snapshot_provider_bitmap->Info());
   }
 
   return CreateAcceleratedImageFromVideoFrame(

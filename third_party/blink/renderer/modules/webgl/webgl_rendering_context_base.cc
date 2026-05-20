@@ -6639,8 +6639,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   scoped_refptr<StaticBitmapImage> image;
   if (snapshot_provider->IsExternalBitmapProvider()) {
     image = CreateUnacceleratedImageFromVideoFrame(
-        std::move(media_video_frame), info, /*cached_draw_surface=*/nullptr,
-        video_renderer, kPreferTaggedOrientation, reinterpret_video_as_srgb);
+        std::move(media_video_frame), info, video_renderer,
+        kPreferTaggedOrientation, reinterpret_video_as_srgb);
   } else {
     image = CreateAcceleratedImageFromVideoFrame(
         std::move(media_video_frame),

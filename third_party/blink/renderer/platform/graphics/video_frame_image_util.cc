@@ -39,7 +39,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
     std::optional<CanvasSnapshotProvider::Info> sw_draw_info,
-    sk_sp<SkSurface> cached_sw_draw_surface,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
@@ -101,8 +100,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
                          : ImageOrientationEnum::kDefault;
   if (sw_draw_info) {
     return CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
-        sw_draw_info.value(), draw_callback, orientation,
-        cached_sw_draw_surface);
+        sw_draw_info.value(), draw_callback, orientation);
   }
 
   return static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider)
@@ -195,21 +193,18 @@ scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
   CHECK(snapshot_provider);
   return CreateImageFromVideoFrame(
       std::move(frame), snapshot_provider, /*sw_draw_info=*/std::nullopt,
-      /*cached_sw_draw_surface=*/nullptr, video_renderer,
-      prefer_tagged_orientation, reinterpret_video_as_srgb);
+      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb);
 }
 
 scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     const CanvasSnapshotProvider::Info& draw_info,
-    sk_sp<SkSurface> cached_draw_surface,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
   return CreateImageFromVideoFrame(
       std::move(frame), /*snapshot_provider=*/nullptr, draw_info,
-      cached_draw_surface, video_renderer, prefer_tagged_orientation,
-      reinterpret_video_as_srgb);
+      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb);
 }
 
 void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,

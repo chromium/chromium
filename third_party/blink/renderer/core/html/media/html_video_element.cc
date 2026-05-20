@@ -754,8 +754,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
         kPreferTaggedOrientation, reinterpret_as_srgb);
   } else {
     image = CreateUnacceleratedImageFromVideoFrame(
-        std::move(media_video_frame), cached_draw_info_.value(),
-        /*cached_draw_surface=*/nullptr, video_renderer,
+        std::move(media_video_frame), cached_draw_info_.value(), video_renderer,
         kPreferTaggedOrientation, reinterpret_as_srgb);
   }
   if (image)

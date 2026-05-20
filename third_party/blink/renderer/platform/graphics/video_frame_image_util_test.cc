@@ -131,8 +131,7 @@ class VideoFrameImageUtilTest
           prefer_tagged_orientation);
     } else {
       return CreateUnacceleratedImageFromVideoFrame(
-          std::move(frame), info, /*cached_draw_surface=*/nullptr,
-          video_renderer, prefer_tagged_orientation);
+          std::move(frame), info, video_renderer, prefer_tagged_orientation);
     }
   }
 

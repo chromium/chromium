@@ -84,16 +84,11 @@ CreateAcceleratedImageFromVideoFrame(
 // If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
 // being originally having been in sRGB.
 //
-// The client may optionally provide a cached SkSurface for the software draw to
-// occur into; if not provided, the draw will create a new SkSurface to draw
-// into.
-//
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
 CreateUnacceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     const CanvasSnapshotProvider::Info& draw_info,
-    sk_sp<SkSurface> cached_draw_surface,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
