@@ -23800,8 +23800,7 @@ be describing additional metrics about the same event.
 
 <event name="Tabs.SadTab">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>
     Recorded when a Sad Tab is displayed or interacted with. This allows
     correlating specific URLs and page contexts with renderer crashes that lead
