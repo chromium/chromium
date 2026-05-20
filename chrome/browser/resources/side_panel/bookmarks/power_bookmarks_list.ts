@@ -184,8 +184,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   static get observers() {
     return [
       'onSearchChanged_(searchQuery)',
-      'updateDisplayLists_(activeFolderPath.splices, labels.*, ' +
-          'sortOrder, searchQuery)',
+      'updateDisplayLists_(activeFolderPath.*, labels.*, sortOrder, searchQuery)',
     ];
   }
 
@@ -653,6 +652,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       if (event.detail.bookmark.children) {
         this.recordCountMetricsOnNextUpdate_ = true;
         this.push('activeFolderPath', event.detail.bookmark);
+        this.dispatchActiveFolderPathChanged_();
         this.dispatchEvent(
             new CustomEvent('clear-search', {bubbles: true, composed: true}));
         afterNextRender(this, () => {
@@ -769,6 +769,15 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private onBackClicked_() {
     this.recordCountMetricsOnNextUpdate_ = true;
     this.pop('activeFolderPath');
+    this.dispatchActiveFolderPathChanged_();
+  }
+
+  private dispatchActiveFolderPathChanged_() {
+    this.dispatchEvent(new CustomEvent('active-folder-path-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {value: this.activeFolderPath},
+    }));
   }
 
   private onShowContextMenuClicked_(

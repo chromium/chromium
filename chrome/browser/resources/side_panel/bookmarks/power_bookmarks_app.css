@@ -1,0 +1,112 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//bookmarks-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-dialog-width: 300px;
+  --back-button-size: 14px;
+  --edit-footer-background: var(--google-grey-50);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --edit-footer-background: var(--google-grey-900-white-4-percent);
+  }
+}
+
+.dialog-body > cr-icon {
+  height: 20px;
+  width: 20px;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  margin: 0;
+}
+
+cr-toast {
+  justify-content: space-between;
+  left: 50%;
+  margin: 58px 0;
+  transform: translate(-50%, 0);
+  width: calc(100% - 16px);
+}
+
+:host-context([dir=rtl]) cr-toast {
+  left: auto;
+  right: 50%;
+  transform: translate(50%, 0);
+}
+
+cr-toolbar-search-field {
+  flex-shrink: 0;
+  margin: var(--sp-body-padding);
+  width: auto;
+}
+
+hr {
+  border: var(--cr-hairline);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-body {
+  display: flex;
+  font-size: var(--mwb-primary-text-font-size);
+  gap: 12px;
+}
+
+sp-empty-state {
+  padding-top: 40px;
+}
+
+sp-empty-state[guest] {
+  padding-top: 66px;
+}
+
+.label-row {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin: 4px var(--sp-body-padding) var(--sp-card-gap);
+}
+
+.label-row[header-hidden] {
+  margin-bottom: 14px;
+}
+
+cr-toolbar-selection-overlay {
+  --cr-toolbar-selection-overlay-padding: 16px;
+  background: transparent;
+  border: 0;
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+cr-toolbar-selection-overlay::part(clearIcon) {
+  --cr-icon-button-icon-size: 16px;
+  height: 24px;
+  margin-inline-end: 0;
+  margin-inline-start: -4px;
+  width: 24px;
+}
+
+:host(:not([has-scrollbars_]))
+    sp-footer:has(cr-toolbar-selection-overlay[show]) {
+  border-top: solid 1px var(--color-side-panel-edit-footer-border);
+}

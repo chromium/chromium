@@ -44,7 +44,7 @@ suite('General', () => {
   let metrics: MetricsTracker;
 
   function getAddTabButton(): CrButtonElement {
-    return powerBookmarksApp.shadowRoot!.querySelector<CrButtonElement>(
+    return powerBookmarksApp.shadowRoot.querySelector<CrButtonElement>(
         '#addCurrentTabButton')!;
   }
 
@@ -70,7 +70,7 @@ suite('General', () => {
 
   async function performSearch(query: string) {
     const searchField =
-        powerBookmarksApp.shadowRoot!.querySelector('cr-toolbar-search-field')!;
+        powerBookmarksApp.shadowRoot.querySelector('cr-toolbar-search-field')!;
     const searchChanged = eventToPromise('search-changed', searchField);
     const metricsLogged = eventToPromise(
         'bookmark-count-recorded', powerBookmarksApp.$.bookmarksList);
@@ -864,7 +864,7 @@ suite('General', () => {
       flush();
 
       const deleteButton: HTMLButtonElement =
-          powerBookmarksApp.shadowRoot!.querySelector('#deleteButton')!;
+          powerBookmarksApp.shadowRoot.querySelector('#deleteButton')!;
       assertFalse(deleteButton.disabled);
       deleteButton.click();
 
@@ -939,7 +939,7 @@ suite('General', () => {
       flush();
 
       const deleteButton: HTMLButtonElement =
-          powerBookmarksApp.shadowRoot!.querySelector('#deleteButton')!;
+          powerBookmarksApp.shadowRoot.querySelector('#deleteButton')!;
       assertFalse(deleteButton.disabled);
       deleteButton.click();
 
@@ -1068,8 +1068,8 @@ suite('General', () => {
       assertFalse(isHidden(footer));
 
       // A search with no results.
-      const searchField = powerBookmarksApp.shadowRoot!.querySelector(
-          'cr-toolbar-search-field');
+      const searchField =
+          powerBookmarksApp.shadowRoot.querySelector('cr-toolbar-search-field');
       assertTrue(!!searchField);
       searchField.$.searchInput.value = 'abcdef';
       searchField.onSearchTermSearch();
