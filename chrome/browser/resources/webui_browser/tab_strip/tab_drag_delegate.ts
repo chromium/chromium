@@ -52,24 +52,32 @@ export class TabDragDelegate {
   onMouseDown(e: MouseEvent) {
     e = e || window.event;
     e.preventDefault();
-    const path = e.composedPath();
-    const tabElement =
-        path.find(
-            el => el instanceof Element &&
-                el.localName === 'webui-browser-tab') as TabElement |
-        null;
+
+    const tabElement = this.findTabElement_(e);
     if (tabElement) {
-      this.draggedTabId_ = tabElement.tabData.id;
-      this.dragInProgress_ = true;
-      this.host_.setDragInProgressForDrag(true);
-      this.outOfBoundsDragX_ = e.clientX;
-      this.outOfBoundsDragY_ = e.clientY;
-      this.host_.setTabStripNoDrag(true);
-      this.host_.activateTabForDrag(this.draggedTabId_);
-      this.lastMouseEvent_ = e;
-      this.mouseXOffset_ = e.clientX - tabElement.getBoundingClientRect().left;
-      this.host_.requestUpdate();
+      this.initializeDrag_(e, tabElement);
     }
+  }
+
+  private findTabElement_(e: MouseEvent): TabElement|null {
+    const path = e.composedPath();
+    return path.find(
+               el => el instanceof Element &&
+                   el.localName === 'webui-browser-tab') as TabElement |
+        null;
+  }
+
+  private initializeDrag_(e: MouseEvent, tabElement: TabElement) {
+    this.draggedTabId_ = tabElement.tabData.id;
+    this.dragInProgress_ = true;
+    this.host_.setDragInProgressForDrag(true);
+    this.outOfBoundsDragX_ = e.clientX;
+    this.outOfBoundsDragY_ = e.clientY;
+    this.host_.setTabStripNoDrag(true);
+    this.host_.activateTabForDrag(this.draggedTabId_);
+    this.lastMouseEvent_ = e;
+    this.mouseXOffset_ = e.clientX - tabElement.getBoundingClientRect().left;
+    this.host_.requestUpdate();
   }
 
   onMouseUp() {
@@ -77,17 +85,19 @@ export class TabDragDelegate {
       return;
     }
 
-    this.lastMouseEvent_ = null;
+    this.clearDragState_();
+    this.host_.requestUpdate();
+  }
 
+  private clearDragState_() {
     this.getDraggedElement_().style.transform = '';
     this.draggedTabId_ = '';
     this.mouseXOffset_ = 0;
     this.lastMouseEvent_ = null;
+    this.dragInProgress_ = false;
 
     this.host_.setTabStripNoDrag(false);
-    this.dragInProgress_ = false;
     this.host_.setDragInProgressForDrag(false);
-    this.host_.requestUpdate();
   }
 
   onMouseMove(e: MouseEvent) {
@@ -100,15 +110,22 @@ export class TabDragDelegate {
 
     // Move the tab to its new position relative to the current cursor position.
     this.moveElementToCursor_(e.clientX);
-    const dragElementRect = this.getDraggedElement_().getBoundingClientRect();
 
-    // Now we will test the positioning after the DOM has been laid out.
     const items = this.host_.itemsForDrag;
     const index = items.findIndex((item: TabStripItem) => {
       return item.type === 'tab' && item.id === this.draggedTabId_;
     });
     assert(index !== -1, 'dragged tab not found in items_');
-    // Test for swap forward case.
+
+    const dragElementRect = this.getDraggedElement_().getBoundingClientRect();
+    this.tryMoveLeft_(index, items, dragElementRect);
+    this.tryMoveRight_(index, items, dragElementRect);
+
+    this.checkOutOfBounds_(e);
+  }
+
+  private tryMoveLeft_(
+      index: number, items: TabStripItem[], dragElementRect: DOMRect) {
     const prevItem = items[index - 1];
     if (prevItem && prevItem.type === 'tab') {
       const targetIdx = index - 1;
@@ -121,7 +138,10 @@ export class TabDragDelegate {
         this.host_.setItemsForDrag([...items]);
       }
     }
-    // Test for swap backward case.
+  }
+
+  private tryMoveRight_(
+      index: number, items: TabStripItem[], dragElementRect: DOMRect) {
     const nextItem = items[index + 1];
     if (nextItem && nextItem.type === 'tab') {
       const targetIdx = index + 1;
@@ -134,12 +154,12 @@ export class TabDragDelegate {
         this.host_.setItemsForDrag([...items]);
       }
     }
+  }
 
-    // Check if tab is being dragged outside of bounds +/- artificial margins.
-    if (e.clientX < this.host_.getBoundingClientRect().left ||
-        e.clientX >= this.host_.getBoundingClientRect().right - 1 ||
-        e.clientY < this.host_.getBoundingClientRect().top ||
-        e.clientY > this.host_.getBoundingClientRect().bottom + 10) {
+  private checkOutOfBounds_(e: MouseEvent) {
+    const hostRect = this.host_.getBoundingClientRect();
+    if (e.clientX < hostRect.left || e.clientX >= hostRect.right - 1 ||
+        e.clientY < hostRect.top || e.clientY > hostRect.bottom + 10) {
       this.outOfBoundsHandler_(this.draggedTabId_);
     }
   }

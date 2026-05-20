@@ -36,6 +36,33 @@ export interface TabStripElement {
   };
 }
 
+class TabStripItemFactory {
+  static create(child: Container): TabStripItem|null {
+    const data = child.data;
+    if (data.tab) {
+      return {
+        type: 'tab',
+        id: data.tab.id,
+        tabData: data.tab,
+      };
+    } else if (data.tabGroup) {
+      return {
+        type: 'group',
+        id: data.tabGroup.id,
+        groupData: data.tabGroup.data,
+      };
+    }
+
+    // These are valid parts of the tree but do not produce a UI item.
+    if (child.children) {
+      return null;
+    }
+
+    // If a node has no item data and no children, it is malformed.
+    assert(false, 'TabStripItemFactory: encountered an invalid container node');
+  }
+}
+
 export class TabStripElement extends CrLitElement implements TabStripObserver,
                                                              TabDragHost {
   static get is() {
@@ -89,7 +116,22 @@ export class TabStripElement extends CrLitElement implements TabStripObserver,
 
   private async loadTabStripModel_(observation: TabStripObservation) {
     const tabSnapshot = await this.tabStripService_.getTabs();
-    this.processModelContainer_(tabSnapshot.tabStrip);
+    const items = this.processModelContainer_(tabSnapshot.tabStrip);
+    this.setItems_(items);
+
+    // Process initial tabs to identify the active tab and fire tab-added
+    // events.
+    for (const item of items) {
+      if (item.type === 'tab') {
+        if (item.tabData.isActive) {
+          this.setActiveTab_(item.id);
+        }
+        this.fire<TabAdded>('tab-added', {
+          id: item.id,
+          isActive: item.tabData.isActive,
+        });
+      }
+    }
 
     // Now initial state is processed, start listening to events.
     observation.bind(tabSnapshot.stream.handle);
@@ -98,20 +140,19 @@ export class TabStripElement extends CrLitElement implements TabStripObserver,
     assert(this.activeTab_ !== '', 'initial snapshot contains no active tab');
   }
 
-  private processModelContainer_(container: Container) {
+  private processModelContainer_(container: Container): TabStripItem[] {
     if (!container || !container.children) {
-      return;
+      return [];
     }
-    container.children.forEach((containerElement: Container) => {
-      if (containerElement.data.tab) {
-        this.addTab(containerElement.data.tab);
-      } else if (containerElement.data.tabGroup) {
-        const group = containerElement.data.tabGroup;
-        this.addGroup(group);
-        this.processModelContainer_(containerElement);
-      } else {
-        this.processModelContainer_(containerElement);
+
+    return container.children.flatMap(child => {
+      const subItems = this.processModelContainer_(child);
+      const item = TabStripItemFactory.create(child);
+
+      if (item) {
+        return [item, ...subItems];
       }
+      return subItems;
     });
   }
 
@@ -188,7 +229,8 @@ export class TabStripElement extends CrLitElement implements TabStripObserver,
       case OnDataChangedEventFieldTags.SPLIT_TAB:
         throw new Error('unimplemented type: splitTab');
       default:
-        assertNotReachedCase(tag);
+        assertNotReachedCase(
+            tag, `Received unknown OnDataChangedEvent tag: ${tag}`);
     }
   }
 
@@ -216,17 +258,6 @@ export class TabStripElement extends CrLitElement implements TabStripObserver,
       id: tab.id,
       isActive: tab.isActive,
     });
-  }
-
-  private addGroup(group: TabGroup) {
-    this.setItems_([
-      ...this.items_,
-      {
-        type: 'group',
-        id: group.id,
-        groupData: group.data,
-      },
-    ]);
   }
 
   protected onTabCloseClick(e: CustomEvent<{id: string}>) {
