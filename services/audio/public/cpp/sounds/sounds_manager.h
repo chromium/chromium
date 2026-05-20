@@ -38,14 +38,14 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
   SoundsManager(const SoundsManager&) = delete;
   SoundsManager& operator=(const SoundsManager&) = delete;
 
-  // Initializes SoundsManager with the wav data or the flac data for the system
-  // sounds. The `codec` should be `kPCM` for the wav audio data or `kFLAC` for
-  // the flac audio data. Returns true if SoundsManager was successfully
-  // initialized.
+  // Initializes `SoundsManager` with the wav data or the flac data from the
+  // `resource_id`. The `codec` should be `kPCM` for the wav audio data or
+  // `kFLAC` for the flac audio data. Returns `true` if `SoundsManager` was
+  // successfully initialized.
   virtual bool Initialize(SoundKey key,
-                          std::string_view data,
+                          int resource_id,
                           media::AudioCodec codec,
-                          bool loop = false) = 0;
+                          bool loop) = 0;
 
   // Plays sound identified by |key|, returns false if SoundsManager
   // was not properly initialized.

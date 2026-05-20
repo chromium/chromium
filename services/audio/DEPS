@@ -7,4 +7,5 @@ include_rules = [
    "+sandbox",
    "+services/audio/public",
    "+third_party/tflite",
+   "+ui/base",
 ]

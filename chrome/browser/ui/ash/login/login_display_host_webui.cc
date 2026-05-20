@@ -111,7 +111,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -540,10 +539,8 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI(
   session_observation_.Observe(session_manager::SessionManager::Get());
 
   audio::SoundsManager& manager = audio::GlobalSoundsManager::Get();
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  manager.Initialize(std::to_underlying(Sound::kStartup),
-                     bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
-                     media::AudioCodec::kPCM);
+  manager.Initialize(std::to_underlying(Sound::kStartup), IDR_SOUND_STARTUP_WAV,
+                     media::AudioCodec::kPCM, /*loop=*/false);
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {

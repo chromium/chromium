@@ -32,6 +32,7 @@
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "services/audio/public/cpp/output_device.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace audio {
 
@@ -196,10 +197,13 @@ class AudioStreamHandler::AudioStreamContainer
 
 AudioStreamHandler::AudioStreamHandler(
     SoundsManager::StreamFactoryBinder stream_factory_binder,
-    std::string_view audio_data,
+    int resource_id,
     media::AudioCodec codec,
     bool loop) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const std::string_view audio_data =
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
 
   std::unique_ptr<media::AudioHandler> audio_handler;
   switch (codec) {

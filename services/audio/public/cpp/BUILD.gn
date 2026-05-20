@@ -29,6 +29,8 @@ component("cpp") {
       "sounds/sounds_manager.cc",
       "sounds/sounds_manager.h",
     ]
+
+    deps = [ "//ui/base" ]
   }
 
   defines = [ "IS_AUDIO_PUBLIC_CPP_IMPL" ]

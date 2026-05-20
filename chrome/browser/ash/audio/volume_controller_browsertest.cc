@@ -4,7 +4,6 @@
 
 #include <map>
 #include <memory>
-#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -36,7 +35,7 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
   ~SoundsManagerTestImpl() override = default;
 
   bool Initialize(SoundKey key,
-                  std::string_view /* data */,
+                  int /* resource_id */,
                   media::AudioCodec codec,
                   bool /* loop */) override {
     is_sound_initialized_[key] = true;
