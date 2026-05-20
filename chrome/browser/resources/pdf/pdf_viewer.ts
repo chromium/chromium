@@ -69,7 +69,7 @@ import type {UndoRedoStateChangedDetail} from './undo_redo_stack.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {convertDocumentDimensionsMessage, convertFormFocusChangeMessage, convertLoadProgressMessage, convertSendKeyEventMessage} from './message_converter.js';
-import {record, recordEnumeration, UserAction} from './metrics.js';
+import {record, recordEnumeration, UserAction, PostMessageDataType} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 import type {PdfNavigator} from './navigator.js';
 import {LoadState} from './pdf_scripting_api.js';
@@ -95,18 +95,6 @@ type SaveToDriveStatus = chrome.pdfViewerPrivate.SaveToDriveStatus;
 // </if> enable_pdf_save_to_drive
 const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
-
-/**
- * Keep in sync with the values for enum PDFPostMessageDataType in
- * tools/metrics/histograms/metadata/pdf/enums.xml.
- * These values are persisted to logs. Entries should not be renumbered, removed
- * or reused.
- */
-enum PostMessageDataType {
-  GET_SELECTED_TEXT = 0,
-  PRINT = 1,
-  SELECT_ALL = 2,
-}
 
 interface EmailMessageData {
   type: string;
@@ -971,8 +959,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
 
     recordEnumeration(
-        'PDF.PostMessageDataType', messageType,
-        Object.keys(PostMessageDataType).length);
+        'PDF.PostMessageDataType', messageType, PostMessageDataType.COUNT);
     return true;
   }
 

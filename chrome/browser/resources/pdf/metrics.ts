@@ -7,6 +7,21 @@ import {FittingType} from './constants.js';
 // Handles events specific to the PDF viewer and logs the corresponding metrics.
 
 /**
+ * These values are persisted to logs. Entries should not be renumbered, removed
+ * or reused.
+ */
+export enum PostMessageDataType {
+  // LINT.IfChange(PostMessageDataType)
+  GET_SELECTED_TEXT = 0,
+  PRINT = 1,
+  SELECT_ALL = 2,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFPostMessageDataType)
+
+  // Must be the last one.
+  COUNT = 3,
+}
+
+/**
  * Records when the zoom mode is changed to fit a FittingType.
  * @param fittingType the new FittingType.
  */

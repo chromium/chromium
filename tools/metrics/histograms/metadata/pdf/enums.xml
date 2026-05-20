@@ -272,14 +272,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFLoadedWithV2InkAnnotations) -->
 
+<!-- LINT.IfChange(PDFPostMessageDataType) -->
+
 <enum name="PDFPostMessageDataType">
 <!-- This must be kept current with PostMessageDataType in
-     chrome/browser/resources/pdf/pdf_viewer.ts. -->
+     chrome/browser/resources/pdf/metrics.ts. -->
 
   <int value="0" label="getSelectedText"/>
   <int value="1" label="print"/>
   <int value="2" label="selectAll"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/metrics.ts:PostMessageDataType) -->
 
 <!-- LINT.IfChange(PDFSaveToDriveBubbleAction) -->
 
