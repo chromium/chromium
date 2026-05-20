@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -33,15 +32,15 @@ class BrowserWindowInterface;
 //
 // UI Presentation & Architecture:
 // To ensure the overlay precisely covers the entire browser window (including
-// the tab strip, toolbar, and web contents) without "spilling over" beyond the
-// browser's visible edges, this controller hosts the DrivePickerHostView
-// directly as a child of the BrowserView.
+// the tab strip, toolbar, and web contents) while correctly overlaying other
+// parent-level widgets (such as the Omnibox dropdown) without Z-order
+// regressions, this controller hosts the DrivePickerHostView inside a custom
+// floating views::Widget.
 //
-// By staying within the BrowserView's view hierarchy, we leverage the Views
-// framework's built-in clipping, which is strictly enforced against the
-// window's client area across all platforms. This avoids the complexities and
-// platform-specific inconsistencies (e.g., OS-level window shadows or borders)
-// inherent in using a separate top-level TYPE_POPUP widget.
+// While floating popups usually present coordinates and bounds management
+// complexities, we enforce this custom widget's Z-order to kFloatingWindow and
+// manually synchronize the widget's screen bounds to the BrowserView's screen
+// space to perfectly align and overlay it across all platforms.
 //
 // Ownership and Lifetime:
 // This class is owned by ContextualSearchboxHandler and follows its
@@ -96,7 +95,7 @@ class DrivePickerHostController : public content::WebContentsObserver,
   bool is_picker_document_loaded_ = false;
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
-  views::ViewTracker view_tracker_;
+  std::unique_ptr<views::Widget> picker_widget_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_window_observation_{this};

@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -34,20 +35,19 @@ DrivePickerHostController::~DrivePickerHostController() {
 void DrivePickerHostController::ShowDrivePickerHost(
     std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
   // Ensure that we only have one Drive Picker Host view at a time.
-  if (view_tracker_.view()) {
+  if (picker_widget_) {
     SendErrorToRequest(
         std::move(request),
         drive_picker_host::mojom::DrivePickerError::kAlreadyActive);
     return;
   }
 
-  // To ensure the overlay precisely covers the internal area of the browser
-  // window (tab strip + toolbar + web contents) and is strictly clipped to the
-  // window's edges, we host it as a child view of the BrowserView.
+  // To resolve Z-order regressions where popup widgets like the Omnibox
+  // dropdown appear on top of the modal overlay, we host the view inside a
+  // custom floating views::Widget instead of as a child view of BrowserView.
   //
-  // This child-view approach is platform-agnostic and avoids the coordinate
-  // mismatches or OS-level "bleed-over" (like window shadows) that can occur
-  // when using a separate top-level TYPE_POPUP widget.
+  // We explicitly set its Z-order to floating, and coordinate bounds are
+  // manually synchronized to perfectly overlay the parent window's display.
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_window_interface_);
   if (!browser_view) {
@@ -59,14 +59,24 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   auto view = std::make_unique<DrivePickerHostView>(
       browser_window_interface_->GetProfile(), browser_window_interface_);
+  DrivePickerHostView* view_ptr = view.get();
 
-  // By adding it as a child of BrowserView, it will be drawn on top of all
-  // other browser components. We set kViewIgnoredByLayoutKey to true so we can
-  // manually manage its bounds to cover the entire BrowserView area.
-  view->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  // Using CLIENT_OWNS_WIDGET, the widget's lifecycle and close state are owned
+  // and managed safely by the controller via std::unique_ptr.
+  picker_widget_ = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.parent = browser_view->GetWidget()->GetNativeView();
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.name = "DrivePickerHostWidget";
+  picker_widget_->Init(std::move(params));
+  picker_widget_->SetContentsView(std::move(view));
 
-  DrivePickerHostView* view_ptr = browser_view->AddChildView(std::move(view));
-  view_tracker_.SetView(view_ptr);
+  // Set floating window Z-order to keep the hosted picker view on top of other
+  // browser elements.
+  picker_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  picker_widget_->Show();
 
   // Observe the browser window's widget for resize events to keep the picker
   // overlay perfectly synchronized with the browser's local bounds.
@@ -109,8 +119,9 @@ void DrivePickerHostController::SendErrorToRequest(
 }
 
 void DrivePickerHostController::ResetControllerState() {
-  if (view_tracker_.view()) {
-    view_tracker_.view()->parent()->RemoveChildViewT(view_tracker_.view());
+  if (picker_widget_) {
+    picker_widget_->Close();
+    picker_widget_.reset();
   }
   is_picker_document_loaded_ = false;
   pending_request_.reset();
@@ -130,16 +141,14 @@ void DrivePickerHostController::OnWidgetDestroyed(views::Widget* widget) {
 }
 
 void DrivePickerHostController::UpdatePickerViewBounds() {
-  views::View* view = view_tracker_.view();
-  if (!view) {
+  if (!picker_widget_) {
     return;
   }
 
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_window_interface_);
   if (browser_view) {
-    // Cover the entire local area of BrowserView.
-    view->SetBoundsRect(browser_view->GetLocalBounds());
+    picker_widget_->SetBounds(browser_view->GetBoundsInScreen());
   }
 }
 
@@ -149,8 +158,8 @@ void DrivePickerHostController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // We use `pending_request_` to check if there was a request to
   // trigger the picker UI before the document finished loading. This controller
   // only manages a single active picker session at a time.
-  if (pending_request_ && view_tracker_.view()) {
-    views::AsViewClass<DrivePickerHostView>(view_tracker_.view())
+  if (pending_request_ && picker_widget_) {
+    views::AsViewClass<DrivePickerHostView>(picker_widget_->GetContentsView())
         ->TriggerDrivePickerHostUi(std::move(pending_request_));
   }
 }

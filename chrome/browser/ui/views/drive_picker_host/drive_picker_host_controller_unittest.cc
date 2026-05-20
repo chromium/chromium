@@ -51,10 +51,12 @@ TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostCreatesView) {
   // Process any pending tasks (like view addition or initial WebUI setup).
   base::RunLoop().RunUntilIdle();
 
+  ASSERT_TRUE(controller_->picker_widget_);
   DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
-      controller_->view_tracker_.view());
+      controller_->picker_widget_->GetContentsView());
   ASSERT_TRUE(view);
-  EXPECT_EQ(browser_view(), view->parent());
+  EXPECT_TRUE(controller_->picker_widget_->IsVisible());
+  EXPECT_EQ(controller_->picker_widget_.get(), view->GetWidget());
   EXPECT_EQ(controller_->web_contents(), view->GetWebContents());
 }
 
@@ -67,12 +69,11 @@ TEST_F(DrivePickerHostControllerTest, PickerCoversBrowserContents) {
 
   base::RunLoop().RunUntilIdle();
 
-  DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
-      controller_->view_tracker_.view());
-  ASSERT_TRUE(view);
+  ASSERT_TRUE(controller_->picker_widget_);
 
-  // The view should cover the entire BrowserView local area.
-  EXPECT_EQ(view->bounds(), browser_view()->GetLocalBounds());
+  // The widget should cover the entire BrowserView screen bounds.
+  EXPECT_EQ(controller_->picker_widget_->GetWindowBoundsInScreen(),
+            browser_view()->GetBoundsInScreen());
 }
 
 TEST_F(DrivePickerHostControllerTest, PickerResizesWithWindow) {
@@ -84,16 +85,15 @@ TEST_F(DrivePickerHostControllerTest, PickerResizesWithWindow) {
 
   base::RunLoop().RunUntilIdle();
 
-  DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
-      controller_->view_tracker_.view());
-  ASSERT_TRUE(view);
+  ASSERT_TRUE(controller_->picker_widget_);
 
   // Resize the browser window.
   gfx::Rect new_window_bounds(10, 10, 800, 600);
   browser_view()->GetWidget()->SetBounds(new_window_bounds);
 
-  // The picker view should have been updated to match the new local bounds.
-  EXPECT_EQ(view->bounds(), browser_view()->GetLocalBounds());
+  // The picker widget should have been updated to match the new screen bounds.
+  EXPECT_EQ(controller_->picker_widget_->GetWindowBoundsInScreen(),
+            browser_view()->GetBoundsInScreen());
 }
 
 TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
@@ -105,11 +105,12 @@ TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
 
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(controller_->view_tracker_.view());
+  ASSERT_TRUE(controller_->picker_widget_);
+  ASSERT_TRUE(controller_->picker_widget_->GetContentsView());
 
   controller_->ResetControllerState();
 
-  // ResetControllerState should have cleared the view.
-  EXPECT_FALSE(controller_->view_tracker_.view());
+  // ResetControllerState should have cleared both view and widget.
+  EXPECT_FALSE(controller_->picker_widget_);
   EXPECT_FALSE(controller_->is_picker_document_loaded_);
 }
