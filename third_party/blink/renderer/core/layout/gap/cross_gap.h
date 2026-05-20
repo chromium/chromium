@@ -113,12 +113,6 @@ class CORE_EXPORT CrossGap {
            gap_segment_state_ranges_ == other.gap_segment_state_ranges_;
   }
 
-  static void UpdateCrossGapRangeEdgeState(
-      Vector<CrossGap>& cross_gaps,
-      wtf_size_t start_index,
-      wtf_size_t end_index,
-      CrossGap::EdgeIntersectionState new_state);
-
   // Updates `gap_segment_state_ranges_` to reflect fragmentation up to
   // `last_track_in_previous_fragment`. During fragmentation, main gaps shift
   // and become relative to the current fragment. This function modifies the

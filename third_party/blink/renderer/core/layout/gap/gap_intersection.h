@@ -130,7 +130,6 @@ class CORE_EXPORT GapIntersection {
   }
 
   const GapSegmentState& SegmentState() const { return segment_state_; }
-  void SetSegmentState(GapSegmentState state) { segment_state_ = state; }
 
  private:
   LayoutUnit offset_;

@@ -51,18 +51,6 @@ class CORE_EXPORT GapDataList {
     gap_data_list_.emplace_back(GapData<T>(value));
   }
 
-  explicit GapDataList(Vector<Length>& lengths) {
-    for (const auto& length : lengths) {
-      gap_data_list_.emplace_back(GapData<int>(length.Pixels()));
-    }
-  }
-
-  explicit GapDataList(HeapVector<StyleColor, 1>& colors) {
-    for (const auto& color : colors) {
-      gap_data_list_.emplace_back(GapData<StyleColor>(color));
-    }
-  }
-
   explicit GapDataList(wtf_size_t size) { gap_data_list_.reserve(size); }
 
   void AddGapData(const GapData<T>& gap_data) {

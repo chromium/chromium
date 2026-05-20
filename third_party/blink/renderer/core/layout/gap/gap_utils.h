@@ -79,7 +79,6 @@ class CORE_EXPORT GapSegmentState {
   inline bool HasGapStatus(GapSegmentStateId status) const {
     return (status_ & status) != 0;
   }
-  inline void SetGapStatus(GapSegmentStateId status) { status_ |= status; }
   // Returns true if one or more sides is empty.
   inline bool HasEmptyStatus() const {
     return HasGapStatus(kEmptyBefore) || HasGapStatus(kEmptyAfter);
@@ -97,10 +96,6 @@ class CORE_EXPORT GapSegmentState {
   inline bool operator==(const GapSegmentState& other) const {
     return status_ == other.status_;
   }
-  inline bool operator!=(const GapSegmentState& other) const {
-    return !(*this == other);
-  }
-
   String ToString() const;
 
   wtf_size_t status_;
