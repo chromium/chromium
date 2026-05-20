@@ -182,7 +182,7 @@
   ukm::SourceId sourceId = ukm::GetSourceIdForWebStateDocument(webState);
   if (sourceId != ukm::kInvalidSourceId) {
     ukm::builders::Tabs_SadTab(sourceId)
-        .SetEvent(static_cast<int>(event))
+        .SetEventType(static_cast<int>(event))
         .SetIsFeedbackMode(self.repeatedFailure)
         .Record(ukm::UkmRecorder::Get());
   }

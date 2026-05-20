@@ -23806,10 +23806,10 @@ be describing additional metrics about the same event.
     correlating specific URLs and page contexts with renderer crashes that lead
     to Sad Tabs and user feedback.
   </summary>
-  <metric name="Event" enum="SadTabEvent">
+  <metric name="EventType" enum="SadTabEvent">
     <summary>
-      The SadTabEvent that occurred (e.g. Displayed, Button clicked, Learn more
-      clicked).
+      The type of the SadTabEvent that occurred (e.g. Displayed, Button clicked,
+      Learn more clicked).
     </summary>
     <aggregation>
       <history>
