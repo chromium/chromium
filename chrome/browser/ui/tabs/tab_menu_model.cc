@@ -188,7 +188,8 @@ void TabMenuModel::AppendGlicItems(int index,
                        glic_tab_sub_menu_model_.get(),
                        ui::ImageModel::FromVectorIcon(
                            glic::GlicVectorIconManager::GetVectorIcon(
-                               IDR_GLIC_BUTTON_VECTOR_ICON)));
+                               IDR_GLIC_BUTTON_VECTOR_ICON),
+                           ui::kColorMenuIcon, kTabMenuIconSize));
   } else {
     AddSubMenu(TabStripModel::CommandGlicShare,
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_START_SHARE,
