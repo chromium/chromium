@@ -351,6 +351,9 @@ class RenderViewContextMenu
   bool AppendQRCodeGeneratorItem(bool for_image,
                                  bool draw_icon,
                                  bool add_separator);
+  void AddItemWithOptionalIcon(int command,
+                               int string,
+                               const gfx::VectorIcon& icon);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
       bool notify_if_restricted) const;

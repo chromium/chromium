@@ -1847,8 +1847,9 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 
     if (show_open_in_new_window) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                                      IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+      AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                              IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                              kOpenInNewOldIcon);
     }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1894,10 +1895,11 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 
     if (show_open_link_off_the_record) {
-      menu_model_.AddItemWithStringId(
+      AddItemWithOptionalIcon(
           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
           in_app ? IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP
-                 : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+                 : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+          kIncognitoRefreshMenuOldIcon);
     }
 
     AppendOpenInWebAppLinkItems();
@@ -2130,8 +2132,8 @@ void RenderViewContextMenu::AppendImageItems() {
   }
   if (!IsGlicWindow(this, browser_context_)) {
     // Glic doesn't have tabs, to this option doesn't make sense there.
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
-                                    IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
+    AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
+                            IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB, kImageIcon);
   }
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
                                   IDS_CONTENT_CONTEXT_SAVEIMAGEAS);
@@ -2379,7 +2381,8 @@ void RenderViewContextMenu::AppendPluginItems() {
     // add "Print" here.
     if (!content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_PRINT)) {
-      menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+      AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
+                              kPrintMenuOldIcon);
     }
   }
 }
@@ -2394,7 +2397,8 @@ void RenderViewContextMenu::AppendPageItems() {
   MaybeAppendOpenGlicItem();
   menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
-  menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+  AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
+                          kPrintMenuOldIcon);
   AppendLiveCaptionItem();
   AppendMediaRouterItem();
 
@@ -2515,7 +2519,8 @@ void RenderViewContextMenu::AppendPrintItem() {
       (params_.media_type == ContextMenuDataMediaType::kNone ||
        params_.media_flags & ContextMenuData::kMediaCanPrint) &&
       params_.misspelled_word.empty()) {
-    menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+    AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
+                            kPrintMenuOldIcon);
   }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
@@ -2526,6 +2531,13 @@ void RenderViewContextMenu::AppendPartialTranslateItem() {
       l10n_util::GetStringFUTF16(
           IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
           GetTargetLanguageDisplayName(/*is_full_page_translation=*/false)));
+
+  if (features::IsMenuSimplificationEnabled()) {
+    menu_model_.SetIconForCommandId(
+        IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+        ui::ImageModel::FromVectorIcon(vector_icons::kGTranslateIcon,
+                                       ui::kColorMenuIcon, kTabMenuIconSize));
+  }
 }
 
 void RenderViewContextMenu::AppendTranslateItem() {
@@ -2540,8 +2552,8 @@ void RenderViewContextMenu::AppendTranslateItem() {
 
 void RenderViewContextMenu::AppendMediaRouterItem() {
   if (media_router::MediaRouterEnabled(browser_context_)) {
-    menu_model_.AddItemWithStringId(IDC_ROUTE_MEDIA,
-                                    IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
+    AddItemWithOptionalIcon(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+                            kCastChromeRefreshOldIcon);
   }
 }
 
@@ -2549,8 +2561,9 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
   // Show Read Anything option if it's not already open in the side panel.
   if (GetBrowser() && GetBrowser()->is_type_normal() &&
       !IsReadAnythingEntryShowing(GetBrowser())) {
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
-                                    IDS_CONTENT_CONTEXT_READING_MODE);
+    AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                            IDS_CONTENT_CONTEXT_READING_MODE,
+                            kMenuBookChromeRefreshOldIcon);
     if (features::IsImprovedReadAloudEnabled()) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
                                       IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE);
@@ -5317,6 +5330,20 @@ void RenderViewContextMenu::OpenLinkInSplitView(
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void RenderViewContextMenu::AddItemWithOptionalIcon(
+    int command,
+    int string,
+    const gfx::VectorIcon& icon) {
+  if (features::IsMenuSimplificationEnabled() && !icon.is_empty()) {
+    menu_model_.AddItemWithStringIdAndIcon(
+        command, string,
+        ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+  } else {
+    menu_model_.AddItemWithStringId(command, string);
+  }
+}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
