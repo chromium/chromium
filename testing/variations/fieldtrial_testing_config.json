@@ -24585,9 +24585,9 @@
             ],
             "experiments": [
                 {
-                    "name": "30",
+                    "name": "15",
                     "params": {
-                        "V8MemoryReducerDelayInSeconds": "30"
+                        "V8MemoryReducerDelayInSeconds": "15"
                     },
                     "enable_features": [
                         "V8MemoryReducerDelay"
