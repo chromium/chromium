@@ -22,7 +22,7 @@ Roll process:
   roll-dep --roll-to origin/upstream/master src/third_party/expat/src/
   cd $CHROMIUM_SRC/third_party/expat/src/expat
   ./buildconf.sh
-  ./configure
+  ./configure --without-getrandom --without-sys-getrandom
   cp expat_config.h $CHROMIUM_SRC/third_party/expat/include/expat_config/
   cd $CHROMIUM_SRC/third_party/expat
   patch -p3 < 0001-Do-not-claim-getrandom.patch
