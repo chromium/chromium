@@ -3199,6 +3199,7 @@ test("content_unittests") {
       "../browser/date_time_chooser/ios/date_time_chooser_util_unittest.mm",
       "../browser/renderer_host/ios_extended_text_input_traits_unittest.mm",
       "../browser/renderer_host/render_widget_host_view_ios_uiview_unittest.mm",
+      "../browser/renderer_host/render_widget_host_view_ios_unittest.mm",
     ]
   }
 

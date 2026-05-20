@@ -354,6 +354,21 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
   return GetViewBounds().size();
 }
 
+#if !BUILDFLAG(IS_IOS_TVOS)
+gfx::Size RenderWidgetHostViewIOS::GetVisibleViewportSize() {
+  int bottom_adjust =
+      std::max(0, static_cast<int>([ui_view_->view_ keyboardHeight]));
+  gfx::Rect requested_rect(GetRequestedRendererSize());
+  requested_rect.Inset(gfx::Insets::TLBR(0, 0, bottom_adjust, 0));
+  return requested_rect.size();
+}
+
+gfx::Size RenderWidgetHostViewIOS::GetVisibleViewportSizeDevicePx() {
+  return gfx::ScaleToCeiledSize(GetVisibleViewportSize(),
+                                GetDeviceScaleFactor());
+}
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
+
 std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
   return display_feature_;
 }
@@ -962,6 +977,19 @@ void RenderWidgetHostViewIOS::ContentInsetChanged() {
     host()->SynchronizeVisualProperties();
   }
 }
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+void RenderWidgetHostViewIOS::OnKeyboardVisibilityChanged() {
+  host()->SynchronizeVisualProperties();
+
+  if ([ui_view_->view_ keyboardHeight] > 0) {
+    auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+    if (input_handler) {
+      input_handler->ScrollFocusedEditableNodeIntoView();
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
 void RenderWidgetHostViewIOS::ExtendSelectionAndDelete(int32_t before,
                                                        int32_t after) {

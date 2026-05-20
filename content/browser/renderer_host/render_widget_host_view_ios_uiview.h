@@ -32,6 +32,7 @@ inline constexpr CGFloat kInputAccessoryToolbarBottomMargin = 8;
   std::u16string _markedText;
   std::optional<input::NativeWebKeyboardEvent> _currentKeyDownEvent;
   std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
+  CGFloat _keyboardHeight;
 }
 
 - (instancetype)initWithWidget:
@@ -41,6 +42,7 @@ inline constexpr CGFloat kInputAccessoryToolbarBottomMargin = 8;
                     withBounds:(CGRect)bounds;
 - (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds;
 - (void)hideKeyboard;
+- (CGFloat)keyboardHeight;
 
 - (BETextInteraction*)textInteraction;
 - (void)updateView:(UIScrollView*)view;

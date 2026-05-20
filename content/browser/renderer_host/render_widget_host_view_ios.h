@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/ios_buildflags.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -102,6 +103,10 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
   gfx::Rect GetBoundsInRootWindow() override;
   gfx::Size GetRequestedRendererSize() override;
+#if !BUILDFLAG(IS_IOS_TVOS)
+  gfx::Size GetVisibleViewportSize() override;
+  gfx::Size GetVisibleViewportSizeDevicePx() override;
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
   std::optional<DisplayFeature> GetDisplayFeature() override;
   void DisableDisplayFeatureOverrideForEmulation() override;
   void OverrideDisplayFeatureForEmulation(
@@ -220,6 +225,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool CanBecomeFirstResponderForTesting() const;
   bool CanResignFirstResponderForTesting() const;
   void ContentInsetChanged();
+#if !BUILDFLAG(IS_IOS_TVOS)
+  void OnKeyboardVisibilityChanged();
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
   void ExtendSelectionAndDelete(int32_t before, int32_t after);
   void ExtendSelectionAndReplace(uint32_t before,
                                  uint32_t after,
