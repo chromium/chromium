@@ -22,7 +22,8 @@ TableColumn::TableColumn()
       min_visible_width(0),
       alignment(LEFT),
       sortable(false),
-      initial_sort_is_ascending(true) {}
+      initial_sort_is_ascending(true),
+      elide_behavior(gfx::NO_ELIDE) {}
 
 TableColumn::TableColumn(int id, Alignment alignment, int width, float percent)
     : title(l10n_util::GetStringUTF16(id)),
@@ -32,7 +33,8 @@ TableColumn::TableColumn(int id, Alignment alignment, int width, float percent)
       min_visible_width(0),
       alignment(alignment),
       sortable(false),
-      initial_sort_is_ascending(true) {}
+      initial_sort_is_ascending(true),
+      elide_behavior(gfx::NO_ELIDE) {}
 
 TableColumn::TableColumn(const TableColumn& other) = default;
 

@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
+#include "ui/gfx/text_constants.h"
 
 // third_party/icu/source/common/unicode/uversion.h will set namespace icu.
 namespace U_ICU_NAMESPACE {
@@ -142,6 +143,10 @@ struct COMPONENT_EXPORT(UI_BASE) TableColumn {
 
   // Determines what sort order to apply initially. Default is true.
   bool initial_sort_is_ascending;
+
+  // Elide behavior for the column text. Defaults to NO_ELIDE (which will
+  // fallback to Views' default elision behavior, usually tail clipping).
+  gfx::ElideBehavior elide_behavior;
 };
 
 }  // namespace ui

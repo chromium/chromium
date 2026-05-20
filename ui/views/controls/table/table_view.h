@@ -417,6 +417,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
                         const std::u16string& text,
                         int flags,
                         SkColor color,
+                        gfx::ElideBehavior elide_behavior,
                         gfx::RenderText* render_text);
 
   // Returns the horizontal margin between the bounds of a cell and its
