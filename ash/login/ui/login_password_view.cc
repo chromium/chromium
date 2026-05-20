@@ -180,17 +180,15 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     set_placeholder_font_list(font_list_visible_);
     SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
     SetBorder(nullptr);
-  }
-  LoginTextfield(const LoginTextfield&) = delete;
-  LoginTextfield& operator=(const LoginTextfield&) = delete;
-  ~LoginTextfield() override = default;
-
-  void OnThemeChanged() override {
-    views::Textfield::OnThemeChanged();
     SetTextColorId(kColorAshTextColorPrimary);
     SetBackgroundColor(SK_ColorTRANSPARENT);
     SetPlaceholderTextColorId(kColorAshTextColorSecondary);
   }
+
+  LoginTextfield(const LoginTextfield&) = delete;
+  LoginTextfield& operator=(const LoginTextfield&) = delete;
+
+  ~LoginTextfield() override = default;
 
   // views::Textfield:
   void OnBlur() override {

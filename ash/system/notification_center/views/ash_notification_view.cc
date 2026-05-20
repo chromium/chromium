@@ -1380,8 +1380,7 @@ void AshNotificationView::OnThemeChanged() {
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id()));
 
-  // For unittests, `GetColorProvider()` could be nullptr.
-  if (inline_reply() && GetColorProvider()) {
+  if (inline_reply()) {
     inline_reply()->textfield()->SetTextColorId(cros_tokens::kCrosSysOnSurface);
     inline_reply()->textfield()->SetPlaceholderTextColorId(
         cros_tokens::kCrosSysOnSurfaceVariant);

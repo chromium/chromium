@@ -70,6 +70,13 @@ void NotificationInputContainer::Init() {
 
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(GetTextfieldPadding()));
+  textfield_->SetTextColorId(ui::kColorNotificationInputForeground);
+  textfield_->SetPlaceholderTextColorId(
+      ui::kColorNotificationInputPlaceholderForeground);
+  if (ink_drop_container_) {
+    textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  }
+
   StyleTextfield();
   AddChildViewRaw(textfield_.get());
   box_layout->SetFlexForView(textfield_, 1);
@@ -140,18 +147,6 @@ void NotificationInputContainer::RemoveLayerFromRegions(ui::Layer* layer) {
   ink_drop_container_->RemoveLayerFromRegions(layer);
   textfield_->DestroyLayer();
   button_->DestroyLayer();
-}
-
-void NotificationInputContainer::OnThemeChanged() {
-  View::OnThemeChanged();
-
-  textfield_->SetTextColorId(ui::kColorNotificationInputForeground);
-  StyleTextfield();
-  if (ink_drop_container_)
-    textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  textfield_->SetPlaceholderTextColorId(
-      ui::kColorNotificationInputPlaceholderForeground);
-  UpdateButtonImage();
 }
 
 views::ProposedLayout NotificationInputContainer::CalculateProposedLayout(
@@ -234,18 +229,15 @@ void NotificationInputContainer::StyleTextfield() {
 }
 
 void NotificationInputContainer::UpdateButtonImage() {
-  if (!GetWidget())
-    return;
-
   auto icon_color_id = textfield_->GetText().empty()
                            ? ui::kColorNotificationInputPlaceholderForeground
                            : ui::kColorNotificationInputForeground;
   button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kSendFilledIcon
-                                            : kNotificationInlineReplyOldIcon,
-          GetColorProvider()->GetColor(icon_color_id), kInputReplyButtonSize));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kSendFilledIcon
+                                         : kNotificationInlineReplyOldIcon,
+                                     icon_color_id, kInputReplyButtonSize));
 }
 
 BEGIN_METADATA(NotificationInputContainer)

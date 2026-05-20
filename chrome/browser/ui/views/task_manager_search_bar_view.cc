@@ -24,16 +24,23 @@
 #include "ui/views/metadata/view_factory.h"
 
 namespace task_manager {
+namespace {
+
+ui::ColorId GetTextfieldPlaceholderTextColor() {
+#if BUILDFLAG(IS_LINUX)
+  return kColorTaskManagerSearchBarPlaceholderText;
+#else
+  return ui::kColorTextfieldForegroundPlaceholder;
+#endif
+}
+
+}  // namespace
+
 TaskManagerSearchBarView::TaskManagerSearchBarView(
     const std::u16string& placeholder,
     const gfx::Insets& margins,
     Delegate& delegate)
-    : delegate_(delegate)
-#if BUILDFLAG(IS_LINUX)
-      ,
-      textfield_placeholder_color_id_(kColorTaskManagerSearchBarPlaceholderText)
-#endif
-{
+    : delegate_(delegate) {
   auto* layout_provider = ChromeLayoutProvider::Get();
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -55,6 +62,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
           .SetController(this)
           .SetBorder(nullptr)
           .SetBackgroundColor(kColorTaskManagerSearchBarBackground)
+          .SetPlaceholderTextColorId(GetTextfieldPlaceholderTextColor())
           .SetProperty(views::kElementIdentifierKey, kInputField)
           // Set margins to remove duplicate space between search
           // icon and textfield.
@@ -96,11 +104,6 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 }
 
 TaskManagerSearchBarView::~TaskManagerSearchBarView() = default;
-
-void TaskManagerSearchBarView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateTextfield();
-}
 
 bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* /*sender*/,
                                               const ui::KeyEvent& key_event) {
@@ -150,13 +153,9 @@ gfx::Point TaskManagerSearchBarView::GetClearButtonScreenCenterPointForTesting()
   return clear_->GetBoundsInScreen().CenterPoint();
 }
 
-void TaskManagerSearchBarView::UpdateTextfield() {
-  input_->SetPlaceholderTextColorId(textfield_placeholder_color_id_.value_or(
-      ui::kColorTextfieldForegroundPlaceholder));
-}
-
 BEGIN_METADATA(TaskManagerSearchBarView)
 END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TaskManagerSearchBarView, kInputField);
+
 }  // namespace task_manager

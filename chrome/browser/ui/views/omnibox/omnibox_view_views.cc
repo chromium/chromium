@@ -293,6 +293,9 @@ OmniboxViewViews::OmniboxViewViews(bool popup_window_mode,
 #else
   GetViewAccessibility().SetKeyShortcuts("Ctrl+L");
 #endif
+
+  SetSelectionBackgroundColorId(kColorOmniboxSelectionBackground);
+  SetSelectionTextColorId(kColorOmniboxSelectionForeground);
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
@@ -861,10 +864,6 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
-
-  UpdatePlaceholderTextColor();
-  SetSelectionBackgroundColorId(kColorOmniboxSelectionBackground);
-  SetSelectionTextColorId(kColorOmniboxSelectionForeground);
 
   EmphasizeURLComponents();
 }
@@ -2683,10 +2682,6 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
   // placeholders are dim to differentiate from user input. DSE placeholders are
   // not dim to draw attention to the omnibox and because the omnibox is
   // unfocused so there's less risk of confusion with user input.
-  // Null in tests.
-  if (!GetColorProvider()) {
-    return;
-  }
   bool dse_placeholder_installed =
       controller()->edit_model()->keyword_placeholder().empty() &&
       !ShouldInstallAimPlaceholderText() &&
