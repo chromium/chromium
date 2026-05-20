@@ -116,6 +116,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "WhatsNew";
     case mojom::InvocationSource::kAutofill:
       return "Autofill";
+    case mojom::InvocationSource::kToolbarButton:
+      return "ToolbarButton";
     case mojom::InvocationSource::kZeroStateAutoSummarize:
       return "ZeroStateAutoSummarize";
   }

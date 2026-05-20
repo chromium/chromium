@@ -3002,6 +3002,8 @@ export enum InvocationSource {
   PASSWORD_CHANGE = 29,
   // From an Autofill action.
   AUTOFILL = 30,
+  // Button in the toolbar.
+  TOOLBAR_BUTTON = 31,
 }
 
 ///////////////////////////////////////////////

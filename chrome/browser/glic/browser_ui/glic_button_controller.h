@@ -32,7 +32,8 @@ class GlicButtonController {
   ~GlicButtonController();
 
   bool ShouldAutoSummarize() const;
-  mojom::InvocationSource GetInvocationSource(bool is_showing_nudge) const;
+  mojom::InvocationSource GetInvocationSource(bool is_showing_nudge,
+                                              bool is_toolbar) const;
 
  private:
   void UpdateButton();

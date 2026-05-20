@@ -1669,6 +1669,8 @@ enum InvocationSource {
   [MinVersion=20] kPasswordChange = 29,
   // From an Autofill action.
   [MinVersion=21] kAutofill = 30,
+  // Button in the toolbar.
+  [MinVersion=22] kToolbarButton = 31,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

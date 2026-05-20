@@ -783,11 +783,11 @@ void ToolbarView::OnGlicButtonClicked() {
   glic::mojom::InvocationSource source;
   if (button_controller_) {
     source = button_controller_->GetInvocationSource(
-        glic_button_->GetIsShowingNudge());
+        glic_button_->GetIsShowingNudge(), /*is_toolbar=*/true);
   } else {
     source = glic_button_->GetIsShowingNudge()
                  ? glic::mojom::InvocationSource::kNudge
-                 : glic::mojom::InvocationSource::kTopChromeButton;
+                 : glic::mojom::InvocationSource::kToolbarButton;
   }
 
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(

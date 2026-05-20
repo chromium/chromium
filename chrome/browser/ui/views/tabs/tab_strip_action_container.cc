@@ -582,7 +582,7 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   glic::mojom::InvocationSource source;
   if (button_controller_) {
     source = button_controller_->GetInvocationSource(
-        glic_button_->GetIsShowingNudge());
+        glic_button_->GetIsShowingNudge(), /*is_toolbar=*/false);
   } else {
     source = glic_button_->GetIsShowingNudge()
                  ? glic::mojom::InvocationSource::kNudge

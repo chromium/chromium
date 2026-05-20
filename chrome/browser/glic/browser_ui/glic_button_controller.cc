@@ -118,14 +118,16 @@ bool GlicButtonController::ShouldAutoSummarize() const {
 }
 
 mojom::InvocationSource GlicButtonController::GetInvocationSource(
-    bool is_showing_nudge) const {
+    bool is_showing_nudge,
+    bool is_toolbar) const {
   if (is_showing_nudge) {
     return mojom::InvocationSource::kNudge;
   } else if (ShouldAutoSummarize()) {
     return mojom::InvocationSource::kZeroStateAutoSummarize;
   }
 
-  return mojom::InvocationSource::kTopChromeButton;
+  return is_toolbar ? mojom::InvocationSource::kToolbarButton
+                    : mojom::InvocationSource::kTopChromeButton;
 }
 
 }  // namespace glic
