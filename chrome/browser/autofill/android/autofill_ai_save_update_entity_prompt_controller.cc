@@ -158,7 +158,7 @@ void AutofillAiSaveUpdateEntityPromptController::OnUserEdited(
   had_user_interaction_ = true;
   EntityInstance edited_entity =
       edited_entity_android.ToEntityInstance(entity_instance_);
-  RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kAccepted,
+  RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kEditAccepted,
                           std::move(edited_entity));
 }
 

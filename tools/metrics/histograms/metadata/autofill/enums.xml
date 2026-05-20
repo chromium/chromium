@@ -232,6 +232,9 @@ chromium-metrics-reviews@google.com.
       label="The user closed the prompt (via the close button or the ESC)"/>
   <int value="4" label="The user did not interact with the prompt"/>
   <int value="5" label="The prompt was closed due to losing focus"/>
+  <int value="6"
+      label="The prompt was closed by pressing 'Done' button in the editor.
+             The editor is only present on Android."/>
 </enum>
 
 <!-- LINT.IfChange(AutofillAiDecryptStatus) -->

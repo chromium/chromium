@@ -90,6 +90,8 @@ using ::testing::WithArgs;
 // Note that the UI contexts are populated with non-existent dummy string IDs.
 constexpr auto kAcceptBubble =
     AutofillClient::AutofillAiBubbleResult::kAccepted;
+constexpr auto kAcceptEdits =
+    AutofillClient::AutofillAiBubbleResult::kEditAccepted;
 const AutofillClient::EntityImportUIContext kAcceptUIContext(
     /*accepted_consent_string_id=*/123,
     /*accept_button_string_id=*/234);
@@ -899,6 +901,55 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
                     PassportWithNumber(kDefaultPassportNumber), _, _, _))
         .WillOnce(
             RunOnceCallback<3>(kAcceptBubble, std::nullopt, kAcceptUIContext));
+
+    // (User now deletes the passport.)
+
+    // We now get more prompts for the same passport number again.
+    EXPECT_CALL(autofill_client(),
+                ShowEntityImportBubble(
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+            kDeclineBubble, std::nullopt, kDeclineUIContext));
+  }
+
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  // This one will be accepted.
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+
+  // User deletes the passport.
+  ASSERT_THAT(GetEntityInstances(), SizeIs(1));
+  RemoveEntityInstance(GetEntityInstances()[0].guid());
+
+  EXPECT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+}
+
+// Same as above, but the user now accepts the prompt by pressing the "Done"
+// button in the editor.
+TEST_F(AutofillAiManagerImportFormTest,
+       AcceptingEditsResetsStrikesPerAttribute) {
+  {
+    InSequence s;
+    // First, we expect to see two save attempts for a passport.
+    EXPECT_CALL(autofill_client(),
+                ShowEntityImportBubble(
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+            kDeclineBubble, std::nullopt, kDeclineUIContext));
+    // We accept the next save prompt for a passport form.
+    EXPECT_CALL(autofill_client(),
+                ShowEntityImportBubble(
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
+        .WillOnce(
+            RunOnceCallback<3>(kAcceptEdits, std::nullopt, kAcceptUIContext));
 
     // (User now deletes the passport.)
 

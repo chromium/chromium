@@ -138,6 +138,7 @@ optimization_guide::proto::AutofillAiPromptUserDecision GetUserDecision(
     AutofillClient::AutofillAiBubbleResult result) {
   switch (result) {
     case AutofillClient::AutofillAiBubbleResult::kAccepted:
+    case AutofillClient::AutofillAiBubbleResult::kEditAccepted:
       return optimization_guide::proto::
           AUTOFILL_AI_PROMPT_USER_DECISION_ACCEPTED;
     case AutofillClient::AutofillAiBubbleResult::kCancelled:

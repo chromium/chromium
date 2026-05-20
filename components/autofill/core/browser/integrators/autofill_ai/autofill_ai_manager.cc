@@ -76,6 +76,21 @@ namespace autofill {
 
 namespace {
 
+bool DidUserExplicitlyAcceptedImportPrompt(
+    AutofillClient::AutofillAiBubbleResult result) {
+  switch (result) {
+    case AutofillClient::AutofillAiBubbleResult::kAccepted:
+    case AutofillClient::AutofillAiBubbleResult::kEditAccepted:
+      return true;
+    case AutofillClient::AutofillAiBubbleResult::kCancelled:
+    case AutofillClient::AutofillAiBubbleResult::kClosed:
+    case AutofillClient::AutofillAiBubbleResult::kUnknown:
+    case AutofillClient::AutofillAiBubbleResult::kNotInteracted:
+    case AutofillClient::AutofillAiBubbleResult::kLostFocus:
+      return false;
+  }
+}
+
 bool DidUserExplicitlyDeclineImportPrompt(
     AutofillClient::AutofillAiBubbleResult result) {
   switch (result) {
@@ -84,6 +99,7 @@ bool DidUserExplicitlyDeclineImportPrompt(
       return true;
     case AutofillClient::AutofillAiBubbleResult::kUnknown:
     case AutofillClient::AutofillAiBubbleResult::kAccepted:
+    case AutofillClient::AutofillAiBubbleResult::kEditAccepted:
     case AutofillClient::AutofillAiBubbleResult::kNotInteracted:
     case AutofillClient::AutofillAiBubbleResult::kLostFocus:
       return false;
@@ -412,8 +428,7 @@ void AutofillAiManager::HandlePromptResult(
 
   AddOrClearImportPromptStrikes(prompt_type, result, form.url(), entity);
 
-  const bool prompt_accepted =
-      result == AutofillClient::AutofillAiBubbleResult::kAccepted;
+  const bool prompt_accepted = DidUserExplicitlyAcceptedImportPrompt(result);
 
   switch (prompt_type) {
     case AutofillClient::AutofillAiImportPromptType::kSave:
@@ -599,14 +614,14 @@ void AutofillAiManager::AddOrClearImportPromptStrikes(
   switch (prompt_type) {
     case AutofillClient::AutofillAiImportPromptType::kSave:
     case AutofillClient::AutofillAiImportPromptType::kMigrate:
-      if (result == AutofillClient::AutofillAiBubbleResult::kAccepted) {
+      if (DidUserExplicitlyAcceptedImportPrompt(result)) {
         ClearStrikesForSave(url, entity);
       } else if (DidUserExplicitlyDeclineImportPrompt(result)) {
         AddStrikeForSaveAttempt(url, entity);
       }
       break;
     case AutofillClient::AutofillAiImportPromptType::kUpdate:
-      if (result == AutofillClient::AutofillAiBubbleResult::kAccepted) {
+      if (DidUserExplicitlyAcceptedImportPrompt(result)) {
         ClearStrikesForUpdate(entity.guid());
       } else if (DidUserExplicitlyDeclineImportPrompt(result)) {
         AddStrikeForUpdateAttempt(entity.guid());

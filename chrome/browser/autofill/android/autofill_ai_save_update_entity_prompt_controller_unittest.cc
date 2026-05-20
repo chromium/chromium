@@ -138,7 +138,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
       /*requires_reauth_to_see=*/false);
 
   EXPECT_CALL(prompt_closed_callback(),
-              Run(AutofillClient::AutofillAiBubbleResult::kAccepted,
+              Run(AutofillClient::AutofillAiBubbleResult::kEditAccepted,
                   Optional(edited_entity), _));
   prompt_controller().OnUserEdited(env(), edited_entity_android);
 }

@@ -210,9 +210,9 @@ class AutofillClient {
   enum class AutofillAiBubbleResult {
     // Bubble result not specified.
     kUnknown = 0,
-    // The user explicitly accepted the bubble.
+    // The user explicitly accepted the bubble without edits.
     kAccepted = 1,
-    // The user explicitly cancelled the bubble.
+    // The user explicitly cancelled the bubble without edits.
     kCancelled = 2,
     // The user explicitly closed the bubble (via the close button or the ESC).
     kClosed = 3,
@@ -220,7 +220,10 @@ class AutofillClient {
     kNotInteracted = 4,
     // The bubble lost focus and was closed.
     kLostFocus = 5,
-    kMaxValue = kLostFocus
+    // The user opened an editor from the bubble, altered the information and
+    // accepted the edits.
+    kEditAccepted = 6,
+    kMaxValue = kEditAccepted
   };
 
   // Describes the types of Iph shown by Autofill and anchored to a field.
