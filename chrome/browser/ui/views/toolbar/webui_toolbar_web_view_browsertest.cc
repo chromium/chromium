@@ -523,47 +523,9 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
     return image.getColor(image.width() / 2, image.height() / 2);
   }
 
-  void BasicPixelTest(Browser* browser, const std::string& screenshot_name) {
-    ui::TrackedElement* element = nullptr;
-    WebUIToolbarWebView* webui_toolbar_view = nullptr;
-    views::WebView* web_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                       &webui_toolbar_view, &web_view,
-                                       browser));
-
-    // Assert that WebContents is not loading, as it affects the state of the
-    // reload button.
-    ASSERT_FALSE(web_view->GetWebContents()->IsLoading());
-    // The WebView should be using the light color mode for regular windows,
-    // and dark color mode for incognito windows.
-    ASSERT_EQ(web_view->GetWidget()->GetColorMode(),
-              browser->profile()->IsIncognitoProfile()
-                  ? ui::ColorProviderKey::ColorMode::kDark
-                  : ui::ColorProviderKey::ColorMode::kLight);
-
-    // Pixel test
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kVerifyPixels)) {
-      views::ViewSkiaGoldPixelDiff pixel_diff(
-          "WebUIToolbarWebViewPixelBrowserTest");
-      EXPECT_TRUE(pixel_diff.CompareViewScreenshot(screenshot_name,
-                                                   webui_toolbar_view));
-    }
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-// TODO(crbug.com/493362471): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
-  BasicPixelTest(browser(), "Basic");
-}
-
-// TODO(crbug.com/493362471): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, IncognitoBasic) {
-  BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
-}
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);

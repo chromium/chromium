@@ -17,9 +17,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -31,20 +36,24 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/metrics.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace {
 
@@ -137,7 +146,114 @@ class OnDemandHttpResponse : public net::test_server::BasicHttpResponse {
   base::WeakPtrFactory<OnDemandHttpResponse> weak_ptr_factory_{this};
 };
 
+void SetUpWebUI(const ui::ElementIdentifier& element_id,
+                ui::TrackedElement** element_out,
+                WebUIToolbarWebView** webui_toolbar_view_out,
+                views::WebView** web_view_out,
+                Browser* browser) {
+  // Wait for the WebUIToolbarWebView to be available.
+  *webui_toolbar_view_out = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (!browser_view || !browser_view->toolbar()) {
+      return false;
+    }
+    ToolbarButtonProvider* provider = browser_view->toolbar();
+    *webui_toolbar_view_out = provider->GetWebUIToolbarViewForTesting();
+    return *webui_toolbar_view_out != nullptr;
+  }));
+  ASSERT_TRUE(*webui_toolbar_view_out);
+
+  if (element_id == kWebUIToolbarElementIdentifier) {
+    // We already have the view, and the Basic test doesn't strictly need the
+    // TrackedElement. ElementTracker might be flaky or slow here.
+    *element_out = views::ElementTrackerViews::GetInstance()->GetElementForView(
+        *webui_toolbar_view_out);
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      *element_out = BrowserElements::From(browser)->GetElement(element_id);
+      return *element_out != nullptr;
+    }));
+    ASSERT_TRUE(*element_out);
+  }
+
+  ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
+  *web_view_out = views::AsViewClass<views::WebView>(
+      (*webui_toolbar_view_out)->children()[0].get());
+  ASSERT_TRUE(*web_view_out);
+
+  // Wait for the WebView to finish composition.
+  content::WaitForCopyableViewInWebContents((*web_view_out)->GetWebContents());
+}
+
 }  // namespace
+
+class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
+ public:
+  WebUIToolbarPixelInteractiveUiTest() {
+    // All features for Webium Production should be included here.
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
+         features::kWebUIHomeButton, features::kWebUIPinnedToolbarActions,
+         ::tabs::kHorizontalTabStripComboButton, features::kWebUILocationBar,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kInitialWebUISyncNavStartToCommit},
+        {});
+  }
+
+  void SetUp() override {
+    EnablePixelOutput();
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    // Force the color mode to light to avoid flakiness.
+    ThemeServiceFactory::GetForProfile(browser()->profile())
+        ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
+  }
+
+  void BasicPixelTest(Browser* browser, const std::string& screenshot_name) {
+    ui::TrackedElement* element = nullptr;
+    WebUIToolbarWebView* webui_toolbar_view = nullptr;
+    views::WebView* web_view = nullptr;
+    ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                       &webui_toolbar_view, &web_view,
+                                       browser));
+
+    // Assert that WebContents is not loading, as it affects the state of the
+    // reload button.
+    ASSERT_FALSE(web_view->GetWebContents()->IsLoading());
+    // The WebView should be using the light color mode for regular windows,
+    // and dark color mode for incognito windows.
+    ASSERT_EQ(web_view->GetWidget()->GetColorMode(),
+              browser->profile()->IsIncognitoProfile()
+                  ? ui::ColorProviderKey::ColorMode::kDark
+                  : ui::ColorProviderKey::ColorMode::kLight);
+
+    // Pixel test
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kVerifyPixels)) {
+      views::ViewSkiaGoldPixelDiff pixel_diff(
+          "WebUIToolbarPixelInteractiveUiTest");
+      EXPECT_TRUE(pixel_diff.CompareViewScreenshot(screenshot_name,
+                                                   webui_toolbar_view));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, Basic) {
+  BasicPixelTest(browser(), "Basic");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, IncognitoBasic) {
+  BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
+}
 
 // Tests for the old a new toolbar buttons. These tests unfortunately cannot
 // exactly test behavior, since some behaviors depend on time passing, and
