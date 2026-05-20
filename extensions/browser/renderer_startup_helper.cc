@@ -266,8 +266,8 @@ void RendererStartupHelper::OnRenderProcessLaunched(
     // extensions should have already been initialized in
     // OnRenderProcessHostCreated(), if it corresponds to the same context.
     ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, handle race condition during process restart:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+    // On Android and ChromeOS, handle race condition during process restart:
     // 1. OnRenderProcessHostCreated() initializes extensions and populates
     // process_mojo_map_.
     // 2. Process startup fails in some cases.
@@ -283,7 +283,7 @@ void RendererStartupHelper::OnRenderProcessLaunched(
 #else
     CHECK(GetRenderer(host) != nullptr ||
           !client->IsSameContext(browser_context_, host->GetBrowserContext()));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
     return;
   }
   // Otherwise, we should *not* have initialized the host yet.

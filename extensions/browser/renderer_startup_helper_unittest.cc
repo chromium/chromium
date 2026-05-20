@@ -532,7 +532,7 @@ TEST_F(RendererStartupHelperTest, PlatformAppInIncognitoRenderer) {
   ASSERT_EQ(1u, helper_->num_loaded_extensions_in_incognito());
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Tests the process re-registration workflow when OnRenderProcessLaunched() is
 // called after the process has exited. This simulates:
 // 1. OnRenderProcessHostCreated() initializes process
@@ -578,7 +578,7 @@ TEST_F(RendererStartupHelperTest, ProcessReregistrationAfterExit) {
   // and does NOT re-load extensions (to avoid duplicate loading).
   ASSERT_EQ(0u, helper_->num_loaded_extensions());
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class RendererStartupHelperTestCaptivePortalPopupWindow
