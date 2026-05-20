@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
@@ -27,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -35,6 +37,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_handler.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -840,6 +843,71 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraEventBrowserTest,
 
   EXPECT_EQ(content::TouchpadScrollPhaseState::TOUCHPAD_SCROLL_STATE_UNKNOWN,
             mouse_wheel_phase_handler.touchpad_scroll_phase_state_for_test());
+}
+
+namespace {
+class ViewDestroyingPreTargetHandler : public ui::EventHandler {
+ public:
+  explicit ViewDestroyingPreTargetHandler(aura::Window* root_window,
+                                          RenderWidgetHostViewAura* view)
+      : root_window_(root_window), view_(view) {
+    root_window_->AddPreTargetHandler(this);
+  }
+
+  ~ViewDestroyingPreTargetHandler() override {
+    if (root_window_) {
+      root_window_->RemovePreTargetHandler(this);
+    }
+  }
+
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    if (event->type() == ui::EventType::kGestureTapDown && view_) {
+      RenderWidgetHostViewAura* view_to_destroy = view_;
+      view_ = nullptr;
+      view_to_destroy->Destroy();
+      gesture_tap_down_seen_ = true;
+      root_window_->RemovePreTargetHandler(this);
+      root_window_ = nullptr;
+    }
+  }
+
+  bool gesture_tap_down_seen() const { return gesture_tap_down_seen_; }
+
+ private:
+  raw_ptr<aura::Window> root_window_;
+  raw_ptr<RenderWidgetHostViewAura> view_;
+  bool gesture_tap_down_seen_ = false;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
+                       ProcessAckedTouchEventUseAfterFree) {
+  GURL page(
+      "data:text/html;charset=utf-8,"
+      "<!DOCTYPE html>"
+      "<html>"
+      "<body style='width: 100vw; height: 100vh;'>"
+      "</body>"
+      "</html>");
+  EXPECT_TRUE(NavigateToURL(shell(), page));
+
+  auto* web_contents = shell()->web_contents();
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+  WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+
+  auto* rwhva = GetRenderWidgetHostView();
+  ASSERT_TRUE(rwhva);
+  auto* root_window = rwhva->GetNativeView()->GetRootWindow();
+  ASSERT_TRUE(root_window);
+
+  ViewDestroyingPreTargetHandler handler(root_window, rwhva);
+
+  ui::test::EventGenerator generator(root_window, rwhva->GetNativeView());
+  generator.MoveTouch(rwhva->GetNativeView()->bounds().CenterPoint());
+  generator.PressTouch();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return handler.gesture_tap_down_seen(); }));
 }
 
 }  // namespace content

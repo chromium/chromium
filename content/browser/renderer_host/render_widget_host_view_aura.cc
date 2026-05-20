@@ -1319,9 +1319,18 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
   for (size_t i = 0; i < touch.event.touches_length; ++i) {
     if (touch.event.touches[i].state == required_state) {
       CHECK(!sent_ack);
+      // ProcessedTouchEvent() triggers synchronous gesture dispatch, which can
+      // lead to focus or window activation changes. Observers of these changes
+      // may synchronously destroy the WebContents and this view. We must guard
+      // this call with a WeakPtr liveness check before dereferencing 'this'
+      // (e.g., via host() or delegate calls below).
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
       window_host->dispatcher()->ProcessedTouchEvent(
           touch.event.unique_touch_event_id, window_, result,
           input::InputEventResultStateIsSetBlocking(ack_result));
+      if (!weak_this) {
+        return;
+      }
       if (touch.event.touch_start_or_first_touch_move &&
           result == ui::ER_HANDLED && host()->delegate() &&
           host()->delegate()->GetInputEventRouter()) {
