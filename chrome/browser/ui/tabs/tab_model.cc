@@ -208,6 +208,18 @@ void TabModel::LoadIfNeeded() {
   }
 }
 
+std::u16string TabModel::GetTitle() const {
+  return contents_ ? contents_->GetTitle() : std::u16string();
+}
+
+GURL TabModel::GetURL() const {
+  return contents_ ? contents_->GetLastCommittedURL() : GURL();
+}
+
+base::Time TabModel::GetLastActiveTime() const {
+  return contents_ ? contents_->GetLastActiveTime() : base::Time();
+}
+
 Profile* TabModel::GetProfile() const {
   return Profile::FromBrowserContext(contents_->GetBrowserContext());
 }

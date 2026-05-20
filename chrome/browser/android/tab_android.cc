@@ -248,15 +248,6 @@ bool TabAndroid::IsNativePage() const {
   return Java_TabImpl_isNativePage(env, GetJavaObject(env));
 }
 
-std::u16string TabAndroid::GetTitle() const {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_getTitle(env, GetJavaObject(env));
-}
-
-GURL TabAndroid::GetURL() const {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_getUrl(env, GetJavaObject(env));
-}
 
 bool TabAndroid::IsUserInteractable() const {
   JNIEnv* env = AttachCurrentThread();
@@ -736,6 +727,23 @@ void TabAndroid::LoadIfNeeded() {
   // least have an approximation of the correct size.
   bool force_backing_size = true;
   Java_TabImpl_loadIfNeeded(env, GetJavaObject(env), force_backing_size);
+}
+
+std::u16string TabAndroid::GetTitle() const {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_getTitle(env, GetJavaObject(env));
+}
+
+GURL TabAndroid::GetURL() const {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_getUrl(env, GetJavaObject(env));
+}
+
+base::Time TabAndroid::GetLastActiveTime() const {
+  if (web_contents()) {
+    return web_contents()->GetLastActiveTime();
+  }
+  return GetLastShownTimestamp();
 }
 
 Profile* TabAndroid::GetProfile() const {

@@ -136,12 +136,6 @@ class TabAndroid : public tabs::TabInterface,
   int GetLaunchType() const;
   int GetUserAgent() const;
 
-  // Return the tab title.
-  std::u16string GetTitle() const;
-
-  // Return the tab url.
-  GURL GetURL() const;
-
   // Return whether the tab is currently visible and the user can interact with
   // it.
   bool IsUserInteractable() const;
@@ -258,6 +252,9 @@ class TabAndroid : public tabs::TabInterface,
   base::WeakPtr<tabs::TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
   void LoadIfNeeded() override;
+  std::u16string GetTitle() const override;
+  GURL GetURL() const override;
+  base::Time GetLastActiveTime() const override;
   Profile* GetProfile() const override;
   // This implementation of close immediately closes the tab without undo
   // support and without a warning dialog when closing the last tab in a tab

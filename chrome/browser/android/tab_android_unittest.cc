@@ -154,4 +154,12 @@ TEST_F(TabAndroidTest, WebUIEmbeddingContext) {
   EXPECT_EQ(tab.get(), webui::GetTabInterface(raw_web_contents));
 }
 
+TEST_F(TabAndroidTest, Getters) {
+  TabInterfaceAndroid tab_interface(tab_android_);
+  EXPECT_EQ(u"about:blank", tab_interface.GetTitle());
+  EXPECT_EQ(GURL("about:blank"), tab_interface.GetURL());
+  base::Time last_active_time = tab_interface.GetLastActiveTime();
+  EXPECT_LT(base::Time::UnixEpoch(), last_active_time);
+}
+
 DEFINE_JNI(TabAndroidTestHelper)

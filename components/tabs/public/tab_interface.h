@@ -6,13 +6,16 @@
 #define COMPONENTS_TABS_PUBLIC_TAB_INTERFACE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/gurl.h"
 
 namespace ui {
 class UnownedUserDataHost;
@@ -143,6 +146,20 @@ class TabInterface : public SupportsTabHandles {
   // return a non-nullptr value. However, the cost of invoking this is high.
   // Invoke this only in response to a user request that should load the tab.
   virtual void LoadIfNeeded() = 0;
+
+  // Return the tab title. On Android, prefer this to getting the title from
+  // WebContents as it can return the title even if there is no WebContents or
+  // there is a pending navigation.
+  virtual std::u16string GetTitle() const = 0;
+
+  // Return the tab url. On Android, prefer this to getting the URL from
+  // WebContents as it can return the URL even if there is no WebContents or
+  // there is a pending navigation.
+  virtual GURL GetURL() const = 0;
+
+  // Returns the time at which the tab was last active (or shown, on Android if
+  // the tab is not loaded).
+  virtual base::Time GetLastActiveTime() const = 0;
 
   // Returns the Profile associated with this tab.
   virtual Profile* GetProfile() const = 0;

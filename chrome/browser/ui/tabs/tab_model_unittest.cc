@@ -257,4 +257,25 @@ TEST_F(TabModelTest, LoadIfNeeded) {
   EXPECT_FALSE(contents->GetController().NeedsReload());
 }
 
+TEST_F(TabModelTest, Getters) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  tabs::TabModel* const tab_model =
+      static_cast<tabs::TabModel*>(tab_strip.GetTabAtIndex(0));
+
+  content::WebContents* contents = tab_model->GetContents();
+  content::WebContentsTester* tester =
+      content::WebContentsTester::For(contents);
+
+  tester->SetTitle(u"Test Title");
+  tester->NavigateAndCommit(GURL("https://example.com"));
+  base::Time active_time = base::Time::FromSecondsSinceUnixEpoch(100);
+  tester->SetLastActiveTime(active_time);
+
+  EXPECT_EQ(u"Test Title", tab_model->GetTitle());
+  EXPECT_EQ(GURL("https://example.com"), tab_model->GetURL());
+  EXPECT_EQ(active_time, tab_model->GetLastActiveTime());
+}
+
 }  // namespace tabs
