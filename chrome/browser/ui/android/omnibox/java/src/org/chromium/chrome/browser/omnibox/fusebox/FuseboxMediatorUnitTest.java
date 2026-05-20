@@ -14,9 +14,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -81,6 +83,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -114,11 +117,13 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -135,6 +140,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private Clipboard mClipboard;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
@@ -156,6 +162,7 @@ public class FuseboxMediatorUnitTest {
     private PropertyModel mModel;
     private FuseboxMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
+    private final LinkedHashMap<Integer, Tab> mTabMap = new LinkedHashMap<>();
     private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
@@ -202,6 +209,13 @@ public class FuseboxMediatorUnitTest {
         when(mComposeboxQueryControllerBridge.getSuggestedTabsSupplier())
                 .thenReturn(mSuggestedTabsSupplier);
         when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(true);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        mTabMap.clear();
+        doAnswer(i -> new ArrayList<>(mTabMap.values()).get(i.getArgument(0)))
+                .when(mTabModel)
+                .getTabAt(anyInt());
+        doAnswer(i -> mTabMap.size()).when(mTabModel).getCount();
+        doAnswer(i -> mTabMap.get(i.getArgument(0))).when(mTabModelSelector).getTabById(anyInt());
 
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
@@ -365,6 +379,20 @@ public class FuseboxMediatorUnitTest {
         mMediator.uploadAndAddAttachment(attachment);
         RobolectricUtil.runAllBackgroundAndUi();
         return attachment;
+    }
+
+    private Tab mockTab(int id) {
+        return mockTab(id, /* webContentsReady= */ true);
+    }
+
+    private Tab mockTab(int id, GURL url) {
+        Tab t = mockTab(id);
+        when(t.getUrl()).thenReturn(url);
+        when(t.isInitialized()).thenReturn(true);
+        when(t.getTimestampMillis()).thenReturn(id * 100L);
+
+        mTabMap.put(id, t);
+        return t;
     }
 
     private Tab mockTab(int id, boolean webContentsReady) {
@@ -1595,7 +1623,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onTabPickerClicked_sendsAllowedSelectionCount() {
-        addTabAttachment(mockTab(101, /* webContentsReady= */ true));
+        addTabAttachment(mockTab(101));
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_FILE);
 
@@ -1612,7 +1640,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onTabPickerClicked_sendsAllowedSelectionCount_imageNoThumbnail() {
-        addTabAttachment(mockTab(101, /* webContentsReady= */ true));
+        addTabAttachment(mockTab(101));
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_FILE);
 
@@ -1679,6 +1707,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
@@ -1691,6 +1720,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(0, mAttachments.getRemainingAttachments());
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
@@ -1701,6 +1731,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mAttachments.getRemainingAttachments() > 0);
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
@@ -1713,6 +1744,7 @@ public class FuseboxMediatorUnitTest {
 
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
@@ -1969,6 +2001,7 @@ public class FuseboxMediatorUnitTest {
 
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
@@ -2142,5 +2175,52 @@ public class FuseboxMediatorUnitTest {
         assertThat(toolButtons).hasSize(2);
         assertEquals(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE, toolButtons.get(0).iconId);
         assertEquals(IconResourceIds.BANANA_VALUE, toolButtons.get(1).iconId);
+    }
+
+    @Test
+    public void updateModelForRecentTabs_nonDesktop_remainsHidden() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE));
+    }
+
+    @Test
+    public void updateModelForRecentTabs_desktopPlatform_populatesRecentTabs() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        recreateMediator();
+        when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
+
+        // Active tab.
+        Tab tab1 = mockTab(1, JUnitTestGURLs.GOOGLE_URL);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(tab1);
+
+        // Recent tabs.
+        Tab tab2 = mockTab(2, JUnitTestGURLs.NTP_URL);
+        Tab tab3 = mockTab(3, JUnitTestGURLs.URL_1);
+        Tab tab4 = mockTab(4, JUnitTestGURLs.URL_2);
+
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE));
+
+        List<PopupButtonData> recentTabs =
+                mModel.get(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST);
+        assertEquals(3, recentTabs.size());
+        assertEquals("Tab 4", recentTabs.get(0).text);
+        assertEquals("Tab 3", recentTabs.get(1).text);
+        assertEquals("Tab 1", recentTabs.get(2).text);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentButtonUsed",
+                        FuseboxAttachmentButtonType.RECENT_TAB);
+
+        recentTabs.get(0).onClicked.run();
+        assertEquals(1, mAttachments.size());
+        assertEquals(4, mAttachments.get(0).getTabId());
+        histogramWatcher.assertExpected();
     }
 }

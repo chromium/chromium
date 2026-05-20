@@ -188,10 +188,14 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, this::onFilePickerClicked);
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of());
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of());
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of());
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, false);
 
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
-                ChromeFeatureList.sChromeItemPickerUi.isEnabled());
+                !OmniboxCapabilities.isDesktopPlatform()
+                        && ChromeFeatureList.sChromeItemPickerUi.isEnabled());
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, true);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, true);
@@ -521,6 +525,7 @@ import java.util.function.Supplier;
             mWindowAndroid.getKeyboardDelegate().hideKeyboard(mViewHolder.parentView);
         }
         updateModelForCurrentTab();
+        updateModelForRecentTabs();
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, mClipboard.hasImage());
         @PopupState
         int targetState = shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING;
@@ -600,6 +605,7 @@ import java.util.function.Supplier;
                         && !mModelList
                                 .getAttachedTabIds()
                                 .contains(tabSelector.getCurrentTab().getId())
+                        && !OmniboxCapabilities.isDesktopPlatform()
                         && OmniboxFeatures.sAllowCurrentTab.getValue();
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, shouldShowCurrentTab);
@@ -626,9 +632,62 @@ import java.util.function.Supplier;
     }
 
     private void onAddCurrentTab(Tab tab) {
+        addTabAttachment(tab, FuseboxAttachmentButtonType.CURRENT_TAB);
+    }
+
+    private void updateModelForRecentTabs() {
+        if (!isInInputSession() || !OmniboxCapabilities.isDesktopPlatform()) return;
+        var selector = mTabModelSelectorSupplier.get();
+        if (selector == null) {
+            mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of());
+            mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, false);
+            mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, false);
+            return;
+        }
+
+        Set<Integer> attachedIds = mModelList.getAttachedTabIds();
+        List<Tab> eligibleTabs = FuseboxTabUtils.getEligibleRecentTabs(selector, attachedIds);
+
+        List<PopupButtonData> recentTabButtons = buildRecentTabButtons(eligibleTabs);
+
+        boolean hasRecentTabs = !recentTabButtons.isEmpty();
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, recentTabButtons);
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, hasRecentTabs);
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, hasRecentTabs);
+    }
+
+    private List<PopupButtonData> buildRecentTabButtons(List<Tab> eligibleTabs) {
+        List<PopupButtonData> buttons = new ArrayList<>();
+        for (int i = 0; i < eligibleTabs.size(); i++) {
+            Tab tab = eligibleTabs.get(i);
+            Bitmap favicon = OmniboxResourceProvider.getFaviconBitmapForTab(tab);
+
+            buttons.add(
+                    new PopupButtonData(
+                            (data) -> onAddRecentTab(tab),
+                            tab.getTitle(),
+                            favicon,
+                            /* enabled= */ true,
+                            /* selected= */ false,
+                            PopupButtonType.RECENT_TAB,
+                            /* protoId= */ 0,
+                            /* hasColor= */ favicon != null));
+        }
+        return buttons;
+    }
+
+    private void onAddRecentTab(Tab tab) {
+        addTabAttachment(tab, FuseboxAttachmentButtonType.RECENT_TAB);
+    }
+
+    private void addTabAttachment(Tab tab, @FuseboxAttachmentButtonType int source) {
         if (!isInInputSession()) return;
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CURRENT_TAB);
+        mMetrics.notifyAttachmentButtonUsed(source);
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
+
+        if (!FuseboxTabUtils.isTabActive(tab)) {
+            tab.loadIfNeeded(/* forceBackingSize= */ true);
+        }
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
         if (currentAttachedIds.contains(tab.getId())) return;
@@ -637,10 +696,9 @@ import java.util.function.Supplier;
                         tab,
                         isCurrentTab(tab),
                         mContext.getResources(),
-                        FuseboxAttachmentButtonType.CURRENT_TAB,
+                        source,
                         /* isSuggestedTab= */ false);
 
-        // Use FuseboxModelList's add method which handles upload automatically
         mModelList.add(attachment);
     }
 
@@ -820,7 +878,7 @@ import java.util.function.Supplier;
         updateFuseboxState();
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
 
-        if (type != AutocompleteRequestType.AI_MODE && isInInputSession() && mModelList != null) {
+        if (type != AutocompleteRequestType.AI_MODE && isInInputSession()) {
             mModelList.removeSuggestedTabs();
         }
 
@@ -851,6 +909,7 @@ import java.util.function.Supplier;
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, allowNonImage);
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, allowByCapacity);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, allowByCapacity);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, allowByCapacity);
@@ -1106,6 +1165,7 @@ import java.util.function.Supplier;
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_FILE_VALUE);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, tabsEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, tabsEnabled);
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, tabsEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, imagesEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, imagesEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, imagesEnabled);
