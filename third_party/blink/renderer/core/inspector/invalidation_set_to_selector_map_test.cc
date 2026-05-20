@@ -827,8 +827,16 @@ TEST_F(InvalidationSetToSelectorMapTest,
   EXPECT_EQ(found_event_count, 1u);
 }
 
+// TODO(crbug.com/514878860): Flaky on android-15-tablet-x64-rel
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_StartTracingLateWithSubtreeInvalidation_InsertedSibling \
+  DISABLED_StartTracingLateWithSubtreeInvalidation_InsertedSibling
+#else
+#define MAYBE_StartTracingLateWithSubtreeInvalidation_InsertedSibling \
+  StartTracingLateWithSubtreeInvalidation_InsertedSibling
+#endif
 TEST_F(InvalidationSetToSelectorMapTest,
-       StartTracingLateWithSubtreeInvalidation_InsertedSibling) {
+       MAYBE_StartTracingLateWithSubtreeInvalidation_InsertedSibling) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .a + * { background-color: red; }
