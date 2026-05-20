@@ -3570,8 +3570,7 @@ RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParams() {
 #else
       false;
 #endif  // !BUILDFLAG(IS_ANDROID)
-  if (!using_sync_compositing &&
-      base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+  if (!using_sync_compositing && GetProcess()->ShouldSendGpuChannelEarly()) {
     auto initial_frame_sink_params =
         blink::mojom::InitialFrameSinkParams::New();
     initial_frame_sink_pipes_.emplace();

@@ -238,6 +238,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
   virtual bool IsForTopChromeWebUI() const = 0;
 
+  // Returns true if the GPU channel should be established early for this
+  // process during process initialization. This is for internal use only, and
+  // is only exposed here to support MockRenderProcessHost usage in tests.
+  virtual bool ShouldSendGpuChannelEarly() const = 0;
+
   // Indicates whether the current RenderProcessHost is exclusively hosting
   // guest RenderFrames. Not all guest RenderFrames are created equal.  A guest,
   // as indicated by BrowserPluginGuest::IsGuest, may coexist with other

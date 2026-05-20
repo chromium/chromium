@@ -1913,7 +1913,7 @@ bool RenderProcessHostImpl::Init() {
   }
 
   base::TimeTicks gpu_channel_request_start_time;
-  if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+  if (ShouldSendGpuChannelEarly()) {
     gpu_channel_request_start_time = base::TimeTicks::Now();
     // Pre-establish the GPU channel and send the renderer pipe at renderer
     // launch time.
@@ -2039,7 +2039,7 @@ bool RenderProcessHostImpl::Init() {
       cmd_line->PrependWrapper(renderer_prefix);
     AppendRendererCommandLine(cmd_line.get());
 
-    if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+    if (ShouldSendGpuChannelEarly()) {
       cmd_line->AppendSwitchASCII(
           switches::kGpuChannelRequestStartTimeTicks,
           base::NumberToString(
@@ -3606,6 +3606,12 @@ bool RenderProcessHostImpl::IsForTopChromeWebUI() const {
   return (flags_ & RenderProcessFlags::kForTopChromeWebUI) != 0;
 }
 
+bool RenderProcessHostImpl::ShouldSendGpuChannelEarly() const {
+  return base::FeatureList::IsEnabled(features::kSendGPUChannelEarly) &&
+         (!features::kSendGPUChannelEarlyTopChromeOnly.Get() ||
+          IsForTopChromeWebUI());
+}
+
 bool RenderProcessHostImpl::IsJitDisabled() {
   return !!(flags_ & RenderProcessFlags::kJitDisabled);
 }
@@ -3692,7 +3698,7 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
     command_line->AppendSwitch(switches::kTopChromeWebUI);
   }
 
-  if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+  if (ShouldSendGpuChannelEarly()) {
     command_line->AppendSwitchASCII(
         switches::kGpuClientId, base::NumberToString(gpu_client_->client_id()));
   }
