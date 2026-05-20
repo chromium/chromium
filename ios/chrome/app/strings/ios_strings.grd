@@ -1161,15 +1161,6 @@
           =1 {Bookmark saved}
           other {Bookmarks saved}}
       </message>
-      <message name="IDS_IOS_BOOKMARK_ACTION_DELETE" desc="Title of the action that deletes a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
-        Delete
-      </message>
-      <message name="IDS_IOS_BOOKMARK_ACTION_EDIT" desc="Title of the action that edits a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
-        Edit
-      </message>
-      <message name="IDS_IOS_BOOKMARK_ACTION_MOVE" desc="Title of the action that moves a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
-        Move
-      </message>
       <message name="IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON" desc="Button to assign a folder to an uncategorized bookmark. [iOS only]">
         Choose folder
       </message>
