@@ -949,7 +949,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
-            newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, false, true);
+            newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, true);
     public static final CachedFlag sEnableAndroidSidePanel =
             newCachedFlag(
                     ENABLE_ANDROID_SIDE_PANEL,

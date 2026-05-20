@@ -682,7 +682,7 @@ BASE_FEATURE(kControlsVisibilityFromNavigations, base::FEATURE_ENABLED_BY_DEFAUL
 BASE_FEATURE(kCrossDeviceTabPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCrossDeviceTaskHandoff, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDebugToolbarPositioning, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDefaultBrowserPromoAndroid2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultBrowserPromoAndroid2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoEntryPoint, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoFre, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDeferNavigationStateChanged, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -699,7 +699,7 @@ BASE_FEATURE(kEdgeToEdgeExtraLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeMonitorConfigurations, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeTablet, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeUseBackupNavbarInsets, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEducationalTipDefaultBrowserPromoCard, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEducationalTipDefaultBrowserPromoCard, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEmptyTabListAnimationKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableAndroidSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableAndroidSidePanelDevFeature, base::FEATURE_DISABLED_BY_DEFAULT);
