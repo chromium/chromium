@@ -441,6 +441,43 @@ TEST_F(ForeignSessionHandlerSidePanelTest, RecordMetricsOnTabOpen) {
 }
 
 TEST_F(ForeignSessionHandlerSidePanelTest,
+       RecordMetricsOnTabOpen_SynchronousDestruction) {
+  CreateSidePanelUI();
+
+  TabsFromOtherDevicesSidePanelMetrics metrics;
+  metrics.OnEntryShown(nullptr);
+  side_panel_ui_->SetMetricsRecorder(metrics.GetWeakPtr());
+
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "my_session_tag", GURL("https://www.google.com"));
+
+  ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate the side panel closing (which destroys the handler and UI)
+  // synchronously inside the restore callback.
+  EXPECT_CALL(restore_tab_callback_, Run)
+      .WillOnce([this](content::WebContents* source_web_contents,
+                       const ::sessions::SessionTab& tab,
+                       WindowOpenDisposition disposition) {
+        handler_.reset();
+        side_panel_ui_.reset();
+      });
+
+  // This should not crash, even though the handler gets destroyed.
+  handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
+                                  std::move(modifiers));
+  ASSERT_FALSE(handler_);
+
+  // The metrics should still be recorded successfully before destruction.
+  histogram_tester.ExpectBucketCount(
+      "Sync.TabsFromOtherDevicesSidePanel.List.Events", 3,
+      1);  // 3 is kTabOpened
+}
+
+TEST_F(ForeignSessionHandlerSidePanelTest,
        RecordMetricsOnTabOpen_SecondDevice) {
   CreateSidePanelUI();
 

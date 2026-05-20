@@ -300,15 +300,6 @@ void ForeignSessionHandler::OpenForeignSessionTab(
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 
-  // If this is in the side panel, `web_contents_` refers to the content of the
-  // side panel, *not* the main tab where the foreign tab should be restored.
-  content::WebContents* web_contents =
-      side_panel_ui_ ? side_panel_ui_->browser_window_interface()
-                           ->GetTabStripModel()
-                           ->GetActiveWebContents()
-                     : web_contents_.get();
-  restore_tab_callback_.Run(web_contents, *tab, disposition);
-
   if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {
     size_t device_index = 0;
     std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
@@ -324,6 +315,17 @@ void ForeignSessionHandler::OpenForeignSessionTab(
     }
     side_panel_ui_->metrics_recorder()->RecordTabOpened(device_index);
   }
+
+  // If this is in the side panel, `web_contents_` refers to the content of the
+  // side panel, *not* the main tab where the foreign tab should be restored.
+  content::WebContents* web_contents =
+      side_panel_ui_ ? side_panel_ui_->browser_window_interface()
+                           ->GetTabStripModel()
+                           ->GetActiveWebContents()
+                     : web_contents_.get();
+  restore_tab_callback_.Run(web_contents, *tab, disposition);
+  // Note: As a consequence of running the callback, `this` may have been
+  // destroyed!
 }
 
 void ForeignSessionHandler::DeleteForeignSession(
