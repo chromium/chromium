@@ -159,7 +159,11 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
 
     auto service_for_nav = std::make_unique<
         testing::NiceMock<contextual_tasks::MockContextualTasksUiService>>(
-        profile_, contextual_tasks_service_);
+        profile_, contextual_tasks_service_,
+        /*identity_manager=*/nullptr,
+        /*aim_eligibility_service=*/nullptr,
+        /*eligibility_manager=*/nullptr,
+        /*cookie_synchronizer=*/nullptr);
     service_for_nav_ = service_for_nav.get();
     ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
         profile_,

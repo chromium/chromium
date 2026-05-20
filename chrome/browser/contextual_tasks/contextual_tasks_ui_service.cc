@@ -187,6 +187,7 @@ ContextualTasksUiService::ContextualTasksUiService(
     ContextualTasksService* contextual_tasks_service,
     signin::IdentityManager* identity_manager,
     AimEligibilityService* aim_eligibility_service,
+    std::unique_ptr<ContextualTasksEligibilityManager> eligibility_manager,
     std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer)
     : profile_(profile),
       delegate_(std::move(delegate)),
@@ -195,18 +196,14 @@ ContextualTasksUiService::ContextualTasksUiService(
       aim_eligibility_service_(aim_eligibility_service),
       request_access_token_backoff_(
           &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy),
-      cookie_synchronizer_(std::move(cookie_synchronizer)) {
-  if (contextual_tasks::ShouldEnableCookiePrefetch() &&
-      aim_eligibility_service_) {
-    is_cobrowse_eligible_ = aim_eligibility_service_->IsCobrowseEligible();
-    aim_eligibility_subscription_ =
-        aim_eligibility_service_->RegisterEligibilityChangedCallback(
-            base::BindRepeating(
-                &ContextualTasksUiService::OnAimEligibilityChanged,
-                base::Unretained(this)));
-    if (is_cobrowse_eligible_) {
-      EnsureCookiesSynced();
-    }
+      cookie_synchronizer_(std::move(cookie_synchronizer)),
+      eligibility_manager_(std::move(eligibility_manager)) {
+  if (eligibility_manager_ && contextual_tasks::ShouldEnableCookiePrefetch()) {
+    eligibility_subscription_ =
+        eligibility_manager_->RegisterEligibilityChangedCallback(
+            base::BindRepeating(&ContextualTasksUiService::OnEligibilityChanged,
+                                base::Unretained(this)));
+    OnEligibilityChanged(eligibility_manager_->IsEligible());
   }
 }
 
@@ -428,13 +425,12 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
   }
 }
 
-void ContextualTasksUiService::OnAimEligibilityChanged() {
-  bool is_cobrowse_eligible = aim_eligibility_service_->IsCobrowseEligible();
+void ContextualTasksUiService::OnEligibilityChanged(bool eligible) {
   // Trigger cookie sync only on a transition from false to true.
-  if (is_cobrowse_eligible && !is_cobrowse_eligible_) {
+  if (eligible && !is_eligible_) {
     EnsureCookiesSynced();
   }
-  is_cobrowse_eligible_ = is_cobrowse_eligible;
+  is_eligible_ = eligible;
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -973,8 +969,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       << ", has_tab=" << (tab != nullptr);
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
-  if (!contextual_tasks_service_ ||
-      !contextual_tasks_service_->GetFeatureEligibility().IsEligible()) {
+  if (!eligibility_manager_ ||
+      !eligibility_manager_->IsEligibleWithoutIdentity()) {
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: HandleNavigationImpl "
            "returning early, not eligible";
@@ -1075,7 +1071,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       should_bypass_interception = true;
       bypass_reason = "ncb param";
     } else if (net::GetValueForKeyInQuery(url_params.url, kDebugParam,
-                                        &debug_param_value) &&
+                                          &debug_param_value) &&
                debug_param_value.contains(kDebugNoCobrowseValue)) {
       should_bypass_interception = true;
       bypass_reason = "debug param";
@@ -1404,6 +1400,11 @@ bool ContextualTasksUiService::IsSignedInToBrowserWithValidCredentials() {
 
 bool ContextualTasksUiService::CookieJarContainsPrimaryAccount() {
   return contextual_tasks::CookieJarContainsPrimaryAccount(identity_manager_);
+}
+
+ContextualTasksEligibilityManager*
+ContextualTasksUiService::GetEligibilityManager() const {
+  return eligibility_manager_.get();
 }
 
 omnibox::ChromeAimEntryPoint

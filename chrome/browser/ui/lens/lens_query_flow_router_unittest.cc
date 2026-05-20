@@ -355,6 +355,7 @@ class MockContextualTasksUiService
                                  /*contextual_tasks_service=*/nullptr,
                                  /*identity_manager=*/nullptr,
                                  /*aim_eligibility_service=*/nullptr,
+                                 /*eligibility_manager=*/nullptr,
                                  /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 

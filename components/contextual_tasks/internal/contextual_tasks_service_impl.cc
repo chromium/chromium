@@ -24,7 +24,6 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
@@ -175,7 +174,6 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
     std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
-    AimEligibilityService* aim_eligibility_service,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
     bool supports_ephemeral_only,
@@ -185,7 +183,6 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
       get_active_task_count_callback_(
           std::move(get_active_task_count_callback)),
       is_gemini_threads_enabled_callback_(is_gemini_threads_enabled),
-      aim_eligibility_service_(aim_eligibility_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
       supports_ephemeral_only_(supports_ephemeral_only) {
@@ -216,14 +213,6 @@ ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
   for (auto& observer : observers_) {
     observer.OnWillBeDestroyed();
   }
-}
-
-FeatureEligibility ContextualTasksServiceImpl::GetFeatureEligibility() {
-  return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),
-          aim_eligibility_service_->IsAimEligible(),
-          aim_eligibility_service_->IsCobrowseEligible(),
-          contextual_search::ContextualSearchService::IsContextSharingEnabled(
-              pref_service_)};
 }
 
 bool ContextualTasksServiceImpl::IsInitialized() {

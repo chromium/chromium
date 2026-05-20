@@ -21,6 +21,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
@@ -125,10 +126,6 @@ void ContextualTasksInternalsPageHandler::GetEligibilityState(
   if (profile_) {
     auto* aim_eligibility_service =
         AimEligibilityServiceFactory::GetForProfile(profile_);
-    auto* contextual_tasks_service =
-        contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-            profile_);
-
     state->is_contextual_tasks_enabled =
         base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
 
@@ -151,11 +148,9 @@ void ContextualTasksInternalsPageHandler::GetEligibilityState(
           aim_eligibility_service->IsCobrowseEligible();
     }
 
-    if (contextual_tasks_service) {
-      state->is_context_sharing_enabled =
-          contextual_tasks_service->GetFeatureEligibility()
-              .context_sharing_enabled;
-    }
+    state->is_context_sharing_enabled =
+        contextual_search::ContextualSearchService::IsContextSharingEnabled(
+            profile_->GetPrefs());
 
     state->is_default_search_engine_google =
         search::DefaultSearchProviderIsGoogle(profile_);

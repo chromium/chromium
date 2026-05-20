@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -78,12 +79,17 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
         profile, IdentityManagerFactory::GetForProfile(profile));
   }
 
+  auto eligibility_manager =
+      std::make_unique<ContextualTasksEligibilityManager>(
+          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+          AimEligibilityServiceFactory::GetForProfile(profile));
+
   return std::make_unique<ContextualTasksUiService>(
       profile, std::move(delegate),
       ContextualTasksServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       AimEligibilityServiceFactory::GetForProfile(profile),
-      std::move(cookie_synchronizer));
+      std::move(eligibility_manager), std::move(cookie_synchronizer));
 }
 
 void ContextualTasksUiServiceFactory::RegisterProfilePrefs(

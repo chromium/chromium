@@ -64,6 +64,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                                  controller,
                                  nullptr,
                                  nullptr,
+                                 /*eligibility_manager=*/nullptr,
                                  /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 

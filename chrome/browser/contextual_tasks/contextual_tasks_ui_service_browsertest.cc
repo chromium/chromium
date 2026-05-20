@@ -164,6 +164,7 @@ class TestContextualTasksUiService : public ContextualTasksUiService {
             contextual_tasks_service,
             /*identity_manager=*/nullptr,
             aim_eligibility_service,
+            /*eligibility_manager=*/nullptr,
             std::unique_ptr<ContextualTasksCookieSynchronizer>()) {}
   ~TestContextualTasksUiService() override = default;
 

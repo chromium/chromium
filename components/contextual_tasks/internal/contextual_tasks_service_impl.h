@@ -29,7 +29,6 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
-class AimEligibilityService;
 class PrefService;
 
 namespace signin {
@@ -50,7 +49,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       version_info::Channel channel,
       syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
       std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
-      AimEligibilityService* aim_eligibility_service,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
       bool supports_ephemeral_only,
@@ -63,7 +61,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       delete;
 
   // ContextualTasksService implementation.
-  FeatureEligibility GetFeatureEligibility() override;
   bool IsInitialized() override;
   ContextualTask CreateTask() override;
   ContextualTask CreateTaskFromUrl(const GURL& url) override;
@@ -195,7 +192,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // Whether the service is initialized.
   bool is_initialized_ = false;
 
-  raw_ptr<AimEligibilityService> aim_eligibility_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   const raw_ptr<PrefService> pref_service_;

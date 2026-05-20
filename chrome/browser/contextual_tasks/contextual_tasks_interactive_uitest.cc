@@ -11,6 +11,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -75,6 +76,23 @@ class TestTabContextualizationController
   }
 };
 
+class MockContextualTasksEligibilityManager
+    : public contextual_tasks::ContextualTasksEligibilityManager {
+ public:
+  MockContextualTasksEligibilityManager(
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      AimEligibilityService* aim_eligibility_service)
+      : contextual_tasks::ContextualTasksEligibilityManager(
+            pref_service, identity_manager, aim_eligibility_service) {
+    MaybeNotifyEligibilityChanged();
+  }
+  ~MockContextualTasksEligibilityManager() override = default;
+
+  bool IsEligibleWithoutIdentity() const override { return true; }
+  bool CalculateEligibility() const override { return true; }
+};
+
 class MockContextualTasksUiService
     : public contextual_tasks::ContextualTasksUiService {
  public:
@@ -89,6 +107,8 @@ class MockContextualTasksUiService
             contextual_tasks_service,
             identity_manager,
             aim_eligibility_service,
+            std::make_unique<MockContextualTasksEligibilityManager>(
+                profile->GetPrefs(), identity_manager, aim_eligibility_service),
             /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 

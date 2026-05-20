@@ -12,7 +12,6 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/base/features.h"
 #import "components/sync/model/data_type_store_service.h"
-#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -58,7 +57,6 @@ IOSContextualTasksServiceFactory::GetInstance() {
 IOSContextualTasksServiceFactory::IOSContextualTasksServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ContextualTasksService",
                                     ProfileSelection::kOwnInstanceInIncognito) {
-  DependsOn(IOSChromeAimEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(ios::FaviconServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
@@ -76,8 +74,6 @@ IOSContextualTasksServiceFactory::BuildServiceInstanceFor(
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
-  AimEligibilityService* aim_eligibility_service =
-      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -88,7 +84,7 @@ IOSContextualTasksServiceFactory::BuildServiceInstanceFor(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       contextual_tasks::CreateCompositeContextDecorator(favicon_service,
                                                         history_service, {}),
-      aim_eligibility_service, identity_manager, profile->GetPrefs(),
-      supports_ephemeral_only, base::BindRepeating(&GetNumberOfActiveTasks),
+      identity_manager, profile->GetPrefs(), supports_ephemeral_only,
+      base::BindRepeating(&GetNumberOfActiveTasks),
       base::BindRepeating(&IsGeminiThreadsEnabled));
 }

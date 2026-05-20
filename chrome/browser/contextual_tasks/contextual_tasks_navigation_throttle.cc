@@ -54,16 +54,18 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
   content::OpenURLParams url_params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
 
+  ContextualTasksUiService* const ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+
   // TODO(b/485973605): Find a way to consolidate this logic into
   // ContextualTasksUiService if it gets more complicated or needs to handle in
   // other places.
   if (base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksUrlRedirectToAimUrl)) {
-    ContextualTasksService* service =
-        ContextualTasksServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()));
     bool is_cobrowse_eligible =
-        service && service->GetFeatureEligibility().IsEligible();
+        ui_service && ui_service->GetEligibilityManager() &&
+        ui_service->GetEligibilityManager()->IsEligibleWithoutIdentity();
     if ((!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) ||
          !is_cobrowse_eligible) &&
         ContextualTasksUiService::IsContextualTasksUrl(url_params.url)) {
@@ -92,10 +94,6 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
   if (!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     return PROCEED;
   }
-
-  ContextualTasksUiService* ui_service =
-      ContextualTasksUiServiceFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
 
   content::SiteInstance* site = navigation_handle()->GetSourceSiteInstance();
   bool is_same_site_or_from_ui =
