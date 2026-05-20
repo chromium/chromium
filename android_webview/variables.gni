@@ -17,8 +17,8 @@ upstream_only_webview_deps = [ "//android_webview/nonembedded:icon_resources" ]
 webview_product_config_java_package = "org.chromium.android_webview"
 
 use_webview_pgo_profile = current_cpu == "arm64" && chrome_pgo_phase == 2
-use_webview_pgo_profile_default_toolchain = target_cpu == "arm64" &&
-                                            chrome_pgo_phase_default_toolchain == 2
+use_webview_pgo_profile_default_toolchain =
+    target_cpu == "arm64" && chrome_pgo_phase_default_toolchain == 2
 
 if (use_webview_pgo_profile_default_toolchain) {
   webview_toolchain = "//build/toolchain/android:android_clang_arm64_webview"
