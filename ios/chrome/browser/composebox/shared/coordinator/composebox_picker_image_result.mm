@@ -7,11 +7,13 @@
 @implementation ComposeboxPickerImageResult
 
 - (instancetype)initWithImageProvider:(NSItemProvider*)imageProvider
-                              assetID:(NSString*)assetID {
+                              assetID:(NSString*)assetID
+                               source:(ComposeboxInputItemSource)source {
   self = [super init];
   if (self) {
     _imageProvider = imageProvider;
     _assetID = [assetID copy];
+    _source = source;
   }
 
   return self;

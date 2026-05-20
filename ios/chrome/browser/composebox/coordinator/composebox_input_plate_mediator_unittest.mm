@@ -374,7 +374,10 @@ TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
   UIImage* image = [[UIImage alloc] init];
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
-  [mediator_ processImageItemProvider:provider assetID:@"123"];
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"123"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 

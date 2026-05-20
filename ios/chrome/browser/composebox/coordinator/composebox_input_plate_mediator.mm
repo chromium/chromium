@@ -493,7 +493,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
           ComposeboxPickerImageResult* result =
               [[ComposeboxPickerImageResult alloc]
                   initWithImageProvider:item.imageProvider
-                                assetID:item.assetID];
+                                assetID:item.assetID
+                                 source:item.source];
           [images addObject:result];
         }
         break;
@@ -522,6 +523,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   for (ComposeboxPickerImageResult* item in attachments.images) {
     [self processImageItemProvider:item.imageProvider
                            assetID:item.assetID
+                            source:item.source
                         completion:nil];
   }
 
@@ -666,7 +668,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                                webState) ==
                                            WebStateList::kInvalidIndex)
                                               ? webState
-                                              : nullptr];
+                                              : nullptr
+                                   source:ComposeboxInputItemSource::
+                                              kDragAndDrop];
 }
 
 - (void)processText:(NSString*)text {
@@ -708,9 +712,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       isPDF ? ComposeboxInputItemType::kComposeboxInputItemTypePDF
             : ComposeboxInputItemType::kComposeboxInputItemTypeRawFile;
 
-  ComposeboxInputItem* item =
-      [[ComposeboxInputItem alloc] initWithComposeboxInputItemType:itemType
-                                                           assetID:assetID];
+  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:itemType
+                              assetID:assetID
+                               source:ComposeboxInputItemSource::kFilePicker];
   item.title = base::SysUTF8ToNSString(fileURL.ExtractFileName());
   [self addItem:item];
   item.fileURL = nsURL;
@@ -732,12 +737,17 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
-                         assetID:(NSString*)assetID {
-  [self processImageItemProvider:itemProvider assetID:assetID completion:nil];
+                         assetID:(NSString*)assetID
+                          source:(ComposeboxInputItemSource)source {
+  [self processImageItemProvider:itemProvider
+                         assetID:assetID
+                          source:source
+                      completion:nil];
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
                          assetID:(NSString*)assetID
+                          source:(ComposeboxInputItemSource)source
                       completion:(void (^)(void))completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
@@ -755,7 +765,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeImage
-                              assetID:assetID];
+                              assetID:assetID
+                               source:source];
   [self addItem:item];
   item.imageProvider = itemProvider;
   __block base::UnguessableToken identifier = item.identifier;
@@ -854,9 +865,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:
                             (std::set<web::WebStateID>)cachedWebStateIDs {
-  [self attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
-                        cachedWebStateIDs:cachedWebStateIDs
-                     fromExternalWebState:nullptr];
+  [self
+      attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
+                      cachedWebStateIDs:cachedWebStateIDs
+                   fromExternalWebState:nullptr
+                                 source:ComposeboxInputItemSource::kTabPicker];
 }
 
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
@@ -872,10 +885,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Creates an input item for the given `webState` and adds it to the items list.
 // Returns the identifier of the created item.
-- (base::UnguessableToken)createInputItemForWebState:(web::WebState*)webState {
+- (base::UnguessableToken)createInputItemForWebState:(web::WebState*)webState
+                                              source:(ComposeboxInputItemSource)
+                                                         source {
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeTab];
+                                          kComposeboxInputItemTypeTab
+                               source:source];
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   base::UnguessableToken identifier = item.identifier;
   _latestTabSelectionMapping[identifier] = webState->GetUniqueIdentifier();
@@ -1065,7 +1081,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   std::set<web::WebStateID> webStateIDs =
       [self attachedWebStateIDsInCurrentContext];
   webStateIDs.insert(webState->GetUniqueIdentifier());
-  [self attachSelectedTabsWithWebStateIDs:webStateIDs cachedWebStateIDs:{}];
+  [self
+      attachSelectedTabsWithWebStateIDs:webStateIDs
+                      cachedWebStateIDs:{}
+                   fromExternalWebState:nullptr
+                                 source:ComposeboxInputItemSource::kCurrentTab];
 }
 
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
@@ -1298,7 +1318,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:
                             (std::set<web::WebStateID>)cachedWebStateIDs
-                     fromExternalWebState:(web::WebState*)externalWebState {
+                     fromExternalWebState:(web::WebState*)externalWebState
+                                   source:(ComposeboxInputItemSource)source {
   [self.metricsRecorder recordTabPickerTabsAttached:selectedWebStateIDs.size()];
 
   _pageContextWrappers.clear();
@@ -1340,7 +1361,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
 
     base::UnguessableToken identifier =
-        [self createInputItemForWebState:candidateWebState];
+        [self createInputItemForWebState:candidateWebState source:source];
     [self attachWebState:candidateWebState
               identifier:identifier
                 isCached:cachedWebStateIDs.contains(candidateID)];

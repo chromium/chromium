@@ -21,6 +21,7 @@
 #import "components/lens/lens_features.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
+#import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
@@ -2134,8 +2135,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   CHECK(
       [itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]);
 
-  [self.mutator processImageItemProvider:itemProvider
-                                 assetID:[NSUUID UUID].UUIDString];
+  [self.mutator
+      processImageItemProvider:itemProvider
+                       assetID:[NSUUID UUID].UUIDString
+                        source:ComposeboxInputItemSource::kDragAndDrop];
 }
 
 /// Performs a drop for a dragged file from a given `itemProvider`.

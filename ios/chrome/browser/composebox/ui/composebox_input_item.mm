@@ -12,19 +12,24 @@
 }
 
 - (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
-                                        assetID:(NSString*)assetID {
+                                        assetID:(NSString*)assetID
+                                         source:
+                                             (ComposeboxInputItemSource)source {
   self = [super init];
   if (self) {
     _identifier = base::UnguessableToken::Create();
     _state = ComposeboxInputItemState::kLoading;
     _type = type;
     _assetID = [assetID copy];
+    _source = source;
   }
   return self;
 }
 
-- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type {
-  return [self initWithComposeboxInputItemType:type assetID:nil];
+- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
+                                         source:
+                                             (ComposeboxInputItemSource)source {
+  return [self initWithComposeboxInputItemType:type assetID:nil source:source];
 }
 
 - (const base::UnguessableToken&)identifier {
@@ -59,6 +64,7 @@
     copy.type = self.type;
     copy.imageProvider = self.imageProvider;
     copy.fileURL = self.fileURL;
+    copy.source = self.source;
   }
   return copy;
 }

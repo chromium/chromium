@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
+
 namespace base {
 class UnguessableToken;
 }  // namespace base
@@ -30,11 +32,15 @@ enum class ComposeboxInputItemType {
 // Data object for an item in the AIM input.
 @interface ComposeboxInputItem : NSObject <NSCopying>
 
-- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
                                         assetID:(NSString*)assetID
+                                         source:
+                                             (ComposeboxInputItemSource)source
     NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type;
+- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
+                                         source:
+                                             (ComposeboxInputItemSource)source;
+- (instancetype)init NS_UNAVAILABLE;
 
 // The item's identifier.
 @property(nonatomic, assign, readonly) const base::UnguessableToken& identifier;
@@ -54,6 +60,8 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, assign) ComposeboxInputItemType type;
 // Optional, uniquely identifying the asset the item is associated with.
 @property(nonatomic, copy, readonly) NSString* assetID;
+// The source of the item.
+@property(nonatomic, assign) ComposeboxInputItemSource source;
 
 // The image provider for this item. Only set for image types.
 @property(nonatomic, strong) NSItemProvider* imageProvider;

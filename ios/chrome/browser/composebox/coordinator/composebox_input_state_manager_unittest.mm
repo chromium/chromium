@@ -386,7 +386,8 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolDisabled_HasTabOrFile) {
       [[ComposeboxInputItemCollection alloc] init];
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeTab];
+                                          kComposeboxInputItemTypeTab
+                               source:ComposeboxInputItemSource::kTabPicker];
   [collection addItem:item];
 
   manager_.items = collection;
@@ -429,7 +430,9 @@ TEST_F(ComposeboxInputStateManagerTest, OnItemsUpdated_ImageGenerationMode) {
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeImage]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeImage
+                                           source:ComposeboxInputItemSource::
+                                                      kGalleryPicker]];
 
   manager_.items = collection;
 
@@ -503,11 +506,15 @@ TEST_F(ComposeboxInputStateManagerTest, RemainingAttachmentCapacity_WithItems) {
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeTab]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeTab
+                                           source:ComposeboxInputItemSource::
+                                                      kTabPicker]];
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeImage]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeImage
+                                           source:ComposeboxInputItemSource::
+                                                      kGalleryPicker]];
 
   manager_.items = collection;
 
@@ -541,7 +548,9 @@ TEST_F(ComposeboxInputStateManagerTest,
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeImage]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeImage
+                                           source:ComposeboxInputItemSource::
+                                                      kGalleryPicker]];
 
   manager_.items = collection;
 
@@ -612,7 +621,9 @@ TEST_F(ComposeboxInputStateManagerTest,
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeImage]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeImage
+                                           source:ComposeboxInputItemSource::
+                                                      kGalleryPicker]];
 
   manager_.items = collection;
 
@@ -679,7 +690,9 @@ TEST_F(ComposeboxInputStateManagerTest, MaxTabAttachmentCount_WithItems) {
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeTab]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeTab
+                                           source:ComposeboxInputItemSource::
+                                                      kTabPicker]];
 
   manager_.items = collection;
 
@@ -891,7 +904,9 @@ TEST_F(ComposeboxInputStateManagerTest,
   [collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
-                      ComposeboxInputItemType::kComposeboxInputItemTypeTab]];
+                      ComposeboxInputItemType::kComposeboxInputItemTypeTab
+                                           source:ComposeboxInputItemSource::
+                                                      kTabPicker]];
   manager_.items = collection;
 
   ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil

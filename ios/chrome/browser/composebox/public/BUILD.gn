@@ -12,6 +12,7 @@ group("public") {
     ":entrypoint",
     ":features",
     ":focus_params",
+    ":input_item_source",
     ":input_plate_controls",
     ":input_plate_position",
     ":model_options",
@@ -68,6 +69,11 @@ source_set("model_options") {
 
 source_set("attachment_options") {
   sources = [ "composebox_attachment_option.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("input_item_source") {
+  sources = [ "composebox_input_item_source.h" ]
   deps = [ "//base" ]
 }
 

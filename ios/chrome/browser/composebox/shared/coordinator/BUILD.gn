@@ -8,6 +8,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/lens",
+    "//ios/chrome/browser/composebox/public:input_item_source",
     "//ios/chrome/browser/composebox/shared/ui",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/tab_picker/coordinator",

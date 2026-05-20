@@ -8,6 +8,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/lens/lens_features.h"
+#import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
@@ -123,9 +124,13 @@
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
   [self.delegate
       composeboxPickerPresenter:self
-                  didPickImages:@[ [[ComposeboxPickerImageResult alloc]
-                                    initWithImageProvider:provider
-                                                  assetID:nil] ]];
+                  didPickImages:@[
+                    [[ComposeboxPickerImageResult alloc]
+                        initWithImageProvider:provider
+                                      assetID:nil
+                                       source:ComposeboxInputItemSource::
+                                                  kCameraPicker]
+                  ]];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
@@ -177,7 +182,9 @@
   for (PHPickerResult* result in results) {
     [imageItems addObject:[[ComposeboxPickerImageResult alloc]
                               initWithImageProvider:result.itemProvider
-                                            assetID:result.assetIdentifier]];
+                                            assetID:result.assetIdentifier
+                                             source:ComposeboxInputItemSource::
+                                                        kGalleryPicker]];
   }
 
   [self.delegate composeboxPickerPresenter:self didPickImages:imageItems];

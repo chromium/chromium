@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
+#import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -746,7 +747,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   for (ComposeboxPickerImageResult* result in results) {
     [_mediator processImageItemProvider:result.imageProvider
-                                assetID:result.assetID];
+                                assetID:result.assetID
+                                 source:result.source];
   }
 }
 
@@ -788,6 +790,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
           [[NSItemProvider alloc] initWithContentsOfURL:selectedURL];
       [_mediator processImageItemProvider:provider
                                   assetID:selectedURL.absoluteString
+                                   source:ComposeboxInputItemSource::kFilePicker
                                completion:stopAccessScopedResourcesIfNeeded];
       return;
     } else if ([contentType conformsToType:UTTypePDF]) {

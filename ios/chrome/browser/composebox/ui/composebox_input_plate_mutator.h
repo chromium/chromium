@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_
 
+#import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
+
 @class ComposeboxInputItem;
 enum class ComposeboxModelOption;
 class GURL;
@@ -44,11 +46,13 @@ class WebStateID;
 
 /// Processes the given `itemProvider` for an image.
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
-                         assetID:(NSString*)assetID;
+                         assetID:(NSString*)assetID
+                          source:(ComposeboxInputItemSource)source;
 
 /// Processes the given `itemProvider` for an image.
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
                          assetID:(NSString*)assetID
+                          source:(ComposeboxInputItemSource)source
                       completion:(void (^)(void))completion;
 
 /// Processes a tab with the given `webState` and `webStateID`.
