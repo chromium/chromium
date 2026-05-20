@@ -8,14 +8,21 @@
 #include <string>
 #include <vector>
 
+#include "base/android/application_status_listener.h"
 #include "base/android/jni_string.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
@@ -44,13 +51,68 @@ std::optional<std::string> GetScrollToTextFragmentFromEntry(
                                 EscapedStringFormat::kWithoutTextDirective);
 }
 
+bool IsTabModelViable(TabModel* tab_model) {
+  return !tab_model->IsOffTheRecord() &&
+         tab_model->GetTabModelType() == TabModel::TabModelType::kStandard;
+}
+
+// Helper function to find the active standard TabModel's WebContents.
+// If `require_visible` is true, only returns the WebContents if it is visible.
+//
+// Note: `require_visible` is set to false during cold start window creation
+// (`OnTabModelAdded`) or app foreground transitions
+// (`HandleApplicationStateChange`). This is because during these quick
+// lifecycle transitions, the WebContents is active and attached, but the
+// compositor might not have drawn the first frame yet (so `GetVisibility()`
+// still temporarily returns `HIDDEN` or `OCCLUDED`). Requiring visibility in
+// these scenarios would cause auto-opening to fail due to timing races. During
+// real-time push sync delivery (`DisplayNewEntriesOnUIThread`), however,
+// `require_visible` is set to true to ensure entries only auto-open if actively
+// browsing.
+content::WebContents* GetActiveWebContents(bool require_visible) {
+  for (TabModel* model : TabModelList::models()) {
+    // Exclude OTR models and non-standard models (e.g., kEmpty, kArchived).
+    // kEmpty represents stub models which never have an active WebContents.
+    if (!IsTabModelViable(model)) {
+      continue;
+    }
+    content::WebContents* wc = model->GetActiveWebContents();
+    if (!wc) {
+      continue;
+    }
+    if (require_visible &&
+        wc->GetVisibility() != content::Visibility::VISIBLE) {
+      continue;
+    }
+    return wc;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 AndroidNotificationHandler::AndroidNotificationHandler(
     SendTabToSelfModel* send_tab_to_self_model)
-    : send_tab_to_self_model_((send_tab_to_self_model)) {}
+    : send_tab_to_self_model_(send_tab_to_self_model) {
+  // Observe TabModelList to guarantee that CheckAndOpenPendingEntries runs
+  // during cold start as soon as the initial browser window tab model is
+  // attached.
+  TabModelList::AddObserver(this);
 
-AndroidNotificationHandler::~AndroidNotificationHandler() {}
+  // Observe ApplicationStatusListener to guarantee that
+  // CheckAndOpenPendingEntries runs during warm start or when a notification
+  // tap brings Chrome from the background to the foreground.
+  app_status_listener_ =
+      base::android::ApplicationStatusListener::New(base::BindRepeating(
+          &AndroidNotificationHandler::HandleApplicationStateChange,
+          weak_factory_.GetWeakPtr()));
+
+  CheckAndOpenPendingEntries();
+}
+
+AndroidNotificationHandler::~AndroidNotificationHandler() {
+  TabModelList::RemoveObserver(this);
+}
 
 void AndroidNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
@@ -68,40 +130,133 @@ void AndroidNotificationHandler::DisplayNewEntries(
 
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
     const std::vector<SendTabToSelfEntry>& new_entries) {
+  // Called when new entries are received from sync.
+  content::WebContents* target_web_contents =
+      base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)
+          ? GetActiveWebContents(/*require_visible=*/true)
+          : nullptr;
+
   for (const SendTabToSelfEntry& entry : new_entries) {
-    JNIEnv* env = AttachCurrentThread();
-
-    // Set the expiration to 10 days from when the notification is displayed.
-    base::Time expiration_time = entry.GetSharedTime() + base::Days(10);
-
-    ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
-        Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(
-            env);
-
-    std::optional<std::string> internal_scroll_to_text_fragment =
-        GetScrollToTextFragmentFromEntry(entry);
-
-    Java_NotificationManager_showNotification(
-        env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
-        ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
-        ConvertUTF8ToJavaString(env, entry.GetTitle()),
-        ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
-        expiration_time.InMillisecondsSinceUnixEpoch(),
-        send_tab_to_self_notification_receiver_class,
-        internal_scroll_to_text_fragment
-            ? ConvertUTF8ToJavaString(env, *internal_scroll_to_text_fragment)
-            : nullptr);
+    if (target_web_contents) {
+      // If Chrome is already open and active in the foreground, entries are
+      // opened directly as new background tabs.
+      OpenEntryInBackgroundTab(entry, *target_web_contents);
+      continue;
+    }
+    // Otherwise, show a standard system notification.
+    ShowNotification(entry);
   }
+}
+
+void AndroidNotificationHandler::ShowNotification(
+    const SendTabToSelfEntry& entry) {
+  JNIEnv* env = AttachCurrentThread();
+
+  // Set the expiration to 10 days from when the notification is displayed.
+  base::Time expiration_time = entry.GetSharedTime() + base::Days(10);
+
+  ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
+      Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(
+          env);
+
+  std::optional<std::string> internal_scroll_to_text_fragment =
+      GetScrollToTextFragmentFromEntry(entry);
+
+  Java_NotificationManager_showNotification(
+      env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
+      ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
+      ConvertUTF8ToJavaString(env, entry.GetTitle()),
+      ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
+      expiration_time.InMillisecondsSinceUnixEpoch(),
+      send_tab_to_self_notification_receiver_class,
+      internal_scroll_to_text_fragment
+          ? ConvertUTF8ToJavaString(env, *internal_scroll_to_text_fragment)
+          : nullptr);
+}
+
+void AndroidNotificationHandler::HideNotification(const std::string& guid) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_NotificationManager_hideNotification(env,
+                                            ConvertUTF8ToJavaString(env, guid));
 }
 
 void AndroidNotificationHandler::DismissEntries(
     const std::vector<std::string>& guids) {
-  JNIEnv* env = AttachCurrentThread();
-
+  // Hides system notifications for the specified GUIDs (e.g., after they have
+  // been successfully opened or deleted remotely).
   for (const std::string& guid : guids) {
-    Java_NotificationManager_hideNotification(
-        env, ConvertUTF8ToJavaString(env, guid));
+    HideNotification(guid);
   }
+}
+
+void AndroidNotificationHandler::OnTabModelAdded(TabModel* tab_model) {
+  // When a regular browser window is created (e.g., during cold start), check
+  // for and open any pending tab notifications.
+  if (IsTabModelViable(tab_model)) {
+    CheckAndOpenPendingEntries();
+  }
+}
+
+void AndroidNotificationHandler::OnTabModelRemoved(TabModel* tab_model) {}
+
+void AndroidNotificationHandler::HandleApplicationStateChange(
+    base::android::ApplicationState state) {
+  // When Chrome transitions from background to foreground (warm start or via a
+  // notification click), check for and open any pending background tabs.
+  if (state == base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES) {
+    CheckAndOpenPendingEntries();
+  }
+}
+
+void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
+  // Checks if there are any entries that have not been opened yet.
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    return;
+  }
+
+  // If an active browser window WebContents is available, auto-opens all unread
+  // entries as new background tabs and dismisses their system notifications.
+  content::WebContents* target_web_contents =
+      GetActiveWebContents(/*require_visible=*/false);
+  if (!target_web_contents) {
+    return;
+  }
+
+  std::vector<const SendTabToSelfEntry*> pending_entries =
+      send_tab_to_self_model_->GetUnopenedEntriesTargetedToLocalDevice();
+  std::vector<std::string> guids_to_dismiss;
+  for (const SendTabToSelfEntry* entry : pending_entries) {
+    OpenEntryInBackgroundTab(*entry, *target_web_contents);
+    guids_to_dismiss.push_back(entry->GetGUID());
+  }
+
+  if (!guids_to_dismiss.empty()) {
+    DismissEntries(guids_to_dismiss);
+  }
+}
+
+void AndroidNotificationHandler::OpenEntryInBackgroundTab(
+    const SendTabToSelfEntry& entry,
+    content::WebContents& target_web_contents) {
+  // Navigates the specified WebContents to the entry's URL and records the
+  // entry as opened.
+  content::OpenURLParams params(entry.GetURL(), content::Referrer(),
+                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+  params.should_replace_current_entry = false;
+  params.internal_scroll_to_text_fragment =
+      GetScrollToTextFragmentFromEntry(entry);
+
+  content::WebContents* new_contents =
+      target_web_contents.OpenURL(params, /*navigation_handle_callback=*/{});
+
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
+      new_contents) {
+    FillWebContents(new_contents, url::Origin::Create(entry.GetURL()),
+                    entry.GetPageContext());
+  }
+
+  send_tab_to_self_model_->MarkEntryOpened(entry.GetGUID());
 }
 
 }  // namespace send_tab_to_self
