@@ -220,6 +220,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // TabListInterface::From(browser()).
   TabListInterface* GetTabListInterface() const;
 
+  // Set to true if the test shouldn't exit when no browser exists.
+  // This is public so that mixins can use this.
+  void set_exit_when_last_browser_closes(bool value) {
+    exit_when_last_browser_closes_ = value;
+  }
+
  protected:
   // Closes the given browser and waits for it to release all its resources.
   void CloseBrowserSynchronously(BrowserWindowInterface* browser);
@@ -344,10 +350,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
   // Returns the test data path used by the embedded test server.
   base::FilePath GetChromeTestDataDir() const;
-
-  void set_exit_when_last_browser_closes(bool value) {
-    exit_when_last_browser_closes_ = value;
-  }
 
   void set_open_about_blank_on_browser_launch(bool value) {
     open_about_blank_on_browser_launch_ = value;

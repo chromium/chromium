@@ -90,7 +90,9 @@ LoggedInUserMixin::LoggedInUserMixin(
       user_policy_helper_(user_.account_id.GetUserEmail(),
                           &embedded_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
-      test_base_(test_base) {}
+      test_base_(test_base) {
+  test_base->set_exit_when_last_browser_closes(false);
+}
 
 LoggedInUserMixin::~LoggedInUserMixin() = default;
 
