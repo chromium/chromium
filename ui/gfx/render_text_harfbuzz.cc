@@ -40,6 +40,7 @@
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
+#include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/bidi_line_iterator.h"
 #include "ui/gfx/canvas.h"
@@ -109,8 +110,10 @@ bool IsEmojiRelatedCodepoint(UChar32 codepoint) {
          u_hasBinaryProperty(codepoint, UCHAR_REGIONAL_INDICATOR);
 }
 
-// Variation Selector-16 (U+FE0F) is a zero-width "modifier" that follows a
-// base codepoint to request emoji presentation per Unicode UTS #51.
+// Variation Selector-15 (U+FE0E) and Variation Selector-16 (U+FE0F) are
+// zero-width "modifiers" that follow a base codepoint to request,
+// respectively, text or emoji presentation per Unicode UTS #51.
+constexpr UChar32 kVariationSelector15 = 0xFE0E;
 constexpr UChar32 kVariationSelector16 = 0xFE0F;
 
 // Returns true if `text` contains U+FE0F (VS-16). Per Unicode UTS #51, VS-16
@@ -145,6 +148,21 @@ bool RunRequestsEmojiPresentation(std::u16string_view text) {
   return text.find(kVariationSelector16) != std::u16string_view::npos;
 }
 
+// Returns true if `text` contains U+FE0E (VS-15). Per Unicode UTS #51, VS-15
+// is the canonical signal that the user wants the preceding character
+// rendered with text presentation. This is the dual of
+// RunRequestsEmojiPresentation: in native UI (gfx::RenderText) the
+// OS-provided font fallback will happily return the platform color emoji
+// font for emoji-default codepoints (e.g. U+1F310 GLOBE WITH MERIDIANS +
+// VS-15) because that font has the glyph, even though VS-15
+// explicitly requests text style. Blink avoids this in Web content via
+// FontFallbackPriority + ColorTableLookup; we mirror that policy here by
+// refusing to use a color-emoji typeface to shape any run that contains
+// VS-15. See ShapeRunsWithFont.
+bool RunRequestsTextPresentation(std::u16string_view text) {
+  return text.find(kVariationSelector15) != std::u16string_view::npos;
+}
+
 // Returns true if `typeface` provides color emoji glyphs. Mirrors the table
 // set used by Blink's ColorTableLookup so native UI behavior stays aligned
 // with Web content.
@@ -171,6 +189,44 @@ const char* GetPlatformColorEmojiFontName() {
 #else
   return nullptr;
 #endif
+}
+
+// Returns the system font family to try before normal fallback for explicit
+// emoji text-presentation (VS-15) runs. This is only needed on Windows: after
+// we skip Segoe UI Emoji below, DirectWrite fallback can leave emoji-default
+// VS-15 runs without a monochrome candidate and render tofu. Blink's Windows
+// text-emoji fallback order prefers Segoe UI Symbol for this case, and this
+// pre-pass mirrors that behavior. Other platforms currently find an
+// appropriate monochrome fallback after skipping their color emoji fonts, so
+// they do not need a hard-coded text-emoji family here.
+const char* GetPlatformTextEmojiFontName() {
+#if BUILDFLAG(IS_WIN)
+  return "Segoe UI Symbol";
+#else
+  return nullptr;
+#endif
+}
+
+// Returns true for the platform's well-known color emoji family even when
+// table probing does not expose COLR/CBDT/sbix reliably. Windows DirectWrite
+// typefaces in particular can still render color emoji through Segoe UI Emoji
+// even if `TypefaceHasColorEmojiTable()` is not enough to identify them, so
+// use the family name as a conservative backstop for VS-15 filtering.
+bool TypefaceIsKnownPlatformColorEmojiFont(SkTypeface* typeface) {
+  const char* color_emoji_font_name = GetPlatformColorEmojiFontName();
+  if (!typeface || !color_emoji_font_name) {
+    return false;
+  }
+
+  SkString family_name;
+  typeface->getFamilyName(&family_name);
+  return base::EqualsCaseInsensitiveASCII(family_name.c_str(),
+                                          color_emoji_font_name);
+}
+
+bool TypefaceMayRenderColorEmoji(SkTypeface* typeface) {
+  return TypefaceHasColorEmojiTable(typeface) ||
+         TypefaceIsKnownPlatformColorEmojiFont(typeface);
 }
 
 // Returns true if |codepoint| is a bracket. This is used to avoid "matching"
@@ -2207,6 +2263,49 @@ bool RenderTextHarfBuzz::ShapeRuns(
   std::set<SkTypefaceID> fallback_fonts_already_tried;
   std::vector<Font> fallback_font_candidates;
 
+  // Pre-pass for text-presentation emoji runs.
+  //
+  // On Windows, DirectWrite fallback often returns Segoe UI Emoji for
+  // emoji-default codepoints even when VS-15 explicitly requests text
+  // presentation. We skip that color font below, but without first trying
+  // Segoe UI Symbol the run may have no remaining monochrome candidate and
+  // render as tofu. This mirrors Blink's Windows text-emoji fallback order:
+  // prefer Segoe UI Symbol, then let the normal pipeline handle anything the
+  // symbol font does not cover.
+  if (const char* text_emoji_font_name = GetPlatformTextEmojiFontName()) {
+    std::vector<internal::TextRunHarfBuzz*> text_emoji_runs;
+    for (internal::TextRunHarfBuzz* run : runs) {
+      if (RunRequestsTextPresentation(
+              text.substr(run->range.start(), run->range.length()))) {
+        text_emoji_runs.push_back(run);
+      }
+    }
+    if (!text_emoji_runs.empty()) {
+      Font text_emoji_font(text_emoji_font_name, font_params.font_size);
+      internal::TextRunHarfBuzz::FontParams text_emoji_font_params =
+          font_params;
+      if (text_emoji_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
+              text_emoji_font, text_emoji_font.GetFontRenderParams())) {
+        ShapeRunsWithFont(text, text_emoji_font_params, &text_emoji_runs);
+        fallback_font_candidates.push_back(text_emoji_font);
+      }
+
+      std::set<internal::TextRunHarfBuzz*> unresolved_text_emoji_runs(
+          text_emoji_runs.begin(), text_emoji_runs.end());
+      std::erase_if(runs, [&](internal::TextRunHarfBuzz* run) {
+        if (!RunRequestsTextPresentation(
+                text.substr(run->range.start(), run->range.length()))) {
+          return false;
+        }
+        return !unresolved_text_emoji_runs.contains(run);
+      });
+    }
+    if (runs.empty()) {
+      RecordShapeRunsFallback(internal::ShapeRunFallback::NO_FALLBACK);
+      return true;
+    }
+  }
+
   // Pre-pass for emoji-presentation runs.
   //
   // A "text-default emoji + VS-16" sequence (e.g. "♦\uFE0F", "☎\uFE0F",
@@ -2246,13 +2345,11 @@ bool RenderTextHarfBuzz::ShapeRuns(
       internal::TextRunHarfBuzz::FontParams emoji_font_params = font_params;
       if (emoji_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
               emoji_font, emoji_font.GetFontRenderParams()) &&
-          TypefaceHasColorEmojiTable(emoji_font_params.skia_face.get())) {
+          TypefaceMayRenderColorEmoji(emoji_font_params.skia_face.get())) {
         // Shape only the emoji-presentation runs with the color emoji font.
         // Shaping unrelated text with a color emoji font is wasteful and
         // would also be picked up by the cache.
         ShapeRunsWithFont(text, emoji_font_params, &emoji_runs);
-        MarkFontAsTried(emoji_font_params.skia_face,
-                        &fallback_fonts_already_tried);
         fallback_font_candidates.push_back(emoji_font);
       }
 
@@ -2435,6 +2532,27 @@ void RenderTextHarfBuzz::ShapeRunsWithFont(
   constexpr size_t kMaxRunLengthToCache = 25;
   static base::NoDestructor<internal::ShapeRunCache> cache;
 
+  // Honor explicit text-presentation requests (VS-15) by refusing to shape
+  // any run containing U+FE0E with a color-emoji typeface. The skipped runs
+  // are appended back to `*in_out_runs` at the end so callers keep trying
+  // other (non-color) fonts for them. This is the dual of the VS-16
+  // pre-pass in ShapeRuns and is applied centrally here so every caller
+  // (primary fonts, GetFallbackFont result, linked fallbacks) is covered.
+  std::vector<internal::TextRunHarfBuzz*> deferred_text_presentation_runs;
+  if (TypefaceMayRenderColorEmoji(font_params.skia_face.get())) {
+    std::vector<internal::TextRunHarfBuzz*> remaining_runs;
+    remaining_runs.reserve(in_out_runs->size());
+    for (internal::TextRunHarfBuzz* run : *in_out_runs) {
+      if (RunRequestsTextPresentation(
+              text.substr(run->range.start(), run->range.length()))) {
+        deferred_text_presentation_runs.push_back(run);
+      } else {
+        remaining_runs.push_back(run);
+      }
+    }
+    in_out_runs->swap(remaining_runs);
+  }
+
   std::vector<internal::TextRunHarfBuzz*> runs_with_missing_glyphs;
   for (internal::TextRunHarfBuzz*& run : *in_out_runs) {
     // First do a cache lookup.
@@ -2471,6 +2589,12 @@ void RenderTextHarfBuzz::ShapeRunsWithFont(
     }
   }
   in_out_runs->swap(runs_with_missing_glyphs);
+
+  // Re-add the runs we deferred above so callers continue to treat them as
+  // needing shaping and try the next (non-color) candidate font.
+  in_out_runs->insert(in_out_runs->end(),
+                      deferred_text_presentation_runs.begin(),
+                      deferred_text_presentation_runs.end());
 }
 
 void RenderTextHarfBuzz::EnsureLayoutRunList() {
