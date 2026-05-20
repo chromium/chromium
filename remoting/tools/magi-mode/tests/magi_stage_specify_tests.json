@@ -7,7 +7,8 @@
   },
   "cases": [
     {
-      "stage": "Specify", "step": 3,
+      "stage": "Specify",
+      "step": 3,
       "name": "Low Complexity Fast Path",
       "override_inputs": {
         "project_spec_overrides": {
@@ -17,7 +18,9 @@
         }
       },
       "expected_outputs": {
-        "files_created": ["testdata/project.magi.json"],
+        "files_created": [
+          "testdata/project.magi.json"
+        ],
         "valid_json": true,
         "content_patterns": {
           "testdata/project.magi.json": "\"execution_path\": \"FAST_PATH\""
@@ -25,7 +28,8 @@
       }
     },
     {
-      "stage": "Specify", "step": 3,
+      "stage": "Specify",
+      "step": 3,
       "name": "High Ambiguity RIGOR Path",
       "override_inputs": {
         "project_spec_overrides": {
@@ -35,10 +39,56 @@
         }
       },
       "expected_outputs": {
-        "files_created": ["testdata/project.magi.json"],
+        "files_created": [
+          "testdata/project.magi.json"
+        ],
         "valid_json": true,
         "content_patterns": {
           "testdata/project.magi.json": "\"execution_path\": \"RIGOR_PATH\""
+        }
+      }
+    },
+    {
+      "stage": "Specify",
+      "step": 2,
+      "name": "Harness Discovery: JETSKI implies CENTRALIZED",
+      "override_inputs": {
+        "project_spec_overrides": {
+          "environment": {
+            "harness": "JETSKI",
+            "orchestration_pattern": "CENTRALIZED"
+          }
+        }
+      },
+      "expected_outputs": {
+        "files_created": [
+          "testdata/project.magi.json"
+        ],
+        "valid_json": true,
+        "content_patterns": {
+          "testdata/project.magi.json": "\"orchestration_pattern\": \"CENTRALIZED\""
+        }
+      }
+    },
+    {
+      "stage": "Specify",
+      "step": 2,
+      "name": "Harness Discovery: GENERIC_CLI implies DECENTRALIZED",
+      "override_inputs": {
+        "project_spec_overrides": {
+          "environment": {
+            "harness": "GENERIC_CLI",
+            "orchestration_pattern": "DECENTRALIZED"
+          }
+        }
+      },
+      "expected_outputs": {
+        "files_created": [
+          "testdata/project.magi.json"
+        ],
+        "valid_json": true,
+        "content_patterns": {
+          "testdata/project.magi.json": "\"orchestration_pattern\": \"DECENTRALIZED\""
         }
       }
     }

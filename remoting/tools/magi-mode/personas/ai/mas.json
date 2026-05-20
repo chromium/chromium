@@ -26,6 +26,10 @@
     "coordination_safety": [
       "Use sequential scaffolding and 3-way merge strategies for resolving ",
       "implementation and synthesis conflicts."
+    ],
+    "harness_optimization": [
+      "Ensure the chosen orchestration_pattern (CENTRALIZED vs DECENTRALIZED) ",
+      "aligns with the harness and minimizes turns."
     ]
   }
 }

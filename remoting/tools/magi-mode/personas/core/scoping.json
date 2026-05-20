@@ -11,8 +11,9 @@
   ],
   "checklist": {
     "vcs_harness_discovered": [
-      "Ground yourself in the environment (VCS and Harness) before writing ",
-      "the spec."
+      "Ground yourself in the environment (VCS, Harness, and Orchestration ",
+      "Pattern) before writing the spec. Select CENTRALIZED for JETSKI and ",
+      "DECENTRALIZED for GENERIC_CLI."
     ],
     "context_successfully_retrieved": [
       "Read all external URLs/bugs. Halt and ask the human if you encounter a ",

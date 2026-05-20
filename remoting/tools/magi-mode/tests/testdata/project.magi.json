@@ -1,23 +1,24 @@
 {
-    "task_type": "IMPLEMENTATION",
-    "execution_path": "RIGOR_PATH",
-    "complexity_level": "MEDIUM",
-    "goal": "Mock goal for testing.",
-    "target_files": [
-        "testdata/file1.cc"
-    ],
-    "anti_goals": [],
-    "edge_cases": [],
-    "build_targets": [
-        "//remoting/tools/magi-mode/tests/testdata:test_target"
-    ],
-    "context_resolved": true,
-    "approach_confirmed": true,
-    "ambiguity_level": "LOW",
-    "environment": {
-        "repo_type": "CHROMIUM",
-        "vcs": "JJ",
-        "harness": "JETSKI",
-        "output_directory": "out/Default"
-    }
+  "task_type": "IMPLEMENTATION",
+  "execution_path": "RIGOR_PATH",
+  "complexity_level": "MEDIUM",
+  "goal": "Mock goal for testing.",
+  "target_files": [
+    "testdata/file1.cc"
+  ],
+  "anti_goals": [],
+  "edge_cases": [],
+  "build_targets": [
+    "//remoting/tools/magi-mode/tests/testdata:test_target"
+  ],
+  "context_resolved": true,
+  "approach_confirmed": true,
+  "ambiguity_level": "LOW",
+  "environment": {
+    "repo_type": "CHROMIUM",
+    "vcs": "JJ",
+    "harness": "JETSKI",
+    "orchestration_pattern": "CENTRALIZED",
+    "output_directory": "out/Default"
+  }
 }
