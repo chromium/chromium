@@ -94,17 +94,17 @@ ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() {
 }
 
 void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
-  if (!time_source_) {
-    TRACE_EVENT("viz",
-                "ExternalBeginFrameSourceMac::CreateDelayBasedTimeSource");
-    time_source_ = std::make_unique<DelayBasedTimeSource>(
-        base::SingleThreadTaskRunner::GetCurrentDefault().get());
-    time_source_->SetClient(this);
-    // reset preferred interval.
-    preferred_interval_ = BeginFrameArgs::DefaultInterval();
-    time_source_->SetTimebaseAndInterval(base::TimeTicks::Now(),
-                                         preferred_interval_);
+  if (time_source_) {
+    return;
   }
+
+  TRACE_EVENT("viz", "ExternalBeginFrameSourceMac::CreateDelayBasedTimeSource");
+  time_source_ = std::make_unique<DelayBasedTimeSource>(
+      base::SingleThreadTaskRunner::GetCurrentDefault().get());
+  time_source_->SetClient(this);
+  last_frame_time_ = base::TimeTicks::Now();
+  last_interval_ = preferred_interval_;
+  time_source_->SetTimebaseAndInterval(last_frame_time_, preferred_interval_);
 }
 
 // Forces an update of the DisplayLinkMac for the specified display. This is
@@ -185,14 +185,14 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
 
     preferred_interval_ = min_refresh_interval_ = max_refresh_interval_ =
         GetMinimumFrameInterval();
+    CreateDelayBasedTimeSourceIfNeeded();
+
     if (update_vsync_params_callback_) {
       update_vsync_params_callback_.Run(base::TimeTicks::Now(),
                                         min_refresh_interval_);
     }
 
-    DLOG(ERROR) << "Fail to create DisplayLinkMac with DisplayID: "
-                << display_id_ << ". Switch to DelayBasedTimeSource.";
-
+    DLOG(ERROR) << "Switch to DelayBasedTimeSource. DisplayID " << display_id_;
     TRACE_EVENT("viz", "ExternalBeginFrameSourceMac DisplayLinkMac failed.");
 
     // TODO: Set hw_takes_any_refresh_rate_ to true for Timer.
@@ -246,7 +246,6 @@ void ExternalBeginFrameSourceMac::StartBeginFrame() {
   }
 
   // Start the timer.
-  CreateDelayBasedTimeSourceIfNeeded();
   time_source_->SetActive(/*active=*/true);
 }
 
@@ -457,6 +456,7 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
                      << ", Interval: " << interval;
 
   if (!display_link_mac_) {
+    DCHECK(time_source_);
     time_source_->SetTimebaseAndInterval(last_frame_time_, interval);
     return;
   }
