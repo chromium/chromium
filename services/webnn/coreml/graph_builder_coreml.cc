@@ -4737,13 +4737,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
 
   CHECK_EQ(input_operand_info.dimensions.size(), 4u);
 
-  int64_t height = static_cast<int64_t>(input_operand_info.dimensions[2]) -
-                   operation.window_dimensions->height +
+  int64_t input_height = input_operand_info.dimensions[2];
+  int64_t input_width = input_operand_info.dimensions[3];
+
+  int64_t height = input_height - operation.window_dimensions->height +
                    operation.padding->beginning->height +
                    operation.padding->ending->height;
 
-  int64_t width = static_cast<int64_t>(input_operand_info.dimensions[3]) -
-                  operation.window_dimensions->width +
+  int64_t width = input_width - operation.window_dimensions->width +
                   operation.padding->beginning->width +
                   operation.padding->ending->width;
   bool is_ceil = false;
@@ -4754,13 +4755,41 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
     const OperandInfo& output_operand =
         GetOperandInfo(operation.output_operand_id);
     CHECK_EQ(output_operand.dimensions.size(), 4u);
-    if (output_operand.dimensions[2] ==
+
+    int64_t output_height = output_operand.dimensions[2];
+    int64_t output_width = output_operand.dimensions[3];
+
+    if (output_height ==
             base::ClampCeil<uint32_t>(
                 static_cast<double>(height) / operation.strides->height + 1) &&
-        output_operand.dimensions[3] ==
+        output_width ==
             base::ClampCeil<uint32_t>(
                 static_cast<double>(width) / operation.strides->width + 1)) {
       is_ceil = true;
+
+      // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.pool.avg_pool
+      // CoreML makes D_out[i] = D_out[i] - 1 when below conditions are met.
+      bool height_mismatch =
+          (output_height - 1) * operation.strides->height >=
+              input_height + operation.padding->beginning->height &&
+          (operation.padding->beginning->height +
+               operation.padding->ending->height >
+           0);
+
+      bool width_mismatch =
+          (output_width - 1) * operation.strides->width >=
+              input_width + operation.padding->beginning->width &&
+          (operation.padding->beginning->width +
+               operation.padding->ending->width >
+           0);
+      // TODO: crbug.com/501476566: Support ceil roundingType when output shape
+      // mismatches.
+      if (height_mismatch || width_mismatch) {
+        return NewNotSupportedError(
+            "Unsupported ceil roundingType for pooling, CoreML would drop the "
+            "last window resulting in a shape mismatch.");
+      }
+
       // TODO: crbug.com/334914466: Core ML requires padding to be symmetric if
       // `ceil_mode` is true.
       if (operation.padding->beginning->height !=

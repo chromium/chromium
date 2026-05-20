@@ -3,6 +3,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
 [FAIL] [required] maxPool2d float32 4D tensor options.roundingType=ceil
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pooling, padding has to be symmetric for ceil roundingType."
+[FAIL] [required] maxPool2d float32 4D tensor options.roundingType=ceil and symmetric padding
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported ceil roundingType for pooling, CoreML would drop the last window resulting in a shape mismatch."
 [FAIL] [required] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pooling, padding has to be symmetric for ceil roundingType."
 [FAIL] [required] maxPool2d float16 4D tensor options.dilations
