@@ -20,7 +20,11 @@ enum class MediaState {
   kSharing = 5,
   kMaxValue = kSharing,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AndroidTabMediaState)
+// LINT.ThenChange(
+//   //tools/metrics/histograms/metadata/tab/enums.xml:AndroidTabMediaState,
+//   //chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTab.java,
+//   //chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java
+// )
 
 }  // namespace tabs
 
