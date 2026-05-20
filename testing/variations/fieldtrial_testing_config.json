@@ -18684,6 +18684,29 @@
             ]
         }
     ],
+    "PersonalContextStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "personal_context_enable_fetch_context": "true"
+                    },
+                    "enable_features": [
+                        "PersonalContext"
+                    ]
+                }
+            ]
+        }
+    ],
     "PinTimeoutMigration": [
         {
             "platforms": [
