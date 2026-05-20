@@ -119,6 +119,7 @@ source_set("impl") {
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_io_data",
+      "//chrome/browser/reading_list",
       "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/sharing/click_to_call",

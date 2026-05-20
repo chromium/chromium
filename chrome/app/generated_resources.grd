@@ -731,6 +731,10 @@ are declared in tools/grit/grit_args.gni.
             Copy link to highlight
           </message>
 
+          <message name="IDS_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST" desc="In Title Case: The name of the Add link to reading list command in the content area context menu">
+            Add link to reading list
+          </message>
+
           <message name="IDS_CONTENT_CONTEXT_ADD_A_NOTE" desc="The name of the Add Note command in the content area context menu">
             Add a note
           </message>
@@ -1049,6 +1053,10 @@ are declared in tools/grit/grit_args.gni.
 
           <message name="IDS_CONTENT_CONTEXT_COPYLINKTOTEXT" desc="In Title Case: The name of the Copy Link to Highlight command in the content area context menu">
             Copy Link to Highlight
+          </message>
+
+          <message name="IDS_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST" desc="In Title Case: The name of the Add link to reading list command in the content area context menu">
+            Add Link to Reading List
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_ADD_A_NOTE" desc="In Title Case: The name of the Add Note command in the content area context menu">
