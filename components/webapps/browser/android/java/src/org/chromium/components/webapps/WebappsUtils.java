@@ -4,7 +4,6 @@
 
 package org.chromium.components.webapps;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -84,7 +83,13 @@ public class WebappsUtils {
             return;
         }
 
+        String defaultLauncher = getDefaultLauncherPackageName();
+        if (defaultLauncher == null) {
+            Log.w(TAG, "ShortcutManager is not supported and no default launcher found to target.");
+            return;
+        }
         Intent intent = createAddToHomeIntent(title, icon, shortcutIntent);
+        intent.setPackage(defaultLauncher);
         ContextUtils.getApplicationContext().sendBroadcast(intent);
         showAddedToHomescreenToast(title);
     }
@@ -155,14 +160,35 @@ public class WebappsUtils {
      *
      * @return if a shortcut can be added to the home screen under the current profile.
      */
-    @SuppressLint("WrongConstant")
     public static boolean isAddToHomeIntentSupported() {
         if (isRequestPinShortcutSupported()) return true;
+
+        String defaultLauncher = getDefaultLauncherPackageName();
+        if (defaultLauncher == null) return false;
+
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         Intent i = new Intent(INSTALL_SHORTCUT);
-        List<ResolveInfo> receivers =
-                pm.queryBroadcastReceivers(i, PackageManager.GET_INTENT_FILTERS);
+        i.setPackage(defaultLauncher);
+        List<ResolveInfo> receivers = pm.queryBroadcastReceivers(i, 0);
         return !receivers.isEmpty();
+    }
+
+    private static @Nullable String getDefaultLauncherPackageName() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfo == null || resolveInfo.activityInfo == null) {
+            return null;
+        }
+        String packageName = resolveInfo.activityInfo.packageName;
+        // If the resolveInfo is the system resolver (e.g., if there are multiple launchers
+        // and the user hasn't selected a default), we treat it as no default launcher.
+        if ("android".equals(packageName)
+                || "com.android.internal.app.ResolverActivity".equals(packageName)) {
+            return null;
+        }
+        return packageName;
     }
 
     /** Prepares whether Android O's ShortcutManager.requestPinShortcut() is supported. */
