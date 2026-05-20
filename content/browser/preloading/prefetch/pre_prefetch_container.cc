@@ -123,11 +123,6 @@ void PrePrefetchContainer::Start(
   // TODO(crbug.com/452389538): Double-check this process is needed/reasonable
   // to maintain here.
   network::ResourceRequest new_resource_request(*resource_request_);
-  if (!new_resource_request.trusted_params) {
-    new_resource_request.trusted_params.emplace();
-  }
-  new_resource_request.trusted_params->include_request_cookies_with_response =
-      true;
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
       std::move(url_loader_factory));

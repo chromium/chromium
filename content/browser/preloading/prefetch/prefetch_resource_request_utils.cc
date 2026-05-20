@@ -708,6 +708,16 @@ MakeInitialResourceRequestWithoutHeadersForPrefetch(
   // TODO(https://crbug.com/438478667): Revisit this.
   CHECK(!resource_request->skip_service_worker);
 
+  // Request cookies will be included with the response.
+  // They must be removed before forwarding to any untrusted client.
+  // This happens in `PrefetchResponseReader::HandleRedirect` and
+  // `PrefetchResponseReader::OnReceiveResponse`.
+  if (!resource_request->trusted_params) {
+    resource_request->trusted_params.emplace();
+  }
+  resource_request->trusted_params->include_request_cookies_with_response =
+      true;
+
   return resource_request;
 }
 

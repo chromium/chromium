@@ -52,15 +52,6 @@ void PrefetchStreamingURLLoader::Start(
   // This is a violation of const correctness which lead to a confusing bug
   // here.
   network::ResourceRequest new_request(request);
-  if (!new_request.trusted_params) {
-    new_request.trusted_params.emplace();
-  }
-
-  // Request cookies will be included with the response.
-  // They must be removed before forwarding to any untrusted client.
-  // This happens in `PrefetchResponseReader::HandleRedirect` and
-  // `PrefetchResponseReader::OnReceiveResponse`.
-  new_request.trusted_params->include_request_cookies_with_response = true;
 
   // `is_outermost_main_frame` is true here because the prefetched result is
   // served only for outermost main frames.
