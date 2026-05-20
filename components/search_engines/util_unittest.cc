@@ -86,3 +86,24 @@ TEST_F(SearchEngineUtilTemplateUrlTest, IsSearchEngineURLValidToUse) {
   EXPECT_TRUE(IsSearchEngineURLValidToUse(
       "http://google.com/search?q={searchTerms}", service, default_provider));
 }
+
+TEST_F(SearchEngineUtilTest, IsAimZeroStateURL) {
+  EXPECT_TRUE(IsAimZeroStateURL(GURL("https://www.google.com/?udm=50")));
+  EXPECT_TRUE(IsAimZeroStateURL(GURL("https://google.com/?udm=50")));
+
+  // Subdomain should be rejected.
+  EXPECT_FALSE(IsAimZeroStateURL(GURL("https://amp.google.com/?udm=50")));
+  EXPECT_FALSE(IsAimZeroStateURL(GURL("https://sub.google.com/?udm=50")));
+
+  // Non-home page path should be rejected.
+  EXPECT_FALSE(IsAimZeroStateURL(
+      GURL("https://www.google.com/amp/s/attacker.com?udm=50")));
+  EXPECT_FALSE(IsAimZeroStateURL(GURL("https://www.google.com/phish?udm=50")));
+
+  // Search URL should be rejected (handled by IsAimURL).
+  EXPECT_FALSE(
+      IsAimZeroStateURL(GURL("https://www.google.com/search?udm=50&q=test")));
+
+  // Missing udm=50 should be rejected.
+  EXPECT_FALSE(IsAimZeroStateURL(GURL("https://www.google.com/")));
+}

@@ -1122,9 +1122,7 @@ bool IsAimURL(const GURL& url) {
 }
 
 bool IsAimZeroStateURL(const GURL& url) {
-  if (!google_util::IsGoogleDomainUrl(
-          url, google_util::ALLOW_SUBDOMAIN,
-          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+  if (!google_util::IsGoogleHomePageUrl(url)) {
     return false;
   }
   std::string udm;
