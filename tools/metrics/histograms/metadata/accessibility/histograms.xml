@@ -958,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
-    enum="BooleanEnabled" expires_after="2026-06-01">
+    enum="BooleanEnabled" expires_after="2027-05-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -968,7 +968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CaptionSettingsLoadedFromSystemSettings"
-    enum="BooleanEnabled" expires_after="2026-06-01">
+    enum="BooleanEnabled" expires_after="2027-05-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3867,7 +3867,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
-    expires_after="2026-06-01">
+    expires_after="2027-05-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
