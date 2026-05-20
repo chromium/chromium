@@ -170,6 +170,7 @@ public abstract class ChromeFeatureList {
     // included in the screenshot. See https://crbug.com/394842006 for more details.
     public static final String ALWAYS_DRAW_COMPOSITED_TOOLBAR_HAIRLINE =
             "AlwaysDrawCompositedToolbarHairline";
+    public static final String ANDROID_ACTOR_TASK_TIMEOUT = "AndroidActorTaskTimeout";
     public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER =
             "AndroidAnimatedProgressBarInBrowser";
     public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
