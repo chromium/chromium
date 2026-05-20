@@ -29,6 +29,8 @@ def _ProcessMainManifest(manifest_path, manifest_package):
   if manifest_package:
     manifest.set('package', manifest_package)
   tmp_prefix = manifest_path.replace(os.path.sep, '-')
+  if len(tmp_prefix) > 100:
+    tmp_prefix = tmp_prefix[-100:]
   with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
     # Manifest merger requires <uses-sdk> to not exist in the main manifest.
     manifest_utils.RemoveUsesSdk(manifest)
@@ -61,6 +63,8 @@ def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
 
   if package_count > 0 or changed_api:
     tmp_prefix = manifest_path.replace(os.path.sep, '-')
+    if len(tmp_prefix) > 100:
+      tmp_prefix = tmp_prefix[-100:]
     with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
       manifest_utils.SaveManifest(doc, patched_manifest.name)
       yield patched_manifest.name
