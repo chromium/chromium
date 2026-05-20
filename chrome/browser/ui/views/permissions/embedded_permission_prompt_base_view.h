@@ -46,7 +46,8 @@ class Browser;
 // GetWindowTitle/GetAccessibleWindowTitle - inherited from
 // views::BubbleDialogDelegateView.
 
-class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
+class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView,
+                                         public views::WidgetObserver {
   METADATA_HEADER(EmbeddedPermissionPromptBaseView, PermissionPromptBaseView)
 
  public:
@@ -76,6 +77,10 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   bool ShouldShowCloseButton() const override;
   void Init() override;
   void AddedToWidget() override;
+
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  protected:
   enum class ButtonType {

@@ -524,4 +524,9 @@ interface Page {
 
   // Notifies the UI to show or hide the AIM popup for omnibox.
   UpdateAimPopupEligibility(bool eligible);
+
+  // Notifies the size of the permission prompt and that it is
+  // showing or being hidden.
+  OnEmbeddedPermissionPromptChanged(bool is_showing,
+                                    gfx.mojom.Size prompt_size);
 };

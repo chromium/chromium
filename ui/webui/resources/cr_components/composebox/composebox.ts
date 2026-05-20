@@ -146,6 +146,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       enableFileHint: {type: Boolean},
       inputPlaceholderOverride: {type: String},
       contextManagementInComposeboxEnabled_: {type: Boolean},
+      // Must be property so can pass it down to children.
+      searchboxCallbackRouter_: {type: Object},
     };
   }
 
@@ -179,6 +181,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // is false.
   protected accessor expanding_: boolean = false;
   protected accessor isOmniboxInCompactMode_: boolean = false;
+  protected accessor searchboxCallbackRouter_: SearchboxPageCallbackRouter;
+
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
   protected pendingAutomaticActiveTabUrl_: string = '';
@@ -189,7 +193,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
-  private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private resizeObservers_: ResizeObserver[] = [];

@@ -9,7 +9,9 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {Size} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {SubmitButtonIconType} from './composebox.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
@@ -17,6 +19,12 @@ import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './composebox_voice_search.css.js';
 import {getHtml} from './composebox_voice_search.html.js';
 import {WindowProxy} from './window_proxy.js';
+
+export interface VoicePermissionDialogueState {
+  isOpened: boolean;
+  height: number;
+  width: number;
+}
 
 /**
  * Threshold for considering an interim speech transcript result as "confident
@@ -158,6 +166,7 @@ export class ComposeboxVoiceSearchElement extends
     return {
       submitStopButtonsEnabled: {type: Boolean},
       liveTranscriptEnabled: {type: Boolean},
+      pageCallbackRouter: {type: Object},
       transcript_: {type: String},
       listeningPlaceholder_: {type: String},
       state_: {type: Number},
@@ -200,6 +209,10 @@ export class ComposeboxVoiceSearchElement extends
 
   accessor submitStopButtonsEnabled: boolean = false;
   accessor liveTranscriptEnabled: boolean = true;
+  // Accept page callback router attribute asynchronously, so that the parent
+  // and voice search component can share the same mojo connection and source of
+  // truth (to avoid race conditions).
+  accessor pageCallbackRouter: PageCallbackRouter|null = null;
   protected accessor transcript_: string = '';
   protected accessor listeningPlaceholder_: string =
       loadTimeData.getString('voiceListening');
@@ -220,6 +233,7 @@ export class ComposeboxVoiceSearchElement extends
   private timerId_: number|null = null;
   private searchboxHandler_: SearchboxPageHandlerRemote =
       ComposeboxProxyImpl.getInstance().searchboxHandler;
+  private listenerIds_: number[] = [];
   accessor hasErrorTimer: boolean = false;
   accessor submitButtonIconType: SubmitButtonIconType =
       SubmitButtonIconType.FORWARD;
@@ -253,8 +267,24 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   override disconnectedCallback() {
-    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        (id: number) => assert(this.pageCallbackRouter!.removeListener(id)));
+    this.listenerIds_ = [];
     this.voiceRecognition_.abort();
+    super.disconnectedCallback();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // When `pageCallbackRouter` is set by the parent,
+    // add all listeners for the callback router if not already added.
+    if (changedProperties.has('pageCallbackRouter') &&
+        this.pageCallbackRouter && this.listenerIds_.length === 0) {
+      this.listenerIds_.push(
+          this.pageCallbackRouter.onEmbeddedPermissionPromptChanged.addListener(
+              this.onEmbeddedVoicePermissionPromptChanged.bind(this)),
+      );
+    }
   }
 
   protected shouldShowErrorScrim_(): boolean {
@@ -285,6 +315,27 @@ export class ComposeboxVoiceSearchElement extends
         VoiceSearchAction.MAX_VALUE + 1);
     this.voiceRecognition_.stop();
     this.voiceModeEndCleanup_();
+  }
+
+  private onEmbeddedVoicePermissionPromptChanged(
+      isOpened: boolean, promptSize: Size) {
+    this.fire('voice-permission-changed', {
+      'isOpened': isOpened,
+      'height': promptSize.height,
+      'width': promptSize.width,
+    } as VoicePermissionDialogueState);
+    if (isOpened) {
+      this.clearTimer_();
+    } else {
+      this.resetIdleTimer_();
+    }
+  }
+
+  private clearTimer_() {
+    if (this.timerId_) {
+      WindowProxy.getInstance().clearTimeout(this.timerId_);
+      this.timerId_ = null;
+    }
   }
 
   private resetIdleTimer_() {

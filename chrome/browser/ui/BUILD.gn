@@ -461,6 +461,7 @@ static_library("ui") {
     "//chrome/browser/ui/toolbar:impl",
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/translate",
+    "//chrome/browser/ui/views/permissions:embedded_permission_prompt_observer",
     "//chrome/browser/ui/webauthn",
     "//chrome/browser/ui/webid",
     "//chrome/browser/ui/webui",

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -960,9 +961,21 @@ SearchboxHandler::SearchboxHandler(
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {
   controller_ = owned_controller_.get();
+
+  if (web_contents_) {
+    EmbeddedPermissionPromptObserver::CreateForWebContents(web_contents_);
+    EmbeddedPermissionPromptObserver::FromWebContents(web_contents_)
+        ->AddObserver(this);
+  }
 }
 
 SearchboxHandler::~SearchboxHandler() {
+  if (web_contents_) {
+    if (auto* observer =
+            EmbeddedPermissionPromptObserver::FromWebContents(web_contents_)) {
+      observer->RemoveObserver(this);
+    }
+  }
   // Avoids dangling pointer warning when `controller_` is not owned.
   controller_ = nullptr;
 }
@@ -1386,6 +1399,12 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
       }
     }
   }
+}
+
+void SearchboxHandler::OnEmbeddedPermissionPromptChanged(
+    bool is_showing,
+    const gfx::Size& prompt_size) {
+  page_->OnEmbeddedPermissionPromptChanged(is_showing, prompt_size);
 }
 
 const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
