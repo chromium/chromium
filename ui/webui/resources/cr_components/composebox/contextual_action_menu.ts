@@ -78,6 +78,7 @@ export class ContextualActionMenuElement extends
       shareTabsFlyoutOpen_: {type: Boolean},
       shareTabsFlyoutPosition_: {type: String},
       sharingTabsText_: {type: String},
+      uploadButtonDisabled: {type: Boolean},
     };
   }
 
@@ -87,6 +88,7 @@ export class ContextualActionMenuElement extends
   accessor inputState: InputState|null = null;
   accessor smartTabSharingActive: boolean = false;
   accessor disableAutoReposition: boolean = false;
+  accessor uploadButtonDisabled: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -253,32 +255,30 @@ export class ContextualActionMenuElement extends
         });
   }
 
-  protected isToolAllowed_(tool: ToolMode): boolean {
-    if (!this.inputState) {
-      return false;
+  private isItemDisabled_<T>(item: T, disabledItems: T[]|undefined): boolean {
+    if (this.uploadButtonDisabled) {
+      return true;
     }
-    return this.inputState.allowedTools.includes(tool);
+    if (!this.inputState || !disabledItems) {
+      return true;
+    }
+    return disabledItems.includes(item);
+  }
+
+  protected isToolAllowed_(tool: ToolMode): boolean {
+    return this.isItemAllowed_(tool, this.inputState?.allowedTools);
   }
 
   protected isToolDisabled_(tool: ToolMode): boolean {
-    if (!this.inputState) {
-      return true;
-    }
-    return this.inputState.disabledTools.includes(tool);
+    return this.isItemDisabled_(tool, this.inputState?.disabledTools);
   }
 
   protected isModelAllowed_(model: ModelMode): boolean {
-    if (!this.inputState) {
-      return false;
-    }
-    return this.inputState.allowedModels.includes(model);
+    return this.isItemAllowed_(model, this.inputState?.allowedModels);
   }
 
   protected isModelDisabled_(model: ModelMode): boolean {
-    if (!this.inputState) {
-      return true;
-    }
-    return this.inputState.disabledModels.includes(model);
+    return this.isItemDisabled_(model, this.inputState?.disabledModels);
   }
 
   protected isModelActive_(model: ModelMode): boolean {
@@ -286,6 +286,10 @@ export class ContextualActionMenuElement extends
       return false;
     }
     return this.inputState.activeModel === model;
+  }
+
+  protected isTabSelected_(tabId: number): boolean {
+    return this.disabledTabIds.has(tabId);
   }
 
   protected getToolLabel_(tool: ToolMode): string {
@@ -363,74 +367,35 @@ export class ContextualActionMenuElement extends
     }
   }
 
-  // Checks if the drive upload item in the context menu should be visible.
-  protected isDriveUploadAllowed_(): boolean {
-    if (this.inputState) {
-      return this.inputState.allowedInputTypes.includes(InputType.kDrive);
+  private isItemAllowed_<T>(item: T, allowedItems: T[]|undefined): boolean {
+    if (!this.inputState || !allowedItems) {
+      return false;
     }
-    return false;
+    return allowedItems.includes(item);
   }
 
-  // Checks if the drive upload item in the context menu should be disabled.
-  protected isDriveUploadDisabled_(): boolean {
-    if (this.inputState) {
-      return this.inputState.disabledInputTypes.includes(InputType.kDrive);
-    }
-    return this.fileNum >= this.maxFileCount_;
+  protected isInputTypeAllowed_(...types: InputType[]): boolean {
+    return types.some(
+        type => this.isItemAllowed_(type, this.inputState?.allowedInputTypes));
   }
 
-  // Checks if the image upload item in the context menu should be visible.
-  protected isImageUploadAllowed_(): boolean {
-    if (this.inputState) {
-      return this.inputState.allowedInputTypes.includes(InputType.kLensImage);
+  protected isInputTypeDisabled_(inputType: InputType): boolean {
+    if (this.uploadButtonDisabled) {
+      return true;
     }
-    return false;
-  }
-
-  // Checks if the image upload item in the context menu should be disabled.
-  protected isImageUploadDisabled_(): boolean {
+    const limitReached = this.fileNum >= this.maxFileCount_;
     if (this.inputState) {
-      return this.inputState.disabledInputTypes.includes(InputType.kLensImage);
+      return limitReached ||
+          (this.inputState.disabledInputTypes || []).includes(inputType);
     }
-    return this.fileNum >= this.maxFileCount_;
-  }
-
-  // Checks if the file upload item in the context menu should be visible.
-  protected isFileUploadAllowed_(): boolean {
-    if (this.inputState) {
-      return this.inputState.allowedInputTypes.includes(InputType.kLensFile);
-    }
-    return false;
-  }
-
-  // Checks if the file upload item in the context menu should be disabled.
-  protected isFileUploadDisabled_(): boolean {
-    if (this.inputState) {
-      return this.inputState.disabledInputTypes.includes(InputType.kLensFile);
-    }
-    return this.fileNum >= this.maxFileCount_;
-  }
-
-  // Checks if the browser tab item in the context menu should be visible.
-  protected isBrowserTabAllowed_(): boolean {
-    if (this.inputState) {
-      return this.inputState.allowedInputTypes.includes(InputType.kBrowserTab);
-    }
-    return false;
+    return limitReached;
   }
 
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
-    let noNewContextAllowed = this.fileNum >= this.maxFileCount_;
-    if (this.inputState) {
-      noNewContextAllowed =
-          this.inputState.disabledInputTypes.includes(InputType.kBrowserTab);
-    }
-    const isTabInContext = this.disabledTabIds.has(tab.tabId);
-    // If multi-tab selection is enabled, we only want to disable a tab if
-    // no more context can be added and the tab has not yet been added as
-    // context already. Otherwise, don't disable the tab, since we want to allow
-    // users to unselect the tab, and remove it from the context.
+    const noNewContextAllowed =
+        this.isInputTypeDisabled_(InputType.kBrowserTab);
+    const isTabInContext = this.isTabSelected_(tab.tabId);
     if (this.enableMultiTabSelection_) {
       return noNewContextAllowed && !isTabInContext;
     }
@@ -438,8 +403,7 @@ export class ContextualActionMenuElement extends
   }
 
   protected getSelectedTabs_(): TabInfo[] {
-    return this.tabSuggestions.filter(
-        tab => this.disabledTabIds.has(tab.tabId));
+    return this.tabSuggestions.filter(tab => this.isTabSelected_(tab.tabId));
   }
 
   protected onSmartTabSharingToggleChange_(e: Event) {
@@ -475,8 +439,7 @@ export class ContextualActionMenuElement extends
 
     assert(tabInfo);
 
-    if (this.enableMultiTabSelection_ &&
-        this.disabledTabIds.has(tabInfo.tabId)) {
+    if (this.enableMultiTabSelection_ && this.isTabSelected_(tabInfo.tabId)) {
       this.deleteTabContext_(this.disabledTabIds.get(tabInfo.tabId)!);
       return;
     }

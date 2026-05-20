@@ -4,18 +4,18 @@
 
 import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
-
-import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {MockInputState} from './composebox_test_utils.js';
 
@@ -1013,5 +1013,137 @@ suite('ContextualActionMenu', () => {
         $$(actionMenu, 'composebox-favicon-group') as ComposeboxFaviconGroupElement;
     assertTrue(!!faviconGroup);
     assertEquals(1, faviconGroup.tabs.length);
+  });
+
+  test(
+      'Disables uploads and tabs immediately when maxFileCount is reached',
+      async () => {
+        // Recreate actionMenu with maxFileCount = 1.
+        actionMenu.remove();
+        loadTimeData.overrideValues({
+          composeboxFileMaxCount: 1,
+        });
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        actionMenu.fileNum = 1;  // Set fileNum to 1 (limit reached)
+
+        // Provide tab suggestion.
+        const tabInfo = {
+          tabId: 1,
+          title: 'Google',
+          url: 'https://google.com',
+          lastActiveTime: {internalValue: 0n},
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        actionMenu.tabSuggestions = [tabInfo];
+
+        // inputState allows everything and disables nothing.
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [
+            InputType.kLensImage,
+            InputType.kLensFile,
+            InputType.kDrive,
+            InputType.kBrowserTab,
+          ],
+          disabledInputTypes: [],  // Nothing disabled by C++ yet
+          toolsSectionConfig: {header: ''},
+          modelSectionConfig: {header: ''},
+        });
+
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
+
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        // Verify uploads are disabled.
+        const imageUpload = $$(actionMenu, '#imageUpload') as HTMLButtonElement;
+        const fileUpload = $$(actionMenu, '#fileUpload') as HTMLButtonElement;
+        const driveUpload = $$(actionMenu, '#driveUpload') as HTMLButtonElement;
+
+        assertTrue(imageUpload.disabled);
+        assertTrue(fileUpload.disabled);
+        assertTrue(driveUpload.disabled);
+
+        // Verify tabs are disabled.
+        const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+            '.suggestion-container button')!;
+        assertTrue(isVisible(tabButton));
+        assertTrue(tabButton.disabled);
+      });
+
+  test('Disables all items when uploadButtonDisabled is true', async () => {
+    actionMenu.uploadButtonDisabled = true;
+
+    // Provide tab suggestion.
+    const tabInfo = {
+      tabId: 1,
+      title: 'Google',
+      url: 'https://google.com',
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    };
+    actionMenu.tabSuggestions = [tabInfo];
+
+    // inputState allows everything and disables nothing.
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [
+        InputType.kLensImage,
+        InputType.kLensFile,
+        InputType.kDrive,
+        InputType.kBrowserTab,
+      ],
+      allowedTools: [ToolMode.kDeepSearch],
+      toolConfigs: [{
+        tool: ToolMode.kDeepSearch,
+        menuLabel: 'Deep Search',
+        disableActiveModelSelection: false,
+        chipLabel: '',
+        hintText: '',
+        aimUrlParams: [],
+      }],
+      toolsSectionConfig: {header: ''},
+      allowedModels: [ModelMode.kGeminiRegular],
+      modelConfigs: [{
+        model: ModelMode.kGeminiRegular,
+        menuLabel: 'Gemini Regular',
+        hintText: '',
+        aimUrlParams: [],
+      }],
+      modelSectionConfig: {header: ''},
+    });
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    // Verify uploads are disabled.
+    const imageUpload = $$(actionMenu, '#imageUpload') as HTMLButtonElement;
+    const fileUpload = $$(actionMenu, '#fileUpload') as HTMLButtonElement;
+    const driveUpload = $$(actionMenu, '#driveUpload') as HTMLButtonElement;
+    assertTrue(imageUpload.disabled);
+    assertTrue(fileUpload.disabled);
+    assertTrue(driveUpload.disabled);
+
+    // Verify tabs are disabled.
+    const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+        '.suggestion-container button')!;
+    assertTrue(isVisible(tabButton));
+    assertTrue(tabButton.disabled);
+
+    // Verify tools are disabled.
+    const deepSearch =
+        $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`) as
+        HTMLButtonElement;
+    assertTrue(deepSearch.disabled);
+
+    // Verify models are disabled.
+    const regularModel =
+        $$(actionMenu, `[data-model="${ModelMode.kGeminiRegular}"]`) as
+        HTMLButtonElement;
+    assertTrue(regularModel.disabled);
   });
 });
