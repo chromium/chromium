@@ -4,13 +4,20 @@
 
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 
+#include <atomic>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/mock_input_handler.h"
@@ -58,8 +65,8 @@ class WidgetInputHandlerManagerTest : public testing::Test,
   // testing::Test:
   void SetUp() override;
 
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
   StubWidgetBaseClient client_;
@@ -217,6 +224,85 @@ TEST_P(WidgetInputHandlerManagerTest, DevToolsSessionOverridesSuppression) {
   if (GetParam()) {
     ExpectNotConsumedDispatchEvent();
   }
+}
+
+TEST_P(WidgetInputHandlerManagerTest, VizHostRace) {
+  std::atomic<bool> start_flag{false};
+  std::atomic<int> threads_ready{0};
+  std::atomic<int> threads_finished{0};
+  const int kOpsPerThread = 1000;
+
+  scoped_refptr<WidgetInputHandlerManager> manager;
+
+  auto reader_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+  auto writer_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+
+  base::WaitableEvent manager_created;
+
+  auto writer_worker = [&]() {
+    manager = WidgetInputHandlerManager::Create(
+        widget_base_->GetWeakPtr(), frame_widget_input_handler_,
+        /*never_composited=*/false,
+        /*compositor_thread_scheduler=*/nullptr, widget_scheduler_,
+        /*needs_input_handler=*/false,
+        /*allow_scroll_resampling=*/false,
+        /*io_thread_id=*/base::kInvalidThreadId,
+        /*main_thread_id=*/base::PlatformThread::CurrentId());
+    manager_created.Signal();
+
+    threads_ready++;
+    while (!start_flag.load(std::memory_order_acquire)) {
+      std::this_thread::yield();
+    }
+
+    std::vector<mojo::PendingReceiver<mojom::blink::WidgetInputHandlerHost>>
+        receivers;
+    for (int i = 0; i < kOpsPerThread; ++i) {
+      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> viz_host_remote;
+      auto receiver = viz_host_remote.InitWithNewPipeAndPassReceiver();
+      receivers.push_back(std::move(receiver));
+      manager->SetVizHost(std::move(viz_host_remote));
+    }
+    threads_finished++;
+  };
+
+  auto reader_worker = [&]() {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    // Wait for manager to be created by writer thread.
+    manager_created.Wait();
+
+    threads_ready++;
+    while (!start_flag.load(std::memory_order_acquire)) {
+      std::this_thread::yield();
+    }
+
+    for (int i = 0; i < kOpsPerThread; ++i) {
+      manager->GetVizWidgetInputHandlerHost();
+    }
+    threads_finished++;
+  };
+
+  writer_runner->PostTask(FROM_HERE, base::BindLambdaForTesting(writer_worker));
+  reader_runner->PostTask(FROM_HERE, base::BindLambdaForTesting(reader_worker));
+
+  // Wait until both threads are ready at the starting line.
+  while (threads_ready.load(std::memory_order_relaxed) < 2) {
+    std::this_thread::yield();
+  }
+
+  // Signal the starting flag to allow both threads to race.
+  start_flag.store(true, std::memory_order_release);
+
+  // Wait until both threads are finished.
+  while (threads_finished.load(std::memory_order_relaxed) < 2) {
+    std::this_thread::yield();
+  }
+
+  // Ensure destruction on writer thread.
+  writer_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce([](scoped_refptr<WidgetInputHandlerManager> m) {},
+                     std::move(manager)));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
