@@ -203,3 +203,64 @@ TEST_F(AssistantAIMMediatorTest, InterceptsThirdPartyURLAndOpensInNewTab) {
   EXPECT_EQ(url_loader_->load_new_tab_call_count, 1);
   EXPECT_EQ(url_loader_->last_params.web_params.url, third_party_url);
 }
+
+// Tests that the navigation policy decider allows authorized Google
+// redirections.
+TEST_F(AssistantAIMMediatorTest, AllowsAuthorizedGoogleRedirection) {
+  id<CRWWebStatePolicyDecider> policy_decider =
+      static_cast<id<CRWWebStatePolicyDecider>>(mediator_);
+
+  GURL google_redirect_url("https://www.google.com/search?q=test");
+  __block web::WebStatePolicyDecider::PolicyDecision allowed_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Cancel();
+
+  [policy_decider
+      shouldAllowRequest:[NSURLRequest requestWithURL:net::NSURLWithGURL(
+                                                          google_redirect_url)]
+             requestInfo:
+                 web::WebStatePolicyDecider::RequestInfo(
+                     ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+                     /*target_frame_is_main=*/true,
+                     /*target_frame_is_cross_origin=*/false,
+                     /*target_window_is_cross_origin=*/false,
+                     /*is_user_initiated=*/true,
+                     /*user_tapped_recently=*/true)
+         decisionHandler:^(
+             web::WebStatePolicyDecider::PolicyDecision decision) {
+           allowed_decision = decision;
+         }];
+  EXPECT_TRUE(allowed_decision.ShouldAllowNavigation());
+  EXPECT_EQ(url_loader_->load_new_tab_call_count, 0);
+  EXPECT_EQ(url_loader_->load_current_tab_call_count, 0);
+}
+
+// Tests that the navigation policy decider intercepts and cancels unauthorized
+// Google redirections (e.g. to AMP viewer or arbitrary paths).
+TEST_F(AssistantAIMMediatorTest, CancelsUnauthorizedGoogleRedirection) {
+  id<CRWWebStatePolicyDecider> policy_decider =
+      static_cast<id<CRWWebStatePolicyDecider>>(mediator_);
+
+  GURL unauthorized_google_url("https://www.google.com/amp/s/attacker.com");
+  __block web::WebStatePolicyDecider::PolicyDecision blocked_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+
+  [policy_decider
+      shouldAllowRequest:[NSURLRequest
+                             requestWithURL:net::NSURLWithGURL(
+                                                unauthorized_google_url)]
+             requestInfo:
+                 web::WebStatePolicyDecider::RequestInfo(
+                     ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+                     /*target_frame_is_main=*/true,
+                     /*target_frame_is_cross_origin=*/false,
+                     /*target_window_is_cross_origin=*/false,
+                     /*is_user_initiated=*/true,
+                     /*user_tapped_recently=*/true)
+         decisionHandler:^(
+             web::WebStatePolicyDecider::PolicyDecision decision) {
+           blocked_decision = decision;
+         }];
+  EXPECT_TRUE(blocked_decision.ShouldCancelNavigation());
+  EXPECT_EQ(url_loader_->load_current_tab_call_count, 1);
+  EXPECT_EQ(url_loader_->last_params.web_params.url, unauthorized_google_url);
+}

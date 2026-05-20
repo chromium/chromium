@@ -12,6 +12,7 @@
 #import "components/contextual_tasks/public/contextual_task.h"
 #import "components/contextual_tasks/public/contextual_tasks_service.h"
 #import "components/contextual_tasks/public/features.h"
+#import "components/google/core/common/google_util.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
@@ -98,18 +99,22 @@ namespace {
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL URL = net::GURLWithNSURL(request.URL);
 
-  // 1. Allow Google redirection or main-frame navigation to Google/AIM domains.
-  if (lens::IsGoogleRedirection(URL, requestInfo)) {
-    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
-    return;
-  }
-
+  // 1. Allow main-frame navigation to Google/AIM domains.
   if (IsAimURL(URL) || IsAimZeroStateURL(URL)) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
 
-  // 2. Block renderer-initiated third-party main-frame navigations and open in
+  // 2. Allow Google redirection to authorized search or home page paths.
+  if (lens::IsGoogleRedirection(URL, requestInfo)) {
+    if (google_util::IsGoogleSearchUrl(URL) ||
+        google_util::IsGoogleHomePageUrl(URL)) {
+      decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return;
+    }
+  }
+
+  // 3. Block renderer-initiated third-party main-frame navigations and open in
   // the main browser instead.
   if (requestInfo.target_frame_is_main) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
