@@ -664,6 +664,7 @@ message PaymentInstrumentCreationOption {
   oneof creation_option {
     BnplCreationOption buy_now_pay_later_option = 2;
     EwalletCreationOption ewallet_creation_option = 3;
+    PixCreationOption pix_creation_option = 4;
   }
 }
 
@@ -676,6 +677,9 @@ message EwalletCreationOption {
   // Payment hyperlinks will be embedded in payment web pages.
   repeated string supported_payment_link_uris = 3;
 }
+
+// Option to create a Pix instrument for which the user is eligible.
+message PixCreationOption {}
 
 // Buy Now Pay Later details that the user is eligible to create an instrument
 // from.
