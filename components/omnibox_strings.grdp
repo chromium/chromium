@@ -191,6 +191,9 @@
       <message name="IDS_FUSEBOX_MODEL_PRO" desc="The text in attachments popup for the button to switch the active model to pro.">
         Pro
       </message>
+      <message name="IDS_FUSEBOX_RECENT_TABS_HEADER" desc="The text displayed in the omnibox attachments popup as a header for the most recent tabs list." formatter_data="android_java">
+        Add recent tabs
+      </message>
     </if>
   </if>
   <if expr="is_android">

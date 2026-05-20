@@ -65,6 +65,7 @@ public class FuseboxMetrics {
         FuseboxAttachmentButtonType.FILES,
         FuseboxAttachmentButtonType.CLIPBOARD,
         FuseboxAttachmentButtonType.SUGGESTED_TAB,
+        FuseboxAttachmentButtonType.RECENT_TAB,
         FuseboxAttachmentButtonType.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -76,7 +77,8 @@ public class FuseboxMetrics {
         int FILES = 4;
         int CLIPBOARD = 5;
         int SUGGESTED_TAB = 6;
-        int COUNT = 7;
+        int RECENT_TAB = 7;
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentButtonType)
@@ -228,6 +230,7 @@ public class FuseboxMetrics {
             case FuseboxAttachmentButtonType.FILES -> "Files";
             case FuseboxAttachmentButtonType.CLIPBOARD -> "Clipboard";
             case FuseboxAttachmentButtonType.SUGGESTED_TAB -> "SuggestedTab";
+            case FuseboxAttachmentButtonType.RECENT_TAB -> "RecentTab";
             default -> "";
         };
     }
@@ -248,6 +251,8 @@ public class FuseboxMetrics {
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE);
             case FuseboxAttachmentButtonType.CLIPBOARD ->
                     model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE);
+            case FuseboxAttachmentButtonType.RECENT_TAB ->
+                    model.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE);
             default -> false;
         };
     }

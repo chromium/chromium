@@ -79,6 +79,8 @@ std::string AttachmentButtonTypeToString(
       return "Clipboard";
     case ContextualSearchAttachmentButtonType::kSuggestedTab:
       return "SuggestedTab";
+    case ContextualSearchAttachmentButtonType::kRecentTab:
+      return "RecentTab";
   }
 }
 }  // namespace

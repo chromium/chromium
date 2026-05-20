@@ -106,6 +106,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".CurrentTab" summary="Current Tab button"/>
   <variant name=".Files" summary="File picker"/>
   <variant name=".Gallery" summary="Image picker"/>
+  <variant name=".RecentTab" summary="Add Recent Tabs button"/>
   <variant name=".TabPicker" summary="Tab picker"/>
 </variants>
 

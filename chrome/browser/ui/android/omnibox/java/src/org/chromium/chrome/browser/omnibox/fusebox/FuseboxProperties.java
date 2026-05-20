@@ -27,10 +27,10 @@ import java.util.List;
 /** The properties associated with the Fusebox bar. */
 @NullMarked
 class FuseboxProperties {
-    @IntDef({PopupButtonType.ATTACHMENT, PopupButtonType.TOOL, PopupButtonType.MODEL})
+    @IntDef({PopupButtonType.RECENT_TAB, PopupButtonType.TOOL, PopupButtonType.MODEL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PopupButtonType {
-        int ATTACHMENT = 0;
+        int RECENT_TAB = 0;
         int TOOL = 1;
         int MODEL = 2;
     }
@@ -39,7 +39,9 @@ class FuseboxProperties {
     public static class PopupButtonData {
         public final Runnable onClicked;
         public final String text;
+        // Either iconId (predefined vector drawable) or customIcon (bitmap favicon) is set.
         public final /*IconResourceIds*/ int iconId;
+        public final @Nullable Bitmap customIcon;
         public final boolean enabled;
         public final boolean selected;
         public final @PopupButtonType int type;
@@ -58,6 +60,27 @@ class FuseboxProperties {
             this.onClicked = onClicked.bind(this);
             this.text = text;
             this.iconId = iconId;
+            this.customIcon = null;
+            this.enabled = enabled;
+            this.selected = selected;
+            this.type = type;
+            this.protoId = protoId;
+            this.hasColor = hasColor;
+        }
+
+        public PopupButtonData(
+                Callback<PopupButtonData> onClicked,
+                String text,
+                @Nullable Bitmap customIcon,
+                boolean enabled,
+                boolean selected,
+                @PopupButtonType int type,
+                int protoId,
+                boolean hasColor) {
+            this.onClicked = onClicked.bind(this);
+            this.text = text;
+            this.iconId = 0;
+            this.customIcon = customIcon;
             this.enabled = enabled;
             this.selected = selected;
             this.type = type;
@@ -220,6 +243,22 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey SHOW_REQUEST_TYPE_BUTTON =
             new WritableBooleanPropertyKey();
 
+    /** Holds button data objects for each recent tab that is to be shown. */
+    public static final WritableObjectPropertyKey<List<PopupButtonData>>
+            POPUP_RECENT_TABS_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
+
+    /** Whether the recent tabs divider in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_DIVIDER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the recent tabs header in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_HEADER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the recent tab buttons in the popup are enabled. */
+    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_ENABLED =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         // go/keep-sorted start
         ADAPTER,
@@ -253,6 +292,10 @@ class FuseboxProperties {
         POPUP_MODEL_DIVIDER_VISIBLE,
         POPUP_MODEL_HEADER_TEXT,
         POPUP_MODEL_HEADER_VISIBLE,
+        POPUP_RECENT_TABS_BUTTON_DATA_LIST,
+        POPUP_RECENT_TABS_DIVIDER_VISIBLE,
+        POPUP_RECENT_TABS_ENABLED,
+        POPUP_RECENT_TABS_HEADER_VISIBLE,
         POPUP_STATE,
         POPUP_TOOL_BUTTON_DATA_LIST,
         POPUP_TOOL_DIVIDER_VISIBLE,

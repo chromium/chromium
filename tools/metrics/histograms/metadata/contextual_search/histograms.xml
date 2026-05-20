@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CurrentTab" summary="Current Tab button"/>
   <variant name="Files" summary="File picker"/>
   <variant name="Gallery" summary="Image picker"/>
+  <variant name="RecentTab" summary="Recent Tab"/>
   <variant name="SuggestedTab" summary="Suggested Tab"/>
   <variant name="TabPicker" summary="Tab picker"/>
 </variants>

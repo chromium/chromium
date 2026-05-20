@@ -88,6 +88,9 @@ ContextualSearchAttachmentButtonTypeFromFuseboxButtonType(
     case FuseboxAttachmentButtonType::kSuggestedTab:
       return contextual_search::ContextualSearchAttachmentButtonType::
           kSuggestedTab;
+    case FuseboxAttachmentButtonType::kRecentTab:
+      return contextual_search::ContextualSearchAttachmentButtonType::
+          kRecentTab;
   }
 }
 

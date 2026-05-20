@@ -31,7 +31,8 @@ enum class FuseboxAttachmentButtonType {
   kFiles = 4,
   kClipboard = 5,
   kSuggestedTab = 6,
-  kMaxValue = kSuggestedTab
+  kRecentTab = 7,
+  kMaxValue = kRecentTab
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentButtonType)
 
