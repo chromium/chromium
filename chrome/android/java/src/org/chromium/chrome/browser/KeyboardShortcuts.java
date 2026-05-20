@@ -24,7 +24,6 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1163,17 +1162,7 @@ public class KeyboardShortcuts {
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.CLOSE_TAB:
-                    List<Tab> selectedTabs = new ArrayList<>();
-                    for (int i = 0; i < currentTabModel.getCount(); i++) {
-                        @Nullable Tab tab = currentTabModel.getTabAt(i);
-                        if (tab == null) continue;
-                        if (!currentTabModel.isTabMultiSelected(tab.getId())) continue;
-                        selectedTabs.add(tab);
-                    }
-                    List<Tab> tabsToClose =
-                            selectedTabs.isEmpty()
-                                    ? List.of(TabModelUtils.getCurrentTab(currentTabModel))
-                                    : selectedTabs;
+                    List<Tab> tabsToClose = currentTabModel.getOrderedMultiSelectedTabs();
                     Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
                     if (tab != null) {
                         // Pinned tabs require a second Ctrl+W to confirm closure unless part of a

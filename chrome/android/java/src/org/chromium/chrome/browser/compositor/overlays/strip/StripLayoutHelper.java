@@ -3186,17 +3186,12 @@ public class StripLayoutHelper
 
     private List<Integer> getMultiSelectedTabIds() {
         StripLayoutUtils.recordTabMultiSelectionTabCount(mModel);
-        List<Integer> multiSelectedTabs = new ArrayList<>();
-        if (mModel == null) return multiSelectedTabs;
-        for (StripLayoutTab stripTab : mStripTabs) {
-            if (mModel.isTabMultiSelected(stripTab.getTabId())) {
-                multiSelectedTabs.add(stripTab.getTabId());
-            }
-        }
-        assert multiSelectedTabs.size() == mModel.getMultiSelectedTabsCount()
+        if (mModel == null) return new ArrayList<>();
+        List<Integer> multiSelectedTabIds = mModel.getOrderedMultiSelectedTabIds();
+        assert multiSelectedTabIds.size() == mModel.getMultiSelectedTabsCount()
                 : "Count of multi selected tabs don't match.";
-        assert multiSelectedTabs.size() >= 2 : "Too few tabs in multi selection";
-        return multiSelectedTabs;
+        assert multiSelectedTabIds.size() >= 2 : "Too few tabs in multi selection";
+        return multiSelectedTabIds;
     }
 
     /**

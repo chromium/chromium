@@ -1759,7 +1759,7 @@ public class UndoTabModelTest {
         // Note: Despite the "undoable=true" setup, incognito tabs won't support undo.
         closeMultipleTabs(model, Arrays.asList(tab2, tab4), /* undoable= */ true);
         fullList = new Tab[] {tab0, tab3};
-        checkState(model, fullList, tab0, EMPTY, fullList, tab0);
+        checkState(model, fullList, tab3, EMPTY, fullList, tab3);
         assertTrue(tab2.isClosing());
         assertTrue(tab4.isClosing());
         assertFalse(tab2.isInitialized());

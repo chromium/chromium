@@ -196,7 +196,7 @@ public class TabModelImplUtilUnitTest {
         assertEquals(tab1, getNextTabIfClosed(mTabModel, tab0, false));
 
         setCurrentTab(tab1);
-        assertEquals(tab0, getNextTabIfClosed(mTabModel, tab1, false));
+        assertEquals(tab2, getNextTabIfClosed(mTabModel, tab1, false));
 
         setCurrentTab(tab2);
         assertEquals(tab1, getNextTabIfClosed(mTabModel, tab2, false));
@@ -293,13 +293,13 @@ public class TabModelImplUtilUnitTest {
         setCurrentTab(tab1);
         List<Tab> closingTabs = List.of(tab1, tab2);
         assertEquals(
-                tab0, getNextTabIfClosed(mTabModel, closingTabs, false, TabCloseType.MULTIPLE));
+                tab3, getNextTabIfClosed(mTabModel, closingTabs, false, TabCloseType.MULTIPLE));
 
-        // Close tabs [1, 2], current is 2. Should select 0.
+        // Close tabs [1, 2], current is 2. Should select 3.
         // The nearby logic depends on the first element of closingTabs.
         setCurrentTab(tab2);
         assertEquals(
-                tab0, getNextTabIfClosed(mTabModel, closingTabs, false, TabCloseType.MULTIPLE));
+                tab3, getNextTabIfClosed(mTabModel, closingTabs, false, TabCloseType.MULTIPLE));
 
         // Close tabs [0, 1], current is 0. Should select 2.
         setCurrentTab(tab0);

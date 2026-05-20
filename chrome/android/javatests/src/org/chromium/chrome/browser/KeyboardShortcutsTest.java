@@ -146,6 +146,7 @@ public class KeyboardShortcutsTest {
         }
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.isTabMultiSelected(TAB_ID)).thenReturn(true);
+        when(mTabModel.getOrderedMultiSelectedTabs()).thenReturn(List.of(tabs.get(0)));
 
         doNothing().when(mTabRemover).closeTabs(any(TabClosureParams.class), anyBoolean());
     }
@@ -165,6 +166,7 @@ public class KeyboardShortcutsTest {
             for (Tab tab : tabsToClose) {
                 when(mTabModel.isTabMultiSelected(tab.getId())).thenReturn(true);
             }
+            when(mTabModel.getOrderedMultiSelectedTabs()).thenReturn(tabsToClose);
             for (int i = 0; i < keyCodeAndModifier.size(); i++) {
                 clearInvocations(mTabRemover);
                 int keyCode = keyCodeAndModifier.get(i).first;
@@ -322,6 +324,7 @@ public class KeyboardShortcutsTest {
         when(mTab.getIsPinned()).thenReturn(true);
         when(mTabModel.isTabMultiSelected(0)).thenReturn(true);
         when(mTabModel.isTabMultiSelected(1)).thenReturn(true);
+        when(mTabModel.getOrderedMultiSelectedTabs()).thenReturn(List.of(mTab, mTab2));
 
         // trigger Ctrl+W keyboard shortcut once.
         ThreadUtils.runOnUiThreadBlocking(

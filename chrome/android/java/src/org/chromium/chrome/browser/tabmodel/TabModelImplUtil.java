@@ -11,6 +11,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Set;
@@ -75,8 +77,27 @@ class TabModelImplUtil {
 
         // Select a nearby tab if one exists.
         if (tabCloseType != TabCloseType.ALL) {
-            Tab nearbyTab =
-                    findNearbyNotClosingTab(model, model.indexOf(closingTabs.get(0)), closingTabs);
+            int anchorIndex = -1;
+
+            // Search for the first closing tab that is not a new tab.
+            for (Tab tab : closingTabs) {
+                if (isNotNewTab(tab)) {
+                    anchorIndex = model.indexOf(tab);
+                    break;
+                }
+            }
+
+            // Fallback to the active tab if all closing tabs were blank new tabs.
+            if (anchorIndex == -1 && currentTab != null) {
+                anchorIndex = model.indexOf(currentTab);
+            }
+
+            // Ultimate fallback to the first closing tab if all else fails.
+            if (anchorIndex == -1) {
+                anchorIndex = model.indexOf(closingTabs.get(0));
+            }
+
+            Tab nearbyTab = findNearbyNotClosingTab(model, anchorIndex, closingTabs);
             if (validNextTab(nearbyTab)) {
                 return nearbyTab;
             }
@@ -95,6 +116,14 @@ class TabModelImplUtil {
 
     private static boolean validNextTab(@Nullable Tab tab) {
         return tab != null && !tab.isClosing();
+    }
+
+    private static boolean isNotNewTab(@Nullable Tab tab) {
+        if (tab == null || tab.isClosing()) return false;
+        GURL url = tab.getUrl();
+        if (url == null) return false;
+
+        return !UrlUtilities.isNtpUrl(url);
     }
 
     /**
@@ -123,20 +152,24 @@ class TabModelImplUtil {
      */
     /* package */ static @Nullable Tab findNearbyNotClosingTab(
             Iterable<Tab> tabIterable, int closingIndex, List<Tab> closingTabs) {
-        Tab nearestTab = null;
-        int i = -1;
+        // This is implemented in desktop here: chrome/browser/ui/tabs/tab_strip_model.cc
+        Tab leftCandidate = null;
+        int currentIndex = 0;
+
         for (Tab tab : tabIterable) {
-            i++;
-            if (i == closingIndex) {
-                continue;
-            } else if (i > closingIndex && nearestTab != null) {
-                return nearestTab;
+            if (currentIndex < closingIndex) {
+                if (validNextTab(tab, closingTabs)) leftCandidate = tab;
+            } else if (currentIndex > closingIndex) {
+                if (validNextTab(tab, closingTabs)) return tab;
             }
-            if (!tab.isClosing() && !closingTabs.contains(tab)) {
-                nearestTab = tab;
-            }
+            currentIndex++;
         }
-        return nearestTab;
+
+        return leftCandidate;
+    }
+
+    private static boolean validNextTab(@Nullable Tab tab, List<Tab> closingTabs) {
+        return tab != null && !tab.isClosing() && !closingTabs.contains(tab);
     }
 
     /**

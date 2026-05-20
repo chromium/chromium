@@ -430,11 +430,11 @@ public class TabCollectionTabModelImplTest {
                 List.of(tab1),
                 tabsInFinishingMultiple.get());
         assertEquals("Incorrect tab in onFinishingTabClosure.", tab1, tabInFinishing.get());
-        assertEquals("Incorrect tab selected.", tab0, tabInDidSelect.get());
+        assertEquals("Incorrect tab selected.", tab2, tabInDidSelect.get());
 
         assertEquals("Tab count is wrong.", 2, getCount());
         assertTabsInOrderAre(List.of(tab0, tab2));
-        assertEquals("Incorrect tab is selected after removal.", tab0, getCurrentTab());
+        assertEquals("Incorrect tab is selected after removal.", tab2, getCurrentTab());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
@@ -542,11 +542,11 @@ public class TabCollectionTabModelImplTest {
         assertTrue(
                 "Incorrect tabs in onFinishingTabClosure.",
                 tabsInFinishing.containsAll(tabsToClose));
-        assertEquals("Incorrect tab selected.", tab0, tabInDidSelect.get());
+        assertEquals("Incorrect tab selected.", tab3, tabInDidSelect.get());
 
         assertEquals("Tab count is wrong.", 2, getCount());
         assertTabsInOrderAre(List.of(tab0, tab3));
-        assertEquals("Incorrect tab is selected after removal.", tab0, getCurrentTab());
+        assertEquals("Incorrect tab is selected after removal.", tab3, getCurrentTab());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
@@ -3591,7 +3591,7 @@ public class TabCollectionTabModelImplTest {
         pendingClosureHelper.waitForOnly();
         assertEquals(2, getCount());
         assertTabsInOrderAre(List.of(tab0, tab3));
-        assertEquals(tab0, getCurrentTab());
+        assertEquals(tab3, getCurrentTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -3611,8 +3611,7 @@ public class TabCollectionTabModelImplTest {
                 });
         assertEquals(4, getCount());
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
-
-        assertEquals(tab0, getCurrentTab());
+        assertEquals(tab3, getCurrentTab());
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
 
@@ -3675,7 +3674,7 @@ public class TabCollectionTabModelImplTest {
         pendingClosureHelper.waitForOnly();
         assertEquals(2, getCount());
         assertTabsInOrderAre(List.of(tab0, tab3));
-        assertEquals(tab0, getCurrentTab());
+        assertEquals(tab3, getCurrentTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
