@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/printing/local_printer.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace chromeos {
@@ -22,7 +24,9 @@ namespace ash {
 
 class LocalPrinterImpl : public LocalPrinter {
  public:
-  LocalPrinterImpl();
+  // `application_locale_storage` must be non-null and outlive this.
+  explicit LocalPrinterImpl(
+      const ApplicationLocaleStorage* application_locale_storage);
   LocalPrinterImpl(const LocalPrinterImpl&) = delete;
   LocalPrinterImpl& operator=(const LocalPrinterImpl&) = delete;
   ~LocalPrinterImpl() override;
@@ -50,6 +54,9 @@ class LocalPrinterImpl : public LocalPrinter {
  protected:
   virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile);
+
+ private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 };
 
 }  // namespace ash

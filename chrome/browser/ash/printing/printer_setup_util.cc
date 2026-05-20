@@ -19,8 +19,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/buildflags/buildflags.h"
@@ -100,9 +100,10 @@ void LogPrinterSetup(const chromeos::Printer& printer,
 
 // This runs on a ThreadPoolForegroundWorker and not the UI thread.
 std::optional<::printing::PrinterSemanticCapsAndDefaults>
-FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
-                                      const std::string& locale) {
-  auto print_backend = ::printing::PrintBackend::CreateInstance(locale);
+FetchCapabilitiesOnBlockingTaskRunner(const std::string& application_locale,
+                                      const std::string& printer_id) {
+  auto print_backend =
+      ::printing::PrintBackend::CreateInstance(application_locale);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -169,7 +170,8 @@ void CapabilitiesFetchedFromService(
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-void FetchCapabilities(const std::string& printer_id,
+void FetchCapabilities(const std::string& application_locale,
+                       const std::string& printer_id,
                        GetPrinterCapabilitiesCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -196,12 +198,13 @@ void FetchCapabilities(const std::string& printer_id,
   // USER_VISIBLE because the result is displayed in the print preview dialog.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(FetchCapabilitiesOnBlockingTaskRunner, printer_id,
-                     g_browser_process->GetApplicationLocale()),
+      base::BindOnce(FetchCapabilitiesOnBlockingTaskRunner, application_locale,
+                     printer_id),
       std::move(cb));
 }
 
 void OnPrinterInstalled(
+    const ApplicationLocaleStorage* application_locale_storage,
     CupsPrintersManager* printers_manager,
     const chromeos::Printer& printer,
     base::OnceCallback<void(
@@ -215,14 +218,17 @@ void OnPrinterInstalled(
     return;
   }
   // Fetch settings off of the UI thread and invoke callback.
-  FetchCapabilities(printer.id(), std::move(cb));
+  FetchCapabilities(application_locale_storage->Get(), printer.id(),
+                    std::move(cb));
 }
 
 }  // namespace
 
-void SetUpPrinter(CupsPrintersManager* printers_manager,
+void SetUpPrinter(const ApplicationLocaleStorage* application_locale_storage,
+                  CupsPrintersManager* printers_manager,
                   const chromeos::Printer& printer,
                   GetPrinterCapabilitiesCallback cb) {
+  CHECK(application_locale_storage);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Log printer configuration for selected printer.
@@ -233,14 +239,15 @@ void SetUpPrinter(CupsPrintersManager* printers_manager,
   if (printers_manager->IsPrinterInstalled(printer)) {
     // Skip setup if the printer does not need to be installed.
     // Fetch settings off of the UI thread and invoke callback.
-    FetchCapabilities(printer.id(), std::move(cb));
+    FetchCapabilities(application_locale_storage->Get(), printer.id(),
+                      std::move(cb));
     return;
   }
 
   printers_manager->SetUpPrinter(
       printer, /*is_automatic_installation=*/true,
-      base::BindOnce(OnPrinterInstalled, printers_manager, printer,
-                     std::move(cb)));
+      base::BindOnce(OnPrinterInstalled, application_locale_storage,
+                     printers_manager, printer, std::move(cb)));
 }
 
 }  // namespace printing

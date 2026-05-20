@@ -12,6 +12,8 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/print_backend.h"
 
+class ApplicationLocaleStorage;
+
 namespace ash {
 namespace printing {
 
@@ -24,7 +26,10 @@ using GetPrinterCapabilitiesCallback = base::OnceCallback<void(
 // This function must be called from the UI thread.
 // This function is called when setting up a printer from Print Preview
 // and records a metric with the printer setup result code.
-void SetUpPrinter(CupsPrintersManager* printers_manager,
+// `application_locale_storage` must be non-null and remain valid while the
+// main RunLoop is running.
+void SetUpPrinter(const ApplicationLocaleStorage* application_locale_storage,
+                  CupsPrintersManager* printers_manager,
                   const chromeos::Printer& printer,
                   GetPrinterCapabilitiesCallback cb);
 

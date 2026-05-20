@@ -1204,7 +1204,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   }
 
 #if BUILDFLAG(USE_CUPS)
-  local_printer_ = std::make_unique<LocalPrinterImpl>();
+  local_printer_ = std::make_unique<LocalPrinterImpl>(
+      g_browser_process->GetFeatures()->application_locale_storage());
 #endif
 }
 
@@ -1812,6 +1813,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
+
+#if BUILDFLAG(USE_CUPS)
+  local_printer_.reset();
+#endif
 
   parent_access_service_.reset();
 

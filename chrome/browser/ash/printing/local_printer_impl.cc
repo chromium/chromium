@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
@@ -71,11 +72,13 @@ void OnSetUpPrinter(
 }
 
 // Mark if a not yet installed printer is autoconf then continue with setup.
-void OnPrinterQueriedForAutoConf(ash::CupsPrintersManager* printers_manager,
-                                 LocalPrinter::GetCapabilityCallback callback,
-                                 chromeos::Printer printer,
-                                 bool is_printer_autoconf,
-                                 const chromeos::IppPrinterInfo& info) {
+void OnPrinterQueriedForAutoConf(
+    const ApplicationLocaleStorage* application_locale_storage,
+    ash::CupsPrintersManager* printers_manager,
+    LocalPrinter::GetCapabilityCallback callback,
+    chromeos::Printer printer,
+    bool is_printer_autoconf,
+    const chromeos::IppPrinterInfo& info) {
   if (!is_printer_autoconf) {
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
@@ -84,12 +87,13 @@ void OnPrinterQueriedForAutoConf(ash::CupsPrintersManager* printers_manager,
   printer.mutable_ppd_reference()->autoconf = true;
   printer.set_ipp_printer_info(info);
   printing::SetUpPrinter(
-      printers_manager, printer,
+      application_locale_storage, printers_manager, printer,
       base::BindOnce(OnSetUpPrinter, std::move(callback), printer));
 }
 
 // Query the printer for setup metrics then continue with setup.
 void OnPrinterQueriedForAutoConfMetricsOnly(
+    const ApplicationLocaleStorage* application_locale_storage,
     ash::CupsPrintersManager* printers_manager,
     LocalPrinter::GetCapabilityCallback callback,
     chromeos::Printer printer,
@@ -97,7 +101,7 @@ void OnPrinterQueriedForAutoConfMetricsOnly(
     const chromeos::IppPrinterInfo& info) {
   printer.set_ipp_printer_info(info);
   printing::SetUpPrinter(
-      printers_manager, printer,
+      application_locale_storage, printers_manager, printer,
       base::BindOnce(OnSetUpPrinter, std::move(callback), printer));
 }
 
@@ -105,9 +109,11 @@ void OnPrinterQueriedForAutoConfMetricsOnly(
 // verified. The user can use the printer <=> `status` == StatusCode::kOK.
 // Other values of `status` mean that the access was denied or an error
 // occurred. The function is supposed to set-up the printer <=> the access was
-// granted. The first parameter is used only for keep the pointer alive until
-// this callback is executed.
+// granted. `application_locale_storage` must be non-null and remain valid while
+// the main RunLoop is running. The second parameter is used only
+// to keep the pointer alive until this callback is executed.
 void OnPrinterAuthenticated(
+    const ApplicationLocaleStorage* application_locale_storage,
     std::unique_ptr<ash::printing::PrinterAuthenticator> /* authenticator */,
     ash::CupsPrintersManager* printers_manager,
     const chromeos::Printer& printer,
@@ -134,9 +140,9 @@ void OnPrinterAuthenticated(
     // continue with normal setup.
     if (printer.ppd_reference().IsFilled()) {
       printers_manager->QueryPrinterForAutoConf(
-          printer,
-          base::BindOnce(OnPrinterQueriedForAutoConfMetricsOnly,
-                         printers_manager, std::move(callback), printer));
+          printer, base::BindOnce(OnPrinterQueriedForAutoConfMetricsOnly,
+                                  application_locale_storage, printers_manager,
+                                  std::move(callback), printer));
       return;
     }
 
@@ -148,14 +154,16 @@ void OnPrinterAuthenticated(
     }
 
     printers_manager->QueryPrinterForAutoConf(
-        printer, base::BindOnce(OnPrinterQueriedForAutoConf, printers_manager,
-                                std::move(callback), printer));
+        printer,
+        base::BindOnce(OnPrinterQueriedForAutoConf, application_locale_storage,
+                       printers_manager, std::move(callback), printer));
     return;
   }
 
   printers_manager->QueryPrinterForAutoConf(
       printer, base::BindOnce(OnPrinterQueriedForAutoConfMetricsOnly,
-                              printers_manager, std::move(callback), printer));
+                              application_locale_storage, printers_manager,
+                              std::move(callback), printer));
 }
 
 void OnOAuthAccessTokenObtained(
@@ -177,7 +185,9 @@ void OnOAuthAccessTokenObtained(
 
 }  // namespace
 
-LocalPrinterImpl::LocalPrinterImpl() = default;
+LocalPrinterImpl::LocalPrinterImpl(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 LocalPrinterImpl::~LocalPrinterImpl() = default;
 
@@ -223,12 +233,13 @@ void LocalPrinterImpl::GetCapability(
         printers_manager, auth_manager, *printer);
     ash::printing::PrinterAuthenticator* authenticator_ptr =
         authenticator.get();
-    authenticator_ptr->ObtainAccessTokenIfNeeded(
-        base::BindOnce(OnPrinterAuthenticated, std::move(authenticator),
-                       printers_manager, *printer, std::move(callback)));
+    authenticator_ptr->ObtainAccessTokenIfNeeded(base::BindOnce(
+        OnPrinterAuthenticated, &application_locale_storage_.get(),
+        std::move(authenticator), printers_manager, *printer,
+        std::move(callback)));
   } else {
-    OnPrinterAuthenticated(nullptr, printers_manager, *printer,
-                           std::move(callback),
+    OnPrinterAuthenticated(&application_locale_storage_.get(), nullptr,
+                           printers_manager, *printer, std::move(callback),
                            ash::printing::oauth2::StatusCode::kOK, "");
   }
 }

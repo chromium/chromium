@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -24,6 +25,7 @@
 #include "chromeos/printing/uri.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -85,7 +87,10 @@ class FakePpdProvider : public chromeos::PpdProvider {
 
 class TestLocalPrinterImpl : public LocalPrinterImpl {
  public:
-  TestLocalPrinterImpl() = default;
+  TestLocalPrinterImpl()
+      : LocalPrinterImpl(TestingBrowserProcess::GetGlobal()
+                             ->GetFeatures()
+                             ->application_locale_storage()) {}
   ~TestLocalPrinterImpl() override = default;
 
   scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(

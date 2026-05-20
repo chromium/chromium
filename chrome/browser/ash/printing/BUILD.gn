@@ -141,6 +141,7 @@ static_library("printing") {
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/printing",
     "//chromeos/services/network_config/public/cpp",
+    "//components/application_locale_storage",
     "//components/device_event_log",
     "//components/pref_registry",
     "//printing/backend",
@@ -266,6 +267,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//components/account_id:test_support",
+      "//components/application_locale_storage",
       "//components/session_manager/test:test_support",
       "//printing:printing_base",
       "//printing/backend",

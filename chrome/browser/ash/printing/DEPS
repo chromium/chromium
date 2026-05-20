@@ -38,6 +38,7 @@ include_rules = [
 specific_include_rules = {
   ".*test(_.*)?\\.(cc|h)": [
     "+chrome/browser/ash/system_web_apps/test_support",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
   ],
