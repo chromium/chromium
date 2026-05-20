@@ -41,7 +41,7 @@ readonly DOCKER_CONTAINER="${LINUX_GCC_FLOOR_CONTAINER}"
 
 # Print information about the environment.
 docker run "${DOCKER_CONTAINER}" /usr/bin/fastfetch -c ci
-docker run "${DOCKER_CONTAINER}" /opt/gcc-9/bin/gcc -v
+docker run "${DOCKER_CONTAINER}" /opt/gcc-10/bin/gcc -v
 docker run "${DOCKER_CONTAINER}" cat /root/cached_bazel_versions
 
 # USE_BAZEL_CACHE=1 only works on Kokoro.
@@ -69,10 +69,10 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
-        --env="USE_BAZEL_VERSION=9.0.0" \
-        --env="CC=/opt/gcc-9/bin/gcc" \
+        --env="USE_BAZEL_VERSION=9.1.0" \
+        --env="CC=/opt/gcc-10/bin/gcc" \
         --env="BAZEL_CXXOPTS=-std=${std}" \
-        --env="BAZEL_LINKOPTS=-L/opt/gcc-9/lib64:-Wl,-rpath=/opt/gcc-9/lib64" \
+        --env="BAZEL_LINKOPTS=-L/opt/gcc-10/lib64:-Wl,-rpath=/opt/gcc-10/lib64" \
         --volume="${ABSEIL_ROOT}:/abseil-cpp:ro" \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \

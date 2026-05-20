@@ -53,6 +53,19 @@ namespace macros_internal {
 template <typename T, size_t N>
 auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 }  // namespace macros_internal
+
+namespace base_internal {
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::nomerge)
+[[clang::nomerge]]  // Needed when this function is not inlined
+#endif
+[[noreturn]] inline void HardeningAbort() {
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::nomerge)
+  [[clang::nomerge]]  // Needed when this function is inlined
+#endif
+  ABSL_INTERNAL_IMMEDIATE_ABORT_IMPL();
+  ABSL_INTERNAL_UNREACHABLE_IMPL();
+}
+}  // namespace base_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
 
@@ -122,8 +135,7 @@ ABSL_NAMESPACE_END
 // aborts the program in release mode (when NDEBUG is defined). The
 // implementation should abort the program as quickly as possible and ideally it
 // should not be possible to ignore the abort request.
-#define ABSL_INTERNAL_HARDENING_ABORT() \
-  ((void)ABSL_INTERNAL_IMMEDIATE_ABORT_IMPL(), ABSL_INTERNAL_UNREACHABLE_IMPL())
+#define ABSL_INTERNAL_HARDENING_ABORT() ::absl::base_internal::HardeningAbort()
 
 // ABSL_HARDENING_ASSERT()
 //

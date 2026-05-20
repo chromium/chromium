@@ -338,7 +338,8 @@ TEST(Util, GrowthAndCapacity) {
 }
 
 TEST(Util, probe_seq) {
-  probe_seq<16> seq(0, 127);
+  HashtableCapacity capacity(127);
+  probe_seq<16> seq(capacity, /*hash=*/0);
   auto gen = [&]() {
     size_t res = seq.offset();
     seq.next();
@@ -347,7 +348,7 @@ TEST(Util, probe_seq) {
   std::vector<size_t> offsets(8);
   std::generate_n(offsets.begin(), 8, gen);
   EXPECT_THAT(offsets, ElementsAre(0, 16, 48, 96, 32, 112, 80, 64));
-  seq = probe_seq<16>(128, 127);
+  seq = probe_seq<16>(capacity, /*hash=*/128);
   std::generate_n(offsets.begin(), 8, gen);
   EXPECT_THAT(offsets, ElementsAre(0, 16, 48, 96, 32, 112, 80, 64));
 }
@@ -421,24 +422,24 @@ TYPED_TEST(HashtableDataTest, HashtableInlineDataCapacity) {
   using Capacity = HashtableCapacityImpl<kMode>;
 
   InlineData data(Capacity(0), no_seed_empty_tag_t{});
-  EXPECT_EQ(data.capacity(), 0);
+  EXPECT_EQ(data.capacity().capacity(), 0);
   EXPECT_EQ(data.size(), 0);
   EXPECT_TRUE(data.empty());
 
   for (size_t i = 0, cap = 0; i < 20; ++i, cap = NextCapacity(cap)) {
     data.set_capacity(cap);
-    ASSERT_EQ(data.capacity(), cap);
+    ASSERT_EQ(data.capacity().capacity(), cap);
   }
 
   // Test overload from `Capacity` object.
   for (size_t i = 0, cap = 0; i < 20; ++i, cap = NextCapacity(cap)) {
     data.set_capacity(Capacity(cap));
-    ASSERT_EQ(data.capacity(), cap);
+    ASSERT_EQ(data.capacity().capacity(), cap);
   }
 
   auto reentrance = Capacity::CreateReentrance();
   data.set_capacity(reentrance);
-  EXPECT_TRUE(data.maybe_invalid_capacity().IsReentrance());
+  EXPECT_TRUE(data.capacity().IsReentrance());
 }
 
 TYPED_TEST(HashtableDataTest, HashtableInlineDataSize) {
@@ -502,7 +503,7 @@ TYPED_TEST(HashtableDataTest, HashtableInlineDataFullSooConstructor) {
   {
     InlineData data_soo(Capacity(1), full_soo_tag_t{},
                         /*has_tried_sampling=*/true);
-    EXPECT_EQ(data_soo.capacity(), 1);
+    EXPECT_EQ(data_soo.capacity().capacity(), 1);
     EXPECT_EQ(data_soo.size(), 1);
     EXPECT_TRUE(data_soo.soo_has_tried_sampling());
   }
@@ -510,7 +511,7 @@ TYPED_TEST(HashtableDataTest, HashtableInlineDataFullSooConstructor) {
   {
     InlineData data_soo(Capacity(1), full_soo_tag_t{},
                         /*has_tried_sampling=*/false);
-    EXPECT_EQ(data_soo.capacity(), 1);
+    EXPECT_EQ(data_soo.capacity().capacity(), 1);
     EXPECT_EQ(data_soo.size(), 1);
     EXPECT_FALSE(data_soo.soo_has_tried_sampling());
   }
@@ -2921,12 +2922,11 @@ TEST(TableDeathTest, InvalidIteratorAssertsSoo) {
   // the control is static constant.
 }
 
-// Invalid iterator use can trigger use-after-free in asan/hwasan,
-// use-of-uninitialized-value in msan, or invalidated iterator assertions.
+// Invalid iterator use can trigger crashes or invalidated iterator assertions.
 testing::Matcher<const std::string&> InvalidIteratorMatcher() {
   return AnyOf(HasSubstr("invalidated iterator"), HasSubstr("Invalid iterator"),
-               HasSubstr("invalid iterator"), HasSubstr("use-after-free"),
-               HasSubstr("use-of-uninitialized-value"));
+               HasSubstr("invalid iterator"),
+               HasSubstr("CrashIfIteratorIsInvalid"));
 }
 
 TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperator) {

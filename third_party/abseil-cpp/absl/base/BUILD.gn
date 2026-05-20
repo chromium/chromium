@@ -20,7 +20,6 @@ absl_source_set("errno_saver") {
 }
 
 absl_source_set("hardening") {
-  sources = [ "internal/hardening.cc" ]
   public = [ "internal/hardening.h" ]
   deps = [
     ":config",

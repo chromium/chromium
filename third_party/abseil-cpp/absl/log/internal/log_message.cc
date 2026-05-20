@@ -721,7 +721,7 @@ void LogMessage::CopyToEncodedBufferWithStructuredProtoField(
   }
 
   // Write the string, truncating if necessary.
-  if (!EncodeStringTruncate(ValueTag::kString, str, &encoded_remaining_copy)) {
+  if (!EncodeStringTruncate(tag_value, str, &encoded_remaining_copy)) {
     // The length of the string itself did not fit; zero `encoded_remaining()`
     // so the value is not encoded at all.
     data_->encoded_remaining().remove_suffix(data_->encoded_remaining().size());

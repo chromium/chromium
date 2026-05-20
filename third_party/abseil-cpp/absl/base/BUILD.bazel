@@ -63,9 +63,6 @@ cc_library(
 
 cc_library(
     name = "hardening",
-    srcs = [
-        "internal/hardening.cc",
-    ],
     hdrs = [
         "internal/hardening.h",
     ],

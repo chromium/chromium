@@ -16,7 +16,7 @@
 # Test scripts should source this file to get the identifiers.
 
 readonly LINUX_ALPINE_CONTAINER="gcr.io/google.com/absl-177019/alpine:20230612"
-readonly LINUX_CLANG_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20260131"
-readonly LINUX_ARM_CLANG_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_arm_hybrid-latest:20260131"
-readonly LINUX_GCC_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20260131"
-readonly LINUX_GCC_FLOOR_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20260131"
+readonly LINUX_CLANG_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest@sha256:baa99e65a3cc837bab8e5246f1870d25c76d0adf2b1d598ee5a3ec77fd2e19bd"
+readonly LINUX_ARM_CLANG_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_arm_hybrid-latest@sha256:04479ae67993e1a70dc1730bcddfe3233ac3af178ede0b33044dd9c31b889ac8"
+readonly LINUX_GCC_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest@sha256:baa99e65a3cc837bab8e5246f1870d25c76d0adf2b1d598ee5a3ec77fd2e19bd"
+readonly LINUX_GCC_FLOOR_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest@sha256:baa99e65a3cc837bab8e5246f1870d25c76d0adf2b1d598ee5a3ec77fd2e19bd"

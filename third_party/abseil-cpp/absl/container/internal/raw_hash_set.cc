@@ -91,8 +91,8 @@ bool ShouldRehashForBugDetection(size_t capacity) {
   // `min(1, RehashProbabilityConstant() / capacity())`. In order to do this,
   // we probe based on a random hash and see if the offset is less than
   // RehashProbabilityConstant().
-  return probe(capacity, absl::HashOf(RandomSeed())).offset() <
-         RehashProbabilityConstant();
+  return probe(HashtableCapacity(capacity), absl::HashOf(RandomSeed()))
+             .offset() < RehashProbabilityConstant();
 }
 
 // Find a non-deterministic hash for single group table.
@@ -185,12 +185,12 @@ inline Group::NonIterableBitMaskType probe_till_first_non_full_group(
 }
 
 FindInfo find_first_non_full_from_h1(const ctrl_t* ctrl, size_t h1,
-                                     size_t capacity) {
+                                     HashtableCapacity capacity) {
   auto seq = probe_h1(capacity, h1);
   if (IsEmptyOrDeleted(ctrl[seq.offset()])) {
     return {seq.offset(), /*probe_length=*/0};
   }
-  auto mask = probe_till_first_non_full_group(ctrl, seq, capacity);
+  auto mask = probe_till_first_non_full_group(ctrl, seq, capacity.capacity());
   return {seq.offset(mask.LowestBitSet()), seq.index()};
 }
 
@@ -203,7 +203,7 @@ FindInfo find_first_non_full_from_h1(const ctrl_t* ctrl, size_t h1,
 // slots in the same group. Such tables appear during `erase()`.
 FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
   return find_first_non_full_from_h1(common.control(), H1(hash),
-                                     common.capacity());
+                                     common.capacity_impl());
 }
 
 // Same as `find_first_non_full`, but returns the mask corresponding to the
@@ -869,7 +869,7 @@ void InsertOldSooSlotAndInitializeControlBytes(
 
   const size_t soo_slot_hash =
       policy.hash_slot(policy.hash_fn(c), c.soo_data(), c.seed().seed());
-  size_t offset = probe(new_capacity, soo_slot_hash).offset();
+  size_t offset = probe(c.capacity_impl(), soo_slot_hash).offset();
   offset = offset == new_capacity ? 0 : offset;
   SanitizerPoisonMemoryRegion(new_slots, policy.slot_size * new_capacity);
   void* target_slot = SlotAddress(new_slots, offset, policy.slot_size);
@@ -1072,7 +1072,7 @@ template <typename ProbedItem>
 ABSL_ATTRIBUTE_NOINLINE size_t DecodeAndInsertImpl(
     CommonFields& c, const PolicyFunctions& __restrict policy,
     const ProbedItem* start, const ProbedItem* end, void* old_slots) {
-  const size_t new_capacity = c.capacity();
+  const HashtableCapacity new_capacity = c.capacity_impl();
 
   void* new_slots = c.slot_array();
   ctrl_t* new_ctrl = c.control();
@@ -1087,8 +1087,8 @@ ABSL_ATTRIBUTE_NOINLINE size_t DecodeAndInsertImpl(
     total_probe_length += target.probe_length;
     const size_t old_index = static_cast<size_t>(start->source_offset);
     const size_t new_i = target.offset;
-    ABSL_SWISSTABLE_ASSERT(old_index < new_capacity / 2);
-    ABSL_SWISSTABLE_ASSERT(new_i < new_capacity);
+    ABSL_SWISSTABLE_ASSERT(old_index < new_capacity.capacity() / 2);
+    ABSL_SWISSTABLE_ASSERT(new_i < new_capacity.capacity());
     ABSL_SWISSTABLE_ASSERT(IsEmpty(new_ctrl[new_i]));
     void* src_slot = SlotAddress(old_slots, old_index, slot_size);
     void* dst_slot = SlotAddress(new_slots, new_i, slot_size);

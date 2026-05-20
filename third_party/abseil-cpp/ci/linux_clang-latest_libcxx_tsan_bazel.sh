@@ -69,11 +69,11 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
-        --env="USE_BAZEL_VERSION=9.0.0" \
+        --env="USE_BAZEL_VERSION=9.1.0" \
         --env="CC=/opt/llvm/bin/clang" \
         --env="BAZEL_CXXOPTS=-std=${std}:-nostdinc++" \
-        --env="BAZEL_LINKOPTS=-L/opt/llvm-tsan/lib/x86_64-unknown-linux-gnu:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm-tsan/lib/x86_64-unknown-linux-gnu" \
-        --env="CPLUS_INCLUDE_PATH=/opt/llvm-tsan/include/c++/v1:/opt/llvm-tsan/include/x86_64-unknown-linux-gnu/c++/v1/" \
+        --env="BAZEL_LINKOPTS=-L/opt/llvm-tsan/lib:-lc++:-lc++abi:-lgcc_s:-lm:-Wl,-rpath=/opt/llvm-tsan/lib" \
+        --env="CPLUS_INCLUDE_PATH=/opt/llvm-tsan/include/c++/v1" \
         --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \

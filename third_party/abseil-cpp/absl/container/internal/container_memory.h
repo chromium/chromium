@@ -550,8 +550,18 @@ template <class Fn, class T, bool kIsDefault>
 size_t TypeErasedDerefAndApplyToSlotFn(const void* fn, void* slot_ptr,
                                        size_t seed) {
   const auto* f = static_cast<const Fn*>(fn);
-  const T* slot = *static_cast<const T**>(slot_ptr);
+  const T* slot = *static_cast<T**>(slot_ptr);
   return HashElement<Fn, kIsDefault>{*f, seed}(*slot);
+}
+
+// Type erased function to apply `Fn` to data inside of the `slot_ptr->first`.
+// The data is expected to have type `T`.
+template <class Fn, class T, bool kIsDefault>
+size_t TypeErasedDerefAndApplyToSlotFirstFn(const void* fn, void* slot_ptr,
+                                            size_t seed) {
+  const auto* f = static_cast<const Fn*>(fn);
+  const T* slot = *static_cast<T**>(slot_ptr);
+  return HashElement<Fn, kIsDefault>{*f, seed}(slot->first);
 }
 
 }  // namespace container_internal

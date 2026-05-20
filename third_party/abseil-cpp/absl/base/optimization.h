@@ -31,6 +31,7 @@
 #define ABSL_BASE_OPTIMIZATION_H_
 
 #include <assert.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 // Included for std::unreachable()

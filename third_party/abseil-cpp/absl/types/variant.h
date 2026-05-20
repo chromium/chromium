@@ -37,9 +37,36 @@ ABSL_NAMESPACE_BEGIN
 using bad_variant_access ABSL_REFACTOR_INLINE
     = std::bad_variant_access;
 
-using std::get;
-using std::get_if;
-using std::holds_alternative;
+template <size_t I, typename... Args>
+constexpr auto get(Args&&... args)
+    -> decltype(std::get<I>(std::forward<Args>(args)...)) {
+  return std::get<I>(std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+constexpr decltype(std::get<T>(std::declval<Args>()...)) get(
+    Args&&... args) {
+  return std::get<T>(std::forward<Args>(args)...);
+}
+
+template <size_t I, typename... Args>
+[[deprecated]] constexpr decltype(std::get_if<I>(std::declval<Args>()...))
+get_if(Args&&... args) {
+  return std::get_if<I>(std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+[[deprecated]] constexpr decltype(std::get_if<T>(std::declval<Args>()...))
+get_if(Args&&... args) {
+  return std::get_if<T>(std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+constexpr decltype(std::holds_alternative<T>(
+    std::declval<Args>()...))
+holds_alternative(Args&&... args) {
+  return std::holds_alternative<T>(std::forward<Args>(args)...);
+}
 
 using monostate ABSL_REFACTOR_INLINE
     = std::monostate;
@@ -67,7 +94,11 @@ template <typename T>
 inline constexpr size_t variant_size_v ABSL_REFACTOR_INLINE
     = std::variant_size_v<T>;
 
-using std::visit;
+template <typename... Args>
+[[deprecated]] constexpr decltype(std::visit(std::declval<Args>()...)) visit(
+    Args&&... args) {
+  return std::visit(std::forward<Args>(args)...);
+}
 
 namespace variant_internal {
 // Helper visitor for converting a variant<Ts...>` into another type (mostly

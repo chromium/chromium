@@ -29,6 +29,7 @@
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
+#include "absl/types/optional_ref.h"
 #include "absl/types/source_location.h"
 #include "absl/types/span.h"
 
@@ -62,6 +63,7 @@ enum class StatusToStringMode : int;
 namespace status_internal {
 #ifndef SWIG
 class StatusPrivateAccessor;
+class StatusPrivateAccessorForStatusBuilder;
 #endif  // !SWIG
 
 // Container for status payloads.
@@ -112,7 +114,17 @@ class StatusRep {
 
   // Returns an equivalent heap allocated StatusRep with refcount 1.
   //
-  // `this` is not safe to be used after calling as it may have been deleted.
+  // If `new_message` is provided, the message will be replaced with the new
+  // message.
+  StatusRep* absl_nonnull Clone(
+      absl::optional_ref<absl::string_view> new_message, bool include_payloads,
+      bool include_source_locations) const;
+
+  // Same as Clone(), but also removes a reference to `this`. `this` is not safe
+  // to be used after calling as it may have been deleted.
+  StatusRep* absl_nonnull CloneAndUnref(
+      absl::optional_ref<absl::string_view> new_message, bool include_payloads,
+      bool include_source_locations) const;
   StatusRep* absl_nonnull CloneAndUnref() const;
 
  private:

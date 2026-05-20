@@ -71,6 +71,7 @@ cc_library(
         "//absl/strings:cord",
         "//absl/strings:str_format",
         "//absl/types:optional",
+        "//absl/types:optional_ref",
         "//absl/types:source_location",
         "//absl/types:span",
     ],
@@ -162,6 +163,78 @@ cc_binary(
         ":status",
         ":statusor",
         "@google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_library(
+    name = "status_builder",
+    srcs = ["status_builder.cc"],
+    hdrs = ["status_builder.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":status",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/base:log_severity",
+        "//absl/strings",
+        "//absl/strings:cord",
+        "//absl/strings:internal",
+        "//absl/strings:stringify_stream",
+        "//absl/time",
+        "//absl/types:source_location",
+    ],
+)
+
+cc_test(
+    name = "status_builder_test",
+    srcs = ["status_builder_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":status",
+        ":status_builder",
+        ":status_matchers",
+        ":statusor",
+        "//absl/base:config",
+        "//absl/log",
+        "//absl/log:flags",
+        "//absl/log:log_entry",
+        "//absl/log:log_sink",
+        "//absl/strings",
+        "//absl/types:source_location",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "status_macros",
+    hdrs = ["status_macros.h"],
+    deps = [
+        ":status",
+        ":status_builder",
+        ":statusor",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/types:source_location",
+    ],
+)
+
+cc_test(
+    name = "status_macros_test",
+    size = "small",
+    srcs = ["status_macros_test.cc"],
+    deps = [
+        ":status",
+        ":status_builder",
+        ":status_macros",
+        ":statusor",
+        "//absl/base:core_headers",
+        "//absl/strings:string_view",
+        "//absl/types:source_location",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 

@@ -69,7 +69,7 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
-        --env="USE_BAZEL_VERSION=9.0.0" \
+        --env="USE_BAZEL_VERSION=9.1.0" \
         --env="CC=/opt/llvm/bin/clang" \
         --env="BAZEL_CXXOPTS=-std=${std}:-nostdinc++" \
         --env="BAZEL_LINKOPTS=-L/opt/llvm/lib/x86_64-unknown-linux-gnu:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/lib/x86_64-unknown-linux-gnu" \

@@ -698,6 +698,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   static Status MakeNonOkStatusWithOkCode(absl::string_view message);
 
   friend class absl::status_internal::StatusPrivateAccessor;
+  friend class absl::status_internal::StatusPrivateAccessorForStatusBuilder;
 #endif  // !SWIG
 
   // Creates a status in the canonical error space with the specified

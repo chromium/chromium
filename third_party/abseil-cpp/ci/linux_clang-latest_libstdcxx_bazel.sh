@@ -70,7 +70,7 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
-        --env="USE_BAZEL_VERSION=9.0.0" \
+        --env="USE_BAZEL_VERSION=9.1.0" \
         --env="CC=/opt/llvm/bin/clang" \
         --env="BAZEL_CXXOPTS=-std=${std}" \
         --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \

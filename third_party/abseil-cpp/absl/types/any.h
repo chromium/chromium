@@ -25,6 +25,7 @@
 #define ABSL_TYPES_ANY_H_
 
 #include <any>  // IWYU pragma: export
+#include <initializer_list>
 
 #include "absl/base/config.h"
 
@@ -35,10 +36,30 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+
 using any ABSL_DEPRECATE_AND_INLINE() = std::any;
-using std::any_cast;
+
+template <typename T, typename... Args>
+[[deprecated]] constexpr decltype(std::any_cast<T>(std::declval<Args>()...))
+any_cast(Args&&... args) {
+  return std::any_cast<T>(std::forward<Args>(args)...);
+}
+
 using bad_any_cast ABSL_DEPRECATE_AND_INLINE() = std::bad_any_cast;
-using std::make_any;
+
+template <typename T, typename... Args>
+[[deprecated]] constexpr decltype(std::make_any<T>(std::declval<Args>()...))
+make_any(Args&&... args) {
+  return std::make_any<T>(std::forward<Args>(args)...);
+}
+
+template <typename T, typename U, typename... Args>
+[[deprecated]] constexpr decltype(std::make_any<T>(
+    std::declval<std::initializer_list<U>>(), std::declval<Args>()...))
+make_any(std::initializer_list<U> il, Args&&... args) {
+  return std::make_any<T>(il, std::forward<Args>(args)...);
+}
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 

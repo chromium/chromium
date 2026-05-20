@@ -1,6 +1,6 @@
 Deprecated abseil api that is still used by some third party libraries.
 When possible, this patch should be reduced!
-This patch is currently relied on by grpc and protobuf libraries.
+This patch is currently relied on by grpc, protobuf, and nearby libraries.
 ---
 diff --git a/third_party/abseil-cpp/absl/synchronization/mutex.h b/third_party/abseil-cpp/absl/synchronization/mutex.h
 index ad156d443d6c5..13e8e3ff58775 100644
@@ -64,3 +64,32 @@ index aaacc2899a28a..213a0ff23b96e 100644
  WebSafeBase64Escape(absl::string_view src, std::string* absl_nonnull dest) {
    *dest = WebSafeBase64Escape(src);
  }
+diff --git a/third_party/abseil-cpp/absl/types/variant.h b/third_party/abseil-cpp/absl/types/variant.h
+index 49f3e24a86e7e..a6e5187fa2f48 100644
+--- a/third_party/abseil-cpp/absl/types/variant.h
++++ b/third_party/abseil-cpp/absl/types/variant.h
+@@ -38,13 +38,13 @@ using bad_variant_access ABSL_REFACTOR_INLINE
+     = std::bad_variant_access;
+ 
+ template <size_t I, typename... Args>
+-[[deprecated]] constexpr auto get(Args&&... args)
++constexpr auto get(Args&&... args)
+     -> decltype(std::get<I>(std::forward<Args>(args)...)) {
+   return std::get<I>(std::forward<Args>(args)...);
+ }
+ 
+ template <typename T, typename... Args>
+-[[deprecated]] constexpr decltype(std::get<T>(std::declval<Args>()...)) get(
++constexpr decltype(std::get<T>(std::declval<Args>()...)) get(
+     Args&&... args) {
+   return std::get<T>(std::forward<Args>(args)...);
+ }
+@@ -62,7 +62,7 @@ get_if(Args&&... args) {
+ }
+ 
+ template <typename T, typename... Args>
+-[[deprecated]] constexpr decltype(std::holds_alternative<T>(
++constexpr decltype(std::holds_alternative<T>(
+     std::declval<Args>()...))
+ holds_alternative(Args&&... args) {
+   return std::holds_alternative<T>(std::forward<Args>(args)...);

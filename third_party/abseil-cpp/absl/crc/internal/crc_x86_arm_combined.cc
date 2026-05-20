@@ -746,8 +746,10 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
 CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
   CpuType type = GetCpuType();
   switch (type) {
-    case CpuType::kIntelHaswell:
     case CpuType::kAmdRome:
+      return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
+          3, 0, 0, CutoffStrategy::Fold3>();
+    case CpuType::kIntelHaswell:
     case CpuType::kAmdNaples:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 1, 0, CutoffStrategy::Fold3>();
