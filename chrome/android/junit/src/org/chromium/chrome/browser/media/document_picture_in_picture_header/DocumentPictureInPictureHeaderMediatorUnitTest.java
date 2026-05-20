@@ -48,6 +48,9 @@ import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
+import org.chromium.components.url_formatter.SchemeDisplay;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.display.DisplayAndroid;
@@ -68,6 +71,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
     @Mock private DisplayAndroid mDisplayAndroid;
+    @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
 
     private WebContents mOpenerWebContents;
     private WebContents mWebContents;
@@ -95,6 +99,14 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         when(mThemeColorProvider.getActivityFocusTint()).thenReturn(DEFAULT_FOCUS_TINT);
         when(mThemeColorProvider.getBrandedColorScheme()).thenReturn(DEFAULT_BRANDED_COLOR_SCHEME);
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
+        UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
+        Mockito.lenient()
+                .when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(any(), anyInt()))
+                .thenAnswer(
+                        invocation -> {
+                            GURL url = invocation.getArgument(0);
+                            return url.getHost();
+                        });
         mOpenerWebContents =
                 Mockito.mock(
                         WebContents.class,
@@ -489,5 +501,18 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 expectedIcon,
                 (int) mModel.get(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
+    }
+
+    @Test
+    @SmallTest
+    public void testUrlFormattedForSecurityDisplay() {
+        GURL url = new GURL("https://accounts.google.com.attacker.com");
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
+                .thenReturn("accounts.google.com.attacker.com");
+        createMediator(/* isBackToTabShown= */ true, url);
+        assertEquals(
+                "accounts.google.com.attacker.com",
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
     }
 }

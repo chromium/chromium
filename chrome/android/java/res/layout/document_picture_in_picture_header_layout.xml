@@ -28,6 +28,7 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@dimen/document_picture_in_picture_header_component_size"
         android:scaleType="center" />
 
+    <!-- Ellipsize start (head elision) is consistent with desktop (ELIDE_HEAD) to prevent origin spoofing. -->
     <TextView
         android:id="@+id/document_picture_in_picture_header_url_bar"
         android:background="@null"
@@ -41,7 +42,7 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@dimen/document_picture_in_picture_url_bar_margin"
         android:layout_weight="1"
         android:enabled="false"
-        android:ellipsize="end"
+        android:ellipsize="start"
         android:scrollHorizontally="false"
         android:gravity="center_vertical"
         android:focusable="false"
