@@ -10086,14 +10086,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mouse.ScrollSensitivity{PreferenceChangeType}"
-    enum="PointerSensitivity" expires_after="2025-12-01">
+    enum="PointerSensitivity" expires_after="2026-11-03">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Mouse scroll sensitivity value. Only reported on Chrome OS.
 
-    Warning: this histogram was expired from 2020-12-01 to M105; data may be
-    missing. {PreferenceChangeType}
+    Warning: this histogram was expired from 2025-12-01 to 2026-05-18; data may
+    be missing. {PreferenceChangeType}
   </summary>
 </histogram>
 
