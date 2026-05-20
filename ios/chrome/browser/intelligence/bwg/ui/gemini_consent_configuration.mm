@@ -9,6 +9,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -16,12 +17,20 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
 // Spacing and icon size attributes.
-static const CGFloat kIconSize = 16.0;
+const CGFloat kIconSize = 16.0;
+const CGFloat kLiveHeaderIconPointSize = 24.0;
 
 // ISO alpha-2 country codes. Lowercased to match `base::ToLowerASCII`.
 static NSString* const kSouthKoreaCountryCode = @"kr";
 static NSString* const kUSCountryCode = @"us";
+
+// Non-shared symbol names.
+NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
+
+}  // namespace
 
 @implementation GeminiConsentHeader
 
@@ -73,23 +82,33 @@ static NSString* const kUSCountryCode = @"us";
                                  strict:(BOOL)useStrict
                                    type:(GeminiFREType)type
                                 country:(NSString*)country {
-  if (type == GeminiFREType::kLive) {
-    // TODO(crbug.com/510738937): Implement Live FRE consent configuration.
-    NOTREACHED();
+  switch (type) {
+    case GeminiFREType::kLive: {
+      NSArray<GeminiConsentRow*>* rows = @[
+        [self liveFirstRow],
+        [self liveSecondRow],
+        [self liveThirdRow],
+      ];
+      return [[GeminiConsentConfiguration alloc] initWithRows:rows
+                                                     footnote:nil
+                                                       header:[self liveHeader]
+                                                  collapsible:NO];
+    }
+    case GeminiFREType::kNewUser: {
+      NSArray<GeminiConsentRow*>* rows = @[
+        [self standardFirstRowForManaged:isManaged],
+        [self standardSecondRowForManaged:isManaged],
+      ];
+
+      NSAttributedString* footnote = [self footnoteForCountry:country
+                                                    useStrict:useStrict];
+
+      return [[GeminiConsentConfiguration alloc] initWithRows:rows
+                                                     footnote:footnote
+                                                       header:nil
+                                                  collapsible:NO];
+    }
   }
-
-  NSArray<GeminiConsentRow*>* rows = @[
-    [self standardFirstRowForManaged:isManaged],
-    [self standardSecondRowForManaged:isManaged]
-  ];
-
-  NSAttributedString* footnote = [self footnoteForCountry:country
-                                                useStrict:useStrict];
-
-  return [[GeminiConsentConfiguration alloc] initWithRows:rows
-                                                 footnote:footnote
-                                                   header:nil
-                                              collapsible:NO];
 }
 
 #pragma mark - Private Helper Class Methods
@@ -310,6 +329,92 @@ static NSString* const kUSCountryCode = @"us";
   }
 
   return [footnote copy];
+}
+
+#pragma mark - Live FRE
+
+// Builds the custom header for the Live consent FRE.
++ (GeminiConsentHeader*)liveHeader {
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithPointSize:kLiveHeaderIconPointSize
+                          weight:UIImageSymbolWeightMedium];
+  UIImage* icon;
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  icon = CustomSymbolWithConfiguration(kGeminiLiveLogoSymbol, config);
+#else
+  icon = DefaultSymbolWithConfiguration(kGeminiNonBrandedLogoSymbol, config);
+#endif
+
+  NSMutableAttributedString* attributedTitle =
+      [[NSMutableAttributedString alloc]
+          initWithString:@"Go Live with Gemini"
+              attributes:@{
+                NSFontAttributeName : PreferredFontForTextStyle(
+                    UIFontTextStyleTitle2, UIFontWeightRegular),
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor]
+              }];
+  NSRange geminiRange = [attributedTitle.string rangeOfString:@"Gemini"];
+  if (geminiRange.location != NSNotFound) {
+    [attributedTitle addAttribute:NSForegroundColorAttributeName
+                            value:[UIColor colorNamed:kBlue600Color]
+                            range:geminiRange];
+  }
+
+  return [[GeminiConsentHeader alloc] initWithIcon:icon title:attributedTitle];
+}
+
+// Builds the first live FRE consent row.
++ (GeminiConsentRow*)liveFirstRow {
+  UIImage* icon = DefaultSymbolWithConfiguration(
+      kMicrophoneSymbol, [self defaultSymbolConfiguration]);
+  // TODO(crbug.com/498291812): Replace strings placeholders.
+  NSString* bodyText =
+      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do "
+      @"eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+  NSAttributedString* body =
+      [[NSAttributedString alloc] initWithString:bodyText
+                                      attributes:[self defaultTextAttributes]];
+  return [[GeminiConsentRow alloc] initWithIcon:icon title:nil body:body];
+}
+
+// Builds the second live FRE consent row.
++ (GeminiConsentRow*)liveSecondRow {
+  UIImage* icon = DefaultSymbolWithConfiguration(
+      kInfoCircleSymbol, [self defaultSymbolConfiguration]);
+  // TODO(crbug.com/498291812): Replace strings placeholders.
+  NSString* fullText =
+      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+      @"eiusmod tempor incididunt ut labore et dolore magna aliqua. "
+      @"Gemini Apps Privacy Notice, Learn more.";
+
+  NSAttributedString* body =
+      [self bodyAttributedTextForText:fullText
+                                links:@[
+                                  @"Gemini Apps Privacy Notice",
+                                  @"Learn more",
+                                ]
+                              actions:@[
+                                kGeminiLivePrivacyNoticeLinkAction,
+                                kGeminiLiveLearnMoreLinkAction
+                              ]];
+  return [[GeminiConsentRow alloc] initWithIcon:icon title:nil body:body];
+}
+
+// Builds the third live FRE consent row.
++ (GeminiConsentRow*)liveThirdRow {
+  UIImage* icon = DefaultSymbolWithConfiguration(
+      kWarningShieldSymbol, [self defaultSymbolConfiguration]);
+  // TODO(crbug.com/498291812): Replace strings placeholders.
+  NSString* fullText =
+      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+      @"Respect other's privacy ipsum dolor sit amet.";
+
+  NSAttributedString* body =
+      [self bodyAttributedTextForText:fullText
+                                links:@[ @"Respect other's privacy" ]
+                              actions:@[ kGeminiLivePrivacyPolicyLinkAction ]];
+  return [[GeminiConsentRow alloc] initWithIcon:icon title:nil body:body];
 }
 
 @end

@@ -13,6 +13,10 @@
 
 namespace {
 
+// ISO alpha-2 country codes.
+NSString* const kSouthKoreaCountryCode = @"kr";
+NSString* const kUSCountryCode = @"us";
+
 // Helper function to check for a link in an attributed string.
 BOOL HasLinkWithAction(NSAttributedString* attributedText, NSString* action) {
   __block BOOL found_link = NO;
@@ -43,12 +47,20 @@ class GeminiConsentConfigurationTest : public PlatformTest {
                            type:GeminiFREType::kNewUser
                         country:country];
   }
+
+  GeminiConsentConfiguration* BuildLiveConfiguration() {
+    return
+        [GeminiConsentConfiguration configurationForManaged:NO
+                                                     strict:NO
+                                                       type:GeminiFREType::kLive
+                                                    country:kUSCountryCode];
+  }
 };
 
 // Tests that standard configuration rows count is exactly 2.
 TEST_F(GeminiConsentConfigurationTest, StandardRowCount) {
   GeminiConsentConfiguration* config =
-      BuildStandardConfiguration(NO, NO, @"us");
+      BuildStandardConfiguration(NO, NO, kUSCountryCode);
   ASSERT_NE(nil, config);
   EXPECT_EQ(2U, config.rows.count);
   EXPECT_FALSE(config.collapsible);
@@ -58,7 +70,7 @@ TEST_F(GeminiConsentConfigurationTest, StandardRowCount) {
 // Tests properties for non-managed accounts.
 TEST_F(GeminiConsentConfigurationTest, StandardNonManagedAccountRows) {
   GeminiConsentConfiguration* config =
-      BuildStandardConfiguration(NO, NO, @"us");
+      BuildStandardConfiguration(NO, NO, kUSCountryCode);
 
   GeminiConsentRow* row1 = config.rows[0];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE),
@@ -84,7 +96,7 @@ TEST_F(GeminiConsentConfigurationTest, StandardNonManagedAccountRows) {
 // Tests properties for managed accounts.
 TEST_F(GeminiConsentConfigurationTest, StandardManagedAccountRows) {
   GeminiConsentConfiguration* config =
-      BuildStandardConfiguration(YES, NO, @"us");
+      BuildStandardConfiguration(YES, NO, kUSCountryCode);
 
   GeminiConsentRow* row1 = config.rows[0];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE),
@@ -108,7 +120,7 @@ TEST_F(GeminiConsentConfigurationTest, StandardManagedAccountRows) {
 TEST_F(GeminiConsentConfigurationTest, FootnoteForUSAndNonUS) {
   // US Footnote
   GeminiConsentConfiguration* us_config =
-      BuildStandardConfiguration(NO, NO, @"us");
+      BuildStandardConfiguration(NO, NO, kUSCountryCode);
   EXPECT_TRUE(
       HasLinkWithAction(us_config.footnote, kGeminiFirstFootnoteLinkAction));
   EXPECT_TRUE(
@@ -119,7 +131,7 @@ TEST_F(GeminiConsentConfigurationTest, FootnoteForUSAndNonUS) {
 
   // Korea Footnote
   GeminiConsentConfiguration* kr_config =
-      BuildStandardConfiguration(NO, NO, @"kr");
+      BuildStandardConfiguration(NO, NO, kSouthKoreaCountryCode);
   EXPECT_TRUE(
       HasLinkWithAction(kr_config.footnote, kGeminiFirstFootnoteLinkAction));
   EXPECT_TRUE(
@@ -134,6 +146,40 @@ TEST_F(GeminiConsentConfigurationTest, FootnoteForUSAndNonUS) {
 // Tests footnote strict watch link.
 TEST_F(GeminiConsentConfigurationTest, StrictConsentFootnote) {
   GeminiConsentConfiguration* config =
-      BuildStandardConfiguration(NO, YES, @"us");
+      BuildStandardConfiguration(NO, YES, kUSCountryCode);
   EXPECT_TRUE(HasLinkWithAction(config.footnote, kGeminiWatchLinkAction));
+}
+
+// Tests that Live configuration has exactly 3 rows and a custom header.
+TEST_F(GeminiConsentConfigurationTest, LiveConfigurationStructure) {
+  GeminiConsentConfiguration* config = BuildLiveConfiguration();
+  ASSERT_NE(nil, config);
+  EXPECT_EQ(3U, config.rows.count);
+  EXPECT_FALSE(config.collapsible);
+
+  // Header
+  ASSERT_NE(nil, config.header);
+  EXPECT_NE(nil, config.header.icon);
+  EXPECT_GT(config.header.title.length, 0U);
+}
+
+// Tests properties of Live rows and links.
+TEST_F(GeminiConsentConfigurationTest, LiveRowPropertiesAndLinks) {
+  GeminiConsentConfiguration* config = BuildLiveConfiguration();
+
+  // Row 1
+  GeminiConsentRow* row1 = config.rows[0];
+  EXPECT_EQ(nil, row1.title);
+  EXPECT_GT(row1.body.length, 0U);
+
+  // Row 2
+  GeminiConsentRow* row2 = config.rows[1];
+  EXPECT_EQ(nil, row2.title);
+  EXPECT_TRUE(HasLinkWithAction(row2.body, kGeminiLivePrivacyNoticeLinkAction));
+  EXPECT_TRUE(HasLinkWithAction(row2.body, kGeminiLiveLearnMoreLinkAction));
+
+  // Row 3
+  GeminiConsentRow* row3 = config.rows[2];
+  EXPECT_EQ(nil, row3.title);
+  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiLivePrivacyPolicyLinkAction));
 }

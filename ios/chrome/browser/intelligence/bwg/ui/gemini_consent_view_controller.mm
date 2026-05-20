@@ -361,7 +361,7 @@ NSDictionary* GetLinkAttributes(NSString* action, UIFontTextStyle fontStyle) {
   iconView.image = CustomSymbolWithConfiguration(kGeminiLiveLogoSymbol, config);
 #else
   iconView.image =
-      CustomSymbolWithConfiguration(kGeminiNonBrandedLogoSymbol, config);
+      DefaultSymbolWithConfiguration(kGeminiNonBrandedLogoSymbol, config);
 #endif
   iconView.contentMode = UIViewContentModeScaleAspectFit;
   iconView.translatesAutoresizingMaskIntoConstraints = NO;
