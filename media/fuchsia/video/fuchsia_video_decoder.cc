@@ -167,7 +167,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
                                         const gfx::Size& natural_size,
                                         base::TimeDelta timestamp,
                                         base::OnceClosure reuse_callback) {
-    DCHECK(!is_used_);
+    CHECK(!is_used_);
     is_used_ = true;
     reuse_callback_ = std::move(reuse_callback);
 
