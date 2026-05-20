@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>:link-to() parsing tests</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#link-to-pseudo-class">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style id="sheet">
+  :link-to(url-pattern("/\"")) {}
+</style>
+<script>
+  // Ideally, these tests should use test_valid_selector() from
+  // /css/support/parsing-testcommon.js instead, but that's crashing because
+  // of crbug.com/514721936
+  test(() => {
+    sheet.sheet.cssRules.length;
+    assert_equals(sheet.sheet.cssRules.length, 1);
+    assert_equals(sheet.sheet.cssRules[0].selectorText, ':link-to(url-pattern("/\\""))');
+  }, "Check that url-pattern() escapes the string on serialization");
+</script>

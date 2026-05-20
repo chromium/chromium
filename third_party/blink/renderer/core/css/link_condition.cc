@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/link_condition.h"
 
 #include "base/memory/stack_allocated.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -95,15 +96,13 @@ KleeneValue NavigationParamExpNode::Evaluate(
 
 void NavigationParamExpNode::SerializeTo(StringBuilder& builder) const {
   if (value_) {
-    builder.Append("\"");
-    builder.Append(param_);
-    builder.Append("\": \"");
-    builder.Append(value_);
-    builder.Append("\"");
+    SerializeString(param_, builder);
+    builder.Append(": ");
+    SerializeString(value_, builder);
   } else {
-    builder.Append("navigation-param(\"");
-    builder.Append(param_);
-    builder.Append("\")");
+    builder.Append("navigation-param(");
+    SerializeString(param_, builder);
+    builder.Append(")");
   }
 }
 

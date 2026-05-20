@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/navigation_query.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
@@ -35,11 +36,11 @@ const Route* NavigationLocation::FindOrCreateRoute(Document& document) const {
 void NavigationLocation::SerializeTo(StringBuilder& builder) const {
   DCHECK(!string_.IsNull());
   if (url_pattern_) {
-    builder.Append("url-pattern(\"");
-    builder.Append(string_);
-    builder.Append("\")");
+    builder.Append("url-pattern(");
+    SerializeString(string_, builder);
+    builder.Append(")");
   } else {
-    builder.Append(string_);
+    SerializeIdentifier(string_, builder);
   }
 }
 

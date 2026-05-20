@@ -17,6 +17,9 @@
 <style class="test" id="sheet5">
   @navigation (at: urlpattern("/r66/")) { }
 </style>
+<style class="test" id="sheet6">
+  @navigation (at: \)) { }
+</style>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -25,6 +28,7 @@
                        '@navigation ((from: r66) or (to: blah))',
                        '@navigation (Attention! This is General Enclosed speaking)',
                        '@navigation (at: urlpattern("/r66/"))',
+                       '@navigation (at: \\))',
                      ];
   document.querySelectorAll(".test").forEach((elm) => {
     test(()=> {
