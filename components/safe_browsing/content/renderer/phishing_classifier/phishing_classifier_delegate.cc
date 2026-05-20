@@ -45,6 +45,13 @@ GURL StripRef(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
+GURL StripQueryAndRef(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements);
+}
+
 void LogClassificationRetryWithinTimeout(bool success) {
   base::UmaHistogramBoolean(
       "SBClientPhishing.Classifier.ReadyAfterRetryTimeout", success);
@@ -331,8 +338,14 @@ void PhishingClassifierDelegate::ClassificationDone(
     }
   }
 
+  // In the process of classifiation, especially on pages that are single page
+  // applications (SPAs), the URL could change due to pushState, etc. Check once
+  // more that the URL still matches, ignoring ref and query.
   if (result == mojom::PhishingDetectorResult::SUCCESS) {
-    DCHECK_EQ(last_url_sent_to_classifier_.spec(), verdict.url());
+    DCHECK(StripQueryAndRef(last_url_sent_to_classifier_) ==
+           StripQueryAndRef(GURL(verdict.url())))
+        << "URL mismatch: " << last_url_sent_to_classifier_.spec() << " vs "
+        << verdict.url();
   }
   request_type_ = std::nullopt;
   RecordEvent(SBPhishingClassifierEvent::kPhishingClassifierRequestResponded);

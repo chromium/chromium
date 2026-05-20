@@ -80,7 +80,12 @@ void PhishingClassifier::BeginClassification(DoneCallback done_callback) {
   visual_extractor_ = std::make_unique<PhishingVisualFeatureExtractor>();
   done_callback_ = std::move(done_callback);
 
+  // Cache the URL of the frame right before paint capture for visual
+  // extraction. This is needed because the URL of the frame may change
+  // after the page has finished loading and during classification via same
+  // page navigation.
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
+  classification_url_ = frame->GetDocument().Url();
 
   // Check whether the URL is one that we should classify.
   // Currently, we only classify http/https URLs that are GET requests.
@@ -149,11 +154,9 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
     return;
   }
 
-  blink::WebLocalFrame* main_frame = render_frame_->GetWebFrame();
-
   std::unique_ptr<ClientPhishingRequest> verdict =
       std::make_unique<ClientPhishingRequest>();
-  verdict->set_url(main_frame->GetDocument().Url().GetString().Utf8());
+  verdict->set_url(classification_url_.spec());
   // Because the client_score is required, set a dummy value so that it can be
   // parsed in the browser host class.
   verdict->set_client_score(0);

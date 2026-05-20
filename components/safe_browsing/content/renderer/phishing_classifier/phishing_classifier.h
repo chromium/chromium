@@ -161,6 +161,10 @@ class PhishingClassifier {
   // tflite model was applied.
   std::optional<safe_browsing::mojom::ClientSideDetectionType> request_type_;
 
+  // The URL of the page being classified. Stored at the beginning of
+  // classification to ensure consistency in the verdict.
+  GURL classification_url_;
+
   // Used in scheduling BeginFeatureExtraction tasks.
   // These pointers are invalidated if classification is cancelled.
   base::WeakPtrFactory<PhishingClassifier> weak_factory_{this};
