@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
@@ -57,6 +60,15 @@ size_t GetVisibleItemCount(const ui::SimpleMenuModel* menu_model) {
     }
   }
   return visible_count;
+}
+
+void OpenClassicPopup(Profile* profile, OmniboxController* omnibox_controller) {
+  auto* edit_model = omnibox_controller->edit_model();
+  edit_model->SetUserText(u"foo");
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::BLANK,
+                          ChromeAutocompleteSchemeClassifier(profile));
+  input.set_omit_asynchronous_matches(true);
+  omnibox_controller->StartAutocomplete(input);
 }
 
 }  // namespace
@@ -259,8 +271,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxContextMenuControllerBrowserTestWithCommand,
   ASSERT_TRUE(omnibox_controller);
 
   // Start with the popup in Classic state.
-  omnibox_controller->popup_state_manager()->SetPopupState(
-      OmniboxPopupState::kClassic);
+  OpenClassicPopup(browser()->profile(), omnibox_controller);
 
   // Executing the command should record that AIM was NOT open.
   controller.ExecuteCommand(GetCommandId(), 0);
@@ -676,8 +687,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
       OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
           ->get_omnibox_controller();
   ASSERT_TRUE(omnibox_controller);
-  omnibox_controller->popup_state_manager()->SetPopupState(
-      OmniboxPopupState::kClassic);
+  OpenClassicPopup(browser()->profile(), omnibox_controller);
 
   ASSERT_NE(command_id, -1) << "Drive option not found in menu";
   controller.ExecuteCommand(command_id, 0);
