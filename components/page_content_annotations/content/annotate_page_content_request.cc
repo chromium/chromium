@@ -313,15 +313,7 @@ void AnnotatedPageContentRequest::DidFinishNavigationWithPageSettledMonitor(
     pending_page_settled_monitors_.erase(it);
   }
 
-  // Skip about:blank navigations. Legacy path waits for FCP which never occurs
-  // for about:blank, effectively skipping it. We match that behavior here
-  // to avoid unnecessary extractions for pages without meaningful content.
-  //
-  // TODO(b/422120832): Considering moving the about:blank logic to
-  // `ShouldExtractPageContent()` when default enabling
-  // `kPageContentExtractionUsingPageSettledMonitor`.
-  if (!ShouldExtractPageContent(navigation_handle) ||
-      navigation_handle->GetURL().IsAboutBlank()) {
+  if (!ShouldExtractPageContent(navigation_handle)) {
     return;
   }
 
