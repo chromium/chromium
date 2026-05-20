@@ -17,6 +17,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -25,6 +26,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -852,6 +854,61 @@ PrefetchServiceInjectedEligibilityCheckFuture::
     ~PrefetchServiceInjectedEligibilityCheckFuture() {
   prefetch_service_->SetInjectedEligibilityCheckForTesting(
       base::NullCallback());
+}
+
+void VerifyIsolationInfo(const net::IsolationInfo& isolation_info) {
+  EXPECT_FALSE(isolation_info.IsEmpty());
+  EXPECT_FALSE(isolation_info.network_isolation_key().IsEmpty());
+  EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
+  EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
+}
+
+void VerifyCommonRequestState(const GURL& url,
+                              const VerifyCommonRequestStateOptions& options,
+                              const network::ResourceRequest& request,
+                              BrowserContext* browser_context) {
+  EXPECT_EQ(request.url, url);
+  EXPECT_EQ(request.method, "GET");
+  EXPECT_TRUE(request.enable_load_timing);
+
+  EXPECT_EQ(request.credentials_mode,
+            network::mojom::CredentialsMode::kInclude);
+
+  EXPECT_EQ(request.load_flags, net::LOAD_PREFETCH);
+
+  EXPECT_EQ(request.headers.GetHeader(blink::kPurposeHeaderName),
+            std::optional<std::string>(blink::kSecPurposePrefetchHeaderValue));
+
+  std::string sec_purpose_header_value;
+  if (options.sec_purpose_header_value) {
+    sec_purpose_header_value = options.sec_purpose_header_value.value();
+  } else {
+    sec_purpose_header_value =
+        options.use_prefetch_proxy
+            ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
+            : blink::kSecPurposePrefetchHeaderValue;
+  }
+
+  EXPECT_EQ(request.headers.GetHeader(blink::kSecPurposeHeaderName),
+            std::optional<std::string>(sec_purpose_header_value));
+
+  EXPECT_EQ(request.headers.GetHeader(net::HttpRequestHeaders::kAccept),
+            std::optional<std::string>(FrameAcceptHeaderValue(
+                /*allow_sxg_responses=*/true, browser_context)));
+
+  EXPECT_EQ(request.headers.GetHeader("Upgrade-Insecure-Requests"),
+            std::optional<std::string>("1"));
+
+  ASSERT_TRUE(request.trusted_params.has_value());
+  VerifyIsolationInfo(request.trusted_params->isolation_info);
+
+  EXPECT_EQ(request.priority, options.expected_priority);
+
+  net::HttpRequestHeaders::Iterator header_it(options.additional_headers);
+  while (header_it.GetNext()) {
+    EXPECT_EQ(request.headers.GetHeader(header_it.name()),
+              std::optional<std::string>(header_it.value()));
+  }
 }
 
 }  // namespace content

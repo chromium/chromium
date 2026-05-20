@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/pre_prefetch_service.h"
 #include "content/public/browser/prefetch_priority.h"
@@ -25,12 +26,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_browser_context.h"
-#include "net/http/http_request_headers.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -43,8 +42,10 @@ class PrePrefetchServiceImplTest : public testing::Test {
                 &test_url_loader_factory_)) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPrefetchOffTheMainThread);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kPrefetchOffTheMainThread},
+        /*disabled_features=*/{
+            blink::features::kRemovePurposeHeaderForPrefetch});
     PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(
         test_shared_url_loader_factory_.get());
   }
@@ -129,8 +130,12 @@ TEST_F(PrePrefetchServiceImplTest, StartPrePrefetchRequestFromNonUIThread) {
   std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
   EXPECT_NE(handle, nullptr);
 
+  // Verify that the UI-thread pre-calculated prefetch headers are properly
+  // included in the request.
   network::ResourceRequest request = request_future.Take();
-  EXPECT_EQ(request.url, prefetch_url);
+  VerifyCommonRequestStateOptions options;
+  options.expected_priority = net::RequestPriority::HIGHEST;
+  VerifyCommonRequestState(prefetch_url, options, request, browser_context());
 
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.PrePrefetch.StartResult",

@@ -387,6 +387,18 @@ class PrefetchServiceInjectedEligibilityCheckFuture final {
   TestFutureType result_callback_future_;
 };
 
+struct VerifyCommonRequestStateOptions {
+  bool use_prefetch_proxy = false;
+  net::RequestPriority expected_priority = net::RequestPriority::IDLE;
+  std::optional<std::string> sec_purpose_header_value = std::nullopt;
+  net::HttpRequestHeaders additional_headers;
+};
+
+void VerifyCommonRequestState(const GURL& url,
+                              const VerifyCommonRequestStateOptions& options,
+                              const network::ResourceRequest& request,
+                              BrowserContext* browser_context);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_INTERNAL_H_

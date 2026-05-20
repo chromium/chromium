@@ -548,12 +548,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         });
   }
 
-  struct VerifyCommonRequestStateOptions {
-    bool use_prefetch_proxy = false;
-    net::RequestPriority expected_priority = net::RequestPriority::IDLE;
-    std::optional<std::string> sec_purpose_header_value = std::nullopt;
-    net::HttpRequestHeaders additional_headers;
-  };
 
   void VerifyCommonRequestState(const GURL& url) {
     VerifyCommonRequestState(url, {});
@@ -617,12 +611,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
               PrefetchContainer::LoadState::kEligible);
   }
 
-  void VerifyIsolationInfo(const net::IsolationInfo& isolation_info) {
-    EXPECT_FALSE(isolation_info.IsEmpty());
-    EXPECT_FALSE(isolation_info.network_isolation_key().IsEmpty());
-    EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
-    EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
-  }
 
   network::mojom::URLResponseHeadPtr CreateURLResponseHeadForPrefetch(
       net::HttpStatusCode http_status,
@@ -1095,50 +1083,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       const VerifyCommonRequestStateOptions& options,
       const network::TestURLLoaderFactory::PendingRequest* request) {
     ASSERT_TRUE(request);
-
-    EXPECT_EQ(request->request.url, url);
-    EXPECT_EQ(request->request.method, "GET");
-    EXPECT_TRUE(request->request.enable_load_timing);
-
-    EXPECT_EQ(request->request.credentials_mode,
-              network::mojom::CredentialsMode::kInclude);
-
-    EXPECT_EQ(request->request.load_flags, net::LOAD_PREFETCH);
-
-    EXPECT_THAT(
-        request->request.headers.GetHeader(blink::kPurposeHeaderName),
-        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
-    std::string sec_purpose_header_value;
-    if (options.sec_purpose_header_value) {
-      sec_purpose_header_value = options.sec_purpose_header_value.value();
-    } else {
-      sec_purpose_header_value =
-          options.use_prefetch_proxy
-              ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
-              : blink::kSecPurposePrefetchHeaderValue;
-    }
-
-    EXPECT_THAT(
-        request->request.headers.GetHeader(blink::kSecPurposeHeaderName),
-        testing::Optional(sec_purpose_header_value));
-
-    EXPECT_THAT(request->request.headers.GetHeader("Accept"),
-                testing::Optional(FrameAcceptHeaderValue(
-                    /*allow_sxg_responses=*/true, browser_context())));
-
-    EXPECT_THAT(request->request.headers.GetHeader("Upgrade-Insecure-Requests"),
-                testing::Optional(std::string("1")));
-
-    ASSERT_TRUE(request->request.trusted_params.has_value());
-    VerifyIsolationInfo(request->request.trusted_params->isolation_info);
-
-    EXPECT_EQ(request->request.priority, options.expected_priority);
-
-    net::HttpRequestHeaders::Iterator header_it(options.additional_headers);
-    while (header_it.GetNext()) {
-      EXPECT_THAT(request->request.headers.GetHeader(header_it.name()),
-                  testing::Optional(header_it.value()));
-    }
+    content::VerifyCommonRequestState(url, options, request->request,
+                                      browser_context());
   }
 
   void SendHeadOfResponseAndWait(
