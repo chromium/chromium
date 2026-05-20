@@ -5589,41 +5589,19 @@ TEST_F(BrowserAutofillManagerTest,
 // submitted.
 TEST_F(BrowserAutofillManagerTest,
        DeterminePossibleFieldTypesForUpload_IsTriggered) {
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-
-  std::vector<FieldTypeSet> expected_types;
-  std::vector<std::u16string> expected_values;
-
-  // These fields should all match.
-  FieldTypeSet types;
-
-  expected_values.push_back(u"Elvis");
-  types.clear();
-  types.insert(NAME_FIRST);
-  test_api(form).Append(
-      CreateTestFormField("", "1", "", FormControlType::kInputText));
-  expected_types.push_back(types);
-
-  expected_values.push_back(u"Aaron");
-  types.clear();
-  types.insert(NAME_MIDDLE);
-  test_api(form).Append(
-      CreateTestFormField("", "2", "", FormControlType::kInputText));
-  expected_types.push_back(types);
-
-  expected_values.push_back(u"A");
-  types.clear();
-  types.insert(NAME_MIDDLE_INITIAL);
-  test_api(form).Append(
-      CreateTestFormField("", "3", "", FormControlType::kInputText));
-  expected_types.push_back(types);
+  FormData form = test::GetFormData({.fields = {{.label = u"", .name = u"1"},
+                                                {.label = u"", .name = u"2"},
+                                                {.label = u"", .name = u"3"}}});
 
   // Make sure the form is in the cache so that it is processed for Autofill
   // upload.
   FormsSeen({form});
+
+  std::vector<std::u16string> expected_values = {u"Elvis", u"Aaron", u"A"};
+  // These fields should all match.
+  std::vector<FieldTypeSet> expected_types = {
+      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_MIDDLE},
+      FieldTypeSet{NAME_MIDDLE_INITIAL}};
 
   // Once the form is cached, fill the values.
   EXPECT_EQ(form.fields().size(), expected_values.size());
@@ -5650,33 +5628,15 @@ TEST_F(BrowserAutofillManagerTest, TestExternalDelegate) {
 // fields.
 TEST_F(BrowserAutofillManagerTest, OnTextFieldValueChangedAndUnfocus_Upload) {
   // Set up our form data (it's already filled out with user data).
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-
-  std::vector<FieldTypeSet> expected_types;
-  FieldTypeSet types;
-
-  test_api(form).Append(CreateTestFormField("First Name", "firstname", "",
-                                            FormControlType::kInputText));
-  types.insert(NAME_FIRST);
-  expected_types.push_back(types);
-
-  test_api(form).Append(CreateTestFormField("Last Name", "lastname", "",
-                                            FormControlType::kInputText));
-  types.clear();
-  types.insert(NAME_LAST);
-  types.insert(NAME_LAST_SECOND);
-  expected_types.push_back(types);
-
-  test_api(form).Append(
-      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
-  types.clear();
-  types.insert(EMAIL_ADDRESS);
-  expected_types.push_back(types);
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                                {.role = NAME_LAST},
+                                                {.role = EMAIL_ADDRESS}}});
 
   FormsSeen({form});
+
+  std::vector<FieldTypeSet> expected_types = {
+      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_LAST, NAME_LAST_SECOND},
+      FieldTypeSet{EMAIL_ADDRESS}};
 
   // We will expect these types in the upload and no observed submission (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
@@ -5702,33 +5662,15 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldValueChangedAndUnfocus_Upload) {
 TEST_F(BrowserAutofillManagerTest,
        OnTextFieldValueChangedAndNavigation_Upload) {
   // Set up our form data (it's already filled out with user data).
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-
-  std::vector<FieldTypeSet> expected_types;
-  FieldTypeSet types;
-
-  test_api(form).Append(CreateTestFormField("First Name", "firstname", "",
-                                            FormControlType::kInputText));
-  types.insert(NAME_FIRST);
-  expected_types.push_back(types);
-
-  test_api(form).Append(CreateTestFormField("Last Name", "lastname", "",
-                                            FormControlType::kInputText));
-  types.clear();
-  types.insert(NAME_LAST_SECOND);
-  types.insert(NAME_LAST);
-  expected_types.push_back(types);
-
-  test_api(form).Append(
-      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
-  types.clear();
-  types.insert(EMAIL_ADDRESS);
-  expected_types.push_back(types);
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                                {.role = NAME_LAST},
+                                                {.role = EMAIL_ADDRESS}}});
 
   FormsSeen({form});
+
+  std::vector<FieldTypeSet> expected_types = {
+      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_LAST, NAME_LAST_SECOND},
+      FieldTypeSet{EMAIL_ADDRESS}};
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
@@ -5753,34 +5695,15 @@ TEST_F(BrowserAutofillManagerTest,
 // fields.
 TEST_F(BrowserAutofillManagerTest, OnDidAutofillFormAndUnfocus_Upload) {
   // Set up our form data (empty).
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-
-  std::vector<FieldTypeSet> expected_types;
-
-  // These fields should all match.
-  FieldTypeSet types;
-  test_api(form).Append(CreateTestFormField("First Name", "firstname", "",
-                                            FormControlType::kInputText));
-  types.insert(NAME_FIRST);
-  expected_types.push_back(types);
-
-  test_api(form).Append(CreateTestFormField("Last Name", "lastname", "",
-                                            FormControlType::kInputText));
-  types.clear();
-  types.insert(NAME_LAST_SECOND);
-  types.insert(NAME_LAST);
-  expected_types.push_back(types);
-
-  test_api(form).Append(
-      CreateTestFormField("Email", "email", "", FormControlType::kInputText));
-  types.clear();
-  types.insert(EMAIL_ADDRESS);
-  expected_types.push_back(types);
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                                {.role = NAME_LAST},
+                                                {.role = EMAIL_ADDRESS}}});
 
   FormsSeen({form});
+
+  std::vector<FieldTypeSet> expected_types = {
+      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_LAST, NAME_LAST_SECOND},
+      FieldTypeSet{EMAIL_ADDRESS}};
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
@@ -5803,20 +5726,16 @@ TEST_F(BrowserAutofillManagerTest, OnDidAutofillFormAndUnfocus_Upload) {
 TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_UnrecognizedAttribute) {
   // Set up the form data.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {// Set a valid autocomplete attribute on the card name.
-       CreateTestFormField("Name on Card", "nameoncard", "",
-                           FormControlType::kInputText, "cc-name"),
-       // Set no autocomplete attribute on the card number.
-       CreateTestFormField("Card Number", "cardnumber", "",
-                           FormControlType::kInputText),
-       // Set an unrecognized autocomplete attribute on the expiration month.
-       CreateTestFormField("Expiration Date", "ccmonth", "",
-                           FormControlType::kInputText, "unrecognized")});
+  FormData form = test::GetFormData(
+      {.fields = {
+           // Set a valid autocomplete attribute on the card name.
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           // Set no autocomplete attribute on the card number.
+           {.role = CREDIT_CARD_NUMBER},
+           // Set an unrecognized autocomplete attribute on the
+           // expiration month.
+           {.role = CREDIT_CARD_EXP_MONTH,
+            .autocomplete_attribute = "unrecognized"}}});
   FormsSeen({form});
 
   // Suggestions should be returned for the first two fields
@@ -5836,29 +5755,19 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields({CreateTestFormField("Name on Card", "nameoncard", "",
-                                       FormControlType::kInputText)});
-
-  // Add new 4 |card_number_field|s to the |form|.
   constexpr uint64_t kMaxLength = 4;
-  test_api(form).Append(CreateTestFormField("Card Number", "cardnumber_1", "",
-                                            FormControlType::kInputText, "",
-                                            kMaxLength));
-  test_api(form).Append(CreateTestFormField(
-      "", "cardnumber_2", "", FormControlType::kInputText, "", kMaxLength));
-  test_api(form).Append(CreateTestFormField(
-      "", "cardnumber_3", "", FormControlType::kInputText, "", kMaxLength));
-  test_api(form).Append(CreateTestFormField(
-      "", "cardnumber_4", "", FormControlType::kInputText, "", kMaxLength));
-
-  test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
-                                            FormControlType::kInputText));
-  test_api(form).Append(
-      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.label = u"Name on Card", .name = u"nameoncard"},
+           // Add new 4 |card_number_field|s to the |form|.
+           {.label = u"Card Number",
+            .name = u"cardnumber_1",
+            .max_length = kMaxLength},
+           {.label = u"", .name = u"cardnumber_2", .max_length = kMaxLength},
+           {.label = u"", .name = u"cardnumber_3", .max_length = kMaxLength},
+           {.label = u"", .name = u"cardnumber_4", .max_length = kMaxLength},
+           {.label = u"Expiration Date", .name = u"ccmonth"},
+           {.label = u"", .name = u"ccyear"}}});
 
   FormsSeen({form});
 
