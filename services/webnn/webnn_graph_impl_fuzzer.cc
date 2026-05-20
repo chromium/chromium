@@ -1346,7 +1346,7 @@ TensorRemoteAndHandle CreateTensorWithValues(
 
 void BuildAndCompute(
     mojo::Remote<mojom::WebNNContext>& context_remote,
-    mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote,
+    mojo::Remote<mojom::WebNNGraphBuilder> graph_builder_remote,
     mojom::GraphInfoPtr graph_info,
     base::flat_map<std::string, base::span<const uint8_t>> named_inputs) {
   // Create input tensors.
@@ -1396,7 +1396,7 @@ void BuildAndCompute(
     return;
   }
 
-  mojo::AssociatedRemote<mojom::WebNNGraph> graph_remote;
+  mojo::Remote<mojom::WebNNGraph> graph_remote;
   graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
   blink::WebNNGraphToken graph_token = create_graph_result.value()->graph_token;
 
@@ -1448,7 +1448,7 @@ class WebNNGraphImplFuzzerBase : public testing::Test {
     return context_properties_;
   }
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
+  mojo::Remote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
  protected:
   virtual mojom::Device GetDeviceType() const = 0;
@@ -1501,10 +1501,10 @@ void WebNNGraphImplFuzzerBase::TearDown() {
   GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
 }
 
-mojo::AssociatedRemote<mojom::WebNNGraphBuilder>
+mojo::Remote<mojom::WebNNGraphBuilder>
 WebNNGraphImplFuzzerBase::BindNewGraphBuilderRemote() {
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote;
-  context_->CreateGraphBuilder(remote.BindNewEndpointAndPassReceiver());
+  mojo::Remote<mojom::WebNNGraphBuilder> remote;
+  context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
   return remote;
 }
 
@@ -1576,7 +1576,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConcat(
       auto concat_descs,
       SetUpConcatDescriptors(this->context_properties(), params));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -1626,7 +1626,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
       auto conv2d_descs,
       SetUpConv2dDescriptors(this->context_properties(), params));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -1759,7 +1759,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpExpand(
                                               this->context_properties(),
                                               input_desc, output_dims, ""));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -1815,7 +1815,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGatherND(
                                               this->context_properties(),
                                               input_desc, indices_desc, ""));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -1868,7 +1868,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
       auto gemm_descs,
       SetUpGemmDescriptors(this->context_properties(), params));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2047,7 +2047,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpLstm(
                                  weight_desc, recurrent_weight_desc,
                                  params.steps, params.hidden_size, attributes));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2176,7 +2176,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPad(PadParams params,
   ASSIGN_OR_RETURN_VOID(
       auto pad_descs, SetUpPadDescriptors(this->context_properties(), params));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2219,7 +2219,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPool2d(
       auto pool2d_descs,
       SetUpPool2dDescriptors(this->context_properties(), params));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2269,7 +2269,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpReduce(
       auto reduce_descs,
       SetUpReduceDescriptors(this->context_properties(), params));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2333,7 +2333,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpScatterElements(
                             this->context_properties(), input_desc,
                             indices_desc, updates_desc, params.axis, ""));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2466,7 +2466,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConcatQ(
           this->context_properties(), concat_descs.output_desc,
           output_scale_desc, output_zero_desc, ""));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2692,7 +2692,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
   }
   std::vector<uint8_t> output_zero_data(output_zero_desc.PackedByteLength(), 0);
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -2946,7 +2946,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
   std::vector<uint8_t> b_zero_data(b_zero_desc.PackedByteLength(), 0);
   std::vector<uint8_t> output_zero_data(output_zero_desc.PackedByteLength(), 0);
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -3104,7 +3104,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPadQ(
                             this->context_properties(), pad_descs.output_desc,
                             output_scale_desc, output_zero_desc, ""));
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -3237,7 +3237,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
   std::vector<uint8_t> input_zero_data(input_zero_desc.PackedByteLength(), 0);
   std::vector<uint8_t> output_zero_data(output_zero_desc.PackedByteLength(), 0);
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
@@ -3382,7 +3382,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQReduceQ(
   std::vector<uint8_t> output_zero_data(output_zero_desc.PackedByteLength(),
                                         seed_for_zero_point);
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 

@@ -136,9 +136,8 @@ class WebnnGraphLPMFuzzer {
                   webnn::mojom::Device device) {
     mojo::Remote<webnn::mojom::WebNNContextProvider> webnn_provider_remote;
     mojo::Remote<webnn::mojom::WebNNContext> webnn_context_remote;
-    mojo::AssociatedRemote<webnn::mojom::WebNNGraphBuilder>
-        webnn_graph_builder_remote;
-    mojo::AssociatedRemote<webnn::mojom::WebNNGraph> webnn_graph_remote;
+    mojo::Remote<webnn::mojom::WebNNGraphBuilder> webnn_graph_builder_remote;
+    mojo::Remote<webnn::mojom::WebNNGraph> webnn_graph_remote;
 
     init_globals->webnn_test_environment_->BindWebNNContextProvider(
         webnn_provider_remote.BindNewPipeAndPassReceiver());
@@ -164,7 +163,7 @@ class WebnnGraphLPMFuzzer {
 
     // Create the GraphBuilder through the context.
     webnn_context_remote->CreateGraphBuilder(
-        webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
+        webnn_graph_builder_remote.BindNewPipeAndPassReceiver());
 
     base::test::TestFuture<base::expected<webnn::mojom::CreateGraphSuccessPtr,
                                           webnn::mojom::ErrorPtr>>

@@ -19,7 +19,7 @@
 namespace webnn {
 
 GraphInfoBuilder::GraphInfoBuilder(
-    mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote)
+    mojo::Remote<mojom::WebNNGraphBuilder>& graph_builder_remote)
     : graph_info_(mojom::GraphInfo::New()),
       graph_builder_remote_(graph_builder_remote) {}
 

@@ -108,7 +108,7 @@ base::WeakPtr<WebNNContextImpl> ContextImplTflite::AsWeakPtr() {
 }
 
 void ContextImplTflite::CreateGraphImpl(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -134,7 +134,7 @@ void ContextImplTflite::CreateGraphImpl(
 }
 
 void ContextImplTflite::DidCreateWeightsFile(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>

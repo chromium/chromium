@@ -32,7 +32,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
@@ -314,7 +314,7 @@ struct GraphImplCoreml::Params {
 
 // static
 void GraphImplCoreml::CreateAndBuild(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     ContextImplCoreml& context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
@@ -564,7 +564,7 @@ void GraphImplCoreml::ReadComputePlan(
 
 // static
 void GraphImplCoreml::DidCreateAndBuild(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result) {
@@ -615,7 +615,7 @@ GraphImplCoreml::ScopedModelPath::~ScopedModelPath() {
 }
 
 GraphImplCoreml::GraphImplCoreml(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     WebNNContextImpl& context,
     std::unique_ptr<Params> params)
     : WebNNGraphImpl(std::move(receiver),

@@ -19,15 +19,15 @@
 
 namespace blink {
 
-MLGraph::MLGraph(ExecutionContext* execution_context,
-                 MLContext* context,
-                 mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraph>
-                     pending_graph_remote,
-                 blink::WebNNGraphToken graph_token,
-                 NamedOperandDescriptors input_constraints,
-                 NamedOperandDescriptors output_constraints,
-                 Vector<V8MLDeviceType> devices,
-                 base::PassKey<MLGraphBuilder> /*pass_key*/)
+MLGraph::MLGraph(
+    ExecutionContext* execution_context,
+    MLContext* context,
+    mojo::PendingRemote<webnn::mojom::blink::WebNNGraph> pending_graph_remote,
+    blink::WebNNGraphToken graph_token,
+    NamedOperandDescriptors input_constraints,
+    NamedOperandDescriptors output_constraints,
+    Vector<V8MLDeviceType> devices,
+    base::PassKey<MLGraphBuilder> /*pass_key*/)
     : input_constraints_(std::move(input_constraints)),
       output_constraints_(std::move(output_constraints)),
       ml_context_(context),
@@ -44,6 +44,17 @@ MLGraph::MLGraph(ExecutionContext* execution_context,
 
 MLGraph::~MLGraph() = default;
 
+void MLGraph::Dispose() {
+  // When GC collects the graph without an explicit destroy() call, send
+  // DestroyGraph through the context pipe to ensure ordering with
+  // Dispatch/ReadTensor/WriteTensor. If destroy() was already called,
+  // the remote is unbound and this is a no-op.
+  if (!IsDestroyed()) {
+    ml_context_->DestroyGraph(graph_token_);
+    OnConnectionError();
+  }
+}
+
 void MLGraph::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_graph_);
@@ -51,9 +62,9 @@ void MLGraph::Trace(Visitor* visitor) const {
 }
 
 void MLGraph::destroy() {
-  if (remote_graph_.is_bound()) {
-    OnConnectionError();
-  }
+  // Delegate to Dispose(), which sends DestroyGraph through the context pipe
+  // to ensure ordering with Dispatch/ReadTensor/WriteTensor.
+  Dispose();
 }
 
 bool MLGraph::IsDestroyed() const {

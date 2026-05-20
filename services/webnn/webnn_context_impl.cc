@@ -283,7 +283,7 @@ void WebNNContextImpl::ReportBadGraphBuilderMessage(
 }
 
 void WebNNContextImpl::BuildGraph(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -323,7 +323,7 @@ void WebNNContextImpl::RemoveGraphBuilder(
 }
 
 void WebNNContextImpl::CreateGraphBuilder(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver) {
+    mojo::PendingReceiver<mojom::WebNNGraphBuilder> receiver) {
   auto graph_builder = std::make_unique<WebNNGraphBuilderImpl>(*this);
   WebNNGraphBuilderImpl* graph_builder_ptr = graph_builder.get();
 
@@ -627,6 +627,17 @@ void WebNNContextImpl::Dispatch(
       std::move(scoped_trace), GetMojoReceiver().GetBadMessageCallback());
 }
 
+void WebNNContextImpl::DestroyGraph(
+    const blink::WebNNGraphToken& graph_handle) {
+  auto it = graph_impls_.find(graph_handle);
+  if (it == graph_impls_.end()) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidGraph);
+    return;
+  }
+  (*it)->ResetMojoReceiver();
+  graph_impls_.erase(it);
+}
+
 void WebNNContextImpl::RemoveWebNNTensorImpl(
     const blink::WebNNTensorToken& handle) {
   const auto it = tensor_impls_.find(handle);
@@ -637,15 +648,6 @@ void WebNNContextImpl::RemoveWebNNTensorImpl(
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNTensorImpl`.
   tensor_impls_.erase(it);
-}
-
-void WebNNContextImpl::RemoveWebNNGraphImpl(
-    const blink::WebNNGraphToken& handle) {
-  const auto it = graph_impls_.find(handle);
-  CHECK(it != graph_impls_.end());
-  // Upon calling erase, the handle will no longer refer to a valid
-  // `WebNNGraphImpl`.
-  graph_impls_.erase(it);
 }
 
 const ContextProperties& WebNNContextImpl::properties() const {

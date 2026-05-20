@@ -39,7 +39,7 @@ namespace webnn {
 namespace {
 
 mojom::GraphInfoPtr BuildSimpleGraphInfo(
-    mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote) {
+    mojo::Remote<mojom::WebNNGraphBuilder>& graph_builder_remote) {
   // Build a simple graph.
   GraphInfoBuilder builder(graph_builder_remote);
   OperandId input_operand_id = builder.BuildInput(
@@ -55,10 +55,9 @@ mojom::GraphInfoPtr BuildSimpleGraphInfo(
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  FakeWebNNGraphImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-      WebNNContextImpl& context,
-      ComputeResourceInfo compute_resource_info)
+  FakeWebNNGraphImpl(mojo::PendingReceiver<mojom::WebNNGraph> receiver,
+                     WebNNContextImpl& context,
+                     ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(std::move(receiver),
                        context,
                        std::move(compute_resource_info),
@@ -114,7 +113,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   ~FakeWebNNContextImpl() override = default;
 
   void CreateGraphImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -131,7 +130,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     // remote before it's disconnected.
     RunOrScheduleTask(
         base::BindOnce(
-            [](mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+            [](mojo::PendingReceiver<mojom::WebNNGraph> receiver,
                base::WeakPtr<WebNNContextImpl> context,
                WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
                CreateGraphImplCallback callback) {
@@ -242,7 +241,7 @@ class WebNNGraphBuilderImplTest : public testing::Test {
         std::move(create_context_result->get_success()->context_remote));
 
     webnn_context_->CreateGraphBuilder(
-        graph_builder_remote_.BindNewEndpointAndPassReceiver());
+        graph_builder_remote_.BindNewPipeAndPassReceiver());
   }
   void TearDown() override {
     // Give WebNNContext a chance to disconnect.
@@ -256,7 +255,7 @@ class WebNNGraphBuilderImplTest : public testing::Test {
     return webnn_test_environment_;
   }
 
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote() {
+  mojo::Remote<mojom::WebNNGraphBuilder>& graph_builder_remote() {
     return graph_builder_remote_;
   }
 
@@ -276,7 +275,7 @@ class WebNNGraphBuilderImplTest : public testing::Test {
   test::WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<mojom::WebNNContext> webnn_context_;
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote_;
+  mojo::Remote<mojom::WebNNGraphBuilder> graph_builder_remote_;
 };
 
 TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {

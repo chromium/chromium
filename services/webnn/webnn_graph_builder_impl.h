@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
           constant_operands);
   void DidCreateGraph(CreateGraphCallback callback,
-                      mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
+                      mojo::PendingRemote<mojom::WebNNGraph> remote,
                       base::expected<GraphBuilderContext::GraphCreationResult,
                                      mojom::ErrorPtr> result);
 

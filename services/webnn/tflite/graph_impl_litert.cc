@@ -20,7 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -464,7 +464,7 @@ class GraphImplLiteRt::ComputeResources {
 
 // static
 void GraphImplLiteRt::CreateAndBuild(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -525,7 +525,7 @@ GraphImplLiteRt::CreateAndBuildOnBackgroundThread(
 }
 
 void GraphImplLiteRt::DidCreateAndBuild(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
@@ -558,7 +558,7 @@ void GraphImplLiteRt::DidCreateAndBuild(
 GraphImplLiteRt::~GraphImplLiteRt() = default;
 
 GraphImplLiteRt::GraphImplLiteRt(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     std::vector<std::pair<std::string, tflite::TensorDescriptor>>
         input_name_to_descriptor,

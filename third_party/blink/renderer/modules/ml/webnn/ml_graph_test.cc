@@ -20,12 +20,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -371,7 +372,7 @@ class WebNNContextHelper {
   std::map<blink::WebNNTensorToken, std::unique_ptr<FakeWebNNTensor>>
       tensor_impls_;
 
-  mojo::UniqueAssociatedReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
+  mojo::UniqueReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
 };
 
 class FakeWebNNGraph : public blink_mojom::WebNNGraph {
@@ -480,11 +481,11 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
                    CreateGraphCallback callback) override {
     helper_->SetGraphInfo(std::move(graph_info));
 
-    mojo::PendingAssociatedRemote<blink_mojom::WebNNGraph> blink_remote;
+    mojo::PendingRemote<blink_mojom::WebNNGraph> blink_remote;
     // The receiver bind to FakeWebNNGraph.
-    mojo::MakeSelfOwnedAssociatedReceiver<blink_mojom::WebNNGraph>(
+    mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNGraph>(
         std::make_unique<FakeWebNNGraph>(*helper_),
-        blink_remote.InitWithNewEndpointAndPassReceiver());
+        blink_remote.InitWithNewPipeAndPassReceiver());
 
     auto success = blink_mojom::CreateGraphSuccess::New(
         std::move(blink_remote), blink::WebNNGraphToken(),
@@ -519,9 +520,8 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
  private:
   // Override methods from webnn::mojom::WebNNContext.
   void CreateGraphBuilder(
-      mojo::PendingAssociatedReceiver<blink_mojom::WebNNGraphBuilder> receiver)
-      override {
-    mojo::MakeSelfOwnedAssociatedReceiver<blink_mojom::WebNNGraphBuilder>(
+      mojo::PendingReceiver<blink_mojom::WebNNGraphBuilder> receiver) override {
+    mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNGraphBuilder>(
         std::make_unique<FakeWebNNGraphBuilder>(*helper_), std::move(receiver));
   }
 
@@ -553,6 +553,10 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
       const blink::WebNNGraphToken& graph,
       const HashMap<String, blink::WebNNTensorToken>& named_inputs,
       const HashMap<String, blink::WebNNTensorToken>& named_outputs) override {
+    // No-op for testing.
+  }
+
+  void DestroyGraph(const blink::WebNNGraphToken& graph_handle) override {
     // No-op for testing.
   }
 

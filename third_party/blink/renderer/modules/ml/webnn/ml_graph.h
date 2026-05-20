@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -30,6 +30,7 @@ typedef HeapVector<std::pair<String, Member<MLTensor>>> MLNamedTensors;
 // Represents a handle to a compiled, platform-specific computational graph.
 class MODULES_EXPORT MLGraph : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(MLGraph, Dispose);
 
  public:
   using NamedOperandDescriptors =
@@ -41,15 +42,15 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // `pending_graph_remote` is a handle to the computational graph.
   // `input_constraints` and `output_constraints` describe the constraints on
   // the inputs and outputs which may be used to execute the respective graph.
-  MLGraph(ExecutionContext* execution_context,
-          MLContext* context,
-          mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraph>
-              pending_graph_remote,
-          blink::WebNNGraphToken graph_token,
-          NamedOperandDescriptors input_constraints,
-          NamedOperandDescriptors output_constraints,
-          Vector<V8MLDeviceType> devices,
-          base::PassKey<MLGraphBuilder> pass_key);
+  MLGraph(
+      ExecutionContext* execution_context,
+      MLContext* context,
+      mojo::PendingRemote<webnn::mojom::blink::WebNNGraph> pending_graph_remote,
+      blink::WebNNGraphToken graph_token,
+      NamedOperandDescriptors input_constraints,
+      NamedOperandDescriptors output_constraints,
+      Vector<V8MLDeviceType> devices,
+      base::PassKey<MLGraphBuilder> pass_key);
 
   MLGraph(const MLGraph&) = delete;
   MLGraph& operator=(const MLGraph&) = delete;
@@ -72,6 +73,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   const MLContext* Context() const;
 
  private:
+  void Dispose();
   void OnConnectionError();
 
   // Describes the constraints on the inputs or outputs to this graph.
@@ -88,7 +90,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   // The `WebNNGraph` is a compiled graph. This remote is lifecycle-only:
   // pipe disconnect signals graph destruction in the service.
-  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
+  HeapMojoRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
 
   // Devices that will be used when dispatching the graph.
   Vector<V8MLDeviceType> devices_;

@@ -1624,8 +1624,7 @@ MLGraphBuilder* MLGraphBuilder::Create(ScriptState* script_state,
 MLGraphBuilder::MLGraphBuilder(
     ExecutionContext* execution_context,
     MLContext* context,
-    mojo::PendingAssociatedRemote<blink_mojom::WebNNGraphBuilder>
-        pending_remote)
+    mojo::PendingRemote<blink_mojom::WebNNGraphBuilder> pending_remote)
     : execution_context_(execution_context),
       ml_context_(context),
       remote_(execution_context) {

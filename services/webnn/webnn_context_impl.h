@@ -27,7 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -131,11 +131,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // call, it is no longer safe to use the WebNNTensorImpl.
   void RemoveWebNNTensorImpl(const blink::WebNNTensorToken& handle);
 
-  // Disassociates a `WebNNGraph` instance owned by this context by its handle.
-  // Called when a `WebNNGraph` instance has a connection error. After this
-  // call, it is no longer safe to use the WebNNGraphImpl.
-  void RemoveWebNNGraphImpl(const blink::WebNNGraphToken& handle);
-
   // Retrieves a `WebNNTensorImpl` instance created from this context.
   // Emits a bad message if a tensor with the given handle does not exist.
   scoped_refptr<WebNNTensorImpl> GetWebNNTensorImpl(
@@ -154,7 +149,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // TODO(crbug.com/354724062): Move this to either `WebNNGraphImpl` or
   // `WebNNGraphBuilderImpl`.
   virtual void CreateGraphImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -178,7 +173,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // GraphBuilderContext:
   void BuildGraph(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -267,8 +262,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // mojom::WebNNContext
   void CreateGraphBuilder(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver)
-      override;
+      mojo::PendingReceiver<mojom::WebNNGraphBuilder> receiver) override;
   void CreateTensor(mojom::TensorInfoPtr tensor_info,
                     mojo_base::BigBuffer tensor_data,
                     CreateTensorCallback callback) override;
@@ -281,6 +275,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
       const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs)
       override;
+  void DestroyGraph(const blink::WebNNGraphToken& graph_handle) override;
 
   // This method will be called by `CreateTensor()` after the tensor info is
   // validated. A backend subclass should implement this method to create and
@@ -365,16 +360,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       const gpu::SyncToken& fence = gpu::SyncToken());
 
   // Graph builders owned by this context.
-  mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
-      graph_builder_impls_;
+  mojo::UniqueReceiverSet<mojom::WebNNGraphBuilder> graph_builder_impls_;
 
   // GraphImpls owned by the context. Graphs use a WeakPtr to safely access the
   // context during build operations.
-  base::flat_set<
-      scoped_refptr<WebNNGraphImpl>,
-      WebNNObjectImpl<mojom::WebNNGraph,
-                      blink::WebNNGraphToken,
-                      mojo::AssociatedReceiver<mojom::WebNNGraph>>::Comparator>
+  base::flat_set<scoped_refptr<WebNNGraphImpl>,
+                 WebNNObjectImpl<mojom::WebNNGraph,
+                                 blink::WebNNGraphToken,
+                                 mojo::Receiver<mojom::WebNNGraph>>::Comparator>
       graph_impls_;
 
   // WebNN context API operations execute tasks in a sequence.

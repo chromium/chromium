@@ -11,9 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
@@ -38,7 +38,7 @@ class WebNNTensorImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     : public WebNNObjectImpl<mojom::WebNNGraph,
                              blink::WebNNGraphToken,
-                             mojo::AssociatedReceiver<mojom::WebNNGraph>> {
+                             mojo::Receiver<mojom::WebNNGraph>> {
  public:
   // Describes the constraints of a graph's inputs and outputs.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
@@ -66,9 +66,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     base::flat_map<OperandId, OperationId> operand_to_producing_operation;
   };
 
-  // Constructs a graph where the receiever and implementation is owned by the
+  // Constructs a graph where the receiver and implementation are owned by the
   // context.
-  WebNNGraphImpl(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+  WebNNGraphImpl(mojo::PendingReceiver<mojom::WebNNGraph> receiver,
                  WebNNContextImpl& context,
                  ComputeResourceInfo compute_resource_info,
                  std::vector<mojom::Device> devices);

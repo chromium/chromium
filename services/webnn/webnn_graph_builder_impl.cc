@@ -2957,8 +2957,8 @@ void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
         constant_operands) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
-  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+  mojo::PendingRemote<mojom::WebNNGraph> remote;
+  auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
   context_->BuildGraph(std::move(receiver), std::move(graph_info),
                        std::move(compute_resource_info),
@@ -2971,7 +2971,7 @@ void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
 
 void WebNNGraphBuilderImpl::DidCreateGraph(
     CreateGraphCallback callback,
-    mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
+    mojo::PendingRemote<mojom::WebNNGraph> remote,
     base::expected<GraphBuilderContext::GraphCreationResult, mojom::ErrorPtr>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

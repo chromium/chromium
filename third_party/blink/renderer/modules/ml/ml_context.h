@@ -127,6 +127,10 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   void OnGraphCreated(MLGraph* graph);
 
+  // Sends DestroyGraph through the context pipe to ensure ordering with
+  // Dispatch/ReadTensor/WriteTensor. Called by MLGraph::destroy().
+  void DestroyGraph(const blink::WebNNGraphToken& graph_token);
+
   const mojo::ScopedDataPipeProducerHandle& write_tensor_producer() const {
     return write_tensor_producer_;
   }

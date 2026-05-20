@@ -14,7 +14,7 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 // On `CreateGraph` success, returns the remote graph and the devices that
 // will be used on dispatch.
 struct CreateGraphSuccess {
-  pending_associated_remote<WebNNGraph> graph_remote;
+  pending_remote<WebNNGraph> graph_remote;
   // Token used to identify this graph in WebNNContext::Dispatch() calls.
   blink.mojom.WebNNGraphToken graph_token;
   array<Device> devices;

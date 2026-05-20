@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -75,7 +75,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   explicit MLGraphBuilder(
       ExecutionContext* execution_context,
       MLContext* context,
-      mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+      mojo::PendingRemote<webnn::mojom::blink::WebNNGraphBuilder>
           pending_remote);
 
   MLGraphBuilder(const MLGraphBuilder&) = delete;
@@ -557,7 +557,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   Member<MLContext> ml_context_;
 
-  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
+  HeapMojoRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
 
   // Tracks whether `build()` has been called (with valid inputs). If so, `this`
   // is effectively invalid and all methods should reject.

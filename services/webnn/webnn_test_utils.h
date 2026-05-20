@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -32,7 +32,7 @@ class GraphInfoBuilder final {
 
  public:
   explicit GraphInfoBuilder(
-      mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote);
+      mojo::Remote<mojom::WebNNGraphBuilder>& graph_builder_remote);
   GraphInfoBuilder(const GraphInfoBuilder&) = delete;
   GraphInfoBuilder& operator=(const GraphInfoBuilder&) = delete;
   ~GraphInfoBuilder();
@@ -585,8 +585,7 @@ class GraphInfoBuilder final {
 
   mojom::GraphInfoPtr graph_info_;
 
-  base::raw_ref<mojo::AssociatedRemote<mojom::WebNNGraphBuilder>>
-      graph_builder_remote_;
+  base::raw_ref<mojo::Remote<mojom::WebNNGraphBuilder>> graph_builder_remote_;
 };
 
 mojom::GraphInfoPtr CloneGraphInfoForTesting(

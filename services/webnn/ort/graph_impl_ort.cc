@@ -131,7 +131,7 @@ class GraphImplOrt::ComputeResources {
 
 // static
 void GraphImplOrt::CreateAndBuild(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -197,7 +197,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
 // static
 void GraphImplOrt::DidCreateAndBuild(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     WebNNContextImpl& context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
@@ -218,7 +218,7 @@ void GraphImplOrt::DidCreateAndBuild(
 GraphImplOrt::~GraphImplOrt() = default;
 
 GraphImplOrt::GraphImplOrt(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<GraphImplOrt::ComputeResources> compute_resources,
     WebNNContextImpl& context,

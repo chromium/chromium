@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderContext {
   // compiles the graph and loads it locally. For Compiler-hosted contexts, this
   // compiles the graph and sends the compiled model to GPU process.
   virtual void BuildGraph(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>

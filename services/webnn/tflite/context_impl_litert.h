@@ -60,7 +60,7 @@ class ContextImplLiteRt final : public WebNNContextImpl {
   ~ContextImplLiteRt() override;
 
   void CreateGraphImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -70,7 +70,7 @@ class ContextImplLiteRt final : public WebNNContextImpl {
       CreateGraphImplCallback callback) override;
 
   void DidCreateWeightsFile(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>

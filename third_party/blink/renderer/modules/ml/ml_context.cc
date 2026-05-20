@@ -401,10 +401,9 @@ MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
     return nullptr;
   }
 
-  mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
-      pending_remote;
+  mojo::PendingRemote<webnn::mojom::blink::WebNNGraphBuilder> pending_remote;
   context_remote_->CreateGraphBuilder(
-      pending_remote.InitWithNewEndpointAndPassReceiver());
+      pending_remote.InitWithNewPipeAndPassReceiver());
 
   auto* graph_builder = MakeGarbageCollected<MLGraphBuilder>(
       ExecutionContext::From(script_state), this, std::move(pending_remote));
@@ -1239,6 +1238,12 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
 void MLContext::OnGraphCreated(MLGraph* graph) {
   graphs_.insert(graph);
+}
+
+void MLContext::DestroyGraph(const blink::WebNNGraphToken& graph_token) {
+  if (context_remote_.is_bound()) {
+    context_remote_->DestroyGraph(graph_token);
+  }
 }
 
 ScriptPromise<MLTensor> MLContext::createTensor(
