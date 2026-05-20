@@ -39,14 +39,13 @@
 
 namespace {
 
-void RepaintLayerBackedViewsRecursive(views::View* top_container,
-                                      views::View* view) {
+void RepaintLayerBackedViewsRecursive(views::View* view) {
   for (auto& child : view->children()) {
     if (child->layer()) {
       child->SchedulePaint();
     }
 
-    RepaintLayerBackedViewsRecursive(top_container, child);
+    RepaintLayerBackedViewsRecursive(child);
   }
 }
 
@@ -54,7 +53,7 @@ void RepaintTopContainer(views::View* top_container) {
   top_container->SchedulePaint();
 
   // Invalidate layer backed views as well.
-  RepaintLayerBackedViewsRecursive(top_container, top_container);
+  RepaintLayerBackedViewsRecursive(top_container);
 }
 
 // Converts from ImmersiveModeController::AnimateReveal to
