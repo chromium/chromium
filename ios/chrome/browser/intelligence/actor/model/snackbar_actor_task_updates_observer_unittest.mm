@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/snackbar_actor_task_updates_observer.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -86,7 +87,7 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestRegistrationStateFormatting) {
       showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
                                       SnackbarMessage* message) {
         return [message.title isEqualToString:@"Test Task"] &&
-               [message.subtitle isEqualToString:@"No task"] &&
+               message.subtitle == nil &&
                [message.secondarySubtitle isEqualToString:@"State: Finished"];
       }]];
   [observer_ didRegisterAsObserverForTaskID:task_id
@@ -101,7 +102,7 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestRegistrationStateFormatting) {
       showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
                                       SnackbarMessage* message) {
         return [message.title isEqualToString:@"Test Task"] &&
-               [message.subtitle isEqualToString:@"No task"] &&
+               message.subtitle == nil &&
                [message.secondarySubtitle isEqualToString:@"State: Failed"];
       }]];
   [observer_ didRegisterAsObserverForTaskID:task_id
@@ -204,7 +205,7 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestWillExecuteTool) {
                    isEqualToString:@"Executing: NavigateTool"];
       }]];
   [observer_ actorTaskWithID:task_id
-             willExecuteTool:@"NavigateTool"
+             willExecuteTool:optimization_guide::proto::Action::kNavigate
                   taskUpdate:@"Navigating..."
                   onWebState:web_state_id];
   [mock_snackbar_commands_ verify];

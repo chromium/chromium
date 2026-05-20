@@ -22,6 +22,7 @@ source_set("actor_task_ui_protocols") {
   ]
   deps = [
     ":actor_types",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/web/public",
   ]
 }

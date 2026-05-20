@@ -34,7 +34,8 @@
 @property(nonatomic, assign) actor::ActorTaskState oldState;
 
 @property(nonatomic, assign) BOOL willExecuteToolCalled;
-@property(nonatomic, copy) NSString* toolString;
+@property(nonatomic, assign)
+    optimization_guide::proto::Action::ActionCase toolCase;
 @property(nonatomic, assign) web::WebStateID toolWebStateId;
 
 @property(nonatomic, assign) BOOL didStopCalled;
@@ -72,11 +73,11 @@
 }
 
 - (void)actorTaskWithID:(actor::ActorTaskId)taskID
-        willExecuteTool:(NSString*)toolString
+        willExecuteTool:(optimization_guide::proto::Action::ActionCase)toolCase
              taskUpdate:(NSString*)taskUpdate
              onWebState:(web::WebStateID)webStateID {
   _willExecuteToolCalled = YES;
-  _toolString = toolString;
+  _toolCase = toolCase;
   _toolWebStateId = webStateID;
 }
 
@@ -418,7 +419,7 @@ TEST_F(ActorTaskTest, OnWillExecuteToolNotifiesObserver) {
                            web_state->GetUniqueIdentifier());
 
   EXPECT_TRUE(observer.willExecuteToolCalled);
-  EXPECT_NSEQ(@"NavigateTool", observer.toolString);
+  EXPECT_EQ(optimization_guide::proto::Action::kNavigate, observer.toolCase);
   EXPECT_EQ(web_state->GetUniqueIdentifier().identifier(),
             observer.toolWebStateId.identifier());
 
@@ -428,7 +429,8 @@ TEST_F(ActorTaskTest, OnWillExecuteToolNotifiesObserver) {
                            web_state->GetUniqueIdentifier());
 
   EXPECT_TRUE(observer.willExecuteToolCalled);
-  EXPECT_NSEQ(@"Unknown tool", observer.toolString);
+  EXPECT_EQ(optimization_guide::proto::Action::ACTION_NOT_SET,
+            observer.toolCase);
   EXPECT_EQ(web_state->GetUniqueIdentifier().identifier(),
             observer.toolWebStateId.identifier());
 }

@@ -46,6 +46,7 @@ source_set("snackbar_observer") {
   deps = [
     "//base",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser:utils",
     "//ios/chrome/browser/shared/model/profile",

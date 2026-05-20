@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -26,9 +25,6 @@ namespace {
 
 // Safety timeout duration to wait for pages to finish loading.
 constexpr base::TimeDelta kPageLoadTimeout = base::Seconds(7);
-
-// The fallback tool name string when an action case cannot be mapped.
-constexpr char kUnknownTool[] = "Unknown tool";
 
 // Returns the string representation of the ActorTaskState.
 std::string ActorTaskStateToString(ActorTaskState state) {
@@ -291,10 +287,8 @@ void ActorTask::SetState(ActorTaskState new_state) {
 void ActorTask::OnWillExecuteTool(
     optimization_guide::proto::Action::ActionCase tool_case,
     web::WebStateID web_state_id) {
-  std::string tool_name =
-      ActorActionCaseToToolName(tool_case).value_or(kUnknownTool);
   [observers_ actorTaskWithID:task_id_
-              willExecuteTool:base::SysUTF8ToNSString(tool_name)
+              willExecuteTool:tool_case
                    taskUpdate:base::SysUTF8ToNSString(last_task_update_)
                    onWebState:web_state_id];
 }

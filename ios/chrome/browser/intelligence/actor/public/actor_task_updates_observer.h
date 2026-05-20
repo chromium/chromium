@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 namespace web {
@@ -39,7 +40,8 @@ class WebStateID;
 
 // Called just before a tool is about to be executed.
 - (void)actorTaskWithID:(actor::ActorTaskId)taskID
-        willExecuteTool:(NSString*)toolString
+        // TODO(crbug.com/514742306): Remove proto dependency.
+        willExecuteTool:(optimization_guide::proto::Action::ActionCase)toolCase
              taskUpdate:(NSString*)taskUpdate
              onWebState:(web::WebStateID)webStateID;
 
