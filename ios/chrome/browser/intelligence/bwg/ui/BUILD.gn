@@ -84,6 +84,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "gemini_consent_accordion_view_unittest.mm",
+    "gemini_consent_configuration_unittest.mm",
     "gemini_consent_view_controller_unittest.mm",
     "gemini_fre_wrapper_view_controller_unittest.mm",
     "gemini_promo_view_controller_unittest.mm",

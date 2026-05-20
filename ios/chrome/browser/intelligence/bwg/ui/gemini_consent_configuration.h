@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+
 // Model representing a custom header in the Gemini consent.
 @interface GeminiConsentHeader : NSObject
 
@@ -58,11 +60,11 @@
 // Whether the consent rows are collapsible.
 @property(nonatomic, assign, readonly) BOOL collapsible;
 
-// Designated initializer.
-- (instancetype)initWithRows:(NSArray<GeminiConsentRow*>*)rows
-                    footnote:(NSAttributedString*)footnote
-                      header:(GeminiConsentHeader*)header
-                 collapsible:(BOOL)collapsible NS_DESIGNATED_INITIALIZER;
+// Factory method to build a configuration.
++ (instancetype)configurationForManaged:(BOOL)isManaged
+                                 strict:(BOOL)useStrict
+                                   type:(GeminiFREType)type
+                                country:(NSString*)country;
 
 - (instancetype)init NS_UNAVAILABLE;
 
