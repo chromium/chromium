@@ -77,6 +77,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
+#include "ui/base/test/mock_base_window.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -192,37 +193,6 @@ class MockDrivePickerHostController : public DrivePickerHostController {
               ShowDrivePickerHost,
               (std::unique_ptr<drive_picker_host::DrivePickerHostRequest>),
               (override));
-};
-
-class MockBaseWindow : public ui::BaseWindow {
- public:
-  MockBaseWindow() = default;
-  ~MockBaseWindow() = default;
-  MOCK_METHOD(bool, IsActive, (), (const, override));
-  MOCK_METHOD(bool, IsMaximized, (), (const, override));
-  MOCK_METHOD(bool, IsMinimized, (), (const, override));
-  MOCK_METHOD(bool, IsFullscreen, (), (const, override));
-  MOCK_METHOD(gfx::NativeWindow, GetNativeWindow, (), (const, override));
-  MOCK_METHOD(gfx::Rect, GetRestoredBounds, (), (const, override));
-  MOCK_METHOD(ui::mojom::WindowShowState,
-              GetRestoredState,
-              (),
-              (const, override));
-  MOCK_METHOD(gfx::Rect, GetBounds, (), (const, override));
-  MOCK_METHOD(void, Show, (), (override));
-  MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(bool, IsVisible, (), (const, override));
-  MOCK_METHOD(void, ShowInactive, (), (override));
-  MOCK_METHOD(void, Close, (), (override));
-  MOCK_METHOD(void, Activate, (), (override));
-  MOCK_METHOD(void, Deactivate, (), (override));
-  MOCK_METHOD(void, Maximize, (), (override));
-  MOCK_METHOD(void, Minimize, (), (override));
-  MOCK_METHOD(void, Restore, (), (override));
-  MOCK_METHOD(void, SetBounds, (const gfx::Rect&), (override));
-  MOCK_METHOD(void, FlashFrame, (bool), (override));
-  MOCK_METHOD(ui::ZOrderLevel, GetZOrderLevel, (), (const, override));
-  MOCK_METHOD(void, SetZOrderLevel, (ui::ZOrderLevel), (override));
 };
 
 class MockContextualTasksContextService
@@ -368,7 +338,7 @@ class ContextualSearchboxHandlerTest
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
-  testing::NiceMock<MockBaseWindow> mock_base_window_;
+  testing::NiceMock<ui::MockBaseWindow> mock_base_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::NetworkHandlerTestHelper network_handler_test_helper_;

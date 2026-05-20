@@ -46,17 +46,44 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #else
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "ui/actions/actions.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/test/mock_base_window.h"
 #endif
 
 namespace metrics {
 
 namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+void DestroyBrowserActionsSafely(
+    std::unique_ptr<BrowserActions> browser_actions) {
+  if (!browser_actions) {
+    return;
+  }
+
+  auto dummy_action_item = actions::ActionItem::Builder().Build();
+  actions::ActionItem* dummy_ptr =
+      actions::ActionManager::Get().AddAction(std::move(dummy_action_item));
+
+  raw_ptr<actions::ActionItem>* root_ptr =
+      reinterpret_cast<raw_ptr<actions::ActionItem>*>(browser_actions.get());
+  *root_ptr = dummy_ptr;
+
+  browser_actions.reset();
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using TabsStats = TabStatsDataStore::TabsStats;
 using TabStripInterface = TabStatsTracker::TabStripInterface;
@@ -161,32 +188,33 @@ class TabStripModifier {
 
 class TabStripModifier {
  public:
-  TabStripModifier(const TabStripInterface* tab_strip, Browser* browser)
-      : tab_strip_(tab_strip), browser_(browser) {}
+  TabStripModifier(const TabStripInterface* tab_strip,
+                   TabStripModel* tab_strip_model)
+      : tab_strip_(tab_strip), tab_strip_model_(tab_strip_model) {}
 
   const TabStripInterface& tab_strip() const { return *tab_strip_; }
 
   void InsertWebContentsAt(size_t index,
                            std::unique_ptr<content::WebContents> web_contents) {
-    browser_->tab_strip_model()->InsertWebContentsAt(
-        index, std::move(web_contents), AddTabTypes::ADD_ACTIVE);
+    tab_strip_model_->InsertWebContentsAt(index, std::move(web_contents),
+                                          AddTabTypes::ADD_ACTIVE);
   }
 
   void CloseWebContentsAt(size_t index) {
-    browser_->tab_strip_model()->CloseWebContentsAt(
-        index, TabCloseTypes::CLOSE_USER_GESTURE);
+    tab_strip_model_->CloseWebContentsAt(index,
+                                         TabCloseTypes::CLOSE_USER_GESTURE);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
   void AddToNewSplit(int index) {
-    browser_->tab_strip_model()->AddToNewSplit(
+    tab_strip_model_->AddToNewSplit(
         {index}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
   }
 #endif
 
  private:
   raw_ptr<const TabStripInterface> tab_strip_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -331,6 +359,18 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   TabStatsTrackerTest() {
     TabStatsTracker::RegisterPrefs(pref_service_.registry());
+#if !BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(prefs::kVerticalTabsEnabled,
+                                                  false);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kVerticalTabsExpandOnHoverEnabled, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kVerticalTabsEnabledFirstTime, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kVerticalTabsCollapsedState, false);
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kVerticalTabsUncollapsedWidth, 0);
+#endif
 
     // The tab stats tracker has to be created after the power monitor as it's
     // using it.
@@ -351,28 +391,95 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
         tab_strip_interface_.get(), test_tab_model_.get());
 #else
     scoped_feature_.InitWithFeatures({tabs::kVerticalTabs}, {});
-    browser_ = CreateBrowserWithTestWindowForParams(
-        Browser::CreateParams(profile(), true));
-    tab_strip_interface_ = std::make_unique<TabStripInterface>(browser_.get());
+    test_tab_strip_model_delegate_ =
+        std::make_unique<TestTabStripModelDelegate>();
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        test_tab_strip_model_delegate_.get(), profile());
+
+    ON_CALL(static_cast<const MockBrowserWindowInterface&>(
+                mock_browser_window_interface_),
+            GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(unowned_user_data_host_));
+    ON_CALL(mock_browser_window_interface_, GetProfile())
+        .WillByDefault(::testing::Return(profile()));
+    ON_CALL(static_cast<const MockBrowserWindowInterface&>(
+                mock_browser_window_interface_),
+            GetProfile())
+        .WillByDefault(::testing::Return(profile()));
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
+        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+    ON_CALL(static_cast<const MockBrowserWindowInterface&>(
+                mock_browser_window_interface_),
+            GetTabStripModel())
+        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+    ON_CALL(mock_browser_window_interface_, GetFeatures())
+        .WillByDefault(::testing::ReturnRef(browser_window_features_));
+    ON_CALL(static_cast<const MockBrowserWindowInterface&>(
+                mock_browser_window_interface_),
+            GetFeatures())
+        .WillByDefault(::testing::ReturnRef(browser_window_features_));
+    ON_CALL(mock_browser_window_interface_, GetWindow())
+        .WillByDefault(::testing::Return(&mock_base_window_));
+    ON_CALL(static_cast<const MockBrowserWindowInterface&>(
+                mock_browser_window_interface_),
+            GetWindow())
+        .WillByDefault(::testing::Return(&mock_base_window_));
+    ON_CALL(mock_browser_window_interface_, GetType())
+        .WillByDefault(
+            ::testing::Return(BrowserWindowInterface::Type::TYPE_NORMAL));
+
+    browser_actions_ =
+        std::make_unique<BrowserActions>(&mock_browser_window_interface_);
+
+    ON_CALL(mock_browser_window_interface_, GetActions())
+        .WillByDefault(::testing::Return(browser_actions_.get()));
+
+    test_tab_strip_model_delegate_->SetBrowserWindowInterface(
+        &mock_browser_window_interface_);
+
+    mock_browser_user_education_interface_ =
+        std::make_unique<testing::NiceMock<MockBrowserUserEducationInterface>>(
+            &mock_browser_window_interface_);
+
+    vertical_tab_strip_state_controller_ =
+        std::make_unique<tabs::VerticalTabStripStateController>(
+            &mock_browser_window_interface_, &pref_service_, nullptr, nullptr,
+            SessionID::InvalidValue(), std::nullopt, std::nullopt);
+
+    static_cast<BrowserCollectionObserver*>(
+        GlobalBrowserCollection::GetInstance()->GetPlatformDelegate())
+        ->OnBrowserCreated(&mock_browser_window_interface_);
+
+    tab_strip_interface_ =
+        std::make_unique<TabStripInterface>(&mock_browser_window_interface_);
     tab_strip_modifier_ = std::make_unique<TabStripModifier>(
-        tab_strip_interface_.get(), browser_.get());
+        tab_strip_interface_.get(), tab_strip_model_.get());
 #endif
   }
 
   void TearDown() override {
+#if !BUILDFLAG(IS_ANDROID)
+    static_cast<BrowserCollectionObserver*>(
+        GlobalBrowserCollection::GetInstance()->GetPlatformDelegate())
+        ->OnBrowserClosed(&mock_browser_window_interface_);
+#endif
     tab_stats_tracker_->RemoveTabs(tab_strip_interface_->GetTabCount(),
                                    tab_strip_modifier_.get());
-    tab_stats_tracker_.reset();
 
-    // Everything depending on `profile()` must be destroyed before it's deleted
-    // in TearDown.
     tab_strip_modifier_.reset();
     tab_strip_interface_.reset();
 #if BUILDFLAG(IS_ANDROID)
     test_tab_model_.reset();
 #else
-    browser_.reset();
+    vertical_tab_strip_state_controller_.reset();
+    mock_browser_user_education_interface_.reset();
+    DestroyBrowserActionsSafely(std::move(browser_actions_));
+    test_tab_strip_model_delegate_->SetBrowserWindowInterface(nullptr);
+    tab_strip_model_.reset();
+    test_tab_strip_model_delegate_.reset();
 #endif
+
+    tab_stats_tracker_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -449,7 +556,17 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<OwningTestTabModel> test_tab_model_;
 #else
-  std::unique_ptr<Browser> browser_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  testing::NiceMock<ui::MockBaseWindow> mock_base_window_;
+  std::unique_ptr<testing::NiceMock<MockBrowserUserEducationInterface>>
+      mock_browser_user_education_interface_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  BrowserWindowFeatures browser_window_features_;
+  std::unique_ptr<TestTabStripModelDelegate> test_tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<BrowserActions> browser_actions_;
+  std::unique_ptr<tabs::VerticalTabStripStateController>
+      vertical_tab_strip_state_controller_;
 #endif
 
   // Wrappers for the TabStripModel on desktop or TabModel on Android.
@@ -870,7 +987,7 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(TabStatsTrackerTest, HeartbeatMetricsWithVerticalTabs) {
-  tabs::VerticalTabStripStateController::From(browser_.get())
+  tabs::VerticalTabStripStateController::From(&mock_browser_window_interface_)
       ->SetVerticalTabsEnabled(true);
 
   size_t expected_tab_count =
@@ -885,8 +1002,8 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetricsWithVerticalTabs) {
 }
 
 TEST_F(TabStatsTrackerTest, HeartbeatMetricsWithVerticalTabsCollapseState) {
-  auto* controller =
-      tabs::VerticalTabStripStateController::From(browser_.get());
+  auto* controller = tabs::VerticalTabStripStateController::From(
+      &mock_browser_window_interface_);
   tabs::TestVerticalTabStripStateControllerDelegate delegate;
   controller->SetDelegate(&delegate);
   controller->SetVerticalTabsEnabled(true);

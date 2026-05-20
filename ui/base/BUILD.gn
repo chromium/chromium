@@ -780,6 +780,8 @@ static_library("test_support") {
     "resource/mock_resource_bundle_delegate.h",
     "test/idle_test_utils.cc",
     "test/idle_test_utils.h",
+    "test/mock_base_window.cc",
+    "test/mock_base_window.h",
   ]
 
   if (is_mac) {
