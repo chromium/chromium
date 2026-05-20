@@ -46,6 +46,8 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -72,6 +74,7 @@ public class ExtensionAccessControlButtonMediatorTest {
             ObservableSuppliers.createNullable();
 
     @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Observer> mToolbarObserverCaptor;
+    @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
 
     private ExtensionAccessControlButtonMediator mMediator;
     private PropertyModel mModel;
@@ -98,6 +101,10 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(windowManager.getDefaultDisplay()).thenReturn(display);
 
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
+
+        UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
+        when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
+                .thenReturn("example.com");
 
         when(mContext.getString(R.string.extensions_request_access_button_dismissed_text))
                 .thenReturn("Allowed");
@@ -249,6 +256,17 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mContext.getString(R.string.extensions_menu_requests_access_section_allow_button_text))
                 .thenReturn("Allow");
 
+        when(mContext.getString(
+                        R.string.extensions_request_access_message_description_single_extension,
+                        "example.com",
+                        "ExtensionName"))
+                .thenReturn("example.com needs your permission to run ExtensionName");
+        when(mContext.getString(
+                        R.string.extensions_request_access_message_description_multiple_extensions,
+                        "example.com",
+                        "2"))
+                .thenReturn("example.com needs your permission to run 2 extensions");
+
         ExtensionAction action = mock(ExtensionAction.class);
         when(action.getName()).thenReturn("ExtensionName");
         when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
@@ -267,6 +285,10 @@ public class ExtensionAccessControlButtonMediatorTest {
         assertEquals(
                 "Allow extension \"ExtensionName\"?",
                 messageModel.get(MessageBannerProperties.TITLE));
+        assertEquals(
+                "example.com needs your permission to run ExtensionName",
+                messageModel.get(MessageBannerProperties.DESCRIPTION));
+        assertEquals(2, messageModel.get(MessageBannerProperties.DESCRIPTION_MAX_LINES));
 
         // Test primary action click behavior
         Supplier<Integer> primaryAction =
@@ -296,6 +318,53 @@ public class ExtensionAccessControlButtonMediatorTest {
                 .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
         PropertyModel multiMessageModel = messageCaptor.getValue();
         assertEquals("Allow 2 extensions?", multiMessageModel.get(MessageBannerProperties.TITLE));
+        assertEquals(
+                "example.com needs your permission to run 2 extensions",
+                multiMessageModel.get(MessageBannerProperties.DESCRIPTION));
+        assertEquals(2, multiMessageModel.get(MessageBannerProperties.DESCRIPTION_MAX_LINES));
+    }
+
+    @Test
+    public void testRequestAccessButtonVisibility_CompactWindow_Truncation() {
+        ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
+        when(mIsWindowCompactSupplier.get()).thenReturn(true);
+
+        String tooltip = "Some tooltip";
+        RequestAccessButtonParams paramsWithRequests =
+                new RequestAccessButtonParams(new String[] {"a"}, tooltip);
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
+                .thenReturn(paramsWithRequests);
+
+        String longName = "A".repeat(40);
+        String truncatedName = "A".repeat(27) + "...";
+
+        when(mContext.getString(
+                        R.string.extensions_request_access_message_title_single_extension,
+                        truncatedName))
+                .thenReturn("Allow extension \"" + truncatedName + "\"?");
+        when(mContext.getString(
+                        R.string.extensions_request_access_message_description_single_extension,
+                        "example.com",
+                        truncatedName))
+                .thenReturn("example.com needs your permission to run " + truncatedName);
+
+        ExtensionAction action = mock(ExtensionAction.class);
+        when(action.getName()).thenReturn(longName);
+        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
+
+        observer.onRequestAccessButtonParamsChanged();
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher)
+                .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
+
+        PropertyModel messageModel = messageCaptor.getValue();
+        assertEquals(
+                "Allow extension \"" + truncatedName + "\"?",
+                messageModel.get(MessageBannerProperties.TITLE));
+        assertEquals(
+                "example.com needs your permission to run " + truncatedName,
+                messageModel.get(MessageBannerProperties.DESCRIPTION));
     }
 
     @Test

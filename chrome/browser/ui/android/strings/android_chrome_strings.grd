@@ -550,6 +550,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_MESSAGE_TITLE_SINGLE_EXTENSION" desc="The title of the request access message banner that appears on the toolbar when an extension requests access to the site" formatter_data="android_java">
           Allow extension "<ph name="EXTENSION_NAME">%1$s</ph>"?
         </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_MESSAGE_DESCRIPTION_SINGLE_EXTENSION" desc="The description of the request access message banner for a single extension" formatter_data="android_java">
+          <ph name="WEBSITE">%1$s</ph> needs your permission to run <ph name="EXTENSION_NAME">%2$s</ph>
+        </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_MESSAGE_DESCRIPTION_MULTIPLE_EXTENSIONS" desc="The description of the request access message banner for multiple extensions" formatter_data="android_java">
+          <ph name="WEBSITE">%1$s</ph> needs your permission to run <ph name="COUNT">%2$s</ph> extensions
+        </message>
         <message name="IDS_SITE_SEARCH_EXTENSIONS_MENU_MANAGE" desc="Menu item to manage extensions">
           Manage
         </message>

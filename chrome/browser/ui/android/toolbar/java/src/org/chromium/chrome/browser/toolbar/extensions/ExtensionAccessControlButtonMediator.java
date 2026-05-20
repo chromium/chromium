@@ -25,6 +25,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,6 +39,7 @@ import java.util.function.Supplier;
 @NullMarked
 class ExtensionAccessControlButtonMediator implements Destroyable {
     private static final long CONFIRMATION_DISPLAY_DURATION = 4000L;
+    private static final int MAX_EXTENSION_NAME_LENGTH = 30;
     private final ExtensionsToolbarBridge.Observer mToolbarObserver = new ToolbarObserver();
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final Context mContext;
@@ -145,19 +147,37 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
             WebContents webContents, RequestAccessButtonParams params) {
         int count = params.getExtensionIds().length;
         String title;
+        String description;
         Drawable iconDrawable = null;
         int iconResourceId = R.drawable.chrome_extension;
         String buttonText =
                 mContext.getString(
                         R.string.extensions_menu_requests_access_section_allow_button_text);
 
+        String host =
+                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                        webContents.getLastCommittedUrl());
+
         if (count == 1) {
             String extensionId = params.getExtensionIds()[0];
             ExtensionAction action = mExtensionsToolbarBridge.getAction(extensionId, webContents);
+            String extensionName = action != null ? action.getName() : "";
+            if (extensionName.isEmpty()) {
+                // TODO(crbug.com/514060433): Localize this fallback string.
+                extensionName = "an extension";
+            } else if (extensionName.length() > MAX_EXTENSION_NAME_LENGTH) {
+                // Truncate to prevent UI spoofing by pushing critical information out of view.
+                extensionName = extensionName.substring(0, MAX_EXTENSION_NAME_LENGTH - 3) + "...";
+            }
             title =
                     mContext.getString(
                             R.string.extensions_request_access_message_title_single_extension,
-                            action != null ? action.getName() : "");
+                            extensionName);
+            description =
+                    mContext.getString(
+                            R.string.extensions_request_access_message_description_single_extension,
+                            host,
+                            extensionName);
 
             Bitmap iconBitmap =
                     ExtensionActionIconUtil.getIcon(
@@ -172,6 +192,12 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
         } else {
             String template = mContext.getString(R.string.extensions_request_access_button);
             title = template.replace("$1", String.valueOf(count));
+            description =
+                    mContext.getString(
+                            R.string
+                                    .extensions_request_access_message_description_multiple_extensions,
+                            host,
+                            String.valueOf(count));
         }
 
         PropertyModel.Builder builder =
@@ -180,6 +206,8 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
                                 MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.EXTENSIONS_REQUEST_ACCESS)
                         .with(MessageBannerProperties.TITLE, title)
+                        .with(MessageBannerProperties.DESCRIPTION, description)
+                        .with(MessageBannerProperties.DESCRIPTION_MAX_LINES, 2)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,

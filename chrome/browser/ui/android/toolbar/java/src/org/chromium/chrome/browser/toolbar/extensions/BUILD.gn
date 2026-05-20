@@ -78,6 +78,7 @@ android_library("java") {
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",
     "//components/thin_webview/internal:internal_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
@@ -87,6 +88,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
+    "//url:url_java",
   ]
 }
 
@@ -131,6 +133,7 @@ robolectric_library("junit") {
     "//components/messages/android:java",
     "//components/messages/android:manager_java",
     "//components/prefs/android:java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -142,6 +145,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 
