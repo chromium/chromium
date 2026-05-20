@@ -6,6 +6,8 @@ package org.chromium.content_public.browser;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -41,8 +43,10 @@ public class ContactsDialogHost implements ContactsPickerListener {
         sContactsPermissionProvider = contactsPermissionProvider;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @CalledByNative
-    static ContactsDialogHost create(WebContents webContents, long nativeContactsProviderAndroid) {
+    public static ContactsDialogHost create(
+            WebContents webContents, long nativeContactsProviderAndroid) {
         return new ContactsDialogHost(webContents, nativeContactsProviderAndroid);
     }
 
@@ -72,6 +76,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
         if (sContactsPermissionProvider == null) {
             Log.e(TAG, "Permission provider not set");
             ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
+            mNativeContactsProviderAndroid = 0;
         } else {
             ContactsPickerListener listener = this;
 
@@ -105,6 +110,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
                             }
                             ContactsDialogHostJni.get()
                                     .endWithPermissionDenied(mNativeContactsProviderAndroid);
+                            mNativeContactsProviderAndroid = 0;
                         }
                     });
         }
@@ -124,6 +130,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
                 ContactsDialogHostJni.get()
                         .endContactsList(
                                 mNativeContactsProviderAndroid, 0, propertiesSiteRequested);
+                mNativeContactsProviderAndroid = 0;
                 break;
 
             case ContactsPickerAction.CONTACTS_SELECTED:
@@ -158,12 +165,17 @@ public class ContactsDialogHost implements ContactsPickerListener {
                                 mNativeContactsProviderAndroid,
                                 percentageShared,
                                 propertiesSiteRequested);
+                mNativeContactsProviderAndroid = 0;
                 break;
 
             case ContactsPickerAction.SELECT_ALL:
             case ContactsPickerAction.UNDO_SELECT_ALL:
                 break;
         }
+    }
+
+    public long getNativeContactsProviderAndroidForTesting() {
+        return mNativeContactsProviderAndroid;
     }
 
     @NativeMethods
