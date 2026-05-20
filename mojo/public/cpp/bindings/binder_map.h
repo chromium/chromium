@@ -82,9 +82,9 @@ class BinderMapWithContext {
   // one replaces any existing binder.
   template <typename Interface>
   void Add(std::type_identity_t<BinderType<Interface>> binder) {
-    Add(internal::StaticString(Interface::Name_),
-        internal::GenericCallbackBinderWithContext<ContextType>(
-            Traits::MakeGenericBinder(std::move(binder))));
+    Add<Interface>(internal::StaticString(Interface::Name_),
+                   internal::GenericCallbackBinderWithContext<ContextType>(
+                       Traits::MakeGenericBinder(std::move(binder))));
   }
 
   // Adds a new binder specifically for Interface receivers. This exists for the
@@ -102,10 +102,10 @@ class BinderMapWithContext {
   template <typename Interface>
   void Add(std::type_identity_t<SequenceBinderType<Interface>> binder,
            scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    Add(internal::StaticString(Interface::Name_),
-        internal::GenericCallbackBinderWithContext<ContextType>(
-            SequenceTraits::MakeGenericBinder(std::move(binder)),
-            std::move(task_runner)));
+    Add<Interface>(internal::StaticString(Interface::Name_),
+                   internal::GenericCallbackBinderWithContext<ContextType>(
+                       SequenceTraits::MakeGenericBinder(std::move(binder)),
+                       std::move(task_runner)));
   }
 
   // Adds a new binder specifically for Interface functors. This exists for the
@@ -119,9 +119,9 @@ class BinderMapWithContext {
   // one replaces any existing binder.
   template <typename Interface>
   void Add(std::type_identity_t<FuncType<Interface>>* func) {
-    Add(internal::StaticString(Interface::Name_),
-        internal::GenericCallbackBinderWithContext<ContextType>(
-            Traits::MakeGenericBinder(func)));
+    Add<Interface>(internal::StaticString(Interface::Name_),
+                   internal::GenericCallbackBinderWithContext<ContextType>(
+                       Traits::MakeGenericBinder(func)));
   }
 
   // Adds a new binder specifically for Interface functors. This exists for the
@@ -139,7 +139,8 @@ class BinderMapWithContext {
   template <typename Interface>
   void Add(std::type_identity_t<SequenceFuncType<Interface>>* func,
            scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    Add(internal::StaticString(Interface::Name_),
+    Add<Interface>(
+        internal::StaticString(Interface::Name_),
         internal::GenericCallbackBinderWithContext<ContextType>(
             SequenceTraits::MakeGenericBinder(func), std::move(task_runner)));
   }
@@ -216,8 +217,12 @@ class BinderMapWithContext {
  private:
   using IsVoidContext = std::is_same<ContextType, void>;
 
+  template <typename Interface>
   void Add(internal::StaticString name,
            internal::GenericCallbackBinderWithContext<ContextType>&& binder) {
+    if (!internal::GetRuntimeFeature_IsEnabled<Interface>()) {
+      return;
+    }
     // This is not a public method because it is not safe to use with a
     // non-static `name`. The map key is a `string_view` which would result in
     // a dangling pointer if the underlying string were to be freed.

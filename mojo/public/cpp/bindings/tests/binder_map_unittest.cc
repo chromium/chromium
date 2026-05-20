@@ -9,11 +9,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/tests/binder_map_unittest.test-mojom-features.h"
 #include "mojo/public/cpp/bindings/tests/binder_map_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,6 +163,31 @@ TEST_F(BinderMapTest, BasicMatchWithFunctor) {
   // Allow the self-owned receiver to be destroyed.
   remote.reset();
   loop.Run();
+}
+
+TEST_F(BinderMapTest, RuntimeFeature) {
+  BinderMap map;
+  map.Add<mojom::TestRuntimeFeatureInterface>(
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<mojom::TestRuntimeFeatureInterface>
+                  receiver) {}),
+      base::SequencedTaskRunner::GetCurrentDefault());
+
+  EXPECT_TRUE(map.Contains<mojom::TestRuntimeFeatureInterface>());
+}
+
+TEST_F(BinderMapTest, RuntimeFeature_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(mojom::TestRuntimeFeature);
+
+  BinderMap map;
+  map.Add<mojom::TestRuntimeFeatureInterface>(
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<mojom::TestRuntimeFeatureInterface>
+                  receiver) {}),
+      base::SequencedTaskRunner::GetCurrentDefault());
+
+  EXPECT_FALSE(map.Contains<mojom::TestRuntimeFeatureInterface>());
 }
 
 TEST_F(BinderMapTest, WithContext) {

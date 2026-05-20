@@ -4,6 +4,13 @@
 
 module mojo.test.binder_map_unittest.mojom;
 
+feature TestRuntimeFeature {
+  const string name = "TestRuntimeFeature";
+  const bool default_state = true;
+};
+
 interface TestInterface1 {};
 interface TestInterface2 {};
 
+[RuntimeFeature=TestRuntimeFeature]
+interface TestRuntimeFeatureInterface{};
