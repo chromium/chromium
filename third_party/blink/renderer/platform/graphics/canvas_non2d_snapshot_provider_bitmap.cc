@@ -81,13 +81,6 @@ bool CanvasNon2DSnapshotProviderBitmap::IsValid() const {
   return true;
 }
 
-sk_sp<SkSurface> CanvasNon2DSnapshotProviderBitmap::GetCachedSurface() {
-  if (!surface_) {
-    surface_ = CreateSurface(info_);
-  }
-  return surface_;
-}
-
 // static
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(

@@ -1543,10 +1543,6 @@ ImageBitmapSourceStatus VideoFrame::CheckUsability() const {
   return base::ok();
 }
 
-// Killswitch guarding WebCodecs not caching the SkSurface used for
-// VideoFrame->StaticBitmapImage software draws.
-BASE_FEATURE(kWebCodecsDrawCacheSkSurface, base::FEATURE_DISABLED_BY_DEFAULT);
-
 scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame) {
   auto* execution_context =
@@ -1561,12 +1557,9 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
   if (snapshot_provider->IsExternalBitmapProvider()) {
     auto* snapshot_provider_bitmap =
         static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
-    sk_sp<SkSurface> draw_surface =
-        base::FeatureList::IsEnabled(kWebCodecsDrawCacheSkSurface)
-            ? snapshot_provider_bitmap->GetCachedSurface()
-            : nullptr;
     return CreateUnacceleratedImageFromVideoFrame(
-        frame, snapshot_provider_bitmap->Info(), draw_surface);
+        frame, snapshot_provider_bitmap->Info(),
+        /*cached_draw_surface=*/nullptr);
   }
 
   return CreateAcceleratedImageFromVideoFrame(
