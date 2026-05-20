@@ -32,6 +32,8 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::vector<std::string> GetAllGuids() const override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
+  std::vector<const SendTabToSelfEntry*>
+  GetUnopenedEntriesTargetedToLocalDevice() const override;
   const SendTabToSelfEntry* SendEntry(
       const GURL& url,
       const std::string& title,
@@ -53,6 +55,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
       const std::vector<TargetDeviceInfo>& devices);
   void AddTargetDevice(const TargetDeviceInfo& device);
   void SetLocalDeviceName(std::string_view device_name);
+  void SetLocalCacheGuid(std::string_view cache_guid);
   void SetSendResult(SendTabToSelfResult result);
 
   using SendEntryCallback =
@@ -76,6 +79,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   bool is_ready_ = true;
   bool has_valid_target_device_ = false;
   std::string local_device_name_ = "device";
+  std::string local_cache_guid_ = "";
   std::map<std::string, std::unique_ptr<SendTabToSelfEntry>> entries_;
   std::vector<TargetDeviceInfo> devices_;
   std::string last_opened_guid_;

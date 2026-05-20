@@ -392,6 +392,23 @@ const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
   return it->second.get();
 }
 
+bool SendTabToSelfBridge::IsTargetedToLocalDevice(
+    const SendTabToSelfEntry& entry) const {
+  return device_info_tracker_->IsRecentLocalCacheGuid(
+      entry.GetTargetDeviceSyncCacheGuid());
+}
+
+std::vector<const SendTabToSelfEntry*>
+SendTabToSelfBridge::GetUnopenedEntriesTargetedToLocalDevice() const {
+  std::vector<const SendTabToSelfEntry*> unopened_entries;
+  for (const auto& [guid, entry] : entries_) {
+    if (IsTargetedToLocalDevice(*entry) && !entry->IsOpened()) {
+      unopened_entries.push_back(entry.get());
+    }
+  }
+  return unopened_entries;
+}
+
 const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
     const GURL& url,
     const std::string& title,
@@ -625,9 +642,8 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
   // cache_guids
   DCHECK(!change_processor()->TrackedCacheGuid().empty());
   for (const SendTabToSelfEntry* entry : new_entries) {
-    if (device_info_tracker_->IsRecentLocalCacheGuid(
-            entry->GetTargetDeviceSyncCacheGuid()) &&
-        !entry->GetNotificationDismissed() && !entry->IsOpened()) {
+    if (IsTargetedToLocalDevice(*entry) && !entry->GetNotificationDismissed() &&
+        !entry->IsOpened()) {
       new_local_entries.push_back(entry);
     }
   }

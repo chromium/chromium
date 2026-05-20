@@ -1764,6 +1764,65 @@ TEST_F(SendTabToSelfBridgeTest, DeleteAllEntriesPersists) {
   EXPECT_EQ(0ul, bridge()->GetAllGuids().size());
 }
 
+TEST_F(SendTabToSelfBridgeTest, GetUnopenedEntriesTargetedToLocalDevice) {
+  InitializeBridge();
+
+  syncer::EntityChangeList remote_input;
+
+  // entry1: targeted to local device, unopened, not dismissed.
+  SendTabToSelfEntry entry1(
+      "guid1", GURL("http://www.example.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  // entry2: targeted to another device.
+  SendTabToSelfEntry entry2("guid2", GURL("http://www.example.com/"), "title",
+                            AdvanceAndGetTime(), "device", "RemoteDevice",
+                            PageContext(), NavigationHistory());
+
+  // entry3: targeted to local device, but will be marked opened.
+  SendTabToSelfEntry entry3(
+      "guid3", GURL("http://www.example.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  // entry4: targeted to local device, but will be dismissed.
+  SendTabToSelfEntry entry4(
+      "guid4", GURL("http://www.example.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  // entry5: targeted to local device, unopened, not dismissed.
+  SendTabToSelfEntry entry5(
+      "guid5", GURL("http://www.example.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid2", MakeEntityData(entry2)));
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid3", MakeEntityData(entry3)));
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid4", MakeEntityData(entry4)));
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid5", MakeEntityData(entry5)));
+
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_input));
+
+  bridge()->MarkEntryOpened("guid3");
+  bridge()->DismissEntry("guid4");
+
+  std::vector<const SendTabToSelfEntry*> unopened_entries =
+      bridge()->GetUnopenedEntriesTargetedToLocalDevice();
+
+  // entry1, entry4, and entry5 should be returned, because they are unopened (
+  // even though entry4 was dismissed).
+  // entry2 should not be returned because it's not targeted to local device.
+  // entry3 should not be returned because it's marked opened.
+  EXPECT_THAT(
+      unopened_entries,
+      UnorderedElementsAre(GuidIs("guid1"), GuidIs("guid4"), GuidIs("guid5")));
+}
+
 }  // namespace
 
 }  // namespace send_tab_to_self

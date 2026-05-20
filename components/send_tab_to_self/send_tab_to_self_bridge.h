@@ -93,6 +93,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   std::vector<std::string> GetAllGuids() const override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
+  std::vector<const SendTabToSelfEntry*>
+  GetUnopenedEntriesTargetedToLocalDevice() const override;
   const SendTabToSelfEntry* SendEntry(
       const GURL& url,
       const std::string& title,
@@ -151,6 +153,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // Returns a specific entry for editing. Returns null if the entry does not
   // exist.
   SendTabToSelfEntry* GetMutableEntryByGUID(const std::string& guid) const;
+
+  bool IsTargetedToLocalDevice(const SendTabToSelfEntry& entry) const;
 
   // Returns the name of the local device.
   std::string GetLocalFullName() const;
