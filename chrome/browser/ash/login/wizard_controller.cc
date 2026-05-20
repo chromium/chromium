@@ -2756,7 +2756,15 @@ void WizardController::OnOSAuthErrorScreenExit(
     case OSAuthErrorScreen::Result::kProceedAuthenticated: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
+          ShowPasswordSelectionScreen();
+          return;
+
         case WizardContext::AuthChangeFlow::kRecovery:
+          if (ash::features::IsRecoveryFlowReorderEnabled()) {
+            wizard_context_->allow_factor_change_during_recovery = true;
+            ObtainContextAndLoginAuthenticated();
+            return;
+          }
           ShowPasswordSelectionScreen();
           return;
         case WizardContext::AuthChangeFlow::kReauthentication:
