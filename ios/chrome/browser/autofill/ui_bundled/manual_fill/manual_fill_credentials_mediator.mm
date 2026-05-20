@@ -239,6 +239,25 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     [self setFormFetcher:[self createFormFetcher]];
   }
 
+  if (!_webAuthnDelegate && IsConditionalPasskeyLoginEnabled()) {
+    web::WebFramesManager* framesManager =
+        webauthn::PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            _webState);
+    if (framesManager) {
+      webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
+          webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+              _webState);
+      for (web::WebFrame* frame : framesManager->GetAllWebFrames()) {
+        webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+            factory->GetDelegateForFrameId(frame->GetFrameId());
+        if (delegate && delegate->GetPasskeys().has_value()) {
+          _webAuthnDelegate = delegate->AsWeakPtr();
+          break;
+        }
+      }
+    }
+  }
+
   _formFetcher->Fetch();
 
   if (_webAuthnDelegate && !_webAuthnDelegate->GetPasskeys().has_value()) {
@@ -305,11 +324,68 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   if (!self.consumer) {
     return;
   }
-  NSArray<ManualFillCredentialItem*>* credentials =
+
+  size_t passkeyCount = 0;
+  const std::vector<password_manager::PasskeyCredential>* availablePasskeys =
+      nullptr;
+
+  if (_webAuthnDelegate) {
+    base::expected<const std::vector<password_manager::PasskeyCredential>*,
+                   password_manager::WebAuthnCredentialsDelegate::
+                       PasskeysUnavailableReason>
+        passkeys_result = _webAuthnDelegate->GetPasskeys();
+    if (passkeys_result.has_value()) {
+      availablePasskeys = *passkeys_result;
+      passkeyCount = availablePasskeys->size();
+    }
+  }
+
+  size_t totalCount = passkeyCount + _credentials.size();
+  NSMutableArray<ManualFillCredentialItem*>* items =
+      [[NSMutableArray alloc] initWithCapacity:totalCount];
+
+  if (availablePasskeys) {
+    const std::vector<password_manager::PasskeyCredential>& passkeys =
+        *availablePasskeys;
+    for (size_t i = 0; i < passkeyCount; i++) {
+      const password_manager::PasskeyCredential& passkey = passkeys[i];
+
+      NSString* rpId = base::SysUTF8ToNSString(passkey.rp_id());
+      ManualFillCredential* passkeyCredential = [[ManualFillCredential alloc]
+            initWithUsername:base::SysUTF8ToNSString(passkey.username())
+                    password:@""
+                    siteName:rpId
+                        host:rpId
+                         URL:_URL
+          isBackupCredential:NO];
+
+      NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
+          base::i18n::MessageFormatter::FormatWithNamedArgs(
+              l10n_util::GetStringUTF16(
+                  IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
+              "count", base::checked_cast<int>(totalCount), "position",
+              base::checked_cast<int>(i + 1)));
+
+      ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
+                   initWithCredential:passkeyCredential
+                      contentInjector:self
+                          menuActions:@[]
+                            cellIndex:i
+          cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+               showAutofillFormButton:_showAutofillFormButton
+              fromAllPasswordsContext:[self isFromAllPasswordsContext]
+                       credentialType:ManualFillCredentialType::kPasskey];
+      [items addObject:item];
+    }
+  }
+
+  NSArray<ManualFillCredentialItem*>* credentialItems =
       [self createItemsForCredentials:_credentials
-                           startIndex:0
-                           totalCount:_credentials.size()];
-  [self.consumer presentCredentials:credentials];
+                           startIndex:passkeyCount
+                           totalCount:totalCount];
+  [items addObjectsFromArray:credentialItems];
+
+  [self.consumer presentCredentials:items];
 }
 
 // Creates a table view model with the passed credentials.
