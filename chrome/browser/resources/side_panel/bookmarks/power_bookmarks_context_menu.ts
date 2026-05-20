@@ -373,17 +373,6 @@ export class PowerBookmarksContextMenuElement extends CrLitElement {
     this.$.menu.close();
   }
 
-  protected onFocusout_(e: FocusEvent): void {
-    // `e.relatedTarget` points to the element gaining focus. If it is within
-    // this menu, do not close the menu (e.g. when focus moves between items).
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    if (relatedTarget && this.$.menu.contains(relatedTarget)) {
-      return;
-    }
-
-    this.$.menu.close();
-  }
-
   protected onMenuItemClick_(event: Event) {
     event.preventDefault();
     event.stopPropagation();

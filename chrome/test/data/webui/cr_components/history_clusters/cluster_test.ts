@@ -10,7 +10,7 @@ import type {ClusterElement} from 'chrome://resources/cr_components/history_clus
 import type {Cluster, RawVisitData, URLVisit} from 'chrome://resources/cr_components/history_clusters/history_cluster_types.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -144,5 +144,27 @@ suite('cluster element', () => {
     queries[0]!.$.searchQueryLink.click();
     const params = await handler.whenCalled('openHistoryUrl');
     assertEquals('https://www.google.com', params[0]);
+  });
+
+  test('ClusterMenuClosesOnFocusout', async () => {
+    const clusterMenu = cluster.shadowRoot.querySelector('cluster-menu');
+    assertTrue(!!clusterMenu);
+
+    // Open cluster action menu.
+    clusterMenu.$.actionMenuButton.click();
+    await microtasksFinished();
+
+    const menu = clusterMenu.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertTrue(menu.open);
+
+    // Simulate the menu losing focus to the document body.
+    menu.dispatchEvent(new FocusEvent('focusout', {
+      relatedTarget: document.body,
+      bubbles: true,
+    }));
+    // Wait for the menu to process the focus event and update its 'open' state.
+    await microtasksFinished();
+    assertFalse(menu.open);
   });
 });

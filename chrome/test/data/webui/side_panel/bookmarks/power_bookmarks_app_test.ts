@@ -10,6 +10,7 @@ import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bo
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarksAddFolderButtonElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_add_folder_button.js';
 import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
+import type {PowerBookmarksListHeaderElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list_header.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/price_tracking_browser_proxy.js';
@@ -1147,6 +1148,34 @@ suite('General', () => {
       // Cleanup: restore document state.
       Object.defineProperty(
           document, 'visibilityState', {value: originalVisibilityState});
+    });
+
+    test('SortMenuClosesOnFocusout', async () => {
+      const header = powerBookmarksApp.$.bookmarksList.shadowRoot!
+                         .querySelector<PowerBookmarksListHeaderElement>(
+                             'power-bookmarks-list-header');
+      assertTrue(!!header);
+
+      // Open sort menu.
+      const sortButton =
+          header.shadowRoot.querySelector<HTMLElement>('.sort-menu-button');
+      assertTrue(!!sortButton);
+      sortButton.click();
+      await microtasksFinished();
+
+      const sortMenu = header.$.sortMenu;
+      assertTrue(sortMenu.open);
+
+      // Simulate blur by dispatching focusout event with relatedTarget outside
+      // the menu.
+      const event = new FocusEvent('focusout', {
+        relatedTarget: document.body,
+      });
+      sortMenu.dispatchEvent(event);
+
+      await microtasksFinished();
+
+      assertFalse(sortMenu.open);
     });
 
     test('ShowUiOnlyCalledOnce', async () => {

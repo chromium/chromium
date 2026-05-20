@@ -42,7 +42,8 @@ export function getHtml(this: UrlVisitElement) {
 
 ${
       this.renderActionMenu_ ? html`
-    <cr-action-menu role-description="${this.i18n('actionMenuDescription')}">
+    <cr-action-menu auto-close-on-focusout
+        role-description="${this.i18n('actionMenuDescription')}">
       <button id="removeSelfButton" class="dropdown-item"
           ?hidden="${!this.allowDeletingHistory_}"
           @click="${this.onRemoveSelfButtonClick_}">

@@ -15,6 +15,15 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './cr_action_menu.css.js';
 import {getHtml} from './cr_action_menu.html.js';
 
+/**
+ * @param e The focusout event.
+ * @param element The element that should contain the focus.
+ * @return Whether the focus is moving outside of the element.
+ */
+function hasFocusoutOutside(e: FocusEvent, element: Element|null): boolean {
+  return !element || !element.contains(e.relatedTarget as Node);
+}
+
 interface ShowAtConfig {
   top?: number;
   left?: number;
@@ -145,6 +154,10 @@ export class CrActionMenuElement extends CrLitElement {
       // and reposition to its anchor accordingly.
       autoReposition: {type: Boolean},
 
+      // Setting this flag will cause the menu to automatically close when
+      // focus moves outside the menu.
+      autoCloseOnFocusout: {type: Boolean},
+
       open: {
         type: Boolean,
         notify: true,
@@ -162,9 +175,9 @@ export class CrActionMenuElement extends CrLitElement {
       roleDescription: {type: String},
     };
   }
-
   accessor accessibilityLabel: string|undefined;
   accessor autoReposition: boolean = false;
+  accessor autoCloseOnFocusout: boolean = false;
   accessor open: boolean = false;
   accessor roleDescription: string|undefined;
   accessor nonModal: boolean = false;
@@ -185,6 +198,7 @@ export class CrActionMenuElement extends CrLitElement {
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('mouseover', this.onMouseover_);
     this.addEventListener('click', this.onClick_);
+    this.addEventListener('focusout', this.onFocusout_.bind(this));
   }
 
   /**
@@ -201,6 +215,12 @@ export class CrActionMenuElement extends CrLitElement {
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;
+    }
+  }
+
+  protected onFocusout_(e: FocusEvent) {
+    if (this.autoCloseOnFocusout && hasFocusoutOutside(e, this)) {
+      this.close();
     }
   }
 

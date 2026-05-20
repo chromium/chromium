@@ -9,8 +9,8 @@ import type {PowerBookmarksContextMenuElement} from './power_bookmarks_context_m
 export function getHtml(this: PowerBookmarksContextMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-action-menu id="menu" @mousedown="${this.onMousedown_}"
-    @focusout="${this.onFocusout_}">
+<cr-action-menu id="menu" auto-close-on-focusout
+    @mousedown="${this.onMousedown_}">
   ${this.getMenuItemsForBookmarks_().map(item => html`
     ${!this.showDivider_(item) ? html`
       <button class="dropdown-item" data-id="${item.id}"

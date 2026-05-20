@@ -13,8 +13,9 @@ export function getHtml(this: ClusterMenuElement) {
     @click="${this.onActionMenuButtonClick_}">
 </cr-icon-button>
 
-${this.renderActionMenu_ ? html`<cr-action-menu
-    role-description="${this.i18n('actionMenuDescription')}">
+${
+      this.renderActionMenu_ ? html`<cr-action-menu auto-close-on-focusout
+          role-description="${this.i18n('actionMenuDescription')}">
   <button id="openAllButton" class="dropdown-item"
       @click="${this.onOpenAllButtonClick_}">
     ${this.i18n('openAllInTabGroup')}
@@ -28,5 +29,6 @@ ${this.renderActionMenu_ ? html`<cr-action-menu
       ?hidden="${!this.allowDeletingHistory_}">
     ${this.i18n('removeAllFromHistory')}
   </button>
-</cr-action-menu>` : ''}`;
+</cr-action-menu>` :
+                               ''}`;
 }

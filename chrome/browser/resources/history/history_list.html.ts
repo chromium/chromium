@@ -66,7 +66,8 @@ export function getHtml(this: HistoryListElement) {
     </cr-lazy-render-lit>
 
     <cr-lazy-render-lit id="sharedMenu" .template='${() => html`
-        <cr-action-menu role-description="$i18n{actionMenuDescription}">
+        <cr-action-menu auto-close-on-focusout
+            role-description="$i18n{actionMenuDescription}">
           <button id="menuMoreButton" class="dropdown-item"
               ?hidden="${!this.canSearchMoreFromSite_()}"
               @click="${this.onMoreFromSiteClick_}">

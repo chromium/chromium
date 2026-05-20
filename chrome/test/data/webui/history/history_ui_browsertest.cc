@@ -204,6 +204,10 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, ResizingLoadsMore) {
   RunTestCase("ResizingLoadsMore");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest, SharedMenuClosesOnFocusout) {
+  RunTestCase("SharedMenuClosesOnFocusout");
+}
+
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   HistoryWithHistoryEmbeddingsTest() {

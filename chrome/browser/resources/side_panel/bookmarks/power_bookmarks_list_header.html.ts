@@ -43,7 +43,7 @@ export function getHtml(this: PowerBookmarksListHeaderElement) {
   </cr-icon-button>
 </sp-heading>
 
-<cr-action-menu id="sortMenu">
+<cr-action-menu id="sortMenu" auto-close-on-focusout>
   ${this.sortTypes_.map((item, index) => html`
     <button class="dropdown-item" @click="${this.onSortTypeClick_}"
         data-index="${index}">

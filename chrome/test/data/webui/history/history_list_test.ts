@@ -841,6 +841,37 @@ suite('HistoryListTest', function() {
         1, testService.handler.getCallCount('queryHistoryContinuation'));
   });
 
+  test('SharedMenuClosesOnFocusout', async () => {
+    await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
+    const target = document.createElement('div');
+    document.body.appendChild(target);
+
+    // Dispatch 'open-menu' to open the shared action menu for the first item.
+    app.$.history.fire('open-menu', {
+      index: 0,
+      item: createHistoryEntry('2013-02-13 10:00', 'https://www.google.com'),
+      target: target,
+    });
+    await microtasksFinished();
+
+    const menu = app.$.history.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertTrue(menu.open);
+
+    // Simulate blur by dispatching focusout event with relatedTarget outside
+    // the menu.
+    const event = new FocusEvent('focusout', {
+      relatedTarget: document.body,
+      bubbles: true,
+      composed: true,
+    });
+    menu.dispatchEvent(event);
+
+    // Wait for the menu to process the focus event and update its 'open' state.
+    await microtasksFinished();
+    assertFalse(menu.open);
+  });
+
   teardown(function() {
     app.dispatchEvent(new CustomEvent(
         'change-query', {bubbles: true, composed: true, detail: {search: ''}}));

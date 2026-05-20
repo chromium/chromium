@@ -248,6 +248,32 @@ suite('CrActionMenu', function() {
     assertFalse(dialog.open);
   });
 
+  test('auto-close on focusout', function() {
+    menu.autoCloseOnFocusout = true;
+    menu.showAt(dots);
+    assertTrue(menu.open);
+
+    // Focus out to an external element.
+    menu.dispatchEvent(new FocusEvent('focusout', {
+      relatedTarget: dots,
+      bubbles: true,
+      composed: true,
+    }));
+    assertFalse(menu.open);
+
+    // Reset and test with autoCloseOnFocusout = false.
+    menu.autoCloseOnFocusout = false;
+    menu.showAt(dots);
+    assertTrue(menu.open);
+
+    menu.dispatchEvent(new FocusEvent('focusout', {
+      relatedTarget: dots,
+      bubbles: true,
+      composed: true,
+    }));
+    assertTrue(menu.open);
+  });
+
   /** @param key The key to use for closing. */
   function testFocusAfterClosing(key: string): Promise<void> {
     return new Promise<void>(function(resolve) {
