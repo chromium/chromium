@@ -150,14 +150,15 @@
   --toolbar-text-color: rgb(31, 31, 31);
 
   /* Animations */
-  --composebox-zero-state-animation: zero-state-intro 600ms ease forwards;
-  --composebox-header-wrapper-zero-state-animation: zero-state-intro 600ms
+  --composebox-zero-state-animation: zero-state-fade-in 600ms ease forwards;
+  --composebox-header-wrapper-zero-state-animation: zero-state-fade-in 600ms
       ease forwards;
 
   /* Energy Effect Motion Curves */
-  --emphasized-curve-energy-effect-enabled: cubic-bezier(0.2, 0, 0, 1);
+  --emphasized-curve: cubic-bezier(0.2, 0, 0, 1);
   --emphasized-decelerate-curve: cubic-bezier(0.05, 0.7, 0.1, 1);
   --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --standard-accelerate-curve: cubic-bezier(0.3, 0, 1, 1);
   --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
 
   background-color: var(--search-background-color);
@@ -306,8 +307,8 @@
   --color-composebox-voice-button-hover-background:
       var(--color-decontained-button-hover-background);
   --color-decontained-button-hover-background: rgba(0, 22, 79, 0.06);
-  --composebox-zero-state-animation: zero-state-intro 500ms
-      var(--emphasized-decelerate-curve) both;
+  --composebox-zero-state-animation:
+    expanded-page-enter-input-plate 900ms var(--emphasized-curve) both;
   --composebox-header-wrapper-zero-state-animation: zero-state-header-text 600ms
       var(--emphasized-decelerate-curve) both 100ms;
   --cr-composebox-background-color: var(--color-sds-comp-input-aim-container);
@@ -545,6 +546,7 @@ error-page {
 :host([is-zero-state_]) #flexCenterContainer {
   align-self: start;
   align-items: center;
+  animation: zero-state-slide-up 500ms var(--emphasized-decelerate-curve) both;
   display: flex;
   flex-direction: column;
   gap: 36px;
@@ -832,22 +834,39 @@ error-page {
   position: relative;
 }
 
-@keyframes zero-state-intro {
+@keyframes zero-state-fade-in {
   from {
     opacity: 0;
-    transform: translateY(180px);
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes zero-state-slide-up {
+  from {
+    transform: translateY(180px);
+  }
+  to {
     transform: translateY(0);
+  }
+}
+
+@keyframes expanded-page-enter-input-plate {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
 .name-shimmer {
   --bg-gradient: linear-gradient(
     to bottom,
-    rgba(49, 134, 255, 1) 10%,
-    rgba(169, 168, 255, 1) 30%,
+    var(--color-zero-state-greeting) 5%,
+    rgba(49, 134, 255, 1) 25%,
+    rgba(169, 168, 255, 1) 35%,
     rgba(169, 168, 255, 1) 40%,
     var(--color-zero-state-greeting) 100%
   );
@@ -857,13 +876,11 @@ error-page {
   background-clip: text;
   background-size: auto 700%;
   position: relative;
-  animation: textShimmerAnimation 1s cubic-bezier(0.3, 0, 1, 1) both;
+  animation: textShimmerAnimation 1s
+    var(--standard-accelerate-curve) 100ms both;
   padding-inline-end: 2px;
 }
 
-:host([energy-effect-enabled_]) .name-shimmer {
-  animation-delay: 100ms;
-}
 
 :host([is-load-error_]) #composeboxHeaderWrapper,
 :host([is-load-error_]) #composebox {
@@ -882,9 +899,11 @@ error-page {
 :host([dark-mode_]) .name-shimmer {
   --bg-gradient: linear-gradient(
     to bottom,
-    rgba(49, 134, 255, 1) 10%,
-    rgba(169, 168, 255, 1) 50%,
-    var(--color-zero-state-greeting) 70%
+    var(--color-zero-state-greeting) 5%,
+    rgba(49, 134, 255, 1) 25%,
+    rgba(169, 168, 255, 1) 35%,
+    var(--color-zero-state-greeting) 40%,
+    var(--color-zero-state-greeting) 100%
   );
   will-change: background-position;
   color: transparent;
@@ -892,8 +911,7 @@ error-page {
   background-clip: text;
   background-size: auto 700%;
   position: relative;
-  animation: textShimmerAnimation 1s cubic-bezier(0.3, 0, 1, 1) both;
-  background-color: var(--color-zero-state-greeting);
+  animation: textShimmerAnimation 1s var(--standard-accelerate-curve) 100ms both;
 }
 
 @keyframes textShimmerAnimation {

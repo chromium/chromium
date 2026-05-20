@@ -308,7 +308,7 @@
 
 :host([is-zero-state][energy-effect-enabled_]) #composebox::part(input-container) {
   animation: zero-state-input-plate-ease-in 900ms
-    var(--emphasized-curve-energy-effect-enabled);
+    var(--emphasized-curve);
   height: 100%;
 }
 
