@@ -9,6 +9,7 @@ proto_library("personal_context_proto") {
   sources = [
     "context_memory_service.proto",
     "features/ambient_autofill.proto",
+    "features/at_memory.proto",
     "features/common_data.proto",
   ]
 }

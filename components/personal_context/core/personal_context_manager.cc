@@ -31,6 +31,7 @@ namespace {
 size_t GetMaxParallelFeatureFetchers(proto::ContextMemoryFeature feature) {
   switch (feature) {
     case proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL:
+    case proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY:
       return 1;
     default:
       NOTREACHED();

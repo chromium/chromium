@@ -38,8 +38,13 @@ constexpr char kServerTimeoutHeader[] = "X-Server-Timeout";
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     proto::ContextMemoryFeature feature) {
   switch (feature) {
-    // TODO(crbug.com/513249464): fill out autofill traffic annotation details.
     case proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL:
+      // TODO(crbug.com/513249464): fill out autofill traffic annotation
+      // details.
+      return MISSING_TRAFFIC_ANNOTATION;
+    case proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY:
+      // TODO(crbug.com/515050857): fill out at-memory traffic annotation
+      // details.
       return MISSING_TRAFFIC_ANNOTATION;
     case proto::CONTEXT_MEMORY_FEATURE_UNSPECIFIED:
     default:
