@@ -555,66 +555,6 @@ void PassthroughResources::Destroy(gl::GLApi* api,
   texture_shared_image_map.clear();
 }
 
-bool PassthroughResources::IsSharedImage(GLuint texture_client_id) {
-  return texture_shared_image_map.contains(texture_client_id);
-}
-
-void GLES2DecoderPassthroughImpl::UpdateFramebufferSharedImageBindings(
-    GLenum framebuffer_target,
-    GLenum attachment,
-    GLuint texture) {
-  if (!track_framebuffer_attachments_) {
-    return;
-  }
-
-  GLuint framebuffer_service_id = 0;
-  GLuint framebuffer_client_id = 0;
-
-  if (framebuffer_target == GL_DRAW_FRAMEBUFFER ||
-      framebuffer_target == GL_FRAMEBUFFER) {
-    framebuffer_client_id = bound_draw_framebuffer_;
-  } else if (framebuffer_target == GL_READ_FRAMEBUFFER) {
-    framebuffer_client_id = bound_read_framebuffer_;
-  } else {
-    NOTREACHED();
-  }
-
-  if (!framebuffer_id_map_.GetServiceID(framebuffer_client_id,
-                                        &framebuffer_service_id)) {
-    return;
-  }
-
-  auto it =
-      framebuffer_to_shared_image_texture_map_.find(framebuffer_client_id);
-  if (it != framebuffer_to_shared_image_texture_map_.end()) {
-    for (auto shared_image_it = it->second.begin();
-         shared_image_it != it->second.end();) {
-      // Let SharedImageData know that we're about to replace attachment in case
-      // it was attached to it.
-      if (resources_->texture_shared_image_map[*shared_image_it]
-              .WasDetachedFromFramebuffer(framebuffer_service_id, attachment)) {
-        // WasDetachedFromFramebuffer returns true if SharedImage is not
-        // attached to this framebuffer anymore, so we can remove reverse
-        // tracking too.
-        shared_image_it = it->second.erase(shared_image_it);
-      } else {
-        shared_image_it++;
-      }
-    }
-  }
-
-  if (texture) {
-    auto target_shared_image =
-        resources_->texture_shared_image_map.find(texture);
-    if (target_shared_image != resources_->texture_shared_image_map.end()) {
-      target_shared_image->second.WasAttachedToFramebuffer(
-          framebuffer_service_id, attachment);
-      framebuffer_to_shared_image_texture_map_[framebuffer_client_id].insert(
-          texture);
-    }
-  }
-}
-
 PassthroughResources::SharedImageData::SharedImageData() = default;
 PassthroughResources::SharedImageData::SharedImageData(
     const GLES2DecoderPassthroughImpl* impl,
@@ -629,49 +569,6 @@ PassthroughResources::SharedImageData::SharedImageData(
 PassthroughResources::SharedImageData::SharedImageData(
     SharedImageData&& other) = default;
 PassthroughResources::SharedImageData::~SharedImageData() = default;
-
-void PassthroughResources::SharedImageData::WasAttachedToFramebuffer(
-    GLuint framebuffer,
-    GLenum attachment) {
-  framebuffer_to_attachments_map_[framebuffer].insert(attachment);
-}
-
-bool PassthroughResources::SharedImageData::WasDetachedFromFramebuffer(
-    GLuint framebuffer,
-    GLenum attachment) {
-  auto it = framebuffer_to_attachments_map_.find(framebuffer);
-  CHECK(it != framebuffer_to_attachments_map_.end());
-  it->second.erase(attachment);
-  if (it->second.empty()) {
-    framebuffer_to_attachments_map_.erase(framebuffer);
-    return true;
-  }
-
-  return false;
-}
-
-void PassthroughResources::SharedImageData::FramebufferDeleted(
-    GLuint framebuffer) {
-  framebuffer_to_attachments_map_.erase(framebuffer);
-}
-
-void PassthroughResources::SharedImageData::DetachFromFramebuffers(
-    gl::GLApi* api,
-    bool supports_separate_fbo_bindings) {
-  if (framebuffer_to_attachments_map_.empty()) {
-    return;
-  }
-
-  ScopedFramebufferBindingReset reset(api, supports_separate_fbo_bindings);
-
-  for (auto framebuffer : framebuffer_to_attachments_map_) {
-    api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer.first);
-    for (auto attachment : framebuffer.second) {
-      api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, attachment,
-                                       GL_TEXTURE_2D, 0, 0);
-    }
-  }
-}
 
 PassthroughResources::SharedImageData&
 PassthroughResources::SharedImageData::operator=(SharedImageData&& other) {
@@ -911,8 +808,6 @@ GLES2DecoderPassthroughImpl::GLES2DecoderPassthroughImpl(
       group_(group),
       feature_info_(new FeatureInfo(group->feature_info()->workarounds(),
                                     group->gpu_feature_info())),
-      track_framebuffer_attachments_(
-          base::FeatureList::IsEnabled(features::kVulkanFromANGLE)),
       emulated_back_buffer_(nullptr),
       bound_draw_framebuffer_(0),
       bound_read_framebuffer_(0),
