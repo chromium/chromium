@@ -4898,7 +4898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.Constraints.RestrictOwnAudio"
-    enum="GetDisplayMediaBooleanConstraint" expires_after="2026-06-30">
+    enum="GetDisplayMediaBooleanConstraint" expires_after="2027-05-20">
   <owner>brandstrom@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
