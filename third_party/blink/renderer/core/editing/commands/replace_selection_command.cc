@@ -2182,7 +2182,13 @@ bool ReplaceSelectionCommand::ShouldNormalizeNbspInInsertedContent(
   }
 
   Node* node = EndingSelection().Anchor().AnchorNode();
-  return node && IsEditable(*node);
+  if (!node) {
+    return false;
+  }
+
+  return RuntimeEnabledFeatures::NormalizeNbspRichTextOnlyEnabled()
+             ? IsRichlyEditable(*node)
+             : IsEditable(*node);
 }
 
 // Converts U+00A0 (&nbsp;) to a regular space where it is surrounded by

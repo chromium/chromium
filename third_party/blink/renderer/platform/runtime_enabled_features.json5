@@ -4070,6 +4070,14 @@
       status: "stable",
     },
     {
+      // Preserve NBSP in plain-text editing contexts. Only normalize NBSP for
+      // paste/drop in rich-text editing contexts.
+      // See https://issues.chromium.org/issues/513279004.
+      name: "NormalizeNbspRichTextOnly",
+      status: "stable",
+      depends_on: ["NormalizeNbspForPasteAndDrop"],
+    },
+    {
       name: "NotificationConstructor",
       // Android won't be able to reliably support non-persistent notifications, the
       // intended behavior for which is in flux by itself.
