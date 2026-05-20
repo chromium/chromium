@@ -41,6 +41,12 @@ CRYPTO_EXPORT bool MigrateKeychainItemAccessibilityIfNeeded(
     CFDictionaryRef attributes,
     CFDictionaryRef query);
 
+// Records a metric on startup to track the migration status of the keychain.
+// `access_group` is an optional parameter to scope the search to a specific
+// keychain access group.
+CRYPTO_EXPORT void RecordKeychainMigrationStatus(
+    std::string_view access_group = "");
+
 // Creates a dictionary that can be used to update a generic password.
 CRYPTO_EXPORT base::apple::ScopedCFTypeRef<CFDictionaryRef>
 GenerateGenericPasswordUpdateQuery(std::string_view account_name);

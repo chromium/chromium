@@ -28,6 +28,7 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/ukm/ios/ukm_reporting_ios_util.h"
+#import "crypto/apple/keychain_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -52,6 +53,7 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/metrics.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -512,6 +514,8 @@ BOOL _credentialExtensionWasUsed = NO;
     [self recordStartupDuplicatedTabCount:duplicatedTabCount];
     [self recordTabsAgeAtStartup:timesSinceCreation];
     [self recordAndResetWarmStartCount];
+    crypto::apple::RecordKeychainMigrationStatus(
+        base::SysNSStringToUTF8(app_group::ApplicationGroup()));
     ui_util::RecordSystemFontSizeMetrics();
   } else {
     [[PreviousSessionInfo sharedInstance] incrementWarmStartCount];

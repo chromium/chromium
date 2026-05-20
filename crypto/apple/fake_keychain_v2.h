@@ -73,6 +73,14 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
   // Returns the true if |AddGenericPassword()| was called.
   bool called_add_generic() const { return called_add_generic_; }
 
+  // Clears all items from the fake keychain.
+  void ClearItems() { items_.clear(); }
+
+  // |ItemUpdate()| can return different results depending on user interaction
+  // with the system Keychain. For mocking purposes we allow the user of this
+  // class to specify the result code.
+  void set_item_update_result(OSStatus result) { item_update_result_ = result; }
+
 #if !BUILDFLAG(IS_IOS)
   base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
       SecTaskRef task,
@@ -100,6 +108,9 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
 
   // Records whether |AddGenericPassword()| gets called.
   bool called_add_generic_ = false;
+
+  // Result code for the |ItemUpdate()| method.
+  OSStatus item_update_result_ = noErr;
 };
 
 }  // namespace crypto::apple

@@ -194,14 +194,6 @@ OSStatus FakeKeychainV2::ItemAdd(CFDictionaryRef attributes,
 
 OSStatus FakeKeychainV2::ItemCopyMatching(CFDictionaryRef query,
                                           CFTypeRef* result) {
-  // In practice we don't need to care about limit queries, or leaving out the
-  // SecKeyRef or attributes from the result set.
-  DCHECK_EQ(
-      base::apple::GetValueFromDictionary<CFBooleanRef>(query, kSecReturnRef),
-      kCFBooleanTrue);
-  DCHECK_EQ(base::apple::GetValueFromDictionary<CFBooleanRef>(
-                query, kSecReturnAttributes),
-            kCFBooleanTrue);
   CFStringRef match_limit =
       base::apple::GetValueFromDictionary<CFStringRef>(query, kSecMatchLimit);
   bool match_all = match_limit && CFEqual(match_limit, kSecMatchLimitAll);
@@ -220,19 +212,33 @@ OSStatus FakeKeychainV2::ItemCopyMatching(CFDictionaryRef query,
   CFStringRef query_attr_service =
       base::apple::GetValueFromDictionary<CFStringRef>(query, kSecAttrService);
 
+  CFStringRef query_attr_accessible =
+      base::apple::GetValueFromDictionary<CFStringRef>(query,
+                                                       kSecAttrAccessible);
+
   // Filter the items based on `query`.
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> items(
       CFArrayCreateMutable(nullptr, items_.size(), &kCFTypeArrayCallBacks));
   for (auto& item : items_) {
     // Each `Keychain` instance is expected to operate only on items of a single
     // keychain-access-group, which is tied to the `Profile`.
-    CFStringRef keychain_access_group =
+    CFStringRef query_access_group =
         base::apple::GetValueFromDictionary<CFStringRef>(query,
                                                          kSecAttrAccessGroup);
-    DCHECK(CFEqual(keychain_access_group,
+    if (query_access_group) {
+      DCHECK(CFEqual(query_access_group,
+                     base::apple::GetValueFromDictionary<CFStringRef>(
+                         item.get(), kSecAttrAccessGroup)) &&
+             CFEqual(query_access_group, keychain_access_group_.get()));
+    } else {
+      // If no access group is specified in the query, we only return items
+      // belonging to this Keychain instance's access group.
+      if (!CFEqual(keychain_access_group_.get(),
                    base::apple::GetValueFromDictionary<CFStringRef>(
-                       item.get(), kSecAttrAccessGroup)) &&
-           CFEqual(keychain_access_group, keychain_access_group_.get()));
+                       item.get(), kSecAttrAccessGroup))) {
+        continue;
+      }
+    }
 
     CFStringRef item_label = base::apple::GetValueFromDictionary<CFStringRef>(
         item.get(), kSecAttrLabel);
@@ -244,10 +250,14 @@ OSStatus FakeKeychainV2::ItemCopyMatching(CFDictionaryRef query,
     CFStringRef item_attr_service =
         base::apple::GetValueFromDictionary<CFStringRef>(item.get(),
                                                          kSecAttrService);
+    CFStringRef item_attr_accessible =
+        base::apple::GetValueFromDictionary<CFStringRef>(item.get(),
+                                                         kSecAttrAccessible);
     if (!Matches(query_label, item_label) ||
         !Matches(query_application_label, item_application_label) ||
         !Matches(query_application_tag, item_application_tag) ||
-        !Matches(query_attr_service, item_attr_service)) {
+        !Matches(query_attr_service, item_attr_service) ||
+        !Matches(query_attr_accessible, item_attr_accessible)) {
       continue;
     }
     if (match_all) {
@@ -255,14 +265,18 @@ OSStatus FakeKeychainV2::ItemCopyMatching(CFDictionaryRef query,
           CFDictionaryCreateCopy(kCFAllocatorDefault, item.get()));
       CFArrayAppendValue(items.get(), item_copy.get());
     } else {
-      *result = CFDictionaryCreateCopy(kCFAllocatorDefault, item.get());
+      if (result) {
+        *result = CFDictionaryCreateCopy(kCFAllocatorDefault, item.get());
+      }
       return errSecSuccess;
     }
   }
   if (CFArrayGetCount(items.get()) == 0) {
     return errSecItemNotFound;
   }
-  *result = items.release();
+  if (result) {
+    *result = items.release();
+  }
   return errSecSuccess;
 }
 
@@ -298,23 +312,42 @@ OSStatus FakeKeychainV2::ItemDelete(CFDictionaryRef query) {
 
 OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
                                     CFDictionaryRef attributes_to_update) {
-  DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
-            kSecClassKey);
+  if (item_update_result_ != noErr) {
+    return item_update_result_;
+  }
+  CFStringRef query_class =
+      base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass);
+  DCHECK(CFEqual(query_class, kSecClassKey) ||
+         CFEqual(query_class, kSecClassGenericPassword));
   DCHECK(CFEqual(base::apple::GetValueFromDictionary<CFStringRef>(
                      query, kSecAttrAccessGroup),
                  keychain_access_group_.get()));
-  CFDataRef query_credential_id =
+
+  CFDataRef query_application_label =
       base::apple::GetValueFromDictionary<CFDataRef>(query,
                                                      kSecAttrApplicationLabel);
-  DCHECK(query_credential_id);
+  CFStringRef query_account =
+      base::apple::GetValueFromDictionary<CFStringRef>(query, kSecAttrAccount);
+
   for (base::apple::ScopedCFTypeRef<CFDictionaryRef>& item : items_) {
-    CFDataRef item_credential_id =
-        base::apple::GetValueFromDictionary<CFDataRef>(
-            item.get(), kSecAttrApplicationLabel);
-    DCHECK(item_credential_id);
-    if (!CFEqual(query_credential_id, item_credential_id)) {
-      continue;
+    if (query_application_label) {
+      CFDataRef item_application_label =
+          base::apple::GetValueFromDictionary<CFDataRef>(
+              item.get(), kSecAttrApplicationLabel);
+      if (!item_application_label ||
+          !CFEqual(query_application_label, item_application_label)) {
+        continue;
+      }
     }
+    if (query_account) {
+      CFStringRef item_account =
+          base::apple::GetValueFromDictionary<CFStringRef>(item.get(),
+                                                           kSecAttrAccount);
+      if (!item_account || !CFEqual(query_account, item_account)) {
+        continue;
+      }
+    }
+
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> item_copy(
         CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
                                       item.get()));
@@ -322,6 +355,8 @@ OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
         addEntriesFromDictionary:base::apple::CFToNSPtrCast(
                                      attributes_to_update)];
     item = item_copy;
+    // TODO(crbug.com/510320946): `ItemUpdate()` should support updating
+    // multiple values.
     return errSecSuccess;
   }
   return errSecItemNotFound;
