@@ -52,7 +52,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -84,6 +83,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.util.AttrUtils;
+import org.chromium.ui.util.StyleUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -630,11 +630,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_OptOutEdgeToEdge);
         }
 
-        if (ChromeFeatureList.sAndroidDesktopDensity.isEnabled() && DeviceInfo.isDesktop()) {
+        if (StyleUtils.shouldApplyDesktopDensity()) {
             applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_DesktopDensity);
-        }
-
-        if (StripLayoutUtils.shouldApplyMoreDensity()) {
             applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip);
         }
     }

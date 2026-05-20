@@ -236,10 +236,6 @@ inline constexpr char kApproximateGeolocationPermissionDescription[] =
     "Enables the approximate geolocation permission prompt, with options to "
     "control prompt arm variations.";
 
-inline constexpr char kAndroidDesktopDensityName[] = "Android Desktop Density";
-inline constexpr char kAndroidDesktopDensityDescription[] =
-    "Enables desktop density for some surfaces on Android.";
-
 inline constexpr char kAndroidAppIntegrationMultiDataSourceName[] =
     "Integrate with Android App Search with multiple data sources.";
 inline constexpr char kAndroidAppIntegrationMultiDataSourceDescription[] =
@@ -6074,14 +6070,6 @@ inline constexpr char kTabClosureMethodRefactorName[] =
 inline constexpr char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
-
-inline constexpr char kTabStripDensityChangeAndroidName[] =
-    "Tab Strip Density Change";
-inline constexpr char kTabStripDensityChangeAndroidDescription[] =
-    "Enables tab UI to switch to a denser layout when a peripheral(keyboard, "
-    "mouse, touchpad, etc.) is connected, including reducing minimum tab "
-    "width and button touch target to better support click-first interactions.";
-
 
 inline constexpr char kThreeDotMenuBackButtonName[] =
     "Three Dot Menu Back Button";

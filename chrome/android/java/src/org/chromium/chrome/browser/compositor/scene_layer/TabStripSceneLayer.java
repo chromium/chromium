@@ -32,11 +32,12 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.util.StyleUtils;
 
 /**
  * The Java component of what is basically a CC Layer that manages drawing the Tab Strip (which is
- * composed of {@link StripLayoutTab}s) to the screen.  This object keeps the layers up to date and
- * removes/creates children as necessary.  This object is built by its native counterpart.
+ * composed of {@link StripLayoutTab}s) to the screen. This object keeps the layers up to date and
+ * removes/creates children as necessary. This object is built by its native counterpart.
  */
 @JNINamespace("android")
 @NullMarked
@@ -369,7 +370,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
             boolean isPinned = st.getIsPinned();
             float widthToHideTabTitle =
-                    (StripLayoutUtils.shouldApplyMoreDensity() || isPinned)
+                    (StyleUtils.shouldApplyDesktopDensity() || isPinned)
                             ? StripLayoutUtils.MIN_TAB_WIDTH_DP
                             : 0.f;
 

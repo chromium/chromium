@@ -123,6 +123,7 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.StyleUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -183,7 +184,7 @@ public class StripLayoutHelperManager
 
     // Shared button constants (Model selector and Glic).
     static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
-            StripLayoutUtils.shouldApplyMoreDensity() ? 32.f : 48.f;
+            StyleUtils.shouldApplyDesktopDensity() ? 32.f : 48.f;
 
     // Model selector button constants.
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;

@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
+import org.chromium.ui.util.StyleUtils;
 
 import java.util.List;
 
@@ -973,9 +974,9 @@ public class StripLayoutTab extends StripLayoutView {
         }
 
         mClosePlacement.top =
-                StripLayoutUtils.shouldApplyMoreDensity() ? DESKTOP_CLOSE_BUTTON_OFFSET_Y_DP : 0;
+                StyleUtils.shouldApplyDesktopDensity() ? DESKTOP_CLOSE_BUTTON_OFFSET_Y_DP : 0;
         mClosePlacement.bottom =
-                StripLayoutUtils.shouldApplyMoreDensity()
+                StyleUtils.shouldApplyDesktopDensity()
                         ? mClosePlacement.top + closeButtonHeight
                         : getHeight();
 
@@ -1003,7 +1004,7 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     public int getCloseButtonOffsetX() {
-        return StripLayoutUtils.shouldApplyMoreDensity()
+        return StyleUtils.shouldApplyDesktopDensity()
                 ? DESKTOP_CLOSE_BUTTON_OFFSET_X_DP
                 : getTabTouchTargetEndOffsetX();
     }

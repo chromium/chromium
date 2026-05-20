@@ -14,6 +14,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.StyleableRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
@@ -82,5 +83,12 @@ public class StyleUtils {
         }
 
         appearance.recycle();
+    }
+
+    /**
+     * Returns Whether the desktop density should be applied.
+     */
+    public static boolean shouldApplyDesktopDensity() {
+        return DeviceInfo.isDesktop();
     }
 }

@@ -9370,11 +9370,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseWebUiNtpAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kUseWebUiNtpAndroid)},
 
-    {"tab-strip-density-change-android",
-     flag_descriptions::kTabStripDensityChangeAndroidName,
-     flag_descriptions::kTabStripDensityChangeAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripDensityChangeAndroid)},
-
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidDescription,
@@ -10037,12 +10032,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kPasswordSaveInContextErrorResolutionOnDesktop)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"android-desktop-density", flag_descriptions::kAndroidDesktopDensityName,
-     flag_descriptions::kAndroidDesktopDensityDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopDensity)},
 #endif
 
     {"optimization-guide-enable-dogfood-logging",

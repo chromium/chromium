@@ -278,11 +278,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "android-desktop-density",
-    "owners": [ "sinansahin@google.com", "clank-app-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "android-desktop-ua-platform",
     "owners": [ "victortan@chromium.org", "miketaylr@chromium.org" ],
     "expiry_milestone": 155
@@ -8969,11 +8964,6 @@
     "name": "tab-strip-declutter",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "tab-strip-density-change-android",
-    "owners": [ "zheliooo@google.com", "nemco@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 150
   },
   {
     "name": "tab-switcher-drag-drop",

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.util.StyleUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,7 +31,7 @@ public class StripLayoutTabDelegate {
     public static final float TAB_WIDTH_MEDIUM = 156.f;
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START =
-            StripLayoutUtils.shouldApplyMoreDensity() ? 64.f : 96.f;
+            StyleUtils.shouldApplyDesktopDensity() ? 64.f : 96.f;
 
     public static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
     private final LayoutUpdateHost mUpdateHost;

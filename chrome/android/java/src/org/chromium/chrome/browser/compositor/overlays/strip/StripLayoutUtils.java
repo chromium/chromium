@@ -12,13 +12,11 @@ import android.graphics.drawable.Drawable;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
@@ -27,6 +25,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.util.StyleUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
@@ -47,7 +46,9 @@ public class StripLayoutUtils {
     private static final float MIN_TAB_WIDTH_DESKTOP_DP = 76f;
     private static final float MIN_TAB_WIDTH_TABLET_DP = 108f;
     public static final float MIN_TAB_WIDTH_DP =
-            shouldApplyMoreDensity() ? MIN_TAB_WIDTH_DESKTOP_DP : MIN_TAB_WIDTH_TABLET_DP;
+            StyleUtils.shouldApplyDesktopDensity()
+                    ? MIN_TAB_WIDTH_DESKTOP_DP
+                    : MIN_TAB_WIDTH_TABLET_DP;
     public static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     public static final float TAB_OVERLAP_WIDTH_DP = 28f;
 
@@ -57,7 +58,7 @@ public class StripLayoutUtils {
     // Button size constants.
     public static final float BUTTON_BACKGROUND_SIZE_DP = 32f;
     public static final float BUTTON_TOUCH_TARGET_SIZE_DP =
-            shouldApplyMoreDensity() ? BUTTON_BACKGROUND_SIZE_DP : 48f;
+            StyleUtils.shouldApplyDesktopDensity() ? BUTTON_BACKGROUND_SIZE_DP : 48f;
 
     // Animation Constants.
     public static final int ANIM_TAB_MOVE_MS = 125;
@@ -443,10 +444,5 @@ public class StripLayoutUtils {
     public static void performHapticFeedback(View view) {
         if (view == null) return;
         view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-    }
-
-    public static boolean shouldApplyMoreDensity() {
-        return ChromeFeatureList.sTabStripDensityChangeAndroid.isEnabled()
-                && DeviceInfo.isDesktop();
     }
 }
