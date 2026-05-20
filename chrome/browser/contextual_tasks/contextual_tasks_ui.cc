@@ -503,6 +503,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "contextManagementInComposeboxEnabled",
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
+  source->AddBoolean(
+      "tabFaviconChipsToCoinsEnabled",
+      base::FeatureList::IsEnabled(omnibox::kTabFaviconChipsToCoins));
 
   source->AddString(
       "composeboxSource",

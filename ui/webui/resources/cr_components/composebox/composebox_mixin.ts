@@ -147,6 +147,7 @@ export const ComposeboxEmbedderMixin =
             },
             hasVoiceSearchError: {type: Boolean},
             isListening: {type: Boolean},
+            tabFaviconChipsToCoinsEnabled: {type: Boolean},
           };
         }
 
@@ -173,6 +174,9 @@ export const ComposeboxEmbedderMixin =
         // Voice search is listening if there is no error and voice search
         // overlay is open (and active).
         accessor isListening: boolean = false;
+
+        accessor tabFaviconChipsToCoinsEnabled: boolean =
+            loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
 
         browserTabContextAdded: boolean = false;
         pendingUploads: Set<UnguessableToken> = new Set();
@@ -1936,7 +1940,26 @@ export const ComposeboxEmbedderMixin =
               this.shouldShowVoiceSearch();
         }
 
+        getFilteredCarouselFiles(): ComposeboxFile[] {
+          // Gets the list of files to display in the file carousel.
+          // When the context management flag is enabled, tabs (files with a
+          // URL) are filtered out because they would be displayed as favicons
+          // instead of chips.
+          const filesArray = Array.from(this.files.values());
+          if (this.tabFaviconChipsToCoinsEnabled) {
+            return filesArray.filter(f => !f.url);
+          }
+          return filesArray;
+        }
+
         shouldShowDivider(): boolean {
+          if (this.tabFaviconChipsToCoinsEnabled) {
+            const hasNonTabFiles =
+                Array.from(this.files.values()).some(f => !f.url);
+            if (!hasNonTabFiles) {
+              return false;
+            }
+          }
           return this.showDropdown &&
               (this.showFileCarousel || this.shouldShowSubmitButton() ||
                this.inToolMode);
@@ -2065,6 +2088,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   composeboxNoFlickerSuggestionsFix: boolean;
   searchboxListenerIds: number[];
   showTypedSuggest: boolean;
+  tabFaviconChipsToCoinsEnabled: boolean;
   lastQueriedInput: string;
   haveReceivedSynchronousAutocompleteResponse: boolean;
   lensSendRawFileMediaTypesEnabled: boolean;
@@ -2087,6 +2111,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   getContextEntrypointElement(): HTMLElement|null;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean): Promise<void>;
+  getFilteredCarouselFiles(): ComposeboxFile[];
 
   // Common event handlers
   onContextMenuContainerMousedown(e: FocusEvent): void;

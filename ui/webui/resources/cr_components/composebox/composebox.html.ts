@@ -74,7 +74,7 @@ export function getHtml(this: ComposeboxElement) {
                     exportparts="thumbnail, thumbnail-title"
                     id="carousel"
                     class="${this.carouselOnTop_ ? 'top' : ''}"
-                    .files="${this.getFilteredCarouselFiles_()}"
+                    .files="${this.getFilteredCarouselFiles()}"
                     ?enable-scrolling="${this.enableCarouselScrolling}"
                     @delete-file="${this.onDeleteFile_}">
                   </cr-composebox-file-carousel> ` : ''}

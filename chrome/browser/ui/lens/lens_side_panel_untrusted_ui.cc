@@ -200,6 +200,7 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // management should be handled within the composebox.
   // Hardcoded to false because the old side panel composebox lacks a context menu.
   html_source->AddBoolean("contextManagementInComposeboxEnabled", false);
+  html_source->AddBoolean("tabFaviconChipsToCoinsEnabled", false);
 
   // Add strings for post message communication with the remote UI.
   lens::ClientToAimMessage handshake_ping;

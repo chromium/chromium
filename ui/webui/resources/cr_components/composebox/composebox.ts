@@ -204,12 +204,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private resizeObservers_: ResizeObserver[] = [];
   override shouldShowDivider(): boolean {
-    if (this.contextManagementInComposeboxEnabled_) {
-      const hasNonTabFiles = Array.from(this.files.values()).some(f => !f.url);
-      if (!hasNonTabFiles) {
-        return false;
-      }
-    }
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
         this.searchboxLayoutMode === 'TallBottomContext' &&
@@ -693,17 +687,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
       return;
     }
-  }
-
-  protected getFilteredCarouselFiles_(): ComposeboxFile[] {
-    // Gets the list of files to display in the file carousel.
-    // When the context management flag is enabled, tabs (files with a URL)
-    // are filtered out because they would be displayed as favicons instead of chips.
-    const filesArray = Array.from(this.files.values());
-    if (this.contextManagementInComposeboxEnabled_) {
-      return filesArray.filter(f => !f.url);
-    }
-    return filesArray;
   }
 
   protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {

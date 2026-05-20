@@ -89,7 +89,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
         </div>
       ` : this.file.url ? html`
         <div id="tabChip" class="chip" title="${this.file.name}"
-          ?hidden="${this.contextManagementInComposeboxEnabled_}">
+          ?hidden="${this.tabFaviconChipsToCoinsEnabled_}">
           <div id="tabThumbnail" class="thumbnail">
             <cr-composebox-tab-favicon .url="${this.file.url}" .size="${24}">
             </cr-composebox-tab-favicon>
