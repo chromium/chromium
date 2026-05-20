@@ -587,4 +587,11 @@ export class FakeReadingMode {
   // Called after the ReadAnythingAppController maps the readability text blocks
   // to the AXTree.
   onRenderedTextMappingReady() {}
+
+  // Returns the AXTree mapping segments for the distilled block at the given
+  // index. A segment links a character range within the block to its AXnode.
+  getAxMapping(_index: number):
+      Array<{axNodeId: number, start: number, end: number}> {
+    return [];
+  }
 }
