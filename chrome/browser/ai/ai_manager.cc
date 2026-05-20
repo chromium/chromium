@@ -704,9 +704,14 @@ void AIManager::CanCreateLanguageModel(
                                   kUnavailableModelAdaptationNotAvailable);
       return;
     }
-    // Note: Tool use capabilities are gated by RuntimeEnabledFeatures in Blink.
     // Tool use capability is signaled by the presence of tool declarations.
     if (options->tools.has_value() && !options->tools->empty()) {
+      // Check if tool declarations are used without the feature flag.
+      if (!base::FeatureList::IsEnabled(blink::features::kAIPromptAPIToolUse)) {
+        std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                    kUnavailableModelAdaptationNotAvailable);
+        return;
+      }
       input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
     }
   }
@@ -865,11 +870,13 @@ void AIManager::CreateLanguageModelInternal(
     return;
   }
   if (!params->capabilities.empty()) {
-    // Check if multimodal input (image/audio) is used without the feature flag
-    // or if the model doesn't support the requested capabilities.
+    // Check if image/audio/tool input types are used without feature flags, or
+    // the model doesn't support the requested capabilities.
     if ((HasMultimodalInputCapabilities(params->capabilities) &&
          !base::FeatureList::IsEnabled(
              blink::features::kAIPromptAPIMultimodalInput)) ||
+        (params->capabilities.Has(on_device_model::CapabilityFlags::kToolUse) &&
+         !base::FeatureList::IsEnabled(blink::features::kAIPromptAPIToolUse)) ||
         !model_client->capabilities().HasAll(params->capabilities)) {
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote(std::move(client));

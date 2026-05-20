@@ -1827,6 +1827,12 @@ TEST_F(AILanguageModelTest,
 
 // Test class for `Tool Use` functionality.
 class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
+ public:
+  AILanguageModelOpenLoopToolTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAIPromptAPIToolUse);
+  }
+
  protected:
   // Override CreateConfig to use higher max tokens for `Tool Use` testing.
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
@@ -1903,6 +1909,8 @@ class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
   void DisableToolCallSimulation() {
     fake_broker_->settings().simulated_tool_calls.clear();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that tools are embedded in the session's initial context.
@@ -2272,6 +2280,58 @@ TEST_F(AILanguageModelOpenLoopToolTest, ClonedSessionPreservesTools) {
       testing::HasSubstr("<tool-response id=call_clone_002 name=get_weather"));
   EXPECT_THAT(final_response, testing::HasSubstr("\"temperature\":18"));
   EXPECT_THAT(final_response, testing::HasSubstr("\"condition\":\"Cloudy\""));
+}
+
+// Verify that CanCreate and Create correctly handle the disabled tool use flag.
+TEST_F(AILanguageModelOpenLoopToolTest, RejectCreateWithFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kAIPromptAPIToolUse);
+
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->tools = std::move(tools);
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                  future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableModelAdaptationNotAvailable);
+
+  TestCreateLanguageModelClient client;
+  GetAIManagerRemote()->CreateLanguageModel(client.BindNewPipeAndPassRemote(),
+                                            std::move(options));
+  auto result = client.result().Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
+// Ensure Prompt rejects tool responses on sessions without the tool capability.
+TEST_F(AILanguageModelOpenLoopToolTest, RejectToolResponseWithoutCapability) {
+  auto session = CreateSession();
+  base::DictValue tool_response_dict;
+  tool_response_dict.Set("callID", "c0");
+  tool_response_dict.Set("name", "no_such_tool");
+  base::DictValue result;
+  result.Set("arbitrary_field", "arbitrary_value");
+  tool_response_dict.Set("result", std::move(result));
+
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  auto prompt = blink::mojom::AILanguageModelPrompt::New();
+  prompt->role = Role::kUser;
+  prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+          std::move(tool_response_dict)));
+  prompts.push_back(std::move(prompt));
+
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(std::move(prompts), /*constraint=*/nullptr,
+                  responder.BindRemote());
+  ASSERT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
 }
 
 TEST_F(AILanguageModelTest, CanCreatePermissionsPolicyDisabled) {

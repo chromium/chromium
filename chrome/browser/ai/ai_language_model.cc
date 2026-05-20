@@ -159,6 +159,9 @@ on_device_model::mojom::InputPtr ConvertToInput(
           // TODO(crbug.com/422803232): Support on_device_model tool use.
           return nullptr;
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolResponse: {
+          if (!capabilities.Has(on_device_model::CapabilityFlags::kToolUse)) {
+            return nullptr;
+          }
           // TODO(crbug.com/422803232): Support image/audio result types.
           auto response = GetToolResponseFromDict(content->get_tool_response());
           if (!response) {
