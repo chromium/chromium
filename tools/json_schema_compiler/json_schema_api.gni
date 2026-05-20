@@ -364,7 +364,7 @@ template("generated_types") {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
     sources = invoker.sources
-    inputs = compiler_sources
+    inputs = compiler_sources + invoker.sources
     outputs = [
       "$target_gen_dir/{{source_name_part}}.cc",
       "$target_gen_dir/{{source_name_part}}.h",
