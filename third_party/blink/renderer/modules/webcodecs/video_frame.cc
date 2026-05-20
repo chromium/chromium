@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -371,17 +370,13 @@ class CanvasSnapshotProviderCache
       providers_.clear();
     }
 
-    std::unique_ptr<CanvasSnapshotProvider> provider;
-    if (ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
-      provider = CanvasNon2DResourceProviderSharedImage::Create(
-          required_provider_info.size, required_provider_info.format,
-          required_provider_info.alpha_type, required_provider_info.color_space,
-          SharedGpuContext::ContextProviderWrapper(),
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-    } else {
-      provider =
-          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
-    }
+    std::unique_ptr<CanvasSnapshotProvider> provider =
+        CanvasNon2DResourceProviderSharedImage::Create(
+            required_provider_info.size, required_provider_info.format,
+            required_provider_info.alpha_type,
+            required_provider_info.color_space,
+            SharedGpuContext::ContextProviderWrapper(),
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 
     if (!provider) {
       return nullptr;
@@ -1549,16 +1544,14 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
       ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
   auto& provider_cache = CanvasSnapshotProviderCache::From(*execution_context);
 
+  if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
+    return CreateUnacceleratedImageFromVideoFrame(
+        frame, CreateSnapshotProviderInfoForVideoFrame(*frame));
+  }
+
   auto* snapshot_provider = provider_cache.CreateProvider(*frame);
   if (!snapshot_provider) {
     return nullptr;
-  }
-
-  if (snapshot_provider->IsExternalBitmapProvider()) {
-    auto* snapshot_provider_bitmap =
-        static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
-    return CreateUnacceleratedImageFromVideoFrame(
-        frame, snapshot_provider_bitmap->Info());
   }
 
   return CreateAcceleratedImageFromVideoFrame(
