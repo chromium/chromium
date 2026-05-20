@@ -9,10 +9,10 @@
 #include "third_party/blink/renderer/core/style/style_path.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-
 namespace cssvalue {
 
 CSSPathValue::CSSPathValue(StylePath* style_path,
@@ -56,11 +56,13 @@ String CSSPathValue::CustomCSSText() const {
 }
 
 bool CSSPathValue::Equals(const CSSPathValue& other) const {
-  return ByteStream() == other.ByteStream();
+  return style_path_->GetWindRule() == other.style_path_->GetWindRule() &&
+         ByteStream() == other.ByteStream();
 }
 
 unsigned CSSPathValue::CustomHash() const {
-  return ByteStream().Hash();
+  return HashInts(static_cast<unsigned>(style_path_->GetWindRule()),
+                  ByteStream().Hash());
 }
 
 void CSSPathValue::TraceAfterDispatch(blink::Visitor* visitor) const {
