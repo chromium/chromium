@@ -28,6 +28,7 @@ class TabInterfaceAndroid : public tabs::TabInterface {
   // TabInterface overrides:
   base::WeakPtr<tabs::TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
+  void LoadIfNeeded() override;
   Profile* GetProfile() const override;
   void Close() override;
   base::CallbackListSubscription RegisterWillDiscardContents(

@@ -126,6 +126,7 @@ class TabModel final : public TabInterface,
   // TabInterface overrides:
   base::WeakPtr<TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
+  void LoadIfNeeded() override;
   Profile* GetProfile() const override;
   base::CallbackListSubscription RegisterWillDiscardContents(
       TabInterface::WillDiscardContentsCallback callback) override;

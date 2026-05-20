@@ -28,6 +28,7 @@
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -199,6 +200,12 @@ base::WeakPtr<TabInterface> TabModel::GetWeakPtr() {
 
 content::WebContents* TabModel::GetContents() const {
   return contents_;
+}
+
+void TabModel::LoadIfNeeded() {
+  if (contents_ && contents_->GetController().NeedsReload()) {
+    contents_->GetController().LoadIfNecessary();
+  }
 }
 
 Profile* TabModel::GetProfile() const {

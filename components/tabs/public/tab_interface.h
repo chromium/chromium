@@ -138,6 +138,12 @@ class TabInterface : public SupportsTabHandles {
   //   TabInterface and call GetContents() when needed as described above.
   virtual content::WebContents* GetContents() const = 0;
 
+  // Loads the WebContents of the tab if it needs to be loaded/reloaded. On
+  // Android calling this will guarantee subsequent calls to `GetContents` will
+  // return a non-nullptr value. However, the cost of invoking this is high.
+  // Invoke this only in response to a user request that should load the tab.
+  virtual void LoadIfNeeded() = 0;
+
   // Returns the Profile associated with this tab.
   virtual Profile* GetProfile() const = 0;
 

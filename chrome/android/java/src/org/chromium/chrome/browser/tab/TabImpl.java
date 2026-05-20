@@ -272,7 +272,6 @@ class TabImpl implements Tab {
     /** Called when the current window's occlusion changes. */
     private final Callback<Boolean> mOcclusionCallback = (v) -> updateWebContentsVisibility();
 
-
     /** Whether the renderer is currently unresponsive. */
     private boolean mIsRendererUnresponsive;
 
@@ -976,6 +975,7 @@ class TabImpl implements Tab {
         }
     }
 
+    @CalledByNative
     @Override
     public boolean loadIfNeeded(boolean forceBackingSize) {
         if (getActivity(/* withLogs= */ true) == null) {
@@ -1284,7 +1284,6 @@ class TabImpl implements Tab {
             mWebContentsState = null;
         }
 
-
         if (mWindowAndroid != null) {
             mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
         }
@@ -1565,7 +1564,6 @@ class TabImpl implements Tab {
     ObserverList.RewindableIterator<TabObserver> getTabObservers() {
         return mObservers.rewindableIterator();
     }
-
 
     /** Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view. */
     void showRenderedPage() {
@@ -3077,7 +3075,6 @@ class TabImpl implements Tab {
         setNativePtr(nativePtr);
         ResettersForTesting.register(this::clearNativePtr);
     }
-
 
     /**
      * Lightweight proxy stub extending {@link ContentView} used when view layer inflation is

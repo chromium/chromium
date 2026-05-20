@@ -730,6 +730,14 @@ content::WebContents* TabAndroid::GetContents() const {
   return web_contents_.get();
 }
 
+void TabAndroid::LoadIfNeeded() {
+  JNIEnv* env = AttachCurrentThread();
+  // This ensures that screenshots of tabs that haven't been foregrounded at
+  // least have an approximation of the correct size.
+  bool force_backing_size = true;
+  Java_TabImpl_loadIfNeeded(env, GetJavaObject(env), force_backing_size);
+}
+
 Profile* TabAndroid::GetProfile() const {
   return profile();
 }
