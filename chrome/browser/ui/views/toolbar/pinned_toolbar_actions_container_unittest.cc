@@ -660,6 +660,23 @@ TEST_F(PinnedToolbarActionsContainerTest,
   CheckIsPinned(actions::kActionCut, false);
 }
 
+TEST_F(PinnedToolbarActionsContainerTest, EphemeralActionOverflows) {
+  UpdateActionItem(actions::kActionCut);
+
+  container()->GetAnimatingLayoutManager()->disable_widget_check_for_testing();
+  container()->SetBounds(0, 0, 1000, 50);
+  container()->ShowActionEphemerallyInToolbar(actions::kActionCut, true);
+  container()->GetAnimatingLayoutManager()->ResetLayout();
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+
+  // If the available size is large, nothing should need to overflow.
+  EXPECT_FALSE(container()->ShouldAnyButtonsOverflow(gfx::Size(1000, 1000)));
+
+  // If the available size is too small, it should overflow.
+  EXPECT_TRUE(container()->ShouldAnyButtonsOverflow(gfx::Size(1, 1)));
+}
+
 TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
   UpdateActionItem(actions::kActionCut);
   container()->UpdateActionState(actions::kActionCut, true);

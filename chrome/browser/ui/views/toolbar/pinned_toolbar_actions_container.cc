@@ -629,17 +629,16 @@ void PinnedToolbarActionsContainer::RemoveButton(
 }
 
 bool PinnedToolbarActionsContainer::IsOverflowed(actions::ActionId id) {
-  const auto* const pinned_button = GetPinnedButtonFor(id);
-  // TODO(pengchaocai): Support popped out buttons overflow.
+  const auto* const button = GetButtonFor(id);
   // TODO(crbug.com/40949386): If this container is not visible treat the
   // elements inside as overflowed.
 
   // Need to use the target layout in case the animation has not yet shown the
   // button but is in the process of revealing it.
   const auto* const layout =
-      GetAnimatingLayoutManager()->target_layout().GetLayoutFor(pinned_button);
+      GetAnimatingLayoutManager()->target_layout().GetLayoutFor(button);
   return GetAnimatingLayoutManager()->target_layout_manager()->CanBeVisible(
-             pinned_button) &&
+             button) &&
          layout && (!GetVisible() || !layout->visible);
 }
 
@@ -657,17 +656,20 @@ bool PinnedToolbarActionsContainer::ShouldAnyButtonsOverflow(
         GetAnimatingLayoutManager()->target_layout_manager()->GetProposedLayout(
             available_size);
   }
-  for (PinnedActionToolbarButton* pinned_button : pinned_buttons_) {
+
+  auto is_button_overflowing = [&](PinnedActionToolbarButton* button) {
     if (views::ChildLayout* child_layout =
-            proposed_layout.GetLayoutFor(pinned_button)) {
+            proposed_layout.GetLayoutFor(button)) {
       if (GetAnimatingLayoutManager()->target_layout_manager()->CanBeVisible(
-              pinned_button) &&
+              button) &&
           !child_layout->visible) {
         return true;
       }
     }
-  }
-  return false;
+    return false;
+  };
+  return std::ranges::any_of(pinned_buttons_, is_button_overflowing) ||
+         std::ranges::any_of(popped_out_buttons_, is_button_overflowing);
 }
 
 bool PinnedToolbarActionsContainer::IsActionPinned(actions::ActionId id) {
