@@ -182,6 +182,13 @@ export class ToolbarAppElement extends AppElementBase {
         permissionDashboard: null,
       },
     },
+    avatarControlState: {
+      iconUrl: '',
+      text: '',
+      tooltip: '',
+      accessibilityName: '',
+      accessibilityDescription: '',
+    },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],
   };

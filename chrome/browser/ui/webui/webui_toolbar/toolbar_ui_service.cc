@@ -199,4 +199,14 @@ void ToolbarUIService::OnToolbarDropFile(const gfx::PointF& drop_position) {
   }
 }
 
+void ToolbarUIService::ShowAvatarMenu(ShowAvatarMenuCallback callback) {
+  if (delegate_) {
+    delegate_->ShowAvatarMenu();
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        "ToolbarUIService: cannot show avatar menu without delegate_")));
+  }
+}
+
 }  // namespace toolbar_ui_api

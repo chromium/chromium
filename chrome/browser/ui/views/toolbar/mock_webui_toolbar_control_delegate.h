@@ -79,6 +79,10 @@ class MockWebUIToolbarControlDelegate
       GetPinnedToolbarActionsState,
       (),
       (const override));
+  MOCK_METHOD(void,
+              OnAvatarControlStateChanged,
+              (toolbar_ui_api::mojom::AvatarControlStatePtr),
+              (override));
   webui_toolbar::IconTable& GetIconTable() override { return icon_table_; }
 
   // webui_toolbar::IconTable::Delegate:

@@ -161,6 +161,7 @@ class MockToolbarUIDelegate
               OnOmniboxAction,
               (toolbar_ui_api::mojom::OmniboxActionPtr action_ptr),
               (override));
+  MOCK_METHOD(void, ShowAvatarMenu, ());
 };
 
 // Test fixture for WebUIToolbarUI. These tests test the connectivity between

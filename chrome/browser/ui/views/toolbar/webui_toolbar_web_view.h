@@ -83,6 +83,8 @@ class WebUIToolbarControlDelegate {
   virtual void OnContentSettingChanged(
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>
           state) = 0;
+  virtual void OnAvatarControlStateChanged(
+      toolbar_ui_api::mojom::AvatarControlStatePtr state) = 0;
 
   // Read the latest pinned toolbar actions state.
   virtual const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&
@@ -165,6 +167,7 @@ class WebUIToolbarWebView
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
   void OnOmniboxAction(toolbar_ui_api::mojom::OmniboxActionPtr action) override;
+  void ShowAvatarMenu() override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void PermitLaunchUrl() override;
@@ -254,6 +257,8 @@ class WebUIToolbarWebView
       override;
   const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&
   GetPinnedToolbarActionsState() const override;
+  void OnAvatarControlStateChanged(
+      toolbar_ui_api::mojom::AvatarControlStatePtr state) override;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();

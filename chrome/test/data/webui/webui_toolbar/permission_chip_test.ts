@@ -39,6 +39,9 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   onHomeButtonDropUrl() {}
   onHomeButtonDropFile() {}
   onToolbarDropFile() {}
+  showAvatarMenu() {
+    return new Promise<never>(() => {});
+  }
 
   onLhsChipMousePressed(id: LhsChipIdentifier) {
     this.methodCalled('onLhsChipMousePressed', id);

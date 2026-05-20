@@ -73,8 +73,6 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
   // May be null.
   std::unique_ptr<AvatarToolbarButtonStateManager> state_manager_;
-  std::u16string accessibility_name_;
-  std::u16string accessibility_description_;
 
   bool is_initialized_ = false;
 

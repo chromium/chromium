@@ -97,4 +97,7 @@ interface ToolbarUIService {
 
   // Navigates the current tab to the currently dragged file at `drop_position`.
   OnToolbarDropFile(gfx.mojom.PointF drop_position);
+
+  // Shows the avatar menu bubble.
+  ShowAvatarMenu() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };

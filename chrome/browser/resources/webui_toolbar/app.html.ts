@@ -38,11 +38,6 @@ ${this.isBackForwardButtonEnabled_ ? html`
                    !this.navigationControlsState_.splitTabsControlState.isCurrentTabSplit}">
     </split-tabs-button>
   ` : ''}
-  ${this.isAvatarButtonEnabled_ ? html`
-    <avatar-button id="avatar"
-        .state="${null}">
-    </avatar-button>
-  ` : ''}
   ${this.isLocationBarEnabled_ ? html`
     <location-bar id="location-bar"
         .locationBarState="${this.navigationControlsState_.locationBarState}">
@@ -53,6 +48,11 @@ ${this.isBackForwardButtonEnabled_ ? html`
         .state="${this.navigationControlsState_.pinnedToolbarActionsState}"
         .hidden="${this.navigationControlsState_.pinnedToolbarActionsState.length === 0}">
     </pinned-toolbar-actions>
+  ` : ''}
+  ${this.isAvatarButtonEnabled_ ? html`
+    <avatar-button id="avatar"
+        .state="${this.navigationControlsState_.avatarControlState}">
+    </avatar-button>
   ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on

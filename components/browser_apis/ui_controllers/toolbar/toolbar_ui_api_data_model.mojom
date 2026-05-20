@@ -172,6 +172,14 @@ struct HomeControlState {
   bool is_context_menu_visible;
 };
 
+struct AvatarControlState {
+  string icon_url;
+  mojo_base.mojom.String16 text;
+  mojo_base.mojom.String16 tooltip;
+  mojo_base.mojom.String16 accessibility_name;
+  mojo_base.mojom.String16 accessibility_description;
+};
+
 // The type of the content setting image model.
 //
 // Unlike ContentSettingsType, which defines the underlying settings, this enum
@@ -468,6 +476,7 @@ struct NavigationControlsState {
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
   HomeControlState home_control_state;
+  AvatarControlState avatar_control_state;
   LocationBarState location_bar_state;
   // List of pinned toolbar action button states. Order corresponds to order
   // of the drawn buttons and duplicates imply duplicate buttons.

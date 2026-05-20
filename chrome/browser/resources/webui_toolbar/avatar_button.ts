@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './avatar_button.css.js';
 import {getHtml} from './avatar_button.html.js';
-
-export interface AvatarButtonState {
-  isVisible: boolean;
-  accessibilityDescription: string;
-  accessibilityName: string;
-  isButtonActionDisabled: boolean;
-}
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {AvatarControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class AvatarButtonElement extends CrLitElement {
   static get is() {
@@ -36,14 +32,17 @@ export class AvatarButtonElement extends CrLitElement {
     };
   }
 
-  protected accessor state: AvatarButtonState|null = null;
+  protected accessor state: AvatarControlState = {
+    iconUrl: '',
+    text: '',
+    tooltip: '',
+    accessibilityName: '',
+    accessibilityDescription: '',
+  };
 
-  protected getIcon(): string {
-    return 'cr:person';
-  }
-
-  protected onClick_(_e: Event) {
-    // TODO: Connect to browser controls handler.
+  protected onClick_(_: Event) {
+    // TODO(behamilton): Log an error if this fails.
+    BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu();
   }
 }
 

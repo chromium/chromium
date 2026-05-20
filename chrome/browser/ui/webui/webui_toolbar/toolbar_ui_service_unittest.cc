@@ -393,6 +393,13 @@ TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect2) {
               testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
 }
 
+// Tests that calling ShowAvatarMenu() calls the delegate.
+TEST_F(ToolbarUIServiceTest, TestShowAvatarMenu) {
+  EXPECT_CALL(delegate(), ShowAvatarMenu());
+
+  service().ShowAvatarMenu(base::NullCallback());
+}
+
 }  // namespace
 
 }  // namespace toolbar_ui_api

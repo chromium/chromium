@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/icons.html.js';
+
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {AvatarButtonElement} from './avatar_button.js';
@@ -9,14 +12,20 @@ import type {AvatarButtonElement} from './avatar_button.js';
 export function getHtml(this: AvatarButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-icon-button id="button"
-    ?hidden="${!this.state?.isVisible}"
-    .ironIcon="${this.getIcon()}"
-    title="${this.state?.accessibilityDescription || ''}"
-    aria-label="${this.state?.accessibilityName || ''}"
-    ?disabled="${!!this.state?.isButtonActionDisabled}"
+<cr-button id="button"
+    title="${this.state.tooltip || ''}"
+    aria-label="${this.state.accessibilityName || ''}"
+    aria-description="${this.state.accessibilityDescription || ''}"
     @click="${this.onClick_}">
-</cr-icon-button>
+  ${this.state.iconUrl ? html`
+    <img id="icon" src="${this.state.iconUrl}" alt="">
+  ` : html`
+    <cr-icon id="icon" icon="cr:person"></cr-icon>
+  `}
+  ${this.state.text ? html`
+    <span id="text">${this.state.text}</span>
+  ` : ''}
+</cr-button>
 <!--_html_template_end_-->`;
   // clang-format on
 }

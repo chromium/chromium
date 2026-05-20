@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -181,19 +182,32 @@ void WebUIAvatarToolbarButton::UpdateState() {
       !delegate_->GetView()->GetWidget()) {
     return;
   }
-  // TODO(crbug.com/470045174): Implement Mojo state push once API is added.
-  UpdateAccessibilityLabel();
+
+  const StateProvider* state_provider =
+      std::as_const(*state_manager_).GetActiveStateProvider();
+  if (!state_provider) {
+    return;
+  }
+
+  auto state = toolbar_ui_api::mojom::AvatarControlState::New();
+
+  // TODO(crbug.com/470045174): Resolve icon URL properly.
+  // For now, use a generic profile icon.
+  state->icon_url = "chrome://theme/IDR_PROFILE_AVATAR_0";
+
+  state->text = state_provider->GetText();
+  state->tooltip = state_provider->GetAvatarTooltipText();
+
+  auto [name, description] =
+      state_manager_->GetAccessibilityLabels(state_provider->GetText());
+  state->accessibility_name = name;
+  state->accessibility_description = description;
+
+  if (delegate_) {
+    delegate_->OnAvatarControlStateChanged(std::move(state));
+  }
 }
 
 void WebUIAvatarToolbarButton::UpdateAccessibilityLabel() {
-  CHECK(state_manager_);
-  StateProvider* active_state_provider =
-      state_manager_->GetActiveStateProvider();
-  if (!active_state_provider) {
-    return;
-  }
-  auto [name, description] =
-      state_manager_->GetAccessibilityLabels(active_state_provider->GetText());
-  accessibility_name_ = std::move(name);
-  accessibility_description_ = std::move(description);
+  UpdateState();
 }

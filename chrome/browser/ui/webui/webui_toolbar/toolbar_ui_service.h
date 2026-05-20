@@ -57,6 +57,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnToolbarDropFile(const gfx::PointF& drop_position) = 0;
     virtual void OnOmniboxAction(
         toolbar_ui_api::mojom::OmniboxActionPtr action) = 0;
+    virtual void ShowAvatarMenu() = 0;
   };
 
   ToolbarUIService(
@@ -103,6 +104,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnHomeButtonDropUrl(const GURL& url) override;
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
+  void ShowAvatarMenu(ShowAvatarMenuCallback callback) override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

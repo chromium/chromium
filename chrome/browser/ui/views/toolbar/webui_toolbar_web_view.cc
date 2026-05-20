@@ -224,6 +224,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
           /*permission_dashboard=*/nullptr);
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
+  last_queued_state_.avatar_control_state =
+      toolbar_ui_api::mojom::AvatarControlState::New();
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
@@ -488,6 +490,10 @@ void WebUIToolbarWebView::OnOmniboxAction(
   if (location_bar_) {
     location_bar_->OnOmniboxAction(std::move(action));
   }
+}
+
+void WebUIToolbarWebView::ShowAvatarMenu() {
+  avatar_control_.ButtonPressed(/*is_source_accelerator=*/false);
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
@@ -898,6 +904,14 @@ void WebUIToolbarWebView::OnContentSettingChanged(
                                ->content_setting_image_states)) {
     last_queued_state_.location_bar_state->content_setting_image_states =
         std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnAvatarControlStateChanged(
+    toolbar_ui_api::mojom::AvatarControlStatePtr state) {
+  if (!mojo::Equals(state, last_queued_state_.avatar_control_state)) {
+    last_queued_state_.avatar_control_state = std::move(state);
     PostPushNavigationState();
   }
 }
