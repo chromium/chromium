@@ -22,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "gin/arguments.h"
+#include "gin/array_buffer.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/object_template_builder.h"
@@ -148,15 +149,9 @@ void JsSandboxMessagePort::PostMessage(gin::Arguments* args) {
     android_webview::Java_JsSandboxMessagePort_postString(
         env, j_js_sandbox_message_port_, string);
   } else if (value->IsArrayBuffer()) {
-    v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
-    auto backing_store = v8_array_buffer->GetBackingStore();
-
-    // Not going to get out of sync or become invalid.
-    // SAFETY: This runs on isolate thread, and length is handled by V8.
     base::android::ScopedJavaLocalRef<jbyteArray> j_array_buffer =
-        UNSAFE_BUFFERS(base::android::ToJavaByteArray(
-            env, static_cast<const uint8_t*>(backing_store->Data()),
-            backing_store->ByteLength()));
+        base::android::ToJavaByteArray(
+            env, gin::ArrayBuffer(value.As<v8::ArrayBuffer>()).span());
 
     android_webview::Java_JsSandboxMessagePort_postArrayBuffer(
         env, j_js_sandbox_message_port_, j_array_buffer);
