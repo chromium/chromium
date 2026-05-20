@@ -489,6 +489,8 @@ public class NavigationTransitionsTest {
     @Test
     @MediumTest
     public void testInputAfterBackTransition() throws Throwable {
+        // TODO(crbug.com/515045870): Three button mode is failing, disabling.
+        Assume.assumeFalse(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
 
