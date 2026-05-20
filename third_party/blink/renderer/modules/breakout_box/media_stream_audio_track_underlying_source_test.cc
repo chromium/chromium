@@ -20,8 +20,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -57,11 +62,16 @@ const media::AudioParameters kStereoParams =
                            media::ChannelLayoutConfig::Stereo(),
                            kSampleRate,
                            kFramesPerBuffer);
-
 }  // namespace
 
 class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
  public:
+  void SetUp() override {
+    feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    feature_list_->InitAndEnableFeature(
+        kBreakoutBoxExposePageRelativeAudioCaptureTime);
+  }
+
   ~MediaStreamAudioTrackUnderlyingSourceTest() override {
     platform_->RunUntilIdle();
     WebHeap::CollectAllGarbageForTesting();
@@ -141,6 +151,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
   void PushData(
       MediaStreamTrack* track,
@@ -238,9 +249,24 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   NonThrowableExceptionState exception_state;
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, exception_state);
+  Performance* performance =
+      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
+          v8_scope.GetExecutionContext());
+  ASSERT_TRUE(performance);
+  base::TimeTicks time_origin = performance->GetTimeOriginInternal();
+  bool cross_origin_isolated = performance->CrossOriginIsolatedCapability();
+
   for (wtf_size_t i = 1; i <= buffer_size; ++i) {
     AudioData* audio_data = ReadObjectFromStream<AudioData>(v8_scope, reader);
-    EXPECT_EQ(base::Microseconds(audio_data->timestamp()), base::Seconds(i));
+    base::TimeDelta pushed_timestamp = base::Seconds(i);
+    base::TimeTicks capture_time = base::TimeTicks() + pushed_timestamp;
+    DOMHighResTimeStamp expected_rtc_timestamp =
+        Performance::MonotonicTimeToDOMHighResTimeStamp(
+            time_origin, capture_time, /*allow_negative_value=*/true,
+            cross_origin_isolated);
+    int64_t expected_timestamp_us =
+        base::Milliseconds(expected_rtc_timestamp).InMicroseconds();
+    EXPECT_NEAR(audio_data->timestamp(), expected_timestamp_us, 1);
   }
 
   // Pulling causes a pending pull since there are no frames available for
@@ -304,7 +330,18 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, BufferPooling_Simple) {
 
   // Verify returned data.
   EXPECT_TRUE(DataMatches(buffer, *audio_bus));
-  EXPECT_EQ(buffer->timestamp(), now - base::TimeTicks());
+
+  // Verify that the timestamp is page-relative.
+  Performance* performance =
+      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
+          v8_scope.GetExecutionContext());
+  ASSERT_TRUE(performance);
+  DOMHighResTimeStamp expected_rtc_timestamp =
+      Performance::MonotonicTimeToDOMHighResTimeStamp(
+          performance->GetTimeOriginInternal(), now,
+          /*allow_negative_value=*/true,
+          performance->CrossOriginIsolatedCapability());
+  EXPECT_EQ(buffer->timestamp(), base::Milliseconds(expected_rtc_timestamp));
 
   source->Close();
   track->stopTrack(v8_scope.GetExecutionContext());
@@ -490,6 +527,112 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, LeaseOnWorkerFeatureEnabled) {
   tester.WaitUntilSettled();
   EXPECT_EQ(source->GetRealmThreadTypeLeasedForTesting(),
             base::ThreadType::kAudioProcessing);
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
+       AudioDataTimestampIsPageRelativeCaptureTime) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  // Setup format.
+  source->OnSetFormat(kStereoParams);
+
+  // Create fake data.
+  auto audio_bus = CreateTestData(kStereoParams, 0.25);
+  base::TimeTicks capture_time1 = base::TimeTicks::Now();
+
+  // Call OnData directly to simulate frame delivery.
+  source->OnData(*audio_bus, capture_time1);
+
+  // Read first frame.
+  AudioData* audio_data1 = ReadObjectFromStream<AudioData>(v8_scope, reader);
+  ASSERT_TRUE(audio_data1);
+
+  // Verify that timestamp is page-relative capture time in microseconds.
+  Performance* performance =
+      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
+          v8_scope.GetExecutionContext());
+  ASSERT_TRUE(performance);
+  DOMHighResTimeStamp expected_capture_time_ms1 =
+      Performance::MonotonicTimeToDOMHighResTimeStamp(
+          performance->GetTimeOriginInternal(), capture_time1,
+          /*allow_negative_value=*/true,
+          performance->CrossOriginIsolatedCapability());
+  int64_t expected_capture_time_us1 =
+      base::Milliseconds(expected_capture_time_ms1).InMicroseconds();
+
+  // EXPECT_NEAR with 1 microsecond tolerance (due to Milliseconds conversion).
+  EXPECT_NEAR(audio_data1->timestamp(), expected_capture_time_us1, 1);
+
+  // Deliver second frame after some delay.
+  base::TimeDelta delay = base::Milliseconds(100);
+  base::TimeTicks capture_time2 = capture_time1 + delay;
+  source->OnData(*audio_bus, capture_time2);
+
+  // Read second frame.
+  AudioData* audio_data2 = ReadObjectFromStream<AudioData>(v8_scope, reader);
+  ASSERT_TRUE(audio_data2);
+
+  DOMHighResTimeStamp expected_capture_time_ms2 =
+      Performance::MonotonicTimeToDOMHighResTimeStamp(
+          performance->GetTimeOriginInternal(), capture_time2,
+          /*allow_negative_value=*/true,
+          performance->CrossOriginIsolatedCapability());
+  int64_t expected_capture_time_us2 =
+      base::Milliseconds(expected_capture_time_ms2).InMicroseconds();
+
+  EXPECT_NEAR(audio_data2->timestamp(), expected_capture_time_us2, 1);
+
+  source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
+       AudioDataTimestampIsNotRelativeToPageOriginWhenFeatureDisabled) {
+  feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  feature_list_->InitAndDisableFeature(
+      kBreakoutBoxExposePageRelativeAudioCaptureTime);
+
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  auto* track = CreateTrack(scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  // Setup format.
+  source->OnSetFormat(kStereoParams);
+
+  // Create fake data.
+  auto audio_bus = CreateTestData(kStereoParams, 0.25);
+  base::TimeTicks capture_time = base::TimeTicks::Now();
+
+  // Call OnData directly to simulate frame delivery.
+  source->OnData(*audio_bus, capture_time);
+
+  // Read frame.
+  AudioData* audio_data = ReadObjectFromStream<AudioData>(scope, reader);
+  ASSERT_TRUE(audio_data);
+
+  // Verify that the timestamp is not page-relative with the flag disabled.
+  int64_t expected_timestamp_us =
+      (capture_time - base::TimeTicks()).InMicroseconds();
+  EXPECT_EQ(audio_data->timestamp(), expected_timestamp_us);
+
+  source->Close();
+  track->stopTrack(scope.GetExecutionContext());
 }
 
 }  // namespace blink

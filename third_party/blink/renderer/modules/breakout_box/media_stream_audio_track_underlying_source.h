@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_AUDIO_TRACK_UNDERLYING_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_AUDIO_TRACK_UNDERLYING_SOURCE_H_
 
+#include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_parameters.h"
@@ -17,7 +18,12 @@
 
 namespace blink {
 
+MODULES_EXPORT BASE_DECLARE_FEATURE(
+    kBreakoutBoxExposePageRelativeAudioCaptureTime);
+
+class ExecutionContext;
 class MediaStreamComponent;
+class Performance;
 class ReadableStreamTransferringOptimizer;
 
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
@@ -27,6 +33,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
                       DisconnectFromTrack);
 
  public:
+  static Performance* GetPerformanceFromExecutionContext(ExecutionContext*);
   // Public interface for unit testing purposes.
   class AudioBufferPool {
    public:
