@@ -355,7 +355,6 @@ if (!is_debug) {
       "WebNNGraphImplFuzzer_CPU.SingleOpPad",
       "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
       "WebNNGraphImplFuzzer_CPU.SingleOpReduce",
-      "WebNNGraphImplFuzzer_CPU.SingleOpResample2d",
       "WebNNGraphImplFuzzer_CPU.SingleOpScatterElements",
       "WebNNGraphImplFuzzer_CPU.SubgraphDQConcatQ",
       "WebNNGraphImplFuzzer_CPU.SubgraphDQConv2dQ",
@@ -363,7 +362,6 @@ if (!is_debug) {
       "WebNNGraphImplFuzzer_CPU.SubgraphDQPadQ",
       "WebNNGraphImplFuzzer_CPU.SubgraphDQPool2dQ",
       "WebNNGraphImplFuzzer_CPU.SubgraphDQReduceQ",
-      "WebNNGraphImplFuzzer_CPU.SubgraphDQResample2dQ",
       "WebNNGraphImplFuzzer_GPU.SingleOpConcat",
       "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
       "WebNNGraphImplFuzzer_GPU.SingleOpExpand",
@@ -373,7 +371,6 @@ if (!is_debug) {
       "WebNNGraphImplFuzzer_GPU.SingleOpPad",
       "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
       "WebNNGraphImplFuzzer_GPU.SingleOpReduce",
-      "WebNNGraphImplFuzzer_GPU.SingleOpResample2d",
       "WebNNGraphImplFuzzer_GPU.SingleOpScatterElements",
       "WebNNGraphImplFuzzer_GPU.SubgraphDQConcatQ",
       "WebNNGraphImplFuzzer_GPU.SubgraphDQConv2dQ",
@@ -381,7 +378,6 @@ if (!is_debug) {
       "WebNNGraphImplFuzzer_GPU.SubgraphDQPadQ",
       "WebNNGraphImplFuzzer_GPU.SubgraphDQPool2dQ",
       "WebNNGraphImplFuzzer_GPU.SubgraphDQReduceQ",
-      "WebNNGraphImplFuzzer_GPU.SubgraphDQResample2dQ",
       "WebNNGraphImplFuzzer_NPU.SingleOpConcat",
       "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
       "WebNNGraphImplFuzzer_NPU.SingleOpExpand",
@@ -391,7 +387,6 @@ if (!is_debug) {
       "WebNNGraphImplFuzzer_NPU.SingleOpPad",
       "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
       "WebNNGraphImplFuzzer_NPU.SingleOpReduce",
-      "WebNNGraphImplFuzzer_NPU.SingleOpResample2d",
       "WebNNGraphImplFuzzer_NPU.SingleOpScatterElements",
       "WebNNGraphImplFuzzer_NPU.SubgraphDQConcatQ",
       "WebNNGraphImplFuzzer_NPU.SubgraphDQConv2dQ",
@@ -399,7 +394,6 @@ if (!is_debug) {
       "WebNNGraphImplFuzzer_NPU.SubgraphDQPadQ",
       "WebNNGraphImplFuzzer_NPU.SubgraphDQPool2dQ",
       "WebNNGraphImplFuzzer_NPU.SubgraphDQReduceQ",
-      "WebNNGraphImplFuzzer_NPU.SubgraphDQResample2dQ",
     ]
 
     deps = [
