@@ -48,6 +48,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -492,6 +493,7 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
   enterprise_connectors::BinaryUploadService* GetBinaryUploadService(
       Profile* profile,
       const enterprise_connectors::AnalysisSettings&) override {
+    CHECK(profile);
     if (binary_upload_service_override_) {
       return binary_upload_service_override_;
     }
@@ -1039,6 +1041,29 @@ TEST_F(DeepScanningAPPRequestTest, FinishRequestCalledOnceWithCancellation) {
 
     download_protection_service_.set_binary_upload_service(nullptr);
   }
+}
+
+TEST_F(DeepScanningAPPRequestTest,
+       DownloadDestroyedNullBrowserContextCrashTest) {
+  // Overwrite the item's browser context with nullptr to simulate a normal
+  // download destruction where the browser context is lost.
+  content::DownloadItemUtils::AttachInfoForTesting(&item_, nullptr, nullptr);
+
+  enterprise_connectors::AnalysisSettings settings;
+  settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+
+  std::unique_ptr<DeepScanningRequest> request =
+      std::make_unique<DeepScanningRequest>(
+          CreateMetadata(),
+          DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+          DownloadCheckResult::SAFE, base::DoNothing(),
+          &download_protection_service_, std::move(settings),
+          /*password=*/std::nullopt);
+
+  // OnDownloadDestroyed should successfully complete and call FinishRequest /
+  // AcknowledgeRequest without any null-dereference crashes because of the new
+  // null guards.
+  request->OnDownloadDestroyed(&item_);
 }
 
 TEST_F(DeepScanningAPPRequestTest, CancelsUploadOnDownloadDestroyed) {
