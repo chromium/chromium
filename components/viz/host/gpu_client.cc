@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -55,7 +57,8 @@ void GpuClient::InitializeGpuChannelForNewRenderer(
   if (!invitation_handle.is_valid()) {
     // Fall back to the legacy behavior of pre-allocating a channel via the
     // standard method.
-    EstablishGpuChannel(EstablishGpuChannelCallback());
+    EstablishGpuChannelWithReason(EstablishGpuChannelCallback(),
+                                  EstablishChannelReason::kInitNoInvitation);
     return;
   }
 
@@ -86,22 +89,24 @@ void GpuClient::InitializeGpuChannelForNewRenderer(
   // Since the client pipe is sent to the renderer via mojo invitation, pass an
   // empty pipe for the client end for `OnEstablishGpuChannel()`. Send the other
   // end of the invitation pipe to the GPU.
-  EstablishGpuChannelInternal(/*is_for_init_with_invitation=*/true, gpu_host,
-                              std::move(invitation_handle),
-                              mojo::ScopedMessagePipeHandle());
+  EstablishGpuChannelInternal(EstablishChannelReason::kInitWithInvitation,
+                              gpu_host, std::move(invitation_handle),
+                              mojo::ScopedMessagePipeHandle(),
+                              base::TimeTicks::Now());
 }
 
 void GpuClient::EstablishGpuChannelInternal(
-    bool is_for_init_with_invitation,
+    EstablishChannelReason reason,
     GpuHostImpl* gpu_host,
     mojo::ScopedMessagePipeHandle service_handle,
-    mojo::ScopedMessagePipeHandle client_handle) {
+    mojo::ScopedMessagePipeHandle client_handle,
+    base::TimeTicks start_time) {
   gpu_host->EstablishGpuChannel(
       client_id_, client_tracing_id_, /*is_gpu_host=*/false,
       enable_extra_handles_validation_, /*sync=*/false,
       std::move(service_handle),
       base::BindOnce(&GpuClient::OnEstablishGpuChannel,
-                     weak_factory_.GetWeakPtr(), is_for_init_with_invitation,
+                     weak_factory_.GetWeakPtr(), reason, start_time,
                      std::move(client_handle)));
 }
 
@@ -155,7 +160,8 @@ void GpuClient::BindWebNNContextProvider(
 }
 
 void GpuClient::OnEstablishGpuChannel(
-    bool is_for_init_with_invitation,
+    EstablishChannelReason reason,
+    base::TimeTicks start_time,
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -168,11 +174,12 @@ void GpuClient::OnEstablishGpuChannel(
     channel_handle.reset();
   } else {
     // For kSuccess cases, we must get a valid pipe, except for the new renderer
-    // case, where we would always pass in an invalid pipe.
-    DCHECK_EQ(channel_handle.is_valid(), !is_for_init_with_invitation);
+    // case with an invitation, where we would always pass in an invalid pipe.
+    DCHECK_EQ(channel_handle.is_valid(),
+              reason != EstablishChannelReason::kInitWithInvitation);
   }
 
-  if (is_for_init_with_invitation) {
+  if (reason == EstablishChannelReason::kInitWithInvitation) {
     CHECK(!channel_handle_pending_);
     CHECK(init_with_invitation_pending_);
     init_with_invitation_pending_ = false;
@@ -182,12 +189,21 @@ void GpuClient::OnEstablishGpuChannel(
     channel_handle_pending_ = false;
   }
 
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time;
+  if (reason == EstablishChannelReason::kRegular) {
+    base::UmaHistogramMediumTimes(
+        "GPU.EstablishGpuChannel.Browser.RegularAsyncLatency", latency);
+  } else {
+    base::UmaHistogramMediumTimes(
+        "GPU.EstablishGpuChannel.Browser.InitAsyncLatency", latency);
+  }
+
   if (callback_for_testing_) {
     std::move(callback_for_testing_)
         .Run(status == GpuHostImpl::EstablishChannelStatus::kSuccess);
   }
 
-  if (is_for_init_with_invitation) {
+  if (reason == EstablishChannelReason::kInitWithInvitation) {
     // The client pipe is already sent to the renderer via mojo invitation
     // during renderer initialization. Note that if the channel establishment
     // failed, the renderer would notice the connection is lost and trigger a
@@ -230,6 +246,13 @@ void GpuClient::ClearCallback() {
 }
 
 void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
+  EstablishGpuChannelWithReason(std::move(callback),
+                                EstablishChannelReason::kRegular);
+}
+
+void GpuClient::EstablishGpuChannelWithReason(
+    EstablishGpuChannelCallback callback,
+    EstablishChannelReason reason) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // At most one channel should be requested. So clear previous request first.
   ClearCallback();
@@ -279,8 +302,8 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   // Allocate a new pipe. Pass the client end to be saved in `channel_handle_`
   // on `OnEstablishGpuChannel()`, send the other to the GPU.
   mojo::MessagePipe pipe;
-  EstablishGpuChannelInternal(/*is_for_init_with_invitation=*/false, gpu_host,
-                              std::move(pipe.handle1), std::move(pipe.handle0));
+  EstablishGpuChannelInternal(reason, gpu_host, std::move(pipe.handle1),
+                              std::move(pipe.handle0), base::TimeTicks::Now());
 }
 
 void GpuClient::SetEstablishGpuChannelCallbackForTesting(

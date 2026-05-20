@@ -493,8 +493,23 @@ void RenderThreadImpl::Init() {
   mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
   BindHostReceiver(remote_gpu.InitWithNewPipeAndPassReceiver());
   base::TimeTicks init_start_time = base::TimeTicks::Now();
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  std::optional<base::TimeTicks> gpu_request_start_time;
+  if (command_line.HasSwitch(switches::kGpuChannelRequestStartTimeTicks)) {
+    int64_t start_time_internal = 0;
+    if (base::StringToInt64(command_line.GetSwitchValueASCII(
+                                switches::kGpuChannelRequestStartTimeTicks),
+                            &start_time_internal)) {
+      gpu_request_start_time =
+          base::TimeTicks() + base::Microseconds(start_time_internal);
+    }
+  }
+
   auto gpu_channel_established_callback = base::BindOnce(
-      [](base::TimeTicks start_time, scoped_refptr<gpu::GpuChannelHost> host) {
+      [](base::TimeTicks init_start_time,
+         std::optional<base::TimeTicks> gpu_request_start_time,
+         scoped_refptr<gpu::GpuChannelHost> host) {
         // We don't call OnPotentialNewGpuChannelHost() here since this occurs
         // before the RenderMediaClient has been initialized.
         if (host) {
@@ -502,18 +517,17 @@ void RenderThreadImpl::Init() {
         }
         base::UmaHistogramBoolean("GPU.InitialChannelEstablishmentSucceeded",
                                   host != nullptr);
-        base::TimeDelta duration = base::TimeTicks::Now() - start_time;
-        // TODO(crbug.com/496408117): For initial channel sent from the browser
-        // via mojo invitation, record the time it takes from the initial
-        // request on the browser side to when it's available in the renderer
-        // as well.
+        base::TimeTicks now = base::TimeTicks::Now();
         base::UmaHistogramTimes("GPU.EstablishGpuChannel.InitialChannelLatency",
-                                duration);
+                                now - init_start_time);
+        if (gpu_request_start_time) {
+          base::UmaHistogramTimes(
+              "GPU.EstablishGpuChannel.InitialChannelBrowserToRendererLatency",
+              now - gpu_request_start_time.value());
+        }
       },
-      init_start_time);
+      init_start_time, gpu_request_start_time);
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
   mojo::ScopedMessagePipeHandle initial_gpu_channel = TakeInitialGPUChannel();
   const bool use_early_channel =
       base::FeatureList::IsEnabled(features::kSendGPUChannelEarly) &&

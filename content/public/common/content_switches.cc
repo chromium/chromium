@@ -624,6 +624,11 @@ const char kRendererProcess[]               = "renderer";
 // Time the browser launched the renderer process (in TimeTicks).
 const char kRendererProcessLaunchTimeTicks[] = "launch-time-ticks";
 
+// Time the browser process requested the GPU channel for the renderer (in
+// TimeTicks).
+const char kGpuChannelRequestStartTimeTicks[] =
+    "gpu-channel-request-start-time-ticks";
+
 // Overrides the default/calculated limit to the number of renderer processes.
 // Very high values for this setting can lead to high memory/resource usage
 // or instability.
