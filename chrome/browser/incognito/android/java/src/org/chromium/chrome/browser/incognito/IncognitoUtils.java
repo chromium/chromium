@@ -106,14 +106,12 @@ public class IncognitoUtils {
             return false;
         }
         if (BuildConfig.IS_FOR_TEST) {
-            // The feature should be ON for Android Desktop.
-            // The screen size check is not reliable on Android Desktop emulator.
+            // This helper method is called from non-UI thread from tests.
             sShouldOpenIncognitoAsWindowForTesting =
-                    DeviceInfo.isDesktop()
-                            || ThreadUtils.runOnUiThreadBlocking(
-                                    () ->
-                                            DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
-                                                    LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
+                                            LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
             return sShouldOpenIncognitoAsWindowForTesting;
         }
 
