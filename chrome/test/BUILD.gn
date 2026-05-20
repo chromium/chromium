@@ -6888,6 +6888,7 @@ test("unit_tests") {
     "../browser/sharing/sharing_device_registration_impl_unittest.cc",
     "../browser/signin/account_consistency_mode_manager_unittest.cc",
     "../browser/signin/account_id_from_account_info_unittest.cc",
+    "../browser/signin/account_preview_data_service_factory_unittest.cc",
     "../browser/signin/chrome_device_id_helper_unittest.cc",
     "../browser/signin/chrome_signin_client_unittest.cc",
     "../browser/signin/chrome_signin_helper_unittest.cc",

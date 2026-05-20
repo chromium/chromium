@@ -260,6 +260,8 @@ const base::FeatureParam<std::string> kCrossDeviceSigninUrl{&kCrossDeviceSignin,
 BASE_FEATURE(kDisableU18FeedbackDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+BASE_FEATURE(kEnableAccountPreviewData, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Whether activityless sign-in should be used for all entry points.
 BASE_FEATURE(kEnableActivitylessSigninAllEntryPoint,
