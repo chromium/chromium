@@ -829,6 +829,16 @@ void LensOverlayController::ShowUIWithPendingRegion(
     lens::LensOverlayInvocationSource invocation_source,
     lens::mojom::CenterRotatedBoxPtr region,
     const SkBitmap& region_bitmap) {
+  // In the non-blocking image context menu search flow, the initial query
+  // requires session permissions to be granted, but the query controller will
+  // ensure that the contents of the initial query are restricted.
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage) {
+    MaybeGrantLensOverlayPermissionsForSession(invocation_source);
+  }
+
   pending_region_ = std::move(region);
   pending_region_bitmap_ = region_bitmap;
   ShowUI(invocation_source);
@@ -940,8 +950,27 @@ void LensOverlayController::IssueLensRequest(
     initialization_data_->selected_region_bitmap_.reset();
   }
 
+  // On the initial query of the non-blocking image context menu search flow,
+  // the injected image will be sent in place of the screenshot, so set the
+  // region to the entire area. The initial query is identified by selection
+  // type INJECTED_IMAGE; subsequent queries will have a different selection
+  // type.
+  lens::mojom::CenterRotatedBoxPtr server_region = region.Clone();
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source_ ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
+      selection_type == lens::INJECTED_IMAGE &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile)) {
+    server_region->box = gfx::RectF(0.5f, 0.5f, 1.0f, 1.0f);
+    server_region->coordinate_type =
+        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  }
+
   GetLensQueryFlowRouter()->SendRegionSearch(
-      query_start_time, region.Clone(), selection_type,
+      query_start_time, std::move(server_region), selection_type,
       initialization_data_->additional_search_query_params_, region_bytes,
       invocation_source_);
   MaybeOpenSidePanel();
@@ -2302,8 +2331,25 @@ void LensOverlayController::StartQueryFlow() {
     initialization_data_->page_title_ = "";
   }
 
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  // On the initial query of the non-blocking image context menu search flow,
+  // set `initial_image` to `pending_region_bitmap_`. In other flows,
+  // `pending_region_bitmap_` will not be used and `initial_image` will be set
+  // to the initial screenshot.
+  const bool send_pending_region_as_initial_image =
+      lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source_ ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
+      !pending_region_bitmap_.empty() &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile);
+  SkBitmap initial_image = send_pending_region_as_initial_image
+                               ? pending_region_bitmap_
+                               : initialization_data_->initial_screenshot_;
+
   GetLensQueryFlowRouter()->StartQueryFlow(
-      initialization_data_->initial_screenshot_,
+      initialization_data_->initial_screenshot_, initial_image,
       initialization_data_->page_url_, initialization_data_->page_title_,
       std::move(initialization_data_->significant_region_boxes_),
       initialization_data_->page_contents_,

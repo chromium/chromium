@@ -98,6 +98,7 @@ TestLensOverlayQueryController::~TestLensOverlayQueryController() = default;
 
 void TestLensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
+    const SkBitmap& initial_image,
     GURL page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
@@ -114,9 +115,9 @@ void TestLensOverlayQueryController::StartQueryFlow(
   }
 
   LensOverlayQueryController::StartQueryFlow(
-      screenshot, page_url, page_title, std::move(significant_region_boxes),
-      underlying_page_contents, primary_content_type, pdf_current_page,
-      ui_scale_factor, invocation_time);
+      screenshot, initial_image, page_url, page_title,
+      std::move(significant_region_boxes), underlying_page_contents,
+      primary_content_type, pdf_current_page, ui_scale_factor, invocation_time);
 }
 
 void TestLensOverlayQueryController::SendRegionSearch(

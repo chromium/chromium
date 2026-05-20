@@ -6248,6 +6248,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "lens-overlay-non-blocking-privacy-notice-for-image-search",
+    "owners": ["nguyenbryan@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "lens-overlay-omnibox-entry-point",
     "owners": ["khalidpeer@chromium.org", "mercerd@google.com"],
     "expiry_milestone": 150

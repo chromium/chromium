@@ -9549,6 +9549,8 @@ from previous Chrome versions.
   <int value="-1516633879" label="BackgroundNotPerceptibleBinding:disabled"/>
   <int value="-1515835427"
       label="NTPRealboxContextualAndTrendingSuggestions:enabled"/>
+  <int value="-1515447199"
+      label="LensOverlayNonBlockingPrivacyNoticeForImageSearch:disabled"/>
   <int value="-1515415104" label="top-document-isolation:disabled"/>
   <int value="-1515383488"
       label="SafetyHubDisruptiveNotificationRevocation:disabled"/>
@@ -14876,6 +14878,8 @@ from previous Chrome versions.
   <int value="249727337" label="EnableTranslationAPI:enabled"/>
   <int value="250236604" label="kUserMediaScreenCapturing:enabled"/>
   <int value="250297614" label="EnableExclusiveAccessManager:enabled"/>
+  <int value="250850254"
+      label="LensOverlayNonBlockingPrivacyNoticeForImageSearch:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
   <int value="250890200" label="OmniboxZpsSuggestionLimit:enabled"/>
   <int value="251180818" label="ReadAloudAutoVoiceSwitching:disabled"/>

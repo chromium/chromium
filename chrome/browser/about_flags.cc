@@ -12437,6 +12437,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayNonBlockingPrivacyNoticeDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayNonBlockingPrivacyNotice)},
+
+    {"lens-overlay-non-blocking-privacy-notice-for-image-search",
+     flag_descriptions::kLensOverlayNonBlockingPrivacyNoticeForImageSearchName,
+     flag_descriptions::
+         kLensOverlayNonBlockingPrivacyNoticeForImageSearchDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch)},
 #endif
 
     {"migrate-syncing-user-to-signed-in",
