@@ -26,7 +26,7 @@ using ::testing::_;
 using Embedding = passage_embeddings::Embedding;
 using TaskId = passage_embeddings::Embedder::TaskId;
 
-constexpr TaskId kTaskId = 0;
+constexpr TaskId kTaskId = 1;
 
 class MockEmbedder : public passage_embeddings::TestEmbedder {
  public:
@@ -53,14 +53,23 @@ class ContentAnnotatorSemanticMatchClassifierTest : public testing::Test {
 
   std::unique_ptr<ContentAnnotatorSemanticMatchClassifier> CreateClassifier(
       std::string_view rules_json) {
-    base::test::TestFuture<
-        std::unique_ptr<ContentAnnotatorSemanticMatchClassifier>>
+    base::test::TestFuture<SemanticMatchRulesMap, std::vector<Embedding>,
+                           passage_embeddings::ComputeEmbeddingsStatus>
         future;
 
-    CreateSemanticMatchClassifier(rules_json, mock_embedder_.get(),
-                                  future.GetCallback());
+    TaskId task_id = ComputeEmbeddingsForSemanticMatchClassifier(
+        rules_json, mock_embedder_.get(), future.GetCallback());
+    if (task_id == 0) {
+      return nullptr;
+    }
 
-    return future.Take();
+    auto [rules, embeddings, status] = future.Take();
+    if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+      return nullptr;
+    }
+
+    return ContentAnnotatorSemanticMatchClassifier::Create(
+        std::move(rules), std::move(embeddings));
   }
 
   void MockEmbedderResponse(
@@ -101,11 +110,15 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest,
 
 TEST_F(ContentAnnotatorSemanticMatchClassifierTest, FailsWithNullEmbedder) {
   const char kRules[] = R"JSON({ "category1": ["keyword1"] })JSON";
-  base::test::TestFuture<
-      std::unique_ptr<ContentAnnotatorSemanticMatchClassifier>>
+  base::test::TestFuture<SemanticMatchRulesMap, std::vector<Embedding>,
+                         passage_embeddings::ComputeEmbeddingsStatus>
       future;
-  CreateSemanticMatchClassifier(kRules, nullptr, future.GetCallback());
-  EXPECT_FALSE(future.Take());
+  TaskId task_id = ComputeEmbeddingsForSemanticMatchClassifier(
+      kRules, nullptr, future.GetCallback());
+  EXPECT_EQ(task_id, 0u);
+  auto [rules, embeddings, status] = future.Take();
+  EXPECT_EQ(status,
+            passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
 }
 
 TEST_F(ContentAnnotatorSemanticMatchClassifierTest, CreateSucceeds) {

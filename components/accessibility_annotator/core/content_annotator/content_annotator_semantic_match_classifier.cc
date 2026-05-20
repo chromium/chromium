@@ -20,66 +20,70 @@ namespace accessibility_annotator {
 
 namespace {
 
-void OnEmbeddingsReady(std::vector<std::string> categories,
-                       ClassifierCallback callback,
+std::vector<std::string> GetPassagesToEmbed(
+    const SemanticMatchRulesMap& rules) {
+  std::vector<std::string> passages;
+  for (const auto& [category, category_keywords] : rules) {
+    for (const std::string& keyword : category_keywords) {
+      passages.push_back(keyword);
+    }
+  }
+  return passages;
+}
+
+void OnEmbeddingsReady(SemanticMatchRulesMap rules,
+                       SemanticMatchEmbeddingsCallback callback,
                        std::vector<std::string> passages,
                        std::vector<passage_embeddings::Embedding> embeddings,
                        passage_embeddings::Embedder::TaskId task_id,
                        passage_embeddings::ComputeEmbeddingsStatus status) {
-  if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess ||
-      embeddings.size() != categories.size()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::vector<ContentAnnotatorSemanticMatchClassifier::CategoryEmbedding>
-      category_embeddings;
-  category_embeddings.reserve(categories.size());
-  for (size_t i = 0; i < categories.size(); ++i) {
-    category_embeddings.emplace_back(std::move(categories[i]),
-                                     std::move(embeddings[i]));
-  }
-
-  if (category_embeddings.empty()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::move(callback).Run(
-      std::make_unique<ContentAnnotatorSemanticMatchClassifier>(
-          std::move(category_embeddings)));
+  std::move(callback).Run(std::move(rules), std::move(embeddings), status);
 }
 
 }  // namespace
 
-void CreateSemanticMatchClassifier(std::string_view rules_json,
-                                   passage_embeddings::Embedder* embedder,
-                                   ClassifierCallback callback) {
-  // 1. Parse rules.
-  base::flat_map<std::string, std::vector<std::string>> rules =
-      ParseRulesFromJson(rules_json);
+passage_embeddings::Embedder::TaskId
+ComputeEmbeddingsForSemanticMatchClassifier(
+    std::string_view rules_json,
+    passage_embeddings::Embedder* embedder,
+    SemanticMatchEmbeddingsCallback callback) {
+  SemanticMatchRulesMap rules = ParseRulesFromJson(rules_json);
   if (rules.empty() || !embedder) {
-    std::move(callback).Run(nullptr);
-    return;
+    std::move(callback).Run(
+        {}, {}, passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
+    return 0;
   }
 
-  // 2. Prepare passages for embedding.
-  std::vector<std::string> categories;
-  std::vector<std::string> keywords;
-  categories.reserve(rules.size());
-  keywords.reserve(rules.size());
+  std::vector<std::string> passages = GetPassagesToEmbed(rules);
+  return embedder->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kUrgent, std::move(passages),
+      base::BindOnce(&OnEmbeddingsReady, std::move(rules),
+                     std::move(callback)));
+}
+
+// static
+std::unique_ptr<ContentAnnotatorSemanticMatchClassifier>
+ContentAnnotatorSemanticMatchClassifier::Create(
+    SemanticMatchRulesMap rules,
+    std::vector<passage_embeddings::Embedding> embeddings) {
+  std::vector<CategoryEmbedding> category_embeddings;
+  size_t embedding_idx = 0;
   for (const auto& [category, category_keywords] : rules) {
-    for (const std::string& keyword : category_keywords) {
-      categories.push_back(category);
-      keywords.push_back(keyword);
+    for (size_t i = 0; i < category_keywords.size(); ++i) {
+      if (embedding_idx >= embeddings.size()) {
+        return nullptr;
+      }
+      category_embeddings.emplace_back(category,
+                                       std::move(embeddings[embedding_idx++]));
     }
   }
 
-  // 3. Compute embeddings asynchronously.
-  embedder->ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority::kUrgent, std::move(keywords),
-      base::BindOnce(&OnEmbeddingsReady, std::move(categories),
-                     std::move(callback)));
+  if (embedding_idx != embeddings.size() || category_embeddings.empty()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ContentAnnotatorSemanticMatchClassifier>(
+      std::move(category_embeddings));
 }
 
 ContentAnnotatorSemanticMatchClassifier::

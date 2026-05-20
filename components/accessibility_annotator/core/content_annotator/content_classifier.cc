@@ -96,7 +96,11 @@ ContentClassifier::ContentClassifier(
   OnEmbedderModelChanged();
 }
 
-ContentClassifier::~ContentClassifier() = default;
+ContentClassifier::~ContentClassifier() {
+  if (semantic_classifier_task_id_ != 0 && embedder_) {
+    embedder_->TryCancel(semantic_classifier_task_id_);
+  }
+}
 
 void ContentClassifier::OnEmbedderModelChanged() {
   if (semantic_classifier_ || !embedder_) {
@@ -109,15 +113,22 @@ void ContentClassifier::OnEmbedderModelChanged() {
     return;
   }
 
-  CreateSemanticMatchClassifier(
+  semantic_classifier_task_id_ = ComputeEmbeddingsForSemanticMatchClassifier(
       semantic_rules, embedder_,
-      base::BindOnce(&ContentClassifier::OnSemanticClassifierCreated,
+      base::BindOnce(&ContentClassifier::OnSemanticEmbeddingsReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ContentClassifier::OnSemanticClassifierCreated(
-    std::unique_ptr<ContentAnnotatorSemanticMatchClassifier> classifier) {
-  semantic_classifier_ = std::move(classifier);
+void ContentClassifier::OnSemanticEmbeddingsReady(
+    SemanticMatchRulesMap rules,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  semantic_classifier_task_id_ = 0;
+  if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+    return;
+  }
+  semantic_classifier_ = ContentAnnotatorSemanticMatchClassifier::Create(
+      std::move(rules), std::move(embeddings));
 }
 
 bool ContentClassifier::IsSemanticClassifierReadyForTesting() const {

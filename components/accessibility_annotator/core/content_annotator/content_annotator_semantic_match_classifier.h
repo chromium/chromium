@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
@@ -23,22 +24,36 @@ namespace accessibility_annotator {
 
 class ContentAnnotatorSemanticMatchClassifier;
 
-using ClassifierCallback = base::OnceCallback<void(
-    std::unique_ptr<ContentAnnotatorSemanticMatchClassifier>)>;
+// A map of categories to their associated keywords/phrases.
+using SemanticMatchRulesMap =
+    base::flat_map<std::string, std::vector<std::string>>;
 
-// Asynchronously creates a semantic match classifier from a string of rules.
-// This function computes the embeddings for the keywords/phrases for each
-// category and stores them for later comparison.
+using SemanticMatchEmbeddingsCallback = base::OnceCallback<void(
+    SemanticMatchRulesMap rules,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    passage_embeddings::ComputeEmbeddingsStatus status)>;
+
+// Asynchronously computes embeddings for the keywords in `rules_json`.
 // Matching is done using cosine similarity scores between the input text's
 // embedding and the precomputed embeddings for each category.
-// Calls the `callback` with the created classifier or nullptr if rules are
-// malformed or if embedding fails.
-void CreateSemanticMatchClassifier(std::string_view rules_json,
-                                   passage_embeddings::Embedder* embedder,
-                                   ClassifierCallback callback);
+// Calls the `callback` with the parsed rules and their corresponding
+// embeddings. The embeddings vector corresponds to the passages extracted from
+// the rules. Returns a TaskId for cancellation.
+passage_embeddings::Embedder::TaskId
+ComputeEmbeddingsForSemanticMatchClassifier(
+    std::string_view rules_json,
+    passage_embeddings::Embedder* embedder,
+    SemanticMatchEmbeddingsCallback callback);
 
 class ContentAnnotatorSemanticMatchClassifier {
  public:
+  // Synchronously creates a semantic match classifier from precomputed
+  // embeddings. The `embeddings` vector must correspond to the passages
+  // extracted from the `rules`.
+  static std::unique_ptr<ContentAnnotatorSemanticMatchClassifier> Create(
+      SemanticMatchRulesMap rules,
+      std::vector<passage_embeddings::Embedding> embeddings);
+
   // TODO(crbug.com/485267512): Move this to ContentClassifierResult.
   struct ClassificationResult {
     std::string category;
