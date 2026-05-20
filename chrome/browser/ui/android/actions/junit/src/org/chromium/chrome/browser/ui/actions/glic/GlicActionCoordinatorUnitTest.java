@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.ui.actions.glic;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,6 +46,7 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -64,6 +68,7 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private ActorKeyedService mActorService;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private ActionRegistry mActionRegistry;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -100,8 +105,11 @@ public class GlicActionCoordinatorUnitTest {
                         mTabSupplier,
                         mTaskSupplier,
                         mBrowserControlsVisibilityManager,
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mSnackbarManager);
 
+        when(mActivity.getResources())
+                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
         mTabSupplier.set(mTab);
         ShadowLooper.idleMainLooper();
     }
@@ -137,7 +145,17 @@ public class GlicActionCoordinatorUnitTest {
     @Test
     public void testState_Incognito() {
         mTabSupplier.set(mIncognitoTab);
-        assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
+        assertEquals(ButtonState.DEFAULT, mActionModel.get(ActionProperties.BUTTON_STATE));
+        assertTrue(mActionModel.get(ActionProperties.ON_PRESS_CALLBACK) != null);
+    }
+
+    @Test
+    public void testClick_Incognito_showsSnackbar() {
+        mTabSupplier.set(mIncognitoTab);
+        Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+        assertTrue(callback != null);
+        callback.onResult(null);
+        verify(mSnackbarManager).showSnackbar(any());
     }
 
     @Test
@@ -149,10 +167,15 @@ public class GlicActionCoordinatorUnitTest {
     @Test
     public void testTabTransition_updatesState() {
         assertEquals(ButtonState.DEFAULT, mActionModel.get(ActionProperties.BUTTON_STATE));
+        Callback<View> normalCallback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+        assertTrue(normalCallback != null);
 
         mTabSupplier.set(mIncognitoTab);
 
-        assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
+        assertEquals(ButtonState.DEFAULT, mActionModel.get(ActionProperties.BUTTON_STATE));
+        Callback<View> incognitoCallback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+        assertTrue(incognitoCallback != null);
+        assertTrue(normalCallback != incognitoCallback);
     }
 
     @Test

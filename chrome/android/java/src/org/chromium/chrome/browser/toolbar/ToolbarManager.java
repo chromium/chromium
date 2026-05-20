@@ -2508,7 +2508,8 @@ public class ToolbarManager
                             mActivityTabProvider.asObservable(),
                             mChromeAndroidTaskSupplier,
                             mBrowserControlsSizer,
-                            mTabModelSelectorSupplier);
+                            mTabModelSelectorSupplier,
+                            mSnackbarManager);
         }
 
         Profile profile = tabModelSelector.getModel(false).getProfile();

@@ -28,7 +28,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,6 +48,8 @@ public class GlicActionCoordinator {
     private final CurrentTabObserver mCurrentTabObserver;
     private final GlicButtonStateController mStateController;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
+    private final Activity mActivity;
+    private final SnackbarManager mSnackbarManager;
     private @Nullable GlicTaskMenuCoordinator mTaskMenuCoordinator;
 
     public GlicActionCoordinator(
@@ -54,10 +59,13 @@ public class GlicActionCoordinator {
             NullableObservableSupplier<Tab> tabSupplier,
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier) {
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
+            SnackbarManager snackbarManager) {
+        mActivity = activity;
         mToggleGlicCallback = toggleGlicCallback;
         mTabSupplier = tabSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mSnackbarManager = snackbarManager;
         mGlicActionModelSupplier = actionRegistry.get(ActionId.GLIC);
 
         mStateController =
@@ -142,12 +150,32 @@ public class GlicActionCoordinator {
         if (model == null) return;
 
         Tab currentTab = mTabSupplier.get();
-        boolean isEnabled =
-                currentTab != null
-                        && !currentTab.isOffTheRecord()
-                        && !UrlUtilities.isNtpUrl(currentTab.getUrl());
+        boolean isIncognito = currentTab != null && currentTab.isOffTheRecord();
 
-        model.set(ActionProperties.BUTTON_STATE, isEnabled ? DEFAULT : UNCLICKABLE);
+        if (isIncognito) {
+            model.set(ActionProperties.ON_PRESS_CALLBACK, this::showIncognitoSnackbar);
+            model.set(ActionProperties.BUTTON_STATE, DEFAULT);
+            model.set(
+                    ActionProperties.ICON_TINT,
+                    GlicActionUtils.getIncognitoDisabledTint(mActivity));
+        } else {
+            boolean isNtp = currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl());
+            boolean isEnabled = currentTab != null && !isNtp;
+
+            model.set(ActionProperties.ON_PRESS_CALLBACK, this::onGlicActionPressed);
+            model.set(ActionProperties.BUTTON_STATE, isEnabled ? DEFAULT : UNCLICKABLE);
+            model.set(ActionProperties.ICON_TINT, null);
+        }
+    }
+
+    private void showIncognitoSnackbar(View view) {
+        mSnackbarManager.showSnackbar(
+                Snackbar.make(
+                                mActivity.getString(R.string.glic_incognito_not_available),
+                                null,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_UNKNOWN)
+                        .setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS));
     }
 
     private @Nullable PropertyModel getModelSupplierOrNull() {

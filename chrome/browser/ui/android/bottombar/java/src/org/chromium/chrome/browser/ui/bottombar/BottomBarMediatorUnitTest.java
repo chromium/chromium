@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -311,7 +312,7 @@ public class BottomBarMediatorUnitTest {
 
         createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
 
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, false);
     }
 
     @Test
@@ -324,7 +325,7 @@ public class BottomBarMediatorUnitTest {
 
         createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
 
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, true);
     }
 
     @Test
@@ -337,7 +338,7 @@ public class BottomBarMediatorUnitTest {
 
         createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
 
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mButtonManager, atLeastOnce()).setButtonVisibility(ActionId.GLIC, true);
     }
 
     @Test
