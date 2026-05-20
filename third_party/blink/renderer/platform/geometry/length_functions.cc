@@ -31,10 +31,6 @@
 
 namespace blink {
 
-int IntValueForLength(const Length& length, int maximum_value) {
-  return ValueForLength(length, LayoutUnit(maximum_value)).ToInt();
-}
-
 float FloatValueForLength(const Length& length,
                           float maximum_value,
                           const EvaluationInput& input) {

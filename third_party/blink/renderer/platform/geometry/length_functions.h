@@ -41,7 +41,6 @@ class LengthSize;
 
 struct LengthPoint;
 
-PLATFORM_EXPORT int IntValueForLength(const Length&, int maximum_value);
 PLATFORM_EXPORT float FloatValueForLength(const Length&,
                                           float maximum_value,
                                           const EvaluationInput& = {});
