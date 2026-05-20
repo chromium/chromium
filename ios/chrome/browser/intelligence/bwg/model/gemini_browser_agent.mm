@@ -674,7 +674,6 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
   // floaty to be presented immediately.
   GeminiPageContext* initial_page_context =
       gemini_tab_helper->GetPartialPageContext();
-  ApplyUserPrefsToPageContext(initial_page_context);
 
   // Set up the presentation, depending on whether the floaty is already
   // invoked.
@@ -686,7 +685,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     if (image_attachment) {
       ios::provider::AttachImage(image_attachment);
     }
-    ios::provider::UpdatePageContext(initial_page_context);
+    PropagatePageContextToProvider(initial_page_context);
     if (prepopulated_prompt) {
       ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
     }
@@ -698,6 +697,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     [gemini_page_state_change_handler_
         setBaseViewController:base_view_controller];
 
+    ApplyUserPrefsToPageContext(initial_page_context);
     GeminiConfiguration* config = CreateGeminiConfiguration(
         base_view_controller, startup_state, web_state, initial_page_context);
 
@@ -724,7 +724,7 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
   }
   switch (processing_status) {
     case ios::provider::GeminiClientMode::kListening:
-      UpdateGeminiPageContext();
+      RequestPageContextGeneration();
       break;
     case ios::provider::GeminiClientMode::kDormant:
       ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
@@ -1030,11 +1030,9 @@ void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
     return;
   }
 
-  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
-  ApplyUserPrefsToPageContext(gemini_page_context);
-
   // This update is from the active tab. Propagate it to the provider.
-  ios::provider::UpdatePageContext(gemini_page_context);
+  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
+  PropagatePageContextToProvider(gemini_page_context);
 }
 
 void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(
@@ -1126,7 +1124,7 @@ void GeminiBrowserAgent::WillShutDown(FullscreenBrowserAgent* agent) {
 
 #pragma mark - Private
 
-void GeminiBrowserAgent::UpdateGeminiPageContext() {
+void GeminiBrowserAgent::RequestPageContextGeneration() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
@@ -1140,6 +1138,15 @@ void GeminiBrowserAgent::UpdateGeminiPageContext() {
   // Show page attachment UI chip every time the floaty is expanded.
   ios::provider::RequestUIChange(
       ios::provider::GeminiUIElementType::kContextAttachment);
+}
+
+void GeminiBrowserAgent::PropagatePageContextToProvider(
+    GeminiPageContext* gemini_page_context) {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+  ApplyUserPrefsToPageContext(gemini_page_context);
+  ios::provider::UpdatePageContext(gemini_page_context);
 }
 
 GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
@@ -1281,9 +1288,7 @@ void GeminiBrowserAgent::OnPageContentPrefChanged() {
   }
 
   GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
-  ApplyUserPrefsToPageContext(gemini_page_context);
-
-  ios::provider::UpdatePageContext(gemini_page_context);
+  PropagatePageContextToProvider(gemini_page_context);
 
   // Trigger UI update for the attachment chip.
   ios::provider::RequestUIChange(
@@ -1292,8 +1297,7 @@ void GeminiBrowserAgent::OnPageContentPrefChanged() {
 
 void GeminiBrowserAgent::OnPageContextGenerated(
     GeminiPageContext* gemini_page_context) {
-  ApplyUserPrefsToPageContext(gemini_page_context);
-  ios::provider::UpdatePageContext(gemini_page_context);
+  PropagatePageContextToProvider(gemini_page_context);
 }
 
 void GeminiBrowserAgent::OnViewStateChanged(
@@ -1304,7 +1308,7 @@ void GeminiBrowserAgent::OnViewStateChanged(
       active_hiding_sources_.clear();
       is_hidden_by_keyboard_ = false;
     }
-    UpdateGeminiPageContext();
+    RequestPageContextGeneration();
   }
 }
 

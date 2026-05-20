@@ -153,7 +153,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   friend class AppBarMediatorTest;
 
   // Fetches the full context of the active page and feeds it to Gemini.
-  void UpdateGeminiPageContext();
+  void RequestPageContextGeneration();
+
+  // Propagates the page context to the provider if the floaty is invoked.
+  void PropagatePageContextToProvider(GeminiPageContext* gemini_page_context);
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,

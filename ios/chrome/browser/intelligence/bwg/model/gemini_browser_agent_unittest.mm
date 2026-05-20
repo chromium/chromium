@@ -200,9 +200,9 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_->floaty_hidden_timestamp_ = timestamp;
   }
 
-  // Triggers `UpdateGeminiPageContext()` in the browser agent.
-  void UpdateGeminiPageContext() {
-    gemini_browser_agent_->UpdateGeminiPageContext();
+  // Triggers `RequestPageContextGeneration()` in the browser agent.
+  void RequestPageContextGeneration() {
+    gemini_browser_agent_->RequestPageContextGeneration();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -360,8 +360,8 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
   EXPECT_TRUE(helper2->HasObserver(agent));
 }
 
-// Tests that UpdateGeminiPageContext triggers page context generation.
-TEST_F(GeminiBrowserAgentTest, TestUpdateGeminiPageContext) {
+// Tests that RequestPageContextGeneration triggers page context generation.
+TEST_F(GeminiBrowserAgentTest, TestRequestPageContextGeneration) {
   // Set a valid URL.
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
@@ -392,7 +392,7 @@ TEST_F(GeminiBrowserAgentTest, TestUpdateGeminiPageContext) {
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
 
-  UpdateGeminiPageContext();
+  RequestPageContextGeneration();
 
   // Wait for the delegate method to be called.
   ASSERT_TRUE(
