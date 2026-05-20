@@ -108,6 +108,7 @@ source_set("browser") {
     "//components/page_load_metrics/common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/performance_manager",
+    "//components/startup_metric_utils",
     "//content/public/browser",
     "//content/public/common",
     "//net",

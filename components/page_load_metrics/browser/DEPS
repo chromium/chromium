@@ -12,6 +12,7 @@ include_rules = [
   "+components/metrics",
   "+components/performance_manager/public",
   "+components/performance_manager/test_support",
+  "+components/startup_metric_utils/browser",
   "+components/subresource_filter/content/browser",
   "+components/subresource_filter/core/browser",
   "+components/subresource_filter/core/common",

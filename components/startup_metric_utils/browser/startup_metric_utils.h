@@ -117,6 +117,21 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   // launches by the OS.
   void RecordFirstWebContentsNonEmptyPaintForOsLaunch(base::TimeTicks now);
 
+  // Call this with the time when the first web contents had a first contentful
+  // paint. |navigation_start| identifies the page load. Records at most once
+  // per session.
+  void RecordFirstWebContentsFirstContentfulPaint(
+      base::TimeTicks navigation_start,
+      base::TimeTicks fcp_ticks);
+
+  // Call this with the time when the first web contents had a largest
+  // contentful paint. |navigation_start| must match the value passed to
+  // RecordFirstWebContentsFirstContentfulPaint() to ensure FCP and LCP are
+  // from the same page load. Records at most once per session.
+  void RecordFirstWebContentsLargestContentfulPaint(
+      base::TimeTicks navigation_start,
+      base::TimeTicks lcp_ticks);
+
   // Call this with the time when the first web contents began navigating its
   // main frame / successfully committed its navigation for the main frame.
   // These functions must be called after RecordApplicationStartTime(), because
@@ -186,7 +201,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
       BrowserStartupMetricRecorder& GetBrowser();
 
   // Only permit construction from within GetBrowser().
-  BrowserStartupMetricRecorder() = default;
+  BrowserStartupMetricRecorder();
 
 #if BUILDFLAG(IS_WIN)
   // Returns the hard fault count of the current process, or nullopt if it can't
@@ -227,6 +242,13 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   bool is_first_run_ = false;
 
   bool is_browser_window_display_metric_emitted_ = false;
+
+  bool did_record_startup_fcp_ = false;
+  bool did_record_startup_lcp_ = false;
+
+  // The navigation start of the page that recorded FCP. Used to ensure LCP
+  // comes from the same page load.
+  base::TimeTicks startup_fcp_navigation_start_;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
