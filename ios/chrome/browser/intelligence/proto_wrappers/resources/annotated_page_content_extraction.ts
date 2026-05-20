@@ -222,6 +222,8 @@ const ATTR_KEY_ONKEYDOWN = 'onkeydown';
 const ATTR_KEY_ONKEYUP = 'onkeyup';
 const ATTR_KEY_ONKEYPRESS = 'onkeypress';
 const ATTR_KEY_HREF = 'href';
+const ATTR_KEY_ACTION = 'action';
+const ATTR_KEY_NAME = 'name';
 
 // Attribute and style values.
 const ATTR_VALUE_TRUE = 'true';
@@ -693,12 +695,33 @@ function isRenderedInTopLayer(element: HTMLElement): boolean {
  */
 function getFormData(form: HTMLFormElement): PageContentFormData {
   const formData: PageContentFormData = {};
-  if (form.name) {
-    formData.formName = form.name;
+
+  // Forms can contain nested elements with name="name" or name="action", which
+  // pollute and override direct property access or standard methods on the
+  // HTMLFormElement object (DOM stomping/clobbering). Bypassing direct calls
+  // by going through prototypes ensures we retrieve original values safely.
+  const formName = Element.prototype.getAttribute.call(form, ATTR_KEY_NAME);
+  if (formName) {
+    formData.formName = formName;
   }
-  if (form.action) {
-    formData.actionUrl = form.action;
+
+  const actionGetter =
+      Object
+          .getOwnPropertyDescriptor(HTMLFormElement.prototype, ATTR_KEY_ACTION)
+          ?.get;
+  if (actionGetter) {
+    try {
+      formData.actionUrl = actionGetter.call(form);
+    } catch (e) {
+      // In case of invalid URLs, APC extraction on Blink ends up with an empty
+      // string in the APC. See the wrapper here:
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.cc;l=1132;drc=cd8f8edbd3e6254df081d9f9c3dd9a37d05bcfc6
+      // and the mojo parsing here:
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/mojo/kurl_mojom_traits.h;l=19-22;drc=f74b62f9c21559b6cf0e079b0830a903026f6210
+      formData.actionUrl = '';
+    }
   }
+
   return formData;
 }
 

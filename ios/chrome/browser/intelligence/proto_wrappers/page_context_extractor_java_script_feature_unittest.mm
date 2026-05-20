@@ -284,6 +284,55 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_THAT(*result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
+// Validate that <form> elements with nested <input name="name"> or <input
+// name="action"> don't clobber the values in the APC.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContextHandlesFormNamedElementPollution) {
+  // Create HTML containing a form with children named "name" and "action".
+  // Direct properties form.name and form.action will be overridden by DOM
+  // Elements, which would result in unexpected type errors.
+  const std::string main_html =
+      "<html><head><title>Main</title></head><body>"
+      "<form name=\"pollutedForm\" action=\"http://examplesite.com/submit\">"
+      "  <input name=\"name\" value=\"polluted-input-element-name\">"
+      "  <input name=\"action\" value=\"polluted-input-element-action\">"
+      "</form>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  const base::DictValue& dict = result_value->GetDict();
+
+  // Drill down to the form node in the extracted Rich Extraction tree:
+  // rootNode -> childrenNodes[0] (body) -> childrenNodes[0] (form)
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* body_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(body_children && !body_children->empty());
+  const base::DictValue& form_node = (*body_children)[0].GetDict();
+
+  // Verify formName and actionUrl were safely extracted as strings rather than
+  // being polluted or skipped.
+  const std::string* form_name =
+      form_node.FindStringByDottedPath("contentAttributes.formData.formName");
+  ASSERT_TRUE(form_name);
+  EXPECT_EQ(*form_name, "pollutedForm");
+
+  const std::string* action_url =
+      form_node.FindStringByDottedPath("contentAttributes.formData.actionUrl");
+  ASSERT_TRUE(action_url);
+  EXPECT_EQ(*action_url, "http://examplesite.com/submit");
+}
+
 // Test the extraction of the page context with RichExtraction.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_RichExtraction) {
