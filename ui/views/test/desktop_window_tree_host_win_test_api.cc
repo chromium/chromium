@@ -31,6 +31,10 @@ HWNDMessageHandler* DesktopWindowTreeHostWinTestApi::GetHwndMessageHandler() {
   return host_->message_handler_.get();
 }
 
+HWND DesktopWindowTreeHostWinTestApi::GetHWND() const {
+  return host_->GetHWND();
+}
+
 void DesktopWindowTreeHostWinTestApi::SetMockCursorPositionForTesting(
     const gfx::Point& position) {
   GetHwndMessageHandler()->mock_cursor_position_ = position;

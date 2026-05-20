@@ -12,6 +12,10 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM),
 
 namespace wm {
 
+#if BUILDFLAG(IS_WIN)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeFromScreenCaptureKey, false)
+#endif
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPersistableKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUsesScreenCoordinatesKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(base::TimeDelta,

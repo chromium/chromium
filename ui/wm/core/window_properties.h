@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/base/class_property.h"
 
 namespace wm {
@@ -21,6 +22,12 @@ enum WindowVisibilityAnimationTransition {
 };
 
 // Alphabetical sort.
+
+#if BUILDFLAG(IS_WIN)
+// A property to tell if the window should be excluded from screen capture.
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<bool>* const kExcludeFromScreenCaptureKey;
+#endif
 
 // Property to tell if the container uses screen coordinates for the child
 // windows.

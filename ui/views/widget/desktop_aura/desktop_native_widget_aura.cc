@@ -83,6 +83,7 @@
 #include "ui/base/win/shell.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
+#include "ui/wm/core/window_properties.h"
 #endif
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
@@ -572,6 +573,19 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   widget_type_ = params.type;
   name_ = params.name;
 
+#if BUILDFLAG(IS_WIN)
+  // Inherit the exclusion from screen capture property from the parent or
+  // context aura::Window.
+  aura::Window* const inheritance_source =
+      params.parent ? params.parent : params.context;
+
+  if (inheritance_source &&
+      inheritance_source->GetProperty(wm::kExcludeFromScreenCaptureKey)) {
+    params.init_properties_container.SetProperty(
+        wm::kExcludeFromScreenCaptureKey, true);
+  }
+#endif
+
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
     owned_native_widget_delegate =
         base::WrapUnique(native_widget_delegate_.get());
@@ -596,6 +610,11 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   }
   host_->window()->SetProperty(kDesktopNativeWidgetAuraKey, this);
   desktop_window_tree_host_->Init(params);
+
+#if BUILDFLAG(IS_WIN)
+  desktop_window_tree_host_->SetExcludeFromScreenCapture(
+      content_window_->GetProperty(wm::kExcludeFromScreenCaptureKey));
+#endif
 
   host_->window()->AddChild(content_window_);
   host_->window()->AddObserver(new RootWindowDestructionObserver(this));
@@ -1303,6 +1322,20 @@ bool DesktopNativeWidgetAura::AreScreenshotsAllowed() {
              ? desktop_window_tree_host_->AreScreenshotsAllowed()
              : true;
 }
+
+#if BUILDFLAG(IS_WIN)
+void DesktopNativeWidgetAura::SetExcludeFromScreenCapture(bool exclude) {
+  if (content_window_->GetProperty(wm::kExcludeFromScreenCaptureKey) ==
+      exclude) {
+    return;
+  }
+
+  content_window_->SetProperty(wm::kExcludeFromScreenCaptureKey, exclude);
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->SetExcludeFromScreenCapture(exclude);
+  }
+}
+#endif
 
 bool DesktopNativeWidgetAura::IsDesktopNativeWidget() const {
   return true;

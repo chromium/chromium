@@ -45,6 +45,7 @@
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/views/win/hwnd_util.h"
+#include "ui/wm/core/window_properties.h"
 #endif
 
 namespace views::test {
@@ -921,6 +922,56 @@ TEST_F(DesktopNativeWidgetAuraTest,
   target->HandleKeyboardMessage(WM_SYSCHAR, 0, 0, &handled);
   target->HandleKeyboardMessage(WM_SYSDEADCHAR, 0, 0, &handled);
   widget.CloseNow();
+}
+
+TEST_F(DesktopNativeWidgetAuraTest,
+       ExcludeFromScreenCaptureInheritedFromParent) {
+  Widget parent_widget;
+  Widget::InitParams parent_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  parent_widget.Init(std::move(parent_params));
+  parent_widget.SetExcludeFromScreenCapture(true);
+
+  Widget child_widget;
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  child_params.parent = parent_widget.GetNativeView();
+  // Ensure we use DesktopNativeWidgetAura.
+  child_params.native_widget = new DesktopNativeWidgetAura(&child_widget);
+  child_widget.Init(std::move(child_params));
+
+  EXPECT_TRUE(child_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+}
+
+TEST_F(DesktopNativeWidgetAuraTest, ExcludeFromScreenCaptureFromInitParams) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.init_properties_container.SetProperty(wm::kExcludeFromScreenCaptureKey,
+                                               true);
+  widget.Init(std::move(params));
+
+  EXPECT_TRUE(
+      widget.GetNativeView()->GetProperty(wm::kExcludeFromScreenCaptureKey));
+}
+
+TEST_F(DesktopNativeWidgetAuraTest,
+       SetExcludeFromScreenCaptureUpdatesProperty) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget.Init(std::move(params));
+
+  internal::NativeWidgetPrivate* native_widget = widget.native_widget_private();
+
+  native_widget->SetExcludeFromScreenCapture(true);
+  EXPECT_TRUE(
+      widget.GetNativeView()->GetProperty(wm::kExcludeFromScreenCaptureKey));
+
+  native_widget->SetExcludeFromScreenCapture(false);
+  EXPECT_FALSE(
+      widget.GetNativeView()->GetProperty(wm::kExcludeFromScreenCaptureKey));
 }
 
 #endif  // BUILDFLAG(IS_WIN)

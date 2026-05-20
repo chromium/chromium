@@ -231,6 +231,11 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void SetAllowScreenshots(bool allow) = 0;
   virtual bool AreScreenshotsAllowed() = 0;
 
+#if BUILDFLAG(IS_WIN)
+  // Exclude this window from screen capture.
+  virtual void SetExcludeFromScreenCapture(bool exclude) {}
+#endif
+
   // Updates window shape by clipping the canvas before paint starts.
   virtual void UpdateWindowShapeIfNeeded(const ui::PaintContext& context);
 

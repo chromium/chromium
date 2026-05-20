@@ -4,6 +4,7 @@
 
 #include "ui/views/widget/native_widget_private.h"
 
+#include "base/notimplemented.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

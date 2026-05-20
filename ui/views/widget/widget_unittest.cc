@@ -89,6 +89,7 @@
 #include "ui/wm/core/focus_controller.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_controller_delegate.h"
+#include "ui/wm/core/window_properties.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -518,6 +519,105 @@ TEST_F(WidgetTest, NativeWindowProperty) {
   widget->SetNativeWindowProperty(key, nullptr);
   EXPECT_EQ(nullptr, widget->GetNativeWindowProperty(key));
 }
+
+#if BUILDFLAG(IS_WIN)
+using WidgetExcludeFromScreenCaptureTest = DesktopWidgetTest;
+
+TEST_F(WidgetExcludeFromScreenCaptureTest,
+       ExcludeFromScreenCaptureInheritance) {
+  Widget parent_widget;
+  Widget::InitParams parent_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  parent_widget.Init(std::move(parent_params));
+  parent_widget.SetExcludeFromScreenCapture(true);
+
+  Widget child_widget;
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  // Use context instead of parent to ensure the child can be a desktop widget.
+  child_params.context = parent_widget.GetNativeWindow();
+  child_widget.Init(std::move(child_params));
+
+  EXPECT_TRUE(child_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+}
+
+TEST_F(WidgetExcludeFromScreenCaptureTest,
+       ExcludeFromScreenCaptureInheritanceContext) {
+  Widget context_widget;
+  Widget::InitParams context_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  context_widget.Init(std::move(context_params));
+  context_widget.SetExcludeFromScreenCapture(true);
+
+  Widget child_widget;
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  child_params.context = context_widget.GetNativeWindow();
+  child_widget.Init(std::move(child_params));
+
+  EXPECT_TRUE(child_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+}
+
+TEST_F(WidgetExcludeFromScreenCaptureTest, SetExcludeFromScreenCapture) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget.Init(std::move(params));
+
+  EXPECT_FALSE(
+      widget.GetNativeView()->GetProperty(wm::kExcludeFromScreenCaptureKey));
+
+  widget.SetExcludeFromScreenCapture(true);
+  EXPECT_TRUE(
+      widget.GetNativeView()->GetProperty(wm::kExcludeFromScreenCaptureKey));
+
+  widget.SetExcludeFromScreenCapture(false);
+  EXPECT_FALSE(
+      widget.GetNativeView()->GetProperty(wm::kExcludeFromScreenCaptureKey));
+}
+
+TEST_F(WidgetExcludeFromScreenCaptureTest,
+       SetExcludeFromScreenCapturePropagation) {
+  Widget parent_widget;
+  Widget::InitParams parent_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  parent_widget.Init(std::move(parent_params));
+
+  Widget child_widget;
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  child_params.parent = parent_widget.GetNativeView();
+  // Force DesktopNativeWidgetAura to ensure the logic there is exercised.
+  child_params.native_widget = new DesktopNativeWidgetAura(&child_widget);
+  child_widget.Init(std::move(child_params));
+
+  Widget grandchild_widget;
+  Widget::InitParams grandchild_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  grandchild_params.parent = child_widget.GetNativeView();
+  grandchild_params.native_widget =
+      new DesktopNativeWidgetAura(&grandchild_widget);
+  grandchild_widget.Init(std::move(grandchild_params));
+
+  parent_widget.SetExcludeFromScreenCapture(true);
+  EXPECT_TRUE(parent_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+  EXPECT_TRUE(child_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+  EXPECT_TRUE(grandchild_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+
+  parent_widget.SetExcludeFromScreenCapture(false);
+  EXPECT_FALSE(parent_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+  EXPECT_FALSE(child_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+  EXPECT_FALSE(grandchild_widget.GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+}
+#endif
 
 TEST_F(WidgetTest, GetParent) {
   // Create a hierarchy of native widgets.

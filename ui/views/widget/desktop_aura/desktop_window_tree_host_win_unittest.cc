@@ -11,11 +11,13 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/win/windows_version.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/win/hwnd_message_handler.h"
 
 namespace views {
@@ -68,19 +70,66 @@ TEST_F(DesktopWindowTreeHostWinTest, SetAllowScreenshots) {
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget.Init(std::move(params));
 
+  DesktopWindowTreeHostWin* host = static_cast<DesktopWindowTreeHostWin*>(
+      widget.GetNativeWindow()->GetHost());
+  DesktopWindowTreeHostWinTestApi host_api(host);
+
   // Set not allow screenshots.
   widget.SetAllowScreenshots(false);
 
-  // It will not be set because the widget is not shown.
-  EXPECT_TRUE(widget.AreScreenshotsAllowed());
-
-  // Show the widget and should update the allow screenshots.
-  widget.Show();
+  // The logical state updates immediately.
   EXPECT_FALSE(widget.AreScreenshotsAllowed());
 
-  // Widget is showing, update should take effect immediately.
+  // But the OS affinity will not be set because the widget is not shown.
+  DWORD affinity;
+  HWND hwnd = host_api.GetHWND();
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+
+  // Show the widget and the OS display affinity should be updated.
+  widget.Show();
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_MONITOR), affinity);
+
+  // Toggling while showing should take effect immediately at the OS level.
   widget.SetAllowScreenshots(true);
   EXPECT_TRUE(widget.AreScreenshotsAllowed());
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, SetExcludeFromScreenCapture) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget.Init(std::move(params));
+
+  DesktopWindowTreeHostWin* host = static_cast<DesktopWindowTreeHostWin*>(
+      widget.GetNativeWindow()->GetHost());
+  DesktopWindowTreeHostWinTestApi host_api(host);
+
+  // Set exclude from screen capture.
+  widget.SetExcludeFromScreenCapture(true);
+
+  // It will not be set because the widget is not shown.
+  DWORD affinity;
+  HWND hwnd = host_api.GetHWND();
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+
+  // Show the widget and should update the display affinity.
+  widget.Show();
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+    EXPECT_EQ(static_cast<DWORD>(WDA_EXCLUDEFROMCAPTURE), affinity);
+  } else {
+    EXPECT_EQ(static_cast<DWORD>(WDA_MONITOR), affinity);
+  }
+
+  // Toggling while showing should take effect immediately.
+  widget.SetExcludeFromScreenCapture(false);
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
 }
 
 class DesktopWindowTreeHostWinAccessibilityObjectTest

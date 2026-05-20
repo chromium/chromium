@@ -1089,6 +1089,12 @@ void NativeWidgetAura::OnNativeViewHierarchyWillChange() {}
 
 void NativeWidgetAura::OnNativeViewHierarchyChanged() {}
 
+#if BUILDFLAG(IS_WIN)
+void NativeWidgetAura::SetExcludeFromScreenCapture(bool exclude) {
+  // Nothing to be done for native widgets.
+}
+#endif
+
 bool NativeWidgetAura::SetAllowScreenshots(bool allow) {
   // TODO(crbug.com/322519161): Revisit this to delegate the call to
   // `WindowTreeHost`.

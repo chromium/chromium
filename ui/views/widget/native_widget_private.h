@@ -274,6 +274,10 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // Called before and after re-parenting of this or an ancestor widget.
   virtual void OnNativeViewHierarchyWillChange() = 0;
   virtual void OnNativeViewHierarchyChanged() = 0;
+#if BUILDFLAG(IS_WIN)
+  // Exclude this window from screen capture.
+  virtual void SetExcludeFromScreenCapture(bool exclude) = 0;
+#endif
   // Returns false if the setter did not use `allow` to change screenshot
   // availability.
   virtual bool SetAllowScreenshots(bool allow) = 0;

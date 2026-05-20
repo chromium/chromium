@@ -179,6 +179,9 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(void, OnSizeConstraintsChanged, (), (override));
   MOCK_METHOD(void, OnNativeViewHierarchyWillChange, (), (override));
   MOCK_METHOD(void, OnNativeViewHierarchyChanged, (), (override));
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(void, SetExcludeFromScreenCapture, (bool exclude), (override));
+#endif
   MOCK_METHOD(bool, SetAllowScreenshots, (bool allow), (override));
   MOCK_METHOD(bool, AreScreenshotsAllowed, (), (override));
   MOCK_METHOD(std::string, GetName, (), (const override));

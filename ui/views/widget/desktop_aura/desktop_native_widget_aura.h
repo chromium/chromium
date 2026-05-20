@@ -226,6 +226,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void OnNativeViewHierarchyChanged() override;
   bool SetAllowScreenshots(bool allow) override;
   bool AreScreenshotsAllowed() override;
+#if BUILDFLAG(IS_WIN)
+  void SetExcludeFromScreenCapture(bool exclude) override;
+#endif
   bool IsDesktopNativeWidget() const override;
   std::string GetName() const override;
 

@@ -168,6 +168,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
   void SetAllowScreenshots(bool allow) override;
   bool AreScreenshotsAllowed() override;
+  void SetExcludeFromScreenCapture(bool exclude) override;
 
   // Overridden from aura::WindowTreeHost:
   ui::EventSource* GetEventSource() override;
@@ -297,7 +298,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   aura::Window* content_window();
 
   // Call Windows API to update the window display affinity.
-  void UpdateAllowScreenshots();
+  void UpdateDisplayAffinity();
 
   // Designates a Mica DWM_SYSTEMBACKDROP to the window if it does not have
   // a redirection bitmap.
@@ -350,6 +351,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window is allow to take screenshots, by default is true.
   bool allow_screenshots_ = true;
+
+  // True if the window should be excluded from screen capture.
+  bool exclude_from_capture_ = false;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

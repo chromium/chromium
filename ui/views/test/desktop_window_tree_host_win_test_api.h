@@ -38,6 +38,8 @@ class DesktopWindowTreeHostWinTestApi {
 
   HWNDMessageHandler* GetHwndMessageHandler();
 
+  HWND GetHWND() const;
+
   LRESULT SimulatePenEventForTesting(UINT message,
                                      UINT32 pointer_id,
                                      POINTER_PEN_INFO pointer_pen_info);

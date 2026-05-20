@@ -1466,6 +1466,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetAllowScreenshots(bool allow);
   bool AreScreenshotsAllowed();
 
+#if BUILDFLAG(IS_WIN)
+  // Called to exclude this window from screen capture.
+  // Note: On macOS, equivalent functionality is handled at the capturer
+  // level via ScreenCaptureKit (see screen_capture_kit_device_mac.mm).
+  void SetExcludeFromScreenCapture(bool exclude);
+#endif
+
   // Called when we become / stop being `child_widget`'s parent.
   void OnChildAdded(Widget* child_widget);
   void OnChildRemoved(Widget* child_widget);

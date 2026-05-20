@@ -1187,7 +1187,7 @@ void DesktopWindowTreeHostWin::HandleVisibilityChanged(bool visible) {
     native_widget_delegate_->OnNativeWidgetVisibilityChanged(visible);
   }
   if (visible) {
-    UpdateAllowScreenshots();
+    UpdateDisplayAffinity();
   }
 }
 
@@ -1457,16 +1457,25 @@ void DesktopWindowTreeHostWin::SetAllowScreenshots(bool allow) {
     return;
   }
 
-  UpdateAllowScreenshots();
+  UpdateDisplayAffinity();
 }
 
 bool DesktopWindowTreeHostWin::AreScreenshotsAllowed() {
-  DWORD affinity;
-  if (GetWindowDisplayAffinity(GetHWND(), &affinity)) {
-    return affinity == WDA_NONE;
+  return allow_screenshots_;
+}
+
+void DesktopWindowTreeHostWin::SetExcludeFromScreenCapture(bool exclude) {
+  if (exclude_from_capture_ == exclude) {
+    return;
   }
 
-  return true;
+  exclude_from_capture_ = exclude;
+
+  if (!IsVisible()) {
+    return;
+  }
+
+  UpdateDisplayAffinity();
 }
 
 void DesktopWindowTreeHostWin::ClientDestroyedWidget() {
@@ -1559,19 +1568,28 @@ aura::Window* DesktopWindowTreeHostWin::content_window() {
   return desktop_native_widget_aura_->content_window();
 }
 
-void DesktopWindowTreeHostWin::UpdateAllowScreenshots() {
-  if (AreScreenshotsAllowed() == allow_screenshots_) {
-    return;
+void DesktopWindowTreeHostWin::UpdateDisplayAffinity() {
+  DWORD affinity = WDA_NONE;
+  if (exclude_from_capture_) {
+    // `exclude_from_capture_` is used to exclude the window completely from
+    // screen capture. On Windows 10 20H1 and newer, we use
+    // WDA_EXCLUDEFROMCAPTURE which hides the window from capture while keeping
+    // it visible to the user.
+    affinity = (base::win::GetVersion() >= base::win::Version::WIN10_20H1)
+                   ? WDA_EXCLUDEFROMCAPTURE
+                   : WDA_MONITOR;
+  } else if (!allow_screenshots_) {
+    // `allow_screenshots_` is used to avoid capturing sensitive content.
+    // When screenshots are not allowed, we set the affinity to WDA_MONITOR
+    // rather than WDA_EXCLUDEFROMCAPTURE. WDA_MONITOR obscures the window with
+    // a black rectangle in the capture, explicitly signaling to the user that
+    // the content is intentionally hidden. In contrast, WDA_EXCLUDEFROMCAPTURE
+    // completely removes the window from the capture stream, leaving no visual
+    // cue.
+    affinity = WDA_MONITOR;
   }
 
-  // When screenshots are not allowed, set the affinity to WDA_MONITOR.
-  // This is used instead of WDA_EXCLUDEFROMCAPTURE because the latter renders
-  // the window with "no content", which appears as a black rectangle on the
-  // screen, whereas the former completely removes the window from the screen.
-  // The former is better indication to the user that the contents of the window
-  // are being explicitly not shown.
-  SetWindowDisplayAffinity(GetHWND(),
-                           allow_screenshots_ ? WDA_NONE : WDA_MONITOR);
+  SetWindowDisplayAffinity(GetHWND(), affinity);
 }
 
 void DesktopWindowTreeHostWin::UpdateBackdropColorMode() {
