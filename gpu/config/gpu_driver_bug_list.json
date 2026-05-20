@@ -3757,7 +3757,7 @@
       ]
     },
     {
-      "id": 475,
+      "id": 476,
       "description": "Qualcomm GPUs crash when invalidating incomplete framebuffers",
       "cr_bugs": [507508103],
       "os": {
@@ -3770,6 +3770,18 @@
       },
       "features": [
         "dont_invalidate_incomplete_fbos"
+      ]
+    },
+    {
+      "id": 477,
+      "description": "Recreate FBO upon flush/finish/fencesync under certain conditions on Qualcomm GPUs",
+      "gl_vendor": "Qualcomm.*",
+      "driver_version": {
+        "op": "<",
+        "value": "878"
+      },
+      "features": [
+        "recreate_fbo_upon_flush"
       ]
     }
   ]
