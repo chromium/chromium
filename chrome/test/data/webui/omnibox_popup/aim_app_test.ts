@@ -57,6 +57,7 @@ suite('AimAppTest', function() {
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
+      contextButtonShapeIsOblong: false,
     });
   });
 

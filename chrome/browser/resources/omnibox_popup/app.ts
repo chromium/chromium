@@ -140,6 +140,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       inputState_: {type: Object},
       usePecApi_: {type: Boolean},
       applyContextButtonBackground_: {type: Boolean},
+      isOblongShape_: {type: Boolean},
     };
   }
 
@@ -169,6 +170,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor applyContextButtonBackground_: boolean = false;
+  protected accessor isOblongShape_: boolean =
+      loadTimeData.getBoolean('contextButtonShapeIsOblong');
 
   private callbackRouter_: SearchboxPageCallbackRouter;
   private eventTracker_ = new EventTracker();

@@ -265,7 +265,7 @@ cr-icon-button {
   font-weight: 400;
 }
 
-:host([is-oblong-shape_]) #entrypoint {
+:host([is-oblong-shape]) #entrypoint {
   --cr-composebox-entrypoint-width: 40px;
   border-radius: 100px;
   color: var(
