@@ -157,13 +157,13 @@ void UrlLoadingBrowserAgent::SetIncognitoLoader(
   incognito_loader_ = loader;
 }
 
-void UrlLoadingBrowserAgent::AddInterceptor(
+bool UrlLoadingBrowserAgent::AddInterceptor(
     const GURL& url,
     std::unique_ptr<URLInterceptor> interceptor) {
   if (!scene_service_) {
-    return;
+    return false;
   }
-  scene_service_->AddInterceptor(url, std::move(interceptor));
+  return scene_service_->AddInterceptor(url, std::move(interceptor));
 }
 
 void UrlLoadingBrowserAgent::RemoveInterceptor(const GURL& url) {

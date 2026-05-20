@@ -77,9 +77,11 @@ class SceneUrlLoadingService {
   virtual UrlLoadingBrowserAgent* GetBrowserAgent(bool incognito);
 
   // Adds an interceptor for the given URL.
-  // Requires that no interceptor is already registered for `url`.
-  void AddInterceptor(const GURL& url,
-                      std::unique_ptr<URLInterceptor> interceptor);
+  // Returns false if an interceptor overlapping with `url` is already
+  // registered.
+  [[nodiscard]] bool AddInterceptor(
+      const GURL& url,
+      std::unique_ptr<URLInterceptor> interceptor);
 
   // Removes the interceptor for the given URL.
   void RemoveInterceptor(const GURL& url);

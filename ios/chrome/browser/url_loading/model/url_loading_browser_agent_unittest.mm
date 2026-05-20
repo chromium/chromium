@@ -468,7 +468,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorCalled) {
   auto interceptor = std::make_unique<TestInterceptor>();
 
   TestInterceptor* interceptor_ptr = interceptor.get();
-  loader_->AddInterceptor(url, std::move(interceptor));
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
 
   loader_->Load(UrlLoadParams::InCurrentTab(url));
 
@@ -482,7 +482,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorInactive) {
   auto interceptor = std::make_unique<TestInterceptor>();
   interceptor->set_active(false);
   TestInterceptor* interceptor_ptr = interceptor.get();
-  loader_->AddInterceptor(url, std::move(interceptor));
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
 
   loader_->Load(UrlLoadParams::InCurrentTab(url));
 
@@ -497,7 +497,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorPreventsLoad) {
   TestInterceptor* interceptor_ptr = interceptor.get();
 
   interceptor->set_prevent_normal_flow(true);
-  loader_->AddInterceptor(url, std::move(interceptor));
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(0, web_state_list->count());
@@ -517,7 +517,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorDoesNotPreventLoad) {
   TestInterceptor* interceptor_ptr = interceptor.get();
   interceptor->set_prevent_normal_flow(false);
 
-  loader_->AddInterceptor(url, std::move(interceptor));
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(0, web_state_list->count());
@@ -536,7 +536,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorDeactivatesOnMatch) {
   interceptor->set_deactivates_on_match(true);
 
   TestInterceptor* interceptor_ptr = interceptor.get();
-  loader_->AddInterceptor(url, std::move(interceptor));
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
 
   loader_->Load(UrlLoadParams::InCurrentTab(url));
 
@@ -557,8 +557,8 @@ TEST_F(URLLoadingBrowserAgentTest, TestMultipleInterceptors) {
   TestInterceptor* interceptor1_ptr = interceptor1.get();
   TestInterceptor* interceptor2_ptr = interceptor2.get();
 
-  loader_->AddInterceptor(url1, std::move(interceptor1));
-  loader_->AddInterceptor(url2, std::move(interceptor2));
+  EXPECT_TRUE(loader_->AddInterceptor(url1, std::move(interceptor1)));
+  EXPECT_TRUE(loader_->AddInterceptor(url2, std::move(interceptor2)));
 
   loader_->Load(UrlLoadParams::InCurrentTab(url1));
   EXPECT_TRUE(interceptor1_ptr->intercepted_);
@@ -577,11 +577,93 @@ TEST_F(URLLoadingBrowserAgentTest, TestNoInterceptor) {
   auto interceptor = std::make_unique<TestInterceptor>();
   TestInterceptor* interceptor_ptr = interceptor.get();
 
-  loader_->AddInterceptor(other_url, std::move(interceptor));
+  EXPECT_TRUE(loader_->AddInterceptor(other_url, std::move(interceptor)));
 
   loader_->Load(UrlLoadParams::InCurrentTab(url));
 
   EXPECT_FALSE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an interceptor matches when the loaded URL has the registered
+// URL as a prefix.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorPrefixMatching) {
+  GURL prefix_url("http://test.example/prefix");
+  GURL loaded_url("http://test.example/prefix/path?param=1");
+
+  auto interceptor = std::make_unique<TestInterceptor>();
+  TestInterceptor* interceptor_ptr = interceptor.get();
+
+  EXPECT_TRUE(loader_->AddInterceptor(prefix_url, std::move(interceptor)));
+  loader_->Load(UrlLoadParams::InCurrentTab(loaded_url));
+
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an interceptor matches even when the loaded URL only shares a
+// raw string prefix and is not a valid sub-path.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorRawStringPrefixMatching) {
+  GURL prefix_url("http://test.example/prefix");
+  GURL loaded_url("http://test.example/prefix-other");
+
+  auto interceptor = std::make_unique<TestInterceptor>();
+  TestInterceptor* interceptor_ptr = interceptor.get();
+
+  EXPECT_TRUE(loader_->AddInterceptor(prefix_url, std::move(interceptor)));
+  loader_->Load(UrlLoadParams::InCurrentTab(loaded_url));
+
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that adding an exact duplicate interceptor fails registration.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorExactDuplicateOverlap) {
+  GURL url("http://test/exact");
+
+  auto interceptor1 = std::make_unique<TestInterceptor>();
+  auto interceptor2 = std::make_unique<TestInterceptor>();
+
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor1)));
+  EXPECT_FALSE(loader_->AddInterceptor(url, std::move(interceptor2)));
+}
+
+// Tests that adding a narrower prefix interceptor over an existing broader
+// prefix interceptor fails registration.
+TEST_F(URLLoadingBrowserAgentTest,
+       TestInterceptorExistingBroadOverlapsNewNarrow) {
+  GURL broad_url("http://test/prefix");
+  GURL narrow_url("http://test/prefix/path");
+
+  auto interceptor1 = std::make_unique<TestInterceptor>();
+  auto interceptor2 = std::make_unique<TestInterceptor>();
+
+  EXPECT_TRUE(loader_->AddInterceptor(broad_url, std::move(interceptor2)));
+  EXPECT_FALSE(loader_->AddInterceptor(narrow_url, std::move(interceptor1)));
+}
+
+// Tests that adding an existing broader prefix interceptor over a narrower
+// prefix interceptor fails registration.
+TEST_F(URLLoadingBrowserAgentTest,
+       TestInterceptorExistingNarrowOverlapsNewBroad) {
+  GURL narrow_url("http://test/prefix/path");
+  GURL broad_url("http://test/prefix");
+
+  auto interceptor1 = std::make_unique<TestInterceptor>();
+  auto interceptor2 = std::make_unique<TestInterceptor>();
+
+  EXPECT_TRUE(loader_->AddInterceptor(narrow_url, std::move(interceptor1)));
+  EXPECT_FALSE(loader_->AddInterceptor(broad_url, std::move(interceptor2)));
+}
+
+// Tests that registering a URL that shares a raw string prefix with an
+// existing registered URL fails registration.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorRawStringPrefixOverlap) {
+  GURL prefix_url("http://test.example/prefix");
+  GURL other_url("http://test.example/prefix-other");
+
+  auto interceptor1 = std::make_unique<TestInterceptor>();
+  auto interceptor2 = std::make_unique<TestInterceptor>();
+
+  EXPECT_TRUE(loader_->AddInterceptor(prefix_url, std::move(interceptor1)));
+  EXPECT_FALSE(loader_->AddInterceptor(other_url, std::move(interceptor2)));
 }
 
 }  // namespace

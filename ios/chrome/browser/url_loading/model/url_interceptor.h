@@ -20,7 +20,7 @@ class URLInterceptor {
   virtual void OnIntercept(const UrlLoadParams& params) = 0;
 
   // Determines whether the interceptor is currently enabled. When this is
-  // `false`, the interceptor is ignored and the incerceptor will not run.
+  // `false`, the interceptor is ignored and the interceptor will not run.
   bool active() const { return active_; }
   void set_active(bool active) { active_ = active; }
 
