@@ -18,6 +18,7 @@ class SkillsService;
 class SkillsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SkillsService* GetForProfile(Profile* profile);
+  static bool IsSkillsEnabledForProfile(Profile* profile);
 
   static SkillsServiceFactory* GetInstance();
 

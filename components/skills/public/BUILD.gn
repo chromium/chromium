@@ -58,6 +58,10 @@ source_set("types") {
 
 source_set("public") {
   sources = [
+    "skills_features.cc",
+    "skills_features.h",
+    "skills_prefs.cc",
+    "skills_prefs.h",
     "skills_service.cc",
     "skills_service.h",
   ]
@@ -71,6 +75,12 @@ source_set("public") {
     "//components/skills/internal:downloader",
     "//components/skills/proto",
     "//components/sync/protocol",
+  ]
+
+  deps = [
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/skills:features",
   ]
 }
 
@@ -102,6 +112,7 @@ source_set("unit_tests") {
 
   sources = [
     "skill_unittest.cc",
+    "skills_features_unittest.cc",
     "skills_metrics_unittest.cc",
     "skills_mojom_traits_unittest.cc",
   ]
@@ -109,6 +120,8 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
+    "//components/skills:features",
+    "//components/sync_preferences:test_support",
   ]
 
   data = [ "//tools/metrics/histograms/metadata/skills/histograms.xml" ]

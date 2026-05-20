@@ -13,6 +13,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_handler.h"
@@ -175,7 +176,8 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)
 SkillsUI::~SkillsUI() = default;
 
 bool SkillsUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kSkillsEnabled);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return SkillsServiceFactory::IsSkillsEnabledForProfile(profile);
 }
 
 }  // namespace skills

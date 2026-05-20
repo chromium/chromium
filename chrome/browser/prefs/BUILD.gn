@@ -175,6 +175,7 @@ source_set("impl") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/signin/core/browser",
     "//components/site_engagement/content",
+    "//components/skills/public",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/browser",
