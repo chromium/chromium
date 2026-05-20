@@ -1243,8 +1243,10 @@ void FrameImpl::SetMediaSettings(
               perfetto::Flow::FromPointer(this));
 
   media_settings_ = std::move(media_settings);
-  if (media_settings.has_renderer_usage() && set_audio_output_usage_callback_)
-    set_audio_output_usage_callback_.Run(media_settings.renderer_usage());
+  if (media_settings_.has_renderer_usage() &&
+      set_audio_output_usage_callback_) {
+    set_audio_output_usage_callback_.Run(media_settings_.renderer_usage());
+  }
 }
 
 void FrameImpl::ForceContentDimensions(
