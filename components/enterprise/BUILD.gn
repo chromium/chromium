@@ -286,4 +286,9 @@ source_set("unit_tests") {
       "//components/enterprise/device_attestation/android:jni_headers",
     ]
   }
+
+  if (is_win || is_linux || is_chromeos || is_mac) {
+    deps +=
+        [ "//components/enterprise/network_header_injection/core:unit_tests" ]
+  }
 }

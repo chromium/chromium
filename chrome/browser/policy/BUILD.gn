@@ -963,6 +963,7 @@ source_set("impl") {
     "//components/embedder_support",
     "//components/embedder_support:user_agent",
     "//components/enterprise/browser/data_region",
+    "//components/enterprise/network_header_injection/core:policy",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/common",
     "//components/history_clusters/core",

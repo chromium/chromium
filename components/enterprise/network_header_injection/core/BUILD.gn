@@ -1,0 +1,59 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+source_set("policy") {
+  sources = []
+  if (!is_android) {
+    sources += [
+      "http_header_injection_policy_handler.cc",
+      "http_header_injection_policy_handler.h",
+    ]
+  }
+
+  deps = [
+    ":core",
+    "//base",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/url_matcher",
+    "//net",
+    "//url",
+  ]
+}
+
+static_library("core") {
+  sources = [
+    "network_header_injection_prefs.cc",
+    "network_header_injection_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  if (!is_android) {
+    sources += [ "http_header_injection_policy_handler_unittest.cc" ]
+  }
+
+  deps = [
+    ":core",
+    ":policy",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//testing/gtest",
+    "//url",
+  ]
+}

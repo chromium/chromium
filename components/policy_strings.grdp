@@ -466,6 +466,15 @@ Additional details:
   <message name="IDS_POLICY_NTP_SHORTCUTS_URL_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a url that is too long.">
     The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
   </message>
+  <message name="IDS_POLICY_HTTP_HEADER_INJECTION_MAX_URL_PATTERNS_LIMIT_ERROR" desc="Error message displayed in chrome://policy when the administrator exceeds the maximum number of url patterns allowed.">
+    This policy has more than <ph name="MAX_URL_PATTERNS_LIMIT">$1<ex>100</ex></ph> url patterns. Only the first <ph name="MAX_URL_PATTERNS_LIMIT">$1<ex>100</ex></ph> url patterns will be used.
+  </message>
+  <message name="IDS_POLICY_HTTP_HEADER_INJECTION_MAX_HEADERS_PER_RULE_LIMIT_ERROR" desc="Error message displayed in chrome://policy when the administrator exceeds the maximum number of custom headers allowed per rule.">
+    This policy allows up to <ph name="MAX_HEADERS_PER_RULE_LIMIT">$1<ex>100</ex></ph> headers per rule. Only the first <ph name="MAX_HEADERS_PER_RULE_LIMIT">$1<ex>100</ex></ph> headers per rule will be used.
+  </message>
+  <message name="IDS_POLICY_HTTP_HEADER_INJECTION_MAX_HEADER_SIZE_LIMIT_ERROR" desc="Error message displayed in chrome://policy when the administrator exceeds the maximum size allowed for a header.">
+    This policy should not have headers exceeding <ph name="MAX_HEADER_SIZE_LIMIT">$1<ex>8</ex></ph>KB.
+  </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">

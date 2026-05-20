@@ -2151,6 +2151,7 @@ static_library("browser") {
     "//components/enterprise/device_trust",
     "//components/enterprise/encryption/cache",
     "//components/enterprise/isolated_mode",
+    "//components/enterprise/network_header_injection/core",
     "//components/enterprise/networking",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/error_page/common",

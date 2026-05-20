@@ -141,6 +141,7 @@ source_set("impl") {
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/promotion:prefs",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/network_header_injection/core",
     "//components/feature_engagement/public:prefs",
     "//components/history_clusters/core",
     "//components/image_fetcher/core/cache",

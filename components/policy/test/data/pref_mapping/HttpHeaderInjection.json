@@ -1,0 +1,286 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HttpHeaderInjection": [
+            {
+              "patterns": [
+                "example.com",
+                ".example.org"
+              ],
+              "headers": [
+                {
+                  "name": "X-Tenant-ID",
+                  "value": "12345"
+                },
+                {
+                  "name": "X-Custom-Header",
+                  "value": "CustomValue"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "http_header_injection": {
+            "value": [
+              {
+                "patterns": [
+                  "example.com",
+                  ".example.org"
+                ],
+                "headers": [
+                {
+                    "name": "X-Tenant-ID",
+                    "value": "12345"
+                  },
+                  {
+                    "name": "X-Custom-Header",
+                    "value": "CustomValue"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpHeaderInjection": [
+            {
+              "patterns": [
+                "example.com"
+              ],
+              "headers": [
+                {
+                  "name": "X-Rule-1",
+                  "value": "Value1"
+                }
+              ]
+            },
+            {
+              "patterns": [
+                "example.org"
+              ],
+              "headers": [
+                {
+                  "name": "X-Rule-2",
+                  "value": "Value2"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "http_header_injection": {
+            "value": [
+              {
+                "patterns": [
+                  "example.com"
+                ],
+                "headers": [
+                  {
+                    "name": "X-Rule-1",
+                    "value": "Value1"
+                  }
+                ]
+              },
+              {
+                "patterns": [
+                  "example.org"
+                ],
+                "headers": [
+                  {
+                    "name": "X-Rule-2",
+                    "value": "Value2"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpHeaderInjection": [
+            {
+              "patterns": [
+                "example.com",
+                "wsgi:///rancom,org/",
+                "*.example.com",
+                "example.com:abc"
+              ],
+              "headers": [
+                {
+                  "name": "X-Test-Header",
+                  "value": "ValidValue"
+                },
+                {
+                  "name": "Invalid Name",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Test-Header-2",
+                  "value": "Invalid\nValue"
+                },
+                {
+                  "name": "",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Cr-Header",
+                  "value": "Value\r"
+                },
+                {
+                  "name": "X-Cr\r-Name",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Invalid@Name",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Header:Name",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Header/Name",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Header\"Name",
+                  "value": "Value"
+                },
+                {
+                  "name": "X-Header[Name]",
+                  "value": "Value"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "http_header_injection": {
+            "value": [
+              {
+                "patterns": [
+                  "example.com"
+                ],
+                "headers": [
+                  {
+                    "name": "X-Test-Header",
+                    "value": "ValidValue"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpHeaderInjection": [
+            {
+              "patterns": [
+                "*"
+              ],
+              "headers": [
+                {
+                  "name": "X-All-Urls",
+                  "value": "True"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "http_header_injection": {
+            "value": [
+              {
+                "patterns": [
+                  "*"
+                ],
+                "headers": [
+                  {
+                    "name": "X-All-Urls",
+                    "value": "True"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpHeaderInjection": [
+            {
+              "patterns": ["example.com"],
+              "headers": [
+                {"name": "X-Header-1", "value": "Value"},
+                {"name": "X-Header-2", "value": "Value"},
+                {"name": "X-Header-3", "value": "Value"},
+                {"name": "X-Header-4", "value": "Value"},
+                {"name": "X-Header-5", "value": "Value"},
+                {"name": "X-Header-6", "value": "Value"},
+                {"name": "X-Header-7", "value": "Value"},
+                {"name": "X-Header-8", "value": "Value"},
+                {"name": "X-Header-9", "value": "Value"},
+                {"name": "X-Header-10", "value": "Value"},
+                {"name": "X-Header-11", "value": "Value"},
+                {"name": "X-Header-12", "value": "Value"},
+                {"name": "X-Header-13", "value": "Value"},
+                {"name": "X-Header-14", "value": "Value"},
+                {"name": "X-Header-15", "value": "Value"},
+                {"name": "X-Header-16", "value": "Value"},
+                {"name": "X-Header-17", "value": "Value"},
+                {"name": "X-Header-18", "value": "Value"},
+                {"name": "X-Header-19", "value": "Value"},
+                {"name": "X-Header-20", "value": "Value"},
+                {"name": "X-Header-21", "value": "Value"}
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "http_header_injection": {
+            "value": [
+              {
+                "patterns": ["example.com"],
+                "headers": [
+                  {"name": "X-Header-1", "value": "Value"},
+                  {"name": "X-Header-2", "value": "Value"},
+                  {"name": "X-Header-3", "value": "Value"},
+                  {"name": "X-Header-4", "value": "Value"},
+                  {"name": "X-Header-5", "value": "Value"},
+                  {"name": "X-Header-6", "value": "Value"},
+                  {"name": "X-Header-7", "value": "Value"},
+                  {"name": "X-Header-8", "value": "Value"},
+                  {"name": "X-Header-9", "value": "Value"},
+                  {"name": "X-Header-10", "value": "Value"},
+                  {"name": "X-Header-11", "value": "Value"},
+                  {"name": "X-Header-12", "value": "Value"},
+                  {"name": "X-Header-13", "value": "Value"},
+                  {"name": "X-Header-14", "value": "Value"},
+                  {"name": "X-Header-15", "value": "Value"},
+                  {"name": "X-Header-16", "value": "Value"},
+                  {"name": "X-Header-17", "value": "Value"},
+                  {"name": "X-Header-18", "value": "Value"},
+                  {"name": "X-Header-19", "value": "Value"},
+                  {"name": "X-Header-20", "value": "Value"}
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

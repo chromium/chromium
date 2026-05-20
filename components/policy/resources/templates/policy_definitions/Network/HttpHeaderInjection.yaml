@@ -1,0 +1,65 @@
+caption: Configure HTTP Header Injection for specific URL patterns
+desc: |-
+  This policy enables defining a list of rules to inject custom HTTP headers into web requests matching specific URL patterns. Headers set by this policy take precedence over those that initially were present in the request, as well as modifications attempted by users or extensions.
+
+  A common use case for this policy is to enforce tenant access controls by injecting custom headers (e.g., <ph name="EXAMPLE_HEADER_NAME">X-Tenant-ID</ph>).
+
+  The policy accepts a list of Rules. Each Rule contains:
+
+  * <ph name="PATTERNS_KEY">patterns</ph>: A list of URL patterns to match. See how to format a URL pattern ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+  * <ph name="HEADERS_KEY">headers</ph>: A list of objects representing headers to inject, each containing:
+
+    * <ph name="HEADER_NAME_KEY">name</ph>: The name of the header to inject.
+
+    * <ph name="HEADER_VALUE_KEY">value</ph>: The value of the header to inject.
+
+  If multiple rules match a request, headers from all matching rules will be applied. In case there're multiple headers with the same name, the one with the most specific URL pattern will be applied. If patterns are equally specific, the one that appears last in the list will be applied.
+
+  Header names must be compliant with RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Header values must not contain NUL, CR or LF symbols. Individual headers must not exceed 8KB in size. Invalid headers and URL patterns will be ignored.
+
+  This policy is limited to a total of 500 URL patterns across all rules. Each rule can contain at most 20 headers. Patterns and headers beyond these thresholds will be ignored.
+example_value:
+- patterns:
+  - example.com
+  - .example.org
+  headers:
+  - name: X-Tenant-ID
+    value: '123456'
+  - name: X-Custom-Header
+    value: 'CustomValue'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- antoli@google.com
+- cbe-eng@google.com
+future_on:
+- chrome.*
+- chrome_os
+schema:
+  items:
+    properties:
+      patterns:
+        items:
+          type: string
+        type: array
+      headers:
+        items:
+          properties:
+            name:
+              type: string
+            value:
+              type: string
+          required:
+          - name
+          - value
+          type: object
+        type: array
+    required:
+    - patterns
+    - headers
+    type: object
+  type: array
+tags: []
+type: dict

@@ -2439,6 +2439,7 @@ chromium-metrics-reviews@google.com.
   <int value="1451" label="IsolatedModeSettings"/>
   <int value="1452" label="GeminiExperimentalTriggeringSettings"/>
   <int value="1453" label="SmartTabSharingSettings"/>
+  <int value="1454" label="HttpHeaderInjection"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
