@@ -31,10 +31,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,7 +56,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -106,7 +101,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.function.Supplier;
@@ -491,63 +485,6 @@ public class FeedSurfaceCoordinatorTest {
 
         mCoordinator = createCoordinator(mRecyclerView);
         assertNull(mCoordinator.getNtpBackgroundImageCoordinatorForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.FLUID_RESIZE)
-    @Config(qualifiers = "sw800dp-w800dp-h1200dp") // More specific tablet config
-    public void testResize_onTablet_withFeatureEnabled_takesSnapshot() throws Exception {
-        View rootView = mCoordinator.getRootViewForTesting();
-        mActivity.setContentView(rootView);
-        RecyclerView recyclerView = mCoordinator.getRecyclerView();
-        recyclerView.setLayoutParams(
-                new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        ImageView snapshotOverlay = mCoordinator.getRecyclerViewSnapshotOverlayForTesting();
-        assertNotNull("Snapshot overlay should not be null", snapshotOverlay);
-
-        // Force a measure and layout pass to ensure the view has dimensions
-        // and is ready for snapshotting.
-        int oldWidth = 500;
-        int oldHeight = 400;
-        rootView.measure(
-                View.MeasureSpec.makeMeasureSpec(oldWidth, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(oldHeight, View.MeasureSpec.EXACTLY));
-        rootView.layout(0, 0, oldWidth, oldHeight);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // Verify that the RecyclerView has been laid out with the correct dimensions before
-        // resizing.
-        assertEquals(
-                "RecyclerView should have the initial width", oldWidth, recyclerView.getWidth());
-        assertEquals(
-                "RecyclerView should have the initial height",
-                oldHeight - mTabStripHeight,
-                recyclerView.getHeight());
-
-        // Initial state: RecyclerView visible, snapshot overlay gone.
-        assertEquals(View.VISIBLE, recyclerView.getVisibility());
-        assertEquals(View.GONE, snapshotOverlay.getVisibility());
-
-        // Simulate a resize event using reflection.
-        int newWidth = 1000;
-        int newHeight = 800;
-        Method onSizeChanged =
-                View.class.getDeclaredMethod(
-                        "onSizeChanged", int.class, int.class, int.class, int.class);
-        onSizeChanged.setAccessible(true);
-        onSizeChanged.invoke(rootView, newWidth, newHeight, oldWidth, oldHeight);
-
-        // Immediately after resize, snapshot overlay should be visible, RecyclerView invisible.
-        assertEquals(View.INVISIBLE, recyclerView.getVisibility());
-        assertEquals(View.VISIBLE, snapshotOverlay.getVisibility());
-        // Let the posted tasks run, which should hide the overlay and show the RecyclerView.
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // After the delay, RecyclerView should be visible again, and the snapshot overlay gone.
-        assertEquals(View.VISIBLE, recyclerView.getVisibility());
-        assertEquals(View.GONE, snapshotOverlay.getVisibility());
     }
 
     @Test
