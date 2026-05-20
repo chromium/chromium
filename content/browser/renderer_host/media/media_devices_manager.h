@@ -437,6 +437,7 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Helpers to handle device-change notification.
   void HandleDevicesChanged(MediaDeviceType type);
+  void InvalidateCache(MediaDeviceType type);
   void MaybeStopRemovedInputDevices(
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& new_snapshot);

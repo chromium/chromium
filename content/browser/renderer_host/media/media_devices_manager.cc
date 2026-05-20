@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -192,10 +193,11 @@ void ReplaceInvalidFrameRatesWithFallback(media::VideoCaptureFormats* formats) {
   }
 }
 
-void BindDeviceNotifierFromUIThread(
-    mojo::PendingReceiver<audio::mojom::DeviceNotifier> receiver) {
+void SendDeviceNotifierToAudioService(
+    mojo::PendingReceiver<audio::mojom::DeviceNotifier>
+        device_notifier_receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetAudioService().BindDeviceNotifier(std::move(receiver));
+  GetAudioService().BindDeviceNotifier(std::move(device_notifier_receiver));
 }
 
 void ReportVideoEnumerationStart() {
@@ -486,9 +488,11 @@ MediaDevicesManager::SubscriptionRequest::operator=(SubscriptionRequest&&) =
 class MediaDevicesManager::AudioServiceDeviceListener
     : public audio::mojom::DeviceListener {
  public:
-  AudioServiceDeviceListener(base::RepeatingClosure disconnect_cb)
-      : disconnect_cb_(std::move(disconnect_cb)) {
-    ConnectToService();
+  AudioServiceDeviceListener(base::RepeatingClosure invalidate_cache_cb,
+                             base::RepeatingClosure enumerate_system_devices_cb)
+      : invalidate_cache_cb_(std::move(invalidate_cache_cb)),
+        enumerate_system_devices_cb_(std::move(enumerate_system_devices_cb)) {
+    ConnectToService(/*is_reconnect=*/false);
   }
 
   AudioServiceDeviceListener(const AudioServiceDeviceListener&) = delete;
@@ -504,40 +508,49 @@ class MediaDevicesManager::AudioServiceDeviceListener
   }
 
  private:
-  void ConnectToService() {
+  void ConnectToService(bool is_reconnect) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!mojo_audio_device_notifier_);
     DCHECK(!receiver_.is_bound());
+    CHECK(enumerate_system_devices_cb_);
+    mojo::PendingReceiver<audio::mojom::DeviceNotifier>
+        device_notifier_receiver =
+            mojo_audio_device_notifier_.BindNewPipeAndPassReceiver();
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BindDeviceNotifierFromUIThread,
-            mojo_audio_device_notifier_.BindNewPipeAndPassReceiver()));
+        FROM_HERE, base::BindOnce(&SendDeviceNotifierToAudioService,
+                                  std::move(device_notifier_receiver)));
     mojo_audio_device_notifier_.set_disconnect_handler(base::BindOnce(
         &MediaDevicesManager::AudioServiceDeviceListener::OnConnectionError,
         weak_factory_.GetWeakPtr()));
     mojo_audio_device_notifier_->RegisterListener(
         receiver_.BindNewPipeAndPassRemote());
+
+    if (is_reconnect) {
+      enumerate_system_devices_cb_.Run();
+    }
   }
 
   void OnConnectionError() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(disconnect_cb_);
+    CHECK(invalidate_cache_cb_);
     mojo_audio_device_notifier_.reset();
     receiver_.reset();
-    disconnect_cb_.Run();
+    invalidate_cache_cb_.Run();
 
     // Resetting the error handler in a posted task since doing it synchronously
     // results in a browser crash. See https://crbug.com/845142.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AudioServiceDeviceListener::ConnectToService,
-                                  weak_factory_.GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&AudioServiceDeviceListener::ConnectToService,
+                       weak_factory_.GetWeakPtr(), /*is_reconnect=*/true));
   }
 
-  // |disconnect_cb_| is a callback used to invalidate the cache and do a
-  // fresh enumeration to avoid losing out on the changes that might happen
-  // when the audio service is not active.
-  const base::RepeatingClosure disconnect_cb_;
+  // |invalidate_cache_cb_| is a callback used to invalidate the cache upon
+  // disconnection.
+  const base::RepeatingClosure invalidate_cache_cb_;
+  // |enumerate_system_devices_cb_| is a callback used to force a fresh
+  // enumeration upon successful reconnection.
+  const base::RepeatingClosure enumerate_system_devices_cb_;
   mojo::Receiver<audio::mojom::DeviceListener> receiver_{this};
   mojo::Remote<audio::mojom::DeviceNotifier> mojo_audio_device_notifier_;
 
@@ -815,7 +828,7 @@ void MediaDevicesManager::SetCachePolicy(MediaDeviceType type,
   // If the new policy is SYSTEM_MONITOR, issue an enumeration to populate the
   // cache.
   if (policy == CachePolicy::SYSTEM_MONITOR) {
-    cache_infos_[static_cast<size_t>(type)].InvalidateCache();
+    InvalidateCache(type);
     EnumerateSystemDevices(request_id, type);
   }
 }
@@ -860,7 +873,10 @@ void MediaDevicesManager::StartMonitoringAndPopulateCache(
     // |audio_service_device_listener_|.
     audio_service_device_listener_ =
         std::make_unique<AudioServiceDeviceListener>(
-            /*disconnect_cb=*/base::BindRepeating(
+            /*invalidate_cache_cb=*/base::BindRepeating(
+                &MediaDevicesManager::InvalidateCache, base::Unretained(this),
+                MediaDeviceType::kMediaAudioInput),
+            /*enumerate_system_devices_cb=*/base::BindRepeating(
                 &MediaDevicesManager::HandleDevicesChanged,
                 base::Unretained(this), MediaDeviceType::kMediaAudioInput));
   }
@@ -1656,11 +1672,17 @@ void MediaDevicesManager::HandleDevicesChanged(MediaDeviceType type) {
         base::StringPrintf("HandleDevicesChanged({type=%s}, {request_id=%llu})",
                            DeviceTypeToString(type), request_id));
   }
-  cache_infos_[static_cast<size_t>(type)].InvalidateCache();
+  InvalidateCache(type);
   if (!IsRelaxedCacheFeatureEnabled() ||
       cache_infos_[static_cast<size_t>(type)].NeedsUpdateUponInvalidation()) {
     EnumerateSystemDevices(request_id, type);
   }
+}
+
+void MediaDevicesManager::InvalidateCache(MediaDeviceType type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(blink::IsValidMediaDeviceType(type));
+  cache_infos_[static_cast<size_t>(type)].InvalidateCache();
 }
 
 void MediaDevicesManager::MaybeStopRemovedInputDevices(
