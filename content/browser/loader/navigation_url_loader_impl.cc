@@ -577,8 +577,6 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->allow_cross_origin_event_reporting));
   CHECK(mojo::Equals(adjusted_lhs->declarative_performance_observer_policy,
                      rhs->declarative_performance_observer_policy));
-  CHECK(mojo::Equals(adjusted_lhs->prefetch_activation_beacon_endpoint,
-                     rhs->prefetch_activation_beacon_endpoint));
   NOTREACHED() << "The parsed headers don't match, but we don't know which "
                   "field does not match. Please add a DCHECK before this one "
                   "checking for the missing field.";

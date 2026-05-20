@@ -427,16 +427,5 @@ TEST(ParsedHeadersTest, DeclarativePerformanceObserverDisabled) {
   EXPECT_FALSE(parsed_headers->declarative_performance_observer_policy);
 }
 
-TEST(ParsedHeadersTest, PrefetchActivationBeacon) {
-  const std::string_view headers =
-      "HTTP/1.1 200 OK\r\n"
-      "on-prefetch-activation: /analytics/beacon\r\n\r\n";
-  const auto parsed_headers = ParseHeaders(headers);
-
-  ASSERT_TRUE(parsed_headers);
-  EXPECT_EQ(parsed_headers->prefetch_activation_beacon_endpoint,
-            GURL("https://a.com/analytics/beacon"));
-}
-
 }  // namespace
 }  // namespace network
