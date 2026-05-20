@@ -9,6 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"

@@ -16,12 +16,6 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 
-// TODO(crbug.com/489636471): This include belongs in
-// ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_banner_interaction_handler_unittest.mm
-// ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h
-// ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile/save_address_profile_infobar_banner_overlay_mediator_unittest.mm
-#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
-
 namespace autofill {
 
 // A delegate for the prompt that enables the user to allow or deny storing
