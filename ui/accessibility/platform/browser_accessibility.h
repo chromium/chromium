@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -42,6 +43,9 @@ class BrowserAccessibilityManager;
 // Web.
 class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
     : public AXPlatformNodeDelegate {
+  // TODO(b/498205735): Remove once hardening protections are no longer needed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Creates a platform specific BrowserAccessibility. Ownership passes to the
   // caller.
