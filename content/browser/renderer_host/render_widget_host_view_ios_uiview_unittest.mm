@@ -356,19 +356,30 @@ TEST_F(RenderWidgetHostViewIOSUIViewTest, DeleteSelectionCommands) {
 
 TEST_F(RenderWidgetHostViewIOSUIViewTest,
        InputAccessoryButtonsFollowFocusableFlags) {
-  UIView* inputAccessoryView = [uiview_ inputAccessoryView];
-  ASSERT_NE(inputAccessoryView, nil);
+  UIBarButtonItem* previousButton;
+  UIBarButtonItem* nextButton;
 
-  UIToolbar* toolbar =
-      base::apple::ObjCCast<UIToolbar>(inputAccessoryView.subviews.firstObject);
-  ASSERT_NE(toolbar, nil);
-  ASSERT_GE(toolbar.items.count, 2u);
-  EXPECT_EQ(
-      CGRectGetHeight(inputAccessoryView.frame),
-      CGRectGetHeight(toolbar.frame) + kInputAccessoryToolbarBottomMargin);
+  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    NSArray<UIBarButtonItemGroup*>* trailingGroups =
+        uiview_.inputAssistantItem.trailingBarButtonGroups;
+    ASSERT_EQ(trailingGroups.count, 1u);
+    ASSERT_GE(trailingGroups[0].barButtonItems.count, 2u);
+    previousButton = trailingGroups[0].barButtonItems[0];
+    nextButton = trailingGroups[0].barButtonItems[1];
+  } else {
+    UIView* inputAccessoryView = [uiview_ inputAccessoryView];
+    ASSERT_NE(inputAccessoryView, nil);
 
-  UIBarButtonItem* previousButton = toolbar.items[0];
-  UIBarButtonItem* nextButton = toolbar.items[1];
+    UIToolbar* toolbar = base::apple::ObjCCast<UIToolbar>(
+        inputAccessoryView.subviews.firstObject);
+    ASSERT_NE(toolbar, nil);
+    ASSERT_GE(toolbar.items.count, 2u);
+    EXPECT_EQ(
+        CGRectGetHeight(inputAccessoryView.frame),
+        CGRectGetHeight(toolbar.frame) + kInputAccessoryToolbarBottomMargin);
+    previousButton = toolbar.items[0];
+    nextButton = toolbar.items[1];
+  }
 
   ui::mojom::TextInputState state;
   state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT;
