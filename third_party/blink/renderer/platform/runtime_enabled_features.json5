@@ -2475,6 +2475,10 @@
       status: "stable",
     },
     {
+      name: "EditingUseDomPositionApi",
+      status: "test",
+    },
+    {
       // Uses the original event delta to choose the initial elastic overscroll
       // axis.
       name: "ElasticOverscrollUseEventDeltaForAxisSelection",
