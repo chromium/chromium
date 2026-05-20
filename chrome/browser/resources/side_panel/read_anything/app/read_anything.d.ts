@@ -179,6 +179,11 @@ declare namespace chrome {
     // distillation method.
     let distillationTypeReadability: number;
 
+    // Returns the AXTree mapping segments for the distilled block at the given
+    // index. A segment links a character range within the block to its AXnode.
+    function getAXMapping(index: number):
+        Array<{axNodeId: number, start: number, end: number}>;
+
     // Returns whether the reading highlight is currently on.
     function isHighlightOn(): boolean;
 
