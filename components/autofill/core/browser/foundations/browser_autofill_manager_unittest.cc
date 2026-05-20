@@ -4805,24 +4805,12 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsParseQueryResponseServerPrediction) {
   // Set up our form data.
-  FormData form;
-  form.set_host_frame(test::MakeLocalFrameToken());
-  form.set_renderer_id(test::MakeFormRendererId());
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {CreateTestFormField(/*label=*/"Name", /*name=*/"name", /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"Street", /*name=*/"Street", /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"State", /*name=*/"state", /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"Postal Code", /*name=*/"zipcode",
-                           /*value=*/"",
-                           /*type=*/FormControlType::kInputText)});
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FULL},
+                                    {.role = ADDRESS_HOME_STREET_ADDRESS},
+                                    {.role = ADDRESS_HOME_CITY},
+                                    {.role = ADDRESS_HOME_STATE},
+                                    {.role = ADDRESS_HOME_ZIP}}});
 
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
@@ -4892,9 +4880,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
             ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
             : FieldPrediction::SOURCE_UNSPECIFIED;
     // The server prediction overrides the type predicted by local heuristic on
-    // the field of label "Street".
+    // the field of label "Street address".
     bool server_type_prediction_is_override =
-        autofill_field_ptr->label() == u"Street" ? true : false;
+        autofill_field_ptr->label() == u"Street address" ? true : false;
     expected_events.push_back(ServerPredictionFieldLogEvent{
         .server_type1 = autofill_field_ptr->server_type(),
         .prediction_source1 =
@@ -4921,23 +4909,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsRationalizationTwoAddresses) {
   // Set up our form data.
-  FormData form;
-  form.set_host_frame(test::MakeLocalFrameToken());
-  form.set_renderer_id(test::MakeFormRendererId());
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {CreateTestFormField(/*label=*/"Full Name", /*name=*/"fullName",
-                           /*value=*/"", /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"Address", /*name=*/"address",
-                           /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"Address", /*name=*/"address",
-                           /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
-                           /*type=*/FormControlType::kInputText)});
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FULL},
+                                    {.role = ADDRESS_HOME_STREET_ADDRESS},
+                                    {.role = ADDRESS_HOME_STREET_ADDRESS},
+                                    {.role = ADDRESS_HOME_CITY}}});
 
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
@@ -4998,7 +4974,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
     });
     // Rationalization.
     bool type_changed =
-        autofill_field_ptr->label() == u"Address" ? true : false;
+        autofill_field_ptr->Type().GetAddressType() == ADDRESS_HOME_LINE1 ||
+        autofill_field_ptr->Type().GetAddressType() == ADDRESS_HOME_LINE2;
     expected_events.push_back(RationalizationFieldLogEvent{
         .field_type = autofill_field_ptr->Type().GetAddressType(),
         .section_id = 1,
@@ -5097,13 +5074,10 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
       {"IT60X0542811101000000123456", ValuePatternsMetric::kIban}};
   for (const ValuePatternTestCase test_case : kTestCases) {
     // Set up our form data.
-    FormData form;
-    form.set_name(u"my-form");
-    form.set_url(GURL("https://myform.com/form.html"));
-    form.set_action(GURL("https://myform.com/submit.html"));
-    form.set_fields(
-        {CreateTestFormField("Some label", "my-field", test_case.value,
-                             FormControlType::kInputText)});
+    FormData form = test::GetFormData(
+        {.fields = {{.label = u"Some label",
+                     .name = u"my-field",
+                     .value = base::UTF8ToUTF16(test_case.value)}}});
     FormsSeen({form});
 
     base::HistogramTester histogram_tester;
@@ -5293,20 +5267,9 @@ TEST_F(BrowserAutofillManagerTest, DestructorCancelsSingleFieldFillQueries) {
 //  * The query can be processed with a response from the API.
 TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // First form on the page.
-  FormData form;
-  form.set_host_frame(test::MakeLocalFrameToken());
-  form.set_renderer_id(test::MakeFormRendererId());
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"State", /*name=*/"state", /*value=*/"",
-                           /*type=*/FormControlType::kInputText),
-       CreateTestFormField(/*label=*/"Postal Code", /*name=*/"zipcode",
-                           /*value=*/"",
-                           /*type=*/FormControlType::kInputText)});
+  FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_CITY},
+                                                {.role = ADDRESS_HOME_STATE},
+                                                {.role = ADDRESS_HOME_ZIP}}});
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
@@ -5320,18 +5283,9 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
       .AddSeenFormStructure(std::move(form_structure_instance));
 
   // Second form on the page.
-  FormData form2;
-  form2.set_host_frame(test::MakeLocalFrameToken());
-  form2.set_renderer_id(test::MakeFormRendererId());
-  form2.set_name(u"MyForm2");
-  form2.set_url(GURL("https://myform.com/form.html"));
-  form2.set_action(GURL("https://myform.com/submit.html"));
-  form2.set_fields({CreateTestFormField("Last Name", "lastname", "",
-                                        FormControlType::kInputText),
-                    CreateTestFormField("Middle Name", "middlename", "",
-                                        FormControlType::kInputText),
-                    CreateTestFormField("Postal Code", "zipcode", "",
-                                        FormControlType::kInputText)});
+  FormData form2 = test::GetFormData({.fields = {{.role = NAME_LAST},
+                                                 {.role = NAME_MIDDLE},
+                                                 {.role = ADDRESS_HOME_ZIP}}});
   auto form_structure_instance2 = std::make_unique<FormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure2 = form_structure_instance2.get();
@@ -5404,18 +5358,12 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
 // overall types and sections would be set based on the server one.
 TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   // Set up our form data.
-  FormData form;
-  form.set_url(GURL("https://www.myform.com"));
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Card Number", "cardnumber", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Expiration Year", "exp_year", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Expiration Month", "exp_month", "",
-                                       FormControlType::kInputText)});
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = CREDIT_CARD_NUMBER},
+                                    {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR},
+                                    {.role = CREDIT_CARD_EXP_MONTH}}});
 
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager()|.
