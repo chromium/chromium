@@ -5607,7 +5607,6 @@ crbug.com/845610 [ Win ] http/tests/inspector-protocol/target/target-browser-con
 # User Activation
 crbug.com/736415 crbug.com/1066190 [ Debug ] external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.html [ Failure Timeout ]
 crbug.com/736415 crbug.com/1066190 [ Release ] external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.html [ Failure Timeout ]
-crbug.com/736415 external/wpt/html/user-activation/navigation-state-reset-sameorigin.html [ Failure ]
 
 # S13N Sheriff 2018-7-11
 crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ Failure Pass ]
