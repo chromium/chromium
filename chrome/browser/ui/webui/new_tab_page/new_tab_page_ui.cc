@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
@@ -133,6 +134,8 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources_map.h"
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_util.h"
 #include "url/origin.h"
@@ -142,16 +145,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
-#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/grit/new_tab_shared_resources.h"
 #include "chrome/grit/new_tab_shared_resources_map.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "ui/webui/resources/grit/webui_resources.h"
-#include "ui/webui/resources/grit/webui_resources_map.h"
-#endif
 #endif  // !BUILDFLAG(OPTIMIZE_WEBUI)
 
 #if !defined(OFFICIAL_BUILD)
@@ -164,38 +162,6 @@ using content::WebContents;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kRealboxContextualEntrypointElementId);
 
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-namespace {
-
-class StubComposeboxHandler : public composebox::mojom::PageHandler {
- public:
-  StubComposeboxHandler(
-      mojo::PendingReceiver<composebox::mojom::PageHandler> receiver)
-      : receiver_(this, std::move(receiver)) {}
-  ~StubComposeboxHandler() override = default;
-
-  // composebox::mojom::PageHandler:
-  void FocusChanged(bool focused) override {}
-  void HandleLensButtonClick() override {}
-  void HandleFileUpload(bool is_image) override {}
-  void NavigateUrl(const GURL& url) override {}
-  void CloseLensOverlayFromWebUI(
-      composebox::mojom::LensOverlayDismissalSource dismissal_source) override {
-  }
-  void SetSmartTabSharingActive(bool active) override {}
-  void GetSmartTabSharingActive(
-      GetSmartTabSharingActiveCallback callback) override {
-    std::move(callback).Run(false);
-  }
-  void OnContextMenuOpened() override {}
-
- private:
-  mojo::Receiver<composebox::mojom::PageHandler> receiver_;
-};
-}  // namespace
-#endif  // BUILDFLAG(IS_ANDROID)
-
 bool NewTabPageUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -205,14 +171,11 @@ bool NewTabPageUIConfig::IsWebUIEnabled(
 std::unique_ptr<content::WebUIController>
 NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                           const GURL& url) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromWebUI(web_ui);
   if (profile->IsGuestSession()) {
     return std::make_unique<PageNotAvailableForGuestUI>(
         web_ui, chrome::kChromeUINewTabPageHost);
   }
-#endif
   return std::make_unique<NewTabPageUI>(web_ui);
 }
 
@@ -710,11 +673,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       "searchboxShowComposeEntrypoint",
       (aim_eligible || ntp_composebox::IsNtpComposeboxEnabled(profile)));
 
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  source->AddLocalizedString("searchBoxPlaceholder",
-                             IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD);
-#else
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile)) {
     if (base::FeatureList::IsEnabled(
             ntp_realbox::kNtpRealboxCyclingPlaceholders)) {
@@ -742,7 +700,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
     source->AddLocalizedString("searchBoxPlaceholder",
                                IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
@@ -838,10 +795,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePaths(kNewTabSharedResources);
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  source->AddResourcePaths(kWebuiResources);
-#endif
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
 
   // Allow embedding of iframes for the doodle and
@@ -905,14 +858,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-      module_id_details_({})
-#else
       module_id_details_(
           ntp::MakeModuleIdDetails(NewTabPageUI::IsManagedProfile(profile_),
                                    profile_))
-#endif
 {
 
   instance_count_++;
@@ -1597,14 +1545,9 @@ void NewTabPageUI::MaybeEnableEnterpriseShortcutsVisibility() {
 // static
 base::RefCountedMemory* NewTabPageUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_NTP_FAVICON, scale_factor));
-#endif
 }
 
 std::string_view NewTabPageUI::GetNtpPromoType() {
