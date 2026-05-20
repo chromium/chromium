@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {SettingsCategoryDefaultRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsCategoryDefaultRadioGroupElement, SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -94,11 +94,12 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
         await proxy.whenCalled('getDefaultValueForContentType');
     await microtasksFinished();
 
-    const radios: Partial<Record<ContentSetting, any>> = {
-      [ContentSetting.ALLOW]: element.$.allowRadioOption,
-      [ContentSetting.ASK]: element.$.askRadioOption,
-      [ContentSetting.BLOCK]: element.$.blockRadioOption,
-    };
+    const radios:
+        Partial<Record<ContentSetting, SettingsCollapseRadioButtonElement>> = {
+          [ContentSetting.ALLOW]: element.$.allowRadioOption,
+          [ContentSetting.ASK]: element.$.askRadioOption,
+          [ContentSetting.BLOCK]: element.$.blockRadioOption,
+        };
 
     assertEquals(expectedCategory, initialCategory);
 
@@ -119,7 +120,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
       // Click the button specifying the alternative option
       // and verify that the preference value is updated correctly.
       proxy.resetResolver('setDefaultValueForContentType');
-      const radioButton = radios[expectedSetting];
+      const radioButton = radios[expectedSetting]!;
       radioButton.click();
 
       const whenChanged =

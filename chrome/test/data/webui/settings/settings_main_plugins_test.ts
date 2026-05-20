@@ -22,7 +22,7 @@ suite('SettingsMain', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  function createSettingsMain(overrides?: {[key: string]: any}) {
+  function createSettingsMain(overrides?: Record<string, unknown>) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues(Object.assign(
@@ -145,7 +145,8 @@ suite('SettingsMain', function() {
           continue;
         }
 
-        const visibiilty: Record<string, any> = pageVisibility || {};
+        const visibiilty: Record<string, unknown> =
+            (pageVisibility as Record<string, unknown>) || {};
         assertEquals(
             visibiilty[id] !== false, !!queryView(id),
             `Visibility check failed for view with id: '${id}'`);

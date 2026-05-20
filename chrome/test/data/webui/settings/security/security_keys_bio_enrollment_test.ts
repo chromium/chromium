@@ -5,7 +5,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SecurityKeysBioEnrollProxy, SettingsSecurityKeysBioEnrollDialogElement} from 'chrome://settings/lazy_load.js';
+import type {Enrollment, EnrollmentResponse, SecurityKeysBioEnrollProxy, SensorInfo, SettingsSecurityKeysBioEnrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {BioEnrollDialogPage, Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -32,36 +32,36 @@ class TestSecurityKeysBioEnrollProxy extends TestSecurityKeysBrowserProxy
     ]);
   }
 
-  startBioEnroll() {
-    return this.handleMethod('startBioEnroll');
+  startBioEnroll(): Promise<number[]> {
+    return this.handleMethod<number[]>('startBioEnroll');
   }
 
-  providePin(pin: string) {
-    return this.handleMethod('providePin', pin);
+  providePin(pin: string): Promise<number|null> {
+    return this.handleMethod<number|null>('providePin', pin);
   }
 
-  getSensorInfo() {
-    return this.handleMethod('getSensorInfo');
+  getSensorInfo(): Promise<SensorInfo> {
+    return this.handleMethod<SensorInfo>('getSensorInfo');
   }
 
-  enumerateEnrollments() {
-    return this.handleMethod('enumerateEnrollments');
+  enumerateEnrollments(): Promise<Enrollment[]> {
+    return this.handleMethod<Enrollment[]>('enumerateEnrollments');
   }
 
-  startEnrolling() {
-    return this.handleMethod('startEnrolling');
+  startEnrolling(): Promise<EnrollmentResponse> {
+    return this.handleMethod<EnrollmentResponse>('startEnrolling');
   }
 
   cancelEnrollment() {
     this.methodCalled('cancelEnrollment');
   }
 
-  deleteEnrollment(id: string) {
-    return this.handleMethod('deleteEnrollment', id);
+  deleteEnrollment(id: string): Promise<Enrollment[]> {
+    return this.handleMethod<Enrollment[]>('deleteEnrollment', id);
   }
 
-  renameEnrollment(id: string, name: string) {
-    return this.handleMethod('renameEnrollment', [id, name]);
+  renameEnrollment(id: string, name: string): Promise<Enrollment[]> {
+    return this.handleMethod<Enrollment[]>('renameEnrollment', [id, name]);
   }
 
   close() {

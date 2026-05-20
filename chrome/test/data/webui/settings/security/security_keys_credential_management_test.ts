@@ -5,7 +5,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrIconButtonElement, SecurityKeysCredentialBrowserProxy, SettingsSecurityKeysCredentialManagementDialogElement} from 'chrome://settings/lazy_load.js';
+import type {Credential, CredentialManagementResponse, CrIconButtonElement, SecurityKeysCredentialBrowserProxy, SettingsSecurityKeysCredentialManagementDialogElement, StartCredentialManagementResponse} from 'chrome://settings/lazy_load.js';
 import {CredentialManagementDialogPage, SecurityKeysCredentialBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -29,26 +29,28 @@ class TestSecurityKeysCredentialBrowserProxy extends
     ]);
   }
 
-  startCredentialManagement() {
-    return this.handleMethod('startCredentialManagement');
+  startCredentialManagement(): Promise<StartCredentialManagementResponse> {
+    return this.handleMethod<StartCredentialManagementResponse>(
+        'startCredentialManagement');
   }
 
-  providePin(pin: string) {
-    return this.handleMethod('providePin', pin);
+  providePin(pin: string): Promise<number|null> {
+    return this.handleMethod<number|null>('providePin', pin);
   }
 
-  enumerateCredentials() {
-    return this.handleMethod('enumerateCredentials');
+  enumerateCredentials(): Promise<Credential[]> {
+    return this.handleMethod<Credential[]>('enumerateCredentials');
   }
 
-  deleteCredentials(ids: string[]) {
-    return this.handleMethod('deleteCredentials', ids);
+  deleteCredentials(ids: string[]): Promise<CredentialManagementResponse> {
+    return this.handleMethod<CredentialManagementResponse>(
+        'deleteCredentials', ids);
   }
 
   updateUserInformation(
       credentialId: string, userHandle: string, newUsername: string,
-      newDisplayname: string) {
-    return this.handleMethod(
+      newDisplayname: string): Promise<CredentialManagementResponse> {
+    return this.handleMethod<CredentialManagementResponse>(
         'updateUserInformation',
         {credentialId, userHandle, newUsername, newDisplayname});
   }

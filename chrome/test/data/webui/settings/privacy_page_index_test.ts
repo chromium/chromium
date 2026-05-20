@@ -22,7 +22,7 @@ interface RouteInfo {
 suite('PrivacyPageIndex', function() {
   let index: SettingsPrivacyPageIndexElement;
 
-  async function createPrivacyPageIndex(overrides?: {[key: string]: any}) {
+  async function createPrivacyPageIndex(overrides?: Record<string, unknown>) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues(Object.assign(

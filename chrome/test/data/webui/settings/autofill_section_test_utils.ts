@@ -30,7 +30,7 @@ export function expectEvent(
  * Creates the autofill section for the given list.
  */
 export async function createAutofillSection(
-    addresses: chrome.autofillPrivate.AddressEntry[], prefValues: any,
+    addresses: chrome.autofillPrivate.AddressEntry[], prefValues: unknown,
     accountInfo?: chrome.autofillPrivate.AccountInfo):
     Promise<SettingsAutofillSectionElement> {
   // Override the AutofillManagerImpl for testing.

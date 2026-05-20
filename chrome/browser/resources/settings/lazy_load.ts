@@ -161,10 +161,10 @@ export {SettingsLiveCaptionElement} from './a11y_page/live_caption.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate.js';
 // </if>
 
+export {SettingsAiModeSearchPageElement} from './ai_page/ai_mode_search_page.js';
 export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicator} from './ai_page/ai_policy_indicator.js';
 export {SettingsAiSuggestionsPageElement} from './ai_page/ai_suggestions_page.js';
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
-export {SettingsAiModeSearchPageElement} from './ai_page/ai_mode_search_page.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
@@ -215,12 +215,12 @@ export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_prox
 export type {DownloadsBrowserProxy} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 export {SettingsGlicLoginPermissionsPageElement} from './glic_page/glic_login_permissions_page.js';
-export {SettingsGoogleServicesPageElement} from './people_page/google_services_page.js';
 // <if expr="not is_chromeos">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
 // <if expr="not is_macosx">
 export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
 // </if>
+
 export {getLanguageHelperInstance} from './languages_page/languages.js';
 export {LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 export type {LanguagesBrowserProxy} from './languages_page/languages_browser_proxy.js';
@@ -231,6 +231,10 @@ export type {LanguageHelper, LanguagesModel} from './languages_page/languages_ty
 export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
 export {SettingsAccountPageElement} from './people_page/account_page.js';
+// </if>
+
+export {SettingsGoogleServicesPageElement} from './people_page/google_services_page.js';
+// <if expr="not is_chromeos">
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export type {BrowserProfile, ImportDataBrowserProxy} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
@@ -262,7 +266,7 @@ export {SecureDnsInputElement} from './privacy_page/security/secure_dns_input.js
 export {SecureDnsV2ResolverType, SettingsSecureDnsV2Element} from './privacy_page/security/secure_dns_v2.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security/security_keys_browser_proxy.js';
-export type {SecurityKeysBioEnrollProxy, SecurityKeysCredentialBrowserProxy, SecurityKeysPinBrowserProxy, SecurityKeysResetBrowserProxy} from './privacy_page/security/security_keys_browser_proxy.js';
+export type {Credential, CredentialManagementResponse, Enrollment, EnrollmentResponse, SecurityKeysBioEnrollProxy, SecurityKeysCredentialBrowserProxy, SecurityKeysPinBrowserProxy, SecurityKeysResetBrowserProxy, SensorInfo, SetPinResponse, StartCredentialManagementResponse} from './privacy_page/security/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagementDialogElement} from './privacy_page/security/security_keys_credential_management_dialog.js';
 export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy_page/security/security_keys_reset_dialog.js';
 export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security/security_keys_set_pin_dialog.js';

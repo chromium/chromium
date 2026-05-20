@@ -21,12 +21,12 @@ class TestSecurityKeysResetBrowserProxy extends TestSecurityKeysBrowserProxy
     ]);
   }
 
-  override reset() {
-    return this.handleMethod('reset');
+  override reset(): Promise<number> {
+    return this.handleMethod<number>('reset');
   }
 
-  completeReset() {
-    return this.handleMethod('completeReset');
+  completeReset(): Promise<number> {
+    return this.handleMethod<number>('completeReset');
   }
 
   close() {

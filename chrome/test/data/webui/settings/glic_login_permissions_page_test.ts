@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import type {SettingsGlicLoginPermissionsPageElement} from 'chrome://settings/lazy_load.js';
+import type {CrToastElement, SettingsGlicLoginPermissionsPageElement} from 'chrome://settings/lazy_load.js';
 import {GlicBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -104,7 +104,8 @@ suite('GlicLoginPermissionsPage', function() {
     assertNull(
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
 
-    const toast = page.shadowRoot!.querySelector<any>('#removeErrorToast');
+    const toast =
+        page.shadowRoot!.querySelector<CrToastElement>('#removeErrorToast');
     assertTrue(!!toast);
     assertFalse(toast.open);
   });
@@ -140,7 +141,8 @@ suite('GlicLoginPermissionsPage', function() {
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
 
     // Check that the error toast is shown.
-    const toast = page.shadowRoot!.querySelector<any>('#removeErrorToast');
+    const toast =
+        page.shadowRoot!.querySelector<CrToastElement>('#removeErrorToast');
     assertTrue(!!toast);
     assertTrue(toast.open);
   });

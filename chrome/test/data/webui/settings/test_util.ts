@@ -17,9 +17,9 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
  * @param contentType The ContentSettingsType to use as the key.
  * @param value The value to map to |contentType|.
  */
-export function createContentSettingTypeToValuePair(
+export function createContentSettingTypeToValuePair<T>(
     contentType: ContentSettingsTypes,
-    value: any): {setting: ContentSettingsTypes, value: any} {
+    value: T): {setting: ContentSettingsTypes, value: T} {
   return {setting: contentType, value: value};
 }
 
@@ -116,7 +116,7 @@ export function createSiteSettingsPrefs(
   // These test defaults reflect the actual defaults assigned to each
   // ContentSettingType, but keeping these in sync shouldn't matter for tests.
   const defaults: {[key in ContentSettingsTypes]: DefaultContentSetting} = {} as
-      any;
+      unknown as {[key in ContentSettingsTypes]: DefaultContentSetting};
   for (const type in ContentSettingsTypes) {
     defaults[ContentSettingsTypes[type as keyof typeof ContentSettingsTypes]] =
         createDefaultContentSetting({});
@@ -140,9 +140,10 @@ export function createSiteSettingsPrefs(
   });
 
   const chooserExceptions:
-      {[key in ContentSettingsTypes]: RawChooserException[]} = {} as any;
+      {[key in ContentSettingsTypes]: RawChooserException[]} = {} as unknown as
+      {[key in ContentSettingsTypes]: RawChooserException[]};
   const exceptions: {[key in ContentSettingsTypes]: RawSiteException[]} = {} as
-      any;
+      unknown as {[key in ContentSettingsTypes]: RawSiteException[]};
   for (const t in ContentSettingsTypes) {
     const type = t as keyof typeof ContentSettingsTypes;
     chooserExceptions[ContentSettingsTypes[type]] = [];

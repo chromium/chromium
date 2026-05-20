@@ -22,20 +22,21 @@ suite('CrSettingsPrefs', function() {
   let fakeApi: FakeSettingsPrivate;
 
   /**
-   * @param {!Object} Pref store from <settings-prefs>.
-   * @param {string} Pref key of the pref to return.
+   * @param prefStore Pref store from <settings-prefs>.
+   * @param key Pref key of the pref to return.
    */
-  function getPrefFromKey(prefStore: any, key: string):
-      chrome.settingsPrivate.PrefObject|undefined {
+  function getPrefFromKey(
+      prefStore: Record<string, unknown>|undefined,
+      key: string): chrome.settingsPrivate.PrefObject|undefined {
     const path = key.split('.');
-    let pref = prefStore;
+    let current: unknown = prefStore;
     for (const part of path) {
-      pref = pref[part];
-      if (!pref) {
+      if (typeof current !== 'object' || current === null) {
         return undefined;
       }
+      current = (current as Record<string, unknown>)[part];
     }
-    return pref;
+    return current as chrome.settingsPrivate.PrefObject | undefined;
   }
 
   /**

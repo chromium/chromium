@@ -5,6 +5,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {CrInputElement, SecurityKeysPinBrowserProxy, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
 import {SecurityKeysPinBrowserProxyImpl, SetPinDialogPage} from 'chrome://settings/lazy_load.js';
+import type {SetPinResponse} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -26,12 +27,12 @@ class TestSecurityKeysPinBrowserProxy extends TestSecurityKeysBrowserProxy
     ]);
   }
 
-  startSetPin() {
-    return this.handleMethod('startSetPin');
+  startSetPin(): Promise<SetPinResponse> {
+    return this.handleMethod<SetPinResponse>('startSetPin');
   }
 
-  setPin(oldPIN: string, newPIN: string) {
-    return this.handleMethod('setPin', {oldPIN, newPIN});
+  setPin(oldPIN: string, newPIN: string): Promise<SetPinResponse> {
+    return this.handleMethod<SetPinResponse>('setPin', {oldPIN, newPIN});
   }
 
   close() {

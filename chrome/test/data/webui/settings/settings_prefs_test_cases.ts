@@ -10,7 +10,7 @@
  */
 interface TestCase {
   pref: chrome.settingsPrivate.PrefObject;
-  nextValues: any[];
+  nextValues: unknown[];
 }
 
 export const prefsTestCases: TestCase[] = [

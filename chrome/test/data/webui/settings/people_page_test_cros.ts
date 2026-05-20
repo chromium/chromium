@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {AccountManagerBrowserProxy, SettingsPeoplePageElement} from 'chrome://settings/settings.js';
+import type {AccountManagerBrowserProxy, CrLinkRowElement, SettingsPeoplePageElement} from 'chrome://settings/settings.js';
 import {AccountManagerBrowserProxyImpl, loadTimeData, ProfileInfoBrowserProxyImpl, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -128,9 +128,9 @@ suite('Chrome OS', function() {
           'To use and save Chromium data in your Google Account, enter your passphrase',
     });
 
-    const syncSetupRow = peoplePage.shadowRoot!.querySelector('#sync-setup')!;
-    assertEquals(
-        peoplePage.syncStatus!.statusText, (syncSetupRow as any).subLabel);
+    const syncSetupRow =
+        peoplePage.shadowRoot!.querySelector<CrLinkRowElement>('#sync-setup')!;
+    assertEquals(peoplePage.syncStatus!.statusText, syncSetupRow.subLabel);
   });
 });
 

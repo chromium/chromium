@@ -13,9 +13,12 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format off
 // <if expr="not is_chromeos">
 import {ChromeSigninAccessPoint, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
+import type {SyncStatus} from 'chrome://settings/settings.js';
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 // </if>
 // clang-format on
+
+
 
 import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -48,7 +51,7 @@ suite('YourSavedInfoAccount', function() {
   }
 
   // <if expr="not is_chromeos">
-  async function setupSync(syncStatus: any) {
+  async function setupSync(syncStatus: SyncStatus) {
     syncBrowserProxy.testSyncStatus = syncStatus;
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
@@ -163,7 +166,6 @@ suite('YourSavedInfoAccount', function() {
     await syncBrowserProxy.whenCalled('getSyncStatus');
     await setupSync({
       syncSystemEnabled: true,
-      signinAllowed: true,
       signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.NO_ACTION,
       hasError: false,

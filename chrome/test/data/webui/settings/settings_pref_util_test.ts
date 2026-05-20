@@ -63,9 +63,9 @@ suite('PrefUtil', function() {
   // Tests that the pref value is converted to the expected string, for a
   // given prefType.
   function assertPrefToString(
-      prefType: chrome.settingsPrivate.PrefType, prefValue: any,
+      prefType: chrome.settingsPrivate.PrefType, prefValue: unknown,
       expectedValue: string|boolean|number|null) {
-    const pref = {
+    const pref: chrome.settingsPrivate.PrefObject = {
       type: prefType,
       value: prefValue,
       key: 'foo',

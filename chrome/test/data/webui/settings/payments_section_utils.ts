@@ -27,7 +27,7 @@ export async function createPaymentsSection(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
     payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
-    prefValues: any): Promise<SettingsPaymentsSectionElement> {
+    prefValues: unknown): Promise<SettingsPaymentsSectionElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;

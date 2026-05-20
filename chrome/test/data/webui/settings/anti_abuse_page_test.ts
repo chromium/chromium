@@ -12,7 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
-import {createContentSettingTypeToValuePair, createSiteSettingsPrefs} from './test_util.js';
+import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-anti-abuse-page. */
@@ -45,7 +45,8 @@ suite('SettingsAntiAbusePage', function() {
     return createSiteSettingsPrefs(
         [
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.ANTI_ABUSE, {setting: contentSetting}),
+              ContentSettingsTypes.ANTI_ABUSE,
+              createDefaultContentSetting({setting: contentSetting})),
         ],
         []);
   }
@@ -108,10 +109,11 @@ suite('SettingsAntiAbusePage', function() {
 
   test('toggle is disabled when pref is enforced', async function() {
     const enforcedPrefs = createSiteSettingsPrefs(
-        [createContentSettingTypeToValuePair(ContentSettingsTypes.ANTI_ABUSE, {
-          setting: ContentSetting.BLOCK,
-          source: DefaultSettingSource.EXTENSION,
-        })],
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.ANTI_ABUSE, createDefaultContentSetting({
+              setting: ContentSetting.BLOCK,
+              source: DefaultSettingSource.EXTENSION,
+            }))],
         []);
     browserProxy.reset();
     browserProxy.setPrefs(enforcedPrefs);

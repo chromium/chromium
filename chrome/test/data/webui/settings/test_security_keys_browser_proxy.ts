@@ -15,18 +15,18 @@ export class TestSecurityKeysBrowserProxy extends TestBrowserProxy {
    * called. (If no promise is installed, a never-resolved promise is
    * returned.)
    */
-  private promiseMap_ = new Map<string, Promise<any>>();
+  private promiseMap_ = new Map<string, Promise<unknown>>();
 
-  setResponseFor(methodName: string, promise: Promise<any>) {
+  setResponseFor(methodName: string, promise: Promise<unknown>) {
     this.promiseMap_.set(methodName, promise);
   }
 
-  protected handleMethod(methodName: string, arg?: any): Promise<any> {
+  protected handleMethod<T>(methodName: string, arg?: unknown): Promise<T> {
     this.methodCalled(methodName, arg);
     const promise = this.promiseMap_.get(methodName);
     if (promise !== undefined) {
       this.promiseMap_.delete(methodName);
-      return promise;
+      return promise as Promise<T>;
     }
 
     // Return a Promise that never resolves.

@@ -42,7 +42,7 @@ suite('PaymentsSectionCardDialogs', function() {
    */
   function createCreditCardDialogWithPrefs(
       creditCardItem: chrome.autofillPrivate.CreditCardEntry,
-      prefsValues: any): SettingsCreditCardEditDialogElement {
+      prefsValues: unknown): SettingsCreditCardEditDialogElement {
     const dialog = document.createElement('settings-credit-card-edit-dialog');
     dialog.creditCard = creditCardItem;
     dialog.prefs = {autofill: prefsValues};
