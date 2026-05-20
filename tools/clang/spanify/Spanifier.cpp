@@ -112,9 +112,9 @@ void DumpMatchResult(const MatchFinder::MatchResult& result) {
   }
 }
 
-const char kArrayIncludePath[] = "array";
+const char kArrayIncludePath[] = "<array>";
 
-const char kStringViewIncludePath[] = "string_view";
+const char kStringViewIncludePath[] = "<string_view>";
 
 // Precedence values for EmitReplacement.
 //
@@ -577,13 +577,15 @@ std::string GetReplacementDirective(const clang::SourceRange& replacement_range,
                        precedence, replacement_text);
 }
 
-// TODO(crbug.com/364338808): Set `is_system_include_path` to true when
-// `include_path` is "<span>".
 std::string GetIncludeDirective(
     const clang::SourceRange replacement_range,
     const clang::SourceManager& source_manager,
-    std::string_view include_path = GetProject()->GetSpanIncludePath(),
-    bool is_system_include_path = false) {
+    std::string_view include_path = GetProject()->GetSpanIncludePath()) {
+  bool is_system_include_path = false;
+  if (include_path.starts_with('<') && include_path.ends_with('>')) {
+    is_system_include_path = true;
+    include_path = include_path.substr(1, include_path.size() - 2);
+  }
   return llvm::formatv(
       "{0}:::{1}:::-1:::-1:::{2}",
       is_system_include_path ? "include-system-header" : "include-user-header",
@@ -1107,8 +1109,7 @@ SubspanExprReplacement GetSubspanExprReplacement(
   EmitReplacement(
       key, GetIncludeDirective(range, source_manager,
                                GetProject()->GetSafeConversionsIncludePath()));
-  EmitReplacement(key, GetIncludeDirective(range, source_manager, "cstdint",
-                                           /*is_system_include_path=*/true));
+  EmitReplacement(key, GetIncludeDirective(range, source_manager, "<cstdint>"));
   return CheckedCastReplacement{
       .opener = {.range = range.getBegin(),
                  .text = "base::checked_cast<size_t>("},
@@ -2663,9 +2664,8 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   EmitReplacement(key,
                   GetReplacementDirective(replacement_range, replacement_text,
                                           source_manager));
-  EmitReplacement(
-      key, GetIncludeDirective(replacement_range, source_manager, include_path,
-                               /*is_system_include_header=*/true));
+  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager,
+                                           include_path));
 
   // All the other replacements are tied to the proxy_node.
   return proxy_node;

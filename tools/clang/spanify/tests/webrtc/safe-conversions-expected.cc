@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <span>
 
-#include "<span>"
 #include "rtc_base/numerics/safe_conversions.h"
 
 namespace webrtc {

@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include <cstddef>
+#include <span>
 #include <tuple>
-
-#include "<span>"
 
 namespace webrtc {
 
