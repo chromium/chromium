@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_UTILS_H_
 
 #include <limits>
-#include <string>
+#include <string_view>
 
 #include "ui/gfx/range/range.h"
 
@@ -17,7 +17,7 @@ inline constexpr uint32_t kUndefined = std::numeric_limits<uint32_t>::max();
 
 struct Sentence {
   Sentence();
-  Sentence(const gfx::Range& range, const std::u16string& text);
+  Sentence(const gfx::Range& range, std::u16string text);
   Sentence(const Sentence& other);
   ~Sentence();
 
@@ -30,17 +30,17 @@ struct Sentence {
 
 // Find the index of the last sentence end before |pos|, returns |kUndefined| if
 // not found.
-uint32_t FindLastSentenceEnd(const std::u16string& text, uint32_t pos);
+uint32_t FindLastSentenceEnd(std::u16string_view text, uint32_t pos);
 
 // Find the index of the first sentence end equal or after |pos|, returns
 // |kUndefined| if not found.
-uint32_t FindNextSentenceEnd(const std::u16string& text, uint32_t pos);
+uint32_t FindNextSentenceEnd(std::u16string_view text, uint32_t pos);
 
 // Find the last sentence before cursor position |pos|.
-Sentence FindLastSentence(const std::u16string& text, uint32_t pos);
+Sentence FindLastSentence(std::u16string_view text, uint32_t pos);
 
 // Find the sentence containing the cursor position |pos|.
-Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos);
+Sentence FindCurrentSentence(std::u16string_view text, uint32_t pos);
 
 }  // namespace ash::input_method
 
