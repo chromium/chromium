@@ -567,6 +567,7 @@ public class FindTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     @Feature({"FindInPage"})
     public void testBackKeyDoesNotDismissFindWhenImeIsPresent() {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(FILEPATH));
