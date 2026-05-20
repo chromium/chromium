@@ -184,6 +184,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.CmtgDeviceKeys.RequestDuration" units="ms"
+    expires_after="2027-05-15">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the duration of a request to obtain device keys for Credential
+    Manager Trust Group (CMTG) key operations from Cryptauth.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CmtgDeviceKeys.Result"
+    enum="CmtgDeviceKeysResult" expires_after="2027-05-15">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a request to obtain device keys for Credential Manager
+    Trust Group (CMTG) key operations from Cryptauth.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
     expires_after="2026-11-01">
   <owner>kenrb@chromium.org</owner>

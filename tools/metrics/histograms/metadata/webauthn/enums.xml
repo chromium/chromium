@@ -43,6 +43,15 @@ chromium-metrics-reviews@google.com.
       label="A PIN change request is triggered because the user has no UV"/>
 </enum>
 
+<!-- LINT.IfChange(CmtgDeviceKeysResult) -->
+
+<enum name="CmtgDeviceKeysResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.cc:CmtgDeviceKeysResult) -->
+
 <!-- LINT.IfChange(CombinedSelectorAction) -->
 
 <enum name="CombinedSelectorAction">
