@@ -12,11 +12,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -1181,6 +1184,19 @@ GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
   config.entryPoint = startup_state.entryPoint;
   config.imageRemixIPHShouldShow =
       startup_state.entryPoint == gemini::EntryPoint::ImageRemixIPH;
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
+  if (tracker) {
+    config.geminiLiveIPHShouldShow = tracker->ShouldTriggerHelpUI(
+        feature_engagement::kIPHiOSGeminiLiveIPHFeature);
+    config.geminiLiveNewBadgeShouldShow = tracker->ShouldTriggerHelpUI(
+        feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
+  } else {
+    config.geminiLiveIPHShouldShow = NO;
+    config.geminiLiveNewBadgeShouldShow = NO;
+  }
+
   config.geminiLocationPermissionState =
       ios::provider::GeminiLocationPermissionState::kUnknown;
   config.pageContext = page_context;
