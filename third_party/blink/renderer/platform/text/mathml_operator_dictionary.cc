@@ -118,7 +118,7 @@ MathMLOperatorDictionaryCategory FindCategory(
       key = character;
     }
   } else if (content.length() == 2) {
-    UChar32 character = content.CodePointAtOrZero(0);
+    UChar32 character = content.CodePointAt(0);
     if (character == uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel ||
         character == uchar::kArabicMathematicalOperatorHahWithDal) {
       // Special handling of non-BMP Arabic operators.

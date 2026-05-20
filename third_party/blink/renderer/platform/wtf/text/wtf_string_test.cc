@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -756,6 +756,48 @@ TEST(StringTest, ContainsNoAsciiUpper) {
 // https://issues.chromium.org/u/1/issues/420990876#comment9
 TEST(StringTest, Issue420990876FuzzerCase) {
   EXPECT_EQ(String(), String::FromUtf8("\364\244\204\244"));
+}
+
+TEST(StringTest, CodePointAt) {
+  String string8("abc");
+  ASSERT_TRUE(string8.Is8Bit());
+  EXPECT_EQ('a', string8.CodePointAt(0));
+  EXPECT_EQ('b', string8.CodePointAt(1));
+  EXPECT_EQ('c', string8.CodePointAt(2));
+  EXPECT_DEATH_IF_SUPPORTED(string8.CodePointAt(3), "");
+
+  String string16(u"abc");
+  ASSERT_FALSE(string16.Is8Bit());
+  EXPECT_EQ('a', string16.CodePointAt(0));
+  EXPECT_EQ('b', string16.CodePointAt(1));
+  EXPECT_EQ('c', string16.CodePointAt(2));
+  EXPECT_DEATH_IF_SUPPORTED(string16.CodePointAt(3), "");
+
+  // U+1F600 is encoded as surrogate pair: U+D83D (leading) + U+DE00 (trailing)
+  // U+1F601 is encoded as surrogate pair: U+D83D (leading) + U+DE01 (trailing)
+  String string_surrogates = String::FromUtf8("a\U0001F600b\U0001F601");
+  ASSERT_FALSE(string_surrogates.Is8Bit());
+  ASSERT_EQ(6u, string_surrogates.length());
+
+  EXPECT_EQ('a', string_surrogates.CodePointAt(0));
+  EXPECT_EQ(0x1F600, string_surrogates.CodePointAt(1));
+  EXPECT_EQ(0x1F600, string_surrogates.CodePointAt(2));
+  EXPECT_EQ('b', string_surrogates.CodePointAt(3));
+  EXPECT_EQ(0x1F601, string_surrogates.CodePointAt(4));
+  EXPECT_EQ(0x1F601, string_surrogates.CodePointAt(5));
+  EXPECT_DEATH_IF_SUPPORTED(string_surrogates.CodePointAt(6), "");
+
+  // Unpaired surrogates
+  const UChar unpaired_chars[] = {0xD83D, 'a', 0xDE00};
+  String unpaired((base::span(unpaired_chars)));
+  ASSERT_FALSE(unpaired.Is8Bit());
+  EXPECT_EQ(0xD83D, unpaired.CodePointAt(0));
+  EXPECT_EQ('a', unpaired.CodePointAt(1));
+  EXPECT_EQ(0xDE00, unpaired.CodePointAt(2));
+
+  // Null string
+  String null_string;
+  EXPECT_DEATH_IF_SUPPORTED(null_string.CodePointAt(0), "");
 }
 
 TEST(StringTest, CodePointAtAndPrevious) {

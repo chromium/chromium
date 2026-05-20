@@ -97,6 +97,13 @@ String::size_type String::rfind(const StringView& value,
   return impl_ ? impl_->ReverseFind(value, start) : npos;
 }
 
+UChar32 String::CodePointAt(size_type i) const {
+  if (Is8Bit()) {
+    return Span8()[i];
+  }
+  return blink::CodePointAt(Span16(), i);
+}
+
 UChar32 String::CodePointAtOrZero(size_type i) const {
   if (!impl_ || i >= impl_->length())
     return 0;
