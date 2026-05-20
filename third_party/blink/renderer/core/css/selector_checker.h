@@ -541,7 +541,8 @@ class CORE_EXPORT SelectorChecker {
 //  - ID matches (e.g. #id).
 //  - Class matches (e.g. .c).
 //  - Case-sensitive attribute is-set and exact matches ([foo] and [foo="bar"]).
-//  - Subselector and descendant combinators.
+//  - Subselector, descendant, child (>) and direct adjacent (+) combinators,
+//    as long as all descendant combinators come before any > or +.
 //  - Certain non-nested pseudo-element selectors (::before, ::after, ::marker,
 //    etc.) that don't have special handling.
 //  - Anything that does not need further checking

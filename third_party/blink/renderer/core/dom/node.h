@@ -312,6 +312,12 @@ class CORE_EXPORT Node : public EventTarget {
   // idl.
   Element* previousElementSibling();
   Element* nextElementSibling();
+  const Element* previousElementSibling() const {
+    return const_cast<Node*>(this)->previousElementSibling();
+  }
+  const Element* nextElementSibling() const {
+    return const_cast<Node*>(this)->nextElementSibling();
+  }
 
   Node* PseudoAwareNextSibling() const;
   Node* PseudoAwarePreviousSibling() const;
