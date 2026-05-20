@@ -376,6 +376,10 @@ if (use_fuzzing_engine_with_lpm) {
       "//components/variations/service",
       "//third_party/libprotobuf-mutator",
     ]
+    if (is_android) {
+      # Provides org.chromium.components.metrics.LowEntropySource.
+      deps += [ "//components/metrics:metrics_java" ]
+    }
     seed_corpus = "fuzzers/testcases/create_trials_from_seed/"
   }
 }
