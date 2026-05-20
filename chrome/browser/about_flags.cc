@@ -11084,13 +11084,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kLocalNetworkAccessChecksWebTransport)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"tab-capture-infobar-links",
-     flag_descriptions::kTabCaptureInfobarLinksName,
-     flag_descriptions::kTabCaptureInfobarLinksDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabCaptureInfobarLinks)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-surface-color-update",
      flag_descriptions::kAndroidSurfaceColorUpdateName,

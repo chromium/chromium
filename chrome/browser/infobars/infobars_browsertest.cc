@@ -347,7 +347,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           /*role=*/TabSharingInfoBarDelegate::TabRole::kOtherTab,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
-          /*focus_target=*/content::GlobalRenderFrameHostId(),
           /*captured_surface_control_active=*/false,
           /*ui=*/&mock_tab_sharing_ui_views_,
           TabSharingInfoBarDelegate::TabShareType::CAPTURE);

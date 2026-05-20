@@ -89,10 +89,6 @@ bool g_apply_dlp_for_all_users_for_testing_ = false;
 #endif
 
 url_formatter::SchemeDisplay GetSharedTabSchemeDisplay() {
-  if (!base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)) {
-    return url_formatter::SchemeDisplay::SHOW;
-  }
-
   if (base::FeatureList::IsEnabled(kTabSharingBarOmitHttpAndHttps)) {
     return url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS;
   }
@@ -478,19 +474,6 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                             base::Unretained(this)));
   }
 
-  content::GlobalRenderFrameHostId focus_target;
-  if (can_focus_capturer_) {
-    // Self-capture -> no switch-to button.
-    // Capturer -> switch-to-captured.
-    // Captured -> switch-to-capturer.
-    // Otherwise -> no switch-to button.
-    if (is_capturing_tab && !is_captured_tab) {
-      focus_target = GetGlobalId(shared_tab_);
-    } else if (!is_capturing_tab && is_captured_tab) {
-      focus_target = capturer_;
-    }
-  }
-
   // Determine if we are currently allowed to share this tab by policy.
   bool is_sharing_allowed_by_policy =
       !capturer_restricted_to_same_origin_ ||
@@ -522,8 +505,8 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
       infobar_manager, old_infobar, GetGlobalId(shared_tab_), capturer_,
       shared_tab_name_, capturer_name_, contents,
       GetTabRole(is_capturing_tab, is_captured_tab),
-      share_this_tab_instead_button_state, focus_target,
-      captured_surface_control_active_, this, capture_type_);
+      share_this_tab_instead_button_state, captured_surface_control_active_,
+      this, capture_type_);
 
   // Avoid creating entries with null infobar pointer. This happens when Chrome
   // for Testing or Chrome Headless Mode are running with infobars disabled

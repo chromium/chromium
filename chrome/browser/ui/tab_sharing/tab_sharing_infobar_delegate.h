@@ -47,7 +47,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     kNone = 0,
     kStop = 1 << 0,
     kShareThisTabInstead = 1 << 1,
-    kQuickNav = 1 << 2,
     kCapturedSurfaceControlIndicator = 1 << 3,
   };
 
@@ -79,7 +78,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   class TabSharingInfoBarDelegateButton;
   class StopButton;
   class ShareTabInsteadButton;
-  class SwitchToTabButton;
   class CscIndicatorButton;
 
   // Creates a tab sharing infobar, which has 1-2 buttons.
@@ -107,7 +105,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
       content::WebContents* web_contents,
       TabRole role,
       ButtonState share_this_tab_instead_button_state,
-      content::GlobalRenderFrameHostId focus_target,
       bool captured_surface_control_active,
       TabSharingUI* ui,
       TabShareType capture_type);
@@ -124,7 +121,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
   void Stop();
   void ShareThisTabInstead();
-  void QuickNav();
   void OnCapturedSurfaceControlActivityIndicatorPressed();
 
   // InfoBarDelegate:
@@ -139,7 +135,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   TabSharingInfoBarDelegate(content::WebContents* web_contents,
                             TabRole role,
                             ButtonState share_this_tab_instead_button_state,
-                            content::GlobalRenderFrameHostId focus_target,
                             bool captured_surface_control_active,
                             TabSharingUI* ui,
                             TabShareType capture_type);
@@ -156,7 +151,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
   std::unique_ptr<StopButton> stop_button_;
   std::unique_ptr<ShareTabInsteadButton> share_this_tab_instead_button_;
-  std::unique_ptr<SwitchToTabButton> quick_nav_button_;
   std::unique_ptr<CscIndicatorButton> csc_indicator_button_;
 };
 

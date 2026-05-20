@@ -117,13 +117,6 @@ TabSharingInfoBar::TabSharingInfoBar(
         views::kMarginsKey, gfx::Insets::TLBR(0, left_margin, 0, 0));
   }
 
-  if (buttons & TabSharingInfoBarDelegate::kQuickNav &&
-      !base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)) {
-    quick_nav_button_ =
-        create_button(TabSharingInfoBarDelegate::kQuickNav,
-                      &TabSharingInfoBar::QuickNavButtonPressed);
-  }
-
   if (buttons & TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator) {
     csc_indicator_button_ = create_button(
         TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator,
@@ -157,9 +150,6 @@ TabSharingInfoBar::TabSharingInfoBar(
   if (share_this_tab_instead_button_) {
     order_of_buttons.push_back(share_this_tab_instead_button_);
   }
-  if (quick_nav_button_) {
-    order_of_buttons.push_back(quick_nav_button_);
-  }
   if (csc_indicator_button_) {
     order_of_buttons.push_back(csc_indicator_button_);
   }
@@ -175,8 +165,6 @@ TabSharingInfoBar::TabSharingInfoBar(
       first_button_in_layout = stop_button_;
     } else if (share_this_tab_instead_button_) {
       first_button_in_layout = share_this_tab_instead_button_;
-    } else if (quick_nav_button_) {
-      first_button_in_layout = quick_nav_button_;
     } else if (csc_indicator_button_) {
       first_button_in_layout = csc_indicator_button_;
     }
@@ -210,10 +198,6 @@ void TabSharingInfoBar::Layout(PassKey) {
     share_this_tab_instead_button_->SizeToPreferredSize();
   }
 
-  if (quick_nav_button_) {
-    quick_nav_button_->SizeToPreferredSize();
-  }
-
   if (csc_indicator_button_) {
     csc_indicator_button_->SizeToPreferredSize();
   }
@@ -243,13 +227,6 @@ void TabSharingInfoBar::ShareThisTabInsteadButtonPressed() {
   GetDelegate()->ShareThisTabInstead();
 }
 
-void TabSharingInfoBar::QuickNavButtonPressed() {
-  if (!owner()) {
-    return;  // We're closing; don't call anything, it might access the owner.
-  }
-  GetDelegate()->QuickNav();
-}
-
 void TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
@@ -272,8 +249,7 @@ std::unique_ptr<views::View> TabSharingInfoBar::CreateStatusMessageView(
       capturer_name,
       TabSharingStatusMessageView::EndpointInfo::TargetType::kCapturingTab,
       capturer_id);
-  if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks) &&
-      GetOriginFromId(capturer_id).scheme() != extensions::kExtensionScheme) {
+  if (GetOriginFromId(capturer_id).scheme() != extensions::kExtensionScheme) {
     return TabSharingStatusMessageView::Create(capturer_id, shared_tab_info,
                                                capturer_info, capturer_name,
                                                role, capture_type, uma_logger_);
@@ -313,9 +289,9 @@ int TabSharingInfoBar::NonLabelWidth() const {
   const int button_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-  const int button_count =
-      (stop_button_ ? 1 : 0) + (share_this_tab_instead_button_ ? 1 : 0) +
-      (quick_nav_button_ ? 1 : 0) + (csc_indicator_button_ ? 1 : 0);
+  const int button_count = (stop_button_ ? 1 : 0) +
+                           (share_this_tab_instead_button_ ? 1 : 0) +
+                           (csc_indicator_button_ ? 1 : 0);
 
   int width = (button_count == 0) ? 0 : label_spacing;
 
@@ -325,7 +301,6 @@ int TabSharingInfoBar::NonLabelWidth() const {
   width += share_this_tab_instead_button_
                ? share_this_tab_instead_button_->width()
                : 0;
-  width += quick_nav_button_ ? quick_nav_button_->width() : 0;
   width += csc_indicator_button_ ? csc_indicator_button_->width() : 0;
 
   return width + ((width && !link_->GetText().empty()) ? label_spacing : 0);

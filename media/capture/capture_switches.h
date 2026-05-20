@@ -26,10 +26,6 @@ namespace features {
 
 CAPTURE_EXPORT BASE_DECLARE_FEATURE(kExcludePipFromScreenCapture);
 
-#if !BUILDFLAG(IS_ANDROID)
-CAPTURE_EXPORT BASE_DECLARE_FEATURE(kTabCaptureInfobarLinks);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 CAPTURE_EXPORT BASE_DECLARE_FEATURE(kWebRtcPipeWireCamera);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)

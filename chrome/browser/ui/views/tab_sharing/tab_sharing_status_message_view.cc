@@ -148,8 +148,7 @@ MessageInfo GetMessageInfoCapturing(TabRole role,
         {capturer_info}, role);
   }
 
-  if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks) &&
-      TabSharingInfoBarDelegate::IsCapturingTab(role)) {
+  if (TabSharingInfoBarDelegate::IsCapturingTab(role)) {
     return MessageInfo(
         IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL,
         {shared_tab_info}, role);

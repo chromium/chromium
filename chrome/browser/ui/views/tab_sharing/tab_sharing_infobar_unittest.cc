@@ -107,7 +107,7 @@ void CheckStatusMessage(const TabSharingInfoBar& infobar,
 
 }  // namespace
 
-class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
+class TabSharingInfoBarTest : public testing::Test {
  public:
   struct Preferences {
     std::u16string shared_tab_name;
@@ -119,17 +119,14 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
     GlobalRenderFrameHostId capturer_id = GlobalRenderFrameHostId(2, 2);
   };
 
-  TabSharingInfoBarTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kTabCaptureInfobarLinks,
-                                              GetParam());
-  }
+  TabSharingInfoBarTest() = default;
 
   const TabSharingInfoBar& CreateInfobar(const Preferences& prefs) {
     return *static_cast<TabSharingInfoBar*>(TabSharingInfoBarDelegate::Create(
         infobar_manager_.get(), nullptr, prefs.shared_tab_id, prefs.capturer_id,
         prefs.shared_tab_name, prefs.capturer_name, /*web_contents=*/nullptr,
-        prefs.role, TabSharingInfoBarDelegate::ButtonState::ENABLED,
-        GlobalRenderFrameHostId(), true, &mock_ui, prefs.capture_type));
+        prefs.role, TabSharingInfoBarDelegate::ButtonState::ENABLED, true,
+        &mock_ui, prefs.capture_type));
   }
 
  protected:
@@ -142,8 +139,6 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
   void TearDown() override {
     ::testing::Test::TearDown();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
  private:
@@ -153,31 +148,21 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
   std::unique_ptr<TestInfoBarManager> infobar_manager_;
 };
 
-// Instantiate tests for the TabCaptureInfobarLinks feature being
-// active/inactive.
-INSTANTIATE_TEST_SUITE_P(, TabSharingInfoBarTest, testing::Bool());
-
 // Test that the infobar on the capturing tab has the correct text:
 // "|icon| Sharing this tab to |app|"
-TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingTitledTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingTitledTab) {
   SCOPED_TRACE("InfobarOnCapturingTab");
   const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = kSharedTabName,
                      .capturer_name = kAppName,
                      .role = TabRole::kCapturingTab});
 
-  if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)) {
-    CheckStatusMessage(infobar,
-                       {LabelInfo(u"Sharing "), ButtonInfo(kSharedTabName),
-                        LabelInfo(u" to this tab")});
-  } else {
-    CheckStatusMessage(infobar,
-                       {LabelInfo(u"Sharing "), ButtonInfo(kSharedTabName),
-                        LabelInfo(u" to "), ButtonInfo(kAppName)});
-  }
+  CheckStatusMessage(infobar,
+                     {LabelInfo(u"Sharing "), ButtonInfo(kSharedTabName),
+                      LabelInfo(u" to this tab")});
 }
 
-TEST_P(TabSharingInfoBarTest, InfobarOnSelfCapturingTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnSelfCapturingTab) {
   SCOPED_TRACE("InfobarOnCapturedTab");
   const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = std::u16string(),
@@ -190,7 +175,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnSelfCapturingTab) {
 
 // Test that the infobar on the capturing tab has the correct text:
 // "|icon| Sharing this tab to |app|"
-TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingUntitledTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingUntitledTab) {
   const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = std::u16string(),
                      .capturer_name = kAppName,
@@ -201,7 +186,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingUntitledTab) {
 
 // Test that the infobar on the shared tab has the correct text:
 // "Sharing this tab to |app|"
-TEST_P(TabSharingInfoBarTest, InfobarOnCapturedTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnCapturedTab) {
   SCOPED_TRACE("InfobarOnCapturedTab");
   const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = std::u16string(),
@@ -213,7 +198,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnCapturedTab) {
 
 // Test that the infobar on another not share tab has the correct text:
 // Sharing |shared_tab| to |app|
-TEST_P(TabSharingInfoBarTest, InfobarOnNotSharedTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnNotSharedTab) {
   SCOPED_TRACE("InfobarOnNotSharedTab");
   const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = kSharedTabName,
@@ -228,7 +213,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnNotSharedTab) {
 // another tab, or chose the current tab but then switched to sharing another,
 // then the infobar has the correct text:
 // Sharing |shared_tab| to |app|
-TEST_P(TabSharingInfoBarTest,
+TEST_F(TabSharingInfoBarTest,
        InfobarOnCapturingTabIfCapturedAnotherTabButSelfCapturePreferred) {
   SCOPED_TRACE(
       "InfobarOnCapturingTabIfCapturedAnotherTabButSelfCapturePreferred");
@@ -242,7 +227,7 @@ TEST_P(TabSharingInfoBarTest,
 
 // Test that the infobar on another not cast tab has the correct text:
 // "Casting |tab_being_cast| to |sink|"
-TEST_P(TabSharingInfoBarTest, InfobarOnNotCastTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnNotCastTab) {
   SCOPED_TRACE("InfobarOnNotCastTab");
   Preferences preferences = {
       .shared_tab_name = kSharedTabName,
@@ -262,7 +247,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnNotCastTab) {
 
 // Test that the infobar on the tab being cast has the correct text:
 // "Casting this tab to |sink|"
-TEST_P(TabSharingInfoBarTest, InfobarOnCastTab) {
+TEST_F(TabSharingInfoBarTest, InfobarOnCastTab) {
   SCOPED_TRACE("InfobarOnCastTab");
   Preferences preferences = {
       .shared_tab_name = std::u16string(),
