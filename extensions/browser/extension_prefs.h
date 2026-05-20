@@ -757,6 +757,15 @@ class ExtensionPrefs : public KeyedService {
   // Cleans up the preferences for extensions installed via CDP.
   void CleanUpCdpInstalledExtensions();
 
+  // Cleans up duplicate sub-event filters (e.g. webRequest.onBeforeRequest/s0)
+  // that may have accumulated in persisted preferences before the overwrite
+  // logic in EventRouter::AddFilterToEvent was added. Each sub-event key should
+  // hold at most one filter; if duplicates are found, only the most recent
+  // (last) entry is kept. See crbug.com/502402731.
+  // TODO(andreaorru): remove this after M156, once non-duplicating webRequest
+  // behavior has been stable for a while.
+  void CleanUpDuplicateSubEventFilters();
+
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the

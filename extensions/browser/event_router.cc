@@ -127,12 +127,6 @@ base::debug::CrashKeyString* GetEventNameCrashKey() {
   return crash_key;
 }
 
-bool IsSubEventName(std::string_view event) {
-  return (event.starts_with("webRequest.") ||
-          event.starts_with("webViewInternal.")) &&
-         event.contains("/");
-}
-
 }  // namespace
 
 namespace debug {
@@ -231,6 +225,13 @@ EventRouter* EventRouter::Get(content::BrowserContext* browser_context) {
 std::string EventRouter::GetBaseEventName(const std::string& full_event_name) {
   size_t slash_sep = full_event_name.find('/');
   return full_event_name.substr(0, slash_sep);
+}
+
+// static
+bool EventRouter::IsSubEventName(std::string_view event) {
+  return (event.starts_with("webRequest.") ||
+          event.starts_with("webViewInternal.")) &&
+         event.contains("/");
 }
 
 void EventRouter::DispatchEventToSender(

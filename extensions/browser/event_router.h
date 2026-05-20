@@ -141,6 +141,10 @@ class EventRouter : public KeyedService,
   // without a "/" are returned unchanged.
   static std::string GetBaseEventName(const std::string& full_event_name);
 
+  // Returns true if `event` is a sub-event name (e.g.
+  // "webRequest.onBeforeRequest/s1").
+  static bool IsSubEventName(std::string_view event);
+
   // Sends an event via ipc_sender to the given extension. Can be called on any
   // thread.
   //

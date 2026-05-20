@@ -2189,6 +2189,8 @@ ExtensionPrefs::ExtensionPrefs(
 
   CleanUpCdpInstalledExtensions();
 
+  CleanUpDuplicateSubEventFilters();
+
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyPendingUpdates();
 #endif
@@ -2615,6 +2617,40 @@ void ExtensionPrefs::CleanUpCdpInstalledExtensions() {
   for (const auto& info : extensions_info) {
     if (GetCreationFlags(info.extension_id) & Extension::INSTALLED_VIA_CDP) {
       DeleteExtensionPrefs(info.extension_id);
+    }
+  }
+}
+
+void ExtensionPrefs::CleanUpDuplicateSubEventFilters() {
+  const base::DictValue& extensions = prefs_->GetDict(pref_names::kExtensions);
+  for (const auto [extension_id, _] : extensions) {
+    if (!crx_file::id_util::IdIsValid(extension_id)) {
+      continue;
+    }
+    for (auto* pref_key : {EventRouter::kFilteredEvents,
+                           EventRouter::kFilteredServiceWorkerEvents}) {
+      ScopedDictionaryUpdate update(this, extension_id, pref_key);
+      auto filtered_events = update.Get();
+      if (!filtered_events) {
+        continue;
+      }
+      std::vector<std::pair<std::string, base::ListValue>> replacements;
+      for (const auto [event_name, value] : *filtered_events->AsConstDict()) {
+        if (EventRouter::IsSubEventName(event_name) && value.is_list()) {
+          const auto& filter_list = value.GetList();
+          if (filter_list.size() > 1) {
+            // Keep only the last filter, which represents the most recent
+            // registration (matching `EventRouter::AddFilterToEvent`'s
+            // overwrite semantics).
+            base::ListValue replacement_list;
+            replacement_list.Append(filter_list.back().Clone());
+            replacements.emplace_back(event_name, std::move(replacement_list));
+          }
+        }
+      }
+      for (auto& [name, list] : replacements) {
+        filtered_events->SetKey(name, base::Value(std::move(list)));
+      }
     }
   }
 }
