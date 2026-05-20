@@ -84,6 +84,7 @@ FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
 
   // Among other things, this will install the hooks to determine the
   // `MiraclePtr Status`, and some additional memory safety checks.
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish("");
   base::allocator::PartitionAllocSupport::Get()
       ->ReconfigureAfterFeatureListInit("", config);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
