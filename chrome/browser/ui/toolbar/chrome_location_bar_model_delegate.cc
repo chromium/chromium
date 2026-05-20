@@ -127,10 +127,15 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   };
 
   GURL url = entry->GetURL();
-  if (is_ntp(entry->GetVirtualURL()) || is_ntp(url) ||
-      IsContextualTasksPage()) {
+  if (is_ntp(entry->GetVirtualURL()) || is_ntp(url)) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsContextualTasksPage()) {
+    return false;
+  }
+#endif
 
   Profile* profile = GetProfile();
   return !profile || !search::IsInstantNTPURL(url, profile);

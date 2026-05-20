@@ -77,6 +77,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1398,6 +1399,14 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   bool is_ai_page = ui_service_->IsAiUrl(url);
   task_info_delegate_->SetIsAiPage(is_ai_page);
   task_info_delegate_->SetAimUrl(url);
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the toolbar needs to be explicitly notified to refresh its
+  // display URL when the inner frame navigates, as the main tab's URL
+  // (chrome://contextual-tasks) hasn't changed.
+  CHECK(web_contents());
+  web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_URL);
+#endif
 
   bool in_nlm = false;
   std::string value;

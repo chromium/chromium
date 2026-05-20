@@ -437,7 +437,21 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             }
 
             GURL gurl = getCurrentGurl();
-            if (!UrlBarData.shouldShowUrl(gurl, isOffTheRecord())) {
+            boolean shouldShowUrl = UrlBarData.shouldShowUrl(gurl, isOffTheRecord());
+
+            if (!shouldShowUrl) {
+                // If the URL has been rewritten (e.g. AI Mode origin-swapping), show it even if
+                // the underlying URL would normally be suppressed.
+                String urlForDisplay = getUrlForDisplay();
+                String formattedUrl = getFormattedFullUrl();
+                if (isUrlRewritten(urlForDisplay, formattedUrl)) {
+                    // Use urlForDisplay for both display and editing to avoid exposing the
+                    // underlying URL (e.g. chrome://contextual-tasks).
+                    return buildUrlBarData(
+                            gurl, /* isOfflinePage= */ false, urlForDisplay, formattedUrl);
+                }
+
+                // Handle chrome-native:// URLs.
                 if (isNonMultiDisplayContextOnTablet()
                         && NativePage.isChromePageUrl(gurl, isOffTheRecord())
                         && !UrlUtilities.isNtpUrl(gurl)) {
@@ -485,6 +499,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
             return buildUrlBarData(gurl, false, formattedUrl);
         }
+    }
+
+    private boolean isUrlRewritten(String displayUrl, String formattedUrl) {
+        return !TextUtils.isEmpty(displayUrl) && !displayUrl.equals(formattedUrl);
     }
 
     private UrlBarData buildUrlBarData(GURL url, boolean isOfflinePage) {

@@ -647,6 +647,14 @@ if (is_android) {
     ]
   }
 
+  android_library("utils_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java" ]
+    deps = [
+      "//components/embedder_support/android:util_java",
+      "//url:gurl_java",
+    ]
+  }
+
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     resources_package = "org.chromium.chrome.browser.contextual_tasks"
@@ -658,6 +666,7 @@ if (is_android) {
 
     deps = [
       ":java_resources",
+      ":utils_java",
       "//base:base_java",
       "//base:supplier_java",
       "//build/android:build_java",
