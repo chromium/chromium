@@ -1968,7 +1968,47 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "chrome_ai_wpt_tests",
+    name = "chrome_ai_wpt_tests_gpu",
+    args = [
+        "--framework=llm-inference-engine",
+        "--backend=gpu",
+        "--performance-hint=ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE",
+        "--expectations-file=AIExpectations_GPU",
+    ],
+    binary = "chrome_ai_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests_cpu",
+    args = [
+        "--framework=llm-inference-engine",
+        "--backend=cpu",
+        "--performance-hint=ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU",
+        "--expectations-file=AIExpectations_CPU",
+    ],
+    binary = "chrome_ai_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests_litert_cpu",
+    args = [
+        "--framework=litert-lm",
+        "--backend=cpu",
+        "--performance-hint=ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU",
+        "--expectations-file=AIExpectations_LiteRTCPU",
+    ],
+    binary = "chrome_ai_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests_litert_gpu",
+    args = [
+        "--framework=litert-lm",
+        "--backend=gpu",
+        "--performance-hint=ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE",
+        "--expectations-file=AIExpectations_LiteRTGPU",
+    ],
+    binary = "chrome_ai_wpt_tests",
 )
 
 targets.tests.gtest_test(

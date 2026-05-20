@@ -1,0 +1,31 @@
+# tags: [ mac win linux ]
+# tags: [ mac15-arm64 mac15 mac14-arm64 mac14 ]
+# tags: [ x86_64 arm64 ]
+# tags: [ release debug ]
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# An Optimization Guide internal script (run_chrome_ai_wpt_tests.py) uses these
+# expectations instead of the typical TestExpectations file, in order to test
+# Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
+
+# Temporarily disable classifier classify test until a model is available to download.
+crbug.com/502312847 external/wpt/ai/classifier/classifier-classify.tentative.https.window.html [ Skip ]
+
+# These tests fail a 'downloadable' availability precondition, per sideloading.
+# NOTE: They unexpectedly pass on retry; perhaps due to crbug.com/429183223.
+crbug.com/390246212 external/wpt/ai/language_detection/detector.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/language-model/language-model-create-user-activation.tentative.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentative.https.window.html [ Skip ]
+
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`.
+crbug.com/407988949 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
+
+# Temporarily skip these tests while the underlying model is in migration.
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-abort.tentative.https.window.html [ Skip ]
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Skip ]
+
+# The overflow test times out because filling the context window takes too long.
+external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
