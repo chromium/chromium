@@ -232,6 +232,16 @@ suite('LineFocusStyleMode', () => {
       assertEquals(20, largeMode.getFocalPointForRect(rect));
     });
 
+    test('getBottomIndex returns focalIndex when not adapting', () => {
+      model.setAdaptMultiLineWindow(false);
+      assertEquals(5, largeMode.getBottomIndex(5));
+    });
+
+    test('getBottomIndex returns calculated index when adapting', () => {
+      model.setAdaptMultiLineWindow(true);
+      assertEquals(6, largeMode.getBottomIndex(5));
+    });
+
     test('clampLineIndex clamps index such that window stays centered', () => {
       const rect1 = new DOMRect(0, 10, 100, 20);
       const rect2 = new DOMRect(0, 30, 100, 20);
@@ -253,6 +263,14 @@ suite('LineFocusStyleMode', () => {
       assertEquals(0, smallMode.clampLineIndex(0));
       assertEquals(1, smallMode.clampLineIndex(1));
       assertEquals(2, smallMode.clampLineIndex(2));
+    });
+
+    test('clampLineIndex when not adapting returns same index', () => {
+      model.setAdaptMultiLineWindow(false);
+      model.setTextBounds([new DOMRect(0, 10, 100, 20)]);
+
+      assertEquals(1, largeMode.clampLineIndex(1));
+      assertEquals(5, largeMode.clampLineIndex(5));
     });
 
     test('getOffScreenDiff returns diff if bottom line is offscreen', () => {

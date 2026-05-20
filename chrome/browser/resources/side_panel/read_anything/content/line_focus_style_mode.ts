@@ -185,7 +185,9 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
   }
 
   getBottomIndex(focalIndex: number): number {
-    return focalIndex + ((this.style_.lines - 1) / 2);
+    return this.shouldAdaptToTextBounds() ?
+        focalIndex + ((this.style_.lines - 1) / 2) :
+        focalIndex;
   }
 
   // The bottom of the window should not go below the last line in the content
@@ -195,6 +197,11 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     if (bounds.length === 0) {
       return 0;
     }
+
+    if (!this.shouldAdaptToTextBounds()) {
+      return index;
+    }
+
     const numLines = this.style_.lines;
     const offset = Math.floor((numLines - 1) / 2);
     const maxIndex = bounds.length - 1;
