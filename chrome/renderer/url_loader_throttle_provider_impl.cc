@@ -292,7 +292,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 }
 
 void URLLoaderThrottleProviderImpl::SetOnline(bool is_online) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extension_throttle_manager_) {
     extension_throttle_manager_->SetOnline(is_online);
   }
