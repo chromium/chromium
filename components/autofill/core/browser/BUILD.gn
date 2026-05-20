@@ -9,6 +9,7 @@ import("//build/config/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//third_party/pyjson5/pyjson5.gni")
 import("//tools/grit/grit_rule.gni")
 
 source_set("country_data") {
@@ -78,6 +79,8 @@ action("regex_patterns_inl_h") {
   } else {
     sources += [ "form_parsing/resources/legacy_regex_patterns.json" ]
   }
+
+  inputs = pyjson5_inputs
 
   script = "form_parsing/transpile_regex_patterns.py"
   outputs = [ "$target_gen_dir/form_parsing/regex_patterns_inl.h" ]

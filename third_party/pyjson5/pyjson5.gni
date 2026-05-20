@@ -1,0 +1,10 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+pyjson5_inputs = [
+  "//third_party/pyjson5/src/json5/__init__.py",
+  "//third_party/pyjson5/src/json5/lib.py",
+  "//third_party/pyjson5/src/json5/parser.py",
+  "//third_party/pyjson5/src/json5/version.py",
+]

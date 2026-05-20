@@ -27,7 +27,6 @@ def __step_config(ctx, step_config):
         "build/rust/gni_impl/write_rustflags.py",
         "chrome/test/chromedriver/embed_mobile_devices_in_cpp.py",
         "components/autofill/core/browser/data_model/autofill_ai/transpile_entity_schema.py",
-        "components/autofill/core/browser/form_parsing/transpile_regex_patterns.py",
         "components/language/content/browser/ulp_language_code_locator/ulp_serialized_to_static_c.py",
         "components/optimization_guide/tools/gen_on_device_proto_descriptors.py",
         "components/policy/resources/policy_templates.py",
