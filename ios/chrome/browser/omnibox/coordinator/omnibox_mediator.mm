@@ -412,7 +412,8 @@ using base::UserMetricsAction;
   [self.consumer updateReturnKeyAvailability];
 
   // When no suggestion is previewed, just show the default image.
-  if (!suggestion) {
+  BOOL hasText = _omniboxTextController.textInput.text.length != 0;
+  if (!suggestion || !hasText) {
     [self setDefaultLeftImage];
     return;
   }
