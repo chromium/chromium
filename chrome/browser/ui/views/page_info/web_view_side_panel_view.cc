@@ -17,6 +17,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "net/base/url_util.h"
@@ -127,8 +129,12 @@ void WebViewSidePanelView::DidOpenRequestedURL(
                                 renderer_initiated);
   // If the navigation is initiated by the renderer process, we must set an
   // initiator origin.
-  if (renderer_initiated) {
-    params.initiator_origin = url::Origin::Create(url);
+  if (renderer_initiated && source_render_frame_host) {
+    params.initiator_origin =
+        source_render_frame_host->GetLastCommittedOrigin();
+    params.initiator_frame_token = source_render_frame_host->GetFrameToken();
+    params.initiator_process_id =
+        source_render_frame_host->GetProcess()->GetID().GetUnsafeValue();
   }
 
   // We can't open a new tab while the observer is running because it might
