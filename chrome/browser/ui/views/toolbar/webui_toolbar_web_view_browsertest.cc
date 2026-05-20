@@ -890,7 +890,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                      &webui_toolbar_view, &web_view,
                                      browser()));
 
-  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
+  WebUIHomeControl* home_control =
+      webui_toolbar_view->GetHomeControlForTesting();
 
   gfx::Rect control_rect = element->GetScreenBounds();
   gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
@@ -2495,15 +2496,10 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
     return home_url;
   }
 
-  WebUIToolbarWebView* PerformDragAndDrop(const std::string& new_home_url) {
-    WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
-    views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-    content::WebContents* web_contents = web_view->GetWebContents();
-
-    // JS to simulate a drop event on the home button.
-    EXPECT_TRUE(content::ExecJs(
-        web_contents,
-        base::StringPrintf(R"(
+  void SimulateDropOnHomeButton(content::WebContents* web_contents,
+                                const std::string& url) {
+    EXPECT_TRUE(content::ExecJs(web_contents,
+                                base::StringPrintf(R"(
       const homeButton = document.querySelector('toolbar-app').shadowRoot
                              .querySelector('#home').shadowRoot
                              .querySelector('cr-icon-button');
@@ -2517,7 +2513,14 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
       });
       homeButton.dispatchEvent(dropEvent);
     )",
-                           new_home_url.c_str(), new_home_url.c_str())));
+                                                   url.c_str(), url.c_str())));
+  }
+
+  WebUIToolbarWebView* PerformDragAndDrop(const std::string& new_home_url) {
+    WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
+    views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+    SimulateDropOnHomeButton(web_view->GetWebContents(), new_home_url);
 
     // Wait for the bubble widget to be created.
     WaitForUndoBubble(webui_toolbar_view);
@@ -2589,7 +2592,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                               DispatchEventScript(kHomeSelector, "MouseEvent",
                                                   "contextmenu", "button: 2")));
 
-  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
+  WebUIHomeControl* home_control =
+      webui_toolbar_view->GetHomeControlForTesting();
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return home_control->menu_runner_ &&
@@ -2609,7 +2613,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                               DispatchEventScript(kHomeSelector, "PointerEvent",
                                                   "pointerdown", "button: 0")));
 
-  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
+  WebUIHomeControl* home_control =
+      webui_toolbar_view->GetHomeControlForTesting();
 
   // Wait for the long press timer to trigger and show the menu.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -2805,6 +2810,28 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   EXPECT_NE(current_home_url, new_home_url);
 
   PerformDragAndDrop(new_home_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       DragAndDropHomeButton_BlockedJavascript) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  std::string default_homepage = prefs->GetString(prefs::kHomePage);
+
+  // Directly call the drop URL method with a javascript: URL.
+  std::string malicious_url = "javascript:alert(1)";
+  webui_toolbar_view->OnHomeButtonDropUrl(GURL(malicious_url));
+
+  // Verify the homepage preference has NOT changed.
+  EXPECT_EQ(default_homepage, prefs->GetString(prefs::kHomePage));
+
+  // Also verify NO undo bubble appeared.
+  EXPECT_EQ(
+      nullptr,
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          HomePageUndoBubbleCoordinator::kHomePageUndoBubbleMainViewId,
+          views::ElementTrackerViews::GetContextForView(webui_toolbar_view)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,

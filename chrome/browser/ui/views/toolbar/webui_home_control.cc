@@ -76,6 +76,11 @@ void WebUIHomeControl::ShowSetHomePageBubble(const GURL& undo_url,
 }
 
 void WebUIHomeControl::OnHomeButtonDropUrl(const GURL& url) {
+  // Disallow javascript: URLs to prevent self-XSS.
+  if (url.SchemeIs(url::kJavaScriptScheme)) {
+    return;
+  }
+
   PrefService* prefs = delegate_->GetBrowser()->GetProfile()->GetPrefs();
   GURL old_url = GURL(prefs->GetString(prefs::kHomePage));
   bool old_is_ntp = prefs->GetBoolean(prefs::kHomePageIsNewTabPage);
