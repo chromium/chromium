@@ -586,6 +586,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
   "java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivity.java",
   "java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImpl.java",
+  "java/src/org/chromium/chrome/browser/devtools/DevToolsActivity.java",
   "java/src/org/chromium/chrome/browser/display_cutout/ActivityDisplayCutoutModeSupplier.java",
   "java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
   "java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",

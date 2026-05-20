@@ -769,6 +769,18 @@ android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {
   deps = [ ":chrome_test_java_helper" ]
 }
 
+android_library("chrome_test_java_org.chromium.chrome.browser.devtools") {
+  resources_package = "org.chromium.chrome"
+
+  sources =
+      [ "src/org/chromium/chrome/browser/devtools/DevToolsActivityTest.java" ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/devtools/android:java",
+  ]
+}
+
 android_library("chrome_test_java_org.chromium.chrome.browser.display_cutout") {
   resources_package = "org.chromium.chrome"
 

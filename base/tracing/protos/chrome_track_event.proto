@@ -1860,6 +1860,9 @@ message StartUp {
     SHARE_INTENT = 17;
     NFC = 18;
     AUTH_TAB = 19;
+    RECREATION = 20;
+    HANDOFF = 21;
+    DEV_TOOLS = 22;
   }
 
   optional int64 activity_id = 1;

@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
@@ -108,8 +109,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/android/chrome_jni_headers/DevToolsActivity_jni.h"
 #else
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -1026,35 +1026,6 @@ void DevToolsWindow::ScheduleShow(const DevToolsToggleAction& action) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// static
-TabModel* DevToolsWindow::GetTabModelForDefaultRouting(
-    Profile* profile,
-    WebContents* inspected_web_contents) {
-  // On Android, DevTools must be opened in a TabModel.
-  // First, try to find the TabModel that contains the inspected WebContents.
-  // This ensures that DevTools is opened in the same window/activity as the
-  // inspected page, which is important for multi-window and split-screen support.
-  TabModel* tab_model =
-      inspected_web_contents
-          ? TabModelList::GetTabModelForWebContents(inspected_web_contents)
-          : nullptr;
-
-  if (!tab_model) {
-    // If there is no inspected WebContents (e.g., when inspecting a Service
-    // Worker or a background page), or if it's not in a TabModel, fall back
-    // to the first TabModel that matches the profile.
-    for (TabModel* model : TabModelList::models()) {
-      if (model->GetProfile() == profile) {
-        tab_model = model;
-        break;
-      }
-    }
-  }
-  return tab_model;
-}
-#endif
-
 void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   if (life_stage_ == kClosing) {
     return;
@@ -1065,21 +1036,15 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  TabModel* tab_model = GetTabModelForDefaultRouting(profile_, GetInspectedWebContents());
-  if (!tab_model) {
+  if (!owned_main_web_contents_ || launched_activity_) {
     return;
   }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_DevToolsActivity_launchDevToolsActivity(
+      env, main_web_contents_->GetJavaWebContents());
 
-  if (!owned_main_web_contents_) {
-    return;
-  }
-  // TODO(crbug.com/406406862): Show it in a web app window instead of a tab.
-  tab_model->CreateTab(nullptr,
-                       OwnedMainWebContents::TakeWebContents(
-                           std::move(owned_main_web_contents_)),
-                       TabModel::kInvalidIndex,
-                       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
-                       /*should_pin=*/false);
+  launched_activity_ = true;
+
   OverrideAndSyncDevToolsRendererPrefs();
 #else
   if (is_docked_) {
@@ -2279,4 +2244,22 @@ void DevToolsWindow::MainWebContentRenderFrameHostChanged(
 
 raw_ptr<content::WebContents> DevToolsWindow::GetDevToolsWebContents() {
   return main_web_contents_;
+}
+
+void DevToolsWindow::AttachToBrowser(BrowserWindowInterface* browser) {
+  if (!owned_main_web_contents_) {
+    return;
+  }
+  std::unique_ptr<content::WebContents> owned_web_contents =
+      OwnedMainWebContents::TakeWebContents(
+          std::move(owned_main_web_contents_));
+  if (!owned_web_contents) {
+    return;
+  }
+  auto* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return;
+  }
+  tab_list->InsertWebContentsAt(0, std::move(owned_web_contents), false,
+                                std::nullopt);
 }

@@ -39,10 +39,22 @@ public class DevToolsWindowAndroid {
         DevToolsWindowAndroidJni.get().openDevTools(webContents);
     }
 
+    /**
+     * Attaches the DevTools frontend web contents to the browser window.
+     *
+     * @param webContents DevTools frontend web contents.
+     * @param nativeBrowserWindowPtr Browser window to host the DevTools frontend.
+     */
+    public static void attachToBrowser(WebContents webContents, long nativeBrowserWindowPtr) {
+        DevToolsWindowAndroidJni.get().attachToBrowser(webContents, nativeBrowserWindowPtr);
+    }
+
     @NativeMethods
     interface Natives {
         void openDevTools(WebContents webContents);
 
         boolean isDevToolsAllowedFor(Profile profile, WebContents webContents);
+
+        void attachToBrowser(WebContents webContents, long nativeBrowserWindowPtr);
     }
 }
