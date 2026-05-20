@@ -1253,7 +1253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CrossPlatformPromos.Promo.Shown.{Source}"
-    enum="IOSCrossPlatformPromoType" expires_after="2026-06-21">
+    enum="IOSCrossPlatformPromoType" expires_after="2026-11-19">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -1267,7 +1267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CrossPlatformPromos.PushNotification.Interaction"
-    enum="IOSCrossPlatformPromoType" expires_after="2026-06-21">
+    enum="IOSCrossPlatformPromoType" expires_after="2026-11-19">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
