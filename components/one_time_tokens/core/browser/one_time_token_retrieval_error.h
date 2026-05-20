@@ -23,7 +23,8 @@ enum class OneTimeTokenRetrievalError {
   kGmailOtpBackendAuthError = 8,
   kGmailOtpBackendNetworkError = 9,
   kGmailOtpBackendInvalidResponse = 10,
-  kMaxValue = kGmailOtpBackendInvalidResponse,
+  kSmsOtpUnknown = 11,
+  kMaxValue = kSmsOtpUnknown,
 };
 
 }  // namespace one_time_tokens

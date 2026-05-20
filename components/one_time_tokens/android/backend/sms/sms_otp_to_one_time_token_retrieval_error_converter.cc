@@ -27,7 +27,7 @@ OneTimeTokenRetrievalError ConvertSmsOtpRetrievalApiError(
     case SmsOtpRetrievalApiError::kUserPermissionRequired:
       return OneTimeTokenRetrievalError::kSmsOtpBackendUserPermissionRequired;
     case SmsOtpRetrievalApiError::kUnknown:
-      return OneTimeTokenRetrievalError::kUnknown;
+      return OneTimeTokenRetrievalError::kSmsOtpUnknown;
   }
   // LINT.ThenChange(//components/one_time_tokens/core/browser/one_time_token_retrieval_error.h)
 }
