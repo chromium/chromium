@@ -6,24 +6,36 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/proto/loading_predictor_metadata.pb.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
+#include "extensions/browser/api/declarative_net_request/test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 class LoadingPredictorExtensionBrowserTest : public ExtensionBrowserTest {
  public:
   LoadingPredictorExtensionBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kLoadingPredictorUseOptimizationGuide,
-          {{"use_predictions", "true"},
-           {"always_retrieve_predictions", "true"}}},
-         {features::kLoadingPredictorPrefetch, {}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kLoadingPredictorUseOptimizationGuide,
+         {{"use_predictions", "true"},
+          {"always_retrieve_predictions", "true"}}},
+        {features::kLoadingPredictorPrefetch, {}}};
+    // TODO(crbug.com/342445996): Support this in-development feature.
+    // PerformNetworkContextPrefetch() needs to notify the extensions
+    // WebRequest API for prefetches, which should fix this test when
+    // the flag is enabled.
+    std::vector<base::test::FeatureRef> disabled_features = {
+        {features::kPrefetchManagerUseNetworkContextPrefetch}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
   ~LoadingPredictorExtensionBrowserTest() override = default;
 
@@ -75,8 +87,9 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorExtensionBrowserTest,
 
   AddOptimizationGuidePrediction(main_frame_url, subresource_url);
 
-  content::RenderFrameHost* rfh =
-      ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, main_frame_url));
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   ASSERT_EQ(rfh->GetLastCommittedURL(), main_frame_url);
   ASSERT_FALSE(rfh->IsErrorDocument());
 
@@ -100,10 +113,15 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorExtensionBrowserTest,
 // extension using declarativeNetRequest.
 IN_PROC_BROWSER_TEST_F(LoadingPredictorExtensionBrowserTest,
                        PrefetchBlockedByExtension) {
+  declarative_net_request::RulesetManagerObserver ruleset_observer(
+      declarative_net_request::RulesMonitorService::Get(profile())
+          ->ruleset_manager());
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("predictors")
                         .AppendASCII("declarative_net_request"));
   ASSERT_TRUE(extension);
+  // Wait for the declarativeNetRequest ruleset to load from disk.
+  ruleset_observer.WaitForExtensionsWithRulesetsCount(1);
 
   GURL main_frame_url =
       embedded_https_test_server().GetURL("a.com", "/title1.html");
@@ -112,8 +130,9 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorExtensionBrowserTest,
 
   AddOptimizationGuidePrediction(main_frame_url, subresource_url);
 
-  content::RenderFrameHost* rfh =
-      ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, main_frame_url));
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   ASSERT_EQ(rfh->GetLastCommittedURL(), main_frame_url);
   ASSERT_FALSE(rfh->IsErrorDocument());
 
