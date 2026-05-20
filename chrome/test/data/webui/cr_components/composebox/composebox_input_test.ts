@@ -353,6 +353,11 @@ suite('ComposeboxCaretGeometry', () => {
   let inputElement: ComposeboxInputElement;
   let originalDir: string;
 
+  function setDirection(dir: 'ltr'|'rtl') {
+    document.documentElement.dir = dir;
+    inputElement.updateDirection();
+  }
+
   setup(async () => {
     originalDir = document.documentElement.dir;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -367,7 +372,7 @@ suite('ComposeboxCaretGeometry', () => {
 
   // Verify the caret's rendered position aligns with its anchor span.
   test('CaretRenderedPositionMatchesAnchorSpanLtr', async () => {
-    document.documentElement.dir = 'ltr';
+    setDirection('ltr');
     const input = inputElement.$.input as HTMLTextAreaElement;
     const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
     const mirror =
@@ -399,7 +404,7 @@ suite('ComposeboxCaretGeometry', () => {
   });
 
   test('CaretRenderedPositionMatchesAnchorSpanRtl', async () => {
-    document.documentElement.dir = 'rtl';
+    setDirection('rtl');
     const input = inputElement.$.input as HTMLTextAreaElement;
     const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
     const mirror =
@@ -416,17 +421,51 @@ suite('ComposeboxCaretGeometry', () => {
     input.focus();
     await inputElement.updateComplete;
 
-    const anchoredSpan = mirror.childNodes[4] as HTMLElement;
+    const anchoredSpan = mirror.firstChild as HTMLElement;
     assertTrue(!!anchoredSpan);
 
     const caretRect = caret.getBoundingClientRect();
     const spanRect = anchoredSpan.getBoundingClientRect();
 
-    // In RTL, `left: anchor(end)` resolves to the span's left (start) edge.
+    // In RTL, the caret should be at the left edge of the leftmost span.
     assertTrue(Math.abs(caretRect.left - spanRect.left) < 2);
 
     // The caret's top should be near the span's top (within the 2px offset)
     assertTrue(Math.abs(caretRect.top - (spanRect.top - 2)) < 2);
+  });
+
+  test('CaretPositionedAtFarLeftOfLtrTextInRtl', async () => {
+    setDirection('rtl');
+    const input = inputElement.$.input as HTMLTextAreaElement;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!caret);
+    assertTrue(!!mirror);
+
+    input.value = 'AB';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    input.setSelectionRange(2, 2);
+    input.dispatchEvent(new Event('keyup', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    input.focus();
+    await inputElement.updateComplete;
+
+    const firstSpan = mirror.childNodes[0] as HTMLElement;
+    const secondSpan = mirror.childNodes[1] as HTMLElement;
+    assertTrue(!!firstSpan);
+    assertTrue(!!secondSpan);
+
+    const caretRect = caret.getBoundingClientRect();
+    const firstSpanRect = firstSpan.getBoundingClientRect();
+    const secondSpanRect = secondSpan.getBoundingClientRect();
+
+    // Caret should be at the left edge of the first span ('A').
+    assertTrue(Math.abs(caretRect.left - firstSpanRect.left) < 2);
+
+    // Caret should NOT be at the left edge of the second span ('B').
+    assertTrue(Math.abs(caretRect.left - secondSpanRect.left) > 5);
   });
 
   test('CaretAtStartPositionedAtFirstSpanStart', async () => {

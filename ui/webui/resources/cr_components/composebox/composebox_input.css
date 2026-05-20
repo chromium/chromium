@@ -159,6 +159,14 @@
   left: anchor(start);
 }
 
+:host-context([dir='rtl']) #caret {
+  left: anchor(left);
+}
+
+:host-context([dir='rtl']) #caret.at-start {
+  left: anchor(right);
+}
+
 :host([entrypoint-name='Omnibox']) #caret {
   height: 18px;
   top: anchor(top);
