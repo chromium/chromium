@@ -148,6 +148,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       contextManagementInComposeboxEnabled_: {type: Boolean},
       // Must be property so can pass it down to children.
       searchboxCallbackRouter_: {type: Object},
+      applyContextButtonBackground: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -168,6 +172,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor entrypointName: string = '';
   accessor lensButtonDisabled: boolean = false;
   accessor voiceSearchCoherenceEnabled: boolean = false;
+  accessor applyContextButtonBackground: boolean = false;
 
   accessor submitButtonIconType: SubmitButtonIconType =
       SubmitButtonIconType.UPWARD;
@@ -193,6 +198,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
+  private webuiOmniboxSimplificationEnabled_: boolean =
+      getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private resizeObservers_: ResizeObserver[] = [];
@@ -330,6 +337,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         changedProperties.has('searchboxLayoutMode')) {
       this.isOmniboxInCompactMode_ = this.entrypointName === 'Omnibox' &&
           this.searchboxLayoutMode === 'Compact';
+    }
+
+    if (changedProperties.has('inputState') ||
+        changedProperties.has('entrypointName')) {
+      const inToolMode = this.inputState?.activeTool !== ToolMode.kUnspecified;
+      const hasBackground = this.entrypointName === 'Omnibox' ?
+          this.webuiOmniboxSimplificationEnabled_ :
+          false;
+      this.applyContextButtonBackground = hasBackground && !inToolMode;
     }
 
     if (changedProperties.has('inputPlaceholderOverride') ||

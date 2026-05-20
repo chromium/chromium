@@ -9,6 +9,7 @@ import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
+import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
@@ -17,6 +18,7 @@ import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composeb
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './omnibox_composebox.css.js';
 import {getHtml} from './omnibox_composebox.html.js';
@@ -45,11 +47,18 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
 
   static override get properties() {
     return {
+      applyContextButtonBackground: {
+        reflect: true,
+        type: Boolean,
+      },
       entrypointName: {type: String, reflect: true},
     };
   }
 
   accessor entrypointName: string = 'Omnibox';
+  accessor applyContextButtonBackground: boolean = false;
+  private webuiOmniboxSimplificationEnabled_: boolean =
+      getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -60,6 +69,16 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('inputState')) {
+      const inToolMode = this.inputState?.activeTool !== ToolMode.kUnspecified;
+      this.applyContextButtonBackground =
+          this.webuiOmniboxSimplificationEnabled_ && !inToolMode;
+    }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
