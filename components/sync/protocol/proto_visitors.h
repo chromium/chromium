@@ -1010,6 +1010,22 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT(hidden_time);
 }
 
+VISIT_PROTO_FIELDS(
+    const sync_pb::WebauthnCredentialSpecifics::Encrypted& proto) {
+  VISIT_SECRET(private_key);
+  VISIT_SECRET(hmac_secret);
+  VISIT_SECRET(cred_blob);
+  VISIT_SECRET(large_blob);
+  VISIT(large_blob_uncompressed_size);
+  VISIT_REP(cmtg_keys);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WebauthnCredentialSpecifics::Encrypted::CmtgKey& proto) {
+  VISIT_SECRET(private_key);
+  VISIT(creation_time_unix_epoch_millis);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::PageTransition& proto) {
   VISIT_ENUM(core_transition);
   VISIT(blocked);
