@@ -69,7 +69,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/Serializer.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataService.java",
-    "java/src/org/chromium/chrome/browser/tab/utilities/LoadIfNeededService.java",
+    "java/src/org/chromium/chrome/browser/tab/utilities/TabLoadingService.java",
   ]
 
   srcjar_deps = [
@@ -187,7 +187,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab/TabStateExtractorTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLoggerTest.java",
-    "java/src/org/chromium/chrome/browser/tab/utilities/LoadIfNeededServiceTest.java",
+    "java/src/org/chromium/chrome/browser/tab/utilities/TabLoadingServiceTest.java",
   ]
 
   deps = [

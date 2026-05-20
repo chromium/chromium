@@ -36,9 +36,9 @@ import org.chromium.chrome.browser.page_content_annotations.PageContentExtractio
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService;
-import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService.LoadIfNeededCallback;
-import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService.LoadResult;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadIfNeededCallback;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadResult;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -433,14 +433,14 @@ public class TabItemPickerCoordinator {
             // Avoid double-observing the same tab if it's already being loaded.
             if (mLoadingTabsToStartTimes.containsKey(tab)) return;
 
-            LoadIfNeededService loadIfNeededService = LoadIfNeededService.getInstance();
-            if (!loadIfNeededService.queueLoadIfNeeded(tab)) return;
+            TabLoadingService tabLoadingService = TabLoadingService.getInstance();
+            if (!tabLoadingService.queueLoadIfNeeded(tab)) return;
 
             // Clear the thumbnail to avoid showing a stale thumbnail immediately after selection.
             mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
 
             mLoadingTabsToStartTimes.put(tab, SystemClock.elapsedRealtime());
-            loadIfNeededService.addLoadIfNeededCallback(tab, mLoadIfNeededCallback);
+            tabLoadingService.addLoadIfNeededCallback(tab, mLoadIfNeededCallback);
 
             // Show a spinner while the thumbnail is being fetched/generated.
             var controller = mControllerSupplier.get();
@@ -504,11 +504,11 @@ public class TabItemPickerCoordinator {
         /** Cleans up observers and state. */
         public void destroy() {
             long currentTime = SystemClock.elapsedRealtime();
-            LoadIfNeededService loadIfNeededService = LoadIfNeededService.getInstance();
+            TabLoadingService tabLoadingService = TabLoadingService.getInstance();
             for (var entry : mLoadingTabsToStartTimes.entrySet()) {
                 Tab tab = entry.getKey();
                 if (tab != null) {
-                    loadIfNeededService.removeLoadIfNeededCallback(tab, mLoadIfNeededCallback);
+                    tabLoadingService.removeLoadIfNeededCallback(tab, mLoadIfNeededCallback);
                 }
 
                 long duration = currentTime - entry.getValue();

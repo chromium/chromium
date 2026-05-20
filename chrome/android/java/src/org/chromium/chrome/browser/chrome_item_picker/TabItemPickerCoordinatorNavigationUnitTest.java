@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -87,7 +87,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
     @Before
     public void setUp() {
-        LoadIfNeededService.getInstance().clearForTesting();
+        TabLoadingService.getInstance().clearForTesting();
         OneshotSupplierImpl<Profile> profileSupplierImpl = new OneshotSupplierImpl<>();
         ViewGroup rootView = Mockito.mock(ViewGroup.class);
         ViewGroup containerView = Mockito.mock(ViewGroup.class);

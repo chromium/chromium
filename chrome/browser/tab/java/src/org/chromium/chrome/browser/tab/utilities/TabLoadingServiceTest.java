@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -21,25 +22,26 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService.LoadIfNeededCallback;
-import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService.LoadResult;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadIfNeededCallback;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadResult;
 import org.chromium.url.JUnitTestGURLs;
 
-/** Unit tests for {@link LoadIfNeededService}. */
+/** Unit tests for {@link TabLoadingService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class LoadIfNeededServiceTest {
+public class TabLoadingServiceTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
     @Mock private LoadIfNeededCallback mCallback;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
-    private LoadIfNeededService mService;
+    private TabLoadingService mService;
     private static final int TAB_ID = 123;
 
     @Before
     public void setUp() {
         when(mTab.getId()).thenReturn(TAB_ID);
-        mService = LoadIfNeededService.getInstance();
+        mService = TabLoadingService.getInstance();
         mService.clearForTesting();
     }
 
@@ -62,7 +64,7 @@ public class LoadIfNeededServiceTest {
 
         assertTrue(mService.queueLoadIfNeeded(mTab));
         assertTrue(mService.isTabQueuedForLoad(TAB_ID));
-        verify(mTab).addObserver(ArgumentCaptor.forClass(TabObserver.class).capture());
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
     }
 
     @Test
@@ -73,7 +75,7 @@ public class LoadIfNeededServiceTest {
         assertTrue(mService.queueLoadIfNeeded(mTab));
         assertTrue(mService.queueLoadIfNeeded(mTab));
         // Should only add observer once
-        verify(mTab).addObserver(ArgumentCaptor.forClass(TabObserver.class).capture());
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
     }
 
     @Test
@@ -100,9 +102,8 @@ public class LoadIfNeededServiceTest {
         assertTrue(mService.queueLoadIfNeeded(mTab));
         assertTrue(mService.addLoadIfNeededCallback(mTab, mCallback));
 
-        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
-        verify(mTab).addObserver(captor.capture());
-        TabObserver observer = captor.getValue();
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
 
         observer.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
 
@@ -119,9 +120,8 @@ public class LoadIfNeededServiceTest {
         assertTrue(mService.queueLoadIfNeeded(mTab));
         assertTrue(mService.addLoadIfNeededCallback(mTab, mCallback));
 
-        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
-        verify(mTab).addObserver(captor.capture());
-        TabObserver observer = captor.getValue();
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
 
         observer.onPageLoadFailed(mTab, 404);
 
@@ -138,9 +138,8 @@ public class LoadIfNeededServiceTest {
         assertTrue(mService.queueLoadIfNeeded(mTab));
         assertTrue(mService.addLoadIfNeededCallback(mTab, mCallback));
 
-        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
-        verify(mTab).addObserver(captor.capture());
-        TabObserver observer = captor.getValue();
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
 
         observer.onCrash(mTab);
 
@@ -157,9 +156,8 @@ public class LoadIfNeededServiceTest {
         assertTrue(mService.queueLoadIfNeeded(mTab));
         assertTrue(mService.addLoadIfNeededCallback(mTab, mCallback));
 
-        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
-        verify(mTab).addObserver(captor.capture());
-        TabObserver observer = captor.getValue();
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
 
         observer.onDestroyed(mTab);
 

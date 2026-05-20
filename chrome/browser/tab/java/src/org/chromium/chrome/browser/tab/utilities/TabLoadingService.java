@@ -26,7 +26,7 @@ import java.util.Map;
  * loading status and notifying registered callbacks when loading finishes.
  */
 @NullMarked
-public class LoadIfNeededService {
+public class TabLoadingService {
 
     /**
      * Possible outcomes of a tab load request. Used to indicate the final state of the tab when
@@ -77,17 +77,17 @@ public class LoadIfNeededService {
             };
 
     private static class LazyHolder {
-        private static final LoadIfNeededService INSTANCE = new LoadIfNeededService();
+        private static final TabLoadingService INSTANCE = new TabLoadingService();
     }
 
-    private static @Nullable LoadIfNeededService sInstanceForTesting;
+    private static @Nullable TabLoadingService sInstanceForTesting;
 
     private final Map<Integer, ObserverList<LoadIfNeededCallback>> mQueuedTabs = new HashMap<>();
 
-    private LoadIfNeededService() {}
+    private TabLoadingService() {}
 
-    /** Returns the singleton instance of {@link LoadIfNeededService}. */
-    public static LoadIfNeededService getInstance() {
+    /** Returns the singleton instance of {@link TabLoadingService}. */
+    public static TabLoadingService getInstance() {
         ThreadUtils.assertOnUiThread();
         return sInstanceForTesting != null ? sInstanceForTesting : LazyHolder.INSTANCE;
     }
@@ -173,7 +173,7 @@ public class LoadIfNeededService {
         mQueuedTabs.clear();
     }
 
-    static void setInstanceForTesting(@Nullable LoadIfNeededService service) {
+    static void setInstanceForTesting(@Nullable TabLoadingService service) {
         sInstanceForTesting = service;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
