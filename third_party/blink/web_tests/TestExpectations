@@ -5884,7 +5884,6 @@ crbug.com/1287036 external/wpt/html/cross-origin-opener-policy/iframe-popup-same
 crbug.com/1265587 external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Failure ]
 crbug.com/1270351 external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
 crbug.com/1159661 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
-crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-failure.https.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-sharedworker-failure.https.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success.https.html [ Timeout ]
 crbug.com/1223883 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/location-set-and-document-open.html [ Timeout ]
