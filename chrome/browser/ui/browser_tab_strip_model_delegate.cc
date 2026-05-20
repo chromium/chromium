@@ -395,10 +395,8 @@ void BrowserTabStripModelDelegate::NewSplitTab(
   if (indices.empty()) {
     chrome::NewSplitTab(browser_, layout, source);
   } else {
-    split_tabs::SplitTabVisualData visual_data =
-        split_tabs::SplitTabVisualData();
-    visual_data.set_split_layout(layout);
-    browser_->tab_strip_model()->AddToNewSplit(indices, visual_data, source);
+    browser_->tab_strip_model()->AddToNewSplit(
+        indices, split_tabs::SplitTabVisualData(layout), source);
   }
 }
 

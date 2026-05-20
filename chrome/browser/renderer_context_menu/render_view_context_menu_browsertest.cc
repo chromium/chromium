@@ -72,8 +72,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -119,6 +121,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
@@ -4023,6 +4026,106 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTabRTL) {
   size_t index = model_and_index->second;
   EXPECT_EQ(model->GetLabelAt(index),
             l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       OpenLinkInExistingSplitTabBottom) {
+  const GURL test_url("http://www.example.com/");
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kHorizontal,
+                      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(test_url, test_url);
+
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
+  EXPECT_EQ(model->GetLabelAt(index),
+            l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKBOTTOMVIEW));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTabTop) {
+  const GURL test_url("http://www.example.com/");
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kHorizontal,
+                      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
+  tab_strip_model->ActivateTabAt(1);
+  ASSERT_NE(tab_strip_model->GetWebContentsAt(1)->GetURL(), test_url);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(test_url, test_url);
+
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
+  EXPECT_EQ(model->GetLabelAt(index),
+            l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKTOPVIEW));
+}
+
+class ContextMenuSplitViewHorizontalDirectAccessBrowserTest
+    : public ContextMenuBrowserTest {
+ public:
+  ContextMenuSplitViewHorizontalDirectAccessBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{tabs::kSplitViewHorizontal,
+                               {{"split_view_horizontal_direct_access",
+                                 "true"}}}},
+        /*disabled_features=*/{});
+  }
+
+  void TestOpenLinkNewSplit(size_t index,
+                            SplitViewLayoutMenuModel::CommandId command_id,
+                            split_tabs::SplitTabLayout expected_layout) {
+    const GURL test_url("http://www.example.com/");
+    TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+    ASSERT_EQ(tab_strip_model->count(), 1);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateContextMenuMediaTypeNone(test_url, test_url);
+
+    std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+        menu->GetMenuModelAndItemIndex(static_cast<int>(command_id));
+    ASSERT_TRUE(model_and_index);
+    auto [submenu, _] = model_and_index.value();
+
+    EXPECT_EQ(2u, submenu->GetItemCount());
+    EXPECT_EQ(static_cast<int>(command_id), submenu->GetCommandIdAt(index));
+    submenu->ActivatedAt(index);
+
+    EXPECT_EQ(tab_strip_model->count(), 2);
+    EXPECT_TRUE(tab_strip_model->GetActiveTab()->GetSplit().has_value());
+    EXPECT_EQ(
+        expected_layout,
+        tab_strip_model
+            ->GetSplitData(tab_strip_model->GetActiveTab()->GetSplit().value())
+            ->visual_data()
+            ->split_layout());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
+                       OpenLinkNewSplitVertical) {
+  TestOpenLinkNewSplit(0, SplitViewLayoutMenuModel::CommandId::kVertical,
+                       split_tabs::SplitTabLayout::kVertical);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
+                       OpenLinkNewSplitHorizontal) {
+  TestOpenLinkNewSplit(1, SplitViewLayoutMenuModel::CommandId::kHorizontal,
+                       split_tabs::SplitTabLayout::kHorizontal);
 }
 
 }  // namespace

@@ -124,8 +124,10 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -196,6 +198,7 @@
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
@@ -913,6 +916,46 @@ bool IsPrintPreviewContent(const GURL& current_url) {
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+std::pair<int, const gfx::VectorIcon*> GetOpenLinkInSplitStringAndIcon(
+    tabs::TabInterface* tab,
+    Browser* const browser) {
+  int string_id = IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW;
+  const gfx::VectorIcon* icon = &(
+      features::IsRoundedIconsEnabled() ? kSplitSceneIcon : kSplitSceneOldIcon);
+  if (tab && tab->IsSplit()) {
+    split_tabs::SplitTabData* split_data =
+        browser->tab_strip_model()->GetSplitData(tab->GetSplit().value());
+    switch (split_data->visual_data()->split_layout()) {
+      case split_tabs::SplitTabLayout::kVertical:
+        if (split_data->ListTabs()[base::i18n::IsRTL() ? 1 : 0] == tab) {
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW;
+          icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneRightIcon
+                                                     : kSplitSceneRightOldIcon);
+        } else {
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW;
+          icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneLeftIcon
+                                                     : kSplitSceneLeftOldIcon);
+        }
+        break;
+      case split_tabs::SplitTabLayout::kHorizontal:
+        if (split_data->ListTabs()[0] == tab) {
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKBOTTOMVIEW;
+          icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneDownIcon
+                                                     : kSplitSceneDownOldIcon);
+        } else {
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKTOPVIEW;
+          icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneUpIcon
+                                                     : kSplitSceneUpOldIcon);
+        }
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+  return {string_id, icon};
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 // static
@@ -1812,23 +1855,27 @@ void RenderViewContextMenu::AppendLinkItems() {
       // new tab that is then joined with the current active tab.
       Browser* const browser = GetBrowser();
       if (browser && browser->is_type_normal()) {
-        int string_id = IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW;
         tabs::TabInterface* tab =
             tabs::TabInterface::MaybeGetFromContents(GetWebContents());
-        if (tab && tab->IsSplit()) {
-          split_tabs::SplitTabData* split_data =
-              browser->tab_strip_model()->GetSplitData(tab->GetSplit().value());
-          string_id = split_data->ListTabs()[base::i18n::IsRTL() ? 1 : 0] == tab
-                          ? IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW
-                          : IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW;
+        auto [string_id, icon] = GetOpenLinkInSplitStringAndIcon(tab, browser);
+
+        if (tabs::kSplitViewHorizontalDirectAccess.Get() &&
+            !(tab && tab->IsSplit())) {
+          split_layout_submenu_ = std::make_unique<SplitViewLayoutMenuModel>(
+              base::BindOnce(&RenderViewContextMenu::OpenLinkInSplitView,
+                             base::Unretained(this)));
+          menu_model_.AddSubMenuWithStringIdAndIcon(
+              IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, string_id,
+              split_layout_submenu_.get(),
+              ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
+                                             kTabMenuIconSize));
+        } else {
+          menu_model_.AddItemWithStringIdAndIcon(
+              IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, string_id,
+              ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
+                                             kTabMenuIconSize));
         }
 
-        menu_model_.AddItemWithStringIdAndIcon(
-            IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, string_id,
-            ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kSplitSceneIcon
-                                                  : kSplitSceneOldIcon,
-                ui::kColorMenuIcon, kTabMenuIconSize));
         const int command_index =
             menu_model_
                 .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW)
@@ -3399,7 +3446,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW:
 #if !BUILDFLAG(IS_ANDROID)
-      OpenLinkInSplitView();
+      OpenLinkInSplitView(split_tabs::SplitTabLayout::kVertical);
 #endif  // !BUILDFLAG(IS_ANDROID)
       break;
     case IDC_CONTENT_CONTEXT_SAVELINKAS:
@@ -5189,7 +5236,8 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-void RenderViewContextMenu::OpenLinkInSplitView() {
+void RenderViewContextMenu::OpenLinkInSplitView(
+    split_tabs::SplitTabLayout layout) {
   Browser* const browser = GetBrowser();
   CHECK(browser);
   CHECK(browser->is_type_normal());
@@ -5233,7 +5281,7 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
 
     // Create split and activate new tab.
     tab_strip_model->AddToNewSplit(
-        {new_tab_index}, split_tabs::SplitTabVisualData(),
+        {new_tab_index}, split_tabs::SplitTabVisualData(layout),
         split_tabs::SplitTabCreatedSource::kLinkContextMenu);
     tab_strip_model->ActivateTabAt(
         tab_strip_model->GetIndexOfWebContents(new_web_contents));

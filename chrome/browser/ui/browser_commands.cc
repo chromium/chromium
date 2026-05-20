@@ -1513,9 +1513,8 @@ void NewSplitTab(BrowserWindowInterface* browser,
       new_tab_url, active_index + 1, true,
       tab_strip_model->GetTabGroupForTab(active_index),
       tab_strip_model->IsTabPinned(active_index));
-  split_tabs::SplitTabVisualData visual_data = split_tabs::SplitTabVisualData();
-  visual_data.set_split_layout(layout);
-  tab_strip_model->AddToNewSplit({active_index}, visual_data, source);
+  tab_strip_model->AddToNewSplit(
+      {active_index}, split_tabs::SplitTabVisualData(layout), source);
 
   if (content::WebContents* active_contents =
           tab_strip_model->GetActiveWebContents()) {

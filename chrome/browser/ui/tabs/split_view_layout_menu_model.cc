@@ -19,11 +19,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitViewLayoutMenuModel,
                                       kHorizontalMenuItem);
 
 SplitViewLayoutMenuModel::SplitViewLayoutMenuModel(
-    TabStripModel* tab_strip_model,
-    tabs::TabHandle tab_handle)
+    ExecuteCommandCallback execute_command_callback)
     : ui::SimpleMenuModel(this),
-      tab_strip_model_(tab_strip_model),
-      tab_handle_(tab_handle) {
+      execute_command_callback_(std::move(execute_command_callback)) {
   AddItem(static_cast<int>(CommandId::kVertical), std::u16string());
   AddItem(static_cast<int>(CommandId::kHorizontal), std::u16string());
 
@@ -76,11 +74,6 @@ ui::ImageModel SplitViewLayoutMenuModel::GetIconForCommandId(
 }
 
 void SplitViewLayoutMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  if (!tab_handle_.Get()) {
-    return;
-  }
-
-  int context_index = tab_strip_model_->GetIndexOfTab(tab_handle_.Get());
   const CommandId id = static_cast<CommandId>(command_id);
   split_tabs::SplitTabLayout split_layout;
   switch (id) {
@@ -94,5 +87,5 @@ void SplitViewLayoutMenuModel::ExecuteCommand(int command_id, int event_flags) {
       NOTREACHED();
   }
 
-  tab_strip_model_->ExecuteAddToNewSplitCommand(context_index, split_layout);
+  std::move(execute_command_callback_).Run(split_layout);
 }
