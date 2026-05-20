@@ -20,11 +20,9 @@ enum class UIUpdatePhase {
   kBeforeCADisplayLinkDispatch,
   kAfterCADisplayLinkDispatch,
   kBeforeCATransactionCommit,
-  kAfterCATransactionCommit,
   kBeforeLowLatencyEventDispatch,
   kAfterLowLatencyEventDispatch,
   kBeforeLowLatencyCATransactionCommit,
-  kAfterLowLatencyCATransactionCommit,
 };
 }  // namespace
 
@@ -35,6 +33,11 @@ enum class UIUpdatePhase {
   BOOL _appearing;
   uint64_t _flowID;
   uint64_t _flowCounter;
+  NSTimeInterval _lastTargetPresentationTime;
+  NSTimeInterval _currentFramePeriodEstimate;
+  BOOL _isVariableRefreshRate;
+  NSTimeInterval _minSupportedFramePeriod;
+  int _lastDroppedFrames;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   UIUpdateLink* _updateLink;
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
@@ -158,6 +161,26 @@ enum class UIUpdatePhase {
                    }];
     };
 
+    if (_displayTracingOptions & UIViewControllerDisplayTracingOptionDisplay) {
+      // Determine the target frame interval based on the display's maximum
+      // frame rate. We use 60fps as a baseline. If the display supports a
+      // higher refresh rate (e.g. ProMotion), we adjust accordingly. If the
+      // actual refresh rate is lower (e.g. due to power saving), that will be
+      // detected empirically
+      double maxFramesPerSecond = 60.0;
+      UIScreen* screen = self.view.window.screen;
+      if (screen && screen.maximumFramesPerSecond > 0) {
+        maxFramesPerSecond = screen.maximumFramesPerSecond;
+        // Determine if we're on a ProMotion (variable refresh rate) display.
+        // This is important for the accuracy of our frame drop calculations.
+        // This logic assumes that any iOS device with a max frame rate >60fps
+        // is a ProMotion device.
+        _isVariableRefreshRate = (maxFramesPerSecond > 60.0);
+        _minSupportedFramePeriod = 1.0 / maxFramesPerSecond;
+      }
+      _currentFramePeriodEstimate = 1.0 / maxFramesPerSecond;
+    }
+
     if (_displayTracingOptions &
         UIViewControllerDisplayTracingOptionEventDispatch) {
       registerPhase(UIUpdateActionPhase.beforeEventDispatch,
@@ -186,10 +209,21 @@ enum class UIUpdatePhase {
 
     // Always handle the after phases of transaction commit to reset the flow
     // id.
-    registerPhase(UIUpdateActionPhase.afterCATransactionCommit,
-                  UIUpdatePhase::kAfterCATransactionCommit);
-    registerPhase(UIUpdateActionPhase.afterLowLatencyCATransactionCommit,
-                  UIUpdatePhase::kAfterLowLatencyCATransactionCommit);
+    [localUpdateLink
+        addActionToPhase:UIUpdateActionPhase.afterCATransactionCommit
+                 handler:^(UIUpdateLink* link, UIUpdateInfo* info) {
+                   [weakSelf handleCATransactionCommitEndWithLink:link
+                                                             info:info
+                                                     isLowLatency:NO];
+                 }];
+    [localUpdateLink
+        addActionToPhase:UIUpdateActionPhase.afterLowLatencyCATransactionCommit
+                 handler:^(UIUpdateLink* link, UIUpdateInfo* info) {
+                   [weakSelf handleCATransactionCommitEndWithLink:link
+                                                             info:info
+                                                     isLowLatency:YES];
+                 }];
+
     _updateLink.enabled = YES;
   }
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
@@ -252,10 +286,6 @@ enum class UIUpdatePhase {
     case UIUpdatePhase::kBeforeLowLatencyCATransactionCommit:
       phaseName = "LowLatencyCATransactionCommit";
       break;
-    case UIUpdatePhase::kAfterCATransactionCommit:
-    case UIUpdatePhase::kAfterLowLatencyCATransactionCommit:
-      _flowID = 0;
-      break;
     default:
       break;
   }
@@ -268,4 +298,96 @@ enum class UIUpdatePhase {
   }
 }
 
+- (NSTimeInterval)currentMediaTime {
+  return CACurrentMediaTime();
+}
+
+- (void)handleCATransactionCommitEndWithLink:(UIUpdateLink*)link
+                                        info:(UIUpdateInfo*)info
+                                isLowLatency:(BOOL)isLowLatency {
+  [self endCurrentPhaseIfNeeded];
+  if ([self displayTracingOptions] &
+      UIViewControllerDisplayTracingOptionDisplay) {
+    base::TimeTicks nowInTicks = base::TimeTicks::Now();
+    NSTimeInterval nowInSeconds = [self currentMediaTime];
+
+    NSTimeInterval targetTime = info.estimatedPresentationTime;
+    NSTimeInterval scanoutDelay = targetTime - nowInSeconds;
+
+    // The following logic computes an optimistic estimate of pipeline latency,
+    // based on the assumption that the downstream OS compositing pipeline is
+    // jank free, which is usually the case. The expected number of dropped
+    // frames is also estimated based on the same assumptions. The calculations
+    // require knowledge of the display device's refresh rate, which also needs
+    // to be estimated if the device has a variable refresh rate (ProMotion).
+    // A retained estimate of the Vsync interval is used. This estimate is
+    // updated every time we get two consecutive commits that may not have
+    // dropped frames.
+
+    // This accounts for arithmetic precision, clock precision, and clock
+    // de-sync between `base::TimeTicks::Now()` and `CACurrentMediaTime()`.
+    // Real world error shouldn't exceed 1 microsecond, 1e-5 (10
+    // microseconds) is a comfortably safe margin.
+    constexpr NSTimeInterval kMaxError = 1e-5;
+    constexpr NSTimeInterval kMaxSupportedFramePeriod = 1.0 / 10.0;
+
+    // If variable refresh rate is supported, keep the persistent frame period
+    // estimate up to date before computing deadlines to avoid miscalculating
+    // dropped frames.
+    if (_isVariableRefreshRate) {
+      // Because _currentFramePeriodEstimate may be wrong, we can't use
+      // it to determine with absolute certainty whether the current
+      // commit is dropping frames. In cases where the actual frame rate
+      // is faster than the current frame rate estimate, we may get a
+      // dropped frame estimate that is a false positive, and we don't want
+      // that to prevent us from re-estimating the frame rate. To solve this,
+      // we use an optimistic presentation deadline estimate that is based on
+      // the knowledge that the actual frame period is greater or equal to
+      // the device's minimum supported frame period.
+      NSTimeInterval optimisticEarliestPresentation =
+          isLowLatency ? nowInSeconds : nowInSeconds + _minSupportedFramePeriod;
+      if (targetTime < optimisticEarliestPresentation) {
+        // We know for sure that frames are being dropped.
+        _lastTargetPresentationTime = 0;
+      } else {
+        if (_lastTargetPresentationTime > 0) {
+          // Current commit and previous commit possibly did not drop frames.
+          NSTimeInterval delta = targetTime - _lastTargetPresentationTime;
+          // Outliers are possible since we don't know with absolute certainty
+          // that we're not currently dropping frames. We know for sure that
+          // delta is an outlier if it is above kMaxSupportedFramePeriod.
+          if (delta < kMaxSupportedFramePeriod + kMaxError) {
+            _currentFramePeriodEstimate = delta;
+          }
+        }
+        _lastTargetPresentationTime = targetTime;
+      }
+    }
+
+    // Establish pipeline latency: Standard rendering cycles are double
+    // buffered; whereas low-latency views bypass the OS's rendering queue,
+    // reducing latency by one frame.
+    NSTimeInterval pipelineMinLatency =
+        isLowLatency ? 0 : _currentFramePeriodEstimate;
+    NSTimeInterval earliestPresentation = nowInSeconds + pipelineMinLatency;
+
+    // Calculate missed deadlines. If the earliest possible presentation time
+    // exceeds the target time, the main thread was delayed and missed the
+    // window.
+    NSTimeInterval missedBy = earliestPresentation - targetTime;
+    int droppedFrames =
+        ceil((missedBy + kMaxError) / _currentFramePeriodEstimate);
+    droppedFrames = std::max(droppedFrames, 0);
+    _lastDroppedFrames = droppedFrames;
+    scanoutDelay += droppedFrames * _currentFramePeriodEstimate;
+
+    base::TimeTicks presentationTime = nowInTicks + base::Seconds(scanoutDelay);
+    TRACE_EVENT_INSTANT("ui", "Display", perfetto::NamedTrack("Display"),
+                        presentationTime,
+                        perfetto::Flow::ProcessScoped(_flowID), "controller",
+                        _className, "dropped_frames", droppedFrames);
+  }
+
+  _flowID = 0;
+}
 @end
