@@ -139,23 +139,80 @@ class SystemMenuModelBuilderSimplificationTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void VerifyMenuOrder(const ui::MenuModel* menu,
+                       const std::vector<int>& expected_commands) {
+    ASSERT_EQ(menu->GetItemCount(), expected_commands.size());
+
+    for (size_t i = 0; i < menu->GetItemCount(); ++i) {
+      if (menu->GetTypeAt(i) == ui::MenuModel::TYPE_SEPARATOR) {
+        EXPECT_EQ(-1, expected_commands[i]);
+      } else {
+        EXPECT_EQ(menu->GetCommandIdAt(i), expected_commands[i]);
+      }
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
+                       WindowsMenuOrder) {
+  ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->browser_widget()
+                            ->GetSystemMenuModel();
+
+  std::vector<int> expected_commands = {IDC_RESTORE_WINDOW,
+                                        IDC_MOVE_WINDOW,
+                                        IDC_SIZE_WINDOW,
+                                        IDC_MINIMIZE_WINDOW,
+                                        IDC_MAXIMIZE_WINDOW,
+                                        -1,  // Separator
+                                        IDC_NEW_TAB,
+                                        IDC_RESTORE_TAB,
+                                        IDC_BOOKMARK_ALL_TABS,
+                                        IDC_NAME_WINDOW,
+                                        -1,  // Separator
+                                        IDC_TAB_SEARCH_TOGGLE_PIN,
+                                        -1,  // Separator
+                                        IDC_TOGGLE_VERTICAL_TABS,
+                                        IDC_VERTICAL_TABS_SEND_FEEDBACK,
+                                        -1,  // Separator
+                                        IDC_TASK_MANAGER_CONTEXT_MENU,
+                                        -1,  // Separator
+                                        IDC_CLOSE_WINDOW};
+
+  VerifyMenuOrder(menu, expected_commands);
+}
+#endif
+
 #if BUILDFLAG(IS_LINUX)
+// On Linux the system menu is much more dynamic than that of Windows. In order
+// to accommodate all the variations that could run in the commit queue this
+// test would need to recreate the implementation of
+// SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow. Now that wouldn't be
+// a very good test so instead this one verifies what is known to be stable
+// (the top and botom of the menus).
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
                        LinuxMenuOrder) {
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
                             ->browser_widget()
                             ->GetSystemMenuModel();
 
-  ASSERT_GE(menu->GetItemCount(), 6u);
+  size_t count = menu->GetItemCount();
+  ASSERT_GE(count, 11u);  // Expect at least 11 items total
+
+  // Check top items
   EXPECT_EQ(menu->GetCommandIdAt(0), IDC_MINIMIZE_WINDOW);
   EXPECT_EQ(menu->GetCommandIdAt(1), IDC_MAXIMIZE_WINDOW);
   EXPECT_EQ(menu->GetCommandIdAt(2), IDC_RESTORE_WINDOW);
   EXPECT_EQ(menu->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(menu->GetCommandIdAt(4), IDC_NEW_TAB);
   EXPECT_EQ(menu->GetCommandIdAt(5), IDC_RESTORE_TAB);
+
+  // Check bottom items (reverse order)
+  EXPECT_EQ(menu->GetCommandIdAt(count - 1), IDC_CLOSE_WINDOW);
+  EXPECT_EQ(menu->GetTypeAt(count - 2), ui::MenuModel::TYPE_SEPARATOR);
 }
 #endif
