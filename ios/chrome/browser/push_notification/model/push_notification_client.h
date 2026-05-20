@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <optional>
 #import <string>
 #import <string_view>
 
@@ -27,6 +28,12 @@ struct ScheduledNotificationRequest {
   NSString* identifier;
   UNNotificationContent* content;
   base::TimeDelta time_interval;
+};
+
+// Holds the forced debug notification payload.
+struct ForcedNotificationPayload {
+  NSString* title;
+  NSString* body;
 };
 
 // The PushNotificationClient class is an abstract class that provides a
@@ -135,6 +142,17 @@ class PushNotificationClient {
   void CheckRateLimitBeforeSchedulingNotification(
       ScheduledNotificationRequest request,
       base::OnceCallback<void(NSError*)> completion);
+
+  // Builds a mock notification payload, title, and body for forced debugging
+  // of this client. Returns the payload if successfully built, std::nullopt
+  // otherwise.
+  //
+  // NOTE: If you implement this method to add forced triggering for a new push
+  // notification client, you must also update the settings bundle plist file
+  // (Experimental.plist) to expose the new type/subtype option in the iOS
+  // Experimental Settings menu.
+  virtual std::optional<ForcedNotificationPayload>
+  BuildForcedNotificationPayload(int subtype, NSMutableDictionary* user_info);
 
  protected:
   // The unique string that is used to associate incoming push notifications to

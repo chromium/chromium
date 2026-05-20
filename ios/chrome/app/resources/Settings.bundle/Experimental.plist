@@ -988,6 +988,85 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Forced Push Notifications</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Notification Type</string>
+			<key>Key</key>
+			<string>ForcedPushNotificationType</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<!-- Non-zero values must align exactly with their corresponding enum values in push_notification_client_id.h -->
+			<array>
+				<integer>0</integer>
+				<integer>8</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Cross-Platform Promos</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Subtype</string>
+			<key>Key</key>
+			<string>ForcedPushNotificationSubtype_8</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Password</string>
+				<string>Safe Browsing</string>
+				<string>Lens</string>
+				<string>Tab Groups</string>
+				<string>Price Tracking</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Trigger Delay</string>
+			<key>Key</key>
+			<string>ForcedPushNotificationDelay</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>5</integer>
+				<integer>15</integer>
+				<integer>30</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Immediate (0s)</string>
+				<string>5 seconds</string>
+				<string>15 seconds</string>
+				<string>30 seconds</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

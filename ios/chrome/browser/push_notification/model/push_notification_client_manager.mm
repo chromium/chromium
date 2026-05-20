@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/feature_list.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/desktop_to_mobile_promos/features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/send_tab_to_self/features.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_client.h"
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
 using send_tab_to_self::AreIOSTabRemindersEnabled;
@@ -162,6 +165,7 @@ void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
   for (auto& client : clients_) {
     client.second->OnSceneActiveForegroundBrowserReady();
   }
+  MaybeTriggerForcedNotification();
 }
 
 // Adds clients that operate on a per-Profile basis.
@@ -278,4 +282,70 @@ PushNotificationClient* PushNotificationClientManager::GetClientForNotification(
     }
   }
   return nullptr;
+}
+
+void PushNotificationClientManager::MaybeTriggerForcedNotification() {
+  int type = experimental_flags::GetForcedPushNotificationType();
+  if (type == 0) {
+    return;
+  }
+
+  // Prevent infinite trigger loops by only scheduling the forced notification
+  // once per app execution session.
+  static bool has_triggered_in_current_session = false;
+  if (has_triggered_in_current_session) {
+    return;
+  }
+
+  PushNotificationClientId client_id =
+      static_cast<PushNotificationClientId>(type);
+  auto client_it = clients_.find(client_id);
+  if (client_it == clients_.end()) {
+    return;
+  }
+
+  // The subtype preference key is dynamically resolved using the format
+  // ForcedPushNotificationSubtype_<TypeID>, where <TypeID> is the integer
+  // value of PushNotificationClientId (e.g. ForcedPushNotificationSubtype_8).
+  NSString* subtype_key =
+      [NSString stringWithFormat:@"ForcedPushNotificationSubtype_%d", type];
+  int subtype =
+      [[NSUserDefaults standardUserDefaults] integerForKey:subtype_key];
+
+  NSMutableDictionary* user_info = [NSMutableDictionary dictionary];
+  user_info[kPushNotificationClientIdKey] = @(type);
+  if (profile_) {
+    std::string name = profile_->GetProfileName();
+    user_info[kOriginatingProfileNameKey] = base::SysUTF8ToNSString(name);
+  }
+
+  std::optional<ForcedNotificationPayload> payload =
+      client_it->second->BuildForcedNotificationPayload(subtype, user_info);
+  if (!payload.has_value()) {
+    return;
+  }
+
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = payload->title;
+  content.body = payload->body;
+  content.sound = [UNNotificationSound defaultSound];
+  content.userInfo = user_info;
+
+  int delay = experimental_flags::GetForcedPushNotificationDelay();
+  UNTimeIntervalNotificationTrigger* local_trigger =
+      [UNTimeIntervalNotificationTrigger
+          triggerWithTimeInterval:std::max(1, delay)
+                          repeats:NO];
+
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString]
+                                           content:content
+                                           trigger:local_trigger];
+
+  [[UNUserNotificationCenter currentNotificationCenter]
+      addNotificationRequest:request
+       withCompletionHandler:nil];
+
+  has_triggered_in_current_session = true;
 }

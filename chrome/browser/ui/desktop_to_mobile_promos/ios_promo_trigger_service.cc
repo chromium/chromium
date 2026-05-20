@@ -9,8 +9,7 @@
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/desktop_to_mobile_promos/desktop_to_mobile_promo_utils.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -173,33 +172,9 @@ sync_pb::UnencryptedSharingMessage
 IOSPromoTriggerService::CreateNotificationPayload(
     desktop_to_mobile_promos::PromoType promo_type,
     const std::string& device_guid) {
-  int title_id;
-  int body_id;
-  switch (promo_type) {
-    case desktop_to_mobile_promos::PromoType::kPassword:
-      title_id = IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE;
-      body_id = IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_BODY;
-      break;
-    case desktop_to_mobile_promos::PromoType::kEnhancedBrowsing:
-      title_id = IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE;
-      body_id = IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_BODY;
-      break;
-    case desktop_to_mobile_promos::PromoType::kLens:
-      title_id = IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE;
-      body_id = IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_BODY;
-      break;
-    case desktop_to_mobile_promos::PromoType::kTabGroups:
-      title_id = IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_NOTIFICATION_TITLE;
-      body_id = IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_NOTIFICATION_BODY;
-      break;
-    case desktop_to_mobile_promos::PromoType::kPriceTracking:
-      title_id = IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_TITLE;
-      body_id = IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_BODY;
-      break;
-    case desktop_to_mobile_promos::PromoType::kAddress:
-    case desktop_to_mobile_promos::PromoType::kPayment:
-      NOTREACHED();
-  }
+  desktop_to_mobile_promos::PromoNotificationStringIDs string_ids =
+      desktop_to_mobile_promos::GetPromoNotificationStringIDs(promo_type);
+  CHECK(string_ids.title_id != 0 && string_ids.body_id != 0);
 
   sync_pb::UnencryptedSharingMessage sharing_message;
   sync_pb::DesktopToMobilePromoMessage* promo_message =
@@ -208,8 +183,8 @@ IOSPromoTriggerService::CreateNotificationPayload(
       promo_message->mutable_push_notification();
 
   promo_message->set_promo_type(static_cast<int>(promo_type));
-  push_notification->set_title(l10n_util::GetStringUTF8(title_id));
-  push_notification->set_text(l10n_util::GetStringUTF8(body_id));
+  push_notification->set_title(l10n_util::GetStringUTF8(string_ids.title_id));
+  push_notification->set_text(l10n_util::GetStringUTF8(string_ids.body_id));
   push_notification->set_push_notification_client_id(
       kCrossPlatformPromosClientId);
 

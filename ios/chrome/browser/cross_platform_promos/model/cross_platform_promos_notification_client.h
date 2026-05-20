@@ -25,6 +25,9 @@ class CrossPlatformPromosNotificationClient : public PushNotificationClient {
   std::optional<NotificationType> GetNotificationType(
       UNNotification* notification) override;
   void OnSceneActiveForegroundBrowserReady() override;
+  std::optional<ForcedNotificationPayload> BuildForcedNotificationPayload(
+      int subtype,
+      NSMutableDictionary* user_info) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
 
  private:

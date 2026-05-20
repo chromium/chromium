@@ -347,6 +347,13 @@ void PushNotificationClient::CheckRateLimitBeforeSchedulingNotification(
       getPendingNotificationRequestsWithCompletionHandler:completion_handler];
 }
 
+std::optional<ForcedNotificationPayload>
+PushNotificationClient::BuildForcedNotificationPayload(
+    int subtype,
+    NSMutableDictionary* user_info) {
+  return std::nullopt;
+}
+
 void PushNotificationClient::HandlePendingNotificationResult(
     ScheduledNotificationRequest notification,
     base::OnceCallback<void(NSError*)> completion,

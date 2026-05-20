@@ -4,6 +4,8 @@
 
 source_set("desktop_to_mobile_promos") {
   sources = [
+    "desktop_to_mobile_promo_utils.cc",
+    "desktop_to_mobile_promo_utils.h",
     "desktop_to_mobile_promos_metrics.cc",
     "desktop_to_mobile_promos_metrics.h",
     "features.cc",
@@ -13,6 +15,7 @@ source_set("desktop_to_mobile_promos") {
   ]
   deps = [
     "//base",
+    "//components/strings",
     "//components/sync_preferences:features",
   ]
 }

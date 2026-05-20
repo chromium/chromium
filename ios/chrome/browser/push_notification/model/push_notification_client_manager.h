@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
 class ProfileIOS;
-class PushNotificationClient;
 
 // A PushNotificationClientManager maintains a list of push notification enabled
 // features. The PushNotificationClientManger's purpose is to associate and
@@ -103,6 +102,10 @@ class PushNotificationClientManager {
   // construction of the app-wide manager instance. Considers feature flags
   // to determine which specific app-wide clients to add.
   void AddAppWidePushNotificationClients();
+
+  // Checks if a forced push notification is configured via experimental flags,
+  // and dispatches it locally.
+  void MaybeTriggerForcedNotification();
 
   // Task runner used for scheduling asynchronous tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

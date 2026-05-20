@@ -75,8 +75,6 @@ if (!is_android) {
 
     deps = [
       "//base",
-      "//chrome/app:branded_strings",
-      "//chrome/app:generated_resources",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sharing",
