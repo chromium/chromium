@@ -22,6 +22,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -411,6 +412,10 @@ public class NavigationTransitionsTest {
     @Test
     @MediumTest
     public void smokeTest() throws Throwable {
+        // TODO(crbug.com/515000238) Re-enable this test when resolved.
+        Assume.assumeFalse(
+                "Three button mode is Disabled.",
+                mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
 
