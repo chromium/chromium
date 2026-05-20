@@ -311,10 +311,6 @@ inline constexpr char kBrowsingHistorySimilarVisitsGroupingDescription[] =
     "Enables improvements to grouping of similar browsing history on the "
     "history page.";
 
-inline constexpr char kGlicTabRestorationName[] = "Glic Tab Restoration";
-inline constexpr char kGlicTabRestorationDescription[] =
-    "Enables Glic instance restore when tabs are restored.";
-
 inline constexpr char kGlicButtonAutoSummarizeName[] =
     "Glic Button Auto Summarize";
 inline constexpr char kGlicButtonAutoSummarizeDescription[] =
@@ -2881,7 +2877,6 @@ inline constexpr char kLensOverlaySidePanelOpenInNewTabName[] =
 inline constexpr char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
-
 inline constexpr char kLensOverlayPermissionBubbleAltName[] =
     "Lens overlay permission bubble alt appearance";
 inline constexpr char kLensOverlayPermissionBubbleAltDescription[] =
@@ -2936,7 +2931,6 @@ inline constexpr char kLensSearchReinvocationAffordanceName[] =
 inline constexpr char kLensSearchReinvocationAffordanceDescription[] =
     "Enables the Lens button in the AIM Searchbox for reinvocation of "
     "selection overlay.";
-
 
 inline constexpr char kLensVideoCitationsName[] = "Lens video citations";
 inline constexpr char kLensVideoCitationsDescription[] =
@@ -5883,7 +5877,6 @@ inline constexpr char kPCCTMinimumHeightName[] =
 inline constexpr char kPCCTMinimumHeightDescription[] =
     "When enabled, this sets the minimum "
     "height to 30% or 220dp, whichever is greater, for ephemeral pCCTs.";
-
 
 inline constexpr char kProtectedTabsAndroidName[] =
     "Enable protected tab for Android";

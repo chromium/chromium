@@ -216,7 +216,6 @@ class GlicInstanceCoordinatorBrowserTest
                  // Speeds up tests to have quicker warming.
                  {features::kGlicWebContentsWarmingDelay.name, "2s"},
              }},
-            {features::kGlicTabRestoration, {}},
             {enterprise_reporting::kGeminiInChromeUsageReporting, {}},
         },
         /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation});

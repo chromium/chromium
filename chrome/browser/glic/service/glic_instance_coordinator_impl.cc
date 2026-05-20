@@ -57,9 +57,6 @@ constexpr base::FeatureParam<base::TimeDelta> kGlicMaxRecencyValue{
     &kGlicMaxRecency, "duration", base::Minutes(30)};
 
 GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
-  if (!base::FeatureList::IsEnabled(features::kGlicTabRestoration)) {
-    return nullptr;
-  }
   if (!creation_event.new_tab) {
     return nullptr;
   }

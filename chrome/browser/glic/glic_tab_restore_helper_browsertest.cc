@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/glic_tab_restore_helper.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -37,15 +36,7 @@ class MockInstance : public GlicInstanceHelper::Instance {
   std::optional<std::string> conversation_id_;
 };
 
-class GlicTabRestoreHelperBrowserTest : public GlicBrowserTest {
- public:
-  GlicTabRestoreHelperBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicTabRestoration);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using GlicTabRestoreHelperBrowserTest = GlicBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
   auto* tab = CreateAndActivateTab(GURL("about:blank"));
