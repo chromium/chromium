@@ -26,6 +26,7 @@
 
 #include <limits.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/modp_b64/modp_b64.h"
@@ -66,7 +67,7 @@ bool Base64DecodeRaw(const StringView& in,
   if (output_size == MODP_B64_ERROR)
     return false;
 
-  out.resize(output_size);
+  out.resize(base::checked_cast<wtf_size_t>(output_size));
   return true;
 }
 
@@ -75,7 +76,7 @@ bool Base64DecodeRaw(const StringView& in,
 String Base64Encode(base::span<const uint8_t> data) {
   size_t encode_len = modp_b64_encode_data_len(data.size());
   CHECK_LE(data.size(), MODP_B64_MAX_INPUT_LEN);
-  StringBuffer<LChar> result(encode_len);
+  StringBuffer<LChar> result(base::checked_cast<wtf_size_t>(encode_len));
   if (encode_len == 0)
     return String();
   const size_t output_size = modp_b64_encode_data(
@@ -92,7 +93,7 @@ void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
     out.clear();
     return;
   }
-  out.resize(encode_len);
+  out.resize(base::checked_cast<wtf_size_t>(encode_len));
   const size_t output_size = modp_b64_encode_data(
       out.data(), reinterpret_cast<const char*>(data.data()), data.size());
   DCHECK_EQ(output_size, encode_len);

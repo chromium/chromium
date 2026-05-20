@@ -117,7 +117,8 @@ TEST(Base64Test, DecodeNoPaddingValidation) {
     bool expected_success = test.expected_out != nullptr;
     Vector<uint8_t> expected_out;
     if (expected_success) {
-      expected_out.insert(0, test.expected_out, strlen(test.expected_out));
+      expected_out.insert(0, test.expected_out,
+                          static_cast<wtf_size_t>(strlen(test.expected_out)));
     }
 
     bool success_8bit = Base64Decode(in, out);
@@ -179,7 +180,8 @@ TEST(Base64Test, ForgivingBase64Decode) {
     bool expected_success = test.expected_out != nullptr;
     Vector<uint8_t> expected_out;
     if (expected_success) {
-      expected_out.insert(0, test.expected_out, strlen(test.expected_out));
+      expected_out.insert(0, test.expected_out,
+                          static_cast<wtf_size_t>(strlen(test.expected_out)));
     }
 
     bool success_8bit = Base64Decode(in, out, Base64DecodePolicy::kForgiving);
