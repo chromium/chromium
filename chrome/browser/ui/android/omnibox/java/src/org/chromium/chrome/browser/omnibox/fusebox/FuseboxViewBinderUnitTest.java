@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
@@ -641,6 +643,60 @@ public class FuseboxViewBinderUnitTest {
         assertEquals("custom tool", getDynamicToolButton(0).getContentDescription());
     }
 
+    @Test
+    public void recentTabsDividersAndHeadersVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mRecentTabsDivider.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mRecentTabsDivider.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mRecentTabsHeader.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mRecentTabsHeader.getVisibility());
+    }
+
+    @Test
+    public void recentTabsCount_removesExcessButtons() {
+        PopupButtonData data1 =
+                new PopupButtonDataBuilder()
+                        .withText("tab 1")
+                        .withType(PopupButtonType.RECENT_TAB)
+                        .build();
+        PopupButtonData data2 =
+                new PopupButtonDataBuilder()
+                        .withText("tab 2")
+                        .withType(PopupButtonType.RECENT_TAB)
+                        .build();
+
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of(data1, data2));
+        assertEquals(2, mPopup.mRecentTabsContainer.getChildCount());
+
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of(data1));
+        assertEquals(1, mPopup.mRecentTabsContainer.getChildCount());
+    }
+
+    @Test
+    public void recentTabsBinding_truncationAndFavicon() {
+        Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.BLUE);
+        PopupButtonData data =
+                new PopupButtonDataBuilder()
+                        .withText("very long tab title")
+                        .withType(PopupButtonType.RECENT_TAB)
+                        .withCustomIcon(favicon)
+                        .build();
+
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of(data));
+        View buttonView = mPopup.mRecentTabsContainer.getChildAt(0);
+        TextView textView = buttonView.findViewById(R.id.action_text);
+        ImageView imageView = buttonView.findViewById(R.id.start_icon);
+
+        assertEquals("very long tab title", textView.getText());
+        assertEquals(1, textView.getMaxLines());
+        assertEquals(TextUtils.TruncateAt.END, textView.getEllipsize());
+        assertNotNull(imageView.getDrawable());
+    }
+
     private static class PopupButtonDataBuilder {
         private Runnable mOnClicked = CallbackUtils.emptyRunnable();
         private String mText = "test";
@@ -648,6 +704,7 @@ public class FuseboxViewBinderUnitTest {
         private boolean mEnabled = true;
         private boolean mSelected;
         private @PopupButtonType int mType = PopupButtonType.MODEL;
+        private @Nullable Bitmap mCustomIcon;
 
         PopupButtonDataBuilder withOnClicked(Runnable onClicked) {
             mOnClicked = onClicked;
@@ -679,16 +736,33 @@ public class FuseboxViewBinderUnitTest {
             return this;
         }
 
+        PopupButtonDataBuilder withCustomIcon(@Nullable Bitmap customIcon) {
+            mCustomIcon = customIcon;
+            return this;
+        }
+
         PopupButtonData build() {
-            return new PopupButtonData(
-                    (data) -> mOnClicked.run(),
-                    mText,
-                    mIconId,
-                    mEnabled,
-                    mSelected,
-                    mType,
-                    /* protoId= */ 0,
-                    /* hasColor= */ false);
+            if (mType == PopupButtonType.RECENT_TAB) {
+                return new PopupButtonData(
+                        (data) -> mOnClicked.run(),
+                        mText,
+                        mCustomIcon,
+                        mEnabled,
+                        mSelected,
+                        mType,
+                        /* protoId= */ 0,
+                        /* hasColor= */ mCustomIcon != null);
+            } else {
+                return new PopupButtonData(
+                        (data) -> mOnClicked.run(),
+                        mText,
+                        mIconId,
+                        mEnabled,
+                        mSelected,
+                        mType,
+                        /* protoId= */ 0,
+                        /* hasColor= */ false);
+            }
         }
     }
 

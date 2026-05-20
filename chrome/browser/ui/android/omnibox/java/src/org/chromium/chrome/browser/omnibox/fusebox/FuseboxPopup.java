@@ -59,6 +59,9 @@ class FuseboxPopup {
 
     /* package */ final View mModelsDivider;
     /* package */ final TextView mModelsHeader;
+    /* package */ final @Nullable TextView mRecentTabsHeader;
+    /* package */ final @Nullable ViewGroup mRecentTabsContainer;
+    /* package */ final @Nullable View mRecentTabsDivider;
     /* package */ final List<View> mAttachmentButtons;
     /* package */ final Set<View> mDynamicThemedButtons = new HashSet<>();
     /* package */ final List<View> mDividers;
@@ -185,6 +188,11 @@ class FuseboxPopup {
 
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
+
+        mRecentTabsDivider = contentView.findViewById(R.id.fusebox_recent_tabs_divider);
+        mRecentTabsHeader = contentView.findViewById(R.id.fusebox_recent_tabs_header);
+        mRecentTabsContainer = contentView.findViewById(R.id.fusebox_recent_tabs_container);
+
         mAttachmentButtons =
                 List.of(
                         mAddCurrentTab,
@@ -193,8 +201,15 @@ class FuseboxPopup {
                         mCameraButton,
                         mGalleryButton,
                         mFileButton);
-        mDividers = List.of(mToolsDivider, mModelsDivider);
-        mHeaders = List.of(mToolsHeader, mModelsHeader);
+
+        mDividers =
+                mRecentTabsDivider != null
+                        ? List.of(mRecentTabsDivider, mToolsDivider, mModelsDivider)
+                        : List.of(mToolsDivider, mModelsDivider);
+        mHeaders =
+                mRecentTabsHeader != null
+                        ? List.of(mRecentTabsHeader, mToolsHeader, mModelsHeader)
+                        : List.of(mToolsHeader, mModelsHeader);
     }
 
     void destroy() {
