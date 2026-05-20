@@ -159,7 +159,24 @@ class ZstdSourceStream : public FilterSourceStream {
     ZSTD_inBuffer input = {input_buffer->data(), input_buffer_size, 0};
     ZSTD_outBuffer output = {output_buffer->data(), output_buffer_size, 0};
 
-    const size_t result = ZSTD_decompressStream(dctx_.get(), &output, &input);
+    // Loop to satisfy the FilterSourceStream contract: returning 0 output
+    // bytes requires all input bytes to be consumed (filter_source_stream.h
+    // lines 105-106). Zstd may consume partial input without producing
+    // output (e.g., buffering frame headers in concatenated streams), so
+    // keep calling ZSTD_decompressStream until output is produced, all
+    // input is consumed, or an error occurs.
+    size_t result;
+    do {
+      const size_t prev_input_pos = input.pos;
+      result = ZSTD_decompressStream(dctx_.get(), &output, &input);
+
+      if (ZSTD_isError(result)) {
+        break;
+      }
+      if (input.pos == prev_input_pos && output.pos == 0) {
+        break;
+      }
+    } while (output.pos == 0 && input.pos < input.size);
 
     decoding_result_ = result;
 
@@ -175,7 +192,18 @@ class ZstdSourceStream : public FilterSourceStream {
         return base::unexpected(ERR_ZSTD_WINDOW_SIZE_TOO_BIG);
       }
       return base::unexpected(ERR_CONTENT_DECODING_FAILED);
-    } else if (input.pos < input.size) {
+    }
+
+    // Post-loop contract enforcement: if no output was produced and input
+    // remains unconsumed, zstd made no forward progress. Treat as a
+    // decoding error to satisfy the FilterSourceStream contract rather
+    // than returning 0 with unconsumed input.
+    if (output.pos == 0 && input.pos < input.size) {
+      decoding_status_ = ZstdDecodingStatus::kDecodingError;
+      return base::unexpected(ERR_CONTENT_DECODING_FAILED);
+    }
+
+    if (input.pos < input.size) {
       // Given a valid frame, zstd won't consume the last byte of the frame
       // until it has flushed all of the decompressed data of the frame.
       // Therefore, instead of checking if the return code is 0, we can

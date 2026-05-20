@@ -348,4 +348,127 @@ TEST_F(ZstdSourceStreamTest, WindowSizeTooBig) {
       static_cast<int>(ZstdDecodingStatus::kDecodingError), 1);
 }
 
+// Truncated zstd input: a valid frame header that is cut off early returns
+// success but with empty output (by design in net/).
+TEST_F(ZstdSourceStreamTest, TruncatedInputSucceedsWithEmptyOutput) {
+  constexpr uint8_t kTruncatedInput[] = {
+      0x28, 0xb5, 0x2f, 0xfd,  // zstd magic number
+      0x04,                    // frame header descriptor
+  };
+
+  source()->AddReadResult(kTruncatedInput, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
+
+  std::string actual_output = ReadStreamUntilDone();
+  EXPECT_TRUE(actual_output.empty());
+}
+
+// Completely corrupt data (no valid zstd magic) should return a decoding error.
+TEST_F(ZstdSourceStreamTest, CorruptInputReturnsError) {
+  constexpr uint8_t kCorruptInput[] = {
+      0xde, 0xad, 0xbe, 0xef, 0x01, 0x02, 0x03, 0x04,
+      0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+  };
+
+  source()->AddReadResult(kCorruptInput, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
+
+  TestCompletionCallback callback;
+  int bytes_read = ReadStream(callback.callback());
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, bytes_read);
+}
+
+// Small output buffer: ensure decompression completes correctly even when the
+// output buffer is much smaller than the decompressed data.
+TEST_F(ZstdSourceStreamTest, SmallOutputBuffer) {
+  source()->AddReadResult(encoded_span(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
+
+  // Use a tiny output buffer (16 bytes) to force multiple FilterData calls.
+  constexpr size_t kSmallBufferSize = 16;
+  scoped_refptr<IOBufferWithSize> small_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kSmallBufferSize);
+
+  std::string actual_output;
+  while (true) {
+    TestCompletionCallback callback;
+    int bytes_read = zstd_stream()->Read(small_buffer.get(), kSmallBufferSize,
+                                         callback.callback());
+    if (bytes_read <= OK) {
+      break;
+    }
+    actual_output.append(base::as_string_view(small_buffer->first(bytes_read)));
+  }
+
+  EXPECT_EQ(source_data_len(), actual_output.size());
+  EXPECT_EQ(source_data(), actual_output);
+}
+
+// Skippable frame followed by a real zstd frame. Regression test for
+// crbug.com/513050932: zstd can consume a complete skippable frame with 0
+// output while leaving the following frame unconsumed. FilterData must not
+// return 0 until the remaining input is consumed.
+TEST_F(ZstdSourceStreamTest, SkippableFrameFollowedByCompressedFrame) {
+  constexpr uint8_t kSkippableFrame[] = {
+      0x50, 0x2a, 0x4d, 0x18,  // skippable magic
+      0x04, 0x00, 0x00, 0x00,  // size 4
+      0xde, 0xad, 0xbe, 0xef,  // payload
+  };
+
+  std::vector<uint8_t> input_data(std::begin(kSkippableFrame),
+                                  std::end(kSkippableFrame));
+  input_data.insert(input_data.end(), encoded_span().begin(),
+                    encoded_span().end());
+
+  source()->AddReadResult(input_data, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
+
+  std::string actual_output = ReadStreamUntilDone();
+  EXPECT_EQ(source_data_len(), actual_output.size());
+  EXPECT_EQ(source_data(), actual_output);
+}
+
+// Regression test: cross-format data (DCB/Brotli magic
+// bytes) fed through the zstd-with-dictionary pipeline. This mirrors the fuzzer
+// scenario where a malicious server sends Content-Encoding: dcz but the body
+// contains DCB-format (Brotli dictionary) data. The zstd decoder partially
+// consumes input while producing zero output, which previously violated the
+// FilterSourceStream contract.
+TEST_F(ZstdSourceStreamTest, CrossFormatDcbBytesInZstdWithDictionary) {
+  // DCB magic (0xff 0x44 0x43 0x42) + fake SHA-256 hash + garbage payload.
+  // This is what a DCB (Brotli dictionary) response body looks like, but we
+  // feed it to the Zstd decoder.
+  constexpr uint8_t kDcbMagicAndGarbage[] = {
+      0xff, 0x44, 0x43, 0x42,                          // DCB magic
+      0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,  // fake SHA-256 (32 B)
+      0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+      0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+      0xaa, 0xaa, 0xaa, 0xaa, 0x28, 0xb5, 0x2f, 0xfd,  // zstd magic (bait)
+      0x00, 0x00, 0x00, 0x00,                          // garbage
+      0x45, 0x45, 0x45, 0x45, 0x45, 0x45, 0x45, 0x45, 0x01, 0x00,
+      0x00, 0x14, 0x45, 0x45, 0x00, 0x00,
+  };
+
+  // Use a small dictionary (arbitrary bytes).
+  const std::string dictionary_data(256, 'D');
+  scoped_refptr<net::IOBuffer> dictionary_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(dictionary_data);
+
+  auto source = std::make_unique<MockSourceStream>();
+  source->set_expect_all_input_consumed(false);
+  source->AddReadResult(kDcbMagicAndGarbage, OK, MockSourceStream::SYNC);
+  source->AddReadResult(base::span<uint8_t>(), OK, MockSourceStream::SYNC);
+
+  std::unique_ptr<SourceStream> zstd_stream =
+      CreateZstdSourceStreamWithDictionary(std::move(source), dictionary_buffer,
+                                           dictionary_data.size());
+
+  scoped_refptr<IOBufferWithSize> out_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback callback;
+  int bytes_read = zstd_stream->Read(out_buffer.get(), kDefaultBufferSize,
+                                     callback.callback());
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, bytes_read);
+}
+
 }  // namespace net
