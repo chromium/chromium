@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/journey_logger.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -69,8 +70,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestWindowSizeTest,
 
   histograms.ExpectUniqueSample(
       "PaymentRequest.WindowSizeCheckRejectionReason",
-      PaymentRequestDialogView::WindowSizeCheckRejectionReason::kRejectedAtShow,
-      1);
+      JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtShow, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestWindowSizeTest, AbortOnResizeToTooSmall) {
@@ -101,9 +101,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestWindowSizeTest, AbortOnResizeToTooSmall) {
 
   histograms.ExpectUniqueSample(
       "PaymentRequest.WindowSizeCheckRejectionReason",
-      PaymentRequestDialogView::WindowSizeCheckRejectionReason::
-          kRejectedAtResize,
-      1);
+      JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize, 1);
 }
 
 }  // namespace payments

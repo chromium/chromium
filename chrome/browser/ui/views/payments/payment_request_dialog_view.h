@@ -60,19 +60,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   METADATA_HEADER(PaymentRequestDialogView, views::DialogDelegateView)
 
  public:
-  // The reason why the browser window size check failed.
-  enum class WindowSizeCheckRejectionReason {
-    // The check failed during the initial ShowDialog() call.
-    kRejectedAtShow = 0,
-    // The check failed when transitioning to a Payment Handler (which may
-    // require more space).
-    kRejectedAtPaymentHandlerTransition = 1,
-    // The check failed because the browser window was resized to be too small
-    // while the dialog was already open.
-    kRejectedAtResize = 2,
-    kMaxValue = kRejectedAtResize,
-  };
-
   class ObserverForTest {
    public:
     virtual void OnDialogOpened() = 0;
