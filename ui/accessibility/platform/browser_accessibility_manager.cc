@@ -36,6 +36,23 @@
 
 namespace ui {
 
+namespace {
+
+bool CanFireGeneratedEventOnTarget(AXEventGenerator::Event event_type,
+                                   BrowserAccessibility* event_target) {
+  if (event_target->CanFireEvents()) {
+    return true;
+  }
+
+  // MENU_POPUP_END can be fired as a menu changes to ignored. Keep that close
+  // event even though the target can no longer fire normal events.
+  return event_type == AXEventGenerator::Event::MENU_POPUP_END &&
+         event_target->GetRole() == ax::mojom::Role::kMenu &&
+         event_target->node()->IsIgnored();
+}
+
+}  // namespace
+
 AXTreeUpdate MakeAXTreeUpdateForTesting(
     const AXNodeData& node1,
     const AXNodeData& node2 /* = AXNodeData() */,
@@ -611,8 +628,10 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
     if (!event_target)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
-    if (!event_target->CanFireEvents())
+    if (!CanFireGeneratedEventOnTarget(targeted_event.event_params->event,
+                                       event_target)) {
       continue;
+    }
 
     // IsDescendantOf() also returns true in the case of equality.
     if (focus && focus != event_target && focus->IsDescendantOf(event_target)) {
@@ -652,8 +671,10 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
     if (!event_target)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
-    if (!event_target->CanFireEvents())
+    if (!CanFireGeneratedEventOnTarget(targeted_event.event_params->event,
+                                       event_target)) {
       continue;
+    }
 
     FireGeneratedEvent(targeted_event.event_params->event,
                        event_target->node());

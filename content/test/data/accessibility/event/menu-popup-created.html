@@ -1,0 +1,49 @@
+<!--
+@AURALINUX-DENY:*
+@AURALINUX-ALLOW:STATE-CHANGE:SHOWING*
+@MAC-DENY:*
+@MAC-ALLOW:AXMenu*
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_SYSTEM_MENUPOPUP*
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:Menu*
+-->
+<!doctype html>
+<html>
+<body>
+<div id="container"></div>
+<script>
+  const container = document.getElementById("container");
+
+  function createMenu(id, display) {
+    const menu = document.createElement("div");
+    menu.id = id;
+    menu.setAttribute("role", "menu");
+    menu.setAttribute("aria-label", "Dynamic menu");
+    menu.style.display = display;
+
+    const item = document.createElement("div");
+    item.setAttribute("role", "menuitem");
+    item.textContent = "Item";
+    menu.appendChild(item);
+
+    return menu;
+  }
+
+  const go_passes = [
+    () => container.appendChild(createMenu("visible-menu", "block")),
+    () => document.getElementById("visible-menu").remove(),
+    () => container.appendChild(createMenu("hidden-menu", "none")),
+    () => document.getElementById("hidden-menu").style.display = "block",
+    () => document.getElementById("hidden-menu").style.display = "none",
+    () => document.getElementById("hidden-menu").remove(),
+  ];
+
+  let current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!--
+@AURALINUX-DENY:*
+@AURALINUX-ALLOW:STATE-CHANGE:SHOWING*
+@MAC-DENY:*
+@MAC-ALLOW:AXMenu*
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_SYSTEM_MENUPOPUP*
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:Menu*
+-->
+<!doctype html>
+<html>
+<body>
+<div role="menu" aria-label="Static menu">
+  <div role="menuitem">Item</div>
+</div>
+<div style="display: none">
+  <div id="sentinel" aria-hidden="false">sentinel</div>
+</div>
+<script>
+  let current_pass = 0;
+  function go() {
+    ++current_pass;
+    document.getElementById('sentinel').setAttribute(
+        'aria-hidden', current_pass === 1 ? 'true' : 'false');
+    return current_pass < 2;
+  }
+</script>
+</body>
+</html>

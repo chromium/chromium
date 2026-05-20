@@ -1408,6 +1408,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsMenuPopupCreated) {
+  RunEventTest(FILE_PATH_LITERAL("menu-popup-created.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsMenuPopupStatic) {
+  RunEventTest(FILE_PATH_LITERAL("menu-popup-static.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMenubarShowHideMenus) {
   RunEventTest(FILE_PATH_LITERAL("menubar-show-hide-menus.html"));
 }

@@ -322,10 +322,11 @@ void AXTreeManager::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   if (node == GetLastFocusedNode())
     SetLastFocusedNode(nullptr);
 
-  // We fire these here, immediately, to ensure we can send platform
-  // notifications prior to the actual destruction of the object.
-  if (node->GetRole() == ax::mojom::Role::kMenu)
+  // If an exposed menu is deleted, close it before its platform object goes
+  // away. Menus hidden first already closed when their ignored state changed.
+  if (node->GetRole() == ax::mojom::Role::kMenu && !node->IsIgnored()) {
     FireGeneratedEvent(AXEventGenerator::Event::MENU_POPUP_END, node);
+  }
 }
 
 void AXTreeManager::OnAtomicUpdateFinished(

@@ -1016,6 +1016,13 @@ void AXEventGenerator::OnAtomicUpdateFinished(
       continue;
     }
 
+    // This catches menus inserted already visible; menus shown later are
+    // handled when their ignored state changes.
+    if (!root_changed && change.node->GetRole() == ax::mojom::Role::kMenu &&
+        !change.node->IsIgnored()) {
+      AddEvent(change.node, Event::MENU_POPUP_START);
+    }
+
     if (change.node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
         (change.type == SUBTREE_CREATED || change.type == NODE_CREATED)) {
       OnBoolAttributeChanged(tree, change.node,

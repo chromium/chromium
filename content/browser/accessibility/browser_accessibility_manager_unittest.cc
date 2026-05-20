@@ -8,9 +8,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "ui/accessibility/ax_tree_observer.h"
@@ -34,6 +36,21 @@
 namespace content {
 
 namespace {
+
+struct FiredGeneratedEvent {
+  ui::AXEventGenerator::Event event_type;
+  ui::AXNodeID node_id;
+};
+
+#if !BUILDFLAG(IS_ANDROID)
+gfx::AcceleratedWidget MakeAcceleratedWidget(uintptr_t value) {
+#if BUILDFLAG(IS_WIN)
+  return reinterpret_cast<gfx::AcceleratedWidget>(value);
+#else
+  return static_cast<gfx::AcceleratedWidget>(value);
+#endif
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class CountingAXTreeObserver : public ui::AXTreeObserver {
  public:
@@ -1416,6 +1433,58 @@ TEST_F(BrowserAccessibilityManagerTest, TestShouldFireEventForNode) {
   EXPECT_FALSE(manager->ShouldFireEventForNode(manager->GetFromID(1111)));
 #endif
 }
+
+// Desktop keeps MENU_POPUP_END on the menu that just became ignored. Android
+// retargets generated events, so it does not use this exact path.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(BrowserAccessibilityManagerTest,
+       MenuPopupEndFiresWhenMenuBecomesIgnored) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  ui::AXNodeData menu;
+  menu.id = 2;
+  menu.role = ax::mojom::Role::kMenu;
+
+  ui::AXTreeUpdate initial_tree = MakeAXTreeUpdateForTesting(root, menu);
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      MakeAcceleratedWidget(1);
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          initial_tree, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  std::vector<FiredGeneratedEvent> fired_events;
+  manager->SetGeneratedEventCallbackForTesting(base::BindLambdaForTesting(
+      [&](ui::BrowserAccessibilityManager*,
+          ui::AXEventGenerator::Event event_type,
+          ui::AXNodeID node_id) {
+        fired_events.push_back({event_type, node_id});
+      }));
+
+  menu.AddState(ax::mojom::State::kIgnored);
+  ui::AXTreeUpdate hide_menu_update = MakeAXTreeUpdateForTesting(root, menu);
+  hide_menu_update.tree_data.tree_id = manager->GetTreeID();
+  hide_menu_update.tree_data.focused_tree_id = manager->GetTreeID();
+
+  ui::AXUpdatesAndEvents events;
+  events.updates = {hide_menu_update};
+  ASSERT_TRUE(manager->OnAccessibilityEvents(events));
+
+  const ui::AXNodeID expected_menu_popup_end_node_id = menu.id;
+
+  bool found_menu_popup_end = false;
+  for (const FiredGeneratedEvent& event : fired_events) {
+    if (event.event_type == ui::AXEventGenerator::Event::MENU_POPUP_END &&
+        event.node_id == expected_menu_popup_end_node_id) {
+      found_menu_popup_end = true;
+    }
+  }
+  EXPECT_TRUE(found_menu_popup_end);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
   ui::AXNodeData root;

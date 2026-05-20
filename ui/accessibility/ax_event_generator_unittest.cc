@@ -1377,6 +1377,114 @@ TEST(AXEventGeneratorTest, RoleChanged) {
                                    AXEventGenerator::Event::ROLE_CHANGED, 1)));
 }
 
+TEST(AXEventGeneratorTest, MenuPopupStartOnDynamicCreation) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update = initial_state;
+  update.nodes[0].child_ids.push_back(2);
+  update.nodes.resize(2);
+  update.nodes[1].id = 2;
+  update.nodes[1].role = ax::mojom::Role::kMenu;
+  ASSERT_TRUE(tree.Unserialize(update));
+
+  EXPECT_THAT(event_generator,
+              IsSupersetOf({HasEventAtNode(
+                  AXEventGenerator::Event::MENU_POPUP_START, 2)}));
+}
+
+TEST(AXEventGeneratorTest, MenuPopupStartNotFiredOnInitialTreeCreation) {
+  AXTree tree;
+  AXEventGenerator event_generator(&tree);
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kMenu;
+  ASSERT_TRUE(tree.Unserialize(initial_state));
+
+  for (const auto& event : event_generator) {
+    EXPECT_FALSE(event.event_params->event ==
+                     AXEventGenerator::Event::MENU_POPUP_START &&
+                 event.node_id == 2);
+  }
+}
+
+TEST(AXEventGeneratorTest, MenuPopupStartNotFiredForIgnoredMenuCreation) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update = initial_state;
+  update.nodes[0].child_ids.push_back(2);
+  update.nodes.resize(2);
+  update.nodes[1].id = 2;
+  update.nodes[1].role = ax::mojom::Role::kMenu;
+  update.nodes[1].AddState(ax::mojom::State::kIgnored);
+  ASSERT_TRUE(tree.Unserialize(update));
+
+  for (const auto& event : event_generator) {
+    EXPECT_FALSE(event.event_params->event ==
+                     AXEventGenerator::Event::MENU_POPUP_START &&
+                 event.node_id == 2);
+  }
+}
+
+TEST(AXEventGeneratorTest, MenuPopupStartOnIgnoredToUnignored) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kMenu state=kIgnored
+  )HTML"));
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update = initial_state;
+  update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
+  ASSERT_TRUE(tree.Unserialize(update));
+
+  EXPECT_THAT(event_generator,
+              IsSupersetOf({HasEventAtNode(
+                  AXEventGenerator::Event::MENU_POPUP_START, 2)}));
+}
+
+TEST(AXEventGeneratorTest, MenuPopupEndOnUnignoredToIgnored) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kMenu
+  )HTML"));
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update = initial_state;
+  update.nodes[1].AddState(ax::mojom::State::kIgnored);
+  ASSERT_TRUE(tree.Unserialize(update));
+
+  EXPECT_THAT(event_generator,
+              IsSupersetOf({HasEventAtNode(
+                  AXEventGenerator::Event::MENU_POPUP_END, 2)}));
+}
+
 TEST(AXEventGeneratorTest, MenuItemSelected) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;

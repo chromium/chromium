@@ -1,0 +1,9 @@
+STATE-CHANGE:SHOWING:TRUE role=ROLE_MENU name='Dynamic menu' ENABLED,SENSITIVE,SHOWING,VERTICAL,VISIBLE
+=== Start Continuation ===
+STATE-CHANGE:SHOWING:FALSE role=ROLE_MENU name='Dynamic menu' ENABLED,SENSITIVE,SHOWING,VERTICAL,VISIBLE
+=== Start Continuation ===
+=== Start Continuation ===
+STATE-CHANGE:SHOWING:TRUE role=ROLE_MENU name='Dynamic menu' ENABLED,SENSITIVE,SHOWING,VERTICAL,VISIBLE
+=== Start Continuation ===
+STATE-CHANGE:SHOWING:FALSE role=ROLE_MENU name='(null)' ENABLED,SENSITIVE
+=== Start Continuation ===

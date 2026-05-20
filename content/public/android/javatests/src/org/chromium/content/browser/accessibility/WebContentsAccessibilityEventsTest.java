@@ -1202,6 +1202,18 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_menuPopupCreated() {
+        performTest("menu-popup-created.html", "menu-popup-created-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_menuPopupStatic() {
+        performTest("menu-popup-static.html", "menu-popup-static-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_multipleAriaPropertiesChanged() {
         performTest(
                 "multiple-aria-properties-changed.html",

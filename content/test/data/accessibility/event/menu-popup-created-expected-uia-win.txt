@@ -1,0 +1,11 @@
+MenuOpened on role=menu, name=Dynamic menu
+=== Start Continuation ===
+MenuClosed 
+MenuClosed 
+=== Start Continuation ===
+=== Start Continuation ===
+MenuOpened on role=menu, name=Dynamic menu
+=== Start Continuation ===
+MenuClosed 
+MenuClosed 
+=== Start Continuation ===
