@@ -395,6 +395,7 @@
 :host([energy-effect-enabled_][in-tool-mode_]) #composebox::part(context-menu-entrypoint-icon),
 :host([energy-effect-enabled_][in-tool-mode_]) #composebox::part(entrypoint-button) {
   --cr-composebox-entrypoint-background-color: transparent;
+  --cr-icon-button-hover-background-color: transparent;
 }
 
 :host([energy-effect-enabled_]) #composebox::part(entrypoint-button)::before {
@@ -418,6 +419,9 @@
 
 #composebox::part(cancel-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-cancel-button);
+  --cr-icon-button-hover-background-color:
+      var(--color-composebox-cancel-button-hover-background,
+          var(--color-composebox-hover));
   /*
    * Inner icon size of cancel button == cancel button size,
    * unlike other buttons.
@@ -436,6 +440,8 @@
 
 #composebox::part(lens-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button);
+  --cr-icon-button-hover-background-color:
+      var(--color-composebox-lens-button-hover-background);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
   /* Override the expanding fade in animation to make the icon appear instantly. */
