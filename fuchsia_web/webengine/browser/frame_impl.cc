@@ -366,6 +366,12 @@ class AudioStreamBrokerFactory final
       mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client)
       final {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+    if (params.effects() & media::AudioParameters::FUCHSIA_RENDER_USAGE_MASK) {
+      DLOG(ERROR) << "Renderer requested forbidden Fuchsia effect flags.";
+      return nullptr;
+    }
+
     media::AudioParameters params_with_effects = params;
     if (output_usage_) {
       params_with_effects.set_effects(

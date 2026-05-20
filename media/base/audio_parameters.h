@@ -197,26 +197,30 @@ class MEDIA_EXPORT AudioParameters {
     ALLOW_DSP_NOISE_SUPPRESSION = 1 << 10,
     ALLOW_DSP_AUTOMATIC_GAIN_CONTROL = 1 << 11,
 
-    FUCHSIA_RENDER_USAGE_BACKGROUND = 1 << 12,
-    FUCHSIA_RENDER_USAGE_MEDIA = 1 << 13,
-    FUCHSIA_RENDER_USAGE_INTERRUPTION = 1 << 14,
-    FUCHSIA_RENDER_USAGE_SYSTEM_AGENT = 1 << 15,
-    FUCHSIA_RENDER_USAGE_COMMUNICATION = 1 << 16,
+    // Bits 12-15 are used to store the "usage" value describing an audio
+    // stream.
+    FUCHSIA_RENDER_USAGE_SHIFT = 12,
+    FUCHSIA_RENDER_USAGE_MASK = 0xF << FUCHSIA_RENDER_USAGE_SHIFT,
+    FUCHSIA_RENDER_USAGE_BACKGROUND = 1 << FUCHSIA_RENDER_USAGE_SHIFT,
+    FUCHSIA_RENDER_USAGE_MEDIA = 2 << FUCHSIA_RENDER_USAGE_SHIFT,
+    FUCHSIA_RENDER_USAGE_INTERRUPTION = 3 << FUCHSIA_RENDER_USAGE_SHIFT,
+    FUCHSIA_RENDER_USAGE_SYSTEM_AGENT = 4 << FUCHSIA_RENDER_USAGE_SHIFT,
+    FUCHSIA_RENDER_USAGE_COMMUNICATION = 5 << FUCHSIA_RENDER_USAGE_SHIFT,
 
-    IGNORE_UI_GAINS = 1 << 17,
+    IGNORE_UI_GAINS = 1 << 16,
 
-    VOICE_ISOLATION_SUPPORTED = 1 << 18,  // Set when system voice isolation is
+    VOICE_ISOLATION_SUPPORTED = 1 << 17,  // Set when system voice isolation is
                                           // supported.
     CLIENT_CONTROLLED_VOICE_ISOLATION =
-        1 << 19,                // Set when client forces to
+        1 << 18,                // Set when client forces to
                                 // enable/disable the platform voice
                                 // isolation effects. False indicates
                                 // to use platform default state.
-    VOICE_ISOLATION = 1 << 20,  // Enable/Disable platform voice isolation.
+    VOICE_ISOLATION = 1 << 19,  // Enable/Disable platform voice isolation.
                                 // Only meaningful when
                                 // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
 
-    DEEP_NOISE_SUPPRESSION = 1 << 21,  // Also called Voice Focus on Windows.
+    DEEP_NOISE_SUPPRESSION = 1 << 20,  // Also called Voice Focus on Windows.
   };
 
   struct HardwareCapabilities {

@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "audio_parameters.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/channel_layout.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,6 +195,18 @@ TEST(AudioParameters, Constructor_CopyChannelLayoutConfig) {
   EXPECT_EQ(expected_channels, params2.channels());
   EXPECT_EQ(expected_layout, params2.channel_layout());
   EXPECT_TRUE(params2.IsValid());
+}
+
+TEST(AudioParameters, EffectsMaskToStringFuchsiaUsage) {
+  // Fuchsia effects values are represented by an integer encoded in a small
+  // range of bits, so verify that the to-string helper correctly decodes the
+  // integer to a single item, given that bit values overlap.
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION),
+            "FUCHSIA_RENDER_USAGE_COMMUNICATION");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION),
+            "FUCHSIA_RENDER_USAGE_INTERRUPTION");
 }
 
 TEST(AudioOutputBufferParametersHelperTest, LoadAndWriteGlitchInfo) {
