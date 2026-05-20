@@ -45,6 +45,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
+import androidx.annotation.PluralsRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -133,6 +134,31 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
+
+// =========================================================================
+// FILE STRUCTURE & TESTING GUIDELINES
+// =========================================================================
+//
+// This test class is divided into three main sections:
+//
+// 1. Menu item order tests:
+//    - These tests verify that the context menu items appear in the correct
+//      and expected order under various conditions (e.g., standard,
+//      incognito, single vs. multiple tabs selected).
+//    - They only assert the pure state and ordering of the items, and do not
+//      test callback behaviors, modifications, or conditional absences.
+//
+// 2. Menu item behavior tests:
+//    - These tests verify the callbacks and interactive behavior of menu items.
+//    - This includes asserting whether certain items should be absent/present
+//      under specific conditions, submenu verification, or dynamic updates
+//      to menu items (e.g., pin/unpin state changes).
+//
+// 3. Utility methods:
+//    - Private helper and setup methods shared across the test suite to mock
+//      tabs, populate models, and build menu states.
+//
+// =========================================================================
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.DATA_SHARING,
@@ -402,11 +428,22 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     public void testListMenuItems_tabInGroup() {
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
 
         // List item 1
         assertEquals(
@@ -474,17 +511,48 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 10
+        assertEquals(
+                R.id.close_all_tabs_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 11
+        assertEquals(
+                R.id.close_other_tabs_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 12
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
     @Feature("Tab Strip Context Menu")
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabInGroup_multipleTabs() {
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mNonUrlTab,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, NON_URL_TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
 
         // List item 1
         assertEquals(
@@ -547,6 +615,16 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 9
+        assertEquals(
+                R.id.close_other_tabs_menu_id,
+                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 10
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -554,6 +632,17 @@ public class TabContextMenuCoordinatorUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup() {
         MultiWindowUtils.setInstanceCountForTesting(1);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList,
@@ -561,7 +650,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
 
         // List item 1
         assertEquals(
@@ -609,6 +698,21 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 10
+        assertEquals(
+                R.id.close_all_tabs_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 11
+        assertEquals(
+                R.id.close_other_tabs_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 12
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -616,6 +720,22 @@ public class TabContextMenuCoordinatorUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_multipleTabs() {
         MultiWindowUtils.setInstanceCountForTesting(1);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mNonUrlTab,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList,
@@ -623,7 +743,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
 
         // List item 1
         assertEquals(
@@ -666,495 +786,16 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup_multipleWindows() {
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                Collections.singletonList(WINDOW_TITLE_2),
-                mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
-                modelList.get(6).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 9
-        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
+                R.id.close_other_tabs_menu_id,
+                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_tabOutsideOfGroup_multipleWindows_preventMoveToNewWindow() {
-        int instanceType = ACTIVE;
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            instanceType |= REGULAR;
-        }
-        MultiWindowUtils.setInstanceCountForTesting(2);
-        when(mMultiInstanceManager.getInstanceInfo(instanceType))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
-
-        // Set total tab count to be equal to the move tab count (1).
-        mTotalTabCountSupplier.set(1);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                Collections.singletonList(WINDOW_TITLE_2),
-                mActivity,
-                /* isIncognito= */ false,
-                /* expectNewWindow= */ false);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_incognito_multipleWindows() {
-        setupWithIncognito(/* incognito= */ true);
-        initializeCoordinator();
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_INCOGNITO));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                Collections.singletonList(INCOGNITO_WINDOW_TITLE),
-                mActivity,
-                /* isIncognito= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void
-            testListMenuItems_incognito_multipleWindows_filtersNonIncognito_incognitoOnlyWindows() {
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        setupWithIncognito(/* incognito= */ true);
-        initializeCoordinator();
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | OFF_THE_RECORD))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_INCOGNITO));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
-        // INSTANCE_INFO_INCOGNITO should be shown.
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                Collections.singletonList(INCOGNITO_WINDOW_TITLE),
-                mActivity,
-                /* isIncognito= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_regular_multipleWindows_filtersIncognito_incognitoOnlyWindows() {
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        setupWithIncognito(/* incognito= */ false);
-        initializeCoordinator();
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | REGULAR))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
-        // INSTANCE_INFO_2 should be shown.
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                Collections.singletonList(WINDOW_TITLE_2),
-                mActivity,
-                /* isIncognito= */ false);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void
-            testListMenuItems_incognito_multipleWindows_filtersNonIncognito_mixedIncognitoWindows() {
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
-        setupWithIncognito(/* incognito= */ true);
-        initializeCoordinator();
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
-        // Other windows should not be filtered out since they can accommodate both incognito and
-        // regular tabs.
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                List.of(WINDOW_TITLE_2, INCOGNITO_WINDOW_TITLE),
-                mActivity,
-                /* isIncognito= */ true);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_regular_multipleWindows_filtersIncognito_mixedIncognitoWindows() {
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
-        setupWithIncognito(/* incognito= */ false);
-        initializeCoordinator();
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
-        // Other windows should not be filtered out since they can accommodate both incognito and
-        // regular tabs.
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                List.of(WINDOW_TITLE_2, INCOGNITO_WINDOW_TITLE),
-                mActivity,
-                /* isIncognito= */ false);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup_multipleWindows_multipleTabs() {
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
-
-        // List item 1
+        // List item 10
         assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tabs_to_another_window,
-                Collections.singletonList(WINDOW_TITLE_2),
-                mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_belowApi31() {
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 3
-        assertEquals(DIVIDER, modelList.get(2).type);
-
-        // List item 4
-        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_belowApi31_multipleTabs() {
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
-
-        // List item 3
-        assertEquals(DIVIDER, modelList.get(2).type);
-
-        // List item 4
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(3).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_nonShareableUrl() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(NON_URL_TAB_ID, Collections.singletonList(NON_URL_TAB_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList, 2, R.plurals.move_tab_to_another_window, List.of(), mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                R.id.unmute_site_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1162,6 +803,17 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testListMenuItems_incognito() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList,
@@ -1169,7 +821,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
 
         // List item 1
         assertEquals(
@@ -1193,6 +845,15 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(1).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 3
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                2,
+                R.plurals.move_tab_to_another_window,
+                List.of(),
+                mActivity,
+                /* isIncognito= */ true);
+
+        // List item 4
         assertEquals(DIVIDER, modelList.get(3).type);
         assertEquals(
                 "Expected divider to have COLOR_ID set to R.color.divider_color_light in"
@@ -1200,7 +861,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.color.divider_color_light,
                 modelList.get(3).model.get(COLOR_ID));
 
-        // List item 4
+        // List item 5
         assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
@@ -1211,7 +872,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(4).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
-        // List item 5
+        // List item 6
         assertEquals(
                 mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(5).model.get(TITLE));
@@ -1225,7 +886,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(5).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
-        // List item 6
+        // List item 7
         assertEquals(
                 mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
                 modelList.get(6).model.get(TITLE));
@@ -1233,12 +894,12 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.pin_tab_menu_id,
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-        // List item 7
+        // List item 8
         assertEquals(
                 R.id.mute_site_menu_id,
                 modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-        // List item 8
+        // List item 9
         assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
@@ -1248,6 +909,21 @@ public class TabContextMenuCoordinatorUnitTest {
                     + " incognito",
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(8).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 10
+        assertEquals(
+                R.id.close_all_incognito_tabs_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 11
+        assertEquals(
+                R.id.close_other_tabs_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 12
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1255,6 +931,22 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testListMenuItems_incognito_multipleTabs() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mNonUrlTab,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList,
@@ -1262,7 +954,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
 
         // List item 1
         assertEquals(
@@ -1280,6 +972,15 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ true);
 
         // List item 3
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                2,
+                R.plurals.move_tabs_to_another_window,
+                List.of(),
+                mActivity,
+                /* isIncognito= */ true);
+
+        // List item 4
         assertEquals(DIVIDER, modelList.get(3).type);
         assertEquals(
                 "Expected divider to have COLOR_ID set to R.color.divider_color_light in"
@@ -1287,7 +988,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.color.divider_color_light,
                 modelList.get(3).model.get(COLOR_ID));
 
-        // List item 4
+        // List item 5
         assertEquals(
                 mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(4).model.get(TITLE));
@@ -1301,7 +1002,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(4).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
-        // List item 5
+        // List item 6
         assertEquals(
                 mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
                 modelList.get(5).model.get(TITLE));
@@ -1309,12 +1010,12 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.pin_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-        // List item 6
+        // List item 7
         assertEquals(
                 R.id.mute_site_menu_id,
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-        // List item 7
+        // List item 8
         assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
@@ -1324,659 +1025,20 @@ public class TabContextMenuCoordinatorUnitTest {
                     + " incognito",
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(7).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList, 2, R.plurals.move_tab_to_another_window, List.of(), mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
-                modelList.get(6).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 9
-        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
+                R.id.close_other_tabs_menu_id,
+                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption_multipleTabs() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
-
-        // List item 1
+        // List item 10
         assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList, 2, R.plurals.move_tabs_to_another_window, List.of(), mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showUnpinTabOption() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-
-        // Pin tab to show unpin option.
-        when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList, 2, R.plurals.move_tab_to_another_window, List.of(), mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 1),
-                modelList.get(6).model.get(TITLE));
-        assertEquals(
-                R.id.unpin_tab_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 9
-        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showUnpinTabOption_multipleTabs() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-
-        // Pin tab to show unpin option.
-        when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
-
-        // List item 1
-        assertEquals(
-                R.id.new_tab_to_the_right_menu_id,
-                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 2
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
-
-        // List item 3
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList, 2, R.plurals.move_tabs_to_another_window, List.of(), mActivity);
-
-        // List item 4
-        assertEquals(DIVIDER, modelList.get(3).type);
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 2),
-                modelList.get(5).model.get(TITLE));
-        assertEquals(
-                R.id.unpin_tab_menu_id,
-                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveToWindow_NonEmptyCustomWindowTitle() {
-        final InstanceInfo emptyTitleInstance =
-                new InstanceInfo(
-                        INSTANCE_ID_2,
-                        TASK_ID,
-                        CURRENT,
-                        EXAMPLE_URL.toString(),
-                        /* title= */ "Example",
-                        /* customTitle= */ "My window",
-                        NUM_TABS,
-                        NUM_INCOGNITO_TABS,
-                        /* isIncognitoSelected= */ false,
-                        LAST_ACCESSED_TIME,
-                        /* closureTime= */ 0);
-
-        MultiWindowUtils.setInstanceCountForTesting(2);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, emptyTitleInstance));
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-        ListItem moveToWindowItem = modelList.get(2);
-        assertNotNull(moveToWindowItem);
-
-        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
-        assertEquals("Submenu should have 2 items", 2, subMenu.size());
-
-        ListItem otherWindowItem = subMenu.get(1);
-        assertEquals(
-                "The title for the other window is incorrect.",
-                "My window",
-                otherWindowItem.model.get(TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveToWindow_EmptyCustomWindowTitle() {
-        final InstanceInfo emptyTitleInstance =
-                new InstanceInfo(
-                        INSTANCE_ID_2,
-                        TASK_ID,
-                        CURRENT,
-                        EXAMPLE_URL.toString(),
-                        /* title= */ "Example",
-                        /* customTitle= */ null,
-                        NUM_TABS,
-                        NUM_INCOGNITO_TABS,
-                        /* isIncognitoSelected= */ false,
-                        LAST_ACCESSED_TIME,
-                        /* closureTime= */ 0);
-
-        MultiWindowUtils.setInstanceCountForTesting(2);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, emptyTitleInstance));
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-        ListItem moveToWindowItem = modelList.get(2);
-        assertNotNull(moveToWindowItem);
-
-        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
-        assertEquals("Submenu should have 2 items", 2, subMenu.size());
-
-        ListItem otherWindowItem = subMenu.get(1);
-        assertEquals(
-                "The title for the other window is incorrect.",
-                "Example",
-                otherWindowItem.model.get(TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveToWindow_oneInstance_allTabsSelected_singleTab() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-        assertEquals("Tab model should have one tab.", 1, mTabModel.getCount());
-
-        // Set total tab count to be equal to move tab count (1).
-        mTotalTabCountSupplier.set(1);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        // With only one window and all tabs selected, the "move to window" option should not show.
-        assertEquals("Number of items in the list menu is incorrect.", 9, modelList.size());
-        assertEquals(
-                "Second item should be a divider instead of 'move to window'.",
-                DIVIDER,
-                modelList.get(2).type);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveToWindow_oneInstance_allTabsSelected_multipleTabs() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        assertEquals("Tab model should have two tabs.", 2, mTabModel.getCount());
-
-        // Set total tab count to be equal to move tab count (2).
-        mTotalTabCountSupplier.set(2);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_ID_2)));
-
-        // With only one window and all tabs selected, the "move to window" option should not show.
-        assertEquals("Number of items in the list menu is incorrect.", 7, modelList.size());
-        assertEquals(
-                "Second item should be a divider instead of 'move to window'.",
-                DIVIDER,
-                modelList.get(2).type);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_noGroups_submenusEnabled() {
-        // No groups
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // Item 0 should be "Add tab to new group" and NOT have a submenu.
-        ListItem addToGroupItem = modelList.get(1);
-
-        assertEquals("Should be a regular menu item", MENU_ITEM, addToGroupItem.type);
-        assertEquals(
-                "Title should be 'Add tab to new group'",
-                mActivity
-                        .getResources()
-                        .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 1),
-                addToGroupItem.model.get(TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_moreThanOneWindow_submenusEnabled() {
-        MultiWindowUtils.setInstanceCountForTesting(2);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                2,
-                R.plurals.move_tab_to_another_window,
-                List.of(WINDOW_TITLE_2),
-                mActivity);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_singleTab_duplicateTab_featureEnabled() {
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-        ListItem duplicateItem = findItemByMenuId(modelList, R.id.duplicate_tab_menu_id);
-        assertNotNull(duplicateItem);
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                duplicateItem.model.get(ListMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_multipleTabs_duplicateTabs_featureEnabled() {
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
-        ListItem duplicateItem = findItemByMenuId(modelList, R.id.duplicate_tab_menu_id);
-        assertNotNull(duplicateItem);
-        assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                duplicateItem.model.get(ListMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_singleTab_closeTabsToTheRight_featureEnabled() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        ListItem closeRightItem = findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id);
-        assertNotNull(closeRightItem);
-        assertEquals(
-                mActivity.getResources().getString(R.string.close_tabs_to_the_right_menu_item),
-                closeRightItem.model.get(ListMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_multipleTabs_closeTabsToTheRight_featureEnabled() {
-        mTabModel.addTab(
-                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(
-                mTabOutsideOfGroup,
-                -1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_FOREGROUND);
-
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-
-        ListItem closeRightItem = findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id);
-        assertNotNull(closeRightItem);
-        assertEquals(
-                mActivity.getResources().getString(R.string.close_tabs_to_the_right_menu_item),
-                closeRightItem.model.get(ListMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_moveTabItems_accessibilityOn() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-
-        var modelList = new ModelList();
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
-
-        ListItem moveStartItem = modelList.get(3);
-        String moveStartTitle =
-                String.valueOf(moveStartItem.model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                "Move toward start item has wrong title",
-                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
-                moveStartTitle);
-
-        ListItem moveEndItem = modelList.get(4);
-        String moveEndTitle = String.valueOf(moveEndItem.model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                "Move toward end item has wrong title",
-                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
-                moveEndTitle);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_moveTabItems_accessibilityOn_RTL() {
-        LocalizationUtils.setRtlForTesting(true);
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-
-        var modelList = new ModelList();
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
-
-        ListItem moveStartItem = modelList.get(3);
-        String moveStartTitle =
-                String.valueOf(moveStartItem.model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                "Move toward start item has wrong title",
-                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
-                moveStartTitle);
-
-        ListItem moveEndItem = modelList.get(4);
-        String moveEndTitle = String.valueOf(moveEndItem.model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                "Move toward end item has wrong title",
-                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
-                moveEndTitle);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_moveTabItems_incognito() {
-        setupWithIncognito(/* incognito= */ true);
-        initializeCoordinator();
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-
-        var modelList = new ModelList();
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(3);
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // Move items are at index 2 and 3.
-        // Item 0: Add to new group
-        // Item 1: Divider
-        // Item 2: Move left
-        // Item 3: Move right
-
-        ListItem moveStartItem = modelList.get(2);
-        assertEquals(
-                "Expected text appearance ID to be set to"
-                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
-                        + " in incognito",
-                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                moveStartItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-        assertEquals(
-                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
-                        + " incognito",
-                R.color.default_icon_color_light_tint_list,
-                moveStartItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
-
-        ListItem moveEndItem = modelList.get(3);
-        assertEquals(
-                "Expected text appearance ID to be set to"
-                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
-                        + " in incognito",
-                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                moveEndItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-        assertEquals(
-                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
-                        + " incognito",
-                R.color.default_icon_color_light_tint_list,
-                moveEndItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_moveTabsItems_accessibilityOn() {
-        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-
-        var modelList = new ModelList();
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.indexOf(mTab2)).thenReturn(2);
-        when(mTabModel.getCount()).thenReturn(4);
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
-
-        ListItem moveStartItem = modelList.get(3);
-        String moveStartTitle =
-                String.valueOf(moveStartItem.model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                "Move toward start item has wrong title",
-                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 2),
-                moveStartTitle);
-
-        ListItem moveEndItem = modelList.get(4);
-        String moveEndTitle = String.valueOf(moveEndItem.model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                "Move toward end item has wrong title",
-                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 2),
-                moveEndTitle);
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     // --------------------------------------------------------------//
-    // ------------------ MENU ITEM CALLBACK TESTS ------------------//
+    // ------------------ MENU ITEM BEHAVIOR TESTS ------------------//
     // --------------------------------------------------------------//
 
     @Test
@@ -2042,6 +1104,28 @@ public class TabContextMenuCoordinatorUnitTest {
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, "1 tab", 1, /* isIncognito= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAddToGroup_showsAsAddToNewGroupWhenNoGroupsExist() {
+        // No groups
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        ListItem addToGroupItem = findItemByMenuId(modelList, R.id.add_to_new_tab_group);
+        assertNotNull(addToGroupItem);
+        assertEquals("Should be a regular menu item", MENU_ITEM, addToGroupItem.type);
+        assertEquals(
+                "Title should be 'Add tab to new group'",
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 1),
+                addToGroupItem.model.get(TITLE));
     }
 
     @Test
@@ -2118,9 +1202,13 @@ public class TabContextMenuCoordinatorUnitTest {
                 new AnchorInfo(
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+        ListItem moveToWindowItem =
+                findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveToWindowItem);
+        int moveIndex = modelList.indexOf(moveToWindowItem);
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(
                 modelList,
-                2,
+                moveIndex,
                 mOnItemClickedCallback,
                 new AnchorInfo(TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID)),
                 COLLABORATION_ID);
@@ -2148,8 +1236,12 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
+        ListItem moveToWindowItem =
+                findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveToWindowItem);
+        int moveIndex = modelList.indexOf(moveToWindowItem);
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
-                modelList, 2, WINDOW_TITLE_2, mView);
+                modelList, moveIndex, WINDOW_TITLE_2, mView);
 
         verify(mMultiInstanceOrchestrator)
                 .moveTabsToWindowByIdChecked(
@@ -2159,6 +1251,442 @@ public class TabContextMenuCoordinatorUnitTest {
                         /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
                         /* bringToFront= */ true);
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testMoveToWindowSubmenu_multipleWindows() {
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(WINDOW_TITLE_2),
+                mActivity);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_multipleWindows_preventMoveToNewWindow() {
+        int instanceType = ACTIVE;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            instanceType |= REGULAR;
+        }
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(instanceType))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        // Set total tab count to be equal to the move tab count (1).
+        mTotalTabCountSupplier.set(1);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(WINDOW_TITLE_2),
+                mActivity,
+                /* isIncognito= */ false,
+                /* expectNewWindow= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_incognito_multipleWindows() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_INCOGNITO));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(INCOGNITO_WINDOW_TITLE),
+                mActivity,
+                /* isIncognito= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_incognito_filtersNonIncognitoWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | OFF_THE_RECORD))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_INCOGNITO));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
+        // INSTANCE_INFO_INCOGNITO should be shown.
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(INCOGNITO_WINDOW_TITLE),
+                mActivity,
+                /* isIncognito= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_regular_filtersIncognitoWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setupWithIncognito(/* incognito= */ false);
+        initializeCoordinator();
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | REGULAR))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
+        // INSTANCE_INFO_2 should be shown.
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(WINDOW_TITLE_2),
+                mActivity,
+                /* isIncognito= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_incognito_allowsMixedWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
+        // Other windows should not be filtered out since they can accommodate both incognito and
+        // regular tabs.
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                List.of(WINDOW_TITLE_2, INCOGNITO_WINDOW_TITLE),
+                mActivity,
+                /* isIncognito= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_regular_allowsMixedWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        setupWithIncognito(/* incognito= */ false);
+        initializeCoordinator();
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
+        // Other windows should not be filtered out since they can accommodate both incognito and
+        // regular tabs.
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                List.of(WINDOW_TITLE_2, INCOGNITO_WINDOW_TITLE),
+                mActivity,
+                /* isIncognito= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testMoveToWindowSubmenu_multipleTabs_multipleWindows() {
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tabs_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tabs_to_another_window,
+                Collections.singletonList(WINDOW_TITLE_2),
+                mActivity);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testMoveToWindowSubmenu_disabledBelowApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertNull(findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testMoveToWindowSubmenu_multipleTabs_disabledBelowApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertNull(findItemByPluralsId(modelList, R.plurals.move_tabs_to_another_window));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindow_NonEmptyCustomWindowTitle() {
+        final InstanceInfo emptyTitleInstance =
+                new InstanceInfo(
+                        INSTANCE_ID_2,
+                        TASK_ID,
+                        CURRENT,
+                        EXAMPLE_URL.toString(),
+                        /* title= */ "Example",
+                        /* customTitle= */ "My window",
+                        NUM_TABS,
+                        NUM_INCOGNITO_TABS,
+                        /* isIncognitoSelected= */ false,
+                        LAST_ACCESSED_TIME,
+                        /* closureTime= */ 0);
+
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, emptyTitleInstance));
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+        ListItem moveToWindowItem =
+                findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveToWindowItem);
+
+        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
+        assertEquals("Submenu should have 2 items", 2, subMenu.size());
+
+        ListItem otherWindowItem = subMenu.get(1);
+        assertEquals(
+                "The title for the other window is incorrect.",
+                "My window",
+                otherWindowItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindow_EmptyCustomWindowTitle() {
+        final InstanceInfo emptyTitleInstance =
+                new InstanceInfo(
+                        INSTANCE_ID_2,
+                        TASK_ID,
+                        CURRENT,
+                        EXAMPLE_URL.toString(),
+                        /* title= */ "Example",
+                        /* customTitle= */ null,
+                        NUM_TABS,
+                        NUM_INCOGNITO_TABS,
+                        /* isIncognitoSelected= */ false,
+                        LAST_ACCESSED_TIME,
+                        /* closureTime= */ 0);
+
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, emptyTitleInstance));
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+        ListItem moveToWindowItem =
+                findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveToWindowItem);
+
+        var subMenu = moveToWindowItem.model.get(SUBMENU_PROVIDER).get();
+        assertEquals("Submenu should have 2 items", 2, subMenu.size());
+
+        ListItem otherWindowItem = subMenu.get(1);
+        assertEquals(
+                "The title for the other window is incorrect.",
+                "Example",
+                otherWindowItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindow_oneInstance_allTabsSelected_singleTab() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        assertEquals("Tab model should have one tab.", 1, mTabModel.getCount());
+
+        // Set total tab count to be equal to move tab count (1).
+        mTotalTabCountSupplier.set(1);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        // With only one window and all tabs selected, the "move to window" option should not show.
+        assertNull(findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindow_oneInstance_allTabsSelected_multipleTabs() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        assertEquals("Tab model should have two tabs.", 2, mTabModel.getCount());
+
+        // Set total tab count to be equal to move tab count (2).
+        mTotalTabCountSupplier.set(2);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_ID_2)));
+
+        // With only one window and all tabs selected, the "move to window" option should not show.
+        assertNull(findItemByPluralsId(modelList, R.plurals.move_tabs_to_another_window));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testMoveToWindowSubmenu_hasSubmenuWhenMultipleWindows() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem moveItem = findItemByPluralsId(modelList, R.plurals.move_tab_to_another_window);
+        assertNotNull(moveItem);
+        int moveIndex = modelList.indexOf(moveItem);
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                moveIndex,
+                R.plurals.move_tab_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mActivity);
     }
 
     @Test
@@ -2430,6 +1958,120 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    public void testAccessibilityMoveOptions_visibleForSingleTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String expectedMoveStartTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1);
+        ListItem moveStartItem = findItemByTitle(modelList, expectedMoveStartTitle);
+        assertNotNull("Move toward start item should be visible", moveStartItem);
+
+        String expectedMoveEndTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1);
+        ListItem moveEndItem = findItemByTitle(modelList, expectedMoveEndTitle);
+        assertNotNull("Move toward end item should be visible", moveEndItem);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAccessibilityMoveOptions_visibleForSingleTab_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String expectedMoveStartTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1);
+        ListItem moveStartItem = findItemByTitle(modelList, expectedMoveStartTitle);
+        assertNotNull("Move toward start item should be visible", moveStartItem);
+
+        String expectedMoveEndTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1);
+        ListItem moveEndItem = findItemByTitle(modelList, expectedMoveEndTitle);
+        assertNotNull("Move toward end item should be visible", moveEndItem);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAccessibilityMoveOptions_incognitoAppearance() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        String expectedMoveStartTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1);
+        ListItem moveStartItem = findItemByTitle(modelList, expectedMoveStartTitle);
+        assertNotNull(moveStartItem);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                moveStartItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
+                        + " incognito",
+                R.color.default_icon_color_light_tint_list,
+                moveStartItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+
+        String expectedMoveEndTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1);
+        ListItem moveEndItem = findItemByTitle(modelList, expectedMoveEndTitle);
+        assertNotNull(moveEndItem);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                moveEndItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
+                        + " incognito",
+                R.color.default_icon_color_light_tint_list,
+                moveEndItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAccessibilityMoveOptions_visibleForMultipleTabs() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        String expectedMoveStartTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 2);
+        ListItem moveStartItem = findItemByTitle(modelList, expectedMoveStartTitle);
+        assertNotNull("Move toward start item should be visible", moveStartItem);
+
+        String expectedMoveEndTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 2);
+        ListItem moveEndItem = findItemByTitle(modelList, expectedMoveEndTitle);
+        assertNotNull("Move toward end item should be visible", moveEndItem);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
     public void testShareUrl() {
         mOnItemClickedCallback.onClick(
                 R.id.share_tab,
@@ -2437,6 +2079,19 @@ public class TabContextMenuCoordinatorUnitTest {
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
         verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testShareTab_hiddenForNonShareableUrl() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(NON_URL_TAB_ID, Collections.singletonList(NON_URL_TAB_ID)));
+
+        assertNull(findItemByMenuId(modelList, R.id.share_tab));
     }
 
     @Test
@@ -2461,6 +2116,50 @@ public class TabContextMenuCoordinatorUnitTest {
                 /* listViewTouchTracker= */ null);
         verify(mTabModel, times(1)).duplicateTab(mTab1);
         verify(mTabModel, times(1)).duplicateTab(mTab2);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testUnpinTabOption_visibleForPinnedTab() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+
+        // Pin tab to show unpin option.
+        when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem unpinItem = findItemByMenuId(modelList, R.id.unpin_tab_menu_id);
+        assertNotNull(unpinItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 1),
+                unpinItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testUnpinTabOption_visibleForMultiplePinnedTabs() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+
+        // Pin tab to show unpin option.
+        when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
+
+        ListItem unpinItem = findItemByMenuId(modelList, R.id.unpin_tab_menu_id);
+        assertNotNull(unpinItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 2),
+                unpinItem.model.get(TITLE));
     }
 
     @Test
@@ -2668,7 +2367,7 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testListMenuItems_closeAllTabs() {
+    public void testCloseAllTabs() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
@@ -2692,7 +2391,7 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testListMenuItems_closeAllIncognitoTabs() {
+    public void testCloseAllIncognitoTabs() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
         var modelList = new ModelList();
@@ -2720,7 +2419,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    public void testListMenuItems_singleTab_closeOtherTabs_featureEnabled() {
+    public void testCloseOtherTabs_singleTab_hidden() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
@@ -2759,10 +2458,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_multipleTabs_closeOtherTabs_featureEnabled() {
+    public void testCloseOtherTabs_multipleTabs_hidden() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
@@ -2801,10 +2497,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
-    })
-    public void testListMenuItems_singleTab_closeTabsToTheRight_lastTab() {
+    public void testCloseTabsToTheRight_singleTab_hiddenForLastTab() {
         mTabModel.addTab(
                 mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
@@ -3005,6 +2698,26 @@ public class TabContextMenuCoordinatorUnitTest {
             if (item.model.containsKey(ListMenuItemProperties.TITLE_ID)
                     && item.model.get(ListMenuItemProperties.TITLE_ID) == titleId) {
                 return item;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable ListItem findItemByPluralsId(
+            ModelList modelList, @PluralsRes int pluralsRes) {
+        String expectedTitleZero = mActivity.getResources().getQuantityString(pluralsRes, 0);
+        String expectedTitleOne = mActivity.getResources().getQuantityString(pluralsRes, 1);
+        String expectedTitleTwo = mActivity.getResources().getQuantityString(pluralsRes, 2);
+        for (int i = 0; i < modelList.size(); i++) {
+            ListItem item = modelList.get(i);
+            if (item.model.containsKey(TITLE)) {
+                CharSequence title = item.model.get(TITLE);
+                if (title != null
+                        && (expectedTitleZero.contentEquals(title)
+                                || expectedTitleOne.contentEquals(title)
+                                || expectedTitleTwo.contentEquals(title))) {
+                    return item;
+                }
             }
         }
         return null;

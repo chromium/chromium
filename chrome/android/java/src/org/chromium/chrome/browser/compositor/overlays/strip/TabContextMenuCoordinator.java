@@ -575,7 +575,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         itemList.add(createCloseItem(isIncognito));
         itemList.add(createCloseAllTabsItem(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            if (tabs.size() > 1) {
+            if (getTabModel().getCount() > 1) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));
             }
             if (canCloseTabsToTheRight(anchorInfo)) {
@@ -608,7 +608,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         itemList.add(createCloseItem(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            if (tabs.size() > anchorInfo.getAllTabIds().size()) {
+            if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));
             }
             if (canCloseTabsToTheRight(anchorInfo)) {
