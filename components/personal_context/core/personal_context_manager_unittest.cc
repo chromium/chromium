@@ -92,7 +92,8 @@ class PersonalContextManagerTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPersonalContext,
         {{features::kContextMemoryFetchContextEndpointUrl.name,
-          "https://example.com/v1:fetchContext"}});
+          "https://example.com/v1:fetchContext"},
+         {features::kPersonalContextEnableFetchContext.name, "true"}});
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);

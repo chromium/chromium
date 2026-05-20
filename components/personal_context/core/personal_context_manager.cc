@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/personal_context/core/context_memory_error.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_fetcher.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -61,6 +62,17 @@ void PersonalContextManager::FetchContext(
     std::optional<base::TimeDelta> timeout,
     FetchContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!features::kPersonalContextEnableFetchContext.Get()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            FetchContextResult(
+                base::unexpected(ContextMemoryError::FromExecutionError(
+                    ContextMemoryError::ExecutionError::kGenericFailure)))));
+    return;
+  }
 
   ActiveFeatureFetchers& fetchers_for_feature = active_fetchers_[feature];
   if (fetchers_for_feature.size() == GetMaxParallelFeatureFetchers(feature)) {
