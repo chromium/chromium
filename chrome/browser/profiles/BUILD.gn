@@ -172,7 +172,6 @@ source_set("misc") {
       "profile_manager_android.cc",
     ]
     deps += [
-      "//chrome/browser:profile_key_startup_accessor",
       "//chrome/browser/android:profile_token",
       "//chrome/browser/profiles/android:jni_headers",
       "//chrome/common:constants",

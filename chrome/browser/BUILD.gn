@@ -533,16 +533,6 @@ if (!is_win && !is_android) {
   }
 }
 
-if (is_android) {
-  # Header-only target so downstream targets can include
-  # profile_key_startup_accessor.h without depending on :browser. The .cc
-  # file remains in //chrome/browser:browser.
-  source_set("profile_key_startup_accessor") {
-    public = [ "android/profile_key_startup_accessor.h" ]
-    deps = [ "//base" ]
-  }
-}
-
 if (is_mac) {
   source_set("chrome_browser_main_mac") {
     public = [ "chrome_browser_main_mac.h" ]
@@ -612,7 +602,6 @@ if (is_chromeos) {
 
 source_set("core") {
   sources = [
-    "about_flags.cc",
     "after_startup_task_utils.cc",
     "browser_about_handler.cc",
     "browser_process_impl.cc",
@@ -623,7 +612,6 @@ source_set("core") {
     "chrome_browser_interface_binders_webui.h",
     "chrome_browser_interface_binders_webui_parts.h",
     "chrome_browser_interface_binders_webui_parts_features.cc",
-    "chrome_browser_main.cc",
     "chrome_content_browser_client.cc",
     "chrome_content_browser_client_binder_policies.cc",
     "chrome_content_browser_client_binder_policies.h",
@@ -637,21 +625,6 @@ source_set("core") {
     "font_family_cache.cc",
     "font_family_cache.h",
     "global_features.cc",
-    "icon_manager.cc",
-    "memory_details.cc",
-    "net_benchmarking.cc",
-    "platform_util_internal.cc",
-    "platform_util_internal.h",
-    "process_resource_usage.cc",
-    "process_singleton_internal.cc",
-    "process_singleton_internal.h",
-    "renderer_preferences_util.cc",
-    "resources_util.cc",
-    "shell_integration.cc",
-    "startup_data.cc",
-    "unexpire_flags.cc",
-    "unexpire_flags.h",
-    "universal_web_contents_observers.cc",
   ]
 
   configs += [
@@ -691,13 +664,9 @@ source_set("core") {
     ":icon_loader",
     ":icon_manager",
     ":main_extra_parts",
-    ":memory_details",
     ":net_benchmarking",
     ":primitives",
-    ":process_resource_usage",
-    ":process_singleton",
     ":renderer_preferences_util",
-    ":resources_util",
     ":shell_integration",
     ":startup_data",
     ":unexpire_flags",
@@ -775,7 +744,6 @@ source_set("core") {
     "//chrome/browser/permissions",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
-    "//chrome/browser/policy:path_parser",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/predictors",
     "//chrome/browser/predictors:config",
@@ -896,7 +864,6 @@ source_set("core") {
     "//components/embedder_support:user_agent",
     "//components/enterprise/data_controls/content/browser",
     "//components/enterprise/data_controls/core/browser:features",
-    "//components/enterprise/networking",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",
     "//components/feature_engagement/public:feature_constants",
@@ -928,7 +895,6 @@ source_set("core") {
     "//components/network_time",
     "//components/no_state_prefetch/browser",
     "//components/no_state_prefetch/common",
-    "//components/omnibox/common:features",
     "//components/open_from_clipboard:feature_flags",
     "//components/page_content_annotations/core:features",
     "//components/page_load_metrics/browser",
@@ -1138,7 +1104,6 @@ source_set("core") {
 
   if (!is_android) {
     deps += [
-      ":chrome_process_singleton",
       ":intranet_redirect_detector",
       "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/apps/app_service",
@@ -1242,7 +1207,6 @@ source_set("core") {
   }
 
   if (is_win) {
-    sources += [ "chrome_browser_main_win.h" ]
     deps += [
       "//chrome/browser/os_crypt",
       "//chrome/browser/webnn",
@@ -1267,7 +1231,6 @@ source_set("core") {
 
   if (is_mac) {
     deps += [
-      ":chrome_browser_main_mac",
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/mac",
@@ -1281,15 +1244,7 @@ source_set("core") {
     ]
   }
 
-  if (!is_win && !is_android) {
-    deps += [ ":chrome_browser_main_posix" ]
-  }
-
   if (is_linux) {
-    sources += [
-      "chrome_browser_main_extra_parts_linux.h",
-      "chrome_browser_main_linux.h",
-    ]
     deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
 
     if (use_dbus) {
@@ -1301,9 +1256,7 @@ source_set("core") {
   }
 
   if (is_android) {
-    sources += [ "chrome_browser_main_android.h" ]
     deps += [
-      ":profile_key_startup_accessor",
       "//chrome/browser/accessibility/accessibility_prefs",
       "//chrome/browser/dev_ui",
       "//chrome/browser/facilitated_payments",
@@ -1472,7 +1425,6 @@ source_set("core") {
   }
 
   if (use_ozone) {
-    sources += [ "chrome_browser_main_extra_parts_ozone.h" ]
     deps += [
       "//ui/events/ozone",
       "//ui/ozone",
@@ -1506,12 +1458,6 @@ source_set("core") {
     ]
   }
 
-  if (enable_builtin_search_provider_assets) {
-    deps += [
-      "//third_party/search_engines_data:search_engines_scaled_resources_grit",
-    ]
-  }
-
   deps += [ "//chrome/browser/vr:chrome_xr_integration_client" ]
 
   if (is_posix && !is_mac) {
@@ -1533,7 +1479,25 @@ source_set("core") {
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
-  sources = []
+  sources = [
+    "about_flags.cc",
+    "chrome_browser_main.cc",
+    "icon_manager.cc",
+    "memory_details.cc",
+    "net_benchmarking.cc",
+    "platform_util_internal.cc",
+    "platform_util_internal.h",
+    "process_resource_usage.cc",
+    "process_singleton_internal.cc",
+    "process_singleton_internal.h",
+    "renderer_preferences_util.cc",
+    "resources_util.cc",
+    "shell_integration.cc",
+    "startup_data.cc",
+    "unexpire_flags.cc",
+    "unexpire_flags.h",
+    "universal_web_contents_observers.cc",
+  ]
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -2878,6 +2842,7 @@ static_library("browser") {
       "android/preloading/android_prerender_manager.cc",
       "android/preloading/android_prerender_manager.h",
       "android/profile_key_startup_accessor.cc",
+      "android/profile_key_startup_accessor.h",
       "android/profile_key_util.cc",
       "android/profile_key_util.h",
       "android/quick_delete/quick_delete_bridge.cc",
@@ -2981,6 +2946,7 @@ static_library("browser") {
       "browser_process_platform_part_android.cc",
       "chrome_browser_interface_binders_webui_parts_android.cc",
       "chrome_browser_main_android.cc",
+      "chrome_browser_main_android.h",
       "chrome_content_browser_client_android.cc",
       "chrome_content_browser_client_android.h",
       "commerce/android/price_tracking_utils_android.cc",
@@ -3048,7 +3014,6 @@ static_library("browser") {
     public_deps += [ "//chrome/browser/accessibility/accessibility_prefs" ]
 
     deps += [
-      ":profile_key_startup_accessor",
       "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/browser/accessibility/settings",
@@ -5040,6 +5005,7 @@ static_library("browser") {
     ]
     sources += [
       "chrome_browser_main_win.cc",
+      "chrome_browser_main_win.h",
       "font_prewarmer_tab_helper.cc",
       "fullscreen_win.cc",
       "icon_loader_win.cc",
@@ -5319,6 +5285,7 @@ static_library("browser") {
   if (is_linux || is_chromeos) {
     sources += [
       "chrome_browser_main_linux.cc",
+      "chrome_browser_main_linux.h",
       "memory_details_linux.cc",
     ]
     deps += [ "//third_party/fontconfig" ]
@@ -5330,6 +5297,7 @@ static_library("browser") {
   if (is_linux) {
     sources += [
       "chrome_browser_main_extra_parts_linux.cc",
+      "chrome_browser_main_extra_parts_linux.h",
       "fullscreen_linux.cc",
       "icon_loader_auralinux.cc",
       "shell_integration_linux.cc",
@@ -5444,7 +5412,10 @@ static_library("browser") {
   }
 
   if (use_ozone) {
-    sources += [ "chrome_browser_main_extra_parts_ozone.cc" ]
+    sources += [
+      "chrome_browser_main_extra_parts_ozone.cc",
+      "chrome_browser_main_extra_parts_ozone.h",
+    ]
     deps += [
       "//ui/events/ozone",
       "//ui/ozone",
@@ -5869,6 +5840,12 @@ static_library("browser") {
     deps += [
       "//chrome/browser/chrome_for_testing",
       "//chrome/browser/chrome_for_testing:browser",
+    ]
+  }
+
+  if (enable_builtin_search_provider_assets) {
+    deps += [
+      "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     ]
   }
 }
