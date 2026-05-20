@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package personal_context.proto;
+
+import "components/personal_context/proto/features/common_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message ContextMemoryAtMemoryRequest {
+  string query = 1;
+}
+
+message ContextMemoryAtMemoryResponse {
+  repeated Entity entities = 1;
+  string text_response = 2;
+}
