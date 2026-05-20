@@ -15,15 +15,13 @@ typedef NS_OPTIONS(NSUInteger, UIViewControllerDisplayTracingOptions) {
   UIViewControllerDisplayTracingOptionCATransactionCommit = 1 << 2,
   UIViewControllerDisplayTracingOptionLayout = 1 << 3,
   UIViewControllerDisplayTracingOptionAppear = 1 << 4,
-  UIViewControllerDisplayTracingOptionDisplay = 1 << 5,
 
   UIViewControllerDisplayTracingOptionAllTraces =
       UIViewControllerDisplayTracingOptionEventDispatch |
       UIViewControllerDisplayTracingOptionCADisplayLinkDispatch |
       UIViewControllerDisplayTracingOptionCATransactionCommit |
       UIViewControllerDisplayTracingOptionLayout |
-      UIViewControllerDisplayTracingOptionAppear |
-      UIViewControllerDisplayTracingOptionDisplay,
+      UIViewControllerDisplayTracingOptionAppear,
 
   UIViewControllerDisplayTracingOptionEssentialTraces =
       UIViewControllerDisplayTracingOptionCATransactionCommit |
