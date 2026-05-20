@@ -555,11 +555,36 @@ IN_PROC_BROWSER_TEST_F(
       ->mutable_stop_actuation_request()
       ->set_stop_reason("STOPPED_BY_USER");
 
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
   EXPECT_CALL(mock_sharing_message_sender_,
               SendMessageToServerTarget(_, _, _, _))
-      .Times(0);
+      .WillOnce(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
 
   SendMessageAndWait(std::move(message));
+
+  auto response = future.Take();
+  EXPECT_TRUE(response.has_glic_experimental_triggering());
+  EXPECT_FALSE(response.glic_experimental_triggering().context_id().empty());
+  EXPECT_EQ(
+      response.glic_experimental_triggering().response().task_update().state(),
+      components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+  EXPECT_EQ(response.glic_experimental_triggering()
+                .response()
+                .task_update()
+                .data_type(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+  EXPECT_EQ(
+      response.glic_experimental_triggering().response().task_update().data(),
+      "Failed to stop task due to missing glic instance.");
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
@@ -614,6 +639,128 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   EXPECT_EQ(
       response.glic_experimental_triggering().response().task_update().data(),
       "User is not opted in to experimental triggering.");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       CleansUpUpdatesHandlerOnPayloadNotSet) {
+  auto message = CreateTriggeringMessage();
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request();  // Empty request, payload is NOT_SET
+
+  SendMessageAndWait(std::move(message));
+
+  // Handler map should be empty.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       CleansUpUpdatesHandlerOnOptInRejection) {
+  // Ensure we are NOT opted in.
+  auto* glic_service = glic::GlicKeyedService::Get(GetProfile());
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(false);
+  glic_service->enabling().SetExperimentalTriggeringEnabled(false);
+
+  auto message = CreateTriggeringMessage();
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillOnce(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  SendMessageAndWait(std::move(message));
+
+  // Response sent, and handler should be cleaned up immediately.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       CleansUpUpdatesHandlerOnDeviceOptIn) {
+  auto message = CreateTriggeringMessage();
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_device_opt_in_request()
+      ->set_triggering_source("ChromeOS");
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      future;
+  SetupMessageSenderMock(&future);
+
+  SendMessageAndWait(std::move(message));
+
+  // The updates handler should be created and stored in the map while waiting
+  // for opt-in dialog.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  auto* glic_service = glic::GlicKeyedService::Get(GetProfile());
+  ASSERT_TRUE(glic_service);
+  glic_service->opt_in_controller().CloseDialog(/*accepted=*/true);
+
+  auto [server_channel, received_message] = future.Take();
+
+  // After opt-in completes, the updates handler should be erased.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       CleansUpUpdatesHandlerOnStopActuation) {
+  OptIn();
+  // Start Actuation
+  auto start_message = CreateTriggeringMessage();
+  auto* start_triggering = start_message.mutable_glic_experimental_triggering();
+  start_triggering->set_context_id("test-context-id");
+  start_triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  SendMessageAndWait(std::move(start_message));
+
+  // Active triggering handler should exist.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // Verify the instance is bound.
+  auto* new_tab = GetTabListInterface()->GetTab(initial_tab_count);
+  ASSERT_TRUE(new_tab);
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(new_tab));
+
+  // Stop Actuation
+  auto stop_message = CreateTriggeringMessage(43);
+  auto* stop_triggering = stop_message.mutable_glic_experimental_triggering();
+  stop_triggering->set_context_id("test-context-id");
+  stop_triggering->mutable_request()
+      ->mutable_stop_actuation_request()
+      ->set_stop_reason("STOPPED_BY_USER");
+
+  SendMessageAndWait(std::move(stop_message));
+
+  // The stop request completes, and the handler should be cleaned up.
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
 
 class GlicExperimentalTriggeringOpenWindowTest

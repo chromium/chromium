@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -106,16 +107,32 @@ class ExperimentalTriggeringUpdatesHandler
           request.task_metadata().sender_sequence_number();
     }
 
+    base::ScopedClosureRunner cleanup_runner(base::BindOnce(
+        [](base::WeakPtr<GlicExperimentalTriggeringMessageHandler>
+               message_handler,
+           std::string context_id) {
+          if (message_handler) {
+            message_handler->OnUpdatesHandlerCleanup(context_id);
+          }
+        },
+        message_handler_, context_id_));
+
     switch (request.request().payload_case()) {
       case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::kTriggerActuationRequest: {
-        ProcessTriggerActuationRequest(request);
+        ProcessTriggerActuationRequest(request, std::move(cleanup_runner));
         return;
       }
 
       case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::kStopActuationRequest: {
-        ProcessStopActuationRequest();
+        ProcessStopActuationRequest(std::move(cleanup_runner));
+        return;
+      }
+
+      case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::kDeviceOptInRequest: {
+        ProcessDeviceOptInRequest(std::move(cleanup_runner));
         return;
       }
 
@@ -133,6 +150,7 @@ class ExperimentalTriggeringUpdatesHandler
     }
   }
 
+ private:
   // Checks if experimental triggering is allowed for the profile. If NOT
   // allowed, handles the rejection by logging metrics, sending a FAILED
   // response back to the server (if FCM is configured),  and returning true to
@@ -178,7 +196,8 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void ProcessTriggerActuationRequest(
-      const components_sharing_message::GlicExperimentalTriggering& request) {
+      const components_sharing_message::GlicExperimentalTriggering& request,
+      base::ScopedClosureRunner cleanup_runner) {
     if (!message_handler_) {
       return;
     }
@@ -189,7 +208,6 @@ class ExperimentalTriggeringUpdatesHandler
     CHECK(glic_service);
 
     if (HandleUnavailableExperimentalTriggering(glic_service, request)) {
-      message_handler_->OnUpdatesHandlerCleanup(context_id_);
       return;
     }
 
@@ -207,7 +225,6 @@ class ExperimentalTriggeringUpdatesHandler
       if (!browser_window) {
         DLOG(ERROR) << "No browser window found for Profile for "
                        "GlicExperimentalTriggering";
-        message_handler_->OnUpdatesHandlerCleanup(context_id_);
         return;
       }
     }
@@ -238,9 +255,13 @@ class ExperimentalTriggeringUpdatesHandler
 
     instance_ =
         glic_service->InvokeWithAutoSubmit(passkey_, std::move(options));
+
+    // The flow has been successfully initiated, so either Mojo disconnect
+    // or options.on_error will take care of cleaning up this updates handler.
+    std::ignore = cleanup_runner.Release();
   }
 
-  void ProcessStopActuationRequest() {
+  void ProcessStopActuationRequest(base::ScopedClosureRunner cleanup_runner) {
     if (!instance_) {
       SendTaskUpdateMessage(
           TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
@@ -249,12 +270,10 @@ class ExperimentalTriggeringUpdatesHandler
       instance_->GetActorTaskManager()->CancelTask();
       SendTaskUpdateMessage(TaskUpdate::STOPPED);
     }
-
-    if (message_handler_) {
-      message_handler_->OnUpdatesHandlerCleanup(context_id_);
-    }
   }
 
+  // TODO(b/495930541): Move this to the public accessor area above.
+ public:
   void OnUpdate(glic::mojom::ExperimentalTriggeringUpdatePtr update,
                 glic::mojom::SubscriberObservationType observation) override {
     switch (observation) {
@@ -306,10 +325,42 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
  private:
-  void SendTaskUpdateMessage(
-      TaskUpdate::State state,
-      std::optional<TaskUpdate::DataType> data_type = std::nullopt,
-      std::optional<std::string> data = std::nullopt) {
+  void ProcessDeviceOptInRequest(base::ScopedClosureRunner cleanup_runner) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (!message_handler_) {
+      return;
+    }
+
+    tabs::TabInterface* active_tab = message_handler_->GetActiveTab();
+    if (!active_tab) {
+      DLOG(ERROR) << "No active tab found for Profile for "
+                     "GlicExperimentalTriggering";
+      return;
+    }
+
+    glic::GlicKeyedService* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            message_handler_->profile_, /*create=*/false);
+    if (!glic_service) {
+      return;
+    }
+
+    auto callback = base::BindOnce(
+        &ExperimentalTriggeringUpdatesHandler::SendDeviceOptInResult,
+        weak_ptr_factory_.GetWeakPtr());
+
+    glic_service->opt_in_controller().ShowDialog(active_tab->GetContents(),
+                                                 std::move(callback));
+
+    // The dialog is shown, and SendDeviceOptInResult will be called when the
+    // dialog is accepted or declined. SendDeviceOptInResult will clean up the
+    // updates handler when it runs. So we can safely release/disarm the
+    // cleanup_runner here.
+    std::ignore = cleanup_runner.Release();
+#endif
+  }
+
+  components_sharing_message::SharingMessage CreateBaseResponse() {
     components_sharing_message::SharingMessage message;
     auto* triggering = message.mutable_glic_experimental_triggering();
     triggering->set_context_id(context_id_);
@@ -319,16 +370,11 @@ class ExperimentalTriggeringUpdatesHandler
     if (last_seen_sequence_number_.has_value()) {
       task_metadata->set_last_seen_sequence_number(*last_seen_sequence_number_);
     }
+    return message;
+  }
 
-    auto* task_update = triggering->mutable_response()->mutable_task_update();
-    task_update->set_state(state);
-    if (data_type.has_value()) {
-      task_update->set_data_type(*data_type);
-    }
-    if (data.has_value()) {
-      task_update->set_data(std::move(*data));
-    }
-
+  void SendResponse(components_sharing_message::SharingMessage message,
+                    const std::string& error_log_description) {
     if (message_handler_ && message_handler_->profile_) {
       actor::ActorKeyedService* actor_service =
           actor::ActorKeyedService::Get(message_handler_->profile_);
@@ -340,17 +386,52 @@ class ExperimentalTriggeringUpdatesHandler
     if (message_sender_) {
       message_sender_->SendMessageToServerTarget(
           server_channel_, kUpdateMessageTimeout, std::move(message),
-          base::BindOnce([](SharingSendMessageResult result,
-                            std::unique_ptr<
-                                components_sharing_message::ResponseMessage>
-                                response) {
-            if (result != SharingSendMessageResult::kSuccessful) {
-              DLOG(ERROR)
-                  << "Failed to send experimental triggering update to server: "
-                  << static_cast<int>(result);
-            }
-          }));
+          base::BindOnce(
+              [](std::string error_log_description,
+                 SharingSendMessageResult result,
+                 std::unique_ptr<components_sharing_message::ResponseMessage>
+                     response) {
+                if (result != SharingSendMessageResult::kSuccessful) {
+                  DLOG(ERROR) << "Failed to send " << error_log_description
+                              << " to server: " << static_cast<int>(result);
+                }
+              },
+              error_log_description));
     }
+  }
+
+  void SendDeviceOptInResult(bool accepted) {
+    components_sharing_message::SharingMessage message = CreateBaseResponse();
+    auto* triggering = message.mutable_glic_experimental_triggering();
+    triggering->mutable_response()->set_device_opt_in_result(
+        accepted ? components_sharing_message::GlicExperimentalTriggering::
+                       ExperimentalTriggeringResponse::ACCEPTED
+                 : components_sharing_message::GlicExperimentalTriggering::
+                       ExperimentalTriggeringResponse::DECLINED);
+
+    SendResponse(std::move(message), "device opt-in result");
+
+    if (message_handler_) {
+      message_handler_->OnUpdatesHandlerCleanup(context_id_);
+    }
+  }
+
+  void SendTaskUpdateMessage(
+      TaskUpdate::State state,
+      std::optional<TaskUpdate::DataType> data_type = std::nullopt,
+      std::optional<std::string> data = std::nullopt) {
+    components_sharing_message::SharingMessage message = CreateBaseResponse();
+    auto* triggering = message.mutable_glic_experimental_triggering();
+    auto* task_update = triggering->mutable_response()->mutable_task_update();
+    task_update->set_state(state);
+    if (data_type.has_value()) {
+      task_update->set_data_type(*data_type);
+    }
+    if (data.has_value()) {
+      task_update->set_data(std::move(*data));
+    }
+
+    SendResponse(std::move(message), "experimental triggering update");
   }
 
   raw_ptr<SharingMessageSender> message_sender_;
@@ -430,19 +511,6 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     return;
   }
 
-  if (request.request().has_device_opt_in_request()) {
-    tabs::TabInterface* active_tab = GetActiveTab();
-    if (active_tab) {
-      ProcessDeviceOptInRequest(active_tab,
-                                message.server_channel_configuration());
-    } else {
-      DLOG(ERROR) << "No active tab found for Profile for "
-                     "GlicExperimentalTriggering";
-    }
-    std::move(done_callback).Run(nullptr);
-    return;
-  }
-
   // If no `context_id` is present in the request, we generate one that
   // may be used by the sender in follow up actuation requests.
   const std::string context_id =
@@ -462,78 +530,21 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   if (it != context_id_to_updates_handler_map_.end()) {
     handler = it->second.get();
   } else {
-    using ExperimentalTriggeringRequest = components_sharing_message::
-        GlicExperimentalTriggering::ExperimentalTriggeringRequest;
-    const auto payload_case = request.request().payload_case();
-    if (payload_case ==
-        ExperimentalTriggeringRequest::kTriggerActuationRequest) {
-      handler =
-          context_id_to_updates_handler_map_
-              .emplace(
-                  context_id,
-                  std::make_unique<ExperimentalTriggeringUpdatesHandler>(
-                      message_sender_,
-                      std::move(
-                          *message.mutable_server_channel_configuration()),
-                      context_id,
-                      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-                      weak_ptr_factory_.GetWeakPtr()))
-              .first->second.get();
-    }
-  }
-
-  if (!handler) {
-    DLOG(WARNING) << "No updates handler for request.";
-    std::move(done_callback).Run(nullptr);
-    return;
+    handler =
+        context_id_to_updates_handler_map_
+            .emplace(
+                context_id,
+                std::make_unique<ExperimentalTriggeringUpdatesHandler>(
+                    message_sender_,
+                    std::move(*message.mutable_server_channel_configuration()),
+                    context_id,
+                    glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+                    weak_ptr_factory_.GetWeakPtr()))
+            .first->second.get();
   }
 
   handler->OnRequest(request);
   std::move(done_callback).Run(nullptr);
-}
-
-void GlicExperimentalTriggeringMessageHandler::SendDeviceOptInResult(
-    components_sharing_message::ServerChannelConfiguration server_channel,
-    bool accepted) {
-  components_sharing_message::SharingMessage message;
-  auto* triggering = message.mutable_glic_experimental_triggering();
-  triggering->mutable_response()->set_device_opt_in_result(
-      accepted ? components_sharing_message::GlicExperimentalTriggering::
-                     ExperimentalTriggeringResponse::ACCEPTED
-               : components_sharing_message::GlicExperimentalTriggering::
-                     ExperimentalTriggeringResponse::DECLINED);
-
-  message_sender_->SendMessageToServerTarget(
-      server_channel, kUpdateMessageTimeout, std::move(message),
-      base::BindOnce(
-          [](SharingSendMessageResult result,
-             std::unique_ptr<components_sharing_message::ResponseMessage>
-                 response) {
-            if (result != SharingSendMessageResult::kSuccessful) {
-              DLOG(ERROR) << "Failed to send device opt-in result to server: "
-                          << static_cast<int>(result);
-            }
-          }));
-}
-
-void GlicExperimentalTriggeringMessageHandler::ProcessDeviceOptInRequest(
-    tabs::TabInterface* active_tab,
-    components_sharing_message::ServerChannelConfiguration server_channel) {
-#if !BUILDFLAG(IS_ANDROID)
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
-                                                         /*create=*/false);
-  if (!glic_service) {
-    return;
-  }
-
-  auto callback = base::BindOnce(
-      &GlicExperimentalTriggeringMessageHandler::SendDeviceOptInResult,
-      weak_ptr_factory_.GetWeakPtr(), server_channel);
-
-  glic_service->opt_in_controller().ShowDialog(active_tab->GetContents(),
-                                               std::move(callback));
-#endif
 }
 
 void GlicExperimentalTriggeringMessageHandler::OnUpdatesHandlerCleanup(

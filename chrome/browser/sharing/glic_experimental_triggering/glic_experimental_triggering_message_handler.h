@@ -42,6 +42,10 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
   void OnMessage(components_sharing_message::SharingMessage message,
                  DoneCallback done_callback) override;
 
+  size_t GetUpdatesHandlerMapSizeForTesting() const {
+    return context_id_to_updates_handler_map_.size();
+  }
+
  protected:
   // Virtual for testing purposes to allow mocking the active tab.
   virtual tabs::TabInterface* GetActiveTab() const;
@@ -50,14 +54,6 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
 
  private:
   friend class ExperimentalTriggeringUpdatesHandler;
-
-  void ProcessDeviceOptInRequest(
-      tabs::TabInterface* active_tab,
-      components_sharing_message::ServerChannelConfiguration server_channel);
-
-  void SendDeviceOptInResult(
-      components_sharing_message::ServerChannelConfiguration server_channel,
-      bool accepted);
 
   void OnUpdatesHandlerCleanup(std::string context_id);
 
