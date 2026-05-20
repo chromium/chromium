@@ -21,7 +21,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -29,7 +29,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -38,7 +38,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -75,7 +75,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -83,7 +83,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -92,7 +92,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -120,7 +120,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -128,7 +128,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -137,7 +137,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -190,7 +190,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -198,7 +198,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -207,7 +207,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -224,7 +224,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -232,7 +232,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -241,14 +241,14 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "loadline2_phone.crossbench": {
                 "crossbench_name": "loadline2-phone",
                 "arguments": [
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -265,7 +265,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -273,7 +273,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -282,7 +282,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -299,7 +299,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -307,7 +307,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -316,7 +316,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -333,7 +333,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -341,7 +341,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -350,7 +350,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -367,7 +367,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -375,7 +375,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -384,7 +384,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -401,7 +401,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.crossbench": {
@@ -409,7 +409,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "speedometer3.a11y.crossbench": {
@@ -418,7 +418,7 @@
                     "--extra-browser-args=--force-renderer-accessibility",
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
@@ -430,7 +430,7 @@
                 "arguments": [
                     "--cool-down-threshold=moderate",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         },
@@ -605,7 +605,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1171,
+        "num_stories": 1172,
         "predicted_min_shard_time": 544.0,
         "predicted_min_shard_index": 5,
         "predicted_max_shard_time": 7000,
@@ -613,7 +613,7 @@
         "shard #0": 1592.0,
         "shard #1": 1592.0,
         "shard #2": 1586.0,
-        "shard #3": 1363.0,
+        "shard #3": 1373.0,
         "shard #4": 1544.0,
         "shard #5": 544.0,
         "shard #6": 544.0,
