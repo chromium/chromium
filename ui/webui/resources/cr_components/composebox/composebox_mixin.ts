@@ -16,6 +16,7 @@ import {DriveUploadError} from '//resources/mojo/components/omnibox/browser/sear
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {VoicePermissionPromptState} from './composebox_voice_search.js';
 
 import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
@@ -472,6 +473,11 @@ export const ComposeboxEmbedderMixin =
         // =====================================================================
         // Common event handlers
         // =====================================================================
+
+        onVoicePermissionChanged(
+            e: CustomEvent<VoicePermissionPromptState>) {
+          this.fire('embedded-voice-permission-prompt-changed', e.detail);
+        }
 
         // This function is called when backend starts a file upload flow,
         // whether through `addFileFromAttachment_`,
@@ -2155,6 +2161,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   onContextMenuClosed(): Promise<void>;
   onContextMenuOpened(): void;
   onVoiceSearchButtonClick(): void;
+  onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>): void;
   onFileContextAdded(file: ComposeboxFile): void;
   voiceSearchEndCleanup(): void;
   onVoiceSearchFinalResult(e: CustomEvent<string>): void;

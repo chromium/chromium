@@ -175,6 +175,7 @@ export function getHtml(this: ComposeboxElement) {
     </div>
   ${this.shouldShowVoiceSearch() ? html`
     <cr-composebox-voice-search id="voiceSearch"
+        @voice-permission-changed="${this.onVoicePermissionChanged}"
         @voice-search-cancel="${this.onVoiceSearchCancel}"
         @voice-search-final-result="${this.onVoiceSearchFinalResult}"
         @voice-search-error="${this.onVoiceSearchError}"

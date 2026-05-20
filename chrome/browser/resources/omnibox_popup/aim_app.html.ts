@@ -19,6 +19,8 @@ export function getHtml(this: OmniboxAimAppElement) {
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       .isOblongShape="${this.isOblongShape_}"
       .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"
+      @embedded-voice-permission-prompt-changed=
+          "${this.onEmbeddedVoicePermissionPromptChanged}"
       @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
   </cr-omnibox-composebox>` : html`
   <cr-composebox id="composebox" searchbox-next-enabled
@@ -28,6 +30,8 @@ export function getHtml(this: OmniboxAimAppElement) {
       ?disable-composebox-animation="${this.disableComposeboxAnimation_}"
       .disableVoiceSearchAnimation="${this.disableVoiceSearchAnimation_}"
       @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+      @embedded-voice-permission-prompt-changed=
+          "${this.onEmbeddedVoicePermissionPromptChanged}"
       @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}"
       .showMenuOnClick="${false}"

@@ -331,4 +331,58 @@ suite('AimAppTest', function() {
             composebox.$.animatedSearchElement.requiresVoice,
             'voice search animation should exist');
       });
+
+  test('adjusts size on voice permissions dialogue changed', async () => {
+    const app: OmniboxAimAppElement = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    // Simulate the event being fired with specific dimensions.
+    app.$.composebox.dispatchEvent(
+        new CustomEvent('embedded-voice-permission-prompt-changed', {
+          detail: {
+            isOpened: true,
+            height: 120,
+            width: 250,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+
+    await microtasksFinished();
+
+    // Verify CSS custom properties are updated on composebox.
+    assertTrue(
+        app.$.composebox.classList.contains('has-embedded-permission-prompt'));
+    assertEquals(
+        '120px',
+        app.$.composebox.style.getPropertyValue(
+            '--cr_composebox_minimum_height'));
+    assertEquals(
+        '250px',
+        app.$.composebox.style.getPropertyValue(
+            '--cr_composebox_minimum_width'));
+
+    // Simulate the dialogue closing.
+    app.$.composebox.dispatchEvent(
+        new CustomEvent('embedded-voice-permission-prompt-changed', {
+          detail: {isOpened: false, height: 0, width: 0},
+          bubbles: true,
+          composed: true,
+        }));
+
+    await microtasksFinished();
+
+    // Verify CSS custom properties are reset.
+    assertFalse(
+        app.$.composebox.classList.contains('has-embedded-permission-prompt'));
+    assertEquals(
+        '',
+        app.$.composebox.style.getPropertyValue(
+            '--cr_composebox_minimum_height'));
+    assertEquals(
+        '',
+        app.$.composebox.style.getPropertyValue(
+            '--cr_composebox_minimum_width'));
+  });
 });
