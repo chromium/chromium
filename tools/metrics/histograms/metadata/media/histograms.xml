@@ -5250,16 +5250,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.HLS.MultivariantPlaylist" enum="Boolean"
-    expires_after="2026-06-28">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs whether HLS playback uses a multivariant (as opposed to plain media)
-    playlist. Recorded once per player.
-  </summary>
-</histogram>
-
 <histogram name="Media.HLS.ParserError" units="sparse"
     expires_after="2026-11-15">
   <owner>tmathmeyer@chromium.org</owner>
