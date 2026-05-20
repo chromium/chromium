@@ -218,6 +218,9 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {
+    if (!surface_) {
+      return ui::mojom::CursorType::kNull;
+    }
     views::Widget* widget =
         views::Widget::GetTopLevelWidgetForNativeView(surface_->window());
     if (widget)
@@ -225,6 +228,9 @@ class CustomWindowDelegate : public aura::WindowDelegate {
     return ui::mojom::CursorType::kNull;
   }
   int GetNonClientComponent(const gfx::Point& point) const override {
+    if (!surface_) {
+      return HTNOWHERE;
+    }
     views::Widget* widget =
         views::Widget::GetTopLevelWidgetForNativeView(surface_->window());
     if (widget && IsDeskContainer(widget->GetNativeView()->parent()) &&
@@ -244,6 +250,9 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   void OnPaint(const ui::PaintContext& context) override {}
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {
+    if (!surface_) {
+      return;
+    }
     surface_->OnScaleFactorChanged(old_device_scale_factor,
                                    new_device_scale_factor);
   }
@@ -253,14 +262,23 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   void OnWindowOcclusionChanged(
       aura::Window::OcclusionState old_occlusion_state,
       aura::Window::OcclusionState new_occlusion_state) override {
+    if (!surface_) {
+      return;
+    }
     surface_->OnWindowOcclusionChanged(old_occlusion_state,
                                        new_occlusion_state);
   }
   bool HasHitTestMask() const override { return true; }
   void GetHitTestMask(SkPath* mask) const override {
+    if (!surface_) {
+      return;
+    }
     surface_->GetHitTestMask(mask);
   }
   void OnKeyEvent(ui::KeyEvent* event) override {
+    if (!surface_) {
+      return;
+    }
     // Propagates the key event upto the top-level views Widget so that we can
     // trigger proper events in the views/ash level there. Event handling for
     // Surfaces is done in a post event handler in keyboard.cc.
@@ -270,8 +288,10 @@ class CustomWindowDelegate : public aura::WindowDelegate {
       widget->OnKeyEvent(event);
   }
 
+  void reset_surface() { surface_ = nullptr; }
+
  private:
-  const raw_ptr<Surface> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -343,6 +363,9 @@ Surface::Surface()
 }
 
 Surface::~Surface() {
+  // Tell WindowDelegate that surface is in destruction phrase, and no need to
+  // call back to the surface.
+  static_cast<CustomWindowDelegate*>(window_->delegate())->reset_surface();
   for (SurfaceObserver& observer : observers_)
     observer.OnSurfaceDestroying(this);
 

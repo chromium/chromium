@@ -1426,6 +1426,70 @@ TEST_P(SurfaceTest, UpdatesOcclusionOnDestroyingSubsurface) {
             child_surface->window()->GetOcclusionState());
 }
 
+// Regression test for b/511718825. Destroying a surface with subsurface will
+// first destroy the sub surface's window, which will change the occlusion state
+// of the parent surface. That was causing unnecessary reentrant calls to the
+// SurfaceObserver.
+TEST_P(SurfaceTest, NoOcclusionUpdateOnDestroyingSurface) {
+  gfx::Size buffer_size(256, 512);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  gfx::Size child_buffer_size(64, 128);
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(child_buffer_size);
+  auto child_surface = std::make_unique<Surface>();
+  auto sub_surface =
+      std::make_unique<SubSurface>(child_surface.get(), surface.get());
+  child_surface->Attach(child_buffer.get());
+  // Turn on occlusion tracking.
+  child_surface->SetOcclusionTracking(true);
+  child_surface->Commit();
+  surface->Commit();
+
+  SurfaceObserverForTest observer(
+      child_surface.get()->window()->GetOcclusionState());
+  ScopedSurface scoped_child_surface(child_surface.get(), &observer);
+
+  class DestroyingOcclusionObserver : public SurfaceObserver {
+   public:
+    explicit DestroyingOcclusionObserver(Surface* surface) : surface_(surface) {
+      surface_->AddSurfaceObserver(this);
+    }
+    DestroyingOcclusionObserver(const DestroyingOcclusionObserver&) = delete;
+    DestroyingOcclusionObserver& operator=(const DestroyingOcclusionObserver&) =
+        delete;
+    ~DestroyingOcclusionObserver() override {
+      if (surface_) {
+        surface_->RemoveSurfaceObserver(this);
+      }
+    }
+
+    // SurfaceObserver:
+    void OnSurfaceDestroying(Surface* surface) override {
+      surface->RemoveSurfaceObserver(this);
+      surface_ = nullptr;
+    }
+
+    void OnWindowOcclusionChanged(Surface* surface) override {
+      num_occlusion_changes_++;
+    }
+
+    int num_occlusion_changes() const { return num_occlusion_changes_; }
+
+   private:
+    raw_ptr<Surface> surface_;
+    int num_occlusion_changes_ = 0;
+  };
+
+  DestroyingOcclusionObserver parent_observer(surface.get());
+
+  surface.reset();
+  EXPECT_EQ(0, parent_observer.num_occlusion_changes());
+}
+
 TEST_P(SurfaceTest, OcclusionNotRecomputedOnWidgetCommit) {
   constexpr gfx::Size kBufferSize(32, 32);
   auto shell_surface =
