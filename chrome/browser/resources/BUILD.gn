@@ -314,7 +314,6 @@ group("dev_ui_resources") {
   public_deps = [
     "accessibility:resources",
     "accessibility_annotator_internals:resources",
-    "actor_internals:resources",
     "bluetooth_internals:resources",
     "browsing_topics:resources",
     "chrome_finds_internals:resources",
@@ -331,6 +330,7 @@ group("dev_ui_resources") {
     "privacy_sandbox/internals:resources",
     "subresource_filter:resources",
     "usb_internals:resources",
+    "//components/actor/core/internals/resources",
     "//components/commerce/core/internals/resources",
     "//components/data_sharing/data_sharing_internals/resources",
     "//components/download/resources/download_internals:resources",

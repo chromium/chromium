@@ -9,20 +9,18 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
-#include "chrome/browser/ui/webui/actor_internals/actor_internals.mojom.h"
+#include "components/actor/core/internals/browser/actor_internals_handler.h"
+#include "components/actor/public/mojom/actor_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-// UI Handler for chrome://actor-internals/
-// It listens to actor journal events and passes those notifications
-// into the Javascript to update the page.
-class ActorInternalsUIHandler : public actor_internals::mojom::PageHandler,
-                                public actor::AggregatedJournal::Observer,
-                                public ui::SelectFileDialog::Listener {
+// Desktop UI Handler for chrome://actor-internals/
+class ActorInternalsUIHandler
+    : public actor::AggregatedJournal::Observer,
+      public actor_internals::ActorInternalsHandler::Delegate,
+      public ui::SelectFileDialog::Listener {
  public:
   ActorInternalsUIHandler(
       content::WebContents* web_contents,
@@ -38,7 +36,7 @@ class ActorInternalsUIHandler : public actor_internals::mojom::PageHandler,
   void WillAddJournalEntry(
       const actor::AggregatedJournal::Entry& entry) override;
 
-  // actor_internals::mojom::PageHandler implementation:
+  // actor_internals::ActorInternalsHandler::Delegate:
   void StartLogging() override;
   void StopLogging() override;
 
@@ -48,13 +46,12 @@ class ActorInternalsUIHandler : public actor_internals::mojom::PageHandler,
 
  private:
   void TraceFileInitDone(bool success);
-  void Cleanup();
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<actor::AggregatedJournalFileSerializer> trace_logger_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  mojo::Remote<actor_internals::mojom::Page> remote_;
-  mojo::Receiver<actor_internals::mojom::PageHandler> receiver_;
+
+  std::unique_ptr<actor_internals::ActorInternalsHandler> handler_;
 
   base::WeakPtrFactory<ActorInternalsUIHandler> weak_ptr_factory_{this};
 };

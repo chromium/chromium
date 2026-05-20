@@ -2,15 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
-
-mojom("mojo_bindings") {
-  sources = [ "actor_internals.mojom" ]
-  webui_module_path = "/"
-
-  public_deps = [ "//mojo/public/mojom/base" ]
-}
-
 source_set("actor_internals") {
   sources = [
     "actor_internals_ui.cc",
@@ -20,8 +11,8 @@ source_set("actor_internals") {
   ]
 
   public_deps = [
-    ":mojo_bindings",
     "//base",
+    "//components/actor/public/mojom:mojo_bindings",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -31,9 +22,9 @@ source_set("actor_internals") {
     "//chrome/browser:global_features",
     "//chrome/browser/actor",
     "//chrome/browser/profiles",
-    "//chrome/browser/resources/actor_internals:resources",
-    "//chrome/browser/ui/webui/actor_internals:mojo_bindings",
     "//chrome/common",
+    "//components/actor/core/internals/browser",
+    "//components/actor/core/internals/resources",
     "//content/public/browser",
     "//ui/shell_dialogs",
   ]

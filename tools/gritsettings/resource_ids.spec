@@ -204,7 +204,7 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2747],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/actor_internals/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/actor/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2750],
   },

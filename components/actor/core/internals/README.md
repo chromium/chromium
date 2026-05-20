@@ -1,0 +1,1 @@
+Cross-platform resources for the chrome://actor-internals page.
