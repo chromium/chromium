@@ -328,7 +328,7 @@ class OpenXrRenderLoop : public XRThread,
   mojom::XRVisibilityState visibility_state_ =
       mojom::XRVisibilityState::VISIBLE;
   mojom::VRStageParametersPtr current_stage_parameters_;
-  uint32_t stage_parameters_id_;
+  uint32_t stage_parameters_id_ = 0;
 
   // Lifetime of the platform helper is guaranteed by the OpenXrDevice.
   raw_ptr<OpenXrPlatformHelper> platform_helper_;
