@@ -18,6 +18,7 @@
 #include "components/private_ai/phosphor/token_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace private_ai {
 
@@ -44,6 +45,11 @@ std::unique_ptr<Client> Client::Create(
     GURL proxy_url(proxy_url_string);
     if (!proxy_url.SchemeIsHTTPOrHTTPS()) {
       proxy_url = GURL(base::StrCat({"https://", proxy_url_string}));
+    }
+    if (proxy_url.SchemeIs(url::kHttpScheme)) {
+      GURL::Replacements replacements;
+      replacements.SetSchemeStr(url::kHttpsScheme);
+      proxy_url = proxy_url.ReplaceComponents(replacements);
     }
     connection_factory->EnableProxy(proxy_url);
   }

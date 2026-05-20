@@ -162,6 +162,7 @@ void ConnectionProxy::OnProxyToken(
 
 
   auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->enforce_chrome_ct_policy = true;
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->initial_custom_proxy_config =
