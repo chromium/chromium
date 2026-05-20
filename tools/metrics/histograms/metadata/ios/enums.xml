@@ -2743,6 +2743,21 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Metric Volume"/>
 </enum>
 
+<!-- LINT.IfChange(UserFeedbackSender) -->
+
+<enum name="UserFeedbackSender">
+  <int value="0" label="ToolsMenu"/>
+  <int value="1" label="SadTab"/>
+  <int value="2" label="Feed"/>
+  <int value="3" label="KeyCommand"/>
+  <int value="4" label="MiniMap"/>
+  <int value="5" label="ParcelTracking"/>
+  <int value="6" label="UnitConversion"/>
+  <int value="7" label="ContentNotification"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h:UserFeedbackSender) -->
+
 <enum name="VariationsFirstRunSeedApplicationStage">
   <int value="0" label="Seed missing">
     No seed in native variations seed store

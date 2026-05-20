@@ -1952,6 +1952,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Feedback.ReportAnIssue.Displayed"
+    enum="UserFeedbackSender" expires_after="2027-06-01">
+  <owner>jlebel@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the sender of the feedback when the report an issue dialog is
+    displayed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Feedback.ReportAnIssue.NotDisplayed"
+    enum="UserFeedbackSender" expires_after="2027-06-01">
+  <owner>jlebel@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the sender of the feedback when the report an issue dialog is not
+    displayed (e.g. because the user lacks the capability to submit feedback).
+    TODO(crbug.com/512043635): Remove this histogram once Chrome uses Aloha
+    feedback.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FeedbackKit.UserFlowStartedSuccess" enum="Boolean"
     expires_after="2023-10-31">
   <owner>rkgibson@google.com</owner>

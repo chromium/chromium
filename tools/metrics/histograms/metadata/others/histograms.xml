@@ -3860,6 +3860,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the source that requested showing the feedback app. Only recorded if
     feedback submission is allowed.
+
+    This histogram is only recorded on desktop platforms (Windows, macOS, Linux,
+    ChromeOS). For iOS, see IOS.Feedback.ReportAnIssue.Displayed and
+    IOS.Feedback.ReportAnIssue.NotDisplayed.
   </summary>
 </histogram>
 
