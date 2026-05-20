@@ -165,6 +165,16 @@ void ReportResult(Result result) {
       "WebDatabase.AutofillWebDataBackendImpl.OperationResult", result);
 }
 
+bool SupportsSyncingEntityMetadata(const EntityInstance& entity_instance) {
+  switch (entity_instance.record_type()) {
+    case EntityInstance::RecordType::kServerWallet:
+      return true;
+    case EntityInstance::RecordType::kLocal:
+    case EntityInstance::RecordType::kPersonalContext:
+      return false;
+  }
+}
+
 }  // namespace
 
 AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
@@ -356,7 +366,7 @@ void AutofillWebDataBackendImpl::NotifyOnEntityInstanceChanged(
   }
 
   // Notify about potential server metadata changes.
-  if (change.data_model().IsServerInstance()) {
+  if (SupportsSyncingEntityMetadata(change.data_model())) {
     EntityInstanceMetadataChange::Type metadata_change_type = [&] {
       switch (change.type()) {
         case EntityInstanceChange::ADD:
@@ -625,7 +635,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateEntityMetadata(
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  if (entity.IsServerInstance()) {
+  if (SupportsSyncingEntityMetadata(entity)) {
     EntityInstanceMetadataChange change(EntityInstanceMetadataChange::UPDATE,
                                         entity.guid(), entity.metadata());
     NotifyOnServerEntityMetadataChanged(change);
