@@ -43,7 +43,7 @@ XRWebGLTextureArraySwapChain::XRWebGLTextureArraySwapChain(
   CHECK(webgl2());  // Texture arrays are only available in WebGL 2
 }
 
-XRWebGLTextureArraySwapChain::~XRWebGLTextureArraySwapChain() {
+void XRWebGLTextureArraySwapChain::Dispose() {
   if (owned_texture_) {
     gpu::gles2::GLES2Interface* gl = context()->ContextGL();
     if (!gl) {
