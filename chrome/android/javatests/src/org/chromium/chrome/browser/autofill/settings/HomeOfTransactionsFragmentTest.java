@@ -45,13 +45,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,9 +63,11 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -73,6 +75,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.signin_promo.AutofillAndPasswordsPromoDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.SigninFeatures;
@@ -99,6 +102,7 @@ public class HomeOfTransactionsFragmentTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSettingsSigninCoordinator;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mAutofillAndPasswordsSigninCoordinator;
 
@@ -429,10 +433,7 @@ public class HomeOfTransactionsFragmentTest {
     public void testClickPaymentsLaunchesPayments() {
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(R.string.autofill_payments_title)).perform(click());
-
-        onView(withText(R.string.autofill_enable_credit_cards_toggle_label))
-                .check(matches(isDisplayed()));
+        testItemClick(R.string.autofill_payments_title, AutofillPaymentMethodsFragment.class);
     }
 
     @Test
@@ -441,10 +442,7 @@ public class HomeOfTransactionsFragmentTest {
     public void testClickContactInfoLaunchesContactInfo() {
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(R.string.autofill_contact_info_title)).perform(click());
-
-        onView(withText(R.string.autofill_enable_profiles_toggle_label))
-                .check(matches(isDisplayed()));
+        testItemClick(R.string.autofill_contact_info_title, AutofillProfilesFragment.class);
     }
 
     @Test
@@ -453,14 +451,10 @@ public class HomeOfTransactionsFragmentTest {
     public void testClickAutofillSettingsLaunchesAutofillOptions() {
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(R.string.autofill_settings_title)).perform(click());
-
-        onView(withText(R.string.autofill_third_party_filling_default))
-                .check(matches(isDisplayed()));
+        testItemClick(R.string.autofill_settings_title, AutofillOptionsFragment.class);
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/514727834")
     @SmallTest
     @EnableFeatures({
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
@@ -470,10 +464,7 @@ public class HomeOfTransactionsFragmentTest {
         when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(R.string.autofill_identity_docs_title)).perform(click());
-
-        onView(withText(R.string.autofill_identity_docs_opt_in_toggle_label))
-                .check(matches(isDisplayed()));
+        testItemClick(R.string.autofill_identity_docs_title, AutofillIdentityDocsFragment.class);
     }
 
     @Test
@@ -486,7 +477,6 @@ public class HomeOfTransactionsFragmentTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/514727834")
     @SmallTest
     @EnableFeatures({
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
@@ -496,10 +486,7 @@ public class HomeOfTransactionsFragmentTest {
         when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(R.string.autofill_travel_title)).perform(click());
-
-        onView(withText(R.string.autofill_travel_opt_in_toggle_label))
-                .check(matches(isDisplayed()));
+        testItemClick(R.string.autofill_travel_title, AutofillTravelFragment.class);
     }
 
     @Test
@@ -515,5 +502,15 @@ public class HomeOfTransactionsFragmentTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED, value);
+    }
+
+    private void testItemClick(
+            int titleRes, Class<? extends ChromeBaseSettingsFragment> expectedFragment) {
+        // We need to set the testing instance right before the click, otherwise Settings tests
+        // don't launch proper fragment to initiate tests.
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        onView(withText(titleRes)).perform(click());
+
+        verify(mSettingsNavigation).startSettings(any(), eq(expectedFragment), any(), eq(true));
     }
 }

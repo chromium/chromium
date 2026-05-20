@@ -82,7 +82,8 @@ public class SettingsNavigationHelperTest {
     public void testRecordsActionThenLaunchesPaymentsSettings() {
         assertTrue(SettingsNavigationHelper.showAutofillCreditCardSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillCreditCardsViewed"));
-        verify(mMockLauncher).startSettings(mMockContext, AutofillPaymentMethodsFragment.class);
+        verify(mMockLauncher)
+                .startSettings(mMockContext, AutofillPaymentMethodsFragment.class, null, false);
     }
 
     @Test
@@ -90,7 +91,8 @@ public class SettingsNavigationHelperTest {
     public void testRecordsActionThenLaunchesAddressesSettings() {
         assertTrue(SettingsNavigationHelper.showAutofillProfileSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillAddressesViewed"));
-        verify(mMockLauncher).startSettings(mMockContext, AutofillProfilesFragment.class);
+        verify(mMockLauncher)
+                .startSettings(mMockContext, AutofillProfilesFragment.class, null, false);
     }
 
     @Test
