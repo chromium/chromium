@@ -40,9 +40,14 @@
 #include "services/webnn/webnn_switches.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/fp16/src/include/fp16.h"
+#include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_utils.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/optimize/reduced_precision_metadata.h"
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
 #include "third_party/litert/src/litert/cc/litert_options.h"
@@ -63,6 +68,12 @@ BASE_FEATURE(kApplyQDQFusion, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Align weights to match default LITERT_HOST_MEMORY_BUFFER_ALIGNMENT.
 constexpr size_t kWeightsAlignment = 64;
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+static_assert(
+    kWeightsAlignment >= XNN_EXTRA_BYTES,
+    "kWeightsAlignment must be at least XNN_EXTRA_BYTES for XNNPACK reads.");
+#endif
 
 // Flatbuffers cannot be larger than 2 GiB however the library does not provide
 // feedback when this limit is exceeded and can instead encounter integer
@@ -3152,6 +3163,18 @@ auto GraphBuilderTflite::FinishAndTakeResult(
 
   ::tflite::FinishModelBuffer(builder_, model_buffer);
   is_created_model_ = true;
+
+  // The XNNPACK delegate may read up to XNN_EXTRA_BYTES beyond the end of
+  // tensor buffers. Add padding to the weights file so that the last buffer has
+  // sufficient readable memory after it.
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  if (weights_file_.IsValid()) {
+    const uint8_t zeros[XNN_EXTRA_BYTES] = {};
+    if (!weights_file_.WriteAtCurrentPosAndCheck(zeros)) {
+      return base::unexpected("Failed to write weights file padding.");
+    }
+  }
+#endif
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
   ::litert::Options::ScopedWeightSectionMap weights_section_map;
