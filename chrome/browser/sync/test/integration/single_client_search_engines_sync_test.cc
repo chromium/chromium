@@ -75,23 +75,10 @@ class SingleClientSearchEnginesSyncTestBase : public SyncTest {
     }
 
     // Wait for models to load.
-#if !BUILDFLAG(IS_ANDROID)
-    search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(verifier()));
-#endif
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(GetProfile(0)));
 
     return true;
-  }
-
-  bool UseVerifier() override {
-#if BUILDFLAG(IS_ANDROID)
-    return false;
-#else
-    // TODO(crbug.com/40724973): rewrite test to not use verifier.
-    return true;
-#endif
   }
 };
 
@@ -120,18 +107,11 @@ class SingleClientSearchEnginesSyncTest
 
 IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
-#if !BUILDFLAG(IS_ANDROID)
-  ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
-#endif
   search_engines_helper::AddSearchEngine(/*profile_index=*/0,
                                          /*keyword=*/"test0");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
       "test0", GetFakeServer()));
-#else
-  ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest,
@@ -548,11 +528,16 @@ IN_PROC_BROWSER_TEST_F(
     SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
     ShouldPreserveLocalAndAccountSearchEnginesAcrossRestart) {
   ASSERT_TRUE(SetupClients());
+  // Account-based search engines (like key2) reside only in sync's private
+  // database and are not persisted locally, so
+  // WaitForTemplateURLServiceToLoad() cannot load them. Calling
+  // AwaitSyncTransportActive() ensures that the sync engine has initialized and
+  // loaded the account-based search engines from its local sync database.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
 
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
       "key1", GetFakeServer()));
   EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
