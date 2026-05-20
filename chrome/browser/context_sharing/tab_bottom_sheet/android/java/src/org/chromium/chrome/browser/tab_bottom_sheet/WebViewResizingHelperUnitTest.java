@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -181,5 +182,62 @@ public class WebViewResizingHelperUnitTest {
         container.layout(0, 0, 100, 200);
 
         verify(mMockWebContents).setSize(100, 200);
+    }
+
+    @Test
+    public void testSetThinWebViewOnly() {
+        mHelper.setThinWebView(mMockThinWebView, null);
+
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        // Place holder + ThinWebView
+        assertEquals(2, container.getChildCount());
+        assertEquals(mView, container.getChildAt(1));
+
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
+        assertEquals(1000, layoutParams.height);
+    }
+
+    @Test
+    public void testSetWebContentsOnly() {
+        mHelper.setThinWebView(null, mMockWebContents);
+
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        assertEquals(1, container.getChildCount());
+
+        when(mMockWebContents.getWidth()).thenReturn(50);
+        when(mMockWebContents.getHeight()).thenReturn(50);
+
+        clearInvocations(mMockWebContents);
+
+        container.layout(0, 0, 100, 200);
+
+        verify(mMockWebContents).setSize(100, 200);
+    }
+
+    @Test
+    public void testReset_nullThinWebView() {
+        mHelper.setThinWebView(null, mMockWebContents);
+        mHelper.reset();
+
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        assertEquals(1, container.getChildCount());
+        assertEquals(View.GONE, container.getChildAt(0).getVisibility());
+    }
+
+    @Test
+    public void testUpdateBounds_InactiveActivity() {
+        when(mMockWindowAndroid.getActivityState()).thenReturn(ActivityState.PAUSED);
+
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        when(mMockWebContents.getWidth()).thenReturn(50);
+        when(mMockWebContents.getHeight()).thenReturn(50);
+
+        clearInvocations(mMockWebContents);
+
+        container.layout(0, 0, 100, 200);
+
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
     }
 }

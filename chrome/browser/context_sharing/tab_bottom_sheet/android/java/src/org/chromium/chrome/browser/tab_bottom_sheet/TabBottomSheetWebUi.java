@@ -182,7 +182,7 @@ public class TabBottomSheetWebUi {
         // We expect the life cycle of webContents to be managed by native.
         mWebContents = null;
         mContentView = null;
-        mWebViewResizingHelper.reset();
+        mWebViewResizingHelper.destroy();
         if (mThinWebView != null) {
             mThinWebView.destroy();
             mThinWebView = null;
@@ -222,6 +222,7 @@ public class TabBottomSheetWebUi {
         if (isActivityFinishingOrDestroyed(mWindowAndroid)) {
             return;
         }
+
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();
         constraints.supportsOpacity = true;
         constraints.backgroundColor = mBackgroundColor;
@@ -231,6 +232,7 @@ public class TabBottomSheetWebUi {
                         constraints,
                         assumeNonNull(mWindowAndroid.getIntentRequestTracker()),
                         /* enablePermissionRequests= */ true);
+        mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
     }
 
     @Nullable ThinWebView getThinWebViewForTesting() {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityInactive;
 import static org.chromium.ui.animation.AnimationListeners.onAnimationEnd;
 
 import android.animation.ValueAnimator;
@@ -81,28 +82,39 @@ public class WebViewResizingHelper {
         mResizingPlaceholder.setBackground(background);
     }
 
-    /** Resets the helper to its initial state. */
+    /** Destroys the helper and releases the WebContents. */
+    public void destroy() {
+        reset();
+        mWebContents = null;
+    }
+
+    /** Resets the helper to its initial state without resetting the WebContents. */
     public void reset() {
-        if (mThinWebView == null) return;
         mResizingContainer.removeAllViews();
         mResizingContainer.addView(mResizingPlaceholder);
         mResizingPlaceholder.setVisibility(View.GONE);
         mThinWebView = null;
-        mWebContents = null;
         mIsViewportSizeFixed = false;
     }
 
-    /** Sets the ThinWebView which will be resized. */
-    public void setThinWebView(ThinWebView thinWebView, WebContents webContents) {
+    /** Sets the ThinWebView and WebContents which will be resized. */
+    public void setThinWebView(
+            @Nullable ThinWebView thinWebView, @Nullable WebContents webContents) {
         reset();
-        mThinWebView = thinWebView;
-        mWebContents = webContents;
 
-        FrameLayout.LayoutParams layoutParams =
-                new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, getDecorViewHeight());
-        layoutParams.gravity = Gravity.TOP;
-        mResizingContainer.addView(mThinWebView.getView(), layoutParams);
+        if (thinWebView != null && mThinWebView != thinWebView) {
+            // Use MATCH_PARENT so the initial layout uses the container height instead of the
+            // decor height, which can cause incorrect sizing.
+            FrameLayout.LayoutParams layoutParams =
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.gravity = Gravity.TOP;
+            mResizingContainer.addView(thinWebView.getView(), layoutParams);
+        }
+
+        mWebContents = webContents;
+        mThinWebView = thinWebView;
 
         updateBounds();
     }
@@ -111,6 +123,12 @@ public class WebViewResizingHelper {
         Window window = mWindowAndroid.getWindow();
         assert window != null;
         return window.getDecorView().getHeight();
+    }
+
+    private @Px int getDecorViewWidth() {
+        Window window = mWindowAndroid.getWindow();
+        assert window != null;
+        return window.getDecorView().getWidth();
     }
 
     /** Returns the resizing container. This holds the ThinWebView and the placeholder. */
@@ -202,19 +220,27 @@ public class WebViewResizingHelper {
     }
 
     private void updateBounds() {
-        if (mThinWebView == null || mWebContents == null) return;
+        if (isActivityInactive(mWindowAndroid)) {
+            return;
+        }
 
-        int newDecorHeight = getDecorViewHeight();
-        ViewGroup.LayoutParams params = mThinWebView.getView().getLayoutParams();
-        if (params != null && params.height != newDecorHeight) {
-            params.height = newDecorHeight;
-            mThinWebView.getView().setLayoutParams(params);
+        if (mThinWebView != null) {
+            @Px int newDecorHeight = getDecorViewHeight();
+            @Px int newDecorWidth = getDecorViewWidth();
+            ViewGroup.LayoutParams params = mThinWebView.getView().getLayoutParams();
+            if (params != null
+                    && (params.height != newDecorHeight || params.width != newDecorWidth)) {
+                params.height = newDecorHeight;
+                params.width = newDecorWidth;
+                mThinWebView.getView().setLayoutParams(params);
+            }
         }
 
         @Px int width = mResizingContainer.getWidth();
         @Px int height = mResizingContainer.getHeight();
 
-        if ((width == mWebContents.getWidth() && height == mWebContents.getHeight())
+        if (mWebContents == null
+                || (width == mWebContents.getWidth() && height == mWebContents.getHeight())
                 || width == 0
                 || height == 0) {
             return;

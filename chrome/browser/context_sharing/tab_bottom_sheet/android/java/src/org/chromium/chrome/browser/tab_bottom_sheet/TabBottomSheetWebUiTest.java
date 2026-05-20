@@ -254,8 +254,7 @@ public class TabBottomSheetWebUiTest {
         verify(mThinWebView).attachWebContents(eq(mWebContents), any(), paramsCaptor.capture());
 
         ThinWebViewAttachParams params = paramsCaptor.getValue();
-        WebContentsDelegateAndroid delegate =
-                params.webContentsDelegate;
+        WebContentsDelegateAndroid delegate = params.webContentsDelegate;
         assertNotNull(delegate);
 
         delegate.contentsZoomChange(true);
