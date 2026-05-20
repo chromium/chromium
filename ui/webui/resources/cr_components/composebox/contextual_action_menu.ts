@@ -75,6 +75,7 @@ export class ContextualActionMenuElement extends
       disableAutoReposition: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
       shareTabsFlyoutOpen_: {type: Boolean},
+      shareTabsFlyoutPosition_: {type: String},
     };
   }
 
@@ -100,6 +101,7 @@ export class ContextualActionMenuElement extends
   protected accessor contextManagementInComposeboxEnabled_: boolean =
       getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
   protected accessor shareTabsFlyoutOpen_: boolean = false;
+  protected accessor shareTabsFlyoutPosition_: string = 'right';
 
   private closeTimer_: number|null = null;
   private pointerOverTrigger_: boolean = false;
@@ -468,6 +470,7 @@ export class ContextualActionMenuElement extends
     this.pointerOverTrigger_ = true;
     this.cancelCloseTimer_();
     this.shareTabsFlyoutOpen_ = true;
+    this.updateFlyoutPosition_();
   }
 
   protected onShareTabsRowPointerleave_() {
@@ -490,6 +493,7 @@ export class ContextualActionMenuElement extends
       e.preventDefault();
       e.stopPropagation();
       this.shareTabsFlyoutOpen_ = true;
+      this.updateFlyoutPosition_();
 
       this.updateComplete.then(() => {
         const firstTabItem = this.shadowRoot.querySelector<HTMLElement>(
@@ -513,6 +517,46 @@ export class ContextualActionMenuElement extends
         row.focus();
       }
     }
+  }
+
+  private updateFlyoutPosition_() {
+    this.updateComplete.then(() => {
+      const trigger =
+          this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
+      const flyout =
+          this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
+      if (!trigger || !flyout) {
+        return;
+      }
+
+      const triggerRect = trigger.getBoundingClientRect();
+      const flyoutWidth = flyout.offsetWidth || 320;
+      const viewportWidth = window.innerWidth;
+
+      if (triggerRect.right + flyoutWidth + 4 <= viewportWidth) {
+        this.shareTabsFlyoutPosition_ = 'right';
+        flyout.style.left = '';
+        flyout.style.right = '';
+      } else if (triggerRect.left >= flyoutWidth + 4) {
+        this.shareTabsFlyoutPosition_ = 'left';
+        flyout.style.left = '';
+        flyout.style.right = '';
+      } else {
+        this.shareTabsFlyoutPosition_ = 'bottom';
+        const rtl = getComputedStyle(this).direction === 'rtl';
+        if (rtl) {
+          const maxRight = triggerRect.right - flyoutWidth - 12;
+          const boundedRight = Math.max(0, Math.min(110, maxRight));
+          flyout.style.right = `${boundedRight}px`;
+          flyout.style.left = 'auto';
+        } else {
+          const maxLeft = viewportWidth - triggerRect.left - flyoutWidth - 12;
+          const boundedLeft = Math.max(0, Math.min(110, maxLeft));
+          flyout.style.left = `${boundedLeft}px`;
+          flyout.style.right = 'auto';
+        }
+      }
+    });
   }
 
 

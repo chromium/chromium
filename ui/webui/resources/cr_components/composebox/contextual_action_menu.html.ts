@@ -46,6 +46,7 @@ export function getHtml(this: ContextualActionMenuElement) {
           </button>
           <div class="share-tabs-flyout" role="menu"
               ?hidden="${!this.shareTabsFlyoutOpen_}"
+              data-position="${this.shareTabsFlyoutPosition_}"
               @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
               @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
               @keydown="${this.onShareTabsFlyoutKeydown_}">
