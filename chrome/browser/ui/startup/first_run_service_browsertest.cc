@@ -211,9 +211,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, CloseProceeds) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 struct PolicyTestParam {
-  const std::string test_suffix;
-  const std::string key;
-  const std::string value;  // As JSON string, base::Value is not copy-friendly.
+  const char* key;
+  const char* value;  // As JSON string, base::Value is not copy-friendly.
   const bool should_open_fre = false;
 };
 
@@ -230,7 +229,7 @@ const PolicyTestParam kPolicyTestParams[] = {
 std::string PolicyParamToTestSuffix(
     const ::testing::TestParamInfo<PolicyTestParam>& info) {
   std::string force_signin_profile_picker_feature;
-  return info.param.key + "_" + info.param.value;
+  return std::string(info.param.key) + "_" + info.param.value;
 }
 
 class FirstRunServicePolicyBrowserTest

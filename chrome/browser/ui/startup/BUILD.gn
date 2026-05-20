@@ -384,11 +384,10 @@ if (!is_android) {
       deps += [
         ":startup",
         "//base/test:test_support",
-        "//chrome/browser",
         "//chrome/browser:browser_process",
+        "//chrome/browser/first_run",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/profiles:profile_util",
-        "//chrome/browser/ui",
         "//chrome/common:constants",
         "//chrome/common:non_code_constants",
         "//chrome/test:test_support_ui",
@@ -460,7 +459,6 @@ if (!is_android) {
       "//base/version_info",
       "//build:buildflag_header_h",
       "//chrome/app:command_ids",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser:buildflags",
       "//chrome/browser:chrome_browser_main",
@@ -475,7 +473,6 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/sessions",
       "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/profiles",
@@ -523,11 +520,17 @@ if (!is_android) {
       sources += [
         "credential_provider_signin_dialog_win_browsertest.cc",
         "startup_browser_creator_corrupt_profiles_browsertest_win.cc",
+        "startup_browser_creator_triggered_reset_browsertest_win.cc",
       ]
       deps += [
         ":credential_provider_test_utils",
+        "//chrome/browser/profile_resetter",
         "//chrome/credential_provider/common:common_constants",
       ]
+    }
+    if (enable_dice_support) {
+      sources += [ "first_run_service_browsertest.cc" ]
+      deps += [ ":test_support_ui" ]
     }
     if (!is_chromeos) {
       deps += [ "//chrome/browser/ui/webui/signin:profile" ]
@@ -552,13 +555,11 @@ if (!is_android && !is_chromeos_device) {
     deps = [
       ":startup",
       "//base",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser:chrome_browser_main",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser/prefs:util",
       "//chrome/browser/sessions",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",

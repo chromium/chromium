@@ -4492,7 +4492,6 @@ if (!is_android) {
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",
         "../browser/spellchecker/spell_check_host_chrome_impl_win_browsertest.cc",
         "../browser/ui/color/win/native_chrome_color_mixer_win_browsertest.cc",
-        "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/ui/views/uninstall_view_browsertest.cc",
         "../test/delayload/delayload_hook_browsertest.cc",
@@ -4505,7 +4504,6 @@ if (!is_android) {
         "//chrome/app:chrome_dll_resources",
         "//chrome/app:command_ids",
         "//chrome/browser:font_prewarmer_tab_helper",
-        "//chrome/browser/ui/startup:buildflags",
         "//chrome/credential_provider/common:common_constants",
         "//components/onc",
         "//sandbox/win:sandbox",
@@ -6296,7 +6294,6 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [
-        "../browser/ui/startup/first_run_service_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_glic_flow_controller_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_sign_in_provider_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
@@ -6314,7 +6311,6 @@ if (!is_android) {
       deps += [
         "../browser/enterprise/connectors/test:test_support",
         "//chrome/browser:main_extra_parts",
-        "//chrome/browser/ui/startup:test_support_ui",
         "//chrome/browser/ui/supervised_user",
       ]
     }
