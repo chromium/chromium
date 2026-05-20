@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">在書籤中整理所追蹤的產品</translation>
 <translation id="1455845192930279203">仍要從 <ph name="DOWNLOAD_DOMAIN" /> 下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="1460751212339734034">不必重複輸入網址，節省寶貴時間</translation>
+<translation id="146522654774760805">密碼和自動填入</translation>
 <translation id="1466383950273130737">選擇 Chrome 的顯示語言</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="147982357559798527">已變更</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，固定的無痕分頁，已設為靜音</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2029669011553795746">提示通知啟用畫面顯示在畫面下半部</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 和另外 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="441100617989818073">閒置或重複的分頁和分頁群組</translation>
 <translation id="4412123112245770507">收合區段</translation>
+<translation id="4412698727486357573">說明中心</translation>
 <translation id="4414179633735763985">已刪除 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">管理你的 Google 帳戶</translation>
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165">「<ph name="MENU_NAME" />」選單中有醒目顯示項目。</translation>
 <translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
 <translation id="6987047470128880212">這部裝置不支援無痕模式</translation>
-<translation id="6989358895283601928">儲存與列印</translation>
 <translation id="6996145122199359148">下載這個網頁</translation>
 <translation id="7013762323294215682">這個密碼金鑰會儲存至密碼管理工具。凡是有權存取密碼管理工具的使用者，都能使用這個密碼金鑰。</translation>
 <translation id="7020741890149022655">新增到閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -1858,7 +1860,7 @@
 <translation id="8696297579102085705">傳送到你的裝置</translation>
 <translation id="8697753151306746444">改為分享視窗或螢幕畫面</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
-<translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="8715286883001906001">強化 Google 帳戶中的密碼</translation>
 <translation id="8715300232952757586">系統將關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="8723453889042591629">快速翻譯這個網頁，按住這裡即可編輯這個捷徑。</translation>
@@ -2003,6 +2005,7 @@
 <translation id="970715775301869095">還剩 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
+<translation id="984275831282074731">付款方式</translation>
 <translation id="984756705737569814">無法檢查 Google 帳戶密碼</translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="988091779042748639">如要刪除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁。</translation>

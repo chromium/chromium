@@ -774,7 +774,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">‏Android فون سے منسلک ہے</translation>
 <translation id="1523279371236772909">پچھلے مہینے میں دیکھا گیا</translation>
-<translation id="1523486680453956384">ٹاسک دیکھیں</translation>
 <translation id="1523978563989812243">ٹیکسٹ ٹو اسپیچ کے انجنز</translation>
 <translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1525740877599838384">‏مقام کا تعین کرنے کے لیے صرف Wi-Fi کا استعمال کریں</translation>
@@ -2143,7 +2142,6 @@
 <translation id="2450849356604136918">کوئی فعال ملاحظات نہیں</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">آپ جو محفوظ کر سکتے ہیں آپ کی تنظیم اسے محدود کرتی ہے</translation>
-<translation id="245307875355990880">ٹاسک دوبارہ شروع کریں</translation>
 <translation id="245322989586167203">سائٹس عام طور پر ڈیٹا کی منتقلی کی نیٹ ورک سیٹ اپ کرنے جیسی خصوصیات کیلئے سیریل پورٹس سے منسلک ہوتی ہیں</translation>
 <translation id="2453860139492968684">مکمل کریں</translation>
 <translation id="2454206500483040640">تقسیم کی گئی</translation>
@@ -4114,6 +4112,7 @@
 <translation id="3796215473395753611">‏alt + اوپر تیر کا نشان</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />، پیش منظر آواز کیلئے دائیں تیر کے نشان کی کلید استعمال کریں</translation>
 <translation id="3796648294839530037">پسندیدہ نیٹ ورکس:</translation>
+<translation id="3797330664967181051">منقسم منظر</translation>
 <translation id="3797739167230984533">آپ کا <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> آپ کی تنظیم <ph name="END_LINK" /> کے زیر انتظام ہے</translation>
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" کو <ph name="SEARCH_ENGINE" /> میں تلاش کریں</translation>
 <translation id="3798026281364973895">فوری ہاٹ اسپاٹ کو غیر فعال کریں</translation>
@@ -4867,7 +4866,6 @@
 <translation id="4314497418046265427">اپنے فون کو اپنے <ph name="DEVICE_TYPE" /> سے منسلک کرتے وقت زیادہ تخلیقی بنیں</translation>
 <translation id="4314561087119792062">نیا رسائی کی جگہ کا نام شامل کریں</translation>
 <translation id="4314815835985389558">مطابقت پذیری کا نظم کريں</translation>
-<translation id="4314821834464582073">ٹاسک موقوف کریں</translation>
 <translation id="4316850752623536204">ڈویلپر کی ویب سائٹ</translation>
 <translation id="4317733381297736564">درون ایپ خریداریاں</translation>
 <translation id="4317820549299924617">توثیق کامیاب نہیں ہوئی</translation>
@@ -7738,6 +7736,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6350745006329795504">اپنے آلات کا نظم کریں</translation>
 <translation id="6350821834561350243">مسئلہ کی واضح تفصیل اور مسئلہ کو دوبارہ پیش کرنے کے اقدامات فراہم کریں (اگر ممکن ہو)</translation>
+<translation id="635100112331897007">‏‫Chrome کی تمام پالیسیاں دیکھیں</translation>
 <translation id="6351178441572658285">ایپ کی زبانیں</translation>
 <translation id="6352992678231622317">ٹیب نیچے منتقل ہو گیا</translation>
 <translation id="6355632359041940003">ٹاسک کو کنٹرول کریں</translation>

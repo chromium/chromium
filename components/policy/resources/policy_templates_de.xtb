@@ -4501,6 +4501,13 @@ Die Richtlinie kann mit <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_
 <translation id="3928726028264020458">Melden der VPD-Informationen auf Geräten aktivieren</translation>
 <translation id="3935592079035695061">Millisekunden seit Mitternacht.</translation>
 <translation id="3937800910397007337">Vordergrundpriorität für alle Tabs erzwingen</translation>
+<translation id="3938885528378923718">Mit dieser Richtlinie kann konfiguriert werden, wie <ph name="PRODUCT_NAME" /> das Foundation Model für generative KI herunterlädt und lokal für die Inferenz verwendet.
+
+Wenn die Richtlinie auf „Zulässig (0)“ gesetzt oder nicht konfiguriert ist, wird das Modell automatisch heruntergeladen und für die Inferenz verwendet.
+
+Ist die Richtlinie auf „Deaktiviert (1)“ gesetzt, wird das Modell nicht heruntergeladen und das vorhandene Modell (sofern bereits heruntergeladen) gelöscht.
+
+Auf Desktop-Plattformen kann das Herunterladen von Modellen auch deaktiviert werden, indem „<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />“ auf „false“ gesetzt wird.</translation>
 <translation id="3941289958028934630">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="3943930334592166130">Diese Richtlinie legt fest, ob Nutzer aufgefordert werden, ein Clientzertifikat auszuwählen, wenn mehrere Zertifikate zu <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> passen.
       Ist die Richtlinie aktiviert, werden Nutzer aufgefordert, immer dann ein Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.
@@ -8293,13 +8300,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion du
 
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Erweiterungen, deren Veröffentlichung zurückgezogen wurde, deaktivieren</translation>
-<translation id="6382287177674997281">Mit dieser Richtlinie können Nutzer jegliche Art von Firmware-Updates starten.
-
-      Wenn die Richtlinie aktiviert ist, können Nutzer, beispielsweise der Eigentümer des Geräts, Firmware-Updates starten.
-
-      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer keine Firmware-Updates anwenden.
-
-      Diese Richtlinie gilt für Firmware-Updates von Peripheriegeräten und internen Komponenten von <ph name="PRODUCT_OS_FLEX_NAME" />-Geräten. Firmware-Updates interner Komponenten von <ph name="PRODUCT_OS_NAME" />-Geräten sind von dieser Richtlinie nicht betroffen.</translation>
 <translation id="6383774771168138899">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
 <translation id="6389240462871677239">Ursprüngen isolierter Web-Apps erlauben, Controlled Frame zu verwenden</translation>

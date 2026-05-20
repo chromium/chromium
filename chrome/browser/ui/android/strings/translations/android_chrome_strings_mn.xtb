@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Хянаж буй бүтээгдэхүүнүүдээ Хавчуургад цэгцлээрэй</translation>
 <translation id="1455845192930279203">Та ямартай ч "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)-г <ph name="DOWNLOAD_DOMAIN" />-с татмаар байна уу?</translation>
 <translation id="1460751212339734034">Цаг хэмнэж, бага бичээрэй</translation>
+<translation id="146522654774760805">Нууц үг, автоматаар бөглөх хэсэг</translation>
 <translation id="1466383950273130737">Chrome-н хэл сонгоно уу</translation>
 <translation id="1477626028522505441">Серверийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="147982357559798527">Өөрчилсөн</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Google-н хайлтуудад эргэн тойрны текстийг оруулах уу?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Бэхлэгдэж, дууг нь хаасан нууцлалтай таб</translation>
 <translation id="2021896219286479412">Бүтэн дэлгэцийн сайтын хяналт</translation>
+<translation id="2022953316617983419">QR код</translation>
 <translation id="2024195579772565064">Хайлтын системийг устгах</translation>
 <translation id="2029669011553795746">Зөвлөгөөний мэдэгдэлд нэгдэх сонголтыг тал өндрөөр нээсэн</translation>
 <translation id="2038563949887743358">Сайтыг компьютерийн горимоор харах хүсэлтийг асаах</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> болон өөр <ph name="TAB_COUNT" /> таб</translation>
 <translation id="441100617989818073">Ашиглаагүй, хуулбар таб, бүлэг</translation>
 <translation id="4412123112245770507">Хэсгийг хураах</translation>
+<translation id="4412698727486357573">Тусламжийн төв</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" />-г устгасан</translation>
 <translation id="4415276339145661267">Google Бүртгэлээ удирдах</translation>
 <translation id="4425140285732600465">Үнийг хянаж байна. Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай.</translation>
@@ -1435,7 +1438,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> цэсийг тодруулсан.</translation>
 <translation id="6983306615164277634">Та мөн байрлалыг өөрчлөхийн тулд хаяг оруулах хэсэгт хүрээд удаан дарах боломжтой.</translation>
 <translation id="6987047470128880212">Нууцлалтай таб энэ төхөөрөмж дээр боломжгүй</translation>
-<translation id="6989358895283601928">Хадгалаад, хэвлэх</translation>
 <translation id="6996145122199359148">Энэ хуудсыг татах</translation>
 <translation id="7013762323294215682">Энэ нэвтрэх түлхүүрийг таны нууц үгний менежерт хадгална. Үүнд хандах эрхтэй дурын хүн энэ нэвтрэх түлхүүрийг ашиглах боломжтой болно.</translation>
 <translation id="7020741890149022655">Унших жагсаалтад нэмэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="970715775301869095"><ph name="MINUTES" /> минут үлдсэн</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Бүх табыг хаах</translation>
+<translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="984756705737569814">Таны Google Бүртгэл дэх нууц үгийг шалгах боломжгүй</translation>
 <translation id="987264212798334818">Ерөнхий</translation>
 <translation id="988091779042748639">Нууцлалтай горим дахь хөтчийн түүхийг төхөөрөмжөөсөө устгахын тулд бүх нууцлалтай табыг хаана уу.</translation>

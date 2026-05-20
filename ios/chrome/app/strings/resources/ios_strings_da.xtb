@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Gå til første fane</translation>
 <translation id="2499505845365628575">Du kan finde hele din browserhistorik via <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> kompromitterede adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
+<translation id="2512709994717613803">Niveau <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Her kan du se dine fanegrupper</translation>
 <translation id="251837347827266434">Du logges ud, fanerne lukkes, og browserdataene slettes</translation>
 <translation id="2520787026086861736">Du kan deaktivere funktionen ved at gå til <ph name="BEGIN_LINK" />Autofyld og adgangskoder<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Udfyld automatisk kortnummeret, der slutter på <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Oprettet <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerarulle</translation>
+<translation id="3743545564993953213">Dette website forsøger at åbne appen "Genveje".</translation>
 <translation id="3746269120925354434">Oplysningerne er gemt i Google Wallet</translation>
 <translation id="3750225824417196283">Ny side med inkognitofane</translation>
 <translation id="3751873026576444885">Stop med at søge på din skærm med Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Dine bogmærker, din historik, dine adgangskoder og meget andet synkroniseres ikke længere med din Google-konto.</translation>
 <translation id="484280513275854557">Du er blevet logget ud: Browserdataene er blevet slettet</translation>
 <translation id="484462545196658690">Automatisk</translation>
+<translation id="4846662396507502151">Browse hurtigere med den nye værktøjslinje</translation>
 <translation id="4850886885716139402">Se</translation>
 <translation id="4854068532375923088">Giv "Gemini" tilladelse til at bruge dit kamera</translation>
 <translation id="4860895144060829044">Ring op</translation>
@@ -1427,6 +1430,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5988097621740394599">Se prisfald på dine faner</translation>
 <translation id="5988851877894965432">Åbn webadresser i Chrome</translation>
 <translation id="599343768974649785">Eksplicit tekst</translation>
+<translation id="6004988584831654445">Så er du klar! Få besked, når der kommer nye opgaver.</translation>
 <translation id="6006672969046233841">Ny fane</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
 <translation id="6012140227487808125">Krypterer...</translation>
@@ -1658,6 +1662,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6685259053455152195">Genveje til hurtigt at ændre indstillinger og bruge funktioner via adresselinjen.</translation>
 <translation id="6689342293888598653">Hvid baggrundsfarve</translation>
 <translation id="6689685206615181381">Kun inkognitotilstand er tilgængelig</translation>
+<translation id="6705491067826837934">Dine indstillinger – hvor du har brug for dem</translation>
 <translation id="6708501134077648845">Indstillinger til adgangskode</translation>
 <translation id="6709964700841491574">Funktionen Låsning</translation>
 <translation id="6710079714193676716">Administreret af din organisation. Nogle funktioner er muligvis ikke tilgængelige. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6903282483217634857">Flyt til højre</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6906448540340261898">Sørg for, at du altid kan bruge adgangskoderne på din Google-konto</translation>
+<translation id="6906978870282539723">Få hjælp til dine faner og opgaver</translation>
 <translation id="6908734251759299256">Opdater din browser</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Kun på denne enhed.</translation>
 <translation id="6914583639806229067">Søg efter billede, du har kopieret</translation>
@@ -2078,6 +2084,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8182037667962849780">{count,plural, =1{Til {website_1}}=2{Til {website_1}, {website_2}}=3{Til {website_1}, {website_2} og 1 mere}one{Til {website_1}, {website_2} og {more_count} mere}other{Til {website_1}, {website_2} og {more_count} mere}}</translation>
 <translation id="8184895727539791845">Hvis du vil give Gemini tilladelse til at bruge dit kamera, skal du aktivere Kamera i iOS-indstillingerne</translation>
 <translation id="8185076488803799132">Importér</translation>
+<translation id="8187200657863701733">Nuværende Chrome-niveau</translation>
 <translation id="8189615296021678665">Tryk på "Gem" for nemt at få adgang til denne adgangskode, næste gang du logger ind.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dine enheder<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Tilføj adgangskode</translation>
@@ -2121,6 +2128,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8325455175867928593">Skjul "Anmeldelser baseret på dine interesser"</translation>
 <translation id="833647236762414178">Opret, gem og administrer dine adgangskoder og adgangsnøgler, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Udfør 1 opgave mere for at stige i niveau}one{Udfør {count} opgave mere for at stige i niveau}other{Udfør {count} opgaver mere for at stige i niveau}}</translation>
 <translation id="8348530355586151720">Tryk på prikmenuen</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} bogmærke blev importeret}one{{count} bogmærke blev importeret}other{{count} bogmærker blev importeret}}</translation>

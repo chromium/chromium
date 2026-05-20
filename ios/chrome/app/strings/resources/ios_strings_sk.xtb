@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Prejsť na prvú kartu</translation>
 <translation id="2499505845365628575">Celú históriu prehliadania nájdete pomocou možnosti <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) odhalených hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
+<translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. úroveň</translation>
 <translation id="2513103768503127042">Tu nájdete svoje skupiny kariet</translation>
 <translation id="251837347827266434">Systém vás odhlási, karty sa zavrú a dáta prehliadania odstránia</translation>
 <translation id="2520787026086861736">Ak chcete túto funkciu vypnúť, prejdite do sekcie <ph name="BEGIN_LINK" />Automatické dopĺňanie a heslá<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Automaticky doplniť číslo karty končiace sa na <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Vytvorené <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Galéria (zariadenia)</translation>
+<translation id="3743545564993953213">Tento web sa pokúša otvoriť aplikáciu Skratky.</translation>
 <translation id="3746269120925354434">Informácie boli uložené do Peňaženky Google</translation>
 <translation id="3750225824417196283">Nová stránka s kartou inkognito</translation>
 <translation id="3751873026576444885">Zastaviť vyhľadávanie na obrazovke pomocou funkcie Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Záložky, história, heslá a ďalší obsah sa už nebudú synchronizovať do vášho účtu Google.</translation>
 <translation id="484280513275854557">Systém vás odhlásil a dáta prehliadania boli odstránené</translation>
 <translation id="484462545196658690">Automaticky</translation>
+<translation id="4846662396507502151">Prehliadajte rýchlejšie s novým panelom s nástrojmi</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="4854068532375923088">Povoľte aplikácii Gemini používať kameru</translation>
 <translation id="4860895144060829044">Volajte</translation>
@@ -1427,6 +1430,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5988097621740394599">Zobrazte si na kartách poklesy cien.</translation>
 <translation id="5988851877894965432">Otvoriť webové adresy v Chrome</translation>
 <translation id="599343768974649785">Explicitný text</translation>
+<translation id="6004988584831654445">Hotovo! Dostávajte upozornenia na nové úlohy.</translation>
 <translation id="6006672969046233841">Nová karta</translation>
 <translation id="6011308810877101166">Zlepšovať návrhy vyhľadávania</translation>
 <translation id="6012140227487808125">Prebieha šifrovanie…</translation>
@@ -1658,6 +1662,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6685259053455152195">Skratky na rýchlu úpravu nastavení a používanie funkcií na paneli s adresou.</translation>
 <translation id="6689342293888598653">Farba pozadia Biela</translation>
 <translation id="6689685206615181381">K dispozícii je iba režim inkognito</translation>
+<translation id="6705491067826837934">Ovládanie tam, kde ho potrebujete</translation>
 <translation id="6708501134077648845">Možnosti hesiel</translation>
 <translation id="6709964700841491574">Režim silnej zámky</translation>
 <translation id="6710079714193676716">Spravuje vaša organizácia. Niektoré funkcie nemusia byť k dispozícii. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6903282483217634857">Presunúť doprava</translation>
 <translation id="6903907808598579934">Zapnúť synchronizáciu</translation>
 <translation id="6906448540340261898">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť heslá</translation>
+<translation id="6906978870282539723">Získajte pomoc s kartami a úlohami</translation>
 <translation id="6908734251759299256">Aktualizujte si prehliadač</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Iba v tomto zariadení</translation>
 <translation id="6914583639806229067">Vyhľadať skopírovaný obrázok</translation>
@@ -2078,6 +2084,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8182037667962849780">{count,plural, =1{Pre {website_1}}=2{Pre {website_1}, {website_2}}=3{Pre {website_1}, {website_2} a 1 ďalší web}few{Pre {website_1}, {website_2} a {more_count} ďalšie weby}many{For {website_1}, {website_2}, and {more_count} more}other{Pre {website_1}, {website_2} a {more_count} ďalších webov}}</translation>
 <translation id="8184895727539791845">Ak chcete povoliť Gemini používať vašu kameru, zapnite ju v nastaveniach systému iOS</translation>
 <translation id="8185076488803799132">Importovať</translation>
+<translation id="8187200657863701733">Aktuálna úroveň Chromu</translation>
 <translation id="8189615296021678665">Ak chcete mať k tomuto heslu ľahký prístup pri ďalšom prihlasovaní, klepnite na Uložiť.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zariadenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Pridanie hesla</translation>
@@ -2121,6 +2128,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8325455175867928593">Skryť „Recenzie na základe vašich záujmov“</translation>
 <translation id="833647236762414178">Vytvárajte, ukladajte a spravujte svoje heslá a prístupové kľúče, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Ak chcete prejsť na vyššiu úroveň, dokončite ešte jednu úlohu}few{Ak chcete prejsť na vyššiu úroveň, dokončite ešte {count} úlohy}many{Complete {count} more tasks to level up}other{Ak chcete prejsť na vyššiu úroveň, dokončite ešte {count} úloh}}</translation>
 <translation id="8348530355586151720">Klepnite na trojbodkovú ponuku</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
 <translation id="8361189290032177785">{count,plural, =1{Bola importovaná {count} záložka}few{Boli importované {count} záložky}many{Imported {count} bookmarks}other{Bolo importovaných {count} záložiek}}</translation>

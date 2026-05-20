@@ -776,7 +776,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1521655867290435174">Google töflureiknar</translation>
 <translation id="1521933835545997395">Tengt Android-síma</translation>
 <translation id="1523279371236772909">Skoðað undanfarinn mánuð</translation>
-<translation id="1523486680453956384">Skoða verkefni</translation>
 <translation id="1523978563989812243">Talgervilsvélar</translation>
 <translation id="1524563461097350801">Nei, takk</translation>
 <translation id="1525740877599838384">Nota aðeins Wi-Fi til að ákvarða staðsetningu</translation>
@@ -2155,7 +2154,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2450849356604136918">Engin virk yfirlit</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Fyrirtækið takmarkar hvað þú getur vistað</translation>
-<translation id="245307875355990880">Halda verkefni áfram</translation>
 <translation id="245322989586167203">Vefsvæði tengjast yfirleitt raðtengjum fyrir gagnaflutninga, líkt og þegar net er sett upp</translation>
 <translation id="2453860139492968684">Ljúka</translation>
 <translation id="2454206500483040640">Skipt</translation>
@@ -4128,6 +4126,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3796215473395753611">alt + ör upp</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ýttu á örina til hægri til að forskoða rödd</translation>
 <translation id="3796648294839530037">Uppáhaldsnet:</translation>
+<translation id="3797330664967181051">Tvískiptur skjár</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> er stjórnað<ph name="END_LINK" /> af fyrirtækinu þínu</translation>
 <translation id="3797900183766075808">Leita á <ph name="SEARCH_ENGINE" /> að „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="3798026281364973895">Afvirkja skynditengingu við heitan reit</translation>
@@ -4881,7 +4880,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4314497418046265427">Auktu afköstin með því að tengja símann þinn við <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Bæta við heiti nýs aðgangsstaðar</translation>
 <translation id="4314815835985389558">Stjórna samstillingu</translation>
-<translation id="4314821834464582073">Gera hlé á verkefni</translation>
 <translation id="4316850752623536204">Vefsvæði þróunaraðila</translation>
 <translation id="4317733381297736564">Innkaup í forriti</translation>
 <translation id="4317820549299924617">Staðfesting tókst ekki</translation>
@@ -7755,6 +7753,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Hafa umsjón með tækjum</translation>
 <translation id="6350821834561350243">Gefðu skýra lýsingu á vandamálinu og skrefum til að kalla það aftur fram (ef hægt er)</translation>
+<translation id="635100112331897007">Skoða allar reglur Chrome</translation>
 <translation id="6351178441572658285">Tungumál forrita</translation>
 <translation id="6352992678231622317">Flipi færður niður</translation>
 <translation id="6355632359041940003">Taka yfir verkefni</translation>

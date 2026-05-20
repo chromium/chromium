@@ -118,6 +118,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="1448440926884431741">Organiza los productos que sigues en Marcadores</translation>
 <translation id="1455845192930279203">¿Quieres descargar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de <ph name="DOWNLOAD_DOMAIN" /> de todos modos?</translation>
 <translation id="1460751212339734034">Ahorra tiempo, escribe menos</translation>
+<translation id="146522654774760805">Contraseñas y Autocompletar</translation>
 <translation id="1466383950273130737">Elegir idioma de Chrome</translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
 <translation id="147982357559798527">Modificada</translation>
@@ -227,6 +228,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="200114059308480249">¿Incluir texto cercano en las búsquedas de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestaña de Incógnito silenciada fijada</translation>
 <translation id="2021896219286479412">Controles de pantalla completa</translation>
+<translation id="2022953316617983419">Código QR</translation>
 <translation id="2024195579772565064">Eliminar buscador</translation>
 <translation id="2029669011553795746">Aceptación de notificaciones de consejos abierta a media altura</translation>
 <translation id="2038563949887743358">Activar opción para ver como ordenador</translation>
@@ -789,6 +791,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
 <translation id="441100617989818073">Pestañas y grupos duplicados o no usados</translation>
 <translation id="4412123112245770507">Ocultar sección</translation>
+<translation id="4412698727486357573">Centro de Ayuda</translation>
 <translation id="4414179633735763985">Eliminado: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4425140285732600465">Siguiendo precio. Recibe alertas si el precio baja en algún sitio.</translation>
@@ -1435,7 +1438,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6980258170429555165">El menú de <ph name="MENU_NAME" /> está destacado.</translation>
 <translation id="6983306615164277634">También puedes mantener pulsada la barra de direcciones para cambiar la posición.</translation>
 <translation id="6987047470128880212">El modo Incógnito no está disponible en este dispositivo</translation>
-<translation id="6989358895283601928">Guardar e imprimir</translation>
 <translation id="6996145122199359148">Descargar esta página</translation>
 <translation id="7013762323294215682">Esta llave de acceso se guardará en tu gestor de contraseñas. Cualquier persona con acceso a él podrá usar esta llave de acceso.</translation>
 <translation id="7020741890149022655">Añadir a lista de lectura <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
+<translation id="984275831282074731">Métodos de pago</translation>
 <translation id="984756705737569814">No se pueden comprobar las contraseñas de tu cuenta de Google</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988091779042748639">Para eliminar el historial de navegación de Incógnito en tu dispositivo, cierra todas las pestañas de Incógnito.</translation>

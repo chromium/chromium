@@ -258,6 +258,7 @@
 <translation id="1380591466760231819">Ծալում ծրարի տեսքով</translation>
 <translation id="138218114945450791">Բաց կապույտ</translation>
 <translation id="1382194467192730611">USB սարքը թույլատրված է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384725838384960382">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրան</translation>
 <translation id="1386623374109090026">Ծանոթագրություններ</translation>
 <translation id="138810468159004008">Թույլատրել կայք այցելելիս</translation>
@@ -1826,6 +1827,7 @@
 <translation id="380865868633614173">Քարտի տվյալները պահվում են</translation>
 <translation id="3810770279996899697">Գաղտնաբառերի կառավարչին անհրաժեշտ է MacOS Keychain-ի հասանելիություն</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Սա կարևոր թարմացում է, որը բարելավում է Android-ի համար հավելվածների և ChromeOS-ի արդյունավետությունը</translation>
 <translation id="3814865536373139791">Պարզեցրեք ձեր կազմակերպության կողմից կանոնների կառավարման գործընթացը</translation>
 <translation id="3815434930383843058">8 x 12 դյույմ</translation>
@@ -2405,6 +2407,7 @@
 <translation id="4736934858538408121">Վիրտուալ քարտ</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4738601419177586157">Առաջարկվող որոնման հարցում՝ «<ph name="TEXT" />»</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, ընտրված ներդիր, <ph name="INDEX" />՝ <ph name="TOTAL" />-ից, մեկ ներդիրից մյուսն անցնելու համար օգտագործեք ձախ կամ աջ սլաքը</translation>
 <translation id="4742407542027196863">Գաղտնաբառերի կառավարում…</translation>
 <translation id="474270528725216349">Նվազագույնը 1 կայքից՝ համաժամացված սարքերում</translation>
 <translation id="4743275772928623722">Ձեր համակարգը թարմացվել է, սակայն որոշ հավելվածներ և ֆայլեր չհաջողվեց վերականգնել։ Ձեր հավելվածներն ավտոմատ կերպով նորից կներբեռնվեն։</translation>
@@ -2472,6 +2475,7 @@
 <translation id="4832961164064927107">Խորոված և գրիլ</translation>
 <translation id="4835568975547260025">Chrome-ն ըստ կանխադրման կիսվելու է համապատասխան բաց ներդիրներով, որպեսզի դուք ավելի անհատականացված պատասխաններ ստանաք ձեր հարցերին։</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
+<translation id="4842365697443353018">Մաքրեք ձևը՝ ապառիկ գնման տարբերակն օգտագործելու համար</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4844937814014739139">Ոլորել և խոշորացնել ընդհանուր ներդիրները</translation>
 <translation id="484671803914931257">Ստացեք զեղչ <ph name="MERCHANT_NAME" /> և այլ խանութներում</translation>

@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Savjeti za Chrome</translation>
 <translation id="1242008676835033345">Ugrađeno na <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Dodirnite Aplikacije &gt; Zadane aplikacije</translation>
+<translation id="1264694639515903274">Sada možete prilagoditi početnu stranicu</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1289742167380433257">Google je optimizirao slike na ovoj stranici radi uštede vaših podataka.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1919950603503897840">Odaberite kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Prilagodite svoju početnu stranicu</translation>
 <translation id="1939059826036755332">Automatska slika u slici</translation>
 <translation id="1954597385941141174">Web-lokacije mogu tražiti dopuštenje za povezivanje s USB uređajima</translation>
 <translation id="1979673356880165407">Povećajte ili smanjite tekst i slike za sve web-lokacije koje posjetite</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome će danas ponovno blokirati kolačiće</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3859306556332390985">Traži unaprijed</translation>
+<translation id="3870711497942672548">Prilagodite Chrome pomoću personaliziranih boja i slika za početnu stranicu</translation>
 <translation id="389521680295183045">Web-lokacije mogu pitati kad aktivno koristite uređaj</translation>
 <translation id="3895926599014793903">Prisilno omogućavanje zumiranja</translation>
 <translation id="3903738175795615004">Povucite od vrha ili pritisnite tipku Esc za izlaz iz prikaza na cijelom zaslonu.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Proširi</translation>
 <translation id="4310738531374808763">Prilagodite svoju početnu stranicu</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Istječe sutra}one{Istječe za # dan}few{Istječe za # dana}other{Istječe za # dana}}</translation>
+<translation id="4336371609622603229">Prilagodite Chrome tako da odaberete prilagođenu temu</translation>
 <translation id="4338831206024587507">Sve web-lokacije na domeni <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne dopuštaj web-lokacijama slanje obavijesti</translation>
 <translation id="4341577178275615435">Da biste uključili ili isključili pregledavanje kursorom, upotrijebite prečac F7</translation>
@@ -750,7 +754,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="8737426583868847403">Ovdje će se prikazivati web-lokacije za koje spremite prilagođenu razinu zumiranja</translation>
 <translation id="8748714929822124637">Nemoj dopustiti web-lokacijama da pristupaju drugim uređajima na vašoj lokalnoj mreži</translation>
 <translation id="8751914237388039244">Odaberite sliku</translation>
-<translation id="8775741625735357092">Traku oznaka možete uključiti u odjeljku Postavke &gt; Izgled</translation>
 <translation id="8800034312320686233">Web-lokacija ne funkcionira?</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web-lokaciju.</translation>
 <translation id="8801657293260363985">V8 je Chromeov alat za JavaScript i WebAssembly koji se upotrebljava za poboljšanje izvedbe web-lokacija</translation>

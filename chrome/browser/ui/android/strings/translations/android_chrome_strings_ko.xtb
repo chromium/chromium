@@ -118,6 +118,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1448440926884431741">추적 중인 제품을 북마크로 정리하세요.</translation>
 <translation id="1455845192930279203">그래도 <ph name="DOWNLOAD_DOMAIN" />에서 "<ph name="FILE_NAME" />"(<ph name="FILE_SIZE" />) 파일을 다운로드하시겠습니까?</translation>
 <translation id="1460751212339734034">시간은 아끼고, 입력은 줄이고</translation>
+<translation id="146522654774760805">비밀번호 및 자동 완성</translation>
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="147982357559798527">변경됨</translation>
@@ -227,6 +228,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, 고정되고 음소거된 시크릿 탭</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
+<translation id="2022953316617983419">QR 코드</translation>
 <translation id="2024195579772565064">검색엔진 삭제</translation>
 <translation id="2029669011553795746">팁 알림 수신 동의가 절반 높이로 열림</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
@@ -789,6 +791,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 외 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="441100617989818073">사용하지 않거나 중복된 탭 및 그룹</translation>
 <translation id="4412123112245770507">섹션 접기</translation>
+<translation id="4412698727486357573">고객센터</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> 삭제됨</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
@@ -1435,7 +1438,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> 메뉴가 강조 표시됩니다.</translation>
 <translation id="6983306615164277634">주소 표시줄을 길게 터치하여 위치를 변경할 수도 있습니다.</translation>
 <translation id="6987047470128880212">이 기기에서는 시크릿 모드를 사용할 수 없습니다.</translation>
-<translation id="6989358895283601928">저장 및 인쇄</translation>
 <translation id="6996145122199359148">이 페이지 다운로드</translation>
 <translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
 <translation id="7020741890149022655">읽기 목록에 추가 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>
+<translation id="984275831282074731">결제 수단</translation>
 <translation id="984756705737569814">Google 계정의 비밀번호를 확인할 수 없음</translation>
 <translation id="987264212798334818">일반</translation>
 <translation id="988091779042748639">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>

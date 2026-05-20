@@ -330,6 +330,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4348548358339558429">Lai izmantotu personalizēšanu, iekļaujiet pārlūku Chrome iestatījumā “Darbības tīmeklī un lietotnēs”</translation>
 <translation id="436060642166082913">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo šis fails var kaitēt jūsu personīgajiem un sociālo tīklu kontiem</translation>
 <translation id="4367027658822022112">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu. Sānu paneļa augšdaļā noklikšķiniet uz pogas “Piespraust”.</translation>
+<translation id="4372389195695053189">Tagad Chrome ir jūsu noklusējuma pārlūks.</translation>
 <translation id="4389991535395284064">Ja veicat pārlūkošanu inkognito režīmā, pārlūkā Chrome tiks parādīts brīdinājums pirms vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
 <translation id="4434353761996769206">Instalēšanas kļūda: <ph name="INSTALLER_ERROR" /></translation>
@@ -613,7 +614,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7302361266603927550">Noteikti jūsu Chrome dati vēl nav saglabāti jūsu Google kontā. Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="7306401458628386911">Sāciet pārlūkošanu uzreiz: tagad pārlūks Chrome var tikt palaists, kad tiek palaista operētājsistēma Windows.</translation>
 <translation id="7308322188646931570">Pārlūkam Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
-<translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="73786666777299047">Atveriet Chrome interneta veikalu</translation>
 <translation id="7386878009611068389">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pārslēdzieties uz Chrome profilu, kurā jau pierakstījāties ar kontu <ph name="USER_EMAIL_ADDRESS" />.</translation>

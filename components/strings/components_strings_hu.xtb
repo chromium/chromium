@@ -254,6 +254,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1380591466760231819">Levélhajtás</translation>
 <translation id="138218114945450791">Világoskék</translation>
 <translation id="1382194467192730611">A rendszergazda által engedélyezett USB-eszköz</translation>
+<translation id="1383876407941801731">Keresés</translation>
 <translation id="1384725838384960382">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja</translation>
 <translation id="1386623374109090026">Annotációk</translation>
 <translation id="138810468159004008">Engedélyezés a webhely felkeresésekor</translation>
@@ -1818,6 +1819,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="380865868633614173">A kártyaadatok mentése folyamatban van</translation>
 <translation id="3810770279996899697">A Jelszókezelő hozzáférést igényel a macOS Keychain szolgáltatásához</translation>
 <translation id="3810973564298564668">Kezelés</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Ez egy kritikus fontosságú frissítés, amely javítja az Android-alkalmazások teljesítményét ChromeOS rendszeren.</translation>
 <translation id="3814865536373139791">A szervezeti házirend kezelési módjának egyszerűsítése</translation>
 <translation id="3815434930383843058">8 × 12 hüvelyk</translation>
@@ -2396,6 +2398,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4736934858538408121">Virtuális kártya</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> keresési javaslat</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, kiválasztott lap, <ph name="TOTAL" />/<ph name="INDEX" />, a balra vagy a jobbra nyíllal válthat a lapok között</translation>
 <translation id="4742407542027196863">Jelszavak kezelése…</translation>
 <translation id="474270528725216349">Legalább 1 webhelyről a szinkronizált eszközökön</translation>
 <translation id="4743275772928623722">A rendszer frissítése befejeződött, de néhány alkalmazást és fájlt nem sikerült visszaállítani. Alkalmazásaid újra letöltődnek automatikusan.</translation>
@@ -2463,6 +2466,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4832961164064927107">Barbecue és grillezés</translation>
 <translation id="4835568975547260025">A Chrome alapértelmezés szerint megosztja a releváns megnyitott lapokat, hogy személyre szabottabb válaszokat kaphasson a kérdéseire.</translation>
 <translation id="4840250757394056958">Chrome-előzmények megtekintése</translation>
+<translation id="4842365697443353018">A későbbi fizetés használatához törölje ki az űrlapot</translation>
 <translation id="484462545196658690">Automatikus</translation>
 <translation id="4844937814014739139">Megosztott lapok görgetése és nagyítása</translation>
 <translation id="484671803914931257">Kedvezmények <ph name="MERCHANT_NAME" /> keresekedőnél és másoknál</translation>

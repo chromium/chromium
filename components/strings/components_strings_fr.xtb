@@ -254,6 +254,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1380591466760231819">Pli au format lettre</translation>
 <translation id="138218114945450791">Bleu clair</translation>
 <translation id="1382194467192730611">Appareil USB autorisé par votre administrateur</translation>
+<translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384725838384960382">Fiche d'authentification concernant les infos de paiement sécurisé</translation>
 <translation id="1386623374109090026">Annotations</translation>
 <translation id="138810468159004008">Autoriser pendant la visite du site</translation>
@@ -1820,6 +1821,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="380865868633614173">Enregistrement en cours des infos de la carte</translation>
 <translation id="3810770279996899697">Le Gestionnaire de mots de passe a besoin d'accéder au trousseau macOS</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Il s'agit d'une mise à jour essentielle qui améliore les performances des applis Android sur Chrome OS.</translation>
 <translation id="3814865536373139791">Simplifiez la manière dont votre organisation gère les règles</translation>
 <translation id="3815434930383843058">8 x 12 pouces</translation>
@@ -2399,6 +2401,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4736934858538408121">Carte virtuelle</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="4738601419177586157">Suggestion de recherche sur "<ph name="TEXT" />"</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, onglet sélectionné, <ph name="INDEX" /> sur <ph name="TOTAL" />, utiliser les flèches vers la gauche ou la droite pour passer d'un onglet à l'autre</translation>
 <translation id="4742407542027196863">Gérer les mots de passe…</translation>
 <translation id="474270528725216349">D'au moins 1 site sur les appareils synchronisés</translation>
 <translation id="4743275772928623722">Votre système a été mis à jour, mais certains de vos fichiers et applis n'ont pas pu être récupérés. Vos applis seront à nouveau téléchargées automatiquement.</translation>
@@ -2466,6 +2469,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4832961164064927107">Barbecue et grillades</translation>
 <translation id="4835568975547260025">Chrome partagera par défaut les onglets ouverts pertinents pour vous aider à obtenir des réponses plus personnalisées à vos questions.</translation>
 <translation id="4840250757394056958">Afficher votre historique Chrome</translation>
+<translation id="4842365697443353018">Effacez le formulaire pour utiliser le paiement différé</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Faire défiler les onglets partagés et zoomer dessus</translation>
 <translation id="484671803914931257">Obtenez des remises sur <ph name="MERCHANT_NAME" /> et plus</translation>

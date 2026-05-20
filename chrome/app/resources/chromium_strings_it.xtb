@@ -583,7 +583,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7318036098707714271">Il file delle preferenze è danneggiato o non valido.
 
 Chromium non è in grado di recuperare le impostazioni.</translation>
-<translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="734373864078049451">I tuoi siti web, i tuoi segnalibri e gli altri contenuti Chromium sempre disponibili e aggiornati qui.</translation>
 <translation id="7347827960336370838">Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai <ph name="BEGIN_LINK" />eliminare i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">L'amministratore di sistema ha configurato Chromium per l'apertura di <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -592,6 +591,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7376384068949534168">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Apri Chrome Web Store.</translation>
 <translation id="7384121030444253939">Questa estensione non è più supportata. Chromium consiglia di rimuoverla.</translation>
+<translation id="7407655596887111931">Chromium è ora il browser predefinito</translation>
 <translation id="7413153308467572558">Continua da dove avevi interrotto: Chromium ripristina le schede ogni volta che ricominci. Per disattivare questa opzione, vai a</translation>
 <translation id="7427879960656355200">Importa password in Chromium</translation>
 <translation id="744815265653811511">1. Fai clic su <ph name="BUTTON_LABEL" /> qui sotto. Fai clic su <ph name="BUTTON_2" /> nelle impostazioni di Windows

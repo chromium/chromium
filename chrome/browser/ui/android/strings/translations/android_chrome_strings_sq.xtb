@@ -118,6 +118,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1448440926884431741">Organizo produktet e tua të monitoruara te "Faqeshënuesit"</translation>
 <translation id="1455845192930279203">Dëshiron që ta shkarkosh "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) nga <ph name="DOWNLOAD_DOMAIN" /> gjithsesi?</translation>
 <translation id="1460751212339734034">Kurse kohë, shkruaj më pak</translation>
+<translation id="146522654774760805">Fjalëkalimet dhe plotësimi automatik</translation>
 <translation id="1466383950273130737">Zgjidh gjuhën e Chrome</translation>
 <translation id="1477626028522505441">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të serverit.</translation>
 <translation id="147982357559798527">Ndryshuar</translation>
@@ -227,6 +228,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="200114059308480249">Të përfshihet teksti përreth në kërkimet e Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar dhe e vendosur në heshtje</translation>
 <translation id="2021896219286479412">Kontrollet e sajtit në ekranin e plotë</translation>
+<translation id="2022953316617983419">Kodi QR</translation>
 <translation id="2024195579772565064">Fshi motorin e kërkimit</translation>
 <translation id="2029669011553795746">Regjistrimi për njoftimet e këshillave u hap në gjysmë lartësi</translation>
 <translation id="2038563949887743358">Aktivizo "Kërko sajtin për desktop"</translation>
@@ -789,6 +791,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> dhe <ph name="TAB_COUNT" /> skeda të tjera</translation>
 <translation id="441100617989818073">Skedat/grupet e papërdor./dublikatë</translation>
 <translation id="4412123112245770507">Palos seksionin</translation>
+<translation id="4412698727486357573">Qendra e ndihmës</translation>
 <translation id="4414179633735763985">U fshinë: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="4425140285732600465">Çmimi po monitorohet. Merr sinjalizime nëse ulet çmimi në ndonjë sajt.</translation>
@@ -1435,7 +1438,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6980258170429555165">Menyja "<ph name="MENU_NAME" />" është theksuar</translation>
 <translation id="6983306615164277634">Mund të prekësh dhe të mbash shtypur shiritin e adresës për të ndryshuar pozicionin.</translation>
 <translation id="6987047470128880212">"I fshehtë" nuk ofrohet në këtë pajisje</translation>
-<translation id="6989358895283601928">Ruaj dhe printo</translation>
 <translation id="6996145122199359148">Shkarkoje këtë faqe</translation>
 <translation id="7013762323294215682">Ky çelës kalimi do të ruhet te menaxheri i fjalëkalimeve. Çdo person që ka qasje në të do të mund ta përdorë këtë çelës kalimi.</translation>
 <translation id="7020741890149022655">Shto te lista e leximit <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, skeda e zgjedhur e gozhduar e vendosur në heshtje</translation>
 <translation id="7084115944294706056">Zgjidh poz. e shiritit të adres.</translation>
 <translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
+<translation id="7087066066828635014">Njoftimet e këshillave u aktivizuan</translation>
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, skeda "e fshehtë" e vendosur në heshtje dhe e zgjedhur me shumë të tjera</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
@@ -2002,6 +2005,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="970715775301869095"><ph name="MINUTES" /> minuta të mbetura</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>
+<translation id="984275831282074731">Mënyrat e pagesës</translation>
 <translation id="984756705737569814">Nuk mund të kontrollohen fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
 <translation id="988091779042748639">Për të fshirë historikun e shfletimit në modalitetin "I fshehtë" nga pajisja jote, mbylli të gjitha skedat "e fshehta".</translation>

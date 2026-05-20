@@ -440,6 +440,7 @@
 <translation id="2496626742194544812">Ves a la primera pestanya</translation>
 <translation id="2499505845365628575">Pots trobar tot l'historial de navegació a <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Tens <ph name="NUMBER_OF_PASSWORDS" /> contrasenyes en perill que podrien posar en risc la teva seguretat.</translation>
+<translation id="2512709994717613803">Nivell <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Trobaràs els teus grups de pestanyes aquí</translation>
 <translation id="251837347827266434">Es tancaran les pestanyes i la teva sessió, i se suprimiran les dades de navegació</translation>
 <translation id="2520787026086861736">Per desactivar-ho, ves a <ph name="BEGIN_LINK" />Emplenament automàtic i contrasenyes<ph name="END_LINK" /></translation>
@@ -760,6 +761,7 @@
 <translation id="372676576864368480">Emplena automàticament el número de la targeta acabada en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data de creació: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Carret</translation>
+<translation id="3743545564993953213">Aquest lloc web està provant d'obrir l'aplicació Dreceres.</translation>
 <translation id="3746269120925354434">Informació desada a Google Wallet</translation>
 <translation id="3750225824417196283">Pàgina de pestanya d'incògnit nova</translation>
 <translation id="3751873026576444885">Deixa de cercar a la pantalla amb Google Lens</translation>
@@ -1080,6 +1082,7 @@
 <translation id="4840495572919996524">Les adreces d'interès, l'historial, les contrasenyes i altres opcions ja no se sincronitzaran amb el teu Compte de Google.</translation>
 <translation id="484280513275854557">S'ha tancat la teva sessió; les dades de navegació s'han suprimit</translation>
 <translation id="484462545196658690">Automàtic</translation>
+<translation id="4846662396507502151">Navega més ràpid amb la barra d'eines nova</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4854068532375923088">Permet que Gemini utilitzi la càmera</translation>
 <translation id="4860895144060829044">Truca</translation>
@@ -1416,6 +1419,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5988097621740394599">Consulta les baixades de preu a les pestanyes.</translation>
 <translation id="5988851877894965432">Obre els URL a Chrome</translation>
 <translation id="599343768974649785">Text explícit</translation>
+<translation id="6004988584831654445">Ja estàs a punt! Rep notificacions quan arribin tasques noves.</translation>
 <translation id="6006672969046233841">Pestanya nova</translation>
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
 <translation id="6012140227487808125">S'està encriptant…</translation>
@@ -1646,6 +1650,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6685259053455152195">Dreceres per modificar ràpidament la configuració i utilitzar funcions des de la barra d'adreces.</translation>
 <translation id="6689342293888598653">Color de fons blanc</translation>
 <translation id="6689685206615181381">Només està disponible el mode d'incògnit</translation>
+<translation id="6705491067826837934">Els teus controls, allà on els necessites</translation>
 <translation id="6708501134077648845">Opcions de contrasenya</translation>
 <translation id="6709964700841491574">Mode de bloqueig</translation>
 <translation id="6710079714193676716">Gestionat per la teva organització. Pot ser que algunes funcions no estiguin disponibles. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -1705,6 +1710,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6903282483217634857">Mou a la dreta</translation>
 <translation id="6903907808598579934">Activa la sincronització</translation>
 <translation id="6906448540340261898">Assegura't de poder utilitzar sempre les contrasenyes al teu Compte de Google</translation>
+<translation id="6906978870282539723">Obtén ajuda amb les pestanyes i les tasques</translation>
 <translation id="6908734251759299256">Actualitza el navegador</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Només en aquest dispositiu.</translation>
 <translation id="6914583639806229067">Cerca la imatge que has copiat</translation>
@@ -2065,6 +2071,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8182037667962849780">{count,plural, =1{Per a {website_1}}=2{Per a {website_1} i {website_2}}=3{Per a {website_1}, {website_2} i 1 més}other{Per a {website_1}, {website_2} i {more_count} més}}</translation>
 <translation id="8184895727539791845">Per permetre que Gemini utilitzi la càmera, activa-la a la configuració d'iOS</translation>
 <translation id="8185076488803799132">Importa</translation>
+<translation id="8187200657863701733">Nivell actual de Chrome</translation>
 <translation id="8189615296021678665">Toca Desa per accedir fàcilment a aquesta contrasenya la propera vegada que iniciïs la sessió.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Els teus dispositius<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Afegeix una contrasenya</translation>
@@ -2108,6 +2115,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8325455175867928593">Amaga Ressenyes basades en els teus interessos</translation>
 <translation id="833647236762414178">Crea, desa i gestiona les teves contrasenyes i claus d'accés per iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Completa 1 tasca més per pujar de nivell}other{Completa {count} tasques més per pujar de nivell}}</translation>
 <translation id="8348530355586151720">Toca el menú de tres punts</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
 <translation id="8361189290032177785">{count,plural, =1{S'ha importat {count} adreça d'interès}other{S'han importat {count} adreces d'interès}}</translation>

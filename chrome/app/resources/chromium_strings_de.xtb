@@ -583,7 +583,6 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="7318036098707714271">Deine Einstellungsdatei ist beschädigt oder ungültig.
 
 Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
-<translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="734373864078049451">Hier kannst du im Web surfen und deine Lesezeichen und andere Chromium-Inhalte speichern.</translation>
 <translation id="7347827960336370838">Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, musst du die <ph name="BEGIN_LINK" />Chromium-Daten in deinem Konto löschen<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Dein Systemadministrator hat Chromium so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
@@ -592,6 +591,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7376384068949534168">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
 <translation id="7384121030444253939">Diese Erweiterung wird nicht mehr unterstützt. Chromium empfiehlt daher, sie zu entfernen.</translation>
+<translation id="7407655596887111931">Chromium ist jetzt dein Standardbrowser</translation>
 <translation id="7413153308467572558">Mach dort weiter, wo du aufgehört hast: Chromium stellt deine Tabs bei jedem Neustart wieder her. Wenn du diese Funktion deaktivieren möchtest, gehe zu</translation>
 <translation id="7427879960656355200">Passwörter in Chromium importieren</translation>
 <translation id="744815265653811511">1. Klicke unten auf <ph name="BUTTON_LABEL" />

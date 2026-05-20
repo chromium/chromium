@@ -773,7 +773,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
 <translation id="1521933835545997395">Conexión cun teléfono Android</translation>
 <translation id="1523279371236772909">Consultouse no último mes</translation>
-<translation id="1523486680453956384">Ver tarefa</translation>
 <translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1525740877599838384">Utilizar só a wifi para determinar a localización</translation>
@@ -784,6 +783,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1529769834253316556">Altura das liñas</translation>
 <translation id="1529891865407786369">Fonte de alimentación</translation>
 <translation id="1530376661400379364">Chrome restableceu esta configuración</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> ten datos confidenciais ou perigosos</translation>
 <translation id="1531275250079031713">Mostrar cadro de diálogo Engadir nova wifi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> e <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Entendo que esta descarga danará o meu ordenador</translation>
@@ -2139,7 +2139,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2450849356604136918">non hai visualizacións activas</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">A túa organización limita o que podes gardar</translation>
-<translation id="245307875355990880">Retomar tarefa</translation>
 <translation id="245322989586167203">Os sitios adoitan conectarse aos portos en serie para ofrecerche determinadas funcións relacionadas coa transferencia de datos (por exemplo, configurar a túa rede)</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2454206500483040640">Particionadas</translation>
@@ -2178,6 +2177,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2469141124738294431">Estado da máquina virtual</translation>
 <translation id="2469259292033957819">Non tes impresoras gardadas.</translation>
 <translation id="2469375675106140201">Personalizar corrector ortográfico</translation>
+<translation id="2469406914567390938">Actualizar canle</translation>
 <translation id="247051149076336810">URL do sistema de ficheiros compartido</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Permitiuse o acceso á localización</translation>
@@ -2509,6 +2509,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2695943520968279338">Descubrir extensións</translation>
 <translation id="2696675923413008404">Co fin de mellorar esta función, o contido deste sitio (entre o que se inclúe o seu URL) enviarase a Google e poderá someterse a un proceso de revisión por parte do noso equipo</translation>
 <translation id="2698147581454716013">Este é un dispositivo dun lote e non se pode inscribir con Kiosk e Signage Upgrade.</translation>
+<translation id="269941332914175387">Reinicia o navegador para cargar os datos do teu perfil e mantelos encriptados</translation>
 <translation id="2699911226086014512">Produciuse un erro ao definir o PIN. Código do erro: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Contido compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Iniciar sesión, <ph name="EMAIL" /></translation>
@@ -2737,6 +2738,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2844154481025280030">Política configurada.</translation>
 <translation id="2844169650293029770">Dispositivo USB‑C (porto esquerdo frontal)</translation>
 <translation id="2844809857160214557">Accede aos traballos de impresión e xestiónaos</translation>
+<translation id="284491292807422921">Queres quitar o sitio?</translation>
 <translation id="2845276301195220700">Máis acción para Google Calendar</translation>
 <translation id="2845382757467349449">Mostrar sempre a barra de marcadores</translation>
 <translation id="284581348330507117">Crea contrasinais únicos</translation>
@@ -3326,6 +3328,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3262986719682892278">Demasiado grande</translation>
 <translation id="3264544094376351444">Tipo de letra sen serifas</translation>
 <translation id="3264582393905923483">Contexto</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. A persoa encargada da administración di o seguinte: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Pechar ventá</translation>
 <translation id="3266022278425892773">Contorno de programación de Linux</translation>
 <translation id="3266030505377585301">Para eliminar os datos de navegación só deste dispositivo, pero mantelos na túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión<ph name="END_LINK" />.</translation>
@@ -4111,6 +4114,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3796215473395753611">alt + frecha arriba</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa a Frecha dereita para oír unha mostra da voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
+<translation id="3797330664967181051">Vista dividida</translation>
 <translation id="3797739167230984533">A túa organización <ph name="BEGIN_LINK" />xestiona o teu <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798026281364973895">Desactivar zona wifi instantánea</translation>
@@ -4446,6 +4450,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4010746393007464819">Está dispoñible unha actualización a Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Para ter os teus marcadores no teu dispositivo móbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Aurora boreal, de cores verdes e violetas, sobre unha cidade.</translation>
+<translation id="4011897773956589748">A próxima vez que Gemini necesite acceder a esta conta, volverache preguntar.</translation>
 <translation id="4012509903424054869">Os PDF convértense automaticamente para que poidas buscar texto e seleccionalo</translation>
 <translation id="4014432863917027322">Queres reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tes extensións? <ph name="BEGIN_LINK" />Xestiónaas<ph name="END_LINK" /> facilmente desde un único lugar.</translation>
@@ -4863,7 +4868,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4314497418046265427">Para aumentar a produtividade, conecta o teléfono ao teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="4314561087119792062">Engadir novo nome do punto de acceso</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
-<translation id="4314821834464582073">Pausar tarefa</translation>
 <translation id="4316850752623536204">Sitio web para programadores</translation>
 <translation id="4317733381297736564">Compras integradas na aplicación</translation>
 <translation id="4317820549299924617">A verificación non se realizou correctamente</translation>
@@ -6224,6 +6228,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5275084684151588738">Dicionarios do usuario</translation>
 <translation id="5275338516105640560">Botón de grupo de pestanas gardado</translation>
 <translation id="5275352920323889391">Can</translation>
+<translation id="5275946508817197540">As túas preferencias de seguranza non permiten que se instalen aplicacións web illadas. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Ignorar pestana</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript en <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Non se pode gardar a configuración sen antes iniciar sesión</translation>
@@ -7733,6 +7738,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Xestionar os teus dispositivos</translation>
 <translation id="6350821834561350243">Describe claramente o problema e os pasos para reproducilo (se é posible)</translation>
+<translation id="635100112331897007">Ver todas as políticas de Chrome</translation>
 <translation id="6351178441572658285">Idiomas das aplicacións</translation>
 <translation id="6352992678231622317">A pestana moveuse cara abaixo</translation>
 <translation id="6355632359041940003">Asumir control da tarefa</translation>
@@ -8668,6 +8674,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6997553674029032185">Ir ao sitio</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> (rexistro de actividade)</translation>
 <translation id="6997707937646349884">Nos teus dispositivos:</translation>
+<translation id="6998036632333022623">Compartindo as pestanas con Google</translation>
 <translation id="6998793565256476099">Rexistra o dispositivo para realizar videoconferencias</translation>
 <translation id="6999956497249459195">Novo grupo</translation>
 <translation id="7000206553895739324">A impresora <ph name="PRINTER_NAME" /> está conectada, pero é necesario configurala</translation>

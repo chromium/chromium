@@ -772,7 +772,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android ફોન સાથે કનેક્ટેડ છે</translation>
 <translation id="1523279371236772909">ગયા મહિને જોઈ હતી</translation>
-<translation id="1523486680453956384">કાર્ય જુઓ</translation>
 <translation id="1523978563989812243">ટેક્સ્ટ ટૂ સ્પીચ એન્જિન</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
 <translation id="1525740877599838384">સ્થાન નક્કી કરવા માટે માત્ર વાઇ-ફાઇનો ઉપયોગ કરો</translation>
@@ -1543,6 +1542,7 @@
 <translation id="2044750031738659219">{0,plural, =1{અતિથિ વિન્ડો બંધ કરો}one{અતિથિ (# વિન્ડો) બંધ કરો}other{અતિથિ (# વિન્ડો) બંધ કરો}}</translation>
 <translation id="204497730941176055">Microsoft પ્રમાણપત્ર નમૂના નામ</translation>
 <translation id="2045211794962848221">તમને આ ચોક્કસ મેસેજ ફરીથી દેખાશે નહીં</translation>
+<translation id="2045540927991079503">લિંકને આ તરીકે ખોલો</translation>
 <translation id="2045838962742066664">શૉર્ટહેન્ડ ટાઇપિંગ</translation>
 <translation id="204622017488417136">તમારું ડિવાઇસ Chromeના અગાઉ ઇન્ટોલ કરેલા વર્ઝન પર પરત ફરશે. તમામ વપરાશકર્તા એકાઉન્ટ અને સ્થાનિક ડેટા દૂર કરવામાં આવશે. આ પહેલાંના જેવું કરી શકાતું નથી.</translation>
 <translation id="2046702855113914483">રામેન - જાપાનના એક પ્રકારના નૂડલ</translation>
@@ -1568,6 +1568,7 @@
 <translation id="206308717637808771">તમે બધી વિન્ડો બંધ કરો ત્યારે ડેટા ડિલીટ કરો. ડેટા પર તમે જોઈ રહ્યા હો તે સાઇટને સમાન જ પ્રક્રિયા કરવામાં આવે છે</translation>
 <translation id="2066700471214517561">બીમફૉર્મિંગ માઇક, જેથી Chromebookનો ઉપયોગ કરનારી વ્યક્તિને સ્પષ્ટ રીતે સાંભળી શકાય.</translation>
 <translation id="2068581968816126410">તમામ ડિવાઇસ પર બુકમાર્કનો ઉપયોગ કરો</translation>
+<translation id="2069020119963193894">&amp;કદ</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> દ્વારા <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવાનું સમાપ્ત કરવામાં આવ્યું</translation>
 <translation id="2071393345806050157">કોઇ સ્થાનિક લૉગ ફાઇલ નથી.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}one{આ એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}other{આ એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}}</translation>
@@ -1701,6 +1702,7 @@
 <translation id="2148892889047469596">ટેબ કાસ્ટ કરો</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2150139952286079145">નિર્ધારિત સ્થાન શોધો</translation>
+<translation id="2150168665016482929">નાનું&amp;કરો</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" ઉમેરીએ?</translation>
 <translation id="2151576029659734873">અમાન્ય ટૅબ અનુક્રમણિકા દાખલ કરી.</translation>
 <translation id="2153809900849531051">નેબ્યુલા</translation>
@@ -2140,7 +2142,6 @@
 <translation id="2450849356604136918">કોઈ દૃશ્ય નથી</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">તમે શું સાચવી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે</translation>
-<translation id="245307875355990880">કાર્ય ફરી શરૂ કરો</translation>
 <translation id="245322989586167203">તમારા નેટવર્કનું સેટઅપ કરવા જેવી ડેટા ટ્રાન્સફરની સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે સીરિયલ પોર્ટ સાથે કનેક્ટ થાય છે</translation>
 <translation id="2453860139492968684">સમાપ્ત</translation>
 <translation id="2454206500483040640">વિભાજિત કરવામાં આવી</translation>
@@ -4113,6 +4114,7 @@
 <translation id="3796215473395753611">alt + ઉપરની ઍરો કી</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, વૉઇસનો પ્રીવ્યૂ કરવા માટે જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="3796648294839530037">મનપસંદ નેટવર્ક્સ:</translation>
+<translation id="3797330664967181051">વિભાજિત વ્યૂ</translation>
 <translation id="3797739167230984533">તમારી લિંક તમારી સંસ્થા દ્વારા <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> મેનેજ કરવામાં આવે છે<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” માટે <ph name="SEARCH_ENGINE" /> માં &amp;શોધ કરો</translation>
 <translation id="3798026281364973895">ઇન્સ્ટન્ટ હૉટસ્પૉટ બંધ કરો</translation>
@@ -4469,6 +4471,7 @@
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> સૂચના મેળવી</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ફોલ્ડર</translation>
 <translation id="4028467762035011525">ઇનપુટ પદ્ધતિઓ ઉમેરો</translation>
+<translation id="4028830198155575078">&amp;ખસેડો</translation>
 <translation id="4029024445166427442">લૉન્ચર + shift + backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> પેજ પરથી પાછા ફરો</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
@@ -4866,7 +4869,6 @@
 <translation id="4314497418046265427">જ્યારે તમે તમારો ફોન <ph name="DEVICE_TYPE" /> સાથે કનેક્ટ કરો, ત્યારે તમારી પ્રૉડક્ટિવિટી વધારો</translation>
 <translation id="4314561087119792062">ઍક્સેસ પૉઇન્ટનું નવું નામ ઉમેરો</translation>
 <translation id="4314815835985389558">સિંક મેનેજ કરો</translation>
-<translation id="4314821834464582073">કાર્ય થોભાવો</translation>
 <translation id="4316850752623536204">વિકાસકર્તા વેબસાઇટ</translation>
 <translation id="4317733381297736564">ઍપમાંથી ખરીદીઓ</translation>
 <translation id="4317820549299924617">ચકાસણી સફળ થઈ ન હતી</translation>
@@ -6509,6 +6511,7 @@
 <translation id="5473099001878321374">આગળ વધીને, તમે સંમત થાઓ છો કે આ ડિવાઇસ Google, તમારા બાળકના મોબાઇલ ઑપરેટર અને આ ડિવાઇસના નિર્માતા તરફથી સંભવિત રીતે સેલ્યુલર ડેટાનો ઉપયોગ કરીને, અપડેટ અને ઍપને ઑટોમૅટિક રીતે ડાઉનલોડ અને ઇન્સ્ટૉલ પણ કરી શકે છે. આમાંની અમુક ઍપ, ઍપમાંથી ખરીદીઓની ઑફર કરી શકે છે.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{પિન ઓછામાં ઓછો એક અક્ષરનો હોવો આવશ્યક છે}one{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}other{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે હમણાં વાઇ-ફાઇથી કનેક્ટ થાઓ અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).</translation>
+<translation id="547615291475756075">મોટું&amp;કરો</translation>
 <translation id="5476957746413745956">દરેક દિશાનિર્દેશ માટે અલગ-અલગ સ્પીડ ગોઠવો</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" />ના હૉટસ્પૉટને ગોઠવો</translation>
 <translation id="5481273127572794904">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી નથી</translation>
@@ -7742,6 +7745,7 @@ USB ડિવાઇસ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="6350745006329795504">તમારા ડિવાઇસ મેનેજ કરો</translation>
 <translation id="6350821834561350243">(શક્ય હોય તો) સમસ્યાનું સ્પષ્ટ વર્ણન તથા સમસ્યાની પુન:પ્રસ્તુતિ કરવા માટેના પગલાં આપો</translation>
+<translation id="635100112331897007">Chromeની બધી પૉલિસીઓ જુઓ</translation>
 <translation id="6351178441572658285">ઍપની ભાષાઓ</translation>
 <translation id="6352992678231622317">ટૅબ નીચે ખસેડ્યું</translation>
 <translation id="6355632359041940003">કાર્યનું નિયંત્રણ લો</translation>
@@ -8822,6 +8826,7 @@ USB ડિવાઇસ</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
 <translation id="7098447629416471489">અન્ય સાચવેલા શોધ એન્જિન અહીં દેખાશે</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ઍપ કાઢી નાખો}one{ઍપ કાઢી નાખો}other{ઍપ કાઢી નાખો}}</translation>
+<translation id="7099027177878709408">&amp;બંધ કરો</translation>
 <translation id="7099337801055912064">વિશાળ PPD લોડ કરી શકતાં નથી. મહત્તમ કદ 250 kB છે.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="7100379916748214860">Chrome દ્વારા હમણાં જ એક હાનિકારક ફાઇલ ડાઉનલોડ થતી બ્લૉક કરવામાં આવી. વધારેલા સંરક્ષણની સુવિધા દ્વારા હજી બહેતર સુરક્ષા મેળવો.</translation>
@@ -9862,6 +9867,7 @@ USB ડિવાઇસ</translation>
 <translation id="7817361223956157679">ઑન-સ્ક્રીન કીબોર્ડ હજુ પણ Linux ઍપમાં કામ કરતું નથી</translation>
 <translation id="7818135753970109980">નવી થીમ ઉમેરાઈ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">એક્સ્ટેન્શન એ Chrome માટેના ઍડ-ઑન છે જે તમને વધુ બાબતો કરવામાં મદદ કરી શકે છે</translation>
+<translation id="7819968103441522596">&amp;રિસ્ટોર કરો</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> ડિલીટ કરો, જેથી આ ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકો તમારા પાસવર્ડ જોઈ શકશે નહીં</translation>
 <translation id="7820561748632634942">શું વધારાની સ્વિચ માટે સોંપણી કરીએ?</translation>
 <translation id="782057141565633384">વીડિયો ઍડ્રેસ કૉ&amp;પિ કરો</translation>

@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Савети за Chrome</translation>
 <translation id="1242008676835033345">Уграђено у сајт <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Додирните Апликације &gt; Подразумеване апликације</translation>
+<translation id="1264694639515903274">Сада можете да прилагодите почетну страницу</translation>
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1275718070701477396">Изабрано је</translation>
 <translation id="1289742167380433257">Да би се смањило коришћење података, Google је оптимизовао слике на овој страници.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1919950603503897840">Изаберите контакте</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Прилагоди моју почетну страницу</translation>
 <translation id="1939059826036755332">Аутоматска слика у слици</translation>
 <translation id="1954597385941141174">Сајтови могу да траже да се повезују са USB уређајима</translation>
 <translation id="1979673356880165407">Увећавајте или умањујте текст и слике за све сајтове које посећујете</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Проширите</translation>
 <translation id="4310738531374808763">Прилагодите страницу Почетна</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
+<translation id="4336371609622603229">Персонализујте Chrome тако што ћете изабрати прилагођену тему</translation>
 <translation id="4338831206024587507">Сви сајтови у оквиру домена <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Не дозвољавај сајтовима да шаљу обавештења</translation>
 <translation id="4341577178275615435">Да бисте укључили или искључили навигацију курсором, користите F7</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">Овде ће се приказивати сајтови за које чувате прилагођени ниво зумирања</translation>
 <translation id="8748714929822124637">Не дозвољавај сајтовима да приступају другим уређајима на локалној мрежи</translation>
 <translation id="8751914237388039244">Изаберите слику</translation>
-<translation id="8775741625735357092">Можете да укључите траку са обележивачима у Подешавањима &gt; Изглед</translation>
 <translation id="8800034312320686233">Да ли сајт не ради?</translation>
 <translation id="8801436777607969138">Блокирајте JavaScript за одређени сајт.</translation>
 <translation id="8801657293260363985">V8 је Chrome алатка за JavaScript и WebAssembly која се користи за побољшање перформанси сајта</translation>

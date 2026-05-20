@@ -775,7 +775,6 @@
 <translation id="1521655867290435174">Υπολογιστικά φύλλα Google</translation>
 <translation id="1521933835545997395">Συνδέθηκε σε τηλέφωνο Android</translation>
 <translation id="1523279371236772909">Προβλήθηκε τον προηγούμενο μήνα</translation>
-<translation id="1523486680453956384">Προβολή εργασίας</translation>
 <translation id="1523978563989812243">Μηχανές μετατροπής κειμένου σε ομιλία</translation>
 <translation id="1524563461097350801">Όχι, ευχαριστώ</translation>
 <translation id="1525740877599838384">Χρήση μόνο Wi-Fi για καθορισμό τοποθεσίας</translation>
@@ -786,6 +785,7 @@
 <translation id="1529769834253316556">Ύψος γραμμής</translation>
 <translation id="1529891865407786369">Πηγή ενέργειας</translation>
 <translation id="1530376661400379364">Το Chrome επαναφέρει αυτές τις ρυθμίσεις</translation>
+<translation id="1530466164747090379">Το αρχείο <ph name="FILE_NAME" /> περιέχει ευαίσθητα ή επικίνδυνα δεδομένα</translation>
 <translation id="1531275250079031713">Εμφάνιση παραθύρου διαλόγου "Προσθήκη νέου Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Κατανοώ ότι αυτή η λήψη θα βλάψει τον υπολογιστή μου</translation>
@@ -2153,7 +2153,6 @@
 <translation id="2450849356604136918">Δεν υπάρχουν ενεργές προβολές</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Ο οργανισμός σας περιορίζει τα στοιχεία που μπορείτε να αποθηκεύσετε</translation>
-<translation id="245307875355990880">Συνέχιση εργασίας</translation>
 <translation id="245322989586167203">Οι ιστότοποι συνδέονται συνήθως σε σειριακές θύρες για λειτουργίες μεταφοράς δεδομένων, όπως η ρύθμιση του δικτύου σας</translation>
 <translation id="2453860139492968684">Τέλος</translation>
 <translation id="2454206500483040640">Απομονωμένα</translation>
@@ -2192,6 +2191,7 @@
 <translation id="2469141124738294431">Κατάσταση VM</translation>
 <translation id="2469259292033957819">Δεν έχετε αποθηκευμένους εκτυπωτές.</translation>
 <translation id="2469375675106140201">Προσαρμογή ορθογραφικού ελέγχου</translation>
+<translation id="2469406914567390938">Κανάλι ενημέρωσης</translation>
 <translation id="247051149076336810">URL κοινής χρήσης αρχείου</translation>
 <translation id="2471469610750100598">Μαύρο (προεπιλογή)</translation>
 <translation id="2471506181342525583">Επιτρέπεται η πρόσβαση τοποθεσίας</translation>
@@ -2523,6 +2523,7 @@
 <translation id="2695943520968279338">Ανακάλυψη επεκτάσεων</translation>
 <translation id="2696675923413008404">Το περιεχόμενο από αυτόν τον ιστότοπο, συμπεριλαμβανομένου του URL του, αποστέλλεται στην Google και ενδέχεται να το δουν αναθεωρητές για τη βελτίωση αυτής της λειτουργίας</translation>
 <translation id="2698147581454716013">Αυτή είναι μια συσκευή που περιλαμβάνεται σε πακέτο και δεν μπορεί να εγγραφεί στην Αναβάθμιση kiosk και σήμανσης.</translation>
+<translation id="269941332914175387">Επανεκκινήστε το πρόγραμμα περιήγησης για να φορτώσετε τα δεδομένα του προφίλ σας και να τα διατηρήσετε κρυπτογραφημένα.</translation>
 <translation id="2699911226086014512">Η λειτουργία του PIN απέτυχε με τον κωδικό <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Κοινοποιήθηκε από <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Σύνδεση, <ph name="EMAIL" /></translation>
@@ -2751,6 +2752,7 @@
 <translation id="2844154481025280030">Η πολιτική διαμορφώθηκε.</translation>
 <translation id="2844169650293029770">Συσκευή USB-C (αριστερή μπροστινή θύρα)</translation>
 <translation id="2844809857160214557">Προβολή και διαχείριση εργασιών εκτύπωσης</translation>
+<translation id="284491292807422921">Κατάργηση ιστότοπου;</translation>
 <translation id="2845276301195220700">Περισσότερες ενέργειες για το Ημερολόγιο Google</translation>
 <translation id="2845382757467349449">Διαρκής εμφάνιση γραμμής σελιδοδεικτών</translation>
 <translation id="284581348330507117">Δημιουργήστε μοναδικούς κωδικούς πρόσβασης</translation>
@@ -3340,6 +3342,7 @@
 <translation id="3262986719682892278">Πάρα πολύ μεγάλο</translation>
 <translation id="3264544094376351444">Γραμματοσειρά Sans-serif</translation>
 <translation id="3264582393905923483">Περιβάλλον</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Ο διαχειριστής σας λέει: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Κλείσιμο παραθύρου</translation>
 <translation id="3266022278425892773">Περιβάλλον ανάπτυξης Linux</translation>
 <translation id="3266030505377585301">Για να διαγράψετε τα δεδομένα περιήγησης μόνο από αυτή τη συσκευή και να τα διατηρήσετε στον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />αποσυνδεθείτε<ph name="END_LINK" />.</translation>
@@ -4122,6 +4125,7 @@
 <translation id="3796215473395753611">alt + πάνω βέλος</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, χρησιμοποιήστε το πλήκτρο δεξιού βέλους για προεπισκόπηση φωνής</translation>
 <translation id="3796648294839530037">Αγαπημένα δίκτυα:</translation>
+<translation id="3797330664967181051">Προβολή διαχωρισμού οθόνης</translation>
 <translation id="3797739167230984533">Η συσκευή <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> είναι διαχειριζόμενη<ph name="END_LINK" /> από τον οργανισμό σας</translation>
 <translation id="3797900183766075808">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798026281364973895">Απενεργοποίηση του άμεσου σημείου πρόσβασης Wi-Fi</translation>
@@ -4457,6 +4461,7 @@
 <translation id="4010746393007464819">Υπάρχει διαθέσιμη αναβάθμιση σε Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Για να μεταφέρετε τους σελιδοδείκτες σας στην κινητή συσκευή σας, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Το Βόρειο Σέλας σε μοβ και πράσινο χρώμα, πάνω από μια πόλη.</translation>
+<translation id="4011897773956589748">Την επόμενη φορά που το Gemini θα χρειαστεί πρόσβαση σε αυτόν τον λογαριασμό, θα σας ζητήσει ξανά άδεια.</translation>
 <translation id="4012509903424054869">Τα PDF μετατρέπονται αυτόματα, ώστε να μπορείτε να αναζητάτε και να επιλέγετε κείμενο</translation>
 <translation id="4014432863917027322">Να γίνει επιδιόρθωση του "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="4015163439792426608">Έχετε επεκτάσεις; <ph name="BEGIN_LINK" />Διαχειριστείτε τις επεκτάσεις σας<ph name="END_LINK" /> σε ένα βολικό μέρος.</translation>
@@ -4874,7 +4879,6 @@
 <translation id="4314497418046265427">Βελτιώστε την παραγωγικότητά σας κατά τη σύνδεση του τηλεφώνου σας με τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Προσθήκη νέου ονόματος σημείου πρόσβασης</translation>
 <translation id="4314815835985389558">Διαχείριση συγχρονισμού</translation>
-<translation id="4314821834464582073">Παύση εργασίας</translation>
 <translation id="4316850752623536204">Ιστότοπος προγραμματιστή</translation>
 <translation id="4317733381297736564">Αγορές εντός εφαρμογής</translation>
 <translation id="4317820549299924617">Η επαλήθευση δεν ολοκληρώθηκε επιτυχώς</translation>
@@ -6235,6 +6239,7 @@
 <translation id="5275084684151588738">Λεξικά χρήστη</translation>
 <translation id="5275338516105640560">Κουμπί αποθηκευμένης ομάδας καρτελών</translation>
 <translation id="5275352920323889391">Σκύλος</translation>
+<translation id="5275946508817197540">Οι προτιμήσεις ασφαλείας δεν επιτρέπουν την εγκατάσταση απομονωμένων εφαρμογών ιστού. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Σίγαση καρτέλας</translation>
 <translation id="527605982717517565">Να επιτρέπεται πάντα το JavaScript στο <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Δεν είναι δυνατή η αποθήκευση της διαμόρφωσης χωρίς να γίνει πρώτα σύνδεση.</translation>
@@ -7748,6 +7753,7 @@
 <translation id="6349101878882523185">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Διαχειριστείτε τις συσκευές σας</translation>
 <translation id="6350821834561350243">Εισαγάγετε μια σαφή περιγραφή του ζητήματος και βήματα για την αναπαραγωγή του (αν είναι εφικτό)</translation>
+<translation id="635100112331897007">Προβολή όλων των πολιτικών του Chrome</translation>
 <translation id="6351178441572658285">Γλώσσες εφαρμογής</translation>
 <translation id="6352992678231622317">Η καρτέλα μετακινήθηκε προς τα κάτω</translation>
 <translation id="6355632359041940003">Ανάληψη εργασίας</translation>
@@ -8683,6 +8689,7 @@
 <translation id="6997553674029032185">Μετάβαση στον ιστότοπο</translation>
 <translation id="6997642619627518301">Αρχείο καταγραφής δραστηριοτήτων - <ph name="NAME_PH" /></translation>
 <translation id="6997707937646349884">Στις συσκευές σας:</translation>
+<translation id="6998036632333022623">Κοινή χρήση καρτελών με την Google</translation>
 <translation id="6998793565256476099">Εγγραφή συσκευής για βιντεοδιάσκεψη</translation>
 <translation id="6999956497249459195">Νέα ομάδα</translation>
 <translation id="7000206553895739324">Ο εκτυπωτής <ph name="PRINTER_NAME" /> συνδέθηκε αλλά χρειάζεται διαμόρφωση</translation>

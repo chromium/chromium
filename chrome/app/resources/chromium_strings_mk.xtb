@@ -586,7 +586,6 @@
 <translation id="7318036098707714271">Вашата датотека со претпочитани вредности е оштетена или неважечка.
 
 Chromium не може да ги обнови вашите поставки.</translation>
-<translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="734373864078049451">Вашите веб, обележувачи и други работи на Chromium живеат тука.</translation>
 <translation id="7347827960336370838">Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ги <ph name="BEGIN_LINK" />избришете податоците од Chromium во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Системскиот администратор го конфигурирал Chromium да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -595,6 +594,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7376384068949534168">Не сте дошле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Отворете ја Веб-продавницата на Chrome</translation>
 <translation id="7384121030444253939">Екстензијава веќе не е поддржана. Затоа, Chromium препорачува да ја отстраните.</translation>
+<translation id="7407655596887111931">Отсега Chromium е вашиот стандарден прелистувач</translation>
 <translation id="7413153308467572558">Продолжете каде што сте застанале: Chromium ги враќа вашите картички секогаш кога ќе рестартирате. За да го исклучите ова, одете во</translation>
 <translation id="7427879960656355200">Увезете ги лозинките во Chromium</translation>
 <translation id="744815265653811511">1. Кликнете <ph name="BUTTON_LABEL" /> подолу

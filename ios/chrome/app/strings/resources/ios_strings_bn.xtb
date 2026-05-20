@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">প্রথমে ট্যাবে যান</translation>
 <translation id="2499505845365628575">আপনি নিজের সব ব্রাউজিং ইতিহাস <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> থেকে পাবেন।</translation>
 <translation id="2511117522375201202">আপনার <ph name="NUMBER_OF_PASSWORDS" />টি চুরি হয়ে যাওয়া পাসওয়ার্ড আছে যা আপনার সুরক্ষাকে ঝুঁকির মুখে ফেলতে পারে।</translation>
+<translation id="2512709994717613803">লেভেল <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">এখানে আপনার ট্যাব গ্রুপ দেখতে পাবেন</translation>
 <translation id="251837347827266434">আপনি সাইন-আউট হয়ে যাবেন, ট্যাব বন্ধ হয়ে যাবে, ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="2520787026086861736">বন্ধ করতে, <ph name="BEGIN_LINK" />অটোফিল ও পাসওয়ার্ড<ph name="END_LINK" /> বিকল্পে যান</translation>
@@ -1090,6 +1091,7 @@
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
 <translation id="484280513275854557">আপনি সাইন-আউট হয়ে গেছেন; ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে</translation>
 <translation id="484462545196658690">অটো</translation>
+<translation id="4846662396507502151">নতুন টুলবার ব্যবহার করে আরও দ্রুত ব্রাউজ করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4854068532375923088">আপনার ক্যামেরা ব্যবহার করার জন্য “Gemini”-কে অনুমতি দিন</translation>
 <translation id="4860895144060829044">কল করুন</translation>
@@ -1429,6 +1431,7 @@
 <translation id="5988097621740394599">ট্যাবে দাম কমার তথ্য দেখুন।</translation>
 <translation id="5988851877894965432">Chrome ব্রাউজার থেকে ইউআরএলগুলি খুলুন</translation>
 <translation id="599343768974649785">অনুপযুক্ত টেক্সট</translation>
+<translation id="6004988584831654445">আপনি একদম রেডি! নতুন টাস্ক এলে বিজ্ঞপ্তি পান।</translation>
 <translation id="6006672969046233841">নতুন ট্যাব</translation>
 <translation id="6011308810877101166">সার্চ সাজেশন উন্নত করুন</translation>
 <translation id="6012140227487808125">এনক্রিপ্ট হচ্ছে...</translation>
@@ -1660,6 +1663,7 @@
 <translation id="6685259053455152195">অ্যাড্রেস বার থেকে সেটিং দ্রুত পরিবর্তন করা ও ফিচার ব্যবহার করার শর্টকার্ট।</translation>
 <translation id="6689342293888598653">ব্যাকগ্রাউন্ডের সাদা রঙ</translation>
 <translation id="6689685206615181381">শুধু ছদ্মবেশী মোড উপলভ্য রয়েছে</translation>
+<translation id="6705491067826837934">আপনার কন্ট্রোল, যেখানে এটি আপনার প্রয়োজন</translation>
 <translation id="6708501134077648845">পাসওয়ার্ড সংক্রান্ত বিকল্প</translation>
 <translation id="6709964700841491574">লকডাউন মোড</translation>
 <translation id="6710079714193676716">আপনার সংস্থা এটি ম্যানেজ করে। কিছু ফিচার হয়ত উপলভ্য নয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -1720,6 +1724,7 @@
 <translation id="6903282483217634857">ডানদিকে সরান</translation>
 <translation id="6903907808598579934">সিঙ্ক চালু করুন</translation>
 <translation id="6906448540340261898">আপনার Google অ্যাকাউন্টে সবসময় পাসওয়ার্ড ব্যবহার করতে পারবেন তা কনফার্ম করুন</translation>
+<translation id="6906978870282539723">আপনার ট্যাব ও টাস্কের ব্যাপারে সহায়তা নিন</translation>
 <translation id="6908734251759299256">আপনার ব্রাউজার আপডেট করুন</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />। শুধুমাত্র এই ডিভাইসে।</translation>
 <translation id="6914583639806229067">আপনার কপি করা ছবি সার্চ করুন</translation>
@@ -1815,6 +1820,7 @@
 <translation id="7293429513719260019">ভাষা বেছে নিন</translation>
 <translation id="7300448350764260141">অনলাইন ঝুঁকির বিরুদ্ধে অতিরিক্ত সুরক্ষার স্তর যোগ করুন।</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
+<translation id="7312823817809783355">আপনার টাস্ক</translation>
 <translation id="7313347584264171202">আপনি এখানে নিজের ছদ্মবেশী ট্যাবগুলি খুঁজে পাবেন</translation>
 <translation id="7322186060879266048">{count,plural, =1{আপনার কীবোর্ডের উপরে {count}টি অটোফিল বিকল্প উপলভ্য।}one{আপনার কীবোর্ডের উপরে {count}টি অটোফিল বিকল্প উপলভ্য।}other{আপনার কীবোর্ডের উপরে {count}টি অটোফিল বিকল্প উপলভ্য।}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1822,6 +1828,7 @@
 <translation id="7345061034321640811">ইমপোর্ট করার অনুমতি নেই</translation>
 <translation id="7347998088283246662">পাসওয়ার্ড, ইতিহাস, বুকমার্ক ও আরও অনেক কিছু ইমপোর্ট করুন</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
+<translation id="7357999308187750900">সব দেখুন</translation>
 <translation id="7364796246159120393">ফাইল বেছে নিন</translation>
 <translation id="736564850024123010">কাস্টমাইজ করা অভিজ্ঞতার জন্য আপনার অ্যাড্রেস বারের অবস্থান পরিবর্তন করুন।</translation>
 <translation id="7366909168761621528">ব্রাউজিং ডেটা</translation>
@@ -2080,6 +2087,7 @@
 <translation id="8182037667962849780">{count,plural, =1{{website_1}-এর জন্য}=2{{website_2}, {website_1}-এর জন্য}=3{{website_1}, {website_2} এবং আরও ১টির জন্য}one{{website_1}, {website_2} এবং আরও {more_count}টির জন্য}other{{website_1}, {website_2} এবং আরও {more_count}টির জন্য}}</translation>
 <translation id="8184895727539791845">Gemini-কে আপনার ক্যামেরা ব্যবহার করার অনুমতি দিতে, iOS সেটিংসে গিয়ে ক্যামেরা চালু করুন</translation>
 <translation id="8185076488803799132">ইমপোর্ট করুন</translation>
+<translation id="8187200657863701733">Chrome-এর বর্তমান লেভেল</translation>
 <translation id="8189615296021678665">পরেরবার সাইন-ইন করার সময় সহজে এই পাসওয়ার্ড অ্যাক্সেস করতে, "সেভ করুন" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">পাসওয়ার্ড যোগ করুন</translation>
@@ -2123,6 +2131,7 @@
 <translation id="8325455175867928593">"আপনার আগ্রহের উপর ভিত্তি করে রিভিউ" বিকল্প আড়াল করুন</translation>
 <translation id="833647236762414178">সাইট এবং অ্যাপে সহজে সাইন-ইন করতে আপনার পাসওয়ার্ড ও পাসকী তৈরি, সেভ ও ম্যানেজ করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
+<translation id="8345328955902001853">{count,plural, =1{এক লেভেল উপরে করতে আরও ১টি টাস্ক সম্পূর্ণ করুন}one{এক লেভেল উপরে করতে আরও {count}টি টাস্ক সম্পূর্ণ করুন}other{এক লেভেল উপরে করতে আরও {count}টি টাস্ক সম্পূর্ণ করুন}}</translation>
 <translation id="8348530355586151720">তিন ডট মেনুতে ট্যাপ করুন</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count}টি বুকমার্ক ইমপোর্ট করা হয়েছে}one{{count}টি বুকমার্ক ইমপোর্ট করা হয়েছে}other{{count}টি বুকমার্ক ইমপোর্ট করা হয়েছে}}</translation>

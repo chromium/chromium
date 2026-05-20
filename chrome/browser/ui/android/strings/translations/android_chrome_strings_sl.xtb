@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Organizirajte spremljane izdelke v zaznamkih.</translation>
 <translation id="1455845192930279203">Ali želite vseeno prenesti datoteko »<ph name="FILE_NAME" />« (<ph name="FILE_SIZE" />) iz domene <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Prihranite čas in manj vnašajte</translation>
+<translation id="146522654774760805">Gesla in samodejno izpolnjevanje</translation>
 <translation id="1466383950273130737">Izbierite Chromov jezik</translation>
 <translation id="1477626028522505441">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi težav s strežnikom.</translation>
 <translation id="147982357559798527">Spremenjeno</translation>
@@ -227,6 +228,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="200114059308480249">Želite vključiti sobesedilo v iskanja v Googlu?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripeti anonimni zavihek z izklopljenim zvokom</translation>
 <translation id="2021896219286479412">Kontrol. za mesto v celo. načinu</translation>
+<translation id="2022953316617983419">Koda QR</translation>
 <translation id="2024195579772565064">Izbris iskalnika</translation>
 <translation id="2029669011553795746">Možnost omogočanja obvestil z nasveti je odprta pri polovični višini</translation>
 <translation id="2038563949887743358">Vklop možnosti »Zahteva za namizno spletno mesto«</translation>
@@ -789,6 +791,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> in še toliko zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="441100617989818073">Neuporabljeni ali podvojeni zavihki in skupine</translation>
 <translation id="4412123112245770507">Strnitev razdelka</translation>
+<translation id="4412698727486357573">Center za pomoč</translation>
 <translation id="4414179633735763985">Izbrisano: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Upravljanje računa Google</translation>
 <translation id="4425140285732600465">Spremljanje cene. Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
@@ -1435,7 +1438,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6980258170429555165">Meni za <ph name="MENU_NAME" /> je označen.</translation>
 <translation id="6983306615164277634">Položaj lahko spremenite tudi tako, da se dotaknete naslovne vrstice in jo pridržite.</translation>
 <translation id="6987047470128880212">Anonimni način ni na voljo v tej napravi.</translation>
-<translation id="6989358895283601928">Shrani in natisni</translation>
 <translation id="6996145122199359148">Prenos te strani</translation>
 <translation id="7013762323294215682">Ta ključ za dostop bo shranjen v upravitelju gesel. Ta ključ za dostop bodo lahko uporabljali vsi, ki imajo dostop do njega.</translation>
 <translation id="7020741890149022655">Dodaj na bralni seznam <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, izbrani pripeti zavihek z izklopljenim zvokom</translation>
 <translation id="7084115944294706056">Izbira položaja naslovne vrstice</translation>
 <translation id="7085332316435785646">Izberite, ali želite, da je zaradi osebno bolj prilagojenih izkušenj v Googlovih storitvah vključena zgodovina v Chromu.</translation>
+<translation id="7087066066828635014">Obvestila z nasveti so vklopljena</translation>
 <translation id="7088681679121566888">Chrome je posodobljen</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, večkrat izbrani anonimni zavihek z izklopljenim zvokom</translation>
 <translation id="7106762743910369165">Vaš brskalnik upravlja organizacija</translation>
@@ -2002,6 +2005,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="970715775301869095">Še <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Brez povezave</translation>
 <translation id="983192555821071799">Zapri vse zavihke</translation>
+<translation id="984275831282074731">Plačilna sredstva</translation>
 <translation id="984756705737569814">V računu Google ni mogoče preveriti gesel</translation>
 <translation id="987264212798334818">Splošno</translation>
 <translation id="988091779042748639">Če želite izbrisati anonimno zgodovino brskanja iz naprave, zaprite vse anonimne zavihke.</translation>

@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Mẹo dùng Chrome</translation>
 <translation id="1242008676835033345">Được nhúng trên <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Nhấn vào Ứng dụng &gt; Ứng dụng mặc định</translation>
+<translation id="1264694639515903274">Giờ đây, bạn có thể tuỳ chỉnh trang chủ của mình</translation>
 <translation id="1272079795634619415">Dừng</translation>
 <translation id="1275718070701477396">Đã chọn</translation>
 <translation id="1289742167380433257">Google đã tối ưu hóa các hình ảnh trong trang này để tiết kiệm dữ liệu cho bạn.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1919950603503897840">Chọn mục liên hệ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Tuỳ chỉnh trang chủ của tôi</translation>
 <translation id="1939059826036755332">Chế độ hình trong hình tự động</translation>
 <translation id="1954597385941141174">Các trang web có thể yêu cầu kết nối với thiết bị USB</translation>
 <translation id="1979673356880165407">Tăng hoặc giảm kích thước văn bản và hình ảnh cho tất cả trang web bạn truy cập</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Mở rộng</translation>
 <translation id="4310738531374808763">Tuỳ chỉnh trang chủ của bạn</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
+<translation id="4336371609622603229">Thiết lập Chrome theo cách riêng bằng cách chọn giao diện tuỳ chỉnh</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Không cho phép các trang web gửi thông báo</translation>
 <translation id="4341577178275615435">Để bật hoặc tắt tính năng duyệt web có con nháy, hãy dùng phím tắt F7</translation>
@@ -751,7 +754,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8737426583868847403">Các trang web mà bạn lưu mức thu phóng tuỳ chỉnh sẽ xuất hiện tại đây</translation>
 <translation id="8748714929822124637">Không cho phép trang web truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="8751914237388039244">Chọn hình ảnh</translation>
-<translation id="8775741625735357092">Bạn có thể bật thanh dấu trang trong phần Cài đặt &gt; Giao diện</translation>
 <translation id="8800034312320686233">Trang web không hoạt động?</translation>
 <translation id="8801436777607969138">Chặn JavaScript cho một trang web cụ thể.</translation>
 <translation id="8801657293260363985">V8 là công cụ WebAssembly và JavaScript của Chrome, có tác dụng cải thiện hiệu suất của trang web</translation>

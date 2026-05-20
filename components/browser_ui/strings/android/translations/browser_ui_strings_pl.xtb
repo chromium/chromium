@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Wskazówki dotyczące Chrome</translation>
 <translation id="1242008676835033345">Umieszczono na <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Kliknij Aplikacje &gt; Aplikacje domyślne.</translation>
+<translation id="1264694639515903274">Teraz możesz dostosować stronę główną</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1289742167380433257">Aby zaoszczędzić dane, obrazy z tej strony zostały zoptymalizowane przez Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Dostosuj stronę główną</translation>
 <translation id="1939059826036755332">Automatyczny obraz w obrazie</translation>
 <translation id="1954597385941141174">Strony mogą prosić o zgodę na połączenie z urządzeniami USB</translation>
 <translation id="1979673356880165407">Powiększaj lub pomniejszaj tekst i obrazy we wszystkich odwiedzanych witrynach</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome ponownie zablokuje pliki cookie dzisiaj</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3859306556332390985">Przewiń do przodu</translation>
+<translation id="3870711497942672548">Dostosuj Chrome za pomocą spersonalizowanych kolorów i obrazów na stronie głównej</translation>
 <translation id="389521680295183045">Witryny mogą prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="3895926599014793903">Wymuś powiększenie</translation>
 <translation id="3903738175795615004">Aby zamknąć pełny ekran, przeciągnij od góry lub naciśnij klawisz Esc.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Rozwiń</translation>
 <translation id="4310738531374808763">Dostosowywanie strony głównej</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
+<translation id="4336371609622603229">Dostosuj Chrome, wybierając niestandardowy motyw</translation>
 <translation id="4338831206024587507">Wszystkie witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Nie zezwalaj witrynom na wysyłanie powiadomień</translation>
 <translation id="4341577178275615435">Aby włączyć lub wyłączyć przeglądanie przy użyciu kursora, użyj skrótu F7</translation>
@@ -750,7 +754,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="8737426583868847403">Tutaj pojawią się witryny, dla których zapiszesz niestandardowy poziom powiększenia</translation>
 <translation id="8748714929822124637">Nie zezwalaj stronom na dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="8751914237388039244">Wybierz obraz</translation>
-<translation id="8775741625735357092">Pasek zakładek możesz włączyć, klikając Ustawienia &gt; Wygląd</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>
 <translation id="8801657293260363985">V8 to mechanizm JavaScript i WebAssembly w Chrome używany do zwiększania wydajności witryny</translation>

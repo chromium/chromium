@@ -4604,6 +4604,13 @@ Politika, <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" /
 <translation id="3928726028264020458">Cihazın VPD bilgileri raporlamasını etkinleştir</translation>
 <translation id="3935592079035695061">Gece yarısından bu yana milisaniye.</translation>
 <translation id="3937800910397007337">Tüm sekmeler için ön plan önceliğini zorla</translation>
+<translation id="3938885528378923718"><ph name="PRODUCT_NAME" /> öğesinin, üretken yapay zekanın temel modelini indirme ve yerel çıkarım için kullanma şeklini yapılandırın.
+
+Politika, İzin Verildi (0) değerine ayarlanır veya ayarlanmadan bırakılırsa model otomatik olarak indirilir ve çıkarım için kullanılır.
+
+Politika, Devre Dışı (1) değerine ayarlanırsa model indirilmez ve mevcut model (daha önce indirilmişse) silinir.
+
+Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> değerini yanlış olarak ayarlayarak da devre dışı bırakılabilir.</translation>
 <translation id="3941289958028934630">Giriş ekranında sözlü geri bildirimi devre dışı bırak</translation>
 <translation id="3943930334592166130">Bu politika, <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> ile eşleşen birden fazla sertifika olduğunda kullanıcıdan bir istemci sertifikası seçmesinin istenip istenmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan bir istemci sertifikası seçmesi istenir.
@@ -8450,13 +8457,6 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 
 Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="6382209369210116232">Yayından kaldırılan uzantıları devre dışı bırak</translation>
-<translation id="6382287177674997281">Bu politika, kullanıcıların her türlü donanım yazılımı güncellemesini başlatmasına izin verir.
-
-      Politika, Etkin değerine ayarlanırsa cihaz sahibi gibi kullanıcıların donanım yazılımı güncellemeleri başlatmasına izin verir.
-
-      Politika, Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıların donanım yazılımı güncellemeleri uygulamasına izin verilmez.
-
-      Bu politika, <ph name="PRODUCT_OS_FLEX_NAME" /> cihazların harici çevre birimi donanım yazılımı güncellemeleri ve dahili bileşen donanım yazılımı güncellemeleri için geçerlidir. <ph name="PRODUCT_OS_NAME" /> cihazların dahili bileşen donanım yazılımı güncellemeleri bu politikadan etkilenmez.</translation>
 <translation id="6383774771168138899"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırır</translation>
 <translation id="6384542789059421431">Varsayılan arama motoru sonuç sayfalarının, tarayıcı yan panelinde gösterilmesini etkinleştir.</translation>
 <translation id="6389240462871677239">Yalıtılmış web uygulaması kaynaklarının, Controlled Frame'i kullanmasına izin ver</translation>

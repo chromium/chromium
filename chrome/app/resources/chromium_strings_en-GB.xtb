@@ -586,7 +586,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7318036098707714271">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
-<translation id="7339898014177206373">New window</translation>
 <translation id="734373864078049451">Your web, bookmarks and other Chromium stuff live here.</translation>
 <translation id="7347827960336370838">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Your system administrator has configured Chromium to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -595,6 +594,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7376384068949534168">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Open Chrome Web Store</translation>
 <translation id="7384121030444253939">This extension is no longer supported. Chromium recommends that you remove it instead.</translation>
+<translation id="7407655596887111931">Chromium is now your default browser</translation>
 <translation id="7413153308467572558">Continue where you left off: Chromium restores your tabs every time you restart. To turn this off, go to</translation>
 <translation id="7427879960656355200">Import passwords to Chromium</translation>
 <translation id="744815265653811511">1. Click <ph name="BUTTON_LABEL" /> below

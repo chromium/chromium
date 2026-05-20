@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Перейти на першу вкладку</translation>
 <translation id="2499505845365628575">Щоб переглянути всю історію веб-перегляду, натисніть кнопку "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2511117522375201202">У вас є зламані паролі (<ph name="NUMBER_OF_PASSWORDS" />), які можуть загрожувати вашій безпеці.</translation>
+<translation id="2512709994717613803">Рівень <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Тут зберігатимуться групи вкладок</translation>
 <translation id="251837347827266434">Ви вийдете з облікового запису, вкладки буде закрито, а дані вебперегляду – видалено</translation>
 <translation id="2520787026086861736">Щоб вимкнути, перейдіть у розділ <ph name="BEGIN_LINK" />Автозаповнення й паролі<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Автоматично заповнити номер картки, що закінчується на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Створено <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Фотоплівка</translation>
+<translation id="3743545564993953213">Цей сайт намагається відкрити додаток Shortcuts.</translation>
 <translation id="3746269120925354434">Інформацію збережено в Google Гаманці</translation>
 <translation id="3750225824417196283">Сторінка нової анонімної вкладки</translation>
 <translation id="3751873026576444885">Зупинити пошук на екрані за допомогою Google Об’єктива</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Закладки, історія, паролі тощо більше не синхронізуватимуться з обліковим записом Google.</translation>
 <translation id="484280513275854557">Ви вийшли з облікового запису, а дані веб-перегляду було видалено</translation>
 <translation id="484462545196658690">Автоматично</translation>
+<translation id="4846662396507502151">Переглядайте вебсторінки швидше за допомогою нової панелі інструментів</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="4854068532375923088">Дозвольте Gemini використовувати камеру</translation>
 <translation id="4860895144060829044">Зателефонувати</translation>
@@ -1427,6 +1430,7 @@
 <translation id="5988097621740394599">Переглядайте зниження цін на вкладках.</translation>
 <translation id="5988851877894965432">Відкривати URL-адреси в Chrome</translation>
 <translation id="599343768974649785">Точний текст</translation>
+<translation id="6004988584831654445">Готово! Отримуйте сповіщення про нові завдання.</translation>
 <translation id="6006672969046233841">Нова вкладка</translation>
 <translation id="6011308810877101166">Покращувати підказки в пошуку</translation>
 <translation id="6012140227487808125">Шифрування…</translation>
@@ -1658,6 +1662,7 @@
 <translation id="6685259053455152195">Швидкі команди, за допомогою яких можна змінювати налаштування й використовувати функції з адресного рядка.</translation>
 <translation id="6689342293888598653">Білий колір фону</translation>
 <translation id="6689685206615181381">Доступний лише анонімний режим</translation>
+<translation id="6705491067826837934">Елементи керування завжди напохваті</translation>
 <translation id="6708501134077648845">Параметри паролів</translation>
 <translation id="6709964700841491574">Режим блокування входу</translation>
 <translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@
 <translation id="6903282483217634857">Перемістити курсор праворуч</translation>
 <translation id="6903907808598579934">Увімкнути синхронізацію</translation>
 <translation id="6906448540340261898">Подбайте про те, щоб завжди мати змогу використовувати паролі в обліковому записі Google</translation>
+<translation id="6906978870282539723">Отримуйте допомогу з вкладками й завданнями</translation>
 <translation id="6908734251759299256">Оновіть вебпереглядач</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Лише на цьому пристрої.</translation>
 <translation id="6914583639806229067">Шукати скопійоване зображення</translation>
@@ -1813,6 +1819,7 @@
 <translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="7300448350764260141">Додайте ще один рівень захисту від загроз в Інтернеті.</translation>
 <translation id="7311244614769792472">Результатів не знайдено</translation>
+<translation id="7312823817809783355">Ваші завдання</translation>
 <translation id="7313347584264171202">Тут відображатимуться ваші анонімні вкладки</translation>
 <translation id="7322186060879266048">{count,plural, =1{Над клавіатурою показується {count} варіант автозаповнення.}one{Над клавіатурою показується {count} варіант автозаповнення.}few{Над клавіатурою показуються {count} варіанти автозаповнення.}many{Над клавіатурою показуються {count} варіантів автозаповнення.}other{Над клавіатурою показуються {count} варіанта автозаповнення.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1820,6 +1827,7 @@
 <translation id="7345061034321640811">Імпорт заборонено</translation>
 <translation id="7347998088283246662">Імпортуйте паролі, історію, закладки тощо</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
+<translation id="7357999308187750900">Переглянути всі</translation>
 <translation id="7364796246159120393">Вибрати файл</translation>
 <translation id="736564850024123010">Щоб персоналізувати головний екран, змініть положення адресного рядка.</translation>
 <translation id="7366909168761621528">Дані вебперегляду</translation>
@@ -2078,6 +2086,7 @@
 <translation id="8182037667962849780">{count,plural, =1{Для веб-сайту {website_1}}=2{Для веб-сайтів {website_1} і {website_2}}=3{Для {website_1}, {website_2} і ще 1 веб-сайту}one{Для {website_1}, {website_2} і ще {more_count} веб-сайту}few{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}many{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}other{Для {website_1}, {website_2} і ще {more_count} веб-сайту}}</translation>
 <translation id="8184895727539791845">Щоб дозволити Gemini використовувати вашу камеру, увімкніть її в налаштуваннях iOS</translation>
 <translation id="8185076488803799132">Імпорт</translation>
+<translation id="8187200657863701733">Поточний рівень Chrome</translation>
 <translation id="8189615296021678665">Натисніть "Зберегти", щоб легко отримати доступ до цього пароля під час наступного входу.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додати пароль</translation>
@@ -2121,6 +2130,7 @@
 <translation id="8325455175867928593">Сховати розділ "Відгуки на основі ваших інтересів"</translation>
 <translation id="833647236762414178">Створюйте й зберігайте паролі та ключі доступу, а також керуйте ними, щоб простіше входити у свої облікові записи на сайтах і в додатках. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Виконайте ще 1 завдання, щоб перейти на новий рівень}one{Виконайте ще {count} завдання, щоб перейти на новий рівень}few{Виконайте ще {count} завдання, щоб перейти на новий рівень}many{Виконайте ще {count} завдань, щоб перейти новий рівень}other{Виконайте ще {count} завдання, щоб перейти на новий рівень}}</translation>
 <translation id="8348530355586151720">Натисніть меню додаткових параметрів.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8361189290032177785">{count,plural, =1{Імпортовано {count} закладку}one{Імпортовано {count} закладку}few{Імпортовано {count} закладки}many{Імпортовано {count} закладок}other{Імпортовано {count} закладки}}</translation>

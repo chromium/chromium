@@ -254,6 +254,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1380591466760231819">Briefvou</translation>
 <translation id="138218114945450791">Ligblou</translation>
 <translation id="1382194467192730611">USB-toestel word deur jou administrateur toegelaat</translation>
+<translation id="1383876407941801731">Soek</translation>
 <translation id="1384725838384960382">Veilige betaling se eiebewysstawingblad</translation>
 <translation id="1386623374109090026">Aantekeninge</translation>
 <translation id="138810468159004008">Laat toe terwyl jy die werf besoek</translation>
@@ -1820,6 +1821,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="380865868633614173">Stoor tans kaartinligting</translation>
 <translation id="3810770279996899697">Wagwoordbestuurder het toegang tot MacOS Keychain nodig</translation>
 <translation id="3810973564298564668">Bestuur</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Dit is ’n noodsaaklike opdatering wat werkverrigting van Android-apps op ChromeOS verbeter.</translation>
 <translation id="3814865536373139791">Vereenvoudig hoe jou organisasie beleide bestuur</translation>
 <translation id="3815434930383843058">8x12 dm.</translation>
@@ -2399,6 +2401,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4736934858538408121">Virtuele kaart</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4738601419177586157"><ph name="TEXT" />-soekvoorstel</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, gekose oortjie, <ph name="INDEX" /> van <ph name="TOTAL" />, gebruik linker- of regterpyl om tussen oortjies te wissel</translation>
 <translation id="4742407542027196863">Bestuur wagwoorde …</translation>
 <translation id="474270528725216349">Vanaf minstens 1 werf op gesinkroniseerde toestelle</translation>
 <translation id="4743275772928623722">Jou stelsel is opgedateer, maar sommige van jou apps en lêers kon nie teruggestel word nie. Jou apps sal outomaties weer afgelaai word.</translation>
@@ -2466,6 +2469,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4832961164064927107">Braai en rooster</translation>
 <translation id="4835568975547260025">Chrome sal by verstek relevante oop oortjies deel om jou te help om meer gepasmaakte antwoorde op jou vrae te kry.</translation>
 <translation id="4840250757394056958">Bekyk jou Chrome-geskiedenis</translation>
+<translation id="4842365697443353018">Maak vorm skoon om betaal later te gebruik</translation>
 <translation id="484462545196658690">Outo</translation>
 <translation id="4844937814014739139">Gedeelde oortjies vir rollees en zoem</translation>
 <translation id="484671803914931257">Kry afslag op <ph name="MERCHANT_NAME" /> en meer</translation>

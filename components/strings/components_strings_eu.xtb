@@ -254,6 +254,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1380591466760231819">Gutun-tolestura</translation>
 <translation id="138218114945450791">Urdin argia</translation>
 <translation id="1382194467192730611">Administratzaileak onartzen duen USB bidezko gailua</translation>
+<translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384725838384960382">Ordainketa seguruetarako kredentzialak autentifikatzeko orria</translation>
 <translation id="1386623374109090026">Oharpenak</translation>
 <translation id="138810468159004008">Eman baimena webgunea bisitatu bitartean</translation>
@@ -1816,6 +1817,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="380865868633614173">Txartelaren informazioa gordetzen</translation>
 <translation id="3810770279996899697">Pasahitz-kudeatzailea zerbitzuak MacOS Keychain erabiltzeko baimena behar du</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Eguneratze garrantzitsu honek Android-erako aplikazioen errendimendua hobetzen du ChromeOS-en.</translation>
 <translation id="3814865536373139791">Sinplifikatu zure erakundeak gidalerroak kudeatzeko duen modua</translation>
 <translation id="3815434930383843058">20,32 × 30,48 cm (8 × 12 in)</translation>
@@ -2395,6 +2397,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4736934858538408121">Txartel birtuala</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4738601419177586157">Bilaketa-iradokizuna: <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, hautatutako fitxa, <ph name="TOTAL" /> fitxetatik <ph name="INDEX" />garrena. Fitxen artean aldatzeko, erabili ezkerrera edo eskuinera egiteko gezi-tekla</translation>
 <translation id="4742407542027196863">Kudeatu pasahitzak…</translation>
 <translation id="474270528725216349">Gailu sinkronizatuetako webgune batetik gutxienez</translation>
 <translation id="4743275772928623722">Sistema eguneratu da, baina zenbait aplikazio eta fitxategi ezin izan dira berreskuratu. Aplikazioak automatikoki deskargatuko dira berriro.</translation>
@@ -2462,6 +2465,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4832961164064927107">Barbakoa eta parrilla</translation>
 <translation id="4835568975547260025">Chrome-k irekitako fitxa egokiak partekatuko ditu modu lehenetsian, zure galderei erantzun pertsonalizatuagoak emateko.</translation>
 <translation id="4840250757394056958">Ikusi Chrome-ko historia</translation>
+<translation id="4842365697443353018">Geroago ordaintzeko aukera erabiltzeko, garbitu inprimakia</translation>
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="4844937814014739139">Fitxa partekatuetan gora/behera egitea eta zooma erabiltzea</translation>
 <translation id="484671803914931257">Eskuratu deskontuak <ph name="MERCHANT_NAME" /> eta beste saltzaile batzuen produktuetan</translation>

@@ -328,6 +328,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4348548358339558429">Aby korzystać z personalizacji, uwzględnij Chrome w Aktywności w internecie i aplikacjach</translation>
 <translation id="436060642166082913">Pobieranie zostało zablokowane przez Chrome, ponieważ plik może zaszkodzić Twoim kontom osobistym i tym w sieciach społecznościowych</translation>
 <translation id="4367027658822022112">Możesz przypiąć Obiektyw Google, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
+<translation id="4372389195695053189">Chrome jest teraz Twoją przeglądarką domyślną</translation>
 <translation id="4389991535395284064">Podczas przeglądania w trybie incognito Chrome będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
@@ -609,7 +610,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7302361266603927550">Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
 <translation id="7306401458628386911">Zacznij przeglądać od razu: Chrome może się teraz uruchamiać po uruchomieniu systemu Windows.</translation>
 <translation id="7308322188646931570">Chrome musi mieć dostęp do pamięci, by pobierać pliki</translation>
-<translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
 <translation id="7386878009611068389">Aby zapewnić sobie większe bezpieczeństwo online dzięki ustawieniom wybranym przez Twojego rodzica, przełącz się na swój profil Chrome, na który jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /></translation>

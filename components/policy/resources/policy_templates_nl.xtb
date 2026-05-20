@@ -145,6 +145,7 @@ URL-patronen mogen geen conflict vormen met <ph name="CONTROLLED_FRAME_ALLOWED_F
 Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1084697375611053264">Hiermee geef je de lijst aan met web-app-domeinen van derden die <ph name="DESK_API_NAME" /> mogen gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus te beheren. Deze URL-patronen moeten de indeling hebben die is gedefinieerd voor de eigenschap 'matches' (komt overeen met) in https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
+<translation id="1086596047220085412">Instellingen voor slim tabblad delen</translation>
 <translation id="1087057100912843460">Updates toestaan</translation>
 <translation id="1087187152710800704">Het recht voor vensterbeheer wordt standaard geweigerd voor alle sites</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
@@ -1074,6 +1075,7 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       Zie ook <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
+<translation id="1723571018091915166">Slim tabblad delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />-integraties niet toestaan.</translation>
 <translation id="172374442286684480">Alle sites toestaan lokale gegevens in te stellen</translation>
 <translation id="1729169799290004131">Als je het beleid instelt, wordt de helderheid van het scherm als percentage ingesteld en worden de functies voor automatische helderheid uitgezet. Het scherm heeft aanvankelijk de helderheid van de beleidswaarde, maar gebruikers kunnen deze aanpassen.
 
@@ -4496,6 +4498,13 @@ Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3928726028264020458">Rapportage van VPD-informatie van apparaat aanzetten</translation>
 <translation id="3935592079035695061">Milliseconden sinds middernacht.</translation>
 <translation id="3937800910397007337">Voorgrondprioriteit afdwingen voor alle tabbladen</translation>
+<translation id="3938885528378923718">Stel in hoe <ph name="PRODUCT_NAME" /> het basismodel voor generatieve AI downloadt en lokaal gebruikt voor inferentie.
+
+Als je het beleid toepast (0) of niet instelt, wordt het model automatisch gedownload en gebruikt voor inferentie.
+
+Als je het beleid niet toepast (1), wordt het model niet gedownload en wordt het bestaande model (als het al is gedownload) verwijderd.
+
+Op desktopplatforms kan het downloaden van modellen ook worden uitgezet door <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> in te stellen op onwaar.</translation>
 <translation id="3941289958028934630">Gesproken feedback op het inlogscherm uitzetten</translation>
 <translation id="3943930334592166130">Met dit beleid bepaal je of de gebruiker wordt gevraagd een clientcertificaat te selecteren als meerdere certificaten overeenkomen met <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Als je dit beleid toepast, wordt de gebruiker gevraagd een clientcertificaat te selecteren als het beleid voor automatisch selecteren overeenkomt met meerdere certificaten.
@@ -8264,16 +8273,28 @@ Als je dit beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
 
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6382209369210116232">Niet-gepubliceerde extensies uitzetten</translation>
-<translation id="6382287177674997281">Met dit beleid kunnen gebruikers alle soorten firmware-updates starten.
-
-      Als je het beleid toepast, kunnen gebruikers zoals de apparaateigenaar firmware-updates starten.
-
-      Als je het beleid niet toepast of niet instelt, kunnen alle gebruikers geen firmware-updates toepassen.
-
-      Dit beleid is van toepassing op firmware voor updates van firmware voor randapparatuur en updates van firmware voor interne componenten voor <ph name="PRODUCT_OS_FLEX_NAME" />-apparaten. Het beleid heeft geen invloed op firmware-updates voor interne componenten voor <ph name="PRODUCT_OS_NAME" />-apparaten.</translation>
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
 <translation id="6389240462871677239">Toestaan dat geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken</translation>
+<translation id="6393598243777822017">Met dit beleid bepaal je of de functie voor slim tabblad delen van <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> kan worden gebruikt via het zijvenster of de tabbladen van <ph name="PRODUCT_NAME" />.
+
+Dit beleid heeft geen invloed op <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> op het web. Het bepaalt alleen hoe gebruikers informatie met het product kunnen delen als ze <ph name="PRODUCT_NAME" /> gebruiken.
+
+0 = gebruikers kunnen pagina- of bestandscontent delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = gebruikers kunnen pagina- of bestandscontent niet delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. De startpunten voor context delen en het zijvenster worden uitgezet of verborgen.
+
+Dit beleid wordt genegeerd als <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> niet de standaard zoekmachine van gebruikers is, omdat de functie dan uitstaat.
+
+Dit beleid is onafhankelijk van het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> bepaalt alleen startpunten in de omnibox of het zoekvak op de pagina Nieuw tabblad, terwijl dit beleid context delen via het zijvenster of tabbladen beheert.
+
+Dit beleid beheert ook niet de integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Deze kan worden uitgezet door <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Als je <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> uitzet, wordt dit beleid genegeerd.
+
+Als je dit beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
@@ -10690,6 +10711,7 @@ Als je het beleid niet toepast of niet instelt, kunnen gebruikers het icoon vast
 
 Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, heeft de waarde van dit beleid geen effect en wordt het werkbalkicoon niet getoond.</translation>
 <translation id="7933141401888114454">Aanmaak van bewaakte gebruikers aanzetten</translation>
+<translation id="793360449603660370">Slimme tabbladen delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />-integraties toestaan.</translation>
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
 <translation id="7936302526928951356">De tekenreeks voor User-agent zet de hoofdversie niet vast.</translation>
 <translation id="7936632434238618620">Als je het beleid instelt, kun je een lijst met URL-patronen invoeren van sites waarvoor Chrome automatisch een clientcertificaat kan selecteren. De waarde is een matrix van JSON-woordenboeken met tekenreeksen, elk met de indeling <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, waarbij <ph name="URL_PATTERN_PLACEHOLDER" /> een patroon voor het instellen van content is. <ph name="FILTER_PLACEHOLDER" /> beperkt de clientcertificaten waaruit de browser automatisch kan kiezen. Onafhankelijk van het filter worden alleen certificaten geselecteerd die overeenkomen met het certificaatverzoek van de server. Op Android en iOS kan Chrome alleen clientcertificaten selecteren die het zelf heeft ingesteld. Chrome heeft geen toegang tot certificaten die zijn geïnstalleerd op het niveau van het besturingssysteem.

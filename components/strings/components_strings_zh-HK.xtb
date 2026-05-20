@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">此問題由您或其他人在裝置上安裝的憑證而導致。由於憑證曾用作監控及網絡攔截，因此不獲 Chromium 信任。雖然有些監控理由合理 (例如學校或公司網絡)，且無法停止有關監控，但 Chromium 仍希望就此通知您。任何使用網絡的瀏覽器和應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入難以辨識的變更來仿冒網站。</translation>
 <translation id="1024913885641459127">產品評論和價格比較</translation>
+<translation id="1025174656774447058">要自動分享此訊息串已開啟的分頁嗎？</translation>
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在您的裝置上永久儲存大量數據</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{無}=1{來自 1 個網站。刪除 Cookie 後，大多數網站都會將你登出。}other{來自 # 個網站。刪除 Cookie 後，大多數網站都會將你登出。}}</translation>
@@ -254,6 +255,7 @@
 <translation id="1380591466760231819">三折頁</translation>
 <translation id="138218114945450791">淺藍色</translation>
 <translation id="1382194467192730611">系統管理員允許使用的 USB 裝置</translation>
+<translation id="1383876407941801731">搜尋</translation>
 <translation id="1384725838384960382">安全付款憑證驗證工作表</translation>
 <translation id="1386623374109090026">註解</translation>
 <translation id="138810468159004008">瀏覽此網站時允許</translation>
@@ -1024,6 +1026,7 @@
 <translation id="2552246211866555379">Hagaki 紙匣</translation>
 <translation id="2552295903035773204">由現在開始，使用螢幕鎖定即可確認付款卡</translation>
 <translation id="2552532158894206888">右鍵</translation>
+<translation id="2552601157105591479">Chrome 會在每個新訊息串分享已開啟的相關分頁，助你取得更切合需要的答覆。進一步瞭解</translation>
 <translation id="2553352788023127673">搜尋記錄和密碼可以在相應的管理設定中刪除</translation>
 <translation id="2553853292994445426">請檢查您的安全 DNS 設定。您可能設定了一個無法連線的安全 DNS 伺服器。</translation>
 <translation id="255497580849974774">請在更新期間將裝置連接電源。</translation>
@@ -1240,6 +1243,7 @@
 <translation id="2930531075747147366">你的另一部裝置傳來分頁</translation>
 <translation id="2930577230479659665">完成每次複印後修剪</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
+<translation id="2935726091208500473">分享分頁</translation>
 <translation id="293796669683825859">留言</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />：如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
@@ -1267,6 +1271,7 @@
 <translation id="297173220375858963">桌面排版</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2974468223369775963">此 IBAN 無法儲存至 Google 帳戶，因此已改為儲存至此裝置上的 Chrome。Chrome 會在你下次使用此 IBAN 時再次詢問你。</translation>
+<translation id="2976162850019490782">開啟後，Chrome 會分享此視窗中的所有分頁，助你取得更相關的答覆。你可以在「設定」中為所有訊息串開啟此功能。</translation>
 <translation id="297667759942911166">在分頁群組中協作</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌劇</translation>
@@ -3319,6 +3324,7 @@
 <translation id="6133984428121856852">副檔名空白或格式錯誤。</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽名</translation>
 <translation id="6139975341602920272">17 x 22 吋</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />，已選取</translation>
 <translation id="6143097244789397208">擴張和虛擬實境</translation>
 <translation id="614327212146763975">允許使用動作同光線感應器</translation>
 <translation id="6146055958333702838">檢查連接線，或重新啟動路由器、數據機或其他使用中的
@@ -4196,6 +4202,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> 會確認你的資格 (這不會影響你的信貸評分)。如獲核准，<ph name="BNPL_ISSUER_NAME" /> 就會提供付款計劃供你選擇，並完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮水和護髮素</translation>
 <translation id="7489919936111034362">「Google 雲端硬碟」儲存空間已滿</translation>
+<translation id="7490026840522163531">要自動分享每個訊息串已開啟的分頁嗎？</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="749865518782565832">水管工程</translation>
 <translation id="7499188644237027195">在 Chrome 購物時會看到電子錢包和 Pix 選項</translation>
@@ -5315,6 +5322,7 @@
 <translation id="964050462028070434">管理密碼和密鑰…</translation>
 <translation id="964681140808832181">是，我想取消</translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="970182982363142444">開啟後，Chrome 會分享此視窗中的所有分頁，助你取得更相關的答覆。如要為所有對話開啟此功能，請前往</translation>
 <translation id="97054401902912338">進一步瞭解內容篩選器</translation>
 <translation id="973788791897303708">此分頁群組已滿</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{無}=1{1 個項目}other{# 個項目}}</translation>

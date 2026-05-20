@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Советы по работе с Chrome</translation>
 <translation id="1242008676835033345">Встроено на сайте <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Выберите "Приложения &gt; Приложения по умолчанию".</translation>
+<translation id="1264694639515903274">Теперь вы можете настроить главную страницу</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1275718070701477396">Выбрано</translation>
 <translation id="1289742167380433257">В целях экономии трафика изображения на странице были оптимизированы.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Завершить</translation>
 <translation id="1919950603503897840">Выбрать контакты</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> из <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Настроить главную страницу</translation>
 <translation id="1939059826036755332">Автоматический показ картинки в картинке</translation>
 <translation id="1954597385941141174">Разрешить сайтам отправлять запрос на подключение к USB-устройствам</translation>
 <translation id="1979673356880165407">Увеличить или уменьшить размер текста и изображений на всех посещаемых сайтах</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4310738531374808763">Настройте главную страницу</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
+<translation id="4336371609622603229">Выберите тему, чтобы настроить Chrome под себя.</translation>
 <translation id="4338831206024587507">Все сайты с доменом <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Запретить сайтам отправлять уведомления</translation>
 <translation id="4341577178275615435">Чтобы включить или отключить режим активного курсора, нажмите F7</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">Здесь будут сайты, для которых вы сохраните свой уровень масштабирования.</translation>
 <translation id="8748714929822124637">Запретить сайтам доступ к другим устройствам в локальной сети</translation>
 <translation id="8751914237388039244">Выберите фото</translation>
-<translation id="8775741625735357092">Чтобы включить панель закладок, перейдите в "Настройки &gt; Внешний вид"</translation>
 <translation id="8800034312320686233">Сайт не работает?</translation>
 <translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>
 <translation id="8801657293260363985">V8 – движок JavaScript и WebAssembly, повышающий производительность сайтов в Chrome</translation>

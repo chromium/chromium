@@ -254,6 +254,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1380591466760231819">Dobrez de carta</translation>
 <translation id="138218114945450791">Azul claro</translation>
 <translation id="1382194467192730611">O teu administrador permite utilizar este dispositivo USB</translation>
+<translation id="1383876407941801731">Buscar</translation>
 <translation id="1384725838384960382">Folla de autenticación da credencial de pagos seguros</translation>
 <translation id="1386623374109090026">Anotacións</translation>
 <translation id="138810468159004008">Permitir durante a visita ao sitio</translation>
@@ -1820,6 +1821,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="380865868633614173">Gardando información da tarxeta</translation>
 <translation id="3810770279996899697">O xestor de contrasinais necesita permiso para acceder a MacOS Keychain</translation>
 <translation id="3810973564298564668">Xestionar</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Esta é unha actualización importante que mellora o rendemento das aplicacións para Android en ChromeOS.</translation>
 <translation id="3814865536373139791">Optimiza o xeito no que a túa organización xestiona as políticas</translation>
 <translation id="3815434930383843058">8 x 12 polgadas</translation>
@@ -2399,6 +2401,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4736934858538408121">Tarxeta virtual</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4738601419177586157">Suxestión de busca de "<ph name="TEXT" />"</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, pestana seleccionada, <ph name="INDEX" /> de <ph name="TOTAL" />. Usa as frechas esquerda ou dereita para cambiar de pestana</translation>
 <translation id="4742407542027196863">Xestionar contrasinais…</translation>
 <translation id="474270528725216349">De polo menos un sitio en dispositivos sincronizados</translation>
 <translation id="4743275772928623722">Actualizouse o sistema, pero algunhas das túas aplicacións e ficheiros non se puideron recuperar. As túas aplicacións descargaranse de novo automaticamente.</translation>
@@ -2466,6 +2469,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4832961164064927107">Grelladas e churrascadas</translation>
 <translation id="4835568975547260025">Chrome compartirá de forma predeterminada as pestanas abertas relevantes para axudarche a obter respostas máis adaptadas ás túas preguntas.</translation>
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
+<translation id="4842365697443353018">Borrar formulario para usar a opción de pago aprazado</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desprazarse por pestanas compartidas e achegalas</translation>
 <translation id="484671803914931257">Obtén un desconto en <ph name="MERCHANT_NAME" /> e noutros comerciantes</translation>
@@ -3447,7 +3451,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="634500758737709758">Indicacións</translation>
 <translation id="6348220984832452017">Variacións activas</translation>
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
-<translation id="6350739641326887427">Paga sen copiar nin pegar o código de Pix. <ph name="BEGIN_LINK1" />Ver como funciona<ph name="END_LINK1" /></translation>
+<translation id="6350739641326887427">Paga sen copiar e pegar o código de Pix. <ph name="BEGIN_LINK1" />Ver como funciona<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Eliminar datos navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />, sincronizado)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}other{# contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}}</translation>
 <translation id="6354918092619878358">SECG Elliptic Curve secp256r1 (tamén se denomina ANSI X9.62 prime256v1, NIST P-256)</translation>

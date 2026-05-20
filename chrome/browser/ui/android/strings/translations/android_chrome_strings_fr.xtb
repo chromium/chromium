@@ -118,6 +118,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1448440926884431741">Organisez vos produits suivis dans les favoris</translation>
 <translation id="1455845192930279203">Voulez-vous quand même télécharger "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) depuis <ph name="DOWNLOAD_DOMAIN" /> ?</translation>
 <translation id="1460751212339734034">Tapez moins et gagnez du temps</translation>
+<translation id="146522654774760805">Mots de passe et saisie automatique</translation>
 <translation id="1466383950273130737">Choisissez la langue de Chrome</translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
 <translation id="147982357559798527">Modifié</translation>
@@ -227,6 +228,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé avec son coupé</translation>
 <translation id="2021896219286479412">Commandes du site en plein écran</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="2029669011553795746">Activation des notifications de conseils ouverte à mi-hauteur</translation>
 <translation id="2038563949887743358">Activer "Voir version ordinateur"</translation>
@@ -789,6 +791,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> et <ph name="TAB_COUNT" /> autres onglets</translation>
 <translation id="441100617989818073">Onglets et groupes inutilisés ou en double</translation>
 <translation id="4412123112245770507">Réduire la section</translation>
+<translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> supprimés</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi du prix activé. Recevez des alertes si le prix baisse sur un site.</translation>
@@ -1435,7 +1438,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6980258170429555165">Le menu <ph name="MENU_NAME" /> est mis en surbrillance.</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer sa position.</translation>
 <translation id="6987047470128880212">La navigation privée n'est pas disponible sur cet appareil</translation>
-<translation id="6989358895283601928">Enregistrer et imprimer</translation>
 <translation id="6996145122199359148">Télécharger cette page</translation>
 <translation id="7013762323294215682">La clé d'accès sera enregistrée dans votre gestionnaire de mots de passe. Tout utilisateur y ayant accès pourra l'utiliser.</translation>
 <translation id="7020741890149022655">Ajouter à la liste <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, onglet épinglé sélectionné avec son coupé</translation>
 <translation id="7084115944294706056">Positionner la barre d'adresse</translation>
 <translation id="7085332316435785646">Choisissez d'inclure l'historique Chrome pour une expérience plus personnalisée dans les services Google</translation>
+<translation id="7087066066828635014">Notifications d'astuces activées</translation>
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, onglet de navigation privée multisélectionné avec son coupé</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
@@ -2002,6 +2005,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
+<translation id="984275831282074731">Modes de paiement</translation>
 <translation id="984756705737569814">Impossible de vérifier les mots de passe dans votre compte Google</translation>
 <translation id="987264212798334818">Général</translation>
 <translation id="988091779042748639">Pour supprimer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée.</translation>

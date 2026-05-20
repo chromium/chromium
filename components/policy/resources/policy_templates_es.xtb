@@ -145,6 +145,7 @@ Los patrones de URL no deben entrar en conflicto con <ph name="CONTROLLED_FRAME_
 Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
 <translation id="1084697375611053264">Especifica la lista de dominios de aplicaciones web de terceros que están autorizados a usar <ph name="DESK_API_NAME" /> para controlar escritorios de <ph name="PRODUCT_OS_NAME" />. Estos patrones de URL deben tener el formato definido para la propiedad "matches" en https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
+<translation id="1086596047220085412">Configuración para compartir pestañas de forma inteligente</translation>
 <translation id="1087057100912843460">Permitir las actualizaciones</translation>
 <translation id="1087187152710800704">Niega el permiso de gestión de ventanas en todos los sitios de forma predeterminada</translation>
 <translation id="1087437665304381368">Esta política permite controlar únicamente el modo desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las opciones para desarrolladores de Android, debes asignar un valor a la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
@@ -1074,6 +1075,7 @@ Esta política es una solución temporal en caso de que las empresas experimente
       Consulta también <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Nota: Esta opción anulará <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (si está presente).</translation>
+<translation id="1723571018091915166">No permitir que se compartan pestañas de forma inteligente con integraciones de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Permitir que todos los sitios establezcan datos locales</translation>
 <translation id="1729169799290004131">Si se le asigna un valor a esta política, se especifica el porcentaje de brillo de la pantalla y se desactivan las funciones de brillo automático. El brillo inicial de la pantalla se ajusta al del valor de la política, pero los usuarios pueden cambiarlo.
 
@@ -4512,6 +4514,13 @@ Esta política se puede combinar con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLA
 <translation id="3928726028264020458">Habilitar los informes sobre VPD del dispositivo</translation>
 <translation id="3935592079035695061">Milisegundos desde la medianoche.</translation>
 <translation id="3937800910397007337">Forzar la prioridad de primer plano de todas las pestañas</translation>
+<translation id="3938885528378923718">Configura cómo descarga <ph name="PRODUCT_NAME" /> el modelo fundacional de IA generativa y lo usa para la inferencia de forma local.
+
+Si se permite esta política (valor 0) o no se define, el modelo se descargará automáticamente y se usará para la inferencia.
+
+Si se inhabilita esta política (valor 1), el modelo no se descargará y el modelo ya descargado (si lo hay) se eliminará.
+
+En las plataformas de escritorio, también se puede inhabilitar la descarga del modelo asignando el valor false a <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3941289958028934630">Inhabilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="3943930334592166130">Esta política controla si al usuario se le pedirá que seleccione un certificado de cliente cuando haya más de un certificado que coincida con <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si se habilita esta política, se le pedirá al usuario que seleccione un certificado de cliente cuando la política de selección automática coincida con varios certificados.
@@ -8351,16 +8360,28 @@ Si no se define esta política, su comportamiento lo determinará la política <
 
 Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Inhabilitar extensiones no publicadas</translation>
-<translation id="6382287177674997281">Esta política permite a los usuarios iniciar cualquier tipo de actualización de firmware.
-
-      Si se habilita esta política, los usuarios (como el propietario del dispositivo) pueden iniciar actualizaciones de firmware.
-
-      Si se inhabilita esta política o no se establece, los usuarios no pueden aplicar actualizaciones de firmware.
-
-      Esta política se aplica a las actualizaciones de firmware de periféricos externos y a las actualizaciones de firmware de componentes internos de los dispositivos <ph name="PRODUCT_OS_FLEX_NAME" />. Esta política no afecta a las actualizaciones de firmware de componentes internos de los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6383774771168138899">Configura el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren páginas de resultados del buscador predeterminado en un panel lateral del navegador.</translation>
 <translation id="6389240462871677239">Permitir que los orígenes de aplicaciones web aisladas usen Controlled Frame</translation>
+<translation id="6393598243777822017">Esta política controla la función inteligente de compartir pestañas del <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> mediante el panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no afecta al <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo pueden los usuarios compartir información con la función cuando usan <ph name="PRODUCT_NAME" />.
+
+Si se le asigna el valor 0, los usuarios pueden compartir contenido de páginas o archivos con el <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+Si se le asigna el valor 1, los usuarios no pueden compartir contenido de páginas ni archivos con el <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Los puntos de entrada para compartir contexto y el panel lateral se inhabilitarán u ocultarán.
+
+Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el buscador predeterminado de los usuarios, ya que la función está inhabilitada.
+
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el omnibox o en el cuadro de búsqueda de una nueva pestaña, mientras que esta política controla el uso compartido de contexto mediante el panel lateral o de las pestañas.
+
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que se puede inhabilitar mediante <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Ten en cuenta que si se inhabilita <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />, se ignorará esta política.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Esta política no está disponible desde la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6397588391180665797">Envía información sobre la configuración de red de los usuarios en los dispositivos registrados.
 
@@ -10788,6 +10809,7 @@ Si se inhabilita o no se define, los usuarios podrán fijar o quitar el icono a 
 
 Si se inhabilita la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el valor de esta política no tendrá efecto y el icono de la barra de herramientas no se mostrará.</translation>
 <translation id="7933141401888114454">Habilitar la creación de usuarios supervisados</translation>
+<translation id="793360449603660370">Permitir que se compartan pestañas de forma inteligente con integraciones de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="793473937901685727">Establecer la disponibilidad del certificado para las aplicaciones ARC</translation>
 <translation id="7936302526928951356">La cadena user-agent no bloqueará la versión principal.</translation>
 <translation id="7936632434238618620">Si configuras esta política, podrás crear una lista de patrones de URL donde se especifique en qué sitios web podrá usar Chrome un certificado de cliente de forma automática. El valor debe ser un conjunto de diccionarios JSON de tipo string, cada uno con el formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, donde <ph name="URL_PATTERN_PLACEHOLDER" /> es un patrón de configuración de contenido. <ph name="FILTER_PLACEHOLDER" /> restringe los certificados de cliente entre los que puede elegir automáticamente el navegador. Independientemente del filtro, solo se seleccionarán los certificados que coincidan con la solicitud de certificado del servidor. En Android y iOS, Chrome solo puede seleccionar certificados de cliente que haya aprovisionado él mismo; no puede acceder a los certificados instalados a nivel de sistema operativo.

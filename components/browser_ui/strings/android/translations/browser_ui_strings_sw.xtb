@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Vidokezo vya Chrome</translation>
 <translation id="1242008676835033345">Imepachikwa kwenye <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Gusa Programu  &gt; Programu chaguomsingi</translation>
+<translation id="1264694639515903274">Sasa unaweza kuwekea mapendeleo ukurasa wako wa kwanza</translation>
 <translation id="1272079795634619415">Simamisha</translation>
 <translation id="1275718070701477396">Umeichagua</translation>
 <translation id="1289742167380433257">Ili uhifadhi data yako, picha kwenye ukurasa huu zimeboreshwa na Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Kata simu</translation>
 <translation id="1919950603503897840">Chagua anwani</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Kuwekea mapendeleo ukurasa wangu wa kwanza</translation>
 <translation id="1939059826036755332">Kupachika picha ndani ya picha nyingine kiotomatiki</translation>
 <translation id="1954597385941141174">Tovuti zinaweza kuomba ruhusa ya kuunganisha kwenye vifaa vya USB</translation>
 <translation id="1979673356880165407">Fanya maandishi na picha kuwa kubwa au ndogo kwa tovuti zote unazotembelea</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome itazuia vidakuzi tena leo</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3859306556332390985">Peleka mbele</translation>
+<translation id="3870711497942672548">Badilisha Chrome upendavyo kwa kuweka mtindo wa rangi na picha maalum kwenye ukurasa wa kwanza</translation>
 <translation id="389521680295183045">Tovuti zinaweza kuomba ruhusa ya kujua wakati unatumia kifaa chako</translation>
 <translation id="3895926599014793903">Lazimisha kuwasha ukuzaji</translation>
 <translation id="3903738175795615004">Buruta kutoka juu au ubonyeze kitufe cha Esc ili ufunge hali ya skrini nzima.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Panua</translation>
 <translation id="4310738531374808763">Badilisha upendavyo ukurasa wako wa kwanza</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
+<translation id="4336371609622603229">Wekea Chrome mapendeleo kwa kuchagua mandharinyuma maalum</translation>
 <translation id="4338831206024587507">Tovuti zote zenye kikoa cha <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Usiruhusu tovuti zitume arifa</translation>
 <translation id="4341577178275615435">Ili uwashe au uzime mipangilio ya kuvinjari kwa kibodi, tumia njia ya mkato ya F7</translation>
@@ -750,7 +754,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:</translation>
 <translation id="8737426583868847403">Tovuti ambapo umehifadhi kiwango mahususi cha ukuzaji zitaonekana hapa</translation>
 <translation id="8748714929822124637">Usiruhusu tovuti zifikie vifaa vingine kwenye mtandao wako wa karibu</translation>
 <translation id="8751914237388039244">Chagua picha</translation>
-<translation id="8775741625735357092">Unaweza kuwasha sehemu ya alamisho katika Mipangilio &gt; Mwonekano</translation>
 <translation id="8800034312320686233">Je, tovuti haifanyi kazi?</translation>
 <translation id="8801436777607969138">Zuia JavaScript katika tovuti mahususi.</translation>
 <translation id="8801657293260363985">V8 ni mtambo wa JavaScript na WebAssembly wa Chrome unaotumika kuboresha utendaji wa tovuti</translation>

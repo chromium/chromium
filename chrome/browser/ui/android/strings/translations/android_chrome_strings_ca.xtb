@@ -118,6 +118,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1448440926884431741">Organitza els productes que segueixes a Adreces d'interès</translation>
 <translation id="1455845192930279203">Vols baixar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de <ph name="DOWNLOAD_DOMAIN" /> igualment?</translation>
 <translation id="1460751212339734034">Estalvia temps, escriu menys</translation>
+<translation id="146522654774760805">Contrasenyes i emplenament automàtic</translation>
 <translation id="1466383950273130737">Tria l'idioma de Chrome</translation>
 <translation id="1477626028522505441">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa de problemes amb el servidor.</translation>
 <translation id="147982357559798527">S'ha canviat</translation>
@@ -227,6 +228,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="200114059308480249">Vols incloure el text del voltant a les cerques de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada fixada</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
+<translation id="2022953316617983419">Codi QR</translation>
 <translation id="2024195579772565064">Suprimeix el motor de cerca</translation>
 <translation id="2029669011553795746">L'opció d'activar les notificacions de consells està oberta a mitja alçada</translation>
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
@@ -788,6 +790,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> i <ph name="TAB_COUNT" /> pestanyes més</translation>
 <translation id="441100617989818073">Pestanyes/grups no usats o duplicats</translation>
 <translation id="4412123112245770507">Replega la secció</translation>
+<translation id="4412698727486357573">Centre d'ajuda</translation>
 <translation id="4414179633735763985">S'ha suprimit: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Gestiona el teu Compte de Google</translation>
 <translation id="4425140285732600465">Estàs fent un seguiment del preu. Si el preu baixa en qualsevol lloc web, rebràs una alerta.</translation>
@@ -1434,7 +1437,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6980258170429555165">El menú <ph name="MENU_NAME" /> està marcat.</translation>
 <translation id="6983306615164277634">També pots mantenir premuda la barra d'adreces per canviar la posició.</translation>
 <translation id="6987047470128880212">El mode d'incògnit no està disponible en aquest dispositiu</translation>
-<translation id="6989358895283601928">Desa i imprimeix</translation>
 <translation id="6996145122199359148">Baixa aquesta pàgina</translation>
 <translation id="7013762323294215682">Aquesta clau d'accés es desarà al teu gestor de contrasenyes. Qualsevol persona que hi tingui accés podrà utilitzar aquesta clau d'accés.</translation>
 <translation id="7020741890149022655">Inclou a llista de lectura <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
@@ -1452,6 +1454,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, pestanya silenciada i fixada seleccionada</translation>
 <translation id="7084115944294706056">Tria la posició de la barra</translation>
 <translation id="7085332316435785646">Tria si vols incloure l'historial de Chrome per obtenir experiències més personalitzades als serveis de Google</translation>
+<translation id="7087066066828635014">Les notificacions de consells estan activades</translation>
 <translation id="7088681679121566888">Chrome està actualitzat</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada multiseleccionada</translation>
 <translation id="7106762743910369165">La teva organització gestiona el navegador</translation>
@@ -2001,6 +2004,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="970715775301869095">Queden <ph name="MINUTES" /> minuts</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>
+<translation id="984275831282074731">Formes de pagament</translation>
 <translation id="984756705737569814">No es poden comprovar les contrasenyes al teu Compte de Google</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988091779042748639">Per suprimir l'historial de navegació d'incògnit del dispositiu, tanca totes les pestanyes d'incògnit.</translation>

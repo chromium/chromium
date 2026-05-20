@@ -270,11 +270,11 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
       Si estableces la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> como verdadera, las reglas activadas se informarán al administrador.
       Puedes establecer el nivel de restricción como BLOCK, WARN o REPORT.
       - Si estableces el nivel de restricción como BLOCK, no se permitirá la acción.
-      - Si estableces el nivel de restricción como WARN, se enviará una advertencia a un usuario que podrá elegir proceder o cancelar la acción.
-      - Si estableces el nivel de restricción como REPORT, no se interrumpirá la acción del usuario, pero se enviará un informe si se habilita la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />.
+      - Si estableces el nivel de restricción como WARN, se enviará una advertencia al usuario, que podrá elegir proceder o cancelar la acción.
+      - Si estableces el nivel de restricción como REPORT, no se interrumpirá la acción del usuario, pero se enviará un informe si la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> está habilitada.
 
       Notas:
-      - Los patrones de URL deben presentar un formato conforme a lo especificado en (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+      - Los patrones de URL deben presentar un formato conforme a lo especificado en este artículo: https://support.google.com/chrome/a?p=url_blocklist_filter_format.
       - En el caso de las reglas de prevención de filtración de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
 
       Si no estableces la política, no se aplicarán restricciones.
@@ -4661,6 +4661,13 @@ La política puede combinarse con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFO
 <translation id="3928726028264020458">Habilitar los informes de los VPD del dispositivo</translation>
 <translation id="3935592079035695061">Milisegundos desde la medianoche.</translation>
 <translation id="3937800910397007337">Forzar la prioridad en primer plano para todas las pestañas</translation>
+<translation id="3938885528378923718">Configura la forma en que <ph name="PRODUCT_NAME" /> descarga el modelo básico de IA generativa y lo usa para la inferencia a nivel local.
+
+Si permites (0) la política o no la estableces, el modelo se descargará automáticamente y se usará para las inferencias.
+
+Si la inhabilitas (1), no se descargará el modelo y se borrará el modelo existente (si ya se descargó).
+
+En plataformas de escritorio, también se puede inhabilitar la descarga de modelos si se establece <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> como falsa.</translation>
 <translation id="3941289958028934630">Inhabilitar las descripciones por voz en la pantalla de acceso</translation>
 <translation id="3943930334592166130">Esta política controla si se le solicita al usuario que seleccione un certificado de cliente cuando más de un certificado coincide con <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si habilitas esta política, se le solicitará al usuario que seleccione un certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados.
@@ -8626,7 +8633,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán ocultar o mostrar los accesos directos a aplicaciones desde el menú contextual de la barra de favoritos.</translation>
 <translation id="638003144128412430">Inhabilitar los informes de la zona horaria del dispositivo</translation>
-<translation id="638217866669468708">Esta política controla el uso compartido del contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> a través del panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+<translation id="638217866669468708">Esta política controla cómo se comparte el contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> a través del panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
 
 Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo los usuarios pueden compartir información cuando usan <ph name="PRODUCT_NAME" />.
 
@@ -8636,7 +8643,7 @@ Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NA
 
 Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el motor de búsqueda predeterminado de los usuarios, ya que la función estará inhabilitada.
 
-Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda del cuadro multifunción o de la NTP, mientras que esta política controla el uso compartido de contexto a través del panel lateral o las pestañas.
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda del cuadro multifunción o de la NTP, mientras que esta política controla cómo se comparte el contexto a través del panel lateral o las pestañas.
 
 Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que la política <ph name="GEMINI_SETTINGS_POLICY_NAME" /> puede inhabilitar.
 
@@ -8644,13 +8651,6 @@ Si no estableces esta política, su comportamiento se determina según la polít
 
 Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Inhabilitar las extensiones no publicadas</translation>
-<translation id="6382287177674997281">Esta política permite que los usuarios inicien cualquier tipo de actualización de firmware.
-
-      Si habilitas la política, los usuarios, como el propietario del dispositivo, podrán iniciar actualizaciones de firmware.
-
-      Si la inhabilitas o no la estableces, los usuarios no podrán aplicar actualizaciones de firmware.
-
-      Esta política se aplica al firmware para actualizaciones de firmware de periféricos externos y actualizaciones de firmware de los componentes internos de los dispositivos <ph name="PRODUCT_OS_FLEX_NAME" />. Esta política no afecta las actualizaciones de firmware de los componentes internos de los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
 <translation id="6389240462871677239">Permitir que los orígenes de apps web aisladas usen Controlled Frame</translation>

@@ -775,7 +775,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1521655867290435174">Google Feuilles de calcul</translation>
 <translation id="1521933835545997395">Connecté au téléphone Android</translation>
 <translation id="1523279371236772909">Consulté le mois dernier</translation>
-<translation id="1523486680453956384">Afficher la tâche</translation>
 <translation id="1523978563989812243">Moteurs de synthèse vocale</translation>
 <translation id="1524563461097350801">Non, merci</translation>
 <translation id="1525740877599838384">Utiliser uniquement le réseau Wi-Fi pour déterminer l'emplacement</translation>
@@ -786,6 +785,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1529769834253316556">Hauteur des lignes</translation>
 <translation id="1529891865407786369">Source d'énergie</translation>
 <translation id="1530376661400379364">Chrome a réinitialisé ces paramètres</translation>
+<translation id="1530466164747090379">Le fichier <ph name="FILE_NAME" /> comporte des données sensibles ou dangereuses</translation>
 <translation id="1531275250079031713">Afficher la fenêtre « Ajouter un réseau Wi-Fi »</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Je comprends que ce téléchargement endommagera mon ordinateur</translation>
@@ -2141,7 +2141,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2450849356604136918">Aucun affichage actif</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Votre organisation impose une limite quant à ce que vous pouvez enregistrer</translation>
-<translation id="245307875355990880">Reprendre la tâche</translation>
 <translation id="245322989586167203">Les sites se connectent généralement aux ports série pour utiliser les fonctionnalités de transfert de données, comme la configuration de votre réseau</translation>
 <translation id="2453860139492968684">Terminer</translation>
 <translation id="2454206500483040640">Partitionnés</translation>
@@ -2180,6 +2179,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2469141124738294431">État de la MV</translation>
 <translation id="2469259292033957819">Vous n'avez aucune imprimante enregistrée.</translation>
 <translation id="2469375675106140201">Personnaliser le correcteur orthographique</translation>
+<translation id="2469406914567390938">Mettre à jour le canal</translation>
 <translation id="247051149076336810">URL de partage de fichiers</translation>
 <translation id="2471469610750100598">Noir (par défaut)</translation>
 <translation id="2471506181342525583">Accès à la position autorisé</translation>
@@ -2512,6 +2512,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2695943520968279338">Découvrir des extensions</translation>
 <translation id="2696675923413008404">Le contenu de ce site, y compris son URL, est envoyé à Google et peut être vu par des réviseurs humains afin d'améliorer cette fonctionnalité</translation>
 <translation id="2698147581454716013">Il s'agit d'un appareil lié, il ne peut donc pas être inscrit avec la mise à niveau de Kiosk et Signage.</translation>
+<translation id="269941332914175387">Relancez le navigateur pour charger les données de votre profil et les garder chiffrées</translation>
 <translation id="2699911226086014512">Échec du déverrouillage par NIP. Code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Partagé à partir de l'appareil suivant : <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Connexion : <ph name="EMAIL" /></translation>
@@ -2741,6 +2742,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2844154481025280030">La politique a été configurée.</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
 <translation id="2844809857160214557">Consultez et gérez les tâches d'impression</translation>
+<translation id="284491292807422921">Retirer le site?</translation>
 <translation id="2845276301195220700">D'autres actions pour Google Agenda</translation>
 <translation id="2845382757467349449">Toujours afficher la barre des favoris</translation>
 <translation id="284581348330507117">Créer des mots de passe uniques</translation>
@@ -3330,6 +3332,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3262986719682892278">Trop volumineux</translation>
 <translation id="3264544094376351444">Polices sans empattement</translation>
 <translation id="3264582393905923483">Contexte</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Message de votre administrateur : « <ph name="CUSTOM_MESSAGE" /> ».</translation>
 <translation id="3265459715026181080">Fermer la fenêtre</translation>
 <translation id="3266022278425892773">Environnement de conception Linux</translation>
 <translation id="3266030505377585301">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous<ph name="END_LINK" />.</translation>
@@ -4112,6 +4115,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3796215473395753611">alt+flèche vers le haut</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, utilisez la flèche vers la droite pour entendre un aperçu de la voix</translation>
 <translation id="3796648294839530037">Réseaux favoris :</translation>
+<translation id="3797330664967181051">Affichage partagé</translation>
 <translation id="3797739167230984533">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> est géré par votre organisation</translation>
 <translation id="3797900183766075808">Rechercher <ph name="SEARCH_TERMS" /> avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798026281364973895">Désactiver le point d'accès sans fil immédiat</translation>
@@ -4447,6 +4451,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4010746393007464819">Une mise à niveau vers Debian 12 (Bookworm) est offerte</translation>
 <translation id="4010917659463429001">Pour obtenir vos favoris sur votre appareil mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Aurore boréale, stylisée en violet et vert, surplombant une ville.</translation>
+<translation id="4011897773956589748">La prochaine fois que Gemini aura besoin d'accéder à ce compte, il vous le demandera à nouveau.</translation>
 <translation id="4012509903424054869">Les PDF sont convertis automatiquement afin que vous puissiez rechercher et sélectionner du texte</translation>
 <translation id="4014432863917027322">Réparer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="4015163439792426608">Vous avez des extensions? <ph name="BEGIN_LINK" />Gérez vos extensions<ph name="END_LINK" /> à un seul et même endroit.</translation>
@@ -4864,7 +4869,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4314497418046265427">Soyez plus productif lorsque vous connectez votre téléphone à votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Ajouter un nouveau nom de point d'accès</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
-<translation id="4314821834464582073">Suspendre la tâche</translation>
 <translation id="4316850752623536204">Site Web du développeur</translation>
 <translation id="4317733381297736564">Achats au moyen de l'appli</translation>
 <translation id="4317820549299924617">Échec de la vérification</translation>
@@ -6224,6 +6228,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5275084684151588738">Dictionnaires personnels</translation>
 <translation id="5275338516105640560">Bouton du groupe d'onglets enregistré</translation>
 <translation id="5275352920323889391">Chien</translation>
+<translation id="5275946508817197540">Vos préférences de sécurité n'autorisent pas l'installation d'applis Web isolées. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Couper le son de l'onglet</translation>
 <translation id="527605982717517565">Toujours autoriser l'utilisation de JavaScript sur <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Impossible d’enregistrer la configuration sans se connecter</translation>
@@ -7735,6 +7740,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Gérer vos appareils</translation>
 <translation id="6350821834561350243">Décrivez clairement le problème et indiquez les étapes à suivre pour reproduire le problème (si possible)</translation>
+<translation id="635100112331897007">Afficher toutes les politiques de Chrome</translation>
 <translation id="6351178441572658285">Langues des applications</translation>
 <translation id="6352992678231622317">Onglet déplacé vers le bas</translation>
 <translation id="6355632359041940003">Prendre en charge la tâche</translation>
@@ -8672,6 +8678,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6997553674029032185">Accéder au site</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Journal d'activité</translation>
 <translation id="6997707937646349884">Sur vos appareils :</translation>
+<translation id="6998036632333022623">Partage d'onglets avec Google</translation>
 <translation id="6998793565256476099">Inscrire un appareil pour la vidéoconférence</translation>
 <translation id="6999956497249459195">Nouveau groupe</translation>
 <translation id="7000206553895739324">L'imprimante <ph name="PRINTER_NAME" /> est connectée, mais elle doit être configurée</translation>

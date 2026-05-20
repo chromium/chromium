@@ -118,6 +118,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
 <translation id="1455845192930279203">Do you want to download '<ph name="FILE_NAME" />' (<ph name="FILE_SIZE" />) from <ph name="DOWNLOAD_DOMAIN" /> anyway?</translation>
 <translation id="1460751212339734034">Save time, type less</translation>
+<translation id="146522654774760805">Passwords and autofill</translation>
 <translation id="1466383950273130737">Pick Chrome’s language</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="147982357559798527">Changed</translation>
@@ -227,6 +228,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pinned muted Incognito tab</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2024195579772565064">Delete search engine</translation>
 <translation id="2029669011553795746">Tips notifications opt-in opened at half height</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
@@ -789,6 +791,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> and <ph name="TAB_COUNT" /> other tabs</translation>
 <translation id="441100617989818073">Unused or duplicate tabs and groups</translation>
 <translation id="4412123112245770507">Collapse section</translation>
+<translation id="4412698727486357573">Help Centre</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> deleted</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
 <translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
@@ -1435,7 +1438,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> menu is highlighted.</translation>
 <translation id="6983306615164277634">You can also touch and hold the address bar to change the position.</translation>
 <translation id="6987047470128880212">Incognito is not available on this device</translation>
-<translation id="6989358895283601928">Save and print</translation>
 <translation id="6996145122199359148">Download this page</translation>
 <translation id="7013762323294215682">This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.</translation>
 <translation id="7020741890149022655">Add to reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>
+<translation id="984275831282074731">Payment methods</translation>
 <translation id="984756705737569814">Can't check passwords in your Google Account</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988091779042748639">To delete Incognito browsing history from your device, close all Incognito tabs.</translation>

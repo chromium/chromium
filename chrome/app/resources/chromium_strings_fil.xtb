@@ -586,7 +586,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="7318036098707714271">Sira o di-wasto ang file ng iyong mga kagustuhan.
 
 Hindi mabawi ng Chromium ang iyong mga setting.</translation>
-<translation id="7339898014177206373">Bagong window</translation>
 <translation id="734373864078049451">Makikita dito ang iyong web, mga bookmark at iba pang mga bagay-bagay sa Chromium.</translation>
 <translation id="7347827960336370838">Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Na-configure ng iyong system administrator ang Chromium para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -595,6 +594,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7376384068949534168">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Buksan ang Chrome Web Store</translation>
 <translation id="7384121030444253939">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo na lang ito.</translation>
+<translation id="7407655596887111931">Chromium na ang iyong default browser</translation>
 <translation id="7413153308467572558">Magpatuloy kung saan ka huminto: Nire-restore ng Chromium ang iyong mga tab sa tuwing magre-restart ka. Para i-off ito, pumunta sa</translation>
 <translation id="7427879960656355200">Mag-import ng Mga Password sa Chromium</translation>
 <translation id="744815265653811511">1. I-click ang <ph name="BUTTON_LABEL" /> sa ibaba

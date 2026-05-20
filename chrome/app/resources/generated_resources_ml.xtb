@@ -771,7 +771,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="1523279371236772909">കഴിഞ്ഞ മാസം കണ്ടു</translation>
-<translation id="1523486680453956384">ടാസ്‌ക് കാണുക</translation>
 <translation id="1523978563989812243">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് എഞ്ചിനുകൾ</translation>
 <translation id="1524563461097350801">വേണ്ട</translation>
 <translation id="1525740877599838384">ലൊക്കേഷൻ നിർണ്ണയിക്കാൻ വൈഫൈ മാത്രം ഉപയോഗിക്കുക</translation>
@@ -2137,7 +2136,6 @@
 <translation id="2450849356604136918">വിവരങ്ങളുടെ പ്രദർശമൊന്നും ഇപ്പോൾ സജീവമല്ല</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">നിങ്ങൾക്ക് സംരക്ഷിക്കാവുന്ന കാര്യങ്ങൾ നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
-<translation id="245307875355990880">ടാസ്‌ക് പുനരാരംഭിക്കുക</translation>
 <translation id="245322989586167203">നിങ്ങളുടെ നെറ്റ്‌വർക്ക് സജ്ജീകരിക്കുന്നത് പോലുള്ള ഡാറ്റാ കൈമാറൽ ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി സീരിയൽ പോർട്ടുകളിലേക്ക് കണക്റ്റ് ചെയ്യാറുണ്ട്</translation>
 <translation id="2453860139492968684">പൂര്‍ത്തിയാക്കുക</translation>
 <translation id="2454206500483040640">വിഭജിച്ചിരിക്കുന്നു</translation>
@@ -4110,6 +4108,7 @@
 <translation id="3796215473395753611">alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ശബ്ദം പ്രിവ്യൂ ചെയ്യാൻ വലത്തേക്കുള്ള അമ്പടയാള കീ ഉപയോഗിക്കുക</translation>
 <translation id="3796648294839530037">പ്രിയപ്പെട്ട നെറ്റ്‌വർക്കുകൾ:</translation>
+<translation id="3797330664967181051">സ്പ്ലിറ്റ് വ്യൂ</translation>
 <translation id="3797739167230984533">നിങ്ങളുടെ സ്ഥാപനമാണ് <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;'<ph name="SEARCH_TERMS" />' എന്നതിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="3798026281364973895">ഇൻസ്റ്റന്റ് ഹോട്ട്‌സ്പോട്ട് പ്രവർത്തനരഹിതമാക്കുക</translation>
@@ -4862,7 +4861,6 @@
 <translation id="4314497418046265427">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഫോണുമായി കണക്റ്റ് ചെയ്ത് കൂടുതൽ ഉൽപ്പാദനക്ഷമത കൈവരിക്കൂ</translation>
 <translation id="4314561087119792062">പുതിയ ആക്‌സസ് പോയിന്റിന്റെ പേര് ചേർക്കുക</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
-<translation id="4314821834464582073">ടാസ്‌ക് താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="4316850752623536204">ഡെവലപ്പർ വെബ്‌സൈറ്റ്</translation>
 <translation id="4317733381297736564">ആപ്പ് വഴി വാങ്ങൽ</translation>
 <translation id="4317820549299924617">പരിശോധിച്ചുറപ്പിക്കാനായില്ല</translation>
@@ -7736,6 +7734,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="6350745006329795504">നിങ്ങളുടെ ഉപകരണങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6350821834561350243">പ്രശ്‌നത്തിന്റെ വ്യക്തമായ വിവരണവും പ്രശ്‌നം പുനഃസൃഷ്ടിക്കാനുള്ള നടപടികളും നൽകുക (സാധ്യമെങ്കിൽ)</translation>
+<translation id="635100112331897007">എല്ലാ Chrome നയങ്ങളും കാണുക</translation>
 <translation id="6351178441572658285">ആപ്പ് ഭാഷകൾ</translation>
 <translation id="6352992678231622317">ടാബ് താഴേക്ക് നീക്കി</translation>
 <translation id="6355632359041940003">ടാസ്‌ക് ഏറ്റെടുക്കുക</translation>

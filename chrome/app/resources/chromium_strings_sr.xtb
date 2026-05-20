@@ -586,7 +586,6 @@
 <translation id="7318036098707714271">Датотека подешавања је оштећена или неважећа.
 
 Chromium не може да врати подешавања.</translation>
-<translation id="7339898014177206373">Нови прозор</translation>
 <translation id="734373864078049451">Веб, обележивачи и други Chromium садржај се овде уживо приказују.</translation>
 <translation id="7347827960336370838">Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити се чува на Google-у. Ако заборавите приступну фразу или желите да промените ово подешавање, мораћете да <ph name="BEGIN_LINK" />избришете Chromium податке на налогу<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Администратор система је конфигурисао Chromium да отвара прегледач <ph name="ALTERNATIVE_BROWSER_NAME" /> да би приступао <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -595,6 +594,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7376384068949534168">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Отворите Chrome веб-продавницу</translation>
 <translation id="7384121030444253939">Овај додатак више није подржан. Chromium препоручује да га уклоните.</translation>
+<translation id="7407655596887111931">Chromium је сада подразумевани прегледач</translation>
 <translation id="7413153308467572558">Наставите тамо где сте стали: Chromium враћа картице сваки пут када га рестартујете. Да бисте то искључили, идите у</translation>
 <translation id="7427879960656355200">Увезите лозинке у Chromium</translation>
 <translation id="744815265653811511">1. Кликните на <ph name="BUTTON_LABEL" /> у наставку

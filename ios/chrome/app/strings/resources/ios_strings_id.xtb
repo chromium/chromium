@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Buka Tab Pertama</translation>
 <translation id="2499505845365628575">Anda dapat menemukan semua histori penjelajahan dari <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Anda memiliki <ph name="NUMBER_OF_PASSWORDS" /> sandi yang telah dibobol yang dapat membahayakan keamanan Anda.</translation>
+<translation id="2512709994717613803">Level <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Anda akan menemukan grup tab di sini</translation>
 <translation id="251837347827266434">Anda akan logout, tab akan ditutup, data penjelajahan akan dihapus</translation>
 <translation id="2520787026086861736">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Isi Otomatis &amp; Sandi<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Isi otomatis nomor kartu yang diakhiri dengan <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rol Kamera</translation>
+<translation id="3743545564993953213">Situs ini mencoba membuka aplikasi "Shortcuts".</translation>
 <translation id="3746269120925354434">Info disimpan ke Google Wallet</translation>
 <translation id="3750225824417196283">Halaman tab Samaran baru</translation>
 <translation id="3751873026576444885">Berhenti menelusuri layar Anda dengan Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Bookmark, histori, sandi, dan informasi Anda lainnya tidak akan lagi disinkronkan ke Akun Google Anda.</translation>
 <translation id="484280513275854557">Anda telah logout; data penjelajahan dihapus</translation>
 <translation id="484462545196658690">Otomatis</translation>
+<translation id="4846662396507502151">Menjelajah lebih cepat dengan toolbar baru</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4854068532375923088">Izinkan “Gemini” menggunakan kamera</translation>
 <translation id="4860895144060829044">Telepon</translation>
@@ -1427,6 +1430,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5988097621740394599">Lihat diskon di tab.</translation>
 <translation id="5988851877894965432">Buka URL di Chrome</translation>
 <translation id="599343768974649785">Teks Eksplisit</translation>
+<translation id="6004988584831654445">Selesai. Dapatkan notifikasi saat ada tugas baru.</translation>
 <translation id="6006672969046233841">Tab Baru</translation>
 <translation id="6011308810877101166">Tingkatkan saran penelusuran</translation>
 <translation id="6012140227487808125">Mengenkripsi…</translation>
@@ -1658,6 +1662,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6685259053455152195">Pintasan untuk mengubah setelan dan menggunakan fitur dari kolom URL dengan cepat.</translation>
 <translation id="6689342293888598653">Warna latar belakang putih</translation>
 <translation id="6689685206615181381">Hanya mode Samaran yang tersedia</translation>
+<translation id="6705491067826837934">Kontrol Anda, selalu siap saat dibutuhkan</translation>
 <translation id="6708501134077648845">Opsi Sandi</translation>
 <translation id="6709964700841491574">Mode kunci total</translation>
 <translation id="6710079714193676716">Dikelola oleh organisasi Anda. Beberapa fitur mungkin tidak tersedia. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6903282483217634857">Pindah ke Kanan</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
 <translation id="6906448540340261898">Pastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda</translation>
+<translation id="6906978870282539723">Dapatkan bantuan terkait tab dan tugas Anda</translation>
 <translation id="6908734251759299256">Update browser Anda</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Hanya di perangkat ini.</translation>
 <translation id="6914583639806229067">Telusuri Gambar yang Anda Salin</translation>
@@ -2078,6 +2084,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2}, dan 1 lainnya}other{Untuk {website_1}, {website_2}, dan {more_count} lainnya}}</translation>
 <translation id="8184895727539791845">Untuk mengizinkan Gemini menggunakan kamera, aktifkan Kamera di setelan iOS</translation>
 <translation id="8185076488803799132">Impor</translation>
+<translation id="8187200657863701733">Level Chrome Saat Ini</translation>
 <translation id="8189615296021678665">Ketuk "Simpan" untuk mengakses sandi ini dengan mudah saat Anda login lagi.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Tambahkan sandi</translation>
@@ -2121,6 +2128,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8325455175867928593">Sembunyikan "Ulasan berdasarkan minat Anda"</translation>
 <translation id="833647236762414178">Buat, simpan, dan kelola sandi &amp; kunci sandi Anda untuk login dengan mudah ke situs dan aplikasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Selesaikan 1 tugas lagi untuk naik level}other{Selesaikan {count} tugas lagi untuk naik level}}</translation>
 <translation id="8348530355586151720">Ketuk menu tiga titik</translation>
 <translation id="8349305172487531364">Bilah bookmark</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} bookmark diimpor}other{{count} bookmark diimpor}}</translation>

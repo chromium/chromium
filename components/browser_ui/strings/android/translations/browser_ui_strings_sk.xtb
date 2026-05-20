@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Tipy pre Chrome</translation>
 <translation id="1242008676835033345">Vložené na webe <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Klepnite na Aplikácie &gt; Predvolené aplikácie</translation>
+<translation id="1264694639515903274">Teraz si môžete prispôsobiť domovskú stránku</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1275718070701477396">Riadok bol vybratý</translation>
 <translation id="1289742167380433257">Google optimalizoval obrázky tejto stránky, aby vám ušetril dáta.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1919950603503897840">Výber kontaktov</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Prispôsobiť moju domovskú stránku</translation>
 <translation id="1939059826036755332">Automatický obraz v obraze</translation>
 <translation id="1954597385941141174">Weby môžu žiadať o pripjenie k zariadeniam USB</translation>
 <translation id="1979673356880165407">Zväčšite alebo zmenšite si text a obrázky na všetkých weboch, ktoré navštívite</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome bude dnes súbory cookie znova blokovať</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3859306556332390985">Pretočiť dopredu</translation>
+<translation id="3870711497942672548">Prispôsobte si Chrome vlastnými farbami a obrázkami na domovskej stránke</translation>
 <translation id="389521680295183045">Weby sa môžu pýtať, keď chcú zistiť, kedy aktívne používate zariadenie</translation>
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
 <translation id="3903738175795615004">Režim celej obrazovky ukončíte presunutím zhora alebo stlačením klávesa Esc.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Rozbaliť</translation>
 <translation id="4310738531374808763">Prispôsobenie domovskej stránky</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
+<translation id="4336371609622603229">Prispôsobte si Chrome výberom vlastného motívu</translation>
 <translation id="4338831206024587507">Všetky weby v doméne <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Nepovoliť webom odosielať upozornenia</translation>
 <translation id="4341577178275615435">Ak chcete zapnúť alebo vypnúť prehliadanie Caret, použite skratku F7</translation>
@@ -750,7 +754,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="8737426583868847403">Tu sa budú zobrazovať weby, pre ktoré uložíte vlastnú úroveň lupy</translation>
 <translation id="8748714929822124637">Nepovoliť webom prístup k iným zariadeniam vo vašej miestnej sieti</translation>
 <translation id="8751914237388039244">Vyberte obrázok</translation>
-<translation id="8775741625735357092">Panel so záložkami môžete zapnúť v sekcii Nastavenia &gt; Vzhľad</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8801436777607969138">Blokovať JavaScript na konkrétnom webe.</translation>
 <translation id="8801657293260363985">V8 je nástroj skriptov JavaScript a WebAssembly v Chrome, ktorý zlepšuje výkon webov</translation>

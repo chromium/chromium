@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-wenke</translation>
 <translation id="1242008676835033345">Ingebed op <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tik op Apps  &gt; Verstekapps</translation>
+<translation id="1264694639515903274">Jy kan nou jou tuisblad pasmaak</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Gekies</translation>
 <translation id="1289742167380433257">Hierdie bladsy se prente is geoptimeer om vir jou data te bespaar.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Sit neer</translation>
 <translation id="1919950603503897840">Kies kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Pasmaak my tuisblad</translation>
 <translation id="1939059826036755332">Outomatiese prent-in-prent</translation>
 <translation id="1954597385941141174">Werwe kan vra om aan USB-toestelle te koppel</translation>
 <translation id="1979673356880165407">Maak teks en prente groter of kleiner vir alle werwe wat jy besoek</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome sal vandag weer webkoekies blokkeer</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Soek vorentoe</translation>
+<translation id="3870711497942672548">Maak Chrome jou eie met gepasmaakte kleure en prente vir jou tuisblad</translation>
 <translation id="389521680295183045">Werwe kan vra om te weet wanneer jy jou toestel aktief gebruik</translation>
 <translation id="3895926599014793903">Dwing aktivering van zoem</translation>
 <translation id="3903738175795615004">Sleep van bo af of druk Esc-sleutel om volskerm te verlaat.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Vou uit</translation>
 <translation id="4310738531374808763">Pasmaak jou tuisblad</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
+<translation id="4336371609622603229">Maak Chrome jou eie deur ’n gepasmaakte tema te kies</translation>
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Moenie werwe toelaat om kennisgewings te stuur nie</translation>
 <translation id="4341577178275615435">Gebruik die kortpad F7 om karetblaai aan of af te skakel</translation>
@@ -750,7 +754,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:</translation>
 <translation id="8737426583868847403">Werwe vir wie jy ’n gepasmaakte zoemvlak stoor, sal hier verskyn</translation>
 <translation id="8748714929822124637">Moenie werwe toelaat om toegang tot ander toestelle op jou plaaslike netwerk te kry nie</translation>
 <translation id="8751914237388039244">Kies 'n prent</translation>
-<translation id="8775741625735357092">Jy kan die boekmerkbalk aanskakel in Instellings &gt; Voorkoms</translation>
 <translation id="8800034312320686233">Werk werf nie?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript vir 'n spesifieke werf.</translation>
 <translation id="8801657293260363985">V8 is Chrome se JavaScript- en WebAssembly-enjin wat gebruik word om werf se werkverrigting te verbeter</translation>

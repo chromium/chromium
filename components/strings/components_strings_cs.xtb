@@ -254,6 +254,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1380591466760231819">Dopisní přeložení</translation>
 <translation id="138218114945450791">Světle modrá</translation>
 <translation id="1382194467192730611">Zařízení USB povolené administrátorem</translation>
+<translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384725838384960382">List ověření identifikačních údajů pro zabezpečené platby</translation>
 <translation id="1386623374109090026">Poznámky</translation>
 <translation id="138810468159004008">Povolit při návštěvách tohoto webu</translation>
@@ -1816,6 +1817,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="380865868633614173">Ukládání informací o kartě</translation>
 <translation id="3810770279996899697">Správce hesel potřebuje přístup ke Klíčence systému MacOS</translation>
 <translation id="3810973564298564668">Spravovat</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Toto je kritická aktualizace, která zlepšuje výkon aplikací pro Android v systému ChromeOS.</translation>
 <translation id="3814865536373139791">Zjednodušte ve své organizaci správu zásad</translation>
 <translation id="3815434930383843058">8 × 12″</translation>
@@ -2395,6 +2397,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4736934858538408121">Virtuální karta</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4738601419177586157">Návrh vyhledávacího dotazu <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, vybraná karta, <ph name="INDEX" /> z <ph name="TOTAL" />, mezi kartami můžete přepínat šipkami vlevo a vpravo</translation>
 <translation id="4742407542027196863">Spravovat hesla…</translation>
 <translation id="474270528725216349">Z alespoň 1 webu na synchronizovaných zařízeních</translation>
 <translation id="4743275772928623722">Váš systém byl aktualizován, ale některé z vašich aplikací a souborů nebylo možné obnovit. Vaše aplikace budou automaticky znovu staženy.</translation>
@@ -2462,6 +2465,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4832961164064927107">Barbecue a grilování</translation>
 <translation id="4835568975547260025">Chrome bude ve výchozím nastavení sdílet relevantní otevřené karty. Získáte tak přizpůsobenější odpovědi na své otázky.</translation>
 <translation id="4840250757394056958">Zobrazit historii Chromu</translation>
+<translation id="4842365697443353018">Pokud chcete použít možnost Zaplatit později, vymažte formulář</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4844937814014739139">Posouvání a přibližování sdílených karet</translation>
 <translation id="484671803914931257">Získejte slevu u obchodníka <ph name="MERCHANT_NAME" /> a dalších</translation>

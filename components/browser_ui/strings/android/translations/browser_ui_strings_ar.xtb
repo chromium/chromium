@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">‏نصائح قيّمة من Chrome</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">انقر على "التطبيقات"  &gt; "التطبيقات التلقائية"</translation>
+<translation id="1264694639515903274">يمكنك الآن تخصيص صفحتك الرئيسية</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1289742167380433257">‏لحفظ بياناتك، حسَّنت Google الصور في هذه الصفحة.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1919950603503897840">اختيار جهات الاتصال</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">تخصيص صفحتي الرئيسية</translation>
 <translation id="1939059826036755332">فتح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا</translation>
 <translation id="1954597385941141174">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة USB</translation>
 <translation id="1979673356880165407">يمكنك تكبير أو تصغير النص والصور لجميع المواقع الإلكترونية التي تزورها</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">توسيع</translation>
 <translation id="4310738531374808763">تخصيص صفحتك الرئيسية</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{تنتهي الصلاحية غدًا}zero{تنتهي الصلاحية بعد # يوم}two{تنتهي الصلاحية بعد يومَين}few{تنتهي الصلاحية بعد # أيام}many{تنتهي الصلاحية بعد # يومًا}other{تنتهي الصلاحية بعد # يوم}}</translation>
+<translation id="4336371609622603229">‏يمكنك إضافة لمساتك الخاصة إلى Chrome عبر اختيار مظهر مخصّص</translation>
 <translation id="4338831206024587507">جميع المواقع الإلكترونية ضمن <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">عدم السماح للمواقع الإلكترونية بإرسال الإشعارات</translation>
 <translation id="4341577178275615435">‏يفعّل الاختصار F7 ميزة "التصفُّح النصي بالمؤشر" أو يوقفها</translation>
@@ -752,7 +755,6 @@
 <translation id="8737426583868847403">ستظهر هنا المواقع الإلكترونية التي حفظت لها مستوى تكبير أو تصغير مخصّص</translation>
 <translation id="8748714929822124637">عدم السماح للمواقع الإلكترونية بالوصول إلى الأجهزة الأخرى على شبكتك المحلية</translation>
 <translation id="8751914237388039244">اختيار صورة</translation>
-<translation id="8775741625735357092">يمكنك تفعيل شريط الإشارات في "الإعدادات" &gt; "المظهر"</translation>
 <translation id="8800034312320686233">هل الموقع الإلكتروني لا يعمل؟</translation>
 <translation id="8801436777607969138">‏حظر JavaScript لموقع إلكتروني مُعيَّن.</translation>
 <translation id="8801657293260363985">‏V8 هو محرك JavaScript وWebAssembly من Chrome يُستخدَم لتحسين أداء المواقع الإلكترونية.</translation>

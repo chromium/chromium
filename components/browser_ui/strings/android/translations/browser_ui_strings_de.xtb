@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-Tipps</translation>
 <translation id="1242008676835033345">Auf <ph name="WEBSITE_URL" /> eingebettet</translation>
 <translation id="1263609676484797429">Tippe auf „Apps“ &gt; „Standard-Apps“</translation>
+<translation id="1264694639515903274">Du kannst deine Startseite jetzt anpassen</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1289742167380433257">Die Bilder auf dieser Seite wurden von Google optimiert, um den Datenverbrauch zu reduzieren.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1919950603503897840">Kontakte auswählen</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Startseite anpassen</translation>
 <translation id="1939059826036755332">Automatischer Bild-im-Bild-Modus</translation>
 <translation id="1954597385941141174">Websites dürfen nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchten</translation>
 <translation id="1979673356880165407">Damit können Text und Bilder auf allen Websites, die du besuchst, vergrößert oder verkleinert werden</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome blockiert heute wieder Cookies</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3859306556332390985">Nach vorne navigieren</translation>
+<translation id="3870711497942672548">Du kannst Chrome mit benutzerdefinierten Farben und Bildern für deine Startseite personalisieren</translation>
 <translation id="389521680295183045">Websites dürfen nachfragen, ob sie Informationen zu meiner aktiven Nutzung dieses Geräts abrufen dürfen</translation>
 <translation id="3895926599014793903">Zoom zwingend aktivieren</translation>
 <translation id="3903738175795615004">Zum Beenden des Vollbildmodus von oben nach unten ziehen oder Esc-Taste drücken.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Maximieren</translation>
 <translation id="4310738531374808763">Startseite anpassen</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Läuft morgen ab}other{Läuft in # Tagen ab}}</translation>
+<translation id="4336371609622603229">Du kannst Chrome personalisieren, indem du ein benutzerdefiniertes Design auswählst</translation>
 <translation id="4338831206024587507">Alle Websites unter <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Websites dürfen keine Benachrichtigungen senden</translation>
 <translation id="4341577178275615435">Mit dem Tastaturkürzel F7 kann die Tastaturnavigation aktiviert oder deaktiviert werden</translation>
@@ -750,7 +754,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="8737426583868847403">Websites, für die du eine benutzerdefinierte Zoomstufe speicherst, werden hier angezeigt</translation>
 <translation id="8748714929822124637">Websites nicht erlauben, auf andere Geräte in deinem lokalen Netzwerk zuzugreifen</translation>
 <translation id="8751914237388039244">Bild auswählen</translation>
-<translation id="8775741625735357092">Du kannst die Lesezeichenleiste in den Einstellungen &gt; „Darstellung“ aktivieren</translation>
 <translation id="8800034312320686233">Website funktioniert nicht?</translation>
 <translation id="8801436777607969138">Hier kannst du Websites angeben, für die JavaScript blockiert werden soll.</translation>
 <translation id="8801657293260363985">V8 ist die JavaScript- und WebAssembly-Engine von Chrome, mit der die Websiteleistung verbessert wird</translation>

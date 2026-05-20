@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome உதவிக்குறிப்புகள்</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> இல் உட்பொதியப்பட்டது</translation>
 <translation id="1263609676484797429">ஆப்ஸ்  &gt; இயல்பு ஆப்ஸ் என்பதைத் தட்டவும்</translation>
+<translation id="1264694639515903274">இப்போது உங்கள் முகப்புப் பக்கத்தைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1289742167380433257">உங்கள் டேட்டாவைச் சேமிப்பதற்காக, இந்தப் பக்கத்தின் படங்கள் Googleளால் சுருக்கப்பட்டுள்ளன.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">மூடுக</translation>
 <translation id="1919950603503897840">தொடர்புகளைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">பிரத்தியேகமாக்கு</translation>
 <translation id="1939059826036755332">தானியங்குப் பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
 <translation id="1954597385941141174">USB சாதனங்களுடன் தளங்கள் இணைய முயலும்போது அனுமதி கேள்</translation>
 <translation id="1979673356880165407">நீங்கள் பார்க்கும் தளங்கள் அனைத்திலும் உள்ள வார்த்தைகளையும் படங்களையும் பெரிதாக்கும் அல்லது சிறிதாக்கும்</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">விரி</translation>
 <translation id="4310738531374808763">முகப்புப் பக்கத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{நாளை காலாவதியாகிறது}other{# நாட்களில் காலாவதியாகிறது}}</translation>
+<translation id="4336371609622603229">பிரத்தியேகத் தீமினைத் தேர்வுசெய்து Chromeமைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> டொமைனின் கீழே உள்ள அனைத்துத் தளங்கள்</translation>
 <translation id="4340799661701629185">அறிவிப்புகளை அனுப்ப தளங்களை அனுமதிக்காதே</translation>
 <translation id="4341577178275615435">சுட்டி உலாவலை இயக்கவோ முடக்கவோ ‘F7’ என்ற ஷார்ட்கட் விசையைப் பயன்படுத்தவும்</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">நீங்கள் பிரத்தியேக ஜூம் அளவைச் சேமிக்கும் தளங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="8748714929822124637">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள பிற சாதனங்களை அணுக தளங்களை அனுமதிக்க வேண்டாம்</translation>
 <translation id="8751914237388039244">படத்தைத் தேர்ந்தெடுக்கவும்</translation>
-<translation id="8775741625735357092">அமைப்புகள் &gt; தோற்றம் என்பதில் புக்மார்க் பட்டியை நீங்கள் ஆன் செய்யலாம்</translation>
 <translation id="8800034312320686233">தளம் இயங்கவில்லையா?</translation>
 <translation id="8801436777607969138">குறிப்பிட்ட தளத்திற்கு JavaScriptடைத் தடுக்கும்.</translation>
 <translation id="8801657293260363985">V8 என்பது தளத்தின் செயல்திறனை மேம்படுத்தப் பயன்படுத்தப்படும் Chromeமின் JavaScript மற்றும் WebAssembly இன்ஜின்</translation>

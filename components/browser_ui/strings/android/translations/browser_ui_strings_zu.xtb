@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Amathiphu we-Chrome</translation>
 <translation id="1242008676835033345">Ishumekwe ku-<ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Thepha ama-App  &gt; Ama-app azenzekelayo</translation>
+<translation id="1264694639515903274">Manje usungaqamba ngokwabahlinzekelwayo ikhasi lakho eliyisiqalo</translation>
 <translation id="1272079795634619415">Misa</translation>
 <translation id="1275718070701477396">Ikhethiwe</translation>
 <translation id="1289742167380433257">Ukuze ulondoloze idatha, izithombe zaleli khasi zizolungiselelwa yi-Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Vala ikholi</translation>
 <translation id="1919950603503897840">Khetha oxhumana nabo</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Qamba ngokwabahlinzekelwayo ikhasi lami eliyisiqalo</translation>
 <translation id="1939059826036755332">Isithombe-esithombeni esizenzakalelayo</translation>
 <translation id="1954597385941141174">Amasayithi angacela ukuxhumeka kumadivayisi e-USB</translation>
 <translation id="1979673356880165407">Yenza umbhalo nemifanekiso kube kukhulu noma kube ncane kuwo wonke amasayithi owavakashelayo</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">I-Chrome izophinde ivimbele amakhukhi namuhla</translation>
 <translation id="385051799172605136">Emuva</translation>
 <translation id="3859306556332390985">Funela phambili</translation>
+<translation id="3870711497942672548">Yenza iChrome ibe ngeyakho ngemibala nezithombe zekhasi lakho eliyisiqalo ezihlelwa ngokomuntu ngamunye</translation>
 <translation id="389521680295183045">Amasayithi angabuza ukuze azi ukuthi uyisebenzisa nini idivayisi yakho</translation>
 <translation id="3895926599014793903">Phoqa ukunika amandla ukusondeza</translation>
 <translation id="3903738175795615004">Hudula ukusuka phezulu noma cindezela u-Esc ukuze uphume esikrinini esigcwele.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Nweba</translation>
 <translation id="4310738531374808763">Qamba ngokwabahlinzekelwayo ikhasi lakho eliyisiqalo</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Kuphelelwa yisikhathi kusasa}one{Kuphelelwa isikhathi ezinsukwini ezingu-#}other{Kuphelelwa isikhathi ezinsukwini ezingu-#}}</translation>
+<translation id="4336371609622603229">Yenza iChrome ibe ngeyakho ngokukhetha itimu yokumuntu ngamunye</translation>
 <translation id="4338831206024587507">Wonke amasayithi angaphansi kwe-<ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ungavumeli amasayithi athumele izaziso</translation>
 <translation id="4341577178275615435">Ukuze uvule noma uvale ukuphequlula kwe-caret, sebenzisa isinqamuleli se-F7</translation>
@@ -750,7 +754,6 @@ Ukuvikela Okuthuthukile kulawula la masethingi eChrome:</translation>
 <translation id="8737426583868847403">Amasayithi owalondolozela izinga lokusondeza eliqokiwe azovela lapha</translation>
 <translation id="8748714929822124637">Ungavumeli amasayithi ukuthi afinyelele kwamanye amadivayisi kunethiwekhi yakho yendawo</translation>
 <translation id="8751914237388039244">Khetha isithombe</translation>
-<translation id="8775741625735357092">Ungavula ibha yamabhukhimakhi Kumasethingi &gt; Ukubukeka</translation>
 <translation id="8800034312320686233">Isayithi alisebenzi?</translation>
 <translation id="8801436777607969138">Vimbela i-JavaScript kusayithi elithile.</translation>
 <translation id="8801657293260363985">I-V8 iyi-JavaScript ye-Chromium futhi injini ye-WebAssembly isetshenziswe ukuthuthukisa ukusebenza kwesayithi</translation>

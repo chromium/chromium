@@ -769,7 +769,6 @@
 <translation id="1521655867290435174">Google 表格</translation>
 <translation id="1521933835545997395">已连接到 Android 手机</translation>
 <translation id="1523279371236772909">过去一个月内看过</translation>
-<translation id="1523486680453956384">查看任务</translation>
 <translation id="1523978563989812243">文字转语音引擎</translation>
 <translation id="1524563461097350801">不用了</translation>
 <translation id="1525740877599838384">仅根据 Wi-Fi 确定位置</translation>
@@ -780,6 +779,7 @@
 <translation id="1529769834253316556">行高</translation>
 <translation id="1529891865407786369">电源</translation>
 <translation id="1530376661400379364">Chrome 重置了这些设置</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> 包含敏感或危险数据</translation>
 <translation id="1531275250079031713">显示“添加新 Wi-Fi 网络”对话框</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">我了解此下载内容会损害我的计算机</translation>
@@ -2133,7 +2133,6 @@
 <translation id="2450849356604136918">没有正在运行的视图</translation>
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="2453045048779611513">您所在的组织限制了您可保存的内容</translation>
-<translation id="245307875355990880">继续任务</translation>
 <translation id="245322989586167203">网站通常会连接到串行端口以实现数据传输功能（例如设置您的网络）</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454206500483040640">已分区</translation>
@@ -2172,6 +2171,7 @@
 <translation id="2469141124738294431">虚拟机状态</translation>
 <translation id="2469259292033957819">您没有已保存的打印机。</translation>
 <translation id="2469375675106140201">自定义拼写检查</translation>
+<translation id="2469406914567390938">更新渠道</translation>
 <translation id="247051149076336810">文件共享网址</translation>
 <translation id="2471469610750100598">黑色（默认）</translation>
 <translation id="2471506181342525583">已允许使用位置信息</translation>
@@ -2502,6 +2502,7 @@
 <translation id="2695943520968279338">探索扩展程序</translation>
 <translation id="2696675923413008404">为了改进这项功能，系统可能会将此网站的内容（包括其网址）发送给 Google，并且人工审核员可能会查看这些内容</translation>
 <translation id="2698147581454716013">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>
+<translation id="269941332914175387">请重新启动浏览器，以加载个人资料数据并确保其始终处于加密状态</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
 <translation id="2701330563083355633">共享自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
@@ -2730,6 +2731,7 @@
 <translation id="2844154481025280030">已配置政策。</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
 <translation id="2844809857160214557">查看和管理打印任务</translation>
+<translation id="284491292807422921">移除网站？</translation>
 <translation id="2845276301195220700">可对 Google 日历执行的更多操作</translation>
 <translation id="2845382757467349449">总是显示书签栏</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
@@ -3317,6 +3319,7 @@
 <translation id="3262986719682892278">太大</translation>
 <translation id="3264544094376351444">Sans-serif 字体</translation>
 <translation id="3264582393905923483">上下文</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />。管理员消息：“<ph name="CUSTOM_MESSAGE" />”。</translation>
 <translation id="3265459715026181080">关闭窗口</translation>
 <translation id="3266022278425892773">Linux 开发环境</translation>
 <translation id="3266030505377585301">若要仅删除此设备中的浏览数据而保留您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />退出账号<ph name="END_LINK" />。</translation>
@@ -4099,6 +4102,7 @@
 <translation id="3796215473395753611">alt + 向上键</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，点按播放按钮可试听语音</translation>
 <translation id="3796648294839530037">收藏的网络：</translation>
+<translation id="3797330664967181051">拆分视图</translation>
 <translation id="3797739167230984533">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由所属组织管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">使用<ph name="SEARCH_ENGINE" />搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
 <translation id="3798026281364973895">停用智能热点</translation>
@@ -4433,6 +4437,7 @@
 <translation id="4010746393007464819">可以升级至 Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">要在移动设备上获取书签，请<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4011073493055408531">城市上空闪耀着紫色和绿色的北极光。</translation>
+<translation id="4011897773956589748">下次 Gemini 需要访问此账号时，会再次向您发出请求。</translation>
 <translation id="4012509903424054869">系统会自动转换 PDF 文件，以便您搜索和选择文本</translation>
 <translation id="4014432863917027322">要修复“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="4015163439792426608">安装了扩展程序？在一个位置轻松<ph name="BEGIN_LINK" />管理您的扩展程序<ph name="END_LINK" />。</translation>
@@ -4850,7 +4855,6 @@
 <translation id="4314497418046265427">将手机连接到 <ph name="DEVICE_TYPE" />，可提高工作效率</translation>
 <translation id="4314561087119792062">添加新的接入点名称 (APN)</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
-<translation id="4314821834464582073">暂停任务</translation>
 <translation id="4316850752623536204">开发者网站</translation>
 <translation id="4317733381297736564">应用内购买</translation>
 <translation id="4317820549299924617">验证失败</translation>
@@ -6210,6 +6214,7 @@
 <translation id="5275084684151588738">用户字典</translation>
 <translation id="5275338516105640560">“已保存的标签页分组”按钮</translation>
 <translation id="5275352920323889391">狗</translation>
+<translation id="5275946508817197540">由于您的安全偏好设置，无法安装独立式 Web 应用 (IWA)。<ph name="CHANGE_PREFERENCE" />。</translation>
 <translation id="527605719918376753">将此标签页静音</translation>
 <translation id="527605982717517565">始终允许使用 <ph name="HOST" /> 上的 JavaScript</translation>
 <translation id="5276357196618041410">登录后才能保存配置</translation>
@@ -7718,6 +7723,7 @@
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6350745006329795504">管理设备</translation>
 <translation id="6350821834561350243">请清楚描述问题及其重现步骤（如果可能）</translation>
+<translation id="635100112331897007">查看所有 Chrome 政策</translation>
 <translation id="6351178441572658285">应用语言</translation>
 <translation id="6352992678231622317">标签页已下移</translation>
 <translation id="6355632359041940003">接管任务</translation>
@@ -8653,6 +8659,7 @@
 <translation id="6997553674029032185">前往网站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活动日志</translation>
 <translation id="6997707937646349884">在您的设备上：</translation>
+<translation id="6998036632333022623">正在与 Google 分享标签页</translation>
 <translation id="6998793565256476099">注册设备以进行视频会议</translation>
 <translation id="6999956497249459195">新建组</translation>
 <translation id="7000206553895739324">“<ph name="PRINTER_NAME" />”已建立连接但需要配置</translation>

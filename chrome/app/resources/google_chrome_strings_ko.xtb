@@ -332,6 +332,7 @@
 <translation id="4348548358339558429">맞춤설정을 사용하려면 웹 및 앱 활동에 Chrome을 포함하세요</translation>
 <translation id="436060642166082913">파일이 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다</translation>
 <translation id="4367027658822022112">측면 패널 상단의 고정 버튼을 클릭하여 Google 렌즈를 고정하면 쉽게 액세스할 수 있습니다</translation>
+<translation id="4372389195695053189">Chrome이 기본 브라우저로 설정됨</translation>
 <translation id="4389991535395284064">시크릿 모드로 탐색할 때 Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4434353761996769206">설치 프로그램 오류: <ph name="INSTALLER_ERROR" /></translation>
@@ -617,7 +618,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7302361266603927550">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다. 잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다</translation>
 <translation id="7306401458628386911">즉시 탐색 시작: 이제 Windows 시작 시 Chrome을 실행할 수 있습니다.</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
-<translation id="7339898014177206373">새 창</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
 <translation id="7386878009611068389">부모님의 선택을 통해 온라인에서 더 안전하게 보호하려면 이미 <ph name="USER_EMAIL_ADDRESS" />님으로 로그인되어 있는 Chrome 프로필로 전환하세요.</translation>

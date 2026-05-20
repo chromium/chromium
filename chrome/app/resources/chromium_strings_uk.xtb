@@ -584,7 +584,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="7318036098707714271">Ваш файл налаштувань пошкоджений або недійсний.
 
 Chromium не може відновити ваші налаштування.</translation>
-<translation id="7339898014177206373">Нове вікно</translation>
 <translation id="734373864078049451">Тут містяться ваші веб-сторінки, закладки та інші дані Chromium.</translation>
 <translation id="7347827960336370838">Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chromium у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -593,6 +592,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7376384068949534168">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />".</translation>
 <translation id="73786666777299047">Відкрити Веб-магазин Chrome</translation>
 <translation id="7384121030444253939">Це розширення більше не підтримується. Chromium радить вилучити його.</translation>
+<translation id="7407655596887111931">Тепер Chromium – ваш вебпереглядач за умовчанням</translation>
 <translation id="7413153308467572558">Продовжуйте роботу з місця, де зупинилися: Chromium відновлює ваші вкладки після кожного перезапуску. Щоб вимкнути цю функцію, перейдіть у</translation>
 <translation id="7427879960656355200">Імпортувати паролі в Chromium</translation>
 <translation id="744815265653811511">1. Натисніть кнопку "<ph name="BUTTON_LABEL" />" нижче.

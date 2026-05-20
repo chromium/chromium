@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Esse problema acontece devido a um certificado que você ou outra pessoa instalou no dispositivo. O certificado é conhecido por ser usado para monitorar e interceptar redes, e o Chromium não o considera confiável. Embora casos legítimos de monitoramento existam, como em redes de escolas ou empresas, o Chromium quer ter certeza de que você está ciente de tudo o que está acontecendo, mesmo que você não possa fazer nada para impedir isso. O monitoramento pode acontecer em qualquer navegador ou aplicativo que acesse a Web.</translation>
 <translation id="1024111578869940408">Às vezes, os invasores imitam sites, fazendo modificações quase imperceptíveis no endereço da Web.</translation>
 <translation id="1024913885641459127">Avaliações de produtos e comparações de preços</translation>
+<translation id="1025174656774447058">Compartilhar automaticamente as guias abertas com esta conversa?</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quer armazenar permanentemente um grande volume de dados no seu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nenhum}=1{De 1 site. Desconecta você da maioria dos sites. }one{De # site. Desconecta você da maioria dos sites. }other{De # sites. Desconecta você da maioria dos sites. }}</translation>
@@ -254,6 +255,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1380591466760231819">Dobra carteira</translation>
 <translation id="138218114945450791">Azul-claro</translation>
 <translation id="1382194467192730611">Dispositivo USB permitido pelo administrador</translation>
+<translation id="1383876407941801731">Pesquise</translation>
 <translation id="1384725838384960382">Página de autenticação de credenciais para pagamento seguro</translation>
 <translation id="1386623374109090026">Anotações</translation>
 <translation id="138810468159004008">Permitir ao acessar o site</translation>
@@ -1024,6 +1026,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Usar o bloqueio de tela para confirmar os cartões de agora em diante</translation>
 <translation id="2552532158894206888">tecla direita</translation>
+<translation id="2552601157105591479">Em cada nova conversa, o Chrome vai compartilhar as guias abertas relevantes para fornecer respostas melhores. Saiba mais sobre</translation>
 <translation id="2553352788023127673">O histórico de pesquisa e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="2553853292994445426">Verifique suas configurações de DNS seguro. Você pode ter configurado um servidor DNS seguro em que as conexões estão falhando.</translation>
 <translation id="255497580849974774">Mantenha seu dispositivo conectado a um carregador durante a atualização.</translation>
@@ -1240,6 +1243,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2930531075747147366">Guia no seu outro dispositivo</translation>
 <translation id="2930577230479659665">Cortar depois de cada cópia</translation>
 <translation id="2933624813161016821">Laminado em relevo</translation>
+<translation id="2935726091208500473">compartilhando suas guias</translation>
 <translation id="293796669683825859">Comentários</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Para mostrar o cursor, mude de app, recarregue a página ou volte</translation>
@@ -1267,6 +1271,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="297173220375858963">Editoração eletrônica</translation>
 <translation id="2972581237482394796">&amp;Refazer</translation>
 <translation id="2974468223369775963">Não foi possível salvar o IBAN na sua Conta do Google. Ele foi salvo no Chrome neste dispositivo. O Chrome vai perguntar de novo na próxima vez que você usar esse IBAN.</translation>
+<translation id="2976162850019490782">Quando ativada, o Chrome vai compartilhar todas as guias desta janela para ajudar você a receber respostas mais relevantes. Você pode ativar essa opção para todas as conversas nas Configurações.</translation>
 <translation id="297667759942911166">Colaborar em grupos de guias</translation>
 <translation id="2977665033722899841">Selecionado no momento: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -1792,6 +1797,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3763752038825281594">Anteriormente, você não deu a permissão de <ph name="PERMISSION" /> para este site</translation>
 <translation id="3765588406864124894">Caixa de e-mails 9</translation>
 <translation id="3767485424735936570">De acordo com a política do administrador, não é recomendado copiar e colar esse conteúdo no <ph name="VM_NAME" />.</translation>
+<translation id="3769584711865378220">O <ph name="URL" /> quer mudar o acesso de local aproximado para exato</translation>
 <translation id="3772211998634047851">Papel sulfite</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="3780694243617746492">Bandeja de saída</translation>
@@ -2073,6 +2079,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="421066178035138955">Usar dispositivos e dados de realidade virtual</translation>
 <translation id="4213500579045346575">Fisiculturismo</translation>
 <translation id="4214357935346142455">perfil da tela de login</translation>
+<translation id="4218327733815631046">Manter o local aproximado</translation>
 <translation id="4219596572397833317">Veja o histórico de preços e muito mais para fazer compras mais inteligentes.</translation>
 <translation id="4220128509585149162">Falhas</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Etapa 1: fazer login no portal&lt;/h4&gt;
@@ -2996,6 +3003,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5617949217645503996">Redirecionamento em excesso por <ph name="HOST_NAME" /></translation>
 <translation id="5619721953841297650">Predefinição</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
+<translation id="5627344039351500898">Mudar para exato</translation>
 <translation id="5628060911499153873">Salve suas informações para agilizar o dia a dia nos produtos do Google. Os dados são salvos na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Falha ao carregar as configurações da política</translation>
 <translation id="5630981295558454585">Botão "Perguntar ao Google sobre esta página". Ative para fazer uma pergunta</translation>
@@ -3320,6 +3328,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6133984428121856852">A extensão de arquivo está vazia ou incorreta.</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 pol.</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, selecionado</translation>
 <translation id="6143097244789397208">Realidade virtual e aumentada</translation>
 <translation id="614327212146763975">Sensores de movimento e luz permitidos</translation>
 <translation id="6146055958333702838">Verifique todos os cabos e reinicie todos os roteadores, modens ou outros
@@ -4197,6 +4206,7 @@ Mais detalhes:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> vai verificar sua qualificação. Isso não afeta seu score de crédito. Se estiver tudo certo, <ph name="BNPL_ISSUER_NAME" /> vai disponibilizar planos de pagamento para você escolher e concluir a compra.</translation>
 <translation id="7489392576326061356">Shampoos e condicionadores</translation>
 <translation id="7489919936111034362">Seu armazenamento no Google Drive está cheio</translation>
+<translation id="7490026840522163531">Compartilhar automaticamente as guias abertas com todas as conversas?</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
 <translation id="749865518782565832">Encanamento</translation>
 <translation id="7499188644237027195">Ao fazer compras no Chrome, veja a carteira digital e o Pix como opções</translation>
@@ -5319,6 +5329,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="964050462028070434">Gerenciar senhas e chaves de acesso…</translation>
 <translation id="964681140808832181">Sim, quero cancelar</translation>
 <translation id="969892804517981540">Versão oficial</translation>
+<translation id="970182982363142444">Quando ativada, o Chrome vai compartilhar todas as guias desta janela para ajudar você a receber respostas mais relevantes. Você pode ativar essa opção para todos os chats em</translation>
 <translation id="97054401902912338">Saiba mais sobre os filtros de conteúdo</translation>
 <translation id="973788791897303708">Este grupo de guias está cheio</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}one{# item}other{# itens}}</translation>

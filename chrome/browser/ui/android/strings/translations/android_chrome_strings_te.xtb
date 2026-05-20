@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">ట్రాక్ చేసిన మీ ప్రోడక్ట్‌లను బుక్‌మార్క్‌లలో ఆర్గనైజ్ చేయండి</translation>
 <translation id="1455845192930279203">అయినా సరే మీరు <ph name="DOWNLOAD_DOMAIN" /> నుండి "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="1460751212339734034">సమయాన్ని ఆదా చేసుకోండి, తక్కువ టైప్ చేయండి</translation>
+<translation id="146522654774760805">పాస్‌వర్డ్‌లు, ఆటోఫిల్</translation>
 <translation id="1466383950273130737">Chrome భాషను ఎంపిక చేయండి</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="147982357559798527">మార్చబడింది</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను కూడా చేర్చాలనుకుంటున్నారా?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో మ్యూట్ అయ్యే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="2021896219286479412">ఫుల్-స్క్రీన్‌ సైట్ నియంత్రణలు</translation>
+<translation id="2022953316617983419">QR కోడ్</translation>
 <translation id="2024195579772565064">సెర్చ్ ఇంజిన్‌ను తొలగించండి</translation>
 <translation id="2029669011553795746">చిట్కాల నోటిఫికేషన్‌ల సమ్మతి సగం ఎత్తులో తెరవబడింది</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ రిక్వెస్ట్‌ను ఆన్ చేయండి</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" />, <ph name="TAB_COUNT" /> ఇతర ట్యాబ్‌లు</translation>
 <translation id="441100617989818073">ఉపయోగించని లేదా డూప్లికేట్ ట్యాబ్‌లు, గ్రూప్‌లు</translation>
 <translation id="4412123112245770507">విభాగాన్ని కుదించండి</translation>
+<translation id="4412698727486357573">సహాయ కేంద్రం</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> తొలగించబడింది</translation>
 <translation id="4415276339145661267">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4425140285732600465">ధరను ట్రాక్ చేయడం. ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి.</translation>
@@ -1433,7 +1436,6 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> మెనూ హైలైట్ చేయబడింది.</translation>
 <translation id="6983306615164277634">అడ్రస్ బార్ స్థానాన్ని మార్చడానికి దాన్ని నొక్కి, పట్టుకోవచ్చు.</translation>
 <translation id="6987047470128880212">ఈ పరికరంలో అజ్ఞాత మోడ్ అందుబాటులో లేదు</translation>
-<translation id="6989358895283601928">సేవ్ చేసి, ప్రింట్ చేయండి</translation>
 <translation id="6996145122199359148">ఈ పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7013762323294215682">ఈ పాస్-కీ మీ password managerకు సేవ్ చేయబడుతుంది. దీనికి యాక్సెస్ ఉన్న ఎవరైనా ఈ పాస్-కీని ఉపయోగించగలరు.</translation>
 <translation id="7020741890149022655"><ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /> రీడింగ్ లిస్టుకు చేర్చండి</translation>
@@ -2001,6 +2003,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
+<translation id="984275831282074731">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="984756705737569814">మీ Google ఖాతాలో పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="987264212798334818">సాధారణం</translation>
 <translation id="988091779042748639">మీ పరికరం నుండి అజ్ఞాత మోడ్‌లో ఉన్న బ్రౌజింగ్ హిస్టరీని తొలగించడానికి, అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి.</translation>

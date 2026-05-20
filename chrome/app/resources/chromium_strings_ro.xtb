@@ -584,7 +584,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="7318036098707714271">Fișierul de preferințe este fie deteriorat, fie nevalid.
 
 Chromium nu poate recupera setările.</translation>
-<translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="734373864078049451">Experiența web personalizată, marcajele și celelalte date Chromium chiar aici.</translation>
 <translation id="7347827960336370838">Numai un utilizator care știe expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, va trebui să <ph name="BEGIN_LINK" />ștergi datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administratorul sistemului a configurat Chromium să deschidă <ph name="ALTERNATIVE_BROWSER_NAME" /> pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -593,6 +592,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7376384068949534168">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Deschide Magazinul web Chrome</translation>
 <translation id="7384121030444253939">Extensia nu mai este acceptată. Chromium recomandă să o elimini.</translation>
+<translation id="7407655596887111931">Chromium este acum browserul tău prestabilit</translation>
 <translation id="7413153308467572558">Continuă de unde ai rămas: Chromium restabilește filele de fiecare dată când repornești. Pentru a dezactiva opțiunea, accesează</translation>
 <translation id="7427879960656355200">Importă parolele în Chromium</translation>
 <translation id="744815265653811511">1. Dă clic pe <ph name="BUTTON_LABEL" /> mai jos.

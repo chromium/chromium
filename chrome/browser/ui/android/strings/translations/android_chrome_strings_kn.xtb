@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">ನಿಮ್ಮ ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಉತ್ಪನ್ನಗಳನ್ನು Bookmarks ನಲ್ಲಿ ಆಯೋಜಿಸಿ</translation>
 <translation id="1455845192930279203">ನೀವು "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ಅನ್ನು <ph name="DOWNLOAD_DOMAIN" /> ನಿಂದ ಹೇಗಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="1460751212339734034">ಸಮಯ ಉಳಿಸಿ, ಕಡಿಮೆ ಟೈಪ್ ಮಾಡಿ</translation>
+<translation id="146522654774760805">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಆಟೋಫಿಲ್‌</translation>
 <translation id="1466383950273130737">Chrome ನ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</translation>
 <translation id="1477626028522505441">ಸರ್ವರ್ ಸಮಸ್ಯೆಗಳ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="147982357559798527">ಬದಲಿಸಲಾಗಿದೆ</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Google ಹುಡುಕಾಟಗಳಲ್ಲಿ ಸುತ್ತಮುತ್ತಲಿನ ಪಠ್ಯವನ್ನು ಸೇರಿಸಬೇಕೇ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಲಾದ ಮ್ಯೂಟ್ ಆಗಿರುವ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="2021896219286479412">ಫುಲ್ ಸ್ಕ್ರೀನ್ ಸೈಟ್ ನಿಯಂತ್ರಣಗಳು</translation>
+<translation id="2022953316617983419">QR ಕೋಡ್</translation>
 <translation id="2024195579772565064">ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2029669011553795746">ಸಲಹೆಗಳ ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="2038563949887743358">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ಮತ್ತು <ph name="TAB_COUNT" /> ಇತರ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="441100617989818073">ಬಳಸದ ಅಥವಾ ನಕಲಿ ಟ್ಯಾಬ್‌ &amp; ಗುಂಪು</translation>
 <translation id="4412123112245770507">ವಿಭಾಗವನ್ನು ಕುಗ್ಗಿಸಿ</translation>
+<translation id="4412698727486357573">ಸಹಾಯ ಕೇಂದ್ರ</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4415276339145661267">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4425140285732600465">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
@@ -1434,7 +1437,6 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> ಮೆನುವನ್ನು ಹೈಲೈಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="6983306615164277634">ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಲು ನೀವು ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿದಿಟ್ಟುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="6987047470128880212">ಈ ಸಾಧನದಲ್ಲಿ ಅಜ್ಞಾತ ಮೋಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="6989358895283601928">ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
 <translation id="6996145122199359148">ಈ ಪುಟವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7013762323294215682">ಈ ಪಾಸ್‌ಕೀ ಅನ್ನು ನಿಮ್ಮ Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ. ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುವ ಯಾರಿಗಾದರೂ ಈ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
 <translation id="7020741890149022655"><ph name="BEGIN_NEW" />ಹೊಸ<ph name="END_NEW" /> ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
@@ -2002,6 +2004,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="983192555821071799">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="984275831282074731">ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="984756705737569814">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="987264212798334818">ಸಾಮಾನ್ಯ</translation>
 <translation id="988091779042748639">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>

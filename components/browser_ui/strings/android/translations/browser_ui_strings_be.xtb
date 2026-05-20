@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Парады адносна Chrome</translation>
 <translation id="1242008676835033345">Убудавана на сайце <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Націсніце "Праграмы &gt; Стандартныя праграмы"</translation>
+<translation id="1264694639515903274">Цяпер вы можаце наладзіць галоўную старонку</translation>
 <translation id="1272079795634619415">Спыніць</translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1289742167380433257">Відарысы на гэтай старонцы былі аптымізаваны з дапамогай Google для эканоміі трафіка.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1919950603503897840">Выберыце кантакты</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Наладзіць галоўную старонку</translation>
 <translation id="1939059826036755332">Аўтаматычны запуск рэжыму "відарыс у відарысе"</translation>
 <translation id="1954597385941141174">Сайты могуць запытваць дазвол на падключэнне да прылад USB</translation>
 <translation id="1979673356880165407">Вы можаце зрабіць памер тэксту і відарысаў большым або меншым на ўсіх сайтах, якія наведваюцца</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Сёння Chrome зноў заблакіруе файлы cookie</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Перайсці ўперад</translation>
+<translation id="3870711497942672548">Наладзьце Chrome на свой густ, выбраўшы карыстальніцкія колеры і відарысы для галоўнай старонкі</translation>
 <translation id="389521680295183045">Сайты могуць запытваць звесткі пра тое, калі вы карыстаецеся прыладай</translation>
 <translation id="3895926599014793903">Прымусовае ўключэнне павелічэння</translation>
 <translation id="3903738175795615004">Каб выйсці з поўнаэкраннага рэжыму, правядзіце пальцам зверху ўніз ці націсніце клавішу Esc.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Разгарнуць</translation>
 <translation id="4310738531374808763">Наладзьце галоўную старонку</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння закончыцца праз # дзень}few{Тэрмін дзеяння закончыцца праз # дні}many{Тэрмін дзеяння закончыцца праз # дзён}other{Тэрмін дзеяння закончыцца праз # дня}}</translation>
+<translation id="4336371609622603229">Выберыце карыстальніцкую тэму, каб наладзіць Chrome на свой густ</translation>
 <translation id="4338831206024587507">Усе сайты дамена <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Не дазваляць сайтам адпраўляць апавяшчэнні</translation>
 <translation id="4341577178275615435">Каб уключыць або выключыць навігацыю клавішамі, выкарыстоўвайце клавішу F7.</translation>
@@ -750,7 +754,6 @@
 <translation id="8737426583868847403">Тут будуць з’яўляцца сайты, для якіх вы захавалі ўласны маштаб</translation>
 <translation id="8748714929822124637">Не дазваляць сайтам атрымліваць доступ да іншых прылад у лакальнай сетцы</translation>
 <translation id="8751914237388039244">Выберыце відарыс</translation>
-<translation id="8775741625735357092">Уключыць панэль закладак можна ў меню "Налады &gt; Выгляд"</translation>
 <translation id="8800034312320686233">Сайт не працуе?</translation>
 <translation id="8801436777607969138">Блакіраванне JavaScript для канкрэтнага сайта.</translation>
 <translation id="8801657293260363985">V8 – гэта рухавік JavaScript і WebAssembly у Chrome, які павышае эфектыўнасць сайтаў</translation>

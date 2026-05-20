@@ -583,7 +583,6 @@
 <translation id="7318036098707714271">您的偏好設定檔案已損毀或無效。
 
 Chromium 無法復原您的設定。</translation>
-<translation id="7339898014177206373">新視窗</translation>
 <translation id="734373864078049451">您瀏覽的網頁、書籤和其他 Chromium 內容都在這裡。</translation>
 <translation id="7347827960336370838">只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，你需要<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" /></translation>
 <translation id="7349591376906416160">系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
@@ -592,6 +591,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7376384068949534168">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="73786666777299047">開啟 Chrome 網上應用程式商店</translation>
 <translation id="7384121030444253939">此擴充程式不再受支援，Chromium 建議你將其移除。</translation>
+<translation id="7407655596887111931">Chromium 現在是你的預設瀏覽器</translation>
 <translation id="7413153308467572558">開啟上次瀏覽的內容：Chromium 會在每次重新啟動後還原分頁。如要關閉此功能，請前往</translation>
 <translation id="7427879960656355200">匯入密碼至 Chromium</translation>
 <translation id="744815265653811511">1. 點擊下方的 [<ph name="BUTTON_LABEL" />]

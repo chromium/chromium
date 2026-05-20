@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Упорядочивайте отслеживаемые товары в закладках</translation>
 <translation id="1455845192930279203">Все равно скачать файл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) на странице <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Экономьте время</translation>
+<translation id="146522654774760805">Пароли и автозаполнение</translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
 <translation id="147982357559798527">Изменено</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2004096469149679223">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
+<translation id="2022953316617983419">QR-код</translation>
 <translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2029669011553795746">Нижний экран с предложением включить уведомления открыт наполовину</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297">"<ph name="WEBSITE_TITLE" />" и другие вкладки (<ph name="TAB_COUNT" />).</translation>
 <translation id="441100617989818073">Неиспользуемые или одинаковые вкладки и группы</translation>
 <translation id="4412123112245770507">Свернуть раздел</translation>
+<translation id="4412698727486357573">Справочный центр</translation>
 <translation id="4414179633735763985">Удалены: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4425140285732600465">Вы отслеживаете цену на этот товар. Если на одном из сайтов она снизится, вы получите уведомление.</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165">Меню "<ph name="MENU_NAME" />" выделено.</translation>
 <translation id="6983306615164277634">Чтобы изменить расположение адресной строки, также можно нажать и удерживать ее.</translation>
 <translation id="6987047470128880212">Режим инкогнито недоступен на этом устройстве.</translation>
-<translation id="6989358895283601928">Сохранить и распечатать</translation>
 <translation id="6996145122199359148">Скачать эту страницу</translation>
 <translation id="7013762323294215682">Ключ доступа будет сохранен в Менеджере паролей. Им смогут пользоваться все, у кого есть доступ.</translation>
 <translation id="7020741890149022655">Добавить в список для чтения <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>
+<translation id="984275831282074731">Способы оплаты</translation>
 <translation id="984756705737569814">Не удалось проверить пароли в аккаунте Google</translation>
 <translation id="987264212798334818">Общие</translation>
 <translation id="988091779042748639">Чтобы удалить с устройства историю браузера в режиме инкогнито, закройте все вкладки инкогнито.</translation>

@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">İlk Taba keçin</translation>
 <translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> bölməsində brauzer tarixçəsini tapa bilərsiniz.</translation>
 <translation id="2511117522375201202">Təhlükəsizliyi riskə atan <ph name="NUMBER_OF_PASSWORDS" /> oğurlanmış parol var.</translation>
+<translation id="2512709994717613803">Səviyyə <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Tab qruplarını burada tapa bilərsiniz</translation>
 <translation id="251837347827266434">Çıxacaqsınız, tablar bağlanacaq, baxış datası silinəcək</translation>
 <translation id="2520787026086861736">Söndürmək üçün <ph name="BEGIN_LINK" />Avto-doldurma və Parollar<ph name="END_LINK" /> bölməsinə keçin</translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> ilə bitən kart nömrəsini avtomatik doldurun</translation>
 <translation id="3738428049780661523">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Fotolent</translation>
+<translation id="3743545564993953213">Bu sayt "Qısayollar" tətbiqini açmağa çalışır.</translation>
 <translation id="3746269120925354434">Məlumat Google Pulqabıda yadda saxlanıldı</translation>
 <translation id="3750225824417196283">Yeni Anonim tab səhifəsi</translation>
 <translation id="3751873026576444885">Google Linza ilə ekranda axtarış etməyi dayandırın</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Əlfəcin, tarixçə, parol və sair artıq Google Hesabınıza sinxronizasiya olunmayacaq</translation>
 <translation id="484280513275854557">Çıxış edildi; baxış datası silindi</translation>
 <translation id="484462545196658690">Avtomatik</translation>
+<translation id="4846662396507502151">Yeni alətlər paneli ilə daha sürətli axtarın</translation>
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="4854068532375923088">"Gemini"-ın kameranızdan istifadə etməsinə icazə verin</translation>
 <translation id="4860895144060829044">Zəng</translation>
@@ -1427,6 +1430,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5988097621740394599">Tablarda qiymət endirimləri göstərilsin.</translation>
 <translation id="5988851877894965432">Chrome'da keçidləri açın</translation>
 <translation id="599343768974649785">Aydın mətn</translation>
+<translation id="6004988584831654445">Hər şey hazırdır! Yeni tapşırıqlar gəldikdə bildiriş alın.</translation>
 <translation id="6006672969046233841">Yeni Tab</translation>
 <translation id="6011308810877101166">Axtarış təkliflərini təkmilləşdirin</translation>
 <translation id="6012140227487808125">Şifrələnir...</translation>
@@ -1658,6 +1662,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6685259053455152195">Ayarları tez dəyişmək və ünvan panelindəki funksiyalardan istifadə etmək üçün qısayollar.</translation>
 <translation id="6689342293888598653">Ağ fon rəngi</translation>
 <translation id="6689685206615181381">Yalnız Anonim rejim əlçatandır</translation>
+<translation id="6705491067826837934">Nizamlayıcılarınız, ehtiyacınız olan yerdə</translation>
 <translation id="6708501134077648845">Parol seçimləri</translation>
 <translation id="6709964700841491574">Kilidləmə rejimi</translation>
 <translation id="6710079714193676716">Təşkilatınız tərəfindən idarə olunur. Bəzi funksiyalar əlçatan olmaya bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6903282483217634857">Sağa Daşıyın</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6906448540340261898">Google Hesabında hər zaman parollardan istifadə edə biləcəyinizdən əmin olun</translation>
+<translation id="6906978870282539723">Tab və tapşırıqlarla bağlı yardım əldə edin</translation>
 <translation id="6908734251759299256">Brauzeri güncəlləyin</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Yalnız bu cihazda.</translation>
 <translation id="6914583639806229067">Kopyalanmış Şəkli Axtarın</translation>
@@ -2078,6 +2084,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8182037667962849780">{count,plural, =1{{website_1} üçün}=2{{website_1}, {website_2} üçün}=3{{website_1}, {website_2} və digər 1 veb-sayt üçün}other{{website_1}, {website_2} və digər {more_count} veb-sayt üçün}}</translation>
 <translation id="8184895727539791845">Gemini-ın kameranızdan istifadə etməsinə icazə vermək üçün iOS ayarlarında Kameranı yandırın</translation>
 <translation id="8185076488803799132">İmport edin</translation>
+<translation id="8187200657863701733">Cari Chrome səviyyəsi</translation>
 <translation id="8189615296021678665">Növbəti dəfə daxil olanda bu parola asanlıqla daxil olmaq üçün "Yadda saxlayın" seçiminə toxunun.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parol əlavə edin</translation>
@@ -2121,6 +2128,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8325455175867928593">"Maraqlarınıza əsasən rəylər" seçimini gizlədin</translation>
 <translation id="833647236762414178">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parol və giriş açarları yaradın, yadda saxlayın və idarə edin. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Növbəti səviyyəyə keçmək üçün daha 1 tapşırığı tamamlayın}other{Növbəti səviyyəyə keçmək üçün daha {count} tapşırığı tamamlayın}}</translation>
 <translation id="8348530355586151720">Üç nöqtə menyusuna toxunun</translation>
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
 <translation id="8361189290032177785">{count,plural, =1{İmport edilmiş {count} əlfəcin}other{İmport edilmiş {count} əlfəcin}}</translation>

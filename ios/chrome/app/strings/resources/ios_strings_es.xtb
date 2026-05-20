@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Ir a la primera pestaña</translation>
 <translation id="2499505845365628575">Puedes consultar todo tu historial de navegación desde el <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas vulneradas que podrían poner en riesgo tu seguridad.</translation>
+<translation id="2512709994717613803">Nivel <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Aquí verás tus grupos de pestañas</translation>
 <translation id="251837347827266434">Tu sesión y tus pestañas se cerrarán y se eliminarán los datos de navegación</translation>
 <translation id="2520787026086861736">Para desactivar esta función, ve a <ph name="BEGIN_LINK" />Autocompletar y contraseñas<ph name="END_LINK" /></translation>
@@ -1090,6 +1091,7 @@
 <translation id="4840495572919996524">Tus marcadores, el historial, las contraseñas y otros datos dejarán de sincronizarse con tu cuenta de Google.</translation>
 <translation id="484280513275854557">Se ha cerrado tu sesión y se han eliminado los datos de navegación</translation>
 <translation id="484462545196658690">Automático</translation>
+<translation id="4846662396507502151">Navega más rápido con la nueva barra de herramientas</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854068532375923088">Permitir que Gemini use tu cámara</translation>
 <translation id="4860895144060829044">Llamar</translation>
@@ -1428,6 +1430,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5988097621740394599">Consulta las bajadas de precio en tus pestañas.</translation>
 <translation id="5988851877894965432">Abrir URLs en Chrome</translation>
 <translation id="599343768974649785">Texto explícito</translation>
+<translation id="6004988584831654445">¡Todo listo! Recibe notificaciones cuando haya nuevas tareas.</translation>
 <translation id="6006672969046233841">Nueva pestaña</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6012140227487808125">Cifrando...</translation>
@@ -1659,6 +1662,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6685259053455152195">Accesos directos para modificar rápidamente la configuración y usar funciones de la barra de direcciones.</translation>
 <translation id="6689342293888598653">Color de fondo blanco</translation>
 <translation id="6689685206615181381">Solo está disponible el modo Incógnito</translation>
+<translation id="6705491067826837934">Tus controles, justo donde los necesitas</translation>
 <translation id="6708501134077648845">Opciones de contraseñas</translation>
 <translation id="6709964700841491574">Modo Bloqueo de seguridad</translation>
 <translation id="6710079714193676716">Gestionado por tu organización. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1719,6 +1723,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6903282483217634857">Mover hacia la derecha</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de que siempre puedas usar las contraseñas en tu cuenta de Google</translation>
+<translation id="6906978870282539723">Obtén ayuda con tus pestañas y tareas</translation>
 <translation id="6908734251759299256">Actualiza tu navegador</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Solo en este dispositivo.</translation>
 <translation id="6914583639806229067">Buscar la imagen que has copiado</translation>
@@ -1814,6 +1819,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Añade una capa adicional de protección frente a las amenazas online.</translation>
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
+<translation id="7312823817809783355">Tus tareas</translation>
 <translation id="7313347584264171202">Aquí verás tus pestañas de incógnito</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opción de Autocompletar disponible encima del teclado.}other{{count} opciones de Autocompletar disponibles encima del teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1821,6 +1827,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7345061034321640811">Importación no permitida</translation>
 <translation id="7347998088283246662">Importa tus contraseñas, historial, marcadores y más</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
+<translation id="7357999308187750900">Ver todo</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para personalizar tu experiencia.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
@@ -2079,6 +2086,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
 <translation id="8184895727539791845">Para permitir que Gemini use tu cámara, actívala en los ajustes de iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
+<translation id="8187200657863701733">Nivel actual de Chrome</translation>
 <translation id="8189615296021678665">Toca Guardar para acceder fácilmente a esta contraseña la próxima vez que inicies sesión.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Añadir contraseña</translation>
@@ -2122,6 +2130,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8325455175867928593">Ocultar Reseñas según tus intereses</translation>
 <translation id="833647236762414178">Crea, guarda y gestiona tus contraseñas y llaves de acceso para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Completa 1 tarea más para subir de nivel}other{Completa {count} tareas más para subir de nivel}}</translation>
 <translation id="8348530355586151720">Toca el menú de tres puntos</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} marcador importado}other{{count} marcadores importados}}</translation>

@@ -254,6 +254,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1380591466760231819">Plegat en forma de carta</translation>
 <translation id="138218114945450791">Blau clar</translation>
 <translation id="1382194467192730611">Dispositiu USB permès per l'administrador</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1384725838384960382">Full d'autenticació de credencials de pagament segur</translation>
 <translation id="1386623374109090026">Anotacions</translation>
 <translation id="138810468159004008">Permet mentre es visita el lloc web</translation>
@@ -1820,6 +1821,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="380865868633614173">S'està desant la informació de la targeta</translation>
 <translation id="3810770279996899697">El gestor de contrasenyes necessita accés al clauer de macOS</translation>
 <translation id="3810973564298564668">Gestiona</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Aquesta és una actualització crítica que millora el rendiment de les aplicacions d'Android a ChromeOS.</translation>
 <translation id="3814865536373139791">Simplifica la manera com la teva organització gestiona les polítiques</translation>
 <translation id="3815434930383843058">8 x 12 polzades</translation>
@@ -2397,6 +2399,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4736934858538408121">Targeta virtual</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4738601419177586157">Suggeriment de cerca de <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, pestanya seleccionada, <ph name="INDEX" /> de: <ph name="TOTAL" />, utilitza la fletxa esquerra o dreta per canviar entre pestanyes</translation>
 <translation id="4742407542027196863">Gestiona les contrasenyes…</translation>
 <translation id="474270528725216349">D'almenys 1 lloc web en dispositius sincronitzats</translation>
 <translation id="4743275772928623722">El sistema s'ha actualitzat, però alguns dels fitxers i de les aplicacions no s'han pogut recuperar. Les aplicacions es tornaran a baixar automàticament.</translation>
@@ -2464,6 +2467,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4832961164064927107">Barbacoa i cuina a la brasa</translation>
 <translation id="4835568975547260025">Chrome compartirà les pestanyes obertes rellevants de manera predeterminada per ajudar-te a obtenir respostes més personalitzades a les teves preguntes.</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
+<translation id="4842365697443353018">Esborra el formulari a fi d'utilitzar l'opció per pagar més tard</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4844937814014739139">Desplaçar-se i fer zoom a les pestanyes compartides</translation>
 <translation id="484671803914931257">Obtén un descompte a <ph name="MERCHANT_NAME" /> i més</translation>

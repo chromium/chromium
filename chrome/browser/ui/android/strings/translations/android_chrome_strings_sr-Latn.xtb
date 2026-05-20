@@ -118,6 +118,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
 <translation id="1455845192930279203">Ipak želite da preuzmete fajl <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) sa domena <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Uštedite vreme, kucajte manje</translation>
+<translation id="146522654774760805">Lozinke i automatsko popunjavanje</translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
 <translation id="147982357559798527">Promenjeno</translation>
@@ -227,6 +228,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="200114059308480249">Želite da uvrstite okolni tekst u Google pretrage?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, zakačena kartica bez arhiviranja sa isključenim zvukom</translation>
 <translation id="2021896219286479412">Kontrole sajta na celom ekranu</translation>
+<translation id="2022953316617983419">QR kôd</translation>
 <translation id="2024195579772565064">Izbrišite pretraživač</translation>
 <translation id="2029669011553795746">Opcija za omogućavanje obaveštenja o savetima je otvorena do polovine ekrana</translation>
 <translation id="2038563949887743358">Uključi zahtevanje verzije sajta za računare</translation>
@@ -789,6 +791,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> i još kartica (<ph name="TAB_COUNT" />)</translation>
 <translation id="441100617989818073">Nekorišćene/duple kartice i grupe</translation>
 <translation id="4412123112245770507">Skupi odeljak</translation>
+<translation id="4412698727486357573">Centar za pomoć</translation>
 <translation id="4414179633735763985">Izbrisano: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Upravljajte Google nalogom</translation>
 <translation id="4425140285732600465">Cena se prati. Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu.</translation>
@@ -1435,7 +1438,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6980258170429555165">Meni <ph name="MENU_NAME" /> je istaknut.</translation>
 <translation id="6983306615164277634">Možete i da dodirnete i zadržite traku za adresu da biste promenili poziciju.</translation>
 <translation id="6987047470128880212">Režim bez arhiviranja nije dostupan na ovom uređaju.</translation>
-<translation id="6989358895283601928">Sačuvaj i odštampaj</translation>
 <translation id="6996145122199359148">Preuzmi ovu stranicu</translation>
 <translation id="7013762323294215682">Ovaj pristupni ključ će se sačuvati u menadžeru lozinki. Svako ko ima pristup njemu moći će da koristi ovaj pristupni ključ.</translation>
 <translation id="7020741890149022655">Dodaj na listu za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="970715775301869095">Još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Oflajn</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>
+<translation id="984275831282074731">Načini plaćanja</translation>
 <translation id="984756705737569814">Provera lozinki na Google nalogu nije uspela</translation>
 <translation id="987264212798334818">Opšte</translation>
 <translation id="988091779042748639">Da biste izbrisali istoriju pregledanja bez arhiviranja sa uređaja, zatvorite sve kartice bez arhiviranja.</translation>

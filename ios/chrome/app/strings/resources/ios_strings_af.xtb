@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Gaan na eerste oortjie</translation>
 <translation id="2499505845365628575">Jy kan al jou blaaigeskiedenis vanaf die <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> vind.</translation>
 <translation id="2511117522375201202">Jy het <ph name="NUMBER_OF_PASSWORDS" /> gekompromitteerde wagwoorde wat jou sekuriteit in gevaar kan stel.</translation>
+<translation id="2512709994717613803">Vlak <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Jy sal jou oortjiegroepe hier kry</translation>
 <translation id="251837347827266434">Jy sal afgemeld word, oortjies sal toegemaak word, blaaierdata sal uitgevee word</translation>
 <translation id="2520787026086861736">Gaan na <ph name="BEGIN_LINK" />Outovul en wagwoorde<ph name="END_LINK" /> om dit af te skakel</translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Vul die kaartnommer wat op <ph name="LAST_DIGITS" /> eindig outomaties in</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> geskep</translation>
 <translation id="3742498336182910186">Kamerarol</translation>
+<translation id="3743545564993953213">Hierdie werf probeer om die “Kortpaaie”-app oop te maak.</translation>
 <translation id="3746269120925354434">Inligting is in Google Wallet gestoor</translation>
 <translation id="3750225824417196283">Nuwe Incognito-oortjiebladsy</translation>
 <translation id="3751873026576444885">Hou op om jou skerm met Google Lens te soek</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Jou boekmerke, geskiedenis, wagwoorde en meer sal nie meer met jou Google-rekening gesinkroniseer word nie.</translation>
 <translation id="484280513275854557">Jy is uitgeteken; blaaierdata is uitgevee</translation>
 <translation id="484462545196658690">Outo</translation>
+<translation id="4846662396507502151">Blaai vinniger met die nuwe nutsbalk</translation>
 <translation id="4850886885716139402">Bekyk</translation>
 <translation id="4854068532375923088">Laat “Gemini” toe om jou kamera te gebruik</translation>
 <translation id="4860895144060829044">Bel</translation>
@@ -1427,6 +1430,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5988097621740394599">Sien prysdalings in jou oortjies.</translation>
 <translation id="5988851877894965432">Maak URL'e oop in Chrome</translation>
 <translation id="599343768974649785">Eksplisiete teks</translation>
+<translation id="6004988584831654445">Jy is gereed! Word in kennis gestel wanneer jy nuwe take kry.</translation>
 <translation id="6006672969046233841">Nuwe oortjie</translation>
 <translation id="6011308810877101166">Verbeter soekvoorstelle</translation>
 <translation id="6012140227487808125">Enkripteer tans …</translation>
@@ -1658,6 +1662,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6685259053455152195">Kortpaaie om instellings vinnig te wysig en kenmerke van die adresbalk af te gebruik.</translation>
 <translation id="6689342293888598653">Wit agtergrondkleur</translation>
 <translation id="6689685206615181381">Slegs Incognito-modus is beskikbaar</translation>
+<translation id="6705491067826837934">Jou kontroles, waar jy dit nodig het</translation>
 <translation id="6708501134077648845">Wagwoordopsies</translation>
 <translation id="6709964700841491574">Vassluit-modus</translation>
 <translation id="6710079714193676716">Bestuur deur jou organisasie. Sommige kenmerke kan dalk onbeskikbaar wees. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6903282483217634857">Beweeg regs</translation>
 <translation id="6903907808598579934">Skakel sinkronisering aan</translation>
 <translation id="6906448540340261898">Maak seker dat jy altyd die wagwoorde in jou Google-rekening kan gebruik</translation>
+<translation id="6906978870282539723">Kry hulp met jou oortjies en take</translation>
 <translation id="6908734251759299256">Dateer jou blaaier op</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Net op hierdie toestel.</translation>
 <translation id="6914583639806229067">Soek vir prent wat jy gekopieer het</translation>
@@ -2078,6 +2084,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8182037667962849780">{count,plural, =1{Vir {website_1}}=2{Vir {website_1}, {website_2}}=3{Vir {website_1}, {website_2} en nog 1}other{Vir {website_1}, {website_2} en nog {more_count}}}</translation>
 <translation id="8184895727539791845">Skakel Kamera in iOS-instellings aan om Gemini toe te laat om jou kamera te gebruik</translation>
 <translation id="8185076488803799132">Voer in</translation>
+<translation id="8187200657863701733">Huidige Chrome-vlak</translation>
 <translation id="8189615296021678665">Tik op “Stoor” om hierdie wagwoord maklik te kry wanneer jy die volgende keer aanmeld.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Voeg wagwoord by</translation>
@@ -2121,6 +2128,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8325455175867928593">Versteek “Resensies gegrond op jou belangstellings”</translation>
 <translation id="833647236762414178">Skep, stoor en bestuur jou wagwoorde en toegangsleutels om maklik by werwe en apps aan te meld. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rugsteun jou goed en gebruik dit op enige toestel.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Voltooi nog 1 taak om na die volgende vlak te vorder}other{Voltooi nog {count} take om na die volgende vlak te vorder}}</translation>
 <translation id="8348530355586151720">Tik op die driekol-kieslys</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8361189290032177785">{count,plural, =1{Het {count} boekmerk ingevoer}other{Het {count} boekmerke ingevoer}}</translation>

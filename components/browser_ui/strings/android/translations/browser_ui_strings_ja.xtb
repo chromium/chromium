@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome を使いこなすヒント</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> に埋め込まれたページ</translation>
 <translation id="1263609676484797429">[アプリ] &gt; [デフォルトのアプリ] をタップします</translation>
+<translation id="1264694639515903274">ホームページをカスタマイズできるようになりました</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1289742167380433257">データを節約するため、このページの画像は Google によって最適化されています。</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">ホームページをカスタマイズ</translation>
 <translation id="1939059826036755332">ピクチャー イン ピクチャーの自動開始</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
 <translation id="1979673356880165407">アクセスしたすべてのサイトでテキストと画像を拡大または縮小して表示します</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">展開</translation>
 <translation id="4310738531374808763">ホームページをカスタマイズ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
+<translation id="4336371609622603229">カスタムのテーマを選択して Chrome を自分仕様にすることができます</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4340799661701629185">サイトに通知の送信を許可しない</translation>
 <translation id="4341577178275615435">カーソル ブラウジングをオンまたはオフにするには、F7 ショートカット キーを使用します</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">カスタムのズームレベルを保存したサイトがここに表示されます</translation>
 <translation id="8748714929822124637">サイトにローカル ネットワーク上の他のデバイスへのアクセスを許可しない</translation>
 <translation id="8751914237388039244">画像を選択</translation>
-<translation id="8775741625735357092">[設定] &gt; [デザイン] でブックマーク バーをオンにできます</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>
 <translation id="8801657293260363985">V8 は、サイトのパフォーマンスを向上させるために使用される Chrome の JavaScript エンジンおよび WebAssembly エンジンです</translation>

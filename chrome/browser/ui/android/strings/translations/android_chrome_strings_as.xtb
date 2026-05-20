@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহ বুকমাৰ্কত শৃংখলাবদ্ধ কৰক</translation>
 <translation id="1455845192930279203">আপুনি যিহ’লেও <ph name="DOWNLOAD_DOMAIN" />ৰ পৰা "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনল’ড কৰিব বিচাৰে নেকি?</translation>
 <translation id="1460751212339734034">সময় ৰাহি কৰক, কমকৈ টাইপ কৰক</translation>
+<translation id="146522654774760805">পাছৱৰ্ড আৰু স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধা</translation>
 <translation id="1466383950273130737">Chromeৰ ভাষা বাছনি কৰক</translation>
 <translation id="1477626028522505441">ছার্ভাৰৰ সমস্যাৰ বাবে <ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল।</translation>
 <translation id="147982357559798527">সলনি কৰা হৈছে</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Googleত কৰা সন্ধানত আশে-পাশে থকা পাঠ ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, পিন কৰি থোৱা মিউট কৰা ইনক’গ্নিট’ টেব</translation>
 <translation id="2021896219286479412">সম্পূর্ণ স্ক্ৰীন ছাইটৰ নিয়ন্ত্ৰণ</translation>
+<translation id="2022953316617983419">কিউআৰ ক’ড</translation>
 <translation id="2024195579772565064">সন্ধানৰ ইঞ্জিন মচক</translation>
 <translation id="2029669011553795746">পৰামৰ্শৰ জাননীৰ অপ্ট ইন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="2038563949887743358">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটো অন কৰক</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> আৰু অন্য <ph name="TAB_COUNT" /> টা টেব</translation>
 <translation id="441100617989818073">ব্যৱহাৰ নকৰা বা ডুপ্লিকেট টেব আৰু গোট</translation>
 <translation id="4412123112245770507">শাখা সংকোচন কৰক</translation>
+<translation id="4412698727486357573">সহায় কেন্দ্ৰ</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> মচা হ’ল</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4425140285732600465">মূল্য ট্ৰেক কৰাটো সক্ষম কৰা হ’ল। কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক।</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> মেনুখন হাইলাইট কৰা হৈছে।</translation>
 <translation id="6983306615164277634">আপুনি অৱস্থান সলনি কৰিবলৈ ঠিকনা বাৰ স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে।</translation>
 <translation id="6987047470128880212">এই ডিভাইচটোত ইনক’গনিট’ উপলব্ধ নহয়</translation>
-<translation id="6989358895283601928">ছেভ কৰি প্ৰিণ্ট কৰক</translation>
 <translation id="6996145122199359148">এই পৃষ্ঠাখন ডাউনল’ড কৰক</translation>
 <translation id="7013762323294215682">এই পাছকীটো আপোনাৰ Password Managerত ছেভ কৰা হ’ব। সেইটো এক্সেছ কৰিব পৰা যিকোনো ব্যক্তিয়ে এই পাছকীটো ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="7020741890149022655">পঢ়াৰ সূচীত <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> যোগ দিয়ক</translation>
@@ -2003,6 +2005,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকী আছে</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সকলো টেব বন্ধ কৰক</translation>
+<translation id="984275831282074731">পৰিশোধ পদ্ধতি</translation>
 <translation id="984756705737569814">আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিব নোৱাৰি</translation>
 <translation id="987264212798334818">সাধাৰণ</translation>
 <translation id="988091779042748639">আপোনাৰ ডিভাইচৰ পৰা ইনক’গনিট’ত কৰা ব্ৰাউজিঙৰ ইতিহাস মচিবলৈ, আটাইবোৰ ইনক’গ্নিট’ টেব বন্ধ কৰক।</translation>

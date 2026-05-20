@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Ugrás az első lapra</translation>
 <translation id="2499505845365628575">Összes böngészési előzményéhez hozzáférhet az <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> alatt.</translation>
 <translation id="2511117522375201202"><ph name="NUMBER_OF_PASSWORDS" /> jelszavához illetéktelenül hozzáfértek, ez pedig veszélyeztetheti az Ön biztonságát.</translation>
+<translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. szint</translation>
 <translation id="2513103768503127042">Itt láthatja majd a lapcsoportjait</translation>
 <translation id="251837347827266434">A rendszer kijelentkezteti Önt, a lapokat bezárja, a böngészési adatokat pedig törli</translation>
 <translation id="2520787026086861736">A funkció kikapcsolásához lépjen az <ph name="BEGIN_LINK" />Automatikus kitöltés és jelszavak<ph name="END_LINK" /> ponthoz</translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">A következő számsorral végződő kártyaszám automatikus kitöltése: <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Létrehozva: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Galéria</translation>
+<translation id="3743545564993953213">Ez a webhely a „Gyorsparancsok” alkalmazást próbálja megnyitni.</translation>
 <translation id="3746269120925354434">Információk mentve a Google Walletbe</translation>
 <translation id="3750225824417196283">Új inkognitó lap oldal</translation>
 <translation id="3751873026576444885">A képernyőn való Google Lens-keresés leállítása</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Könyvjelzői, előzményei, jelszavai és más beállításai többé nem lesznek szinkronizálva a Google-fiókjával.</translation>
 <translation id="484280513275854557">A rendszer kijelentkeztette Önt, a böngészési adatok pedig törlődtek</translation>
 <translation id="484462545196658690">Automatikus</translation>
+<translation id="4846662396507502151">Gyorsabban böngészhet az új eszköztárral</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="4854068532375923088">A kamera használatának engedélyezése a „Gemini” számára</translation>
 <translation id="4860895144060829044">Hívás</translation>
@@ -1427,6 +1430,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5988097621740394599">Láthatja az árcsökkenéseket a megnyitott lapokon.</translation>
 <translation id="5988851877894965432">URL-ek megnyitása a Chrome-ban</translation>
 <translation id="599343768974649785">Részletes szöveg</translation>
+<translation id="6004988584831654445">Készen is van! Értesítést kaphat az új feladatok érkezéséről.</translation>
 <translation id="6006672969046233841">Új lap</translation>
 <translation id="6011308810877101166">Keresési javaslatok javítása</translation>
 <translation id="6012140227487808125">Titkosítás...</translation>
@@ -1658,6 +1662,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6685259053455152195">Gyorsparancsok, amelyek segítségével a címsáv használatával módosíthat gyorsan beállításokat, illetve használhat funkciókat.</translation>
 <translation id="6689342293888598653">Fehér háttérszín</translation>
 <translation id="6689685206615181381">Csak az inkognitó mód áll rendelkezésre</translation>
+<translation id="6705491067826837934">A vezérlők ott vannak, ahol szüksége van rájuk</translation>
 <translation id="6708501134077648845">Jelszóbeállítások</translation>
 <translation id="6709964700841491574">Zárt mód</translation>
 <translation id="6710079714193676716">Az Ön szervezete kezeli. Előfordulhat, hogy egyes funkciók nem állnak rendelkezésre. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -1718,6 +1723,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6903282483217634857">Jobbra</translation>
 <translation id="6903907808598579934">Szinkronizálás bekapcsolása</translation>
 <translation id="6906448540340261898">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő jelszavakat</translation>
+<translation id="6906978870282539723">Segítséget kaphat a lapokhoz és a feladatokhoz</translation>
 <translation id="6908734251759299256">A böngésző frissítése</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Csak erre az eszközre.</translation>
 <translation id="6914583639806229067">Vágólapra másolt kép keresése</translation>
@@ -2078,6 +2084,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8182037667962849780">{count,plural, =1{A következőhöz: {website_1}}=2{A következőkhöz: {website_1}, {website_2}}=3{A következőkhöz: {website_1}, {website_2} és további 1}other{A következőkhöz: {website_1}, {website_2} és további {more_count}}}</translation>
 <translation id="8184895727539791845">Ha engedélyezni szeretné a Gemini számára a kamera használatát, kapcsolja be a Kamerát az iOS beállításai között.</translation>
 <translation id="8185076488803799132">Importálás</translation>
+<translation id="8187200657863701733">Jelenlegi Chrome-szint</translation>
 <translation id="8189615296021678665">Koppintson a „Mentés” gombra, hogy legközelebb bejelentkezéskor könnyen hozzáférhessen ehhez a jelszóhoz</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Saját eszközök<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Jelszó hozzáadása</translation>
@@ -2121,6 +2128,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8325455175867928593">„Az érdeklődési körei alapján megjelenő értékelések” elrejtése</translation>
 <translation id="833647236762414178">Létrehozhatja, mentheti és kezelheti jelszavait és azonosítókulcsait, hogy egyszerűen bejelentkezhessen a webhelyekre és az alkalmazásokba. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Biztonsági másolatot készíthet adatairól, és bármely eszközön használatja őket.</translation>
+<translation id="8345328955902001853">{count,plural, =1{A szintlépéshez még 1 feladatot kell elvégeznie}other{A szintlépéshez még {count} feladatot kell elvégeznie}}</translation>
 <translation id="8348530355586151720">Koppintson a hárompontos menüre.</translation>
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} könyvjelző lett importálva}other{{count} könyvjelző lett importálva}}</translation>

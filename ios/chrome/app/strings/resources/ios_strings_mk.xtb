@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Одете на првата картичка</translation>
 <translation id="2499505845365628575">Сета ваша историја на прелистувањето може да ја најдете од <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компромитирани лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
+<translation id="2512709994717613803">Ниво <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Вашите групи картички ќе ги најдете овде</translation>
 <translation id="251837347827266434">Ќе се одјавите, картичките ќе се затворат, а податоците од прелистување ќе се избришат</translation>
 <translation id="2520787026086861736">За да исклучите, одете во <ph name="BEGIN_LINK" />AutoFill и лозинки<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Пополни го автоматски бројот на картичката што завршува со <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Создадено: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Фотографии од камерата</translation>
+<translation id="3743545564993953213">Сајтов се обидува да ја отвори апликацијата Shortcuts.</translation>
 <translation id="3746269120925354434">Податоците се зачувани во Google Wallet</translation>
 <translation id="3750225824417196283">Нова страница во картичка „Инкогнито“</translation>
 <translation id="3751873026576444885">Сопри го пребарувањето на екранот со Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Обележувачите, историјата, лозинките и другo веќе нема да се синхронизираат со сметката на Google.</translation>
 <translation id="484280513275854557">Се одјавивте; податоците од прелистување се избришаа</translation>
 <translation id="484462545196658690">Автоматски</translation>
+<translation id="4846662396507502151">Прелистувајте побрзо со новиот алатник</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854068532375923088">Дозволете му на Gemini да ја користи вашата камера</translation>
 <translation id="4860895144060829044">Повикајте</translation>
@@ -1427,6 +1430,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5988097621740394599">Гледајте ги попустите на картичките.</translation>
 <translation id="5988851877894965432">Отвори ги URL-адресите во Chrome</translation>
 <translation id="599343768974649785">Јасен текст</translation>
+<translation id="6004988584831654445">Подготвени сте! Добивајте известувања кога ќе пристигнат нови задачи.</translation>
 <translation id="6006672969046233841">Нова картичка</translation>
 <translation id="6011308810877101166">Подобрување на предлозите за пребарување</translation>
 <translation id="6012140227487808125">Се шифрира...</translation>
@@ -1658,6 +1662,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6685259053455152195">Кратенки за брзо менување поставки и користење функции од лентата за адреси.</translation>
 <translation id="6689342293888598653">Боја на заднината – бела</translation>
 <translation id="6689685206615181381">Достапен е само режимот „Инкогнито“</translation>
+<translation id="6705491067826837934">Вашите контроли, каде што ви се потребни</translation>
 <translation id="6708501134077648845">Опции за лозинки</translation>
 <translation id="6709964700841491574">Режим на заклучување</translation>
 <translation id="6710079714193676716">Управувано од вашата организација. Некои функции можеби се недостапни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6903282483217634857">Движи се надесно</translation>
 <translation id="6903907808598579934">Вклучи синхронизирање</translation>
 <translation id="6906448540340261898">Уверете се дека секогаш ќе може да ги користите лозинките во вашата сметка на Google</translation>
+<translation id="6906978870282539723">Добивајте помош со вашите картички и задачи</translation>
 <translation id="6908734251759299256">Ажурирајте го вашиот прелистувач</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Само на уредов.</translation>
 <translation id="6914583639806229067">Пребарувајте ја сликата што ја копиравте</translation>
@@ -2078,6 +2084,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1}, {website_2}}=3{За {website_1}, {website_2} и уште 1}one{За {website_1}, {website_2} и уште {more_count}}other{За {website_1}, {website_2} и уште {more_count}}}</translation>
 <translation id="8184895727539791845">За да му дозволите на Gemini да ја користи вашата камера, вклучете ја камерата во поставките за iOS</translation>
 <translation id="8185076488803799132">Import</translation>
+<translation id="8187200657863701733">Тековно ниво на Chrome</translation>
 <translation id="8189615296021678665">Допрете „Зачувај“ за да пристапите до лозинкава лесно следниот пат кога ќе се најавите.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинка</translation>
@@ -2121,6 +2128,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8325455175867928593">Скриј „Рецензии според вашите интереси“</translation>
 <translation id="833647236762414178">Создавајте и зачувувајте лозинки и криптографски клучеви и управувајте со нив за да може лесно да се најавувате на сајтовите и апликациите. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Направете бекап од вашите работи и користете ги на сите уреди.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Завршете уште 1 задача за да преминете на следното ниво}one{Завршете уште {count} задача за да преминете на следното ниво}other{Завршете уште {count} задачи за да преминете на следното ниво}}</translation>
 <translation id="8348530355586151720">Допрете го менито со три точки</translation>
 <translation id="8349305172487531364">Лента со обележувачи</translation>
 <translation id="8361189290032177785">{count,plural, =1{Увезен е {count} обележувач}one{Увезени се {count} обележувач}other{Увезени се {count} обележувачи}}</translation>

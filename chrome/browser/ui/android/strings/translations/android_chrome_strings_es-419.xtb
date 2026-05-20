@@ -118,6 +118,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1448440926884431741">Organizar tus productos con seguimiento en Favoritos</translation>
 <translation id="1455845192930279203">¿Quieres descargar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de <ph name="DOWNLOAD_DOMAIN" /> de todos modos?</translation>
 <translation id="1460751212339734034">Ahorra tiempo y escribe menos</translation>
+<translation id="146522654774760805">Contraseñas y autocompletar</translation>
 <translation id="1466383950273130737">Elegir el idioma de Chrome</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> no se pudo descargar debido a problemas del servidor.</translation>
 <translation id="147982357559798527">Se cambió</translation>
@@ -227,6 +228,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="200114059308480249">¿Quieres incluir el texto adyacente en las búsquedas de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestaña de incógnito fijada y silenciada</translation>
 <translation id="2021896219286479412">Controles en pantalla completa</translation>
+<translation id="2022953316617983419">Código QR</translation>
 <translation id="2024195579772565064">Borrar el motor de búsqueda</translation>
 <translation id="2029669011553795746">Se abrió la opción de habilitar las notificaciones de sugerencias a media altura</translation>
 <translation id="2038563949887743358">Activar la opción para solicitar versión de escritorio</translation>
@@ -789,6 +791,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
 <translation id="441100617989818073">Pestañas y grupos sin usar o duplicados</translation>
 <translation id="4412123112245770507">Contraer sección</translation>
+<translation id="4412698727486357573">Centro de ayuda</translation>
 <translation id="4414179633735763985">Se borró <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Administrar tu Cuenta de Google</translation>
 <translation id="4425140285732600465">Sigues el precio. Recibe alertas si baja el precio en algún sitio.</translation>
@@ -1435,7 +1438,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6980258170429555165">Se destaca el menú <ph name="MENU_NAME" />.</translation>
 <translation id="6983306615164277634">También puedes mantener presionada la barra de direcciones para cambiar la posición.</translation>
 <translation id="6987047470128880212">El modo Incógnito no está disponible en este dispositivo.</translation>
-<translation id="6989358895283601928">Guardar e imprimir</translation>
 <translation id="6996145122199359148">Descargar esta página</translation>
 <translation id="7013762323294215682">Esta llave de acceso se guardará en el administrador de contraseñas. Cualquier persona que tenga acceso podrá usar esta llave de acceso.</translation>
 <translation id="7020741890149022655">Agregar a lista de lect. <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, pestaña silenciada, fijada y seleccionada</translation>
 <translation id="7084115944294706056">Elige la posición de la barra</translation>
 <translation id="7085332316435785646">Elige si quieres incluir el historial de Chrome para tener experiencias más personalizadas en los servicios de Google</translation>
+<translation id="7087066066828635014">Se activaron las notificaciones de sugerencias</translation>
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, pestaña de incógnito silenciada con selección múltiple</translation>
 <translation id="7106762743910369165">Tu organización administra el navegador.</translation>
@@ -2002,6 +2005,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
+<translation id="984275831282074731">Formas de pago</translation>
 <translation id="984756705737569814">No se pueden revisar las contraseñas en tu Cuenta de Google</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988091779042748639">Para borrar del dispositivo el historial de navegación en modo Incógnito, cierra todas las pestañas de incógnito.</translation>

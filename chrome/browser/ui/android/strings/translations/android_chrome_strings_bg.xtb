@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Организирайте проследяваните от вас продукти в „Отметки“</translation>
 <translation id="1455845192930279203">Искате ли да изтеглите „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) от <ph name="DOWNLOAD_DOMAIN" /> въпреки това?</translation>
 <translation id="1460751212339734034">Пестете време, въвеждайте по-малко</translation>
+<translation id="146522654774760805">Пароли и автоматично попълване</translation>
 <translation id="1466383950273130737">Изберете език за Chrome</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
 <translation id="147982357559798527">Променено</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, чийто звук е спрян</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
+<translation id="2022953316617983419">QR код</translation>
 <translation id="2024195579772565064">Изтриване на търсещата машина</translation>
 <translation id="2029669011553795746">Долният лист за включване на известията със съвети е отворен на половината височина</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> и още <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="441100617989818073">Неизползвани или дублирани раздели и групи</translation>
 <translation id="4412123112245770507">Свиване на секцията</translation>
+<translation id="4412698727486357573">Помощен център</translation>
 <translation id="4414179633735763985">Изтрихте <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4425140285732600465">Цената се проследява. Ще получавате сигнали, когато има понижение в който и да е сайт.</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165">Менюто <ph name="MENU_NAME" /> е откроено.</translation>
 <translation id="6983306615164277634">Можете също да докоснете и задържите адресната лента, за да промените позицията.</translation>
 <translation id="6987047470128880212">Режимът „инкогнито“ не е налице на това устройство</translation>
-<translation id="6989358895283601928">Запазване и отпечатване</translation>
 <translation id="6996145122199359148">Изтегляне на тази страница</translation>
 <translation id="7013762323294215682">Този ключ за достъп ще бъде запазен в мениджъра на пароли. Всеки, който има достъп до мениджъра, ще може да използва ключа.</translation>
 <translation id="7020741890149022655">Списък за четене: Добав. <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@
 <translation id="7080145768121641840"><ph name="TAB_TITLE" /> – избран фиксиран раздел, чийто звук е спрян</translation>
 <translation id="7084115944294706056">Избиране на позиция на адресната лента</translation>
 <translation id="7085332316435785646">Изберете дали да включите историята в Chrome за по-персонализирана практическа работа с услугите на Google</translation>
+<translation id="7087066066828635014">Известията със съвети са включени</translation>
 <translation id="7088681679121566888">Chrome е актуален</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" /> – раздел в режим „инкогнито“, чийто звук е спрян и който е избран заедно с други</translation>
 <translation id="7106762743910369165">Браузърът се управлява от организацията ви</translation>
@@ -2002,6 +2005,7 @@
 <translation id="970715775301869095">Остават <ph name="MINUTES" /> мин</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Затваряне на всички раздели</translation>
+<translation id="984275831282074731">Начини на плащане</translation>
 <translation id="984756705737569814">Паролите в профила ви в Google не могат да бъдат проверени</translation>
 <translation id="987264212798334818">Общи</translation>
 <translation id="988091779042748639">За да изтриете историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели в този режим.</translation>

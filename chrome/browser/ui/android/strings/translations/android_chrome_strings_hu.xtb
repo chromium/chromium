@@ -118,6 +118,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1448440926884431741">A nyomon követett termékeket a Könyvjelzők között rendszerezheti</translation>
 <translation id="1455845192930279203">Mindenképpen le szeretné tölteni a(z) <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) fájlt innen: <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Takarítson meg időt, gépeljen kevesebbet</translation>
+<translation id="146522654774760805">Jelszavak és automatikus kitöltés</translation>
 <translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
 <translation id="1477626028522505441">A következő fájl letöltése szerverproblémák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="147982357559798527">Módosítva</translation>
@@ -227,6 +228,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="200114059308480249">Használni szeretné a környező szöveget is a Google Kereső használatakor?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, rögzített némított inkognitó lap</translation>
 <translation id="2021896219286479412">Teljes képernyős oldal vezérlői</translation>
+<translation id="2022953316617983419">QR-kód</translation>
 <translation id="2024195579772565064">Keresőmotor törlése</translation>
 <translation id="2029669011553795746">A tippekre vonatkozó értesítésekre való feliratkozás félmagasságban van megnyitva</translation>
 <translation id="2038563949887743358">Kapcsolja be az Asztali webhely kérése funkciót</translation>
@@ -789,6 +791,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> és további <ph name="TAB_COUNT" /> lap</translation>
 <translation id="441100617989818073">Nem használt vagy ismétlődő lapok és csoportok</translation>
 <translation id="4412123112245770507">Szakasz összecsukása</translation>
+<translation id="4412698727486357573">Súgó</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> törölve</translation>
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
@@ -1435,7 +1438,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6980258170429555165">A(z) <ph name="MENU_NAME" /> menü ki van emelve.</translation>
 <translation id="6983306615164277634">A pozíció módosítására lehetőség van a címsáv lenyomva tartásával is.</translation>
 <translation id="6987047470128880212">Az inkognitó nem használható ezen az eszközön.</translation>
-<translation id="6989358895283601928">Mentés és nyomtatás</translation>
 <translation id="6996145122199359148">Az oldal letöltése</translation>
 <translation id="7013762323294215682">Ezt az azonosítókulcsot az Ön jelszókezelőjébe menti a rendszer. Bárki, aki hozzáfér a jelszókezelőhöz, használhatja majd ezt az azonosítókulcsot.</translation>
 <translation id="7020741890149022655">Felvétel olvasólistára <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, kiválasztott rögzített némított lap</translation>
 <translation id="7084115944294706056">Címsáv pozíciójának kiválasztása</translation>
 <translation id="7085332316435785646">Válassza ki, hogy szeretné-e használni a Chrome-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>
+<translation id="7087066066828635014">Tippekkel kapcsolatos értesítések bekapcsolva</translation>
 <translation id="7088681679121566888">A Chrome naprakész</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, több kiválasztott némított inkognitó lap</translation>
 <translation id="7106762743910369165">Böngészőjét a szervezete kezeli.</translation>
@@ -2002,6 +2005,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="970715775301869095"><ph name="MINUTES" /> perc van hátra</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Az összes lap bezárása</translation>
+<translation id="984275831282074731">Fizetési módok</translation>
 <translation id="984756705737569814">Nem lehet ellenőrizni a jelszavakat a Google-fiókjában</translation>
 <translation id="987264212798334818">Általános</translation>
 <translation id="988091779042748639">Az inkognitó mód böngészési előzményeinek az eszközről való törléséhez zárja be az összes lapot.</translation>

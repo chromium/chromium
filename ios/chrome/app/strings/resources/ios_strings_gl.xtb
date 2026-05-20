@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Ir á primeira pestana</translation>
 <translation id="2499505845365628575">Podes atopar todo o historial de navegación en <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais vulnerados que poderían poñer en perigo a túa seguranza.</translation>
+<translation id="2512709994717613803">Nivel <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Atoparás os teus grupos de pestanas aquí</translation>
 <translation id="251837347827266434">Pecharanse a túa sesión e as pestanas, e eliminaranse os datos de navegación</translation>
 <translation id="2520787026086861736">Para desactivar esta opción, vai a <ph name="BEGIN_LINK" />AutoFill &amp; Passwords<ph name="END_LINK" /> (Autocompletar e contrasinais)</translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Autocompletar o número da tarxeta que acaba en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data de creación: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Carrete da cámara</translation>
+<translation id="3743545564993953213">Este sitio está tentando abrir a aplicación Atallos.</translation>
 <translation id="3746269120925354434">A información gardouse en Google Wallet</translation>
 <translation id="3750225824417196283">Nova páxina de pestanas do modo de incógnito</translation>
 <translation id="3751873026576444885">Deixar de buscar o contido da túa pantalla con Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Os marcadores, o historial, os contrasinais e outros datos deixarán de sincronizarse coa túa Conta de Google.</translation>
 <translation id="484280513275854557">Pechouse a túa sesión e elimináronse os datos de navegación</translation>
 <translation id="484462545196658690">Automático</translation>
+<translation id="4846662396507502151">Navega máis rápido coa nova barra de ferramentas</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4854068532375923088">Permite que Gemini use a túa cámara</translation>
 <translation id="4860895144060829044">Chamar</translation>
@@ -1427,6 +1430,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5988097621740394599">Consulta as baixadas de prezo nas túas pestanas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
 <translation id="599343768974649785">Texto explícito</translation>
+<translation id="6004988584831654445">Está todo listo! Recibe notificacións cando cheguen novas tarefas.</translation>
 <translation id="6006672969046233841">Nova pestana</translation>
 <translation id="6011308810877101166">Mellorar as suxestións de busca</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
@@ -1658,6 +1662,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6685259053455152195">Atallos para modificar rapidamente a configuración e usar funcións desde a barra de enderezos.</translation>
 <translation id="6689342293888598653">Cor de fondo branca</translation>
 <translation id="6689685206615181381">Só está dispoñible o modo de incógnito</translation>
+<translation id="6705491067826837934">Os teus controis, onde os necesites</translation>
 <translation id="6708501134077648845">Password Options</translation>
 <translation id="6709964700841491574">Modo de bloqueo</translation>
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6903282483217634857">Mover á dereita</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de poder usar sempre os contrasinais na túa Conta de Google</translation>
+<translation id="6906978870282539723">Obtén axuda coas pestanas e as tarefas</translation>
 <translation id="6908734251759299256">Actualiza o navegador</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Só neste dispositivo.</translation>
 <translation id="6914583639806229067">Buscar imaxe que copiaches</translation>
@@ -2078,6 +2084,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} e {website_2}}=3{Para {website_1}, {website_2} e 1 sitio máis}other{Para {website_1}, {website_2} e {more_count} sitios máis}}</translation>
 <translation id="8184895727539791845">Para permitir que Gemini use a túa cámara, actívaa na configuración de iOS</translation>
 <translation id="8185076488803799132">Import (Importar)</translation>
+<translation id="8187200657863701733">Nivel actual de Chrome</translation>
 <translation id="8189615296021678665">Toca Gardar para acceder facilmente a este contrasinal a próxima vez que inicies sesión.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os teus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Engadir un contrasinal</translation>
@@ -2121,6 +2128,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8325455175867928593">Ocultar Recensións en función dos teus intereses</translation>
 <translation id="833647236762414178">Crea, garda e xestiona os teus contrasinais e claves de acceso para poder iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Completa 1 tarefa máis para subir de nivel}other{Completa {count} tarefas máis para subir de nivel}}</translation>
 <translation id="8348530355586151720">Toca o menú de tres puntos</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} marcador importado}other{{count} marcadores importados}}</translation>

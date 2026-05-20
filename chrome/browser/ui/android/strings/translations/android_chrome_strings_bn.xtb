@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Bookmarks-এ আপনার ট্র্যাক করা সমস্ত প্রোডাক্ট সাজিয়ে রাখুন</translation>
 <translation id="1455845192930279203">আপনি কি তবুও <ph name="DOWNLOAD_DOMAIN" /> থেকে "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনলোড করতে চান?</translation>
 <translation id="1460751212339734034">সময় বাঁচান, কম টাইপ করুন</translation>
+<translation id="146522654774760805">পাসওয়ার্ড ও অটোফিল</translation>
 <translation id="1466383950273130737">Chrome-এর ভাষা বেছে নিন</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="147982357559798527">পরিবর্তন করা হয়েছে</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, পিন করা মিউট করা ছদ্মবেশী ট্যাব</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
+<translation id="2022953316617983419">QR কোড</translation>
 <translation id="2024195579772565064">সার্চ ইঞ্জিন মুছে ফেলুন</translation>
 <translation id="2029669011553795746">স্ক্রিনের নিচে অ্যাটাচ করা শিট অর্ধেক খোলা অবস্থায়, সেখানে দেখানো পরামর্শের বিজ্ঞপ্তি অপ্ট-ইন করার স্ক্রিন</translation>
 <translation id="2038563949887743358">ডেস্কটপ সাইটের অনুরোধ চালু করুন</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> এবং অন্য <ph name="TAB_COUNT" />টি ট্যাব</translation>
 <translation id="441100617989818073">অব্যবহৃত বা ডুপ্লিকেট ট্যাব ও গ্রুপ</translation>
 <translation id="4412123112245770507">বিভাগ আড়াল করুন</translation>
+<translation id="4412698727486357573">সহায়তা কেন্দ্র</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> মোছা হয়েছে</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> মেনু হাইলাইট করা আছে।</translation>
 <translation id="6983306615164277634">এছাড়াও, অ্যাড্রেস বারের অবস্থান পরিবর্তন করার জন্য আপনি এটি টাচ করে ধরে রাখতে পারবেন।</translation>
 <translation id="6987047470128880212">এই ডিভাইসে ছদ্মবেশী ট্যাব উপলভ্য নেই</translation>
-<translation id="6989358895283601928">সেভ করে প্রিন্ট করুন</translation>
 <translation id="6996145122199359148">এই পৃষ্ঠা ডাউনলোড করুন</translation>
 <translation id="7013762323294215682">এই পাসকী আপনার Password Manager-এ সেভ করা থাকবে। এটিতে যার অ্যাক্সেস থাকবে, তারা এই পাসকী ব্যবহার করতে পারবেন।</translation>
 <translation id="7020741890149022655">পড়ার তালিকায় যোগ করুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকি আছে</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>
+<translation id="984275831282074731">পেমেন্ট পদ্ধতি</translation>
 <translation id="984756705737569814">আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করা যাচ্ছে না</translation>
 <translation id="987264212798334818">সাধারণ</translation>
 <translation id="988091779042748639">আপনার ডিভাইস থেকে 'ছদ্মবেশী মোড'-এ করা ব্রাউজিংয়ের ইতিহাস মুছে ফেলতে, সব 'ছদ্মবেশী ট্যাব' বন্ধ করুন।</translation>

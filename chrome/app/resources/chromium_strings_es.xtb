@@ -586,7 +586,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido.
 
 Chromium no puede recuperar tu configuración.</translation>
-<translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="734373864078049451">Aquí puedes encontrar tus páginas web, marcadores y otros contenidos de Chromium.</translation>
 <translation id="7347827960336370838">Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. Google no recibirá la frase de contraseña ni tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, tendrás que <ph name="BEGIN_LINK" />eliminar los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">El administrador del sistema ha configurado Chromium para que abra <ph name="ALTERNATIVE_BROWSER_NAME" /> al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -595,6 +594,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7376384068949534168">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Abre Chrome Web Store</translation>
 <translation id="7384121030444253939">Esta extensión ya no se admite. Chromium te recomienda que la elimines.</translation>
+<translation id="7407655596887111931">Chromium es ahora tu navegador predeterminado</translation>
 <translation id="7413153308467572558">Continúa por donde lo dejaste: Chromium restaura tus pestañas cada vez que lo reinicies. Para desactivar esta opción, ve a</translation>
 <translation id="7427879960656355200">Importar contraseñas a Chromium</translation>
 <translation id="744815265653811511">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación

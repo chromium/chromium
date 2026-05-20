@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Dit probleem doet zich voor als gevolg van een certificaat dat jij of iemand anders heeft geïnstalleerd op je apparaat. Het certificaat staat erom bekend dat het wordt gebruikt voor netwerkmonitoring en -onderschepping en wordt niet vertrouwd door Chromium. Hoewel er ook legitieme certificaten bestaan, bijvoorbeeld op een school- of zakelijk netwerk, wil Chromium zeker weten dat je begrijpt wat er gebeurt, ook als je het niet kunt tegenhouden. Monitoring kan plaatsvinden in elke browser of app met toegang tot internet.</translation>
 <translation id="1024111578869940408">Aanvallers maken sites soms na door wijzigingen in het webadres aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1024913885641459127">Productreviews en prijsvergelijkingen</translation>
+<translation id="1025174656774447058">Geopende tabbladen automatisch delen voor dit gesprek?</translation>
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil grote gegevens permanent op je apparaat opslaan</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Geen}=1{Van 1 site. Hiermee word je uitgelogd bij de meeste sites. }other{Van # sites. Hiermee word je uitgelogd bij de meeste sites. }}</translation>
@@ -254,6 +255,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1380591466760231819">Wikkelvouw</translation>
 <translation id="138218114945450791">Lichtblauw</translation>
 <translation id="1382194467192730611">USB-apparaat toegestaan door je beheerder</translation>
+<translation id="1383876407941801731">Zoeken</translation>
 <translation id="1384725838384960382">Blad voor beveiligde verificatie van betalingsgegevens</translation>
 <translation id="1386623374109090026">Annotaties</translation>
 <translation id="138810468159004008">Toestaan tijdens websitebezoek</translation>
@@ -1024,6 +1026,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Schermvergrendeling gebruiken om kaarten vanaf nu te bevestigen</translation>
 <translation id="2552532158894206888">rechtertoets</translation>
+<translation id="2552601157105591479">Chrome deelt relevante geopende tabbladen in elk nieuw gesprek om betere reacties te krijgen. Meer informatie over</translation>
 <translation id="2553352788023127673">Zoekgeschiedenis en wachtwoorden kunnen worden verwijderd in de beheerinstellingen</translation>
 <translation id="2553853292994445426">Controleer je instellingen voor beveiligde DNS. Mogelijk heb je een beveiligde DNS-server geconfigureerd waarmee geen verbinding kan worden gemaakt.</translation>
 <translation id="255497580849974774">Zorg dat je apparaat tijdens de update is aangesloten op een oplader.</translation>
@@ -1240,6 +1243,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2930531075747147366">Tabblad van je andere apparaat</translation>
 <translation id="2930577230479659665">Bijsnijden na elke kopie</translation>
 <translation id="2933624813161016821">Reliëffolie</translation>
+<translation id="2935726091208500473">je tabbladen delen</translation>
 <translation id="293796669683825859">Reacties</translation>
 <translation id="2938225289965773019">Links voor <ph name="PROTOCOL" /> openen</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: als je de cursor wilt tonen, wissel je tussen apps, laad je de pagina opnieuw of ga je terug</translation>
@@ -1267,6 +1271,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="297173220375858963">Desktoppublishing</translation>
 <translation id="2972581237482394796">&amp;Opnieuw</translation>
 <translation id="2974468223369775963">Dit IBAN kan niet worden opgeslagen in je Google-account. Het is opgeslagen in Chrome op dit apparaat. Chrome vraagt het je opnieuw wanneer je dit IBAN weer gebruikt.</translation>
+<translation id="2976162850019490782">Als deze functie aanstaat, deelt Chrome alle tabbladen in dit venster om je relevantere reacties te geven. Je kunt dit aanzetten voor alle threads via Instellingen.</translation>
 <translation id="297667759942911166">Samenwerken in tabbladgroepen</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, momenteel geselecteerd. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1815,6 +1820,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="380865868633614173">Kaartgegevens opslaan</translation>
 <translation id="3810770279996899697">Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
 <translation id="3810973564298564668">Beheren</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Dit is een essentiële update die de prestaties van Android-apps op ChromeOS verbetert.</translation>
 <translation id="3814865536373139791">De manier stroomlijnen waarop je organisatie beleid beheert</translation>
 <translation id="3815434930383843058">8 x 12 inch</translation>
@@ -2393,6 +2399,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4736934858538408121">Virtuele kaart</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4738601419177586157">Zoeksuggestie: <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, geselecteerd tabblad, <ph name="INDEX" /> van <ph name="TOTAL" />, gebruik de pijl-links of pijl-rechts om tussen tabbladen te schakelen</translation>
 <translation id="4742407542027196863">Wachtwoorden beheren…</translation>
 <translation id="474270528725216349">Van minstens 1 site op gesynchroniseerde apparaten</translation>
 <translation id="4743275772928623722">Je systeem is geüpdatet, maar we hebben sommige van je apps en bestanden niet kunnen herstellen. Je apps worden automatisch opnieuw gedownload.</translation>
@@ -2460,6 +2467,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4832961164064927107">Barbecue en grillen</translation>
 <translation id="4835568975547260025">Chrome deelt standaard relevante geopende tabbladen om je meer op maat gemaakte antwoorden op je vragen te geven.</translation>
 <translation id="4840250757394056958">Je Chrome-geschiedenis bekijken</translation>
+<translation id="4842365697443353018">Formulier wissen om later betalen te gebruiken</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrollen en zoomen op gedeelde tabbladen</translation>
 <translation id="484671803914931257">Krijg korting bij onder andere <ph name="MERCHANT_NAME" /></translation>
@@ -3311,6 +3319,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6133984428121856852">De bestandsextensie is leeg of heeft een onjuiste notatie.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 inch</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, geselecteerd</translation>
 <translation id="6143097244789397208">Augmented en virtual reality</translation>
 <translation id="614327212146763975">Bewegings- en lichtsensoren toegestaan</translation>
 <translation id="6146055958333702838">Controleer alle kabels en start alle routers, modems of andere netwerkapparaten die je gebruikt, opnieuw op.</translation>
@@ -4187,6 +4196,7 @@ Aanvullende informatie:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> controleert of je in aanmerking komt (dit heeft geen invloed op je kredietscore). Als je aanvraag wordt goedgekeurd, biedt <ph name="BNPL_ISSUER_NAME" /> betalingsplannen waaruit je kunt kiezen en kun je je aankoop afronden.</translation>
 <translation id="7489392576326061356">Shampoos en conditioners</translation>
 <translation id="7489919936111034362">Je Google Drive-opslag is vol</translation>
+<translation id="7490026840522163531">Geopende tabbladen automatisch delen in elk gesprek?</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="749865518782565832">Loodgieter</translation>
 <translation id="7499188644237027195">Als je aankopen doet in Chrome, zie je eWallet en Pix als opties</translation>
@@ -5306,6 +5316,7 @@ Aanvullende informatie:
 <translation id="964050462028070434">Wachtwoorden en toegangscodes beheren…</translation>
 <translation id="964681140808832181">Ja, ik wil annuleren</translation>
 <translation id="969892804517981540">Officiële build</translation>
+<translation id="970182982363142444">Als deze functie aanstaat, deelt Chrome alle tabbladen in dit venster om je relevantere reacties te geven. Je kunt dit aanzetten voor alle chats in</translation>
 <translation id="97054401902912338">Meer informatie over contentfilters</translation>
 <translation id="973788791897303708">Deze tabbladgroep is vol</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Geen}=1{1 item}other{# items}}</translation>

@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1242008676835033345">Inbäddad på <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tryck på Appar &gt; Standardappar</translation>
+<translation id="1264694639515903274">Nu kan du anpassa startsidan</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1275718070701477396">Markerad</translation>
 <translation id="1289742167380433257">Bilderna på den här sidan har optimerats av Google så att du sparar data.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1919950603503897840">Välj kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Anpassa min startsida</translation>
 <translation id="1939059826036755332">Automatisk bild-i-bild</translation>
 <translation id="1954597385941141174">Webbplatser får begära tillstånd att ansluta till USB-enheter</translation>
 <translation id="1979673356880165407">Gör text och bilder större eller mindre för alla webbplatser du besöker</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Cookies blockeras i Chrome igen i dag</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3859306556332390985">Sök framåt</translation>
+<translation id="3870711497942672548">Anpassa Chrome med egna färger och bilder på startsidan</translation>
 <translation id="389521680295183045">Webbplatser kan begära tillstånd att få veta om du använder enheten aktivt</translation>
 <translation id="3895926599014793903">Tvinga aktivering av zoom</translation>
 <translation id="3903738175795615004">Dra uppifrån eller tryck på tangenten Esc om du vill avsluta helskärmsläget.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Expandera</translation>
 <translation id="4310738531374808763">Anpassa din startsida</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Löper ut i morgon}other{Löper ut om # dagar}}</translation>
+<translation id="4336371609622603229">Anpassa Chrome genom att välja ett anpassat tema</translation>
 <translation id="4338831206024587507">Alla webbplatser under <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Tillåt inte att webbplatser skickar aviseringar</translation>
 <translation id="4341577178275615435">Aktivera eller inaktivera textmarkörläge med kortkommandot F7</translation>
@@ -750,7 +754,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8737426583868847403">Webbplatser som du har sparat en anpassad zoomnivå för visas här</translation>
 <translation id="8748714929822124637">Tillåt inte att webbplatser får åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="8751914237388039244">Välj en bild</translation>
-<translation id="8775741625735357092">Du kan aktivera bokmärkesfältet i Inställningar &gt; Utseende</translation>
 <translation id="8800034312320686233">Fungerar inte webbplatsen?</translation>
 <translation id="8801436777607969138">Blockera JavaScript på en enskild webbplats.</translation>
 <translation id="8801657293260363985">V8 är Chromes JavaScript- och WebAssembly-motor som används för att förbättra webbplatsens prestanda</translation>

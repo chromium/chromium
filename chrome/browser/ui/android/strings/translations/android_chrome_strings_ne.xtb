@@ -118,6 +118,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1448440926884431741">"बुकमार्कहरू" मा गई आफूले ट्रयाक गरेका उत्पादनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1455845192930279203">तपाईं जे भए पनि <ph name="DOWNLOAD_DOMAIN" /> बाट "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="1460751212339734034">कम टाइप गरी समय बचत गर्नुहोस्</translation>
+<translation id="146522654774760805">पासवर्ड र अटोफिल</translation>
 <translation id="1466383950273130737">Chrome मा प्रयोग गरिने भाषा छान्नुहोस्</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
 <translation id="147982357559798527">परिवर्तन गरिएको</translation>
@@ -227,6 +228,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, पिन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
+<translation id="2022953316617983419">QR कोड</translation>
 <translation id="2024195579772565064">सर्च इन्जिन मेटाउनुहोस्</translation>
 <translation id="2029669011553795746">सुझावसम्बन्धी नोटिफिकेसनहरू प्राप्त गर्ने सुविधामा अप्ट-इन गर्ने पाना आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटप साइट खोल्नुहोस्</translation>
@@ -789,6 +791,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> र अन्य <ph name="TAB_COUNT" /> वटा ट्याब</translation>
 <translation id="441100617989818073">प्रयोग नगरिएका वा दोहोरिएका ट्याब तथा समूहहरू</translation>
 <translation id="4412123112245770507">खण्ड कोल्याप्स गर्नुहोस्</translation>
+<translation id="4412698727486357573">मद्दत केन्द्र</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> मेटाइयो</translation>
 <translation id="4415276339145661267">आफ्नो Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4425140285732600465">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ। कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्।</translation>
@@ -1434,7 +1437,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> मेनु हाइलाइट गरिएको छ।</translation>
 <translation id="6983306615164277634">तपाईं स्थान परिवर्तन गर्न एड्रेस बार टच एण्ड होल्ड गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="6987047470128880212">यो डिभाइसमा इन्कोग्निटो मोड उपलब्ध छैन</translation>
-<translation id="6989358895283601928">सेभ गर्नुहोस् र प्रिन्ट गर्नुहोस्</translation>
 <translation id="6996145122199359148">यो पेज डाउनलोड गर्नुहोस्</translation>
 <translation id="7013762323294215682">यो पासकी पासवर्ड म्यानेजरमा सेभ गरिने छ। यो पासकी प्रयोग गर्ने अनुमति भएका जोकोहीले यो पासकी प्रयोग गर्न सक्ने छन्।</translation>
 <translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
@@ -1452,6 +1454,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको म्युट गरिएको ट्याब</translation>
 <translation id="7084115944294706056">एड्रेस बार कहाँ राख्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7085332316435785646">Google का सेवाहरूमा आफ्नो आवश्यकताअनुसारका सुविधाहरू पाउन Chrome को ब्राउजिङ इतिहास समावेश गर्ने कि नगर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
+<translation id="7087066066828635014">सुझावसम्बन्धी नोटिफिकेसनहरू अन गरिएका छन्</translation>
 <translation id="7088681679121566888">Chrome अपडेट छ</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="7106762743910369165">तपाईंको संगठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
@@ -2001,6 +2004,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनेट बाँकी छ</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
+<translation id="984275831282074731">भुक्तानी विधिहरू</translation>
 <translation id="984756705737569814">तपाईंको Google खातामा सेभ गरिएका पासवर्डहरू जाँच्न सकिएन</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988091779042748639">आफ्नो डिभाइसबाट इन्कोग्निटो मोडको ब्राउजिङ हिस्ट्री मेटाउन सबै इन्कोग्निटो ट्याब बन्द गर्नुहोस्।</translation>

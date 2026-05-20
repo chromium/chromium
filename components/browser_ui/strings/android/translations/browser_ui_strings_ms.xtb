@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Petua Chrome</translation>
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Ketik Apl &gt; Apl lalai</translation>
+<translation id="1264694639515903274">Kini anda boleh menyesuaikan halaman utama anda</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1289742167380433257">Untuk menjimatkan data anda, imej halaman ini telah dioptimumkan oleh Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1919950603503897840">Pilih kenalan</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Sesuaikan halaman utama saya</translation>
 <translation id="1939059826036755332">Gambar dalam gambar automatik</translation>
 <translation id="1954597385941141174">Tapak boleh meminta untuk menyambung kepada peranti USB</translation>
 <translation id="1979673356880165407">Jadikan teks dan imej lebih besar atau lebih kecil untuk semua laman yang anda lawati</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Kembangkan</translation>
 <translation id="4310738531374808763">Sesuaikan halaman utama anda</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
+<translation id="4336371609622603229">Peribadikan Chrome mengikut cita rasa anda dengan memilih tema tersuai</translation>
 <translation id="4338831206024587507">Semua laman di bawah <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Jangan benarkan laman menghantar pemberitahuan</translation>
 <translation id="4341577178275615435">Untuk menghidupkan atau mematikan semak imbas karet, gunakan pintasan F7</translation>
@@ -751,7 +754,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="8737426583868847403">Laman yang anda simpan tahap zum tersuai akan dipaparkan di sini</translation>
 <translation id="8748714929822124637">Jangan benarkan laman mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="8751914237388039244">Pilih imej</translation>
-<translation id="8775741625735357092">Anda boleh menghidupkan bar penanda halaman dalam Tetapan &gt; Penampilan</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8801436777607969138">Sekat JavaScript untuk tapak tertentu.</translation>
 <translation id="8801657293260363985">V8 ialah JavaScript Chrome dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>

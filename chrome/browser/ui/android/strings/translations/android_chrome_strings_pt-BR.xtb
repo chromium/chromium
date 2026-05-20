@@ -118,6 +118,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1448440926884431741">Organize seus produtos monitorados nos favoritos</translation>
 <translation id="1455845192930279203">Quer baixar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de <ph name="DOWNLOAD_DOMAIN" /> mesmo assim?</translation>
 <translation id="1460751212339734034">Poupe tempo digitando menos</translation>
+<translation id="146522654774760805">Senhas e preenchimento automático</translation>
 <translation id="1466383950273130737">Idioma do Chrome</translation>
 <translation id="1477626028522505441">Falha no download do arquivo <ph name="FILE_NAME" /> devido a problemas de servidor.</translation>
 <translation id="147982357559798527">Alterada</translation>
@@ -227,6 +228,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, guia anônima com áudio desativado fixada</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2024195579772565064">Excluir mecanismo de pesquisa</translation>
 <translation id="2029669011553795746">A opção de ativar as notificações de dicas foi aberta na metade da altura</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
@@ -789,6 +791,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e mais <ph name="TAB_COUNT" /> guias</translation>
 <translation id="441100617989818073">Guias e grupos não usados ou duplicados</translation>
 <translation id="4412123112245770507">Fechar seção</translation>
+<translation id="4412698727486357573">Central de Ajuda</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> foram excluídos</translation>
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
 <translation id="4425140285732600465">Monitorando o preço. Receba alertas se houver uma redução no preço em algum site.</translation>
@@ -1436,7 +1439,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6980258170429555165">O menu <ph name="MENU_NAME" /> está destacado.</translation>
 <translation id="6983306615164277634">Você também pode manter a barra endereço pressionada para mudar a posição dela.</translation>
 <translation id="6987047470128880212">A navegação anônima não está disponível neste dispositivo</translation>
-<translation id="6989358895283601928">Salvar e imprimir</translation>
 <translation id="6996145122199359148">Fazer o download desta página</translation>
 <translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7020741890149022655">Adicionar à lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -2004,6 +2006,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Off-line</translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>
+<translation id="984275831282074731">Formas de pagamento</translation>
 <translation id="984756705737569814">Não é possível verificar as senhas na sua Conta do Google</translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="988091779042748639">Para excluir o histórico de navegação anônima do seu dispositivo, feche todas as guias anônimas.</translation>

@@ -27,7 +27,7 @@
 <translation id="1011003645819296594">ಉಳಿಸಲಾದ ಸಾಧನಗಳು</translation>
 <translation id="1011355516189274711">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ವಾಲ್ಯೂಮ್</translation>
 <translation id="1011431628606634753">Google Password Manager ಗಾಗಿ ನಿಮ್ಮ ರಿಕವರಿ ಪಿನ್ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
-<translation id="1012794136286421601">ನಿಮ್ಮ ಡಾಕ್ಸ್‌, ಶೀಟ್‌ಗಳು, ಸ್ಲೈಡ್‌ಗಳು, ಮತ್ತು ರೇಖಾಚಿತ್ರಗಳ ಫೈಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಆನ್‌ಲೈನ್‌ ಅಥವಾ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರವೇಶಿಸಲು Google ಡ್ರೈವ್‌ ಅಪ್ಲಿಕೇಶನ್‌ ತೆರೆಯಿರಿ.</translation>
+<translation id="1012794136286421601">ನಿಮ್ಮ Docs, Sheets, Slides ಮತ್ತು Drawings ಫೈಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಆನ್‌ಲೈನ್‌ ಅಥವಾ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು Google Drive ಆ್ಯಪ್ ತೆರೆಯಿರಿ.</translation>
 <translation id="1012876632442809908">USB-C ಸಾಧನ (ಮುಂದಿನ ಪೋರ್ಟ್)</translation>
 <translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -777,7 +777,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android ಫೋನ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1523279371236772909">ಕಳೆದ ತಿಂಗಳಲ್ಲಿ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
-<translation id="1523486680453956384">ಕಾರ್ಯವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1523978563989812243">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="1524563461097350801">ಬೇಡ</translation>
 <translation id="1525740877599838384">ಸ್ಥಳವನ್ನು ನಿರ್ಧರಿಸಲು ವೈ-ಫೈ ಮಾತ್ರ ಬಳಸಿ</translation>
@@ -2147,7 +2146,6 @@
 <translation id="2450849356604136918">ಸಕ್ರಿಯ ವೀಕ್ಷಣೆಗಳಿಲ್ಲ</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೀವು ಸೇವ್ ಮಾಡಬಹುದಾದದ್ದನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
-<translation id="245307875355990880">ಕಾರ್ಯವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="245322989586167203">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವಂತಹ ಡೇಟಾ ವರ್ಗಾವಣೆ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಸರಣಿ ಪೋರ್ಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ</translation>
 <translation id="2453860139492968684">ಪೂರ್ಣಗೊಳಿಸು</translation>
 <translation id="2454206500483040640">ವಿಭಜಿಸಲಾಗಿದೆ</translation>
@@ -4119,6 +4117,7 @@
 <translation id="3796215473395753611">alt + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ಧ್ವನಿಯನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಲು ರೈಟ್‌ ಆ್ಯರೋ ಕೀಯನ್ನು ಬಳಸಿ</translation>
 <translation id="3796648294839530037">ಮೆಚ್ಚಿನ ನೆಟ್‌ವರ್ಕ್‌ಗಳು:</translation>
+<translation id="3797330664967181051">ಸ್ಪ್ಲಿಟ್ ವ್ಯೂ</translation>
 <translation id="3797739167230984533">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> ಗಾಗಿ '<ph name="SEARCH_TERMS" />' &amp;ಹುಡುಕಿ</translation>
 <translation id="3798026281364973895">ಇನ್‌ಸ್ಟಂಟ್ ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -4872,7 +4871,6 @@
 <translation id="4314497418046265427">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ನಿಮ್ಮ ಫೋನ್ ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4314561087119792062">ಹೊಸ ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4314815835985389558">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="4314821834464582073">ಕಾರ್ಯವನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="4316850752623536204">ಡೆವಲಪರ್ ವೆಬ್‌ಸೈಟ್</translation>
 <translation id="4317733381297736564">ಆ್ಯಪ್‌ನಲ್ಲಿನ ಖರೀದಿಗಳು</translation>
 <translation id="4317820549299924617">ದೃಢೀಕಣವು ಯಶಸ್ವಿಯಾಗಿಲ್ಲ</translation>
@@ -7746,6 +7744,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="6350745006329795504">ನಿಮ್ಮ ಸಾಧನಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6350821834561350243">ಸಮಸ್ಯೆಯ ಸ್ಪಷ್ಟ ವಿವರಣೆಯನ್ನು ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಪುನರುತ್ಪಾದಿಸುವ ಕ್ರಮಗಳನ್ನು ಒದಗಿಸಿ (ಸಾಧ್ಯವಾದರೆ)</translation>
+<translation id="635100112331897007">ಎಲ್ಲಾ Chrome ನೀತಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6351178441572658285">ಆ್ಯಪ್ ಭಾಷೆಗಳು</translation>
 <translation id="6352992678231622317">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="6355632359041940003">ಕಾರ್ಯವನ್ನು ವಹಿಸಿಕೊಳ್ಳಿ</translation>

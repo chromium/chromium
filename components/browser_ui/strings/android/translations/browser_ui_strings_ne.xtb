@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome का सुझावहरू</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> मा इम्बेड गरिएको</translation>
 <translation id="1263609676484797429">"एपहरू  &gt; डिफल्ट एपहरू" मा ट्याप गर्नुहोस्</translation>
+<translation id="1264694639515903274">तपाईं अब आफ्नो होमपेज कस्टमाइज गर्न सक्नुहुन्छ</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1289742167380433257">तपाईंको डेटाको खपत कम गर्न Google ले यो पृष्ठका फोटोहरू अप्टिमाइज गरेको छ।</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1919950603503897840">कन्ट्याक्टहरू चयन गर्नुहोस्</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">मेरो होमपेज कस्टमाइज गर्नुहोस्</translation>
 <translation id="1939059826036755332">picture-in-picture मोडमा स्वतः प्रवेश गर्ने सेटिङ</translation>
 <translation id="1954597385941141174">साइटहरूले USB मा कनेक्ट हुने अनुमति माग्न सक्छन्</translation>
 <translation id="1979673356880165407">तपाईं जाने सबै साइटका टेक्स्ट तथा फोटोहरू अझ ठुलो वा अझ सानो बनाउनुहोस्</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome ले आज फेरि कुकीहरू ब्लक गर्ने छ</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3859306556332390985">अगाडि खोज्नुहोस्</translation>
+<translation id="3870711497942672548">आफ्नो होमपेजमा कस्टम रङ र फोटोहरू प्रयोग गरी Chrome पर्सनलाइज गर्नुहोस्</translation>
 <translation id="389521680295183045">साइटहरूले तपाईं आफ्नो यन्त्र चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुराको जानकारी माग्न सक्छन्</translation>
 <translation id="3895926599014793903">जूम सक्षम गर्न दबाब दिनु</translation>
 <translation id="3903738175795615004">फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् वा Esc की थिच्नुहोस्।</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4310738531374808763">आफ्नो होमपेज कस्टमाइज गर्नुहोस्</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
+<translation id="4336371609622603229">कुनै कस्टम थिम छनौट गरी Chrome कस्टमाइज गर्नुहोस्</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अन्तर्गतका सबै साइटहरू</translation>
 <translation id="4340799661701629185">साइटहरूलाई सूचना देखाउने अनुमति नदिनुहोस्</translation>
 <translation id="4341577178275615435">सर्टकट तरिकाले क्यारेट ब्राउजिङ अन वा अफ गर्न F7 थिच्नुहोस्</translation>
@@ -750,7 +754,6 @@
 <translation id="8737426583868847403">तपाईंले जुन जुन साइटका लागि कस्टम जुम लेभल सेभ गर्नुभएको छ ती साइटहरू यहाँ देखिने छन्</translation>
 <translation id="8748714929822124637">साइटहरूलाई तपाईंको लोकल नेटवर्कमा कनेक्ट भएका अन्य डिभाइसहरू एक्सेस गर्न नदिनुहोस्</translation>
 <translation id="8751914237388039244">कुनै फोटो छनौट गर्नुहोस्‌</translation>
-<translation id="8775741625735357092">तपाईं "सेटिङ &gt; स्वरूप" मा गई बुकमार्क बार अन गर्न सक्नुहुन्छ</translation>
 <translation id="8800034312320686233">साइटले काम गरिरहेको छैन?</translation>
 <translation id="8801436777607969138">कुनै खास साइटमा JavaScript लाई रोक लगाउनुहोस्।</translation>
 <translation id="8801657293260363985">V8 भनेको साइटको पर्फर्मेन्समा सुधार ल्याउन प्रयोग गरिने Chrome को JavaScript र WebAssembly इन्जिन हो</translation>

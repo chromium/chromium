@@ -584,7 +584,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="7318036098707714271">File preferensi Anda rusak atau tidak valid.
 
 Chromium tidak dapat memulihkan setelan Anda.</translation>
-<translation id="7339898014177206373">Jendela baru</translation>
 <translation id="734373864078049451">Web, bookmark, dan barang Chromium Anda lainnya tersedia di sini.</translation>
 <translation id="7347827960336370838">Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, Anda perlu <ph name="BEGIN_LINK" />menghapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administrator sistem Anda telah mengonfigurasi Chromium untuk membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -593,6 +592,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7376384068949534168">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Buka Chrome Webstore</translation>
 <translation id="7384121030444253939">Ekstensi ini tidak lagi didukung. Chromium merekomendasikan agar Anda menghapusnya.</translation>
+<translation id="7407655596887111931">Chromium kini menjadi browser default Anda</translation>
 <translation id="7413153308467572558">Lanjutkan dari halaman terakhir yang dibuka: Chromium memulihkan tab setiap kali Anda memulai ulang. Untuk menonaktifkannya, buka</translation>
 <translation id="7427879960656355200">Impor Sandi ke Chromium</translation>
 <translation id="744815265653811511">1. Klik <ph name="BUTTON_LABEL" /> di bawah Klik <ph name="BUTTON_2" /> di setelan Windows Klik <ph name="BUTTON_3" /> di notifikasi Windows untuk menyematkan Chromium ke taskbar agar dapat diakses dengan cepat</translation>

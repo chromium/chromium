@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Organizujte svoje sledované produkty v Záložkách</translation>
 <translation id="1455845192930279203">Chcete napriek tomu súbor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) z webu <ph name="DOWNLOAD_DOMAIN" /> stiahnuť?</translation>
 <translation id="1460751212339734034">Šetrite čas, píšte menej</translation>
+<translation id="146522654774760805">Heslá a automatické dopĺňanie</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
 <translation id="1477626028522505441">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so serverom.</translation>
 <translation id="147982357559798527">Zmenené</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Chcete zahŕňať okolitý text vo vyhľadávaniach na Googli?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripnutá karta inkognito s vypnutým zvukom</translation>
 <translation id="2021896219286479412">Ovládanie webu na celú obrazovku</translation>
+<translation id="2022953316617983419">QR kód</translation>
 <translation id="2024195579772565064">Odstránenie vyhľadávača</translation>
 <translation id="2029669011553795746">Prihlásenie na odber upozornení na tipy je otvorené na polovičnú výšku</translation>
 <translation id="2038563949887743358">Zapnutie žiadosti o verziu stránok pre počítače</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> a ďalšie karty (<ph name="TAB_COUNT" />)</translation>
 <translation id="441100617989818073">Nepoužívané alebo duplicitné karty a skupiny</translation>
 <translation id="4412123112245770507">Zbaliť sekciu</translation>
+<translation id="4412698727486357573">Centrum pomoci</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> boli odstránené</translation>
 <translation id="4415276339145661267">Spravovať účet Google</translation>
 <translation id="4425140285732600465">Cenu sledujete. Dostávajte upozornenia, keď na ľubovoľnom webe poklesne.</translation>
@@ -1435,7 +1438,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6980258170429555165">Ponuka <ph name="MENU_NAME" /> je zvýraznená.</translation>
 <translation id="6983306615164277634">Pozíciu môžete zmeniť aj pridržaním panela s adresou.</translation>
 <translation id="6987047470128880212">Režim inkognito nie je k dispozícii v tomto zariadení</translation>
-<translation id="6989358895283601928">Uložiť a vytlačiť</translation>
 <translation id="6996145122199359148">Stiahnuť túto stránku</translation>
 <translation id="7013762323294215682">Tento prístupový kľúč bude uložený do vášho správcu hesiel. Budú ho môcť používať všetci, ktorí k nemu majú prístup.</translation>
 <translation id="7020741890149022655">Pridať do čit. zoznamu <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, vybraná pripnutá karta s vypnutým zvukom</translation>
 <translation id="7084115944294706056">Vyberte umiestnenie panela s adresou</translation>
 <translation id="7085332316435785646">Vyberte, či sa má zahrnúť história Chromu na zaistenie prispôsobenejšieho prostredia v službách Googlu</translation>
+<translation id="7087066066828635014">Upozornenia na tipy sú zapnuté</translation>
 <translation id="7088681679121566888">Chrome je aktuálny</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, viackrát vybraná karta inkognito s vypnutým zvukom</translation>
 <translation id="7106762743910369165">Prehliadač je spravovaný vašou organizáciou</translation>
@@ -2002,6 +2005,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="970715775301869095">Zostáva: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavrieť všetky karty</translation>
+<translation id="984275831282074731">Spôsoby platby</translation>
 <translation id="984756705737569814">Heslá vo vašom účte Google nie je možné skontrolovať</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="988091779042748639">Ak chcete zo svojho zariadenia odstrániť históriu prehliadania v režime inkognito, zavrite všetky karty inkognito.</translation>

@@ -586,7 +586,6 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="7318036098707714271">O teu ficheiro de preferencias está danado ou non é válido.
 
 Chromium non pode recuperar a túa configuración.</translation>
-<translation id="7339898014177206373">Nova ventá</translation>
 <translation id="734373864078049451">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chromium.</translation>
 <translation id="7347827960336370838">Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se a esqueces ou queres cambiar esta opción de configuración, terás que <ph name="BEGIN_LINK" />eliminar os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">A persoa que administra o teu sistema configurou Chromium para abrir o navegador <ph name="TARGET_URL_HOSTNAME" /> co obxectivo de acceder a <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -595,6 +594,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7376384068949534168">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
 <translation id="7384121030444253939">Xa non se admite esta extensión. Chromium recomenda que a quites.</translation>
+<translation id="7407655596887111931">Chromium é agora o teu navegador predeterminado</translation>
 <translation id="7413153308467572558">Retoma a actividade onde a deixaches: Chromium restaura as pestanas cada vez que o reinicies. Para desactivar esta opción, vai a</translation>
 <translation id="7427879960656355200">Importar os contrasinais a Chromium</translation>
 <translation id="744815265653811511">1. Fai clic na opción <ph name="BUTTON_LABEL" /> que aparece máis abaixo

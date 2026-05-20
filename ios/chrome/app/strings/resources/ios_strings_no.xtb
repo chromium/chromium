@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Gå til første fane</translation>
 <translation id="2499505845365628575">Du kan finne hele nettleserloggen din via <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko.</translation>
+<translation id="2512709994717613803">Nivå <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Her finner du fanegruppene dine</translation>
 <translation id="251837347827266434">Du blir logget av, faner blir lukket, og nettlesingsdata blir slettet</translation>
 <translation id="2520787026086861736">For å slå av funksjonen, gå til <ph name="BEGIN_LINK" />Autofyll og passord<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Autofyll kortnummeret som slutter på <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Opprettet <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerarull</translation>
+<translation id="3743545564993953213">Dette nettstedet prøver å åpne «Snarveier»-appen.</translation>
 <translation id="3746269120925354434">Informasjonen er lagret i Google Wallet</translation>
 <translation id="3750225824417196283">Ny side på inkognitofane</translation>
 <translation id="3751873026576444885">Slutt å søke på skjermen med Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Bokmerkene, loggen, passord med mer synkroniseres ikke lenger med Google-kontoen din.</translation>
 <translation id="484280513275854557">Du ble logget av, og nettlesingsdata ble slettet</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4846662396507502151">Surf raskere med den nye verktøylinjen</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4854068532375923088">Tillat at «Gemini» bruker kameraet ditt</translation>
 <translation id="4860895144060829044">Ring</translation>
@@ -1427,6 +1430,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5988097621740394599">Se avslag på fanene dine.</translation>
 <translation id="5988851877894965432">Åpne nettadresser i Chrome</translation>
 <translation id="599343768974649785">Ikke barnevennlig tekst</translation>
+<translation id="6004988584831654445">Det var det! Bli varslet når du får nye oppgaver.</translation>
 <translation id="6006672969046233841">Ny fane</translation>
 <translation id="6011308810877101166">Gjør søkeforslagene bedre</translation>
 <translation id="6012140227487808125">Krypterer …</translation>
@@ -1658,6 +1662,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6685259053455152195">Hurtigtaster for å endre innstillinger raskt og bruke funksjoner fra adressefeltet.</translation>
 <translation id="6689342293888598653">Hvit bakgrunnsfarge</translation>
 <translation id="6689685206615181381">Kun inkognitomodus er tilgjengelig</translation>
+<translation id="6705491067826837934">Kontrollene dine – der du trenger dem</translation>
 <translation id="6708501134077648845">Passordvalg</translation>
 <translation id="6709964700841491574">Låsingsmodus</translation>
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6903282483217634857">Flytt til høyre</translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
 <translation id="6906448540340261898">Sørg for at du alltid kan bruke passordene i Google-kontoen din</translation>
+<translation id="6906978870282539723">Få hjelp med faner og oppgaver</translation>
 <translation id="6908734251759299256">Oppdater nettleseren</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Bare på denne enheten.</translation>
 <translation id="6914583639806229067">Søk etter bildet du kopierte</translation>
@@ -1813,6 +1819,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7300448350764260141">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
+<translation id="7312823817809783355">Dine oppgaver</translation>
 <translation id="7313347584264171202">Her finner du inkognitofanene dine</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} autofyllalternativ er tilgjengelig over tastaturet.}other{{count} autofyllalternativer er tilgjengelige over tastaturet.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1820,6 +1827,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7345061034321640811">Import er ikke tillatt</translation>
 <translation id="7347998088283246662">Importer passord, logg, bokmerker med mer</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
+<translation id="7357999308187750900">Se alle</translation>
 <translation id="7364796246159120393">Velg fil</translation>
 <translation id="736564850024123010">Endre adressefeltets plassering for å få en tilpasset opplevelse.</translation>
 <translation id="7366909168761621528">Nettleserdata</translation>
@@ -2078,6 +2086,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1} og {website_2}}=3{For {website_1}, {website_2} og 1 til}other{For {website_1}, {website_2} og {more_count} til}}</translation>
 <translation id="8184895727539791845">For å la Gemini bruke kameraet ditt, slå på Kamera i iOS-innstillingene</translation>
 <translation id="8185076488803799132">Importer</translation>
+<translation id="8187200657863701733">Nåværende Chrome-nivå</translation>
 <translation id="8189615296021678665">Trykk på «Lagre» for å få enkel tilgang til dette passordet neste gang du logger på.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Enhetene dine<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Legg til passord</translation>
@@ -2121,6 +2130,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8325455175867928593">Skjul «Anmeldelser basert på interessene dine»</translation>
 <translation id="833647236762414178">Opprett, lagre og administrer passordene og passnøklene dine for å logge på nettsteder og apper enkelt. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Fullfør 1 oppgave til for å gå opp til nytt nivå}other{Fullfør {count} oppgaver til for å gå opp til nytt nivå}}</translation>
 <translation id="8348530355586151720">Trykk på menyen med tre prikker</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8361189290032177785">{count,plural, =1{Importerte {count} bokmerke}other{Importerte {count} bokmerker}}</translation>

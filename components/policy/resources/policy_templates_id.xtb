@@ -4671,6 +4671,13 @@ Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3928726028264020458">Aktifkan pelaporan info VPD perangkat</translation>
 <translation id="3935592079035695061">Milidetik sejak tengah malam.</translation>
 <translation id="3937800910397007337">Terapkan prioritas latar depan untuk semua tab</translation>
+<translation id="3938885528378923718">Mengonfigurasi cara <ph name="PRODUCT_NAME" /> mendownload model AI Generatif dasar dan menggunakannya untuk inferensi secara lokal.
+
+Jika kebijakan disetel ke Diizinkan (0) atau tidak disetel, model akan otomatis didownload dan digunakan untuk inferensi.
+
+Jika kebijakan ini disetel ke Nonaktif (1), model tidak akan didownload, dan model yang ada (jika sudah didownload) akan dihapus.
+
+Di platform desktop, download model juga dapat dinonaktifkan dengan menyetel <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> ke salah (false).</translation>
 <translation id="3941289958028934630">Nonaktifkan respons lisan di layar login</translation>
 <translation id="3943930334592166130">Kebijakan ini mengontrol apakah pengguna akan diminta memilih sertifikat klien saat lebih dari satu sertifikat cocok dengan <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.
@@ -8656,13 +8663,6 @@ Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Nonaktifkan ekstensi yang tidak dipublikasikan</translation>
-<translation id="6382287177674997281">Kebijakan ini memungkinkan pengguna memulai jenis update firmware apa pun.
-
-      Jika kebijakan ini disetel ke Aktif, pengguna seperti pemilik perangkat akan dapat memulai update firmware.
-
-      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, semua pengguna tidak akan dapat menerapkan update firmware.
-
-      Kebijakan ini berlaku untuk firmware untuk update firmware periferal eksternal dan update firmware komponen internal untuk perangkat <ph name="PRODUCT_OS_FLEX_NAME" />. Update firmware komponen internal untuk perangkat <ph name="PRODUCT_OS_NAME" /> tidak terpengaruh oleh kebijakan ini.</translation>
 <translation id="6383774771168138899">Mengonfigurasi alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Izinkan halaman hasil penelusuran mesin telusur default ditampilkan di panel samping Browser.</translation>
 <translation id="6389240462871677239">Mengizinkan origin Aplikasi Web Terisolasi menggunakan Controlled Frame</translation>

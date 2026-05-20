@@ -254,6 +254,7 @@
 <translation id="1380591466760231819">Məktub formasında qatlayın</translation>
 <translation id="138218114945450791">Açıq-mavi</translation>
 <translation id="1382194467192730611">USB cihazına administrator tərəfindən icazə verilib</translation>
+<translation id="1383876407941801731">Axtar</translation>
 <translation id="1384725838384960382">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi</translation>
 <translation id="1386623374109090026">Annotasiyalar</translation>
 <translation id="138810468159004008">Sayta daxil olarkən icazə verin</translation>
@@ -1816,6 +1817,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="380865868633614173">Kart məlumatı yadda saxlanır</translation>
 <translation id="3810770279996899697">Parol meneceri MacOS Keychain-ə giriş tələb edir</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Bu, ChromeOS-də Android tətbiqlərinin performansını təkmilləşdirən vacib güncəllənmədir.</translation>
 <translation id="3814865536373139791">Təşkilatın siyasətləri idarə etmə formasını sadələşdirin</translation>
 <translation id="3815434930383843058">8 x 12 düym</translation>
@@ -2395,6 +2397,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4736934858538408121">Virtual kart</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> axtarış təklifi</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, seçilmiş tab, <ph name="INDEX" />/<ph name="TOTAL" />, tablar arasında keçid etmək üçün sol və ya sağ oxdan istifadə edin</translation>
 <translation id="4742407542027196863">Parolları idarə edin...</translation>
 <translation id="474270528725216349">Sinxronlaşdırılmış cihazlarda ən azı 1 saytdan</translation>
 <translation id="4743275772928623722">Sistem güncəlləndi, lakin bəzi tətbiq və fayllar bərpa edilmədi. Tətbiqlər avtomatik yenidən endiriləcək.</translation>
@@ -2462,6 +2465,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4832961164064927107">Barbekü və Qril</translation>
 <translation id="4835568975547260025">Chrome suallarınıza daha fərdiləşdirilmiş cavablar əldə etməyinizə kömək etmək üçün defolt olaraq müvafiq açıq tabları paylaşacaq.</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
+<translation id="4842365697443353018">Sonra ödəyin seçimindən istifadə etmək üçün formanı silin</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4844937814014739139">Paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> və digərləri üçün endirim əldə edin</translation>

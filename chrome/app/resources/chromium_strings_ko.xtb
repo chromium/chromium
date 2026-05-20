@@ -585,7 +585,6 @@
 <translation id="7318036098707714271">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chromium에서 설정을 복구할 수 없습니다.</translation>
-<translation id="7339898014177206373">새 창</translation>
 <translation id="734373864078049451">웹, 북마크 및 기타 Chromium 콘텐츠가 여기에 저장됩니다.</translation>
 <translation id="7347827960336370838">암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chromium 데이터를 삭제<ph name="END_LINK" />해야 합니다.</translation>
 <translation id="7349591376906416160">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chromium을 구성했습니다.</translation>
@@ -594,6 +593,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7376384068949534168">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
 <translation id="7384121030444253939">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chromium에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
+<translation id="7407655596887111931">Chromium이 기본 브라우저로 설정됨</translation>
 <translation id="7413153308467572558">중단한 위치에서 계속하기: Chromium은 다시 시작할 때마다 탭을 복원합니다. 이 기능을 사용 중지하려면 다음으로 이동하세요.</translation>
 <translation id="7427879960656355200">Chromium으로 비밀번호 가져오기</translation>
 <translation id="744815265653811511">1. 아래의 <ph name="BUTTON_LABEL" /> 버튼을 클릭합니다.

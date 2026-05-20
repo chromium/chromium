@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Към първия раздел</translation>
 <translation id="2499505845365628575">Можете да намерите цялата си история на сърфиране чрез „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компрометирани пароли, които могат да представляват риск за сигурността ви.</translation>
+<translation id="2512709994717613803">Ниво <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Тук ще намерите групите си раздели</translation>
 <translation id="251837347827266434">Ще излезете от профила си, разделите ще бъдат затворени, а данните за сърфирането – изтрити</translation>
 <translation id="2520787026086861736">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Автоматично попълване и пароли<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Автоматично попълване на номера на картата, завършващ на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Създадено: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Филмова ролка</translation>
+<translation id="3743545564993953213">Този сайт се опитва да отвори приложението „Преки пътища“.</translation>
 <translation id="3746269120925354434">Информацията е запазена в Google Wallet</translation>
 <translation id="3750225824417196283">Нов раздел в режим „инкогнито“</translation>
 <translation id="3751873026576444885">Спиране на търсенето в екрана ви с Google Обектив</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Вашите отметки, история, пароли и други неща повече няма да се синхронизират с профила ви в Google.</translation>
 <translation id="484280513275854557">Излязохте от профила си. Данните за сърфирането бяха изтрити</translation>
 <translation id="484462545196658690">Автоматично</translation>
+<translation id="4846662396507502151">Сърфирайте по-бързо с новата лента с инструменти</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4854068532375923088">Разрешаване на Gemini да използва камерата ви</translation>
 <translation id="4860895144060829044">Обаждане</translation>
@@ -1427,6 +1430,7 @@
 <translation id="5988097621740394599">Преглед на пониженията на цените в разделите ви.</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
 <translation id="599343768974649785">Текст с нецензурно съдържание</translation>
+<translation id="6004988584831654445">Готово! Получавайте известия, когато пристигнат нови задачи.</translation>
 <translation id="6006672969046233841">Нов раздел</translation>
 <translation id="6011308810877101166">Подобряване на предложенията за търсене</translation>
 <translation id="6012140227487808125">Шифрова се…</translation>
@@ -1658,6 +1662,7 @@
 <translation id="6685259053455152195">Преки пътища за бърза промяна на настройките и за използване на функции от адресната лента.</translation>
 <translation id="6689342293888598653">Бял цвят на фона</translation>
 <translation id="6689685206615181381">Налице е само режим „инкогнито“</translation>
+<translation id="6705491067826837934">Контролите ви там, където са ви необходими</translation>
 <translation id="6708501134077648845">Опции за паролите</translation>
 <translation id="6709964700841491574">Режим на заключване</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@
 <translation id="6903282483217634857">Преместване надясно</translation>
 <translation id="6903907808598579934">Включване на синхронизирането</translation>
 <translation id="6906448540340261898">Уверете се, че винаги можете да използвате паролите в профила си в Google</translation>
+<translation id="6906978870282539723">Получавайте помощ за разделите и задачите си</translation>
 <translation id="6908734251759299256">Актуализиране на браузъра ви</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />Само на това устройство</translation>
 <translation id="6914583639806229067">Търсене на копираното изображение</translation>
@@ -2078,6 +2084,7 @@
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и още 1}other{За {website_1}, {website_2} и още {more_count}}}</translation>
 <translation id="8184895727539791845">За да разрешите на Gemini да използва камерата ви, включете съответната опция в настройките на iOS</translation>
 <translation id="8185076488803799132">Import</translation>
+<translation id="8187200657863701733">Текущо ниво на Chrome</translation>
 <translation id="8189615296021678665">Докоснете „Запазване“, за да имате лесен достъп до тази парола следващия път, когато влезете в профила си.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавяне на парола</translation>
@@ -2121,6 +2128,7 @@
 <translation id="8325455175867928593">Скриване на „Отзиви въз основа на интересите ви“</translation>
 <translation id="833647236762414178">Създавайте, запазвайте и управлявайте паролите и ключовете си за достъп, за да влизате лесно в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Изпълнете още 1 задача, за да преминете към по-горно ниво}other{Изпълнете още {count} задачи, за да преминете към по-горно ниво}}</translation>
 <translation id="8348530355586151720">Докоснете менюто с три точки.</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8361189290032177785">{count,plural, =1{Импортирана е {count} отметка}other{Импортирани са {count} отметки}}</translation>

@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Sugerencias de Chrome</translation>
 <translation id="1242008676835033345">Incorporado en <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Presiona Apps &gt; Apps predeterminadas</translation>
+<translation id="1264694639515903274">Ahora puedes personalizar tu página principal</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1289742167380433257">Para ahorrar datos, Google optimizó las imágenes de esta página.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1919950603503897840">Seleccionar contactos</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Personalizar mi página principal</translation>
 <translation id="1939059826036755332">Modo de pantalla en pantalla automático</translation>
 <translation id="1954597385941141174">Permitir que los sitios soliciten permiso para conectarse con dispositivos USB</translation>
 <translation id="1979673356880165407">Aumenta o reduce el tamaño del texto y las imágenes en todos los sitios que visitas</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome volverá a bloquear las cookies hoy</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3859306556332390985">Buscar más adelante</translation>
+<translation id="3870711497942672548">Modifica Chrome a tu gusto con imágenes y colores personalizados para tu página principal</translation>
 <translation id="389521680295183045">Los sitios pueden solicitar permiso para saber en qué momento estás usando activamente el dispositivo</translation>
 <translation id="3895926599014793903">Forzar habilitación de zoom</translation>
 <translation id="3903738175795615004">Arrastra desde la parte superior o presiona la tecla Esc para salir de la pantalla completa.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4310738531374808763">Personaliza la página principal</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vence mañana}other{Vence dentro de # días}}</translation>
+<translation id="4336371609622603229">Elige un tema personalizado para que Chrome sea tuyo</translation>
 <translation id="4338831206024587507">Todos los sitios en <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">No permitir que los sitios envíen notificaciones</translation>
 <translation id="4341577178275615435">Para activar o desactivar la navegación por cursor de texto, presiona F7</translation>
@@ -750,7 +754,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="8737426583868847403">Los sitios para los que guardes un nivel de zoom personalizado aparecerán aquí</translation>
 <translation id="8748714929822124637">No permitir que los sitios accedan a otros dispositivos en tu red local</translation>
 <translation id="8751914237388039244">Seleccionar una imagen</translation>
-<translation id="8775741625735357092">Puedes activar la barra de favoritos en Configuración &gt; Apariencia</translation>
 <translation id="8800034312320686233">¿No funciona el sitio?</translation>
 <translation id="8801436777607969138">Bloquea JavaScript para un sitio específico.</translation>
 <translation id="8801657293260363985">V8 es el motor JavaScript y WebAssembly de Chrome que se usa para mejorar el rendimiento del sitio</translation>

@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Vai alla prima scheda</translation>
 <translation id="2499505845365628575">Puoi trovare tutta la tua cronologia di navigazione a partire da <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Hai <ph name="NUMBER_OF_PASSWORDS" /> password compromesse che potrebbero mettere a rischio la tua sicurezza.</translation>
+<translation id="2512709994717613803">Livello <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Qui troverai i tuoi gruppi di schede</translation>
 <translation id="251837347827266434">Il tuo account verrà disconnesso, le schede verranno chiuse e i dati di navigazione verranno eliminati</translation>
 <translation id="2520787026086861736">Per disattivare la funzionalità, vai a <ph name="BEGIN_LINK" />Compilazione automatica e password<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Compila automaticamente il numero della carta che termina con <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data creazione: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rullino</translation>
+<translation id="3743545564993953213">Questo sito sta tentando di aprire l'applicazione "Scorciatoie".</translation>
 <translation id="3746269120925354434">Informazioni salvate in Google Wallet</translation>
 <translation id="3750225824417196283">Pagina Nuova scheda Incognito</translation>
 <translation id="3751873026576444885">Interrompi la ricerca sullo schermo con Google Lens</translation>
@@ -783,7 +785,7 @@
 <translation id="3812308602011798782">Recensioni</translation>
 <translation id="3813175908845379029">Suggerimenti utili che rendono la navigazione migliore e più semplice</translation>
 <translation id="3818293389945649617">Trova successivo</translation>
-<translation id="3819183753496523827">Sei offline. Controlla la connessione a Internet e riprova.</translation>
+<translation id="3819183753496523827">Sei offline. Controlla la connessione a internet e riprova.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 metodo di pagamento}other{# metodi di pagamento}}</translation>
 <translation id="3831560640878483188">Ignorare l'avviso?</translation>
 <translation id="3832419617903252251">Password salvata solo su questo dispositivo</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">I preferiti, la cronologia, le password e altre impostazioni non verranno più sincronizzati con il tuo Account Google.</translation>
 <translation id="484280513275854557">Il tuo account è stato disconnesso; i dati di navigazione sono stati eliminati</translation>
 <translation id="484462545196658690">Automatico</translation>
+<translation id="4846662396507502151">Naviga più velocemente con la nuova barra degli strumenti</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4854068532375923088">Consenti a "Gemini" di usare la fotocamera</translation>
 <translation id="4860895144060829044">Chiama</translation>
@@ -1427,6 +1430,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5988097621740394599">Visualizza i cali di prezzo nelle tue schede.</translation>
 <translation id="5988851877894965432">Apri URL in Chrome</translation>
 <translation id="599343768974649785">Testo esplicito</translation>
+<translation id="6004988584831654445">Fatto. Ricevi una notifica quando arrivano nuove attività.</translation>
 <translation id="6006672969046233841">Nuova scheda</translation>
 <translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6012140227487808125">Crittografia…</translation>
@@ -1658,6 +1662,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6685259053455152195">Scorciatoie per modificare rapidamente le impostazioni e utilizzare le funzionalità dalla barra degli indirizzi.</translation>
 <translation id="6689342293888598653">Colore sfondo bianco</translation>
 <translation id="6689685206615181381">Disponibile solo la modalità Incognito</translation>
+<translation id="6705491067826837934">I tuoi controlli, dove ti servono</translation>
 <translation id="6708501134077648845">Opzioni password</translation>
 <translation id="6709964700841491574">Modalità di blocco</translation>
 <translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6903282483217634857">Sposta a destra</translation>
 <translation id="6903907808598579934">Attiva la sincronizzazione</translation>
 <translation id="6906448540340261898">Assicurati di poter usare sempre le password nel tuo Account Google</translation>
+<translation id="6906978870282539723">Fatti aiutare con le schede e le attività</translation>
 <translation id="6908734251759299256">Aggiorna il browser</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Solo su questo dispositivo.</translation>
 <translation id="6914583639806229067">Cerca l'immagine copiata</translation>
@@ -2078,6 +2084,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8182037667962849780">{count,plural, =1{Per {website_1}}=2{Per {website_1}, {website_2}}=3{Per {website_1}, {website_2} e 1 altro}other{Per {website_1}, {website_2} e altri {more_count}}}</translation>
 <translation id="8184895727539791845">Per consentire a Gemini di usare la fotocamera, attiva l'autorizzazione Fotocamera nelle impostazioni di iOS</translation>
 <translation id="8185076488803799132">Importa</translation>
+<translation id="8187200657863701733">Livello Chrome attuale</translation>
 <translation id="8189615296021678665">Tocca "Salva" per trovare facilmente questa password al prossimo accesso.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Aggiungi password</translation>
@@ -2121,6 +2128,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8325455175867928593">Nascondi "Recensioni basate sui tuoi interessi"</translation>
 <translation id="833647236762414178">Crea, salva e gestisci le tue password e passkey in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Completa 1 altra attività per salire di livello}other{Completa {count} altre attività per salire di livello}}</translation>
 <translation id="8348530355586151720">Tocca il menu con tre puntini</translation>
 <translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} preferito importato}other{{count} preferiti importati}}</translation>

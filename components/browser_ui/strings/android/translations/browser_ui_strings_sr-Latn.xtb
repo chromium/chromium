@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Saveti za Chrome</translation>
 <translation id="1242008676835033345">Ugrađeno u sajt <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Dodirnite Aplikacije &gt; Podrazumevane aplikacije</translation>
+<translation id="1264694639515903274">Sada možete da prilagodite početnu stranicu</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275718070701477396">Izabrano je</translation>
 <translation id="1289742167380433257">Da bi se smanjilo korišćenje podataka, Google je optimizovao slike na ovoj stranici.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1919950603503897840">Izaberite kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Prilagodi moju početnu stranicu</translation>
 <translation id="1939059826036755332">Automatska slika u slici</translation>
 <translation id="1954597385941141174">Sajtovi mogu da traže da se povezuju sa USB uređajima</translation>
 <translation id="1979673356880165407">Uvećavajte ili umanjujte tekst i slike za sve sajtove koje posećujete</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Proširite</translation>
 <translation id="4310738531374808763">Prilagodite stranicu Početna</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
+<translation id="4336371609622603229">Personalizujte Chrome tako što ćete izabrati prilagođenu temu</translation>
 <translation id="4338831206024587507">Svi sajtovi u okviru domena <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne dozvoljavaj sajtovima da šalju obaveštenja</translation>
 <translation id="4341577178275615435">Da biste uključili ili isključili navigaciju kursorom, koristite F7</translation>
@@ -751,7 +754,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="8737426583868847403">Ovde će se prikazivati sajtovi za koje čuvate prilagođeni nivo zumiranja</translation>
 <translation id="8748714929822124637">Ne dozvoljavaj sajtovima da pristupaju drugim uređajima na lokalnoj mreži</translation>
 <translation id="8751914237388039244">Izaberite sliku</translation>
-<translation id="8775741625735357092">Možete da uključite traku sa obeleživačima u Podešavanjima &gt; Izgled</translation>
 <translation id="8800034312320686233">Da li sajt ne radi?</translation>
 <translation id="8801436777607969138">Blokirajte JavaScript za određeni sajt.</translation>
 <translation id="8801657293260363985">V8 je Chrome alatka za JavaScript i WebAssembly koja se koristi za poboljšanje performansi sajta</translation>

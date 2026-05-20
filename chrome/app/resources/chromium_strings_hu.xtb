@@ -582,7 +582,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7318036098707714271">A beállításait tartalmazó fájl hibás vagy érvénytelen.
 
 A Chromium nem tudja visszaállítani a beállításait.</translation>
-<translation id="7339898014177206373">Új ablak</translation>
 <translation id="734373864078049451">Az Ön könyvjelzői, valamint az internetezéssel és a Chromiummal kapcsolatos egyéb dolgai vannak itt.</translation>
 <translation id="7347827960336370838">Csak az összetett jelszava ismeretében tudja bárki is megtekinteni az Ön titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölnie kell a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Rendszergazdája úgy állította be a Chromiumot, hogy a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőt nyissa meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
@@ -591,6 +590,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7376384068949534168">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">A Chrome Webáruház megnyitása</translation>
 <translation id="7384121030444253939">Ez a bővítmény már nem támogatott. A Chromium az eltávolítását javasolja.</translation>
+<translation id="7407655596887111931">Mostantól a Chromium az alapértelmezett böngésző</translation>
 <translation id="7413153308467572558">Ott folytathatja, ahol abbahagyta: a Chromium minden újraindításkor visszaállítja a lapokat. A kikapcsoláshoz lépjen ide:</translation>
 <translation id="7427879960656355200">Jelszavak importálása a Chromiumba</translation>
 <translation id="744815265653811511">1. Kattintson az alábbi <ph name="BUTTON_LABEL" /> gombra.

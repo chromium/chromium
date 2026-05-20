@@ -254,6 +254,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1380591466760231819">Vēstules locījums</translation>
 <translation id="138218114945450791">Gaiši zila</translation>
 <translation id="1382194467192730611">USB ierīce, ko atļauj jūsu administrators</translation>
+<translation id="1383876407941801731">Meklēt</translation>
 <translation id="1384725838384960382">Drošu maksājumu akreditācijas datu autentifikācijas lapa</translation>
 <translation id="1386623374109090026">Komentāri</translation>
 <translation id="138810468159004008">Atļaut vietnes apmeklēšanas laikā</translation>
@@ -1819,6 +1820,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="380865868633614173">Notiek kartes informācijas saglabāšana</translation>
 <translation id="3810770279996899697">Paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Šis ir svarīgs atjauninājums, kas uzlabo Android lietotņu veiktspēju operētājsistēmā Chrome OS.</translation>
 <translation id="3814865536373139791">Organizācijas politiku pārvaldības racionalizēšana</translation>
 <translation id="3815434930383843058">8 x 12 collas</translation>
@@ -2397,6 +2399,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4736934858538408121">Virtuāla karte</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4738601419177586157">Meklēšanas ieteikums vaicājumam “<ph name="TEXT" />”</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, atlasītā cilne, <ph name="INDEX" />. no <ph name="TOTAL" />, izmantojiet kreiso vai labo bultiņu, lai pārslēgtos starp cilnēm</translation>
 <translation id="4742407542027196863">Pārvaldīt paroles…</translation>
 <translation id="474270528725216349">No vismaz vienas vietnes sinhronizētajās ierīcēs</translation>
 <translation id="4743275772928623722">Sistēma tika atjaunināta, taču dažas lietotnes un failus nevarēja atkopt. Jūsu lietotnes tiks automātiski lejupielādētas vēlreiz.</translation>
@@ -2464,6 +2467,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4832961164064927107">Grilēšana</translation>
 <translation id="4835568975547260025">Lai palīdzētu jums iegūt pielāgotākas atbildes uz jūsu jautājumiem, Chrome pēc noklusējuma kopīgos atbilstošas atvērtās cilnes.</translation>
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
+<translation id="4842365697443353018">Notīriet veidlapu, lai maksātu vēlāk</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="4844937814014739139">Ritināšana un tālummaiņa kopīgotajās cilnēs</translation>
 <translation id="484671803914931257">Saņemiet atlaides, iepērkoties pie <ph name="MERCHANT_NAME" /> un citiem tirgotājiem</translation>

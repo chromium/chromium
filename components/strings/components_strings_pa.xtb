@@ -254,6 +254,7 @@
 <translation id="1380591466760231819">ਚਿੱਠੀ ਵਾਲੀ ਤਹਿ</translation>
 <translation id="138218114945450791">ਹਲਕਾ ਨੀਲਾ</translation>
 <translation id="1382194467192730611">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੀ ਮਨਜ਼ੂਰੀ ਵਾਲਾ USB ਡੀਵਾਈਸ</translation>
+<translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1384725838384960382">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਪ੍ਰਮਾਣੀਕਰਨ ਸ਼ੀਟ</translation>
 <translation id="1386623374109090026">ਐਨੋਟੇਸ਼ਨਾਂ</translation>
 <translation id="138810468159004008">ਸਾਈਟ 'ਤੇ ਜਾਣ ਵੇਲੇ ਆਗਿਆ ਦਿਓ</translation>
@@ -1817,6 +1818,7 @@
 <translation id="380865868633614173">ਕਾਰਡ ਦੀ ਜਾਣਕਾਰੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3810770279996899697">Password Manager ਨੂੰ MacOS Keychain ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ਇਹ ਅਤਿ-ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ ਹੈ ਜੋ ChromeOS 'ਤੇ Android ਐਪਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="3814865536373139791">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੀਤੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਵੇਂ ਕਰਦੀ ਹੈ, ਇਸਨੂੰ ਆਸਾਨ ਬਣਾਓ</translation>
 <translation id="3815434930383843058">8 x 12 ਇੰਚ</translation>
@@ -2396,6 +2398,7 @@
 <translation id="4736934858538408121">ਆਭਾਸੀ ਕਾਰਡ</translation>
 <translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> ਖੋਜ ਸੁਝਾਅ</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਟੈਬ, <ph name="TOTAL" /> ਵਿੱਚੋਂ <ph name="INDEX" />, ਟੈਬਾਂ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰਨ ਲਈ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਤੀਰ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4742407542027196863">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>
 <translation id="474270528725216349">ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਘੱਟੋ-ਘੱਟ 1 ਸਾਈਟ ਦਾ ਡਾਟਾ</translation>
 <translation id="4743275772928623722">ਤੁਹਾਡੇ ਸਿਸਟਮ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ ਪਰ ਤੁਹਾਡੀਆਂ ਕੁਝ ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਤੁਹਾਡੀਆਂ ਐਪਾਂ ਆਪਣੇ ਆਪ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਹੋ ਜਾਣਗੀਆਂ।</translation>
@@ -2463,6 +2466,7 @@
 <translation id="4832961164064927107">BBQ ਅਤੇ ਗ੍ਰਿਲਿੰਗ</translation>
 <translation id="4835568975547260025">ਤੁਹਾਡੇ ਸਵਾਲਾਂ ਦੇ ਜ਼ਿਆਦਾ ਵਿਉਂਤਬੱਧ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ, Chrome ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਢੁਕਵੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰੇਗਾ।</translation>
 <translation id="4840250757394056958">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
+<translation id="4842365697443353018">ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਦੇ ਵਿਕਲਪ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਫ਼ਾਰਮ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="484462545196658690">ਸਵੈ</translation>
 <translation id="4844937814014739139">ਸਾਂਝੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਕ੍ਰੋਲ ਕਰਨਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨਾ</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ 'ਤੇ ਛੋਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>

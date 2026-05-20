@@ -332,6 +332,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4348548358339558429">Pour bénéficier de la personnalisation, incluez Chrome dans l'activité sur le Web et dans les applications</translation>
 <translation id="436060642166082913">Chrome a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
 <translation id="4367027658822022112">Vous pouvez épingler Lentille Google pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
+<translation id="4372389195695053189">Chrome est désormais votre navigateur par défaut</translation>
 <translation id="4389991535395284064">Lors de la navigation en mode Navigation privée, Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
@@ -616,7 +617,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7302361266603927550">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="7306401458628386911">Commencez à naviguer instantanément : Chrome peut désormais se lancer au démarrage de Windows.</translation>
 <translation id="7308322188646931570">Chrome a besoin d'accéder au stockage pour télécharger des fichiers</translation>
-<translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="73786666777299047">Ouvrir la boutique en ligne Chrome Web Store</translation>
 <translation id="7386878009611068389">Pour rester en sécurité en ligne avec les choix de tes parents, passe à ton profil Chrome où tu as utilisé l'adresse <ph name="USER_EMAIL_ADDRESS" /> pour te connecter</translation>

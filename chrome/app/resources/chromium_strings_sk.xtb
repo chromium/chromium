@@ -585,7 +585,6 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="7318036098707714271">Súbor predvolieb je poškodený alebo neplatný. 
 
 Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
-<translation id="7339898014177206373">Nové okno</translation>
 <translation id="734373864078049451">Tu nájdete svoj obsah na webe, záložky a ďalšie položky prehliadača Chromium.</translation>
 <translation id="7347827960336370838">Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak ju zabudnete alebo budete chcieť toto nastavenie zmeniť, budete musieť <ph name="BEGIN_LINK" />vymazať údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Správca systému nakonfiguroval Chromium, aby <ph name="TARGET_URL_HOSTNAME" /> otváral v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -594,6 +593,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7376384068949534168">Tento web ste v poslednom čase nenavštívili. Chromium odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Otvoriť Internetový obchod Chrome</translation>
 <translation id="7384121030444253939">Toto rozšírenie už nie je podporované. Chromium odporúča, aby ste ho odstránili.</translation>
+<translation id="7407655596887111931">Chromium je teraz váš predvolený prehliadač</translation>
 <translation id="7413153308467572558">Pokračujte tam, kde ste prestali: Chromium obnoví vaše karty pri každom reštarte. Ak to chcete vypnúť, prejdite do sekcie</translation>
 <translation id="7427879960656355200">Importovať heslá do prehliadača Chromium</translation>
 <translation id="744815265653811511">1. Nižšie kliknite na <ph name="BUTTON_LABEL" />.

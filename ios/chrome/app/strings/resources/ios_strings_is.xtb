@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Opna fyrsta flipa</translation>
 <translation id="2499505845365628575">Þú getur skoðað allan vafraferilinn á <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Þú ert með <ph name="NUMBER_OF_PASSWORDS" /> aðgangsorð í hættu sem gætu stefnt öryggi þínu í hættu.</translation>
+<translation id="2512709994717613803">Stig <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Hér finnurðu flipahópana þína</translation>
 <translation id="251837347827266434">Þú verður skráð(ur) út, flipum verður lokað, vefskoðunargögnum verður eytt</translation>
 <translation id="2520787026086861736">Farðu í <ph name="BEGIN_LINK" />Sjálfvirk útfylling og aðgangsorð<ph name="END_LINK" /> til að kveikja á eiginleikanum</translation>
@@ -1090,6 +1091,7 @@
 <translation id="4840495572919996524">Bókamerkin þín, ferillinn, aðgangsorðin og fleira verða ekki lengur samstillt við Google reikninginn þinn.</translation>
 <translation id="484280513275854557">Þú skráðist út; vefskoðunargögnum var eytt</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
+<translation id="4846662396507502151">Vafraðu hraðar með nýju tækjastikunni</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4854068532375923088">Leyfa „Gemini“ að nota myndavélina</translation>
 <translation id="4860895144060829044">Hringja</translation>
@@ -1428,6 +1430,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5988097621740394599">Sjá verðlækkanir á flipum.</translation>
 <translation id="5988851877894965432">Opna vefslóðir í Chrome</translation>
 <translation id="599343768974649785">Grófur texti</translation>
+<translation id="6004988584831654445">Þá er allt klárt! Fáðu tilkynningar þegar ný verkefni berast.</translation>
 <translation id="6006672969046233841">Nýr flipi</translation>
 <translation id="6011308810877101166">Bæta leitartillögur</translation>
 <translation id="6012140227487808125">Dulkóðar…</translation>
@@ -1659,6 +1662,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6685259053455152195">Flýtileiðir til að breyta stillingum og nota eiginleika á veffangastikunni á fljótlegan hátt.</translation>
 <translation id="6689342293888598653">Hvítur bakgrunnslitur</translation>
 <translation id="6689685206615181381">Aðeins huliðsstilling er í boði</translation>
+<translation id="6705491067826837934">Stýringarnar þínar, þar sem þú þarft þær</translation>
 <translation id="6708501134077648845">Valkostir fyrir aðgangsorð</translation>
 <translation id="6709964700841491574">Læst stilling</translation>
 <translation id="6710079714193676716">Stjórnað af fyrirtækinu þínu. Sumir eiginleikar gætu verið óaðgengilegir. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
@@ -1719,6 +1723,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6903282483217634857">Færa til hægri</translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6906448540340261898">Gakktu úr skugga um að þú getir alltaf notað aðgangsorðin á Google-reikningnum þínum</translation>
+<translation id="6906978870282539723">Fáðu hjálp með flipana þína og verkefni</translation>
 <translation id="6908734251759299256">Uppfærðu vafrann þinn</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Aðeins í þessu tæki.</translation>
 <translation id="6914583639806229067">Leita að mynd sem þú afritaðir</translation>
@@ -2079,6 +2084,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8182037667962849780">{count,plural, =1{Fyrir {website_1}}=2{Fyrir {website_1}, {website_2}}=3{Fyrir {website_1}, {website_2} og 1 í viðbót}one{Fyrir {website_1}, {website_2} og {more_count} í viðbót}other{Fyrir {website_1}, {website_2} og {more_count} í viðbót}}</translation>
 <translation id="8184895727539791845">Til að leyfa Gemini að nota myndavélina þína skaltu kveikja á myndavél í iOS-stillingum</translation>
 <translation id="8185076488803799132">Flytja inn</translation>
+<translation id="8187200657863701733">Núverandi Chrome-stig</translation>
 <translation id="8189615296021678665">Ýttu á „Vista“ til að nálgast aðgangsorðið á auðveldan hátt næst þegar þú skráir þig inn.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Bæta við aðgangsorði</translation>
@@ -2122,6 +2128,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8325455175867928593">Fela „Umsagnir sem byggjast á áhugasviðunum mínum“</translation>
 <translation id="833647236762414178">Búðu til, vistaðu og stjórnaðu aðgangsorðum og aðgangslyklum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Ljúktu einu verkefni í viðbót til að hækka um stig}one{Ljúktu {count} verkefni í viðbót til að hækka um stig}other{Ljúktu {count} verkefnum í viðbót til að hækka um stig}}</translation>
 <translation id="8348530355586151720">Ýttu á þriggja punkta valmyndina</translation>
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} bókamerki flutt inn}one{{count} bókamerki flutt inn}other{{count} bókamerki flutt inn}}</translation>

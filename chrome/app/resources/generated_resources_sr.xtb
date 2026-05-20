@@ -773,7 +773,6 @@
 <translation id="1521655867290435174">Google табеле</translation>
 <translation id="1521933835545997395">Повезано са Android телефоном</translation>
 <translation id="1523279371236772909">Прегледали сте претходног месеца</translation>
-<translation id="1523486680453956384">Прикажи задатак</translation>
 <translation id="1523978563989812243">Механизми за претварање текста у говор</translation>
 <translation id="1524563461097350801">Не, хвала</translation>
 <translation id="1525740877599838384">Користи само WiFi за одређивање локације</translation>
@@ -2139,7 +2138,6 @@
 <translation id="2450849356604136918">Нема активних приказа</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Ваша организација ограничава садржај који можете да чувате</translation>
-<translation id="245307875355990880">Настави задатак</translation>
 <translation id="245322989586167203">Сајтови се обично повезују са серијским портовима за потребе функција за пренос података, на пример, при подешавању мреже</translation>
 <translation id="2453860139492968684">Заврши</translation>
 <translation id="2454206500483040640">Издељено</translation>
@@ -4112,6 +4110,7 @@
 <translation id="3796215473395753611">alt + стрелица нагоре</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, користите тастер са стрелицом надесно да бисте преслушали глас</translation>
 <translation id="3796648294839530037">Омиљене мреже:</translation>
+<translation id="3797330664967181051">Подељени приказ</translation>
 <translation id="3797739167230984533">Организација <ph name="BEGIN_LINK" />управља уређајем <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Претражи „<ph name="SEARCH_TERMS" />“ на претраживачу <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798026281364973895">Онемогући инстант хотспот</translation>
@@ -4865,7 +4864,6 @@
 <translation id="4314497418046265427">Будите продуктивнији када повежете телефон и <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Додајте нови назив приступне тачке</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
-<translation id="4314821834464582073">Паузирај задатак</translation>
 <translation id="4316850752623536204">Веб-сајт програмера</translation>
 <translation id="4317733381297736564">Куповине у апликацији</translation>
 <translation id="4317820549299924617">Верификација није успела</translation>
@@ -7738,6 +7736,7 @@
 <translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Управљајте уређајима</translation>
 <translation id="6350821834561350243">Јасно опишите проблем и кораке за његово репродуковање (ако је могуће)</translation>
+<translation id="635100112331897007">Прикажи све Chrome смернице</translation>
 <translation id="6351178441572658285">Језици апликација</translation>
 <translation id="6352992678231622317">Картица је премештена надоле</translation>
 <translation id="6355632359041940003">Преузми задатак</translation>

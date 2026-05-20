@@ -772,7 +772,6 @@
 <translation id="1521655867290435174">Google Хүснэгт</translation>
 <translation id="1521933835545997395">Android утсанд холбогдсон</translation>
 <translation id="1523279371236772909">Өнгөрсөн сард үзсэн</translation>
-<translation id="1523486680453956384">Ажлыг харах</translation>
 <translation id="1523978563989812243">Бичвэрийг-ярианд-хувиргах хөдөлгүүр</translation>
 <translation id="1524563461097350801">Үгүй, баярлалаа</translation>
 <translation id="1525740877599838384">Байршлыг тогтоохын тулд зөвхөн Wi-Fi ашиглах</translation>
@@ -2150,7 +2149,6 @@
 <translation id="2450849356604136918">Идэвхтэй харагдац алга</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Танай байгууллага таны юу хадгалж болохыг хязгаарлана</translation>
-<translation id="245307875355990880">Ажлыг үргэлжлүүлэх</translation>
 <translation id="245322989586167203">Сайтууд ихэвчлэн таны сүлжээг тохируулах зэрэг өгөгдөл дамжуулах онцлогуудад зориулж цуваа портуудад холбогддог</translation>
 <translation id="2453860139492968684">Дуусгах</translation>
 <translation id="2454206500483040640">Хуваагдсан</translation>
@@ -4123,6 +4121,7 @@
 <translation id="3796215473395753611">alt + дээш сум</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, дуу хоолойг урьдчилан сонсохын тулд баруун суман товчийг ашиглана уу</translation>
 <translation id="3796648294839530037">Таалагддаг Сүлжээ:</translation>
+<translation id="3797330664967181051">Зэрэгцүүлэн харах горим</translation>
 <translation id="3797739167230984533">Таны <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />-г танай байгууллага удирдаж байна</translation>
 <translation id="3797900183766075808">&amp;“<ph name="SEARCH_TERMS" />”-д зориулсан <ph name="SEARCH_ENGINE" />-ыг хайх</translation>
 <translation id="3798026281364973895">Шуурхай сүлжээний цэгийг идэвхгүй болгох</translation>
@@ -4875,7 +4874,6 @@
 <translation id="4314497418046265427">Утсаа өөрийн <ph name="DEVICE_TYPE" />-д холбосон үедээ илүү бүтээлч байгаарай</translation>
 <translation id="4314561087119792062">Шинэ Хандах цэгийн нэр (APN) нэмэх</translation>
 <translation id="4314815835985389558">Синк хийхийг удирдах</translation>
-<translation id="4314821834464582073">Ажлыг түр зогсоох</translation>
 <translation id="4316850752623536204">Хөгжүүлэгчийн вебсайт</translation>
 <translation id="4317733381297736564">Аппын худалдан авалт</translation>
 <translation id="4317820549299924617">Баталгаажуулалт амжилтгүй боллоо</translation>
@@ -7749,6 +7747,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" />-г суулгах</translation>
 <translation id="6350745006329795504">Төхөөрөмжүүдээ удирдах</translation>
 <translation id="6350821834561350243">Асуудлын тодорхой тайлбар болон асуудлыг хуулбарлах алхмуудыг өгнө үү (хэрэв боломжтой бол)</translation>
+<translation id="635100112331897007">Chrome-н бүх бодлогыг үзэх</translation>
 <translation id="6351178441572658285">Аппын хэлнүүд</translation>
 <translation id="6352992678231622317">Табыг доош зөөсөн</translation>
 <translation id="6355632359041940003">Ажлыг хяналтдаа авах</translation>

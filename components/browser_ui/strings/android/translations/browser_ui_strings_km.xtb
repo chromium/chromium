@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">គន្លឹះប្រើប្រាស់ Chrome</translation>
 <translation id="1242008676835033345">បានបង្កប់​នៅលើ <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">ចុច កម្មវិធី  &gt; កម្មវិធី​លំនាំដើម</translation>
+<translation id="1264694639515903274">ឥឡូវនេះ អ្នកអាច​ប្ដូរ​ទំព័រដើម​របស់អ្នក​តាមបំណង​បានហើយ</translation>
 <translation id="1272079795634619415">ឈប់</translation>
 <translation id="1275718070701477396">បានជ្រើសរើស</translation>
 <translation id="1289742167380433257">ដើម្បី​សន្សំសំចៃ​ទិន្នន័យ​ឱ្យអ្នក រូបភាព​របស់ទំព័រនេះ​ត្រូវបានបង្កើន​គុណភាព​ដោយ Google។</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">បញ្ចប់​ការ​សន្ទនា</translation>
 <translation id="1919950603503897840">ជ្រើសរើស​ទំនាក់ទំនង</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">ប្ដូរ​ទំព័រដើម​របស់ខ្ញុំ​តាមបំណង</translation>
 <translation id="1939059826036755332">រូបក្នុងរូប​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="1954597385941141174">គេហទំព័រអាចស្នើសុំភ្ជាប់ជាមួយឧបករណ៍ USB</translation>
 <translation id="1979673356880165407">ធ្វើ​ឱ្យ​អក្សរ និង​រូបភាព​កាន់តែ​ធំ​ ឬ​កាន់តែ​តូច​សម្រាប់​គេហទំព័រ​ទាំងអស់ដែល​អ្នក​ចូលមើល</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">ពង្រីក</translation>
 <translation id="4310738531374808763">ប្ដូរ​ទំព័រដើម​របស់អ្នក​តាមបំណង</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ផុតកំណត់​ថ្ងៃស្អែក}other{ផុតកំណត់​ក្នុងរយៈពេល # ថ្ងៃ}}</translation>
+<translation id="4336371609622603229">កំណត់ Chrome ឱ្យស្រប​តាមអ្នក​ដោយ​ជ្រើសរើស​ទម្រង់រចនា​ផ្ទាល់ខ្លួន</translation>
 <translation id="4338831206024587507">គេហទំព័រ​ទាំង​អស់​នៅក្រោម <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ផ្ញើការជូនដំណឹងទេ</translation>
 <translation id="4341577178275615435">ដើម្បីបើក ឬបិទមុខងារ caret browsing សូមប្រើផ្លូវកាត់ F7</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">គេហទំព័រដែលអ្នករក្សាទុកកម្រិតពង្រីកបង្រួមផ្ទាល់ខ្លួននឹងបង្ហាញនៅទីនេះ</translation>
 <translation id="8748714929822124637">មិន​អនុញ្ញាតឱ្យ​គេហទំព័រ​ចូលប្រើ​ឧបករណ៍​ផ្សេងទៀត​នៅលើ​បណ្ដាញ​មូលដ្ឋាន​របស់អ្នក​ទេ</translation>
 <translation id="8751914237388039244">ជ្រើសរើស​រូបភាព</translation>
-<translation id="8775741625735357092">អ្នកអាច​បើក​របារចំណាំ​នៅក្នុង ការកំណត់ &gt; រូបរាង</translation>
 <translation id="8800034312320686233">គេហទំព័រ​មិន​ដំណើរការ​?</translation>
 <translation id="8801436777607969138">ទប់ស្កាត់ JavaScript សម្រាប់គេហទំព័រជាក់លាក់។</translation>
 <translation id="8801657293260363985">V8 គឺជាម៉ាស៊ីន JavaScript និង WebAssembly របស់ Chrome ដែលត្រូវបានប្រើ ដើម្បីធ្វើឱ្យប្រតិបត្តិការគេហទំព័រប្រសើរឡើង</translation>

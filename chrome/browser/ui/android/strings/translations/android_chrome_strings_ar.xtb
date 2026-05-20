@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">يمكنك تنظيم منتجاتك التي تتتبّع سعرها في "إشارات مرجعية".</translation>
 <translation id="1455845192930279203">هل المطلوب تنزيل "<ph name="FILE_NAME" />" ‏(<ph name="FILE_SIZE" />) من <ph name="DOWNLOAD_DOMAIN" /> على أي حال؟</translation>
 <translation id="1460751212339734034">وقت أكثر، كتابة أقلّ</translation>
+<translation id="146522654774760805">كلمات المرور والملء التلقائي</translation>
 <translation id="1466383950273130737">‏اختيار لغة Chrome</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
 <translation id="147982357559798527">تم التغيير</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">‏هل تريد تضمين النص المحيط في عمليات البحث على Google؟</translation>
 <translation id="2004096469149679223">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة ومكتومة الصوت في "وضع التصفّح المتخفي"</translation>
 <translation id="2021896219286479412">عناصر التحكم لموقع في وضع ملء الشاشة</translation>
+<translation id="2022953316617983419">رمز الاستجابة السريعة</translation>
 <translation id="2024195579772565064">حذف محرك البحث</translation>
 <translation id="2029669011553795746">تم فتح البطاقة السفلية لتفعيل إشعارات النصائح في نصف الشاشة</translation>
 <translation id="2038563949887743358">تفعيل طلب الموقع الإلكتروني لسطح المكتب</translation>
@@ -790,6 +792,7 @@
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و<ph name="TAB_COUNT" /> علامة تبويب أخرى</translation>
 <translation id="441100617989818073">علامات التبويب والمجموعات غير المستخدَمة أو المكرّرة</translation>
 <translation id="4412123112245770507">تصغير القسم</translation>
+<translation id="4412698727486357573">مركز المساعدة</translation>
 <translation id="4414179633735763985">تم حذف <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4425140285732600465">تم تفعيل ميزة تتبُّع السعر. يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني.</translation>
@@ -1436,7 +1439,6 @@
 <translation id="6980258170429555165">تم تمييز قائمة "<ph name="MENU_NAME" />".</translation>
 <translation id="6983306615164277634">يمكنك أيضًا النقر مع الاستمرار على شريط العناوين لتغيير مكانه.</translation>
 <translation id="6987047470128880212">علامة التبويب في وضع التصفُّح المتخفي غير متوفّرة على هذا الجهاز.</translation>
-<translation id="6989358895283601928">الحفظ والطباعة</translation>
 <translation id="6996145122199359148">تنزيل هذه الصفحة</translation>
 <translation id="7013762323294215682">سيتم حفظ مفتاح المرور هذا في مدير كلمات المرور. سيتمكن أي شخص لديه إذن بالوصول من استخدام مفتاح المرور هذا.</translation>
 <translation id="7020741890149022655">الإضافة إلى قائمة القراءة <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
@@ -2007,6 +2009,7 @@
 <translation id="970715775301869095">عدد الدقائق المتبقية: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>
+<translation id="984275831282074731">طرق الدفع</translation>
 <translation id="984756705737569814">‏يتعذّر التحقّق من أمان كلمات المرور في حسابك على Google</translation>
 <translation id="987264212798334818">عام</translation>
 <translation id="988091779042748639">لحذف سجلّ التصفّح في وضع التصفّح المتخفي على جهازك، عليك إغلاق كل علامات التبويب في وضع التصفّح المتخفي.</translation>

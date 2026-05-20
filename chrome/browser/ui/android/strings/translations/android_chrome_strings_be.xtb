@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Упарадкоўвайце тавары, за якімі сочыце, у Закладках</translation>
 <translation id="1455845192930279203">Усё роўна спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) з дамена "<ph name="DOWNLOAD_DOMAIN" />"?</translation>
 <translation id="1460751212339734034">Менш пішыце – эканомце час</translation>
+<translation id="146522654774760805">Паролі і аўтазапаўненне</translation>
 <translation id="1466383950273130737">Выберыце мову Chrome</translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
 <translation id="147982357559798527">Зменена</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Дадаваць кантэкст у пошукавыя запыты Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
+<translation id="2022953316617983419">QR-код</translation>
 <translation id="2024195579772565064">Выдаленне пошукавай сістэмы</translation>
 <translation id="2029669011553795746">Прапанова ўключыць апавяшчэнні з парадамі адкрыта на палову экрана</translation>
 <translation id="2038563949887743358">Уключыць запытванне версіі для настольнага камп’ютара</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> і іншыя ўкладкі (<ph name="TAB_COUNT" />)</translation>
 <translation id="441100617989818073">Укладкі/групы: копіі, неактыўныя</translation>
 <translation id="4412123112245770507">Згарнуць раздзел</translation>
+<translation id="4412698727486357573">Даведачны цэнтр</translation>
 <translation id="4414179633735763985">Выдалена: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4425140285732600465">Цана адсочваецца. Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі.</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165">Меню "<ph name="MENU_NAME" />" вылучана.</translation>
 <translation id="6983306615164277634">Каб змяніць палажэнне адраснага радка, націсніце яго і ўтрымлівайце.</translation>
 <translation id="6987047470128880212">На гэтай прыладзе нельга адкрываць укладкі ў рэжыме інкогніта</translation>
-<translation id="6989358895283601928">Захаваць і раздрукаваць</translation>
 <translation id="6996145122199359148">Спампаваць старонку</translation>
 <translation id="7013762323294215682">Гэты ключ доступу будзе захаваны ў менеджары пароляў. Усе карыстальнікі, якія маюць доступ да менеджара пароляў, змогуць карыстацца і ключом доступу.</translation>
 <translation id="7020741890149022655">Дадаць у спіс на прагляд <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка з выключаным гукам</translation>
 <translation id="7084115944294706056">Выбар размяшчэння адраснага радка</translation>
 <translation id="7085332316435785646">Выберыце, ці выкарыстоўваць гісторыю Chrome для персаналізацыі сэрвісаў Google</translation>
+<translation id="7087066066828635014">Апавяшчэнні з парадамі ўключаны</translation>
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="7106762743910369165">Вашым браўзерам кіруе арганізацыя</translation>
@@ -2002,6 +2005,7 @@
 <translation id="970715775301869095">Засталося часу: <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="983192555821071799">Закрыць усе ўкладкі</translation>
+<translation id="984275831282074731">Спосабы аплаты</translation>
 <translation id="984756705737569814">Не ўдалося праверыць паролі ў вашым Уліковым запісе Google</translation>
 <translation id="987264212798334818">Агульныя</translation>
 <translation id="988091779042748639">Каб выдаліць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта.</translation>

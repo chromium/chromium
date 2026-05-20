@@ -254,6 +254,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1380591466760231819">Lipatan surat</translation>
 <translation id="138218114945450791">Biru Terang</translation>
 <translation id="1382194467192730611">Perangkat USB diizinkan oleh administrator Anda</translation>
+<translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384725838384960382">Sheet autentikasi kredensial pembayaran aman</translation>
 <translation id="1386623374109090026">Anotasi</translation>
 <translation id="138810468159004008">Izinkan saat mengunjungi situs</translation>
@@ -1820,6 +1821,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="380865868633614173">Menyimpan info kartu</translation>
 <translation id="3810770279996899697">Pengelola Sandi memerlukan akses ke Rantai Kunci macOS</translation>
 <translation id="3810973564298564668">Kelola</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Ini adalah update penting yang meningkatkan performa aplikasi Android di ChromeOS.</translation>
 <translation id="3814865536373139791">Sederhanakan cara organisasi Anda mengelola kebijakan</translation>
 <translation id="3815434930383843058">8 x 12 inci (20 x 30 cm)</translation>
@@ -2399,6 +2401,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4736934858538408121">Kartu virtual</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4738601419177586157">Saran penelusuran <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, tab dipilih, <ph name="INDEX" /> dari <ph name="TOTAL" />, gunakan panah kiri atau kanan untuk berpindah tab</translation>
 <translation id="4742407542027196863">Kelola sandi...</translation>
 <translation id="474270528725216349">Dari minimal 1 situs di perangkat yang disinkronkan</translation>
 <translation id="4743275772928623722">Sistem Anda telah diupdate, tetapi beberapa aplikasi dan file Anda tidak dapat dipulihkan. Aplikasi Anda akan didownload lagi secara otomatis.</translation>
@@ -2466,6 +2469,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4832961164064927107">BBQ &amp; Memanggang</translation>
 <translation id="4835568975547260025">Chrome secara default akan membagikan tab terbuka yang relevan untuk membantu Anda mendapatkan jawaban yang lebih sesuai dengan pertanyaan Anda.</translation>
 <translation id="4840250757394056958">Lihat histori Chrome Anda</translation>
+<translation id="4842365697443353018">Hapus formulir untuk menggunakan bayar nanti</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="4844937814014739139">Men-scroll dan memperbesar/memperkecil tab bersama</translation>
 <translation id="484671803914931257">Dapatkan diskon di <ph name="MERCHANT_NAME" /> dan lainnya</translation>

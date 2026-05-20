@@ -4541,6 +4541,13 @@ Bạn có thể kết hợp chính sách này với <ph name="POLICY_CLOUD_POLIC
 <translation id="3928726028264020458">Bật tính năng báo cáo thông tin về VPD của thiết bị</translation>
 <translation id="3935592079035695061">Số mili giây kể từ nửa đêm.</translation>
 <translation id="3937800910397007337">Buộc chế độ ưu tiên nền trước đối với tất cả các thẻ</translation>
+<translation id="3938885528378923718">Định cấu hình cách <ph name="PRODUCT_NAME" /> tải mô hình AI tạo sinh nền tảng xuống và dùng mô hình đó để suy luận cục bộ.
+
+Khi bạn không đặt hoặc đặt chính sách này thành Allowed (Cho phép) (0), mô hình sẽ tự động được tải xuống và dùng để suy luận.
+
+Khi bạn đặt chính sách này thành Disabled (Tắt) (1), mô hình sẽ không được tải xuống và mô hình hiện có (nếu đã tải xuống) sẽ bị xoá.
+
+Trên nền tảng máy tính, bạn cũng có thể tắt tính năng tải mô hình xuống bằng cách đặt <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> thành false (sai).</translation>
 <translation id="3941289958028934630">Tắt tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
 <translation id="3943930334592166130">Chính sách này kiểm soát việc người dùng có được nhắc chọn chứng chỉ máy khách hay không khi nhiều chứng chỉ khớp <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Nếu bạn bật chính sách này, thì người dùng sẽ được nhắc chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ.
@@ -8452,13 +8459,6 @@ Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do
 
 Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Vô hiệu hoá tiện ích chưa phát hành</translation>
-<translation id="6382287177674997281">Chính sách này cho phép người dùng khởi chạy mọi loại bản cập nhật chương trình cơ sở.
-
-      Nếu bạn đặt chính sách này thành Bật, người dùng (chẳng hạn như chủ sở hữu thiết bị) sẽ có thể khởi chạy bản cập nhật chương trình cơ sở.
-
-      Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, tất cả người dùng sẽ không thể áp dụng bản cập nhật chương trình cơ sở.
-
-      Chính sách này áp dụng cho các bản cập nhật chương trình cơ sở của thiết bị ngoại vi và các bản cập nhật chương trình cơ sở của thành phần bên trong trên các thiết bị <ph name="PRODUCT_OS_FLEX_NAME" />. Các bản cập nhật chương trình cơ sở của thành phần bên trong trên thiết bị <ph name="PRODUCT_OS_NAME" /> không bị ảnh hưởng bởi chính sách này.</translation>
 <translation id="6383774771168138899">Định cấu hình quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="MICROSOFT_ONE_DRIVE_NAME" /> và <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Bật chế độ hiện trang kết quả của công cụ tìm kiếm mặc định trong bảng điều khiển bên của Trình duyệt</translation>
 <translation id="6389240462871677239">Cho phép các nguồn gốc của Ứng dụng web tách biệt sử dụng Controlled Frame API</translation>

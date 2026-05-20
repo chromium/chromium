@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1242008676835033345">Ingesloten in <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tik op Apps &gt; Standaard-apps</translation>
+<translation id="1264694639515903274">Je kunt nu je homepage aanpassen</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1289742167380433257">De afbeeldingen op deze pagina zijn door Google geoptimaliseerd om data te besparen.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1919950603503897840">Contacten selecteren</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Mijn homepage aanpassen</translation>
 <translation id="1939059826036755332">Automatisch scherm-in-scherm</translation>
 <translation id="1954597385941141174">Sites kunnen vragen of ze verbinding mogen maken met USB-apparaten</translation>
 <translation id="1979673356880165407">Tekst en afbeeldingen groter of kleiner maken voor alle sites die je bezoekt</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome blokkeert vandaag weer cookies</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Vooruit zoeken</translation>
+<translation id="3870711497942672548">Personaliseer Chrome met aangepaste kleuren en afbeeldingen voor je homepage</translation>
 <translation id="389521680295183045">Sites kunnen vragen of ze mogen weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="3895926599014793903">Zoom verplicht aan</translation>
 <translation id="3903738175795615004">Sleep vanaf de bovenkant of druk op Esc om het volledige scherm te sluiten.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Uitvouwen</translation>
 <translation id="4310738531374808763">Je homepage aanpassen</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
+<translation id="4336371609622603229">Personaliseer Chrome door een aangepast thema te kiezen</translation>
 <translation id="4338831206024587507">Alle sites onder <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Niet toestaan dat sites meldingen sturen</translation>
 <translation id="4341577178275615435">Gebruik de sneltoets F7 om browsen met navigatietoetsen aan of uit te zetten</translation>
@@ -750,7 +754,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="8737426583868847403">Sites waarvoor je een aangepast zoomniveau hebt opgeslagen</translation>
 <translation id="8748714929822124637">Niet toestaan dat sites toegang krijgen tot andere apparaten in je lokale netwerk</translation>
 <translation id="8751914237388039244">Een afbeelding selecteren</translation>
-<translation id="8775741625735357092">Je kunt de bookmarkbalk aanzetten via Instellingen &gt; Vormgeving</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript voor een specifieke site.</translation>
 <translation id="8801657293260363985">V8 is de JavaScript- en WebAssembly-engine van Chrome die wordt gebruikt om de sitesprestaties te verbeteren</translation>

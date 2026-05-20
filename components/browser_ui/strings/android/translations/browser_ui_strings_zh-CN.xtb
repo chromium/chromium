@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1242008676835033345">嵌入来源：<ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">依次点按“应用”&gt;“默认应用”</translation>
+<translation id="1264694639515903274">现在可以自定义主页了</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1289742167380433257">为节省您的流量，Google 已优化了此网页中的图片。</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">挂断</translation>
 <translation id="1919950603503897840">选择联系人</translation>
 <translation id="1923695749281512248">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，共 <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">自定义我的主页</translation>
 <translation id="1939059826036755332">自动进入画中画模式</translation>
 <translation id="1954597385941141174">网站可以请求连接到 USB 设备</translation>
 <translation id="1979673356880165407">在您访问的所有网站上放大或缩小文字和图片</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome 将于今天再次屏蔽 Cookie</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
+<translation id="3870711497942672548">自定义主页颜色和图片，打造专属 Chrome 体验</translation>
 <translation id="389521680295183045">网站可以询问能否了解您何时在主动使用自己的设备</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3903738175795615004">从顶部拖动或按 Esc 键可退出全屏模式。</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">展开</translation>
 <translation id="4310738531374808763">自定义首页</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
+<translation id="4336371609622603229">选择自定义主题，开启专属 Chrome 体验</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有网站</translation>
 <translation id="4340799661701629185">不允许网站发送通知</translation>
 <translation id="4341577178275615435">如需开启或关闭光标浏览模式，请使用快捷键 F7</translation>
@@ -750,7 +754,6 @@
 <translation id="8737426583868847403">您为其保存了自定义缩放级别的网站将显示在此处</translation>
 <translation id="8748714929822124637">不允许网站访问本地网络中的其他设备</translation>
 <translation id="8751914237388039244">选择图片</translation>
-<translation id="8775741625735357092">您可以在“设置”&gt;“外观”中开启书签栏</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>

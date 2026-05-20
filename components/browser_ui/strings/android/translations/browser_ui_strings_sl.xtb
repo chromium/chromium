@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Nasveti za Chrome</translation>
 <translation id="1242008676835033345">Vdelano v <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Dotaknite se Aplikacije &gt; Privzete aplikacije</translation>
+<translation id="1264694639515903274">Zdaj lahko prilagodite domačo stran</translation>
 <translation id="1272079795634619415">Ustavi</translation>
 <translation id="1275718070701477396">Izbrano</translation>
 <translation id="1289742167380433257">Google optimizira slike na tej strani, da prihranite pri prenosu podatkov.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Prekini</translation>
 <translation id="1919950603503897840">Izbira stikov</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Prilagajanje domače strani</translation>
 <translation id="1939059826036755332">Samodejni način slike v sliki</translation>
 <translation id="1954597385941141174">Spletna mesta lahko zahtevajo vzpostavitev povezave z napravami USB</translation>
 <translation id="1979673356880165407">Povečajte ali pomanjšajte besedilo in slike na vseh spletnih mestih, ki jih obiščete.</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome bo znova blokiral piškotke danes</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3859306556332390985">Išči naprej</translation>
+<translation id="3870711497942672548">Prilagodite si Chrome z barvami in slikami po meri za domačo stran</translation>
 <translation id="389521680295183045">Spletna mesta lahko zahtevajo, da izvejo, kdaj aktivno uporabljate napravo</translation>
 <translation id="3895926599014793903">Vsili povečavo</translation>
 <translation id="3903738175795615004">Povlecite z vrha ali pritisnite tipko Esc, če želite zapreti celozaslonski način.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Razširi</translation>
 <translation id="4310738531374808763">Prilagajanje začetne strani</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
+<translation id="4336371609622603229">Izberite temo po meri in prilagodite Chrome po svoje</translation>
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
 <translation id="4340799661701629185">Spletnim mestom ni dovoljeno pošiljati obvestil.</translation>
 <translation id="4341577178275615435">Če želite vklopiti ali izklopiti brskanje s kazalko, uporabite bližnjico F7</translation>
@@ -750,7 +754,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8737426583868847403">Spletna mesta, za katera shranite prilagojeno stopnjo povečave, bodo prikazana tukaj</translation>
 <translation id="8748714929822124637">Spletnim mestom ni dovoljen dostop do drugih naprav v lokalnem omrežju</translation>
 <translation id="8751914237388039244">Izberite sliko</translation>
-<translation id="8775741625735357092">V meniju Nastavitve &gt; Videz lahko vklopite vrstico z zaznamki</translation>
 <translation id="8800034312320686233">Ali spletno mesto ne deluje?</translation>
 <translation id="8801436777607969138">Preprečevanje JavaScripta za določeno spletno mesto.</translation>
 <translation id="8801657293260363985">V8 je mehanizem za JavaScript in WebAssembly za Chrome, ki se uporablja za izboljšanje učinkovitosti delovanja spletnih mest</translation>

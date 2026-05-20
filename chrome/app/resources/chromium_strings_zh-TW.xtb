@@ -581,7 +581,6 @@
 <translation id="7318036098707714271">你的偏好設定檔案已毀損或無效。
 
 Chromium 無法復原你的設定。</translation>
-<translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="734373864078049451">你瀏覽的網頁、書籤和其他 Chromium 設定都在這裡。</translation>
 <translation id="7347827960336370838">只有知道通關密語的人才能讀取你的加密資料。通關密語不會傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="7349591376906416160">你的系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
@@ -590,6 +589,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7376384068949534168">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="73786666777299047">開啟 Chrome 線上應用程式商店</translation>
 <translation id="7384121030444253939">Chromium 不再支援這項擴充功能，建議你移除。</translation>
+<translation id="7407655596887111931">Chromium 現在是預設瀏覽器</translation>
 <translation id="7413153308467572558">接續上次的瀏覽內容：Chromium 每次重新啟動時都會還原分頁。如要關閉這項功能，請前往</translation>
 <translation id="7427879960656355200">將密碼匯入 Chromium</translation>
 <translation id="744815265653811511">1. 點選下方的「<ph name="BUTTON_LABEL" />」
@@ -709,7 +709,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing 無法設為預設瀏覽器。</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是你專屬的 Chromium</translation>
-<translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="8719993436687031146">要登入 Chromium 嗎？</translation>
 <translation id="8747073452963259673">搜尋區域的左下角：左側 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">安裝錯誤：網路管理員採用的「群組原則」不允許安裝應用程式：<ph name="INSTALL_ERROR" /></translation>

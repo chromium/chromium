@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Dette problemet oppstår på grunn av et sertifikat du eller noen andre har installert på enheten. Det er kjent at sertifikatet brukes til nettverksavlytting og -overvåking, og Chromium stoler ikke på det. Selv om det finnes legitime bruksområder for overvåking, f.eks. på skole- eller bedriftsnettverk, vil Chromium sørge for at du er klar over at det foregår, selv om du ikke kan stoppe det. Overvåking kan skje i alle nettlesere og applikasjoner som bruker nettet.</translation>
 <translation id="1024111578869940408">Noen ganger etterligner angripere nettsteder ved å gjøre endringer i nettadressen som er vanskelige å se.</translation>
 <translation id="1024913885641459127">Produktanmeldelser og prissammenligninger</translation>
+<translation id="1025174656774447058">Vil du dele åpne faner automatisk for denne tråden?</translation>
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted. Du blir logget av de fleste nettsteder. }other{Fra # nettsteder. Du blir logget av de fleste nettsteder. }}</translation>
@@ -254,6 +255,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1380591466760231819">Brevfals</translation>
 <translation id="138218114945450791">Lyseblå</translation>
 <translation id="1382194467192730611">USB-enheten er tillatt av administratoren din</translation>
+<translation id="1383876407941801731">Søk</translation>
 <translation id="1384725838384960382">Ark for sikker autentisering av betalingslegitimasjon</translation>
 <translation id="1386623374109090026">Annoteringer</translation>
 <translation id="138810468159004008">Tillat mens du er på nettstedet</translation>
@@ -1024,6 +1026,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Bruk skjermlås til å bekrefte kort fra nå av</translation>
 <translation id="2552532158894206888">høyretast</translation>
+<translation id="2552601157105591479">Chrome deler relevante åpne faner i hver nye tråd for å gi deg bedre svar. Finn ut mer om</translation>
 <translation id="2553352788023127673">Søkeloggen og passordene kan slettes i innstillingene for administrering</translation>
 <translation id="2553853292994445426">Kontroller innstillingene for sikker DNS. Det er mulig du har konfigurert en sikker DNS-tjener som vi ikke klarer å koble til.</translation>
 <translation id="255497580849974774">Hold enheten koblet til en lader under oppdateringen.</translation>
@@ -1240,6 +1243,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2930531075747147366">Fane fra den andre enheten din</translation>
 <translation id="2930577230479659665">Beskjær etter hver kopi</translation>
 <translation id="2933624813161016821">Pregfolie</translation>
+<translation id="2935726091208500473">deling av faner</translation>
 <translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">åpne linker til <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – For å vise markøren, bytt app, last inn siden på nytt eller gå tilbake</translation>
@@ -1267,6 +1271,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="297173220375858963">DTP</translation>
 <translation id="2972581237482394796">Gjø&amp;r om</translation>
 <translation id="2974468223369775963">Kunne ikke lagre dette IBAN-nummeret i Google-kontoen din. Det ble lagret i Chrome på denne enheten i stedet. Chrome spør deg på nytt neste gang du bruker dette IBAN-nummeret.</translation>
+<translation id="2976162850019490782">Når dette er på, deler Chrome alle fanene i dette vinduet for å hjelpe deg med å få mer relevante svar. Du kan slå på dette for alle tråder i innstillingene.</translation>
 <translation id="297667759942911166">Samarbeid i fanegrupper</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, for øyeblikket valgt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -3320,6 +3325,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6133984428121856852">Filetternavnet er tomt eller feilformatert.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 tommer</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, valgt</translation>
 <translation id="6143097244789397208">Utvidet og virtuell virkelighet</translation>
 <translation id="614327212146763975">Bevegelses- og lyssensorer er tillatt</translation>
 <translation id="6146055958333702838">Sjekk alle kabler, og start rutere, modemer eller andre nettverksenheter
@@ -4196,6 +4202,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> sjekker om du er kvalifisert (dette påvirker ikke kredittvurderingen din). Hvis du godkjennes, gir <ph name="BNPL_ISSUER_NAME" /> deg forslag til betalingsavtaler du kan velge mellom for å fullføre kjøpet.</translation>
 <translation id="7489392576326061356">Sjampo og balsam</translation>
 <translation id="7489919936111034362">Du har brukt opp lagringsplassen din i Google Disk</translation>
+<translation id="7490026840522163531">Vil du dele åpne faner automatisk i alle tråder?</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="749865518782565832">Rørlegging</translation>
 <translation id="7499188644237027195">Når du kjøper noe i Chrome, kan du se e-lommebok og Pix som alternativer</translation>
@@ -5316,6 +5323,7 @@ Mer informasjon:
 <translation id="964050462028070434">Administrer passord og passnøkler…</translation>
 <translation id="964681140808832181">Ja, jeg vil avbryte</translation>
 <translation id="969892804517981540">Offisiell delversjon</translation>
+<translation id="970182982363142444">Når dette er på, deler Chrome alle fanene i dette vinduet for å hjelpe deg med å få mer relevante svar. Du kan slå på dette for alle chatter i</translation>
 <translation id="97054401902912338">Finn ut mer om innholdsfiltre</translation>
 <translation id="973788791897303708">Denne fanegruppen er full</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}other{# elementer}}</translation>

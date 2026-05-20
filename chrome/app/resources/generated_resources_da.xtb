@@ -776,7 +776,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Forbundet til Android-telefon</translation>
 <translation id="1523279371236772909">Set inden for den seneste måned</translation>
-<translation id="1523486680453956384">Se opgave</translation>
 <translation id="1523978563989812243">Maskiner til oplæsning</translation>
 <translation id="1524563461097350801">Nej tak</translation>
 <translation id="1525740877599838384">Brug kun Wi-Fi til at fastslå placeringen</translation>
@@ -787,6 +786,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1529769834253316556">Linjehøjde</translation>
 <translation id="1529891865407786369">Strømkilde</translation>
 <translation id="1530376661400379364">Chrome nulstiller disse indstillinger</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> indeholder følsomme eller farlige data</translation>
 <translation id="1531275250079031713">Vis dialogboksen "Tilføj nyt Wi-Fi-netværk"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Jeg har forstået, at denne download kan skade min computer</translation>
@@ -2155,7 +2155,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2450849356604136918">Ingen aktive visninger</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Din organisation begrænser, hvad du kan gemme</translation>
-<translation id="245307875355990880">Genoptag opgave</translation>
 <translation id="245322989586167203">Websites opretter normalt forbindelse til serieporte for at kunne overføre data, f.eks. ved konfiguration af netværk</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2454206500483040640">Partitioneret</translation>
@@ -2194,6 +2193,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2469141124738294431">Status for VM</translation>
 <translation id="2469259292033957819">Du har ingen gemte printere.</translation>
 <translation id="2469375675106140201">Tilpas stavekontrol</translation>
+<translation id="2469406914567390938">Opdater kanal</translation>
 <translation id="247051149076336810">Webadresse til fildeling</translation>
 <translation id="2471469610750100598">Sort (standard)</translation>
 <translation id="2471506181342525583">Lokationsadgang blev tilladt</translation>
@@ -2525,6 +2525,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2695943520968279338">Se udvidelser</translation>
 <translation id="2696675923413008404">Indhold fra dette website, herunder dets webadresse, sendes til Google og kan blive gennemgået af menneskelige kontrollanter med henblik på at forbedre denne funktion</translation>
 <translation id="2698147581454716013">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage Upgrade.</translation>
+<translation id="269941332914175387">Genstart browseren for at indlæse dine profildata og holde dem krypterede</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
@@ -2753,6 +2754,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2844154481025280030">Politikken er konfigureret.</translation>
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
 <translation id="2844809857160214557">Se og administrer udskriftsjobs</translation>
+<translation id="284491292807422921">Vil du fjerne websitet?</translation>
 <translation id="2845276301195220700">Flere handlinger for Google Kalender</translation>
 <translation id="2845382757467349449">Vis altid bogmærkelinjen</translation>
 <translation id="284581348330507117">Opret unikke adgangskoder</translation>
@@ -3342,6 +3344,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3262986719682892278">For stor</translation>
 <translation id="3264544094376351444">Sans-serif-skrifttype</translation>
 <translation id="3264582393905923483">Kontekst</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Din administrator siger: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="3265459715026181080">Luk vindue</translation>
 <translation id="3266022278425892773">Linux-udviklingsmiljø</translation>
 <translation id="3266030505377585301"><ph name="BEGIN_LINK" />Log ud<ph name="END_LINK" /> for kun at slette browserdata fra denne enhed uden at slette dataene på din Google-konto.</translation>
@@ -4124,6 +4127,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3796215473395753611">Alt + pil op</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, brug højrepil til at høre et eksempel på stemmen</translation>
 <translation id="3796648294839530037">Favoritter netværk:</translation>
+<translation id="3797330664967181051">Opdelt visning</translation>
 <translation id="3797739167230984533">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> af din organisation</translation>
 <translation id="3797900183766075808">&amp;Søg på <ph name="SEARCH_ENGINE" /> efter "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798026281364973895">Deaktiver øjeblikkeligt hotspot</translation>
@@ -4459,6 +4463,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4010746393007464819">Der er en tilgængelig opgradering til Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> for at få dine bogmærker på alle dine mobilenheder.</translation>
 <translation id="4011073493055408531">Nordlys i lilla og grønne farver over en by.</translation>
+<translation id="4011897773956589748">Næste gang Gemini skal have adgang til denne konto, spørger den dig igen.</translation>
 <translation id="4012509903424054869">PDF-filer konverteres automatisk, så du kan søge efter og markere tekst i dem</translation>
 <translation id="4014432863917027322">Vil du reparere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Har du nogen udvidelser? <ph name="BEGIN_LINK" />Administrer nemt dine udvidelser<ph name="END_LINK" /> fra ét sted.</translation>
@@ -4876,7 +4881,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4314497418046265427">Øg din produktivitet, når du knytter din telefon til din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Tilføj nyt Adgangspunkt</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
-<translation id="4314821834464582073">Sæt opgave på pause</translation>
 <translation id="4316850752623536204">Udviklers website</translation>
 <translation id="4317733381297736564">Køb i apps</translation>
 <translation id="4317820549299924617">Verificeringen blev ikke gennemført</translation>
@@ -6237,6 +6241,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5275084684151588738">Brugerordbøger</translation>
 <translation id="5275338516105640560">Knappen Fanegruppe blev gemt</translation>
 <translation id="5275352920323889391">Hund</translation>
+<translation id="5275946508817197540">Dine sikkerhedspræferencer tillader ikke installation af isolerede webapps. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Slå fanens lyd fra</translation>
 <translation id="527605982717517565">Tillad altid JavaScript på <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Konfigurationen først gemmes efter login</translation>
@@ -7749,6 +7754,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Administrer dine enheder</translation>
 <translation id="6350821834561350243">Giv en grundig beskrivelse af problemet, og hvad du kan gøre for at genskabe problemet (hvis det er muligt)</translation>
+<translation id="635100112331897007">Se alle Chrome-politikker</translation>
 <translation id="6351178441572658285">Appsprog</translation>
 <translation id="6352992678231622317">Fanen er flyttet ned</translation>
 <translation id="6355632359041940003">Overtag opgave</translation>
@@ -8686,6 +8692,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6997553674029032185">Gå til website</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Aktivitetshistorik</translation>
 <translation id="6997707937646349884">På dine enheder:</translation>
+<translation id="6998036632333022623">Deler faner med Google</translation>
 <translation id="6998793565256476099">Meld enheden til videomøde</translation>
 <translation id="6999956497249459195">Ny gruppe</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> har forbindelse, men skal konfigureres</translation>

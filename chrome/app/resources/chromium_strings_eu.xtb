@@ -585,7 +585,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="7318036098707714271">Hobespenen fitxategia hondatuta dago edo ez da baliozkoa.
 
 Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
-<translation id="7339898014177206373">Leiho berria</translation>
 <translation id="734373864078049451">Webguneak, laster-markak eta Chromium-eko beste gauzak hemen daude.</translation>
 <translation id="7347827960336370838">Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />kontuko Chromium-eko datuak ezabatu beharko dituzu<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Sistemaren administratzailearen konfigurazioaren arabera, Chromium-ek <ph name="ALTERNATIVE_BROWSER_NAME" /> arakatzailea ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
@@ -594,6 +593,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7376384068949534168">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimena kendu dio.</translation>
 <translation id="73786666777299047">Ireki Chrome Web Store</translation>
 <translation id="7384121030444253939">Luzapena ez da onartzen jada. Kentzea gomendatzen dizu Chromium-ek.</translation>
+<translation id="7407655596887111931">Chromium da orain arakatzaile lehenetsia</translation>
 <translation id="7413153308467572558">Jarraitu utzi zenuen tokitik: Chromium-ek fitxak leheneratzen ditu berrabiarazten duzun bakoitzean. Aukera hori desaktibatzeko, joan hona:</translation>
 <translation id="7427879960656355200">Inportatu pasahitzak Chromium-era</translation>
 <translation id="744815265653811511">1. Sakatu beheko <ph name="BUTTON_LABEL" />.

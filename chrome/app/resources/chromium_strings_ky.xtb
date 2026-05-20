@@ -586,7 +586,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="7318036098707714271">Өзгөчө шарттар файлыңыз бузулган же жараксыз.
 
 Chromium параметрлериңизди калыбына келтире албайт.</translation>
-<translation id="7339898014177206373">Жаңы терезе</translation>
 <translation id="734373864078049451">Веб, кыстармаларыңыз жана Chromium'дагы жеке дайын-даректериңиз бул жерде жайгашкан.</translation>
 <translation id="7347827960336370838">Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүшүңүз керек болот<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> доменин <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачууга конфигуациялады.</translation>
@@ -595,6 +594,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="7376384068949534168">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> өчүрдү.</translation>
 <translation id="73786666777299047">Chrome Интернет дүкөнүн ачуу</translation>
 <translation id="7384121030444253939">Бул кеңейтүү колдоого алынбай калган. Chromium аны өчүрүүнү сунуштайт.</translation>
+<translation id="7407655596887111931">Chromium эми демейки серепчиңиз</translation>
 <translation id="7413153308467572558">Токтогон жерден улантыңыз: Chromium өчүрүп күйгүзгөн сайын өтмөктөрдү калыбына келтирет. Муну өчүрүү үчүн төмөнкүгө өтүңүз:</translation>
 <translation id="7427879960656355200">Сырсөздөрдү Chromium'га импорттоо</translation>
 <translation id="744815265653811511">1. Төмөндөгү <ph name="BUTTON_LABEL" /> баскычын чыкылдатыңыз

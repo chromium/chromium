@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Przejdź do pierwszej karty</translation>
 <translation id="2499505845365628575">Całą historię przeglądania znajdziesz w <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Masz hasła, które zostały przejęte (<ph name="NUMBER_OF_PASSWORDS" />), a to może narazić Cię na niebezpieczeństwo.</translation>
+<translation id="2512709994717613803">Poziom <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Tutaj znajdziesz grupy kart</translation>
 <translation id="251837347827266434">Nastąpi wylogowanie, karty zostaną zamknięte, a dane przeglądania – usunięte</translation>
 <translation id="2520787026086861736">Aby wyłączyć tę funkcję, otwórz <ph name="BEGIN_LINK" />Autouzupełnianie i hasła<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Automatycznie uzupełnij numer karty kończący się na <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Utworzono <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rolka z aparatu</translation>
+<translation id="3743545564993953213">Ta witryna próbuje otworzyć aplikację „Skróty”.</translation>
 <translation id="3746269120925354434">Informacje zapisane w Portfelu Google</translation>
 <translation id="3750225824417196283">Nowa strona karty incognito</translation>
 <translation id="3751873026576444885">Zatrzymaj wyszukiwanie na ekranie za pomocą Obiektywu Google</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Twoje zakładki, historia, hasła i inne ustawienia przestaną być synchronizowane z Twoim kontem Google.</translation>
 <translation id="484280513275854557">Nastąpiło wylogowanie, a dane przeglądania zostały usunięte</translation>
 <translation id="484462545196658690">Automatycznie</translation>
+<translation id="4846662396507502151">Przeglądaj szybciej dzięki nowemu paskowi narzędzi</translation>
 <translation id="4850886885716139402">Wyświetl</translation>
 <translation id="4854068532375923088">Zezwól „Gemini” na korzystanie z aparatu</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
@@ -1427,6 +1430,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5988097621740394599">Pokazuj obniżki cen na kartach.</translation>
 <translation id="5988851877894965432">Otwórz adresy URL w Chrome</translation>
 <translation id="599343768974649785">Tekst jawny</translation>
+<translation id="6004988584831654445">Wszystko gotowe. Otrzymuj powiadomienia o nowych zadaniach.</translation>
 <translation id="6006672969046233841">Nowa karta</translation>
 <translation id="6011308810877101166">Ulepszanie sugestii wyszukiwania</translation>
 <translation id="6012140227487808125">Szyfruję…</translation>
@@ -1658,6 +1662,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6685259053455152195">Skróty pozwalające na szybką zmianę ustawień i korzystanie z funkcji z paska adresu.</translation>
 <translation id="6689342293888598653">Kolor tła: biały</translation>
 <translation id="6689685206615181381">Dostępny jest tylko tryb incognito</translation>
+<translation id="6705491067826837934">Potrzebne opcje zawsze pod ręką</translation>
 <translation id="6708501134077648845">Opcje dotyczące haseł</translation>
 <translation id="6709964700841491574">Tryb blokady</translation>
 <translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6903282483217634857">Przejdź w prawo</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6906448540340261898">Upewnij się, że zawsze możesz używać haseł na swoim koncie Google</translation>
+<translation id="6906978870282539723">Uzyskuj pomoc dotyczącą kart i zadań</translation>
 <translation id="6908734251759299256">Zaktualizuj przeglądarkę</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Tylko na tym urządzeniu.</translation>
 <translation id="6914583639806229067">Wyszukaj skopiowany obraz</translation>
@@ -2078,6 +2084,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8182037667962849780">{count,plural, =1{Do witryny {website_1}}=2{Do witryn {website_1}, {website_2}}=3{Do witryn {website_1}, {website_2} i jeszcze 1}few{Do witryn {website_1}, {website_2} i jeszcze {more_count}}many{Do witryn {website_1}, {website_2} i jeszcze {more_count}}other{Do witryn {website_1}, {website_2} i jeszcze {more_count}}}</translation>
 <translation id="8184895727539791845">Aby zezwolić Gemini na korzystanie z aparatu, włącz go w ustawieniach iOS</translation>
 <translation id="8185076488803799132">Importuj</translation>
+<translation id="8187200657863701733">Aktualny poziom w Chrome</translation>
 <translation id="8189615296021678665">Kliknij „Zapisz”, aby łatwo uzyskać dostęp do tego hasła przy następnym logowaniu.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Twoje urządzenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Dodawanie hasła</translation>
@@ -2121,6 +2128,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8325455175867928593">Ukryj „Opinie na podstawie Twoich zainteresowań”</translation>
 <translation id="833647236762414178">Twórz i zapisuj hasła oraz klucze dostępu i zarządzaj nimi, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Wykonaj jeszcze 1 zadanie, aby przejść na kolejny poziom}few{Wykonaj jeszcze {count} zadania, aby przejść na kolejny poziom}many{Wykonaj jeszcze {count} zadań, aby przejść na kolejny poziom}other{Wykonaj jeszcze {count} zadania, aby przejść na kolejny poziom}}</translation>
 <translation id="8348530355586151720">Dotknij menu z 3 kropkami</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8361189290032177785">{count,plural, =1{Zaimportowano {count} zakładkę}few{Zaimportowano {count} zakładki}many{Zaimportowano {count} zakładek}other{Zaimportowano {count} zakładki}}</translation>

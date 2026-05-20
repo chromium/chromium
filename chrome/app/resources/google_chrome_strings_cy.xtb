@@ -333,6 +333,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="4348548358339558429">I gael personoleiddio, cynhwyswch Chrome yng Ngweithgarwch ar y We ac Apiau</translation>
 <translation id="436060642166082913">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol</translation>
 <translation id="4367027658822022112">Gallwch binio Google Lens i gael mynediad hawdd; cliciwch ar y botwm Pinio ar frig y panel ochr</translation>
+<translation id="4372389195695053189">Mae Chrome bellach yn borwr diofyn i chi</translation>
 <translation id="4389991535395284064">Wrth bori yn y modd Anhysbys, bydd Chrome yn eich rhybuddio cyn llwytho gwefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="4427306783828095590">Mae gwell amddiffyniad yn gwneud rhagor i rwystro gwe-rwydo a drwgwedd</translation>
 <translation id="4434353761996769206">Gwall gosodwr: <ph name="INSTALLER_ERROR" /></translation>
@@ -618,7 +619,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7302361266603927550">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="7306401458628386911">Dechreuwch bori ar unwaith: Gall Chrome bellach lansio pan fydd Windows yn cychwyn.</translation>
 <translation id="7308322188646931570">Mae angen mynediad storfa ar Chrome i lawrlwytho ffeiliau</translation>
-<translation id="7339898014177206373">Ffenestr newydd</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
 <translation id="73786666777299047">Agor Chrome Web Store</translation>
 <translation id="7386878009611068389">I aros yn fwy diogel ar-lein gyda dewisiadau dy riant, newidia i dy broffil Chrome lle rwyt ti eisoes wedi mewngofnodi <ph name="USER_EMAIL_ADDRESS" /></translation>

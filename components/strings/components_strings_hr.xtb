@@ -254,6 +254,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1380591466760231819">Presavijanje u obliku pisma</translation>
 <translation id="138218114945450791">Svijetloplava</translation>
 <translation id="1382194467192730611">USB uređaj koji je dopustio vaš administrator</translation>
+<translation id="1383876407941801731">Traži</translation>
 <translation id="1384725838384960382">List s autentifikacijom za vjerodajnicu sigurnog plaćanja</translation>
 <translation id="1386623374109090026">Napomene</translation>
 <translation id="138810468159004008">Dopusti tijekom posjeta web-lokaciji</translation>
@@ -1819,6 +1820,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="380865868633614173">Spremanje podataka o kartici</translation>
 <translation id="3810770279996899697">Upravitelj zaporki treba pristup MacOS Keychainu</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">To je ključno ažuriranje koje poboljšava izvedbu Android aplikacija na ChromeOS-u.</translation>
 <translation id="3814865536373139791">Pojednostavite način na koji vaša organizacija upravlja pravilima</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
@@ -2398,6 +2400,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4736934858538408121">Virtualna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738601419177586157">Prijedlog za pretraživanje <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, odabrana kartica, <ph name="INDEX" /> od <ph name="TOTAL" />, upotrijebite strelicu lijevo ili desno za prebacivanje između kartica</translation>
 <translation id="4742407542027196863">Upravljaj zaporkama…</translation>
 <translation id="474270528725216349">S najmanje jedne web-lokacije na sinkroniziranim uređajima</translation>
 <translation id="4743275772928623722">Vaš je sustav ažuriran, ali se neke vaše aplikacije i datoteke nisu mogle oporaviti. Aplikacije će se automatski ponovo preuzeti.</translation>
@@ -2465,6 +2468,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4832961164064927107">Roštilj i grilanje</translation>
 <translation id="4835568975547260025">Chrome će prema zadanim postavkama dijeliti relevantne otvorene kartice kako bi vam pomogao da dobijete prilagođenije odgovore na svoja pitanja.</translation>
 <translation id="4840250757394056958">Pregledaj povijest na Chromeu</translation>
+<translation id="4842365697443353018">Izbrišite obrazac da biste upotrijebili opciju plaćanja kasnije</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4844937814014739139">Pomicanje i zumiranje dijeljenih kartica</translation>
 <translation id="484671803914931257">Ostvarite popust na usluzi <ph name="MERCHANT_NAME" /> i drugim uslugama</translation>

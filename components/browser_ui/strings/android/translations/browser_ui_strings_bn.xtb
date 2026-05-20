@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-এ এম্বেড করা হয়েছে</translation>
 <translation id="1263609676484797429">অ্যাপ  &gt; ডিফল্ট অ্যাপ বিকল্পে ট্যাপ করুন</translation>
+<translation id="1264694639515903274">এখন আপনি নিজের হোমপেজ কাস্টমাইজ করতে পারবেন</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1289742167380433257">আপনার ডেটা সেভ করার জন্য, এই পৃষ্ঠার ছবিগুলি Google অপ্টিমাইজ করেছে।</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1919950603503897840">পরিচিতিগুলি বেছে নিন</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">আমার হোমপেজ কাস্টমাইজ করুন</translation>
 <translation id="1939059826036755332">অটোমেটিক 'ছবির-মধ্যে-ছবি'</translation>
 <translation id="1954597385941141174">USB ডিভাইসের সাথে কানেক্ট করতে, সাইট অনুমতি চাইতে পারে</translation>
 <translation id="1979673356880165407">আপনার ভিজিট করা সব সাইটের জন্য টেক্সট এবং ছবিগুলি বড় বা ছোট করুন</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">প্রসারিত করুন</translation>
 <translation id="4310738531374808763">আপনার হোমপেজ কাস্টমাইজ করুন</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{আগামীকাল মেয়াদ শেষ হবে}one{# দিনে মেয়াদ শেষ হবে}other{# দিনে মেয়াদ শেষ হবে}}</translation>
+<translation id="4336371609622603229">কাস্টম থিম বেছে নিয়ে Chrome নিজের মতো করে সাজিয়ে নিন</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-এর সবকটি সাইট</translation>
 <translation id="4340799661701629185">সাইটগুলিকে বিজ্ঞপ্তি পাঠানোর অনুমতি দেয় না</translation>
 <translation id="4341577178275615435">ক্যারেট ব্রাউজিং চালু বা বন্ধ করার জন্য, F7 শর্টকাটটি ব্যবহার করুন</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">যেসব সাইটে আপনি কাস্টম জুম লেভেল সেট করেছেন, সেগুলি এখানে দেখা যাবে</translation>
 <translation id="8748714929822124637">আপনার লোকাল নেটওয়ার্কে অন্যান্য ডিভাইস অ্যাক্সেস করার জন্য সাইটকে অনুমতি দেবেন না</translation>
 <translation id="8751914237388039244">একটি ছবি বেছে নিন</translation>
-<translation id="8775741625735357092">আপনি 'সেটিংস &gt; কেমন দেখাবে' বিকল্প থেকে বুকমার্ক বার চালু করতে পারবেন</translation>
 <translation id="8800034312320686233">সাইট কি কাজ করছে না?</translation>
 <translation id="8801436777607969138">একটি নির্দিষ্ট সাইটের জন্য জাভাস্ক্রিপ্ট ব্লক করুন।</translation>
 <translation id="8801657293260363985">V8 হল Chrome-এর জাভাস্ক্রিপ্ট ও WebAssembly ইঞ্জিন সাইটের পারফরম্যান্স উন্নত করতে ব্যবহার করা হয়</translation>

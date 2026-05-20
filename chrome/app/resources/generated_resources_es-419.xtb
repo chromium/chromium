@@ -771,7 +771,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1521933835545997395">Conectado a un teléfono Android</translation>
 <translation id="1523279371236772909">Visto durante el mes pasado</translation>
-<translation id="1523486680453956384">Ver tarea</translation>
 <translation id="1523978563989812243">Motores para texto a voz</translation>
 <translation id="1524563461097350801">No, gracias</translation>
 <translation id="1525740877599838384">Usar solo Wi-Fi para determinar la ubicación</translation>
@@ -782,6 +781,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1529769834253316556">Altura de línea</translation>
 <translation id="1529891865407786369">Fuente de alimentación</translation>
 <translation id="1530376661400379364">Chrome restableció estos parámetros de configuración</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> incluye datos sensibles o peligrosos</translation>
 <translation id="1531275250079031713">Mostrar el cuadro de diálogo para agregar Wi-Fi nueva</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Comprendo que esta descarga dañará mi computadora</translation>
@@ -2137,7 +2137,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2450849356604136918">No hay vistas activas</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Tu organización limita lo que puedes guardar</translation>
-<translation id="245307875355990880">Reanudar tarea</translation>
 <translation id="245322989586167203">Por lo general los sitios se conectan a puertos en serie para habilitar funciones de transferencia de datos, como la configuración de la red</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2454206500483040640">Con particiones</translation>
@@ -2176,6 +2175,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2469141124738294431">Estado de la VM</translation>
 <translation id="2469259292033957819">No tienes impresoras guardadas.</translation>
 <translation id="2469375675106140201">Personalizar el corrector ortográfico</translation>
+<translation id="2469406914567390938">Actualización del canal</translation>
 <translation id="247051149076336810">URL del sistema de archivos compartidos</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Se permite el acceso a ubicaciones</translation>
@@ -2507,6 +2507,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2695943520968279338">Descubrir extensiones</translation>
 <translation id="2696675923413008404">El contenido de este sitio, incluida su URL, se envía a Google y es posible que los revisores humanos lo vean para mejorar esta función</translation>
 <translation id="2698147581454716013">Este es un dispositivo agrupado y no se puede inscribir en Kiosk &amp; Signage Upgrade.</translation>
+<translation id="269941332914175387">Vuelve a iniciar el navegador para cargar los datos de tu perfil y mantenerlos encriptados</translation>
 <translation id="2699911226086014512">No se pudo realizar la operación del PIN con el código <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Se compartió de <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Acceder, <ph name="EMAIL" /></translation>
@@ -2735,6 +2736,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2844154481025280030">Se configuró la política.</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (puerto lateral izquierdo delantero)</translation>
 <translation id="2844809857160214557">Ver y administrar trabajos de impresión</translation>
+<translation id="284491292807422921">¿Quieres quitar el sitio?</translation>
 <translation id="2845276301195220700">Más acciones para el Calendario de Google</translation>
 <translation id="2845382757467349449">Mostrar siempre la barra de favoritos</translation>
 <translation id="284581348330507117">Crea contraseñas únicas</translation>
@@ -3324,6 +3326,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3262986719682892278">Es demasiado grande.</translation>
 <translation id="3264544094376351444">Fuente Sans-serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Tu administrador dice "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Cerrar ventana</translation>
 <translation id="3266022278425892773">Entorno de desarrollo de Linux</translation>
 <translation id="3266030505377585301">Para borrar los datos de navegación solo de este dispositivo y conservarlos en tu Cuenta de Google, <ph name="BEGIN_LINK" />sal de la cuenta<ph name="END_LINK" />.</translation>
@@ -4106,6 +4109,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3796215473395753611">Alt + flecha hacia arriba</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa la tecla de flecha hacia la derecha para obtener una vista previa de la voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
+<translation id="3797330664967181051">Vista dividida</translation>
 <translation id="3797739167230984533">Tu organización <ph name="BEGIN_LINK" />administra tu <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798026281364973895">Inhabilitar Hotspot instantáneo</translation>
@@ -4441,6 +4445,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4010746393007464819">Hay una actualización a Debian 12 (Bookworm) disponible</translation>
 <translation id="4010917659463429001">Para obtener tus favoritos en el dispositivo móvil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Aurora boreal estilizada en colores púrpura y verde sobre una ciudad.</translation>
+<translation id="4011897773956589748">La próxima vez que Gemini necesite acceder a esta cuenta, te lo volverá a pedir.</translation>
 <translation id="4012509903424054869">Los archivos PDF se convierten automáticamente para que puedas buscar y seleccionar texto</translation>
 <translation id="4014432863917027322">¿Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">¿Tienes extensiones? <ph name="BEGIN_LINK" />Administra tus extensiones<ph name="END_LINK" /> en un solo lugar.</translation>
@@ -4858,7 +4863,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4314497418046265427">Conecta tu teléfono a <ph name="DEVICE_TYPE" /> para mejorar tu productividad</translation>
 <translation id="4314561087119792062">Agregar nuevo nombre de punto de acceso</translation>
 <translation id="4314815835985389558">Administrar sincronización</translation>
-<translation id="4314821834464582073">Pausar tarea</translation>
 <translation id="4316850752623536204">Sitio web del programador</translation>
 <translation id="4317733381297736564">Compras directas desde la app</translation>
 <translation id="4317820549299924617">No se completó la verificación</translation>
@@ -6219,6 +6223,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5275084684151588738">Diccionarios del usuario</translation>
 <translation id="5275338516105640560">Botón para el grupo de pestañas guardadas</translation>
 <translation id="5275352920323889391">Perro</translation>
+<translation id="5275946508817197540">Tus preferencias de seguridad no permiten la instalación de apps web aisladas. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Silenciar pestaña</translation>
 <translation id="527605982717517565">Siempre permitir JavaScript en <ph name="HOST" /></translation>
 <translation id="5276357196618041410">No se puede guardar la configuración sin acceder previamente</translation>
@@ -6598,7 +6603,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="554535686826424776">Buscar cupones</translation>
 <translation id="5546865291508181392">Buscar</translation>
-<translation id="5547868626772433490">Preguntarle a Gemini</translation>
+<translation id="5547868626772433490">Pregúntale a Gemini</translation>
 <translation id="5548075230008247516">Se anuló la selección de todos los elementos; se salió del modo de selección.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="5548644592758170183">Mostrar a la izquierda</translation>
@@ -7731,6 +7736,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Administra tus dispositivos</translation>
 <translation id="6350821834561350243">Brinda una descripción clara del problema y los pasos para reproducirlo (si es posible)</translation>
+<translation id="635100112331897007">Ver todas las políticas de Chrome</translation>
 <translation id="6351178441572658285">Idiomas de la app</translation>
 <translation id="6352992678231622317">Se movió la pestaña hacia abajo</translation>
 <translation id="6355632359041940003">Tomar el control de la tarea</translation>
@@ -8666,6 +8672,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6997553674029032185">Ir al sitio</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
+<translation id="6998036632333022623">Compartiendo pestañas con Google</translation>
 <translation id="6998793565256476099">Inscribe el dispositivo para realizar videoconferencias</translation>
 <translation id="6999956497249459195">Grupo nuevo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero debe configurarse</translation>

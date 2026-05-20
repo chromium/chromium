@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">ເຄັດລັບ Chrome</translation>
 <translation id="1242008676835033345">ຝັງຕິດໃນ <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">ແຕະແອັບ  &gt; ແອັບເລີ່ມຕົ້ນ</translation>
+<translation id="1264694639515903274">ຕອນນີ້ທ່ານສາມາດປັບແຕ່ງໜ້າຫຼັກຂອງທ່ານໄດ້ແລ້ວ</translation>
 <translation id="1272079795634619415">ຢຸດ</translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
 <translation id="1289742167380433257">ເພື່ອຊ່ວຍທ່ານປະຢັດອິນເຕີເນັດ, Google ໄດ້ປັບຮູບຂອງໜ້ານີ້ໃຫ້ເໝາະສົມແລ້ວ.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">ວາງສາຍ</translation>
 <translation id="1919950603503897840">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">ປັບແຕ່ງໜ້າຫຼັກຂອງຂ້ອຍ</translation>
 <translation id="1939059826036755332">ການສະແດງຜົນຊ້ອນກັນອັດຕະໂນມັດ</translation>
 <translation id="1954597385941141174">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ໄດ້</translation>
 <translation id="1979673356880165407">ເຮັດໃຫ້ຂໍ້ຄວາມ ແລະ ຮູບໃຫຍ່ຂຶ້ນ ຫຼື ນ້ອຍລົງສຳລັບເວັບໄຊທັງໝົດທີ່ທ່ານເຂົ້າເບິ່ງ</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome ຈະບລັອກຄຸກກີ້ອີກເທື່ອໜຶ່ງໃນມື້ນີ້</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="3859306556332390985">ເລື່ອນໄປໜ້າ</translation>
+<translation id="3870711497942672548">ປັບແຕ່ງ Chrome ໃຫ້ເປັນແບບຂອງທ່ານເອງດ້ວຍສີ ແລະ ຮູບທີ່ກຳນົດເອງສຳລັບໜ້າຫຼັກຂອງທ່ານ</translation>
 <translation id="389521680295183045">ເວັບໄຊສາມາດຂໍຂໍ້ມູນວ່າທ່ານກຳລັງໃຊ້ອຸປະກອນຂອງທ່ານຢູ່ບໍ່</translation>
 <translation id="3895926599014793903">ບັງຄັບໃຫ້ເປີດ​ໃຊ້​ການ​ຊູມ</translation>
 <translation id="3903738175795615004">ລາກຈາກເທິງສຸດ ຫຼື ກົດປຸ່ມ Esc ເພື່ອອອກຈາກໂໝດເຕັມຈໍ.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">ຂະ​ຫຍາຍ</translation>
 <translation id="4310738531374808763">ປັບແຕ່ງໜ້າຫຼັກຂອງທ່ານ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ໝົດອາຍຸມື້ອື່ນ}other{ໝົດອາຍຸໃນ # ມື້}}</translation>
+<translation id="4336371609622603229">ປັບແຕ່ງ Chrome ໃຫ້ເປັນແບບຂອງທ່ານເອງໂດຍເລືອກຮູບແບບສີສັນທີ່ກຳນົດເອງ</translation>
 <translation id="4338831206024587507">ເວັບໄຊທັງໝົດພາຍໃຕ້ <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊສົ່ງການແຈ້ງເຕືອນ</translation>
 <translation id="4341577178275615435">ເພື່ອເປີດ ຫຼື ປິດການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ, ກະລຸນາໃຊ້ທາງລັດ F7</translation>
@@ -750,7 +754,6 @@
 <translation id="8737426583868847403">ເວັບໄຊທີ່ທ່ານບັນທຶກລະດັບການຊູມທີ່ກຳນົດເອງໄວ້ຈະປາກົດບ່ອນນີ້</translation>
 <translation id="8748714929822124637">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຂົ້າເຖິງອຸປະກອນອື່ນໆໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="8751914237388039244">ເລືອກຮູບ</translation>
-<translation id="8775741625735357092">ທ່ານສາມາດເປີດໃຊ້ແຖບບຸກມາກໄດ້ໃນການຕັ້ງຄ່າ &gt; ຮູບລັກສະນະ</translation>
 <translation id="8800034312320686233">ເວັບໄຊໃຊ້ບໍ່ໄດ້ບໍ?</translation>
 <translation id="8801436777607969138">ບລັອກ JavaScript ສຳລັບເວັບໄຊສະເພາະ.</translation>
 <translation id="8801657293260363985">V8 ແມ່ນເຄື່ອງມື JavaScript ແລະ WebAssembly ຂອງ Chrome ທີ່ໃຊ້ເພື່ອປັບປຸງປະສິດທິພາບຂອງເວັບໄຊ</translation>

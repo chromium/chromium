@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Shko te skeda e parë</translation>
 <translation id="2499505845365628575">Mund të gjesh të gjithë historikun e shfletimit nga "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2511117522375201202">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të komprometuara që mund ta rrezikojnë sigurinë tënde.</translation>
+<translation id="2512709994717613803">Niveli <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Grupet e skedave do t'i gjesh këtu</translation>
 <translation id="251837347827266434">Do të dalësh nga llogaria, skedat do të mbyllen, të dhënat e shfletimit do të fshihen</translation>
 <translation id="2520787026086861736">Për ta çaktivizuar, shko te <ph name="BEGIN_LINK" />AutoFill &amp; Passwords<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Plotëso automatikisht numrin e kartës që mbaron me: <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Krijuar më <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Filmi i kamerës</translation>
+<translation id="3743545564993953213">Ky sajt po përpiqet të hapë aplikacionin "Shkurtoret".</translation>
 <translation id="3746269120925354434">Informacionet u ruajtën te "Portofoli i Google"</translation>
 <translation id="3750225824417196283">Faqja e skedës së re "të fshehtë"</translation>
 <translation id="3751873026576444885">Ndalo kërkimin në ekranin tënd me "Lenten e Google"</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Faqeshënuesit, historiku, fjalëkalimet etj. nuk do të sinkronizohen më në "Llogarinë tënde të Google".</translation>
 <translation id="484280513275854557">Ke dalë nga llogaria dhe të dhënat e shfletimit janë fshirë</translation>
 <translation id="484462545196658690">Automatike</translation>
+<translation id="4846662396507502151">Shfleto më shpejt me shiritin e ri të veglave</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4854068532375923088">Lejo që "Gemini" të përdorë kamerën tënde</translation>
 <translation id="4860895144060829044">Telefono</translation>
@@ -1427,6 +1430,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5988097621740394599">Shiko uljet e çmimeve në skeda.</translation>
 <translation id="5988851877894965432">Hap URL-të në Chrome</translation>
 <translation id="599343768974649785">Teksti i papërshtatshëm</translation>
+<translation id="6004988584831654445">Je plotësisht gati! Merr njoftime kur mbërrijnë detyra të reja.</translation>
 <translation id="6006672969046233841">Skedë e re</translation>
 <translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6012140227487808125">Po shifron…</translation>
@@ -1658,6 +1662,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6685259053455152195">Shkurtoret për të modifikuar me shpejtësi cilësimet dhe për të përdorur veçoritë nga shiriti i adresave.</translation>
 <translation id="6689342293888598653">Ngjyra e sfondit në të bardhë</translation>
 <translation id="6689685206615181381">Ofrohet vetëm modaliteti "I fshehtë"</translation>
+<translation id="6705491067826837934">Kontrollet e tua, aty ku të duhen</translation>
 <translation id="6708501134077648845">Password Options</translation>
 <translation id="6709964700841491574">Modaliteti i bllokimit</translation>
 <translation id="6710079714193676716">Menaxhohet nga organizata jote. Disa veçori mund të jenë të padisponueshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6903282483217634857">Lëviz djathtas</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
 <translation id="6906448540340261898">Sigurohu që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google"</translation>
+<translation id="6906978870282539723">Merr ndihmë për skedat dhe detyrat e tua</translation>
 <translation id="6908734251759299256">Përditëso shfletuesin</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Vetëm në këtë pajisje.</translation>
 <translation id="6914583639806229067">Kërko për imazhin që kopjove</translation>
@@ -2078,6 +2084,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8182037667962849780">{count,plural, =1{Për {website_1}}=2{Për {website_1}, {website_2}}=3{Për {website_1}, {website_2} dhe 1 tjetër}other{Për {website_1}, {website_2} dhe {more_count} të tjerë}}</translation>
 <translation id="8184895727539791845">Për të lejuar që Gemini të përdorë kamerën tënde, aktivizo "Kamerën" te cilësimet e iOS</translation>
 <translation id="8185076488803799132">Importo</translation>
+<translation id="8187200657863701733">Niveli aktual i Chrome</translation>
 <translation id="8189615296021678665">Trokit te "Ruaj" për t'u qasur me lehtësi te ky fjalëkalim herën tjetër kur të identifikohesh.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Shto fjalëkalim</translation>
@@ -2121,6 +2128,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8325455175867928593">Fshih "Komentet bazohen në interesat e tu"</translation>
 <translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Përfundo 1 detyrë tjetër për t'u ngjitur në nivel}other{Përfundo {count} detyra të tjera për t'u ngjitur në nivel}}</translation>
 <translation id="8348530355586151720">Trokit te menyja me tri pika</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8361189290032177785">{count,plural, =1{U importua {count} faqeshënues}other{U importuan {count} faqeshënues}}</translation>

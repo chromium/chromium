@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Sắp xếp các sản phẩm bạn theo dõi trong phần Dấu trang</translation>
 <translation id="1455845192930279203">Bạn vẫn muốn tải "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) xuống từ <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Tiết kiệm thời gian, tối giản thao tác</translation>
+<translation id="146522654774760805">Mật khẩu và tính năng tự động điền</translation>
 <translation id="1466383950273130737">Chọn ngôn ngữ cho Chrome</translation>
 <translation id="1477626028522505441">Tải xuống <ph name="FILE_NAME" /> không thành công do sự cố máy chủ.</translation>
 <translation id="147982357559798527">Đã thay đổi</translation>
@@ -227,6 +228,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Thẻ ẩn danh đã tắt tiếng và được ghim</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
+<translation id="2022953316617983419">Mã QR</translation>
 <translation id="2024195579772565064">Xoá công cụ tìm kiếm</translation>
 <translation id="2029669011553795746">Đã mở chế độ chọn nhận thông báo mẹo hay trên một nửa màn hình</translation>
 <translation id="2038563949887743358">Bật Yêu cầu trang web dành cho máy tính</translation>
@@ -789,6 +791,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> và <ph name="TAB_COUNT" /> thẻ khác</translation>
 <translation id="441100617989818073">Thẻ và nhóm thẻ không dùng đến hoặc trùng lặp</translation>
 <translation id="4412123112245770507">Thu gọn mục này</translation>
+<translation id="4412698727486357573">Trung tâm trợ giúp</translation>
 <translation id="4414179633735763985">Đã xoá <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
@@ -1435,7 +1438,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6980258170429555165">Trình đơn <ph name="MENU_NAME" /> được làm nổi bật.</translation>
 <translation id="6983306615164277634">Bạn cũng có thể chạm và giữ thanh địa chỉ để thay đổi vị trí.</translation>
 <translation id="6987047470128880212">Không dùng được chế độ Ẩn danh trên thiết bị này</translation>
-<translation id="6989358895283601928">Lưu và in</translation>
 <translation id="6996145122199359148">Tải trang này xuống</translation>
 <translation id="7013762323294215682">Khoá truy cập này sẽ được lưu vào trình quản lý mật khẩu của bạn. Bất cứ ai có quyền truy cập vào trình quản lý mật khẩu đó đều có thể sử dụng khoá truy cập này.</translation>
 <translation id="7020741890149022655">Thêm vào danh sách đọc <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="970715775301869095">Còn <ph name="MINUTES" /> phút</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>
+<translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="984756705737569814">Không thể kiểm tra mật khẩu trong Tài khoản Google của bạn</translation>
 <translation id="987264212798334818">Chung</translation>
 <translation id="988091779042748639">Để xoá nhật ký duyệt web ở chế độ Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh.</translation>

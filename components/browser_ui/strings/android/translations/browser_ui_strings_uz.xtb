@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome maslahatlari</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> saytiga joylangan</translation>
 <translation id="1263609676484797429">“Ilovalar  &gt; Birlamchi ilovalar” bandini tanlang</translation>
+<translation id="1264694639515903274">Endi bosh sahifani oʻzingizga moslay olasiz</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
 <translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1289742167380433257">Trafikni tejash maqsadida sahifadagi rasmlar Google tomonidan takomillashtirildi.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Tugatish</translation>
 <translation id="1919950603503897840">Kontaktlarni tanlash</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Bosh sahifani moslang</translation>
 <translation id="1939059826036755332">Avtomatik tasvir ustida tasvir</translation>
 <translation id="1954597385941141174">Saytlar USB qurilmalarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="1979673356880165407">Ochilgan barcha saytlar uchun matn va rasmlarni kattalashtiring yoki kichiklashtiring</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4310738531374808763">Bosh sahifani moslang</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
+<translation id="4336371609622603229">Maxsus mavzusini tanlash orqali Chrome'ni oʻzingizga moslang</translation>
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
 <translation id="4340799661701629185">Saytlarga bildirishnoma yuborishni taqiqlash</translation>
 <translation id="4341577178275615435">Faol kursor rejimini yoqish yoki oʻchirish uchun F7 tugmasidan foydalaning</translation>
@@ -751,7 +754,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="8737426583868847403">Bu yerda alohida zum darajasi saqlangan saytlar chiqadi</translation>
 <translation id="8748714929822124637">Saytlar uchun mahalliy tarmoqdagi boshqa qurilmalarga ruxsatni taqiqlash</translation>
 <translation id="8751914237388039244">Rasmni tanlang</translation>
-<translation id="8775741625735357092">Bukmarklar panelini Sozlamalar &gt; Qiyofa sahifasidan yoqish mumkin</translation>
 <translation id="8800034312320686233">Sayt ishlamayaptimi?</translation>
 <translation id="8801436777607969138">Muayyan saytda JavaScript kodini bloklash.</translation>
 <translation id="8801657293260363985">V8 — Chromeda saytlar unumdorligini oshiradigan JavaScript va WebAssembly tizimi hisoblanadi</translation>

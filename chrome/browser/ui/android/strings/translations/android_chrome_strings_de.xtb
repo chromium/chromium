@@ -118,6 +118,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1448440926884431741">Du kannst deine beobachteten Produkte in den Lesezeichen organisieren</translation>
 <translation id="1455845192930279203">Möchtest du „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) trotzdem von <ph name="DOWNLOAD_DOMAIN" /> herunterladen?</translation>
 <translation id="1460751212339734034">Weniger tippen und Zeit sparen</translation>
+<translation id="146522654774760805">Passwörter und Autofill</translation>
 <translation id="1466383950273130737">Sprache für Chrome auswählen</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> konnte aufgrund von Serverproblemen nicht heruntergeladen werden.</translation>
 <translation id="147982357559798527">Geändert</translation>
@@ -227,6 +228,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="200114059308480249">Umgebenden Text in Google-Suchanfragen einschließen?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, angepinnter, stummgeschalteter Inkognitotab</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
+<translation id="2022953316617983419">QR-Code</translation>
 <translation id="2024195579772565064">Suchmaschine löschen</translation>
 <translation id="2029669011553795746">Opt-in für Benachrichtigungen mit Tipps halb geöffnet</translation>
 <translation id="2038563949887743358">"Desktopversion ansehen" aktivieren</translation>
@@ -789,6 +791,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> und <ph name="TAB_COUNT" /> weitere Tabs</translation>
 <translation id="441100617989818073">Nicht verwendete oder doppelte Tabs und Tabgruppen</translation>
 <translation id="4412123112245770507">Abschnitt minimieren</translation>
+<translation id="4412698727486357573">Hilfe</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> gelöscht</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
 <translation id="4425140285732600465">Preis wird beobachtet. Du wirst bei einem Preisnachlass benachrichtigt.</translation>
@@ -1435,7 +1438,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6980258170429555165">Das Menü „<ph name="MENU_NAME" />“ ist hervorgehoben.</translation>
 <translation id="6983306615164277634">Alternativ kannst du auch die Adressleiste gedrückt halten, um die Position zu ändern.</translation>
 <translation id="6987047470128880212">Der Inkognitomodus ist auf diesem Gerät nicht verfügbar</translation>
-<translation id="6989358895283601928">Speichern und drucken</translation>
 <translation id="6996145122199359148">Diese Seite herunterladen</translation>
 <translation id="7013762323294215682">Dieser Passkey wird in deinem Passwortmanager gespeichert. Jeder, der Zugriff darauf hat, kann diesen Passkey verwenden.</translation>
 <translation id="7020741890149022655">Zur Leseliste hinzufügen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, ausgewählter, angepinnter, stummgeschalteter Tab</translation>
 <translation id="7084115944294706056">Leistenposition auswählen</translation>
 <translation id="7085332316435785646">Lege fest, ob der Chrome-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
+<translation id="7087066066828635014">Benachrichtigungen mit Tipps aktiviert</translation>
 <translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, mehrfach ausgewählter, stummgeschalteter Inkognitotab</translation>
 <translation id="7106762743910369165">Dein Browser wird von deiner Organisation verwaltet</translation>
@@ -2002,6 +2005,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="970715775301869095"><ph name="MINUTES" /> Minuten übrig</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>
+<translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="984756705737569814">Passwörter in deinem Google-Konto können nicht überprüft werden</translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="988091779042748639">Schließe alle Inkognitotabs, um den Inkognito-Browserverlauf vom Gerät zu löschen.</translation>

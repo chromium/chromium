@@ -775,7 +775,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1521655867290435174">Google Blaaie</translation>
 <translation id="1521933835545997395">Gekoppel aan Android-foon</translation>
 <translation id="1523279371236772909">In die afgelope maand bekyk</translation>
-<translation id="1523486680453956384">Bekyk taak</translation>
 <translation id="1523978563989812243">Teks-na-spraak-enjins</translation>
 <translation id="1524563461097350801">Nee, dankie</translation>
 <translation id="1525740877599838384">Gebruik net Wi-Fi om ligging te bepaal</translation>
@@ -786,6 +785,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1529769834253316556">Reëlhoogte</translation>
 <translation id="1529891865407786369">Kragbron</translation>
 <translation id="1530376661400379364">Chrome het hierdie instellings teruggestel</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> het sensitiewe of gevaarlike data</translation>
 <translation id="1531275250079031713">Wys "Voeg nuwe Wi-Fi by"-dialoog</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ek verstaan dat hierdie aflaai my rekenaar sal benadeel</translation>
@@ -2153,7 +2153,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2450849356604136918">Geen aktiewe aansigte nie</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Jou organisasie beperk wat jy kan stoor</translation>
-<translation id="245307875355990880">Hervat taak</translation>
 <translation id="245322989586167203">Werwe koppel gewoonlik aan reekspoorte vir dataoordragkenmerke, soos die opstel van jou netwerk</translation>
 <translation id="2453860139492968684">Voltooi</translation>
 <translation id="2454206500483040640">Verdeel</translation>
@@ -2192,6 +2191,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2469141124738294431">VM-status</translation>
 <translation id="2469259292033957819">Jy het geen gestoorde drukkers nie.</translation>
 <translation id="2469375675106140201">Pasmaak speltoets</translation>
+<translation id="2469406914567390938">Dateer kanaal op</translation>
 <translation id="247051149076336810">Lêerdeling-URL</translation>
 <translation id="2471469610750100598">Swart (verstek)</translation>
 <translation id="2471506181342525583">Liggingtoegang word toegelaat</translation>
@@ -2523,6 +2523,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2695943520968279338">Ontdek uitbreidings</translation>
 <translation id="2696675923413008404">Inhoud vanaf hierdie werf, insluitend die URL, word na Google toe gestuur en kan gesien word deur mense wat kontrolering uitvoer om hierdie kenmerk te verbeter</translation>
 <translation id="2698147581454716013">Dit is ’n gebondelde toestel en dit kan nie by kiosk- en naambordopgradering ingeskryf word nie.</translation>
+<translation id="269941332914175387">Herbegin die blaaier om jou profieldata te laai en dit geënkripteer te hou</translation>
 <translation id="2699911226086014512">PIN-bewerking het misluk met kode <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Gedeel vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Meld aan, <ph name="EMAIL" /></translation>
@@ -2751,6 +2752,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2844154481025280030">Beleid is opgestel.</translation>
 <translation id="2844169650293029770">USB C-toestel (voorste poort aan linkerkant)</translation>
 <translation id="2844809857160214557">Bekyk en bestuur druktake</translation>
+<translation id="284491292807422921">Verwyder werf?</translation>
 <translation id="2845276301195220700">Meer handelinge vir Google Kalender</translation>
 <translation id="2845382757467349449">Wys altyd die boekmerkebalk</translation>
 <translation id="284581348330507117">Skep unieke wagwoorde</translation>
@@ -3340,6 +3342,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3262986719682892278">Te groot</translation>
 <translation id="3264544094376351444">Sans Serif lettertipe</translation>
 <translation id="3264582393905923483">Konteks</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Jou administrateur sê: “<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="3265459715026181080">Maak venster toe</translation>
 <translation id="3266022278425892773">Linux-ontwikkelingomgewing</translation>
 <translation id="3266030505377585301"><ph name="BEGIN_LINK" />Meld af<ph name="END_LINK" /> om blaaierdata net van hierdie toestel af uit te vee terwyl jy dit in jou Google-rekening hou.</translation>
@@ -4122,6 +4125,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3796215473395753611">alt + oppyl</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, gebruik regspylsleutel om stem te voorbeskou</translation>
 <translation id="3796648294839530037">Gunstelingnetwerke:</translation>
+<translation id="3797330664967181051">Verdeelde aansig</translation>
 <translation id="3797739167230984533">Jou <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> word bestuur<ph name="END_LINK" /> deur jou organisasie</translation>
 <translation id="3797900183766075808">&amp;Deursoek <ph name="SEARCH_ENGINE" /> vir "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798026281364973895">Deaktiveer Kitswarmkol</translation>
@@ -4457,6 +4461,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4010746393007464819">'n Opgradering na Debian 12 (Bookworm) is beskikbaar</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om jou boekmerke op jou mobiele toestel te kry.</translation>
 <translation id="4011073493055408531">Bo ’n stad skyn die Noorderlig wat in pers en groen kleure gestileer is.</translation>
+<translation id="4011897773956589748">Die volgende keer wat Gemini toegang tot hierdie rekening nodig het, sal dit jou weer vra.</translation>
 <translation id="4012509903424054869">PDF’s word outomaties omgeskakel sodat jy teks kan soek en kies</translation>
 <translation id="4014432863917027322">Herstel "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Het jy uitbreidings? <ph name="BEGIN_LINK" />Bestuur jou uitbtreidings<ph name="END_LINK" /> in een maklike plek.</translation>
@@ -4874,7 +4879,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4314497418046265427">Wees meer produktief deur jou foon aan jou <ph name="DEVICE_TYPE" /> te koppel</translation>
 <translation id="4314561087119792062">Voeg nuwe toegangspuntnaam by</translation>
 <translation id="4314815835985389558">Bestuur sinkronisering</translation>
-<translation id="4314821834464582073">Onderbreek taak</translation>
 <translation id="4316850752623536204">Ontwikkelaarwebwerf</translation>
 <translation id="4317733381297736564">Inprogramaankope</translation>
 <translation id="4317820549299924617">Verifikasie was nie suksesvol nie</translation>
@@ -6235,6 +6239,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5275084684151588738">Gebruikerwoordeboeke</translation>
 <translation id="5275338516105640560">Gestoorde Oortjiegroep-knoppie</translation>
 <translation id="5275352920323889391">Hond</translation>
+<translation id="5275946508817197540">Jou sekuriteitvoorkeure laat nie die installering van geïsoleerde webapps toe nie. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Demp oortjie</translation>
 <translation id="527605982717517565">Laat JavaScript altyd op <ph name="HOST" /> toe.</translation>
 <translation id="5276357196618041410">Kan nie opstelling stoor sonder om eers aan te meld nie</translation>
@@ -7748,6 +7753,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Bestuur jou toestelle</translation>
 <translation id="6350821834561350243">Verskaf ’n duidelike beskrywing van die probleem en stappe om die probleem weer te laat gebeur (indien moontlik)</translation>
+<translation id="635100112331897007">Bekyk alle Chrome-beleide</translation>
 <translation id="6351178441572658285">Apptale</translation>
 <translation id="6352992678231622317">Oortjie is ondertoe geskuif</translation>
 <translation id="6355632359041940003">Neem taak oor</translation>
@@ -8683,6 +8689,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6997553674029032185">Gaan na werf</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – aktiwiteitloglêer</translation>
 <translation id="6997707937646349884">Op jou toestelle:</translation>
+<translation id="6998036632333022623">Deel tans oortjies met Google</translation>
 <translation id="6998793565256476099">Skryf toestel in vir videokonferensie</translation>
 <translation id="6999956497249459195">Nuwe groep</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is gekoppel, maar moet opgestel word</translation>

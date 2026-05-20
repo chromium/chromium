@@ -776,7 +776,6 @@
 <translation id="1521655867290435174">Google Աղյուսակներ</translation>
 <translation id="1521933835545997395">Միացած է Android հեռախոսին</translation>
 <translation id="1523279371236772909">Դիտել եք անցած ամիս</translation>
-<translation id="1523486680453956384">Դիտել առաջադրանքը</translation>
 <translation id="1523978563989812243">Տեքստի հնչեցման գործիքներ</translation>
 <translation id="1524563461097350801">Ոչ</translation>
 <translation id="1525740877599838384">Տեղորոշելու համար օգտագործել միայն Wi-Fi ցանցը</translation>
@@ -787,6 +786,7 @@
 <translation id="1529769834253316556">Տողի բարձրությունը</translation>
 <translation id="1529891865407786369">Սնուցման աղբյուր</translation>
 <translation id="1530376661400379364">Chrome-ը զրոյացրել է այս կարգավորումները</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> ֆայլը պարունակում է զգայուն կամ վտանգավոր տվյալներ</translation>
 <translation id="1531275250079031713">Ցուցադրել «Ավելացնել նոր Wi-Fi ցանց» պատուհանը</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ես գիտակցում եմ, որ այս ներբեռնումը կվնասի իմ համակարգիչը</translation>
@@ -2142,7 +2142,6 @@
 <translation id="2450849356604136918">Դիտման ակտիվ ռեժիմներ չկան</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Ձեր կազմակերպությունը թույլատրել է պահել ոչ բոլոր տվյալները</translation>
-<translation id="245307875355990880">Վերսկսել առաջադրանքը</translation>
 <translation id="245322989586167203">Կայքերը սովորաբար միանում են հաջորդական միացքներին՝ տվյալների փոխանցման գործառույթների (օր․՝ ցանցի կարգավորման) համար</translation>
 <translation id="2453860139492968684">Ավարտել</translation>
 <translation id="2454206500483040640">Առանձնացված</translation>
@@ -2181,6 +2180,7 @@
 <translation id="2469141124738294431">Վիրտուալ մեքենայի կարգավիճակը</translation>
 <translation id="2469259292033957819">Դուք պահված տպիչներ չունեք։</translation>
 <translation id="2469375675106140201">Անհատականացնել ուղղագրության ստուգումը</translation>
+<translation id="2469406914567390938">Թարմացնել ալիքը</translation>
 <translation id="247051149076336810">Ցանցային պահեստի հասցեն</translation>
 <translation id="2471469610750100598">Սև (կանխադրված)</translation>
 <translation id="2471506181342525583">Տեղորոշման թույլտվությունը միացված է</translation>
@@ -2510,6 +2510,7 @@
 <translation id="2695943520968279338">Հասանելի ընդլայնումներ</translation>
 <translation id="2696675923413008404">Այս կայքի բովանդակությունը, այդ թվում՝ դրա URL-ը, ուղարկվում է Google-ին և կարող է մշակվել մասնագետների կողմից՝ այս գործառույթը բարելավելու համար</translation>
 <translation id="2698147581454716013">Այս սարքում ներկառուցված է լիցենզիայի փաթեթ, և սարքը հնարավոր չէ գրանցել կրպակի և ցուցանակի ռեժիմում։</translation>
+<translation id="269941332914175387">Վերագործարկեք դիտարկիչը՝ պրոֆիլի տվյալները բեռնելու և գաղտնագրված պահելու համար</translation>
 <translation id="2699911226086014512">Չհաջողվեց PIN կոդ սահմանել: Սխալի կոդը՝ <ph name="RETRIES" />:</translation>
 <translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
 <translation id="2701737434167469065">Մուտք գործել, <ph name="EMAIL" /></translation>
@@ -2738,6 +2739,7 @@
 <translation id="2844154481025280030">Կանոնը կազմաձևված է։</translation>
 <translation id="2844169650293029770">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="2844809857160214557">Դիտեք և կառավարեք տպելու առաջադրանքները</translation>
+<translation id="284491292807422921">Հեռացնե՞լ կայքը</translation>
 <translation id="2845276301195220700">Google Օրացույցի այլ գործողություններ</translation>
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="284581348330507117">Ստեղծեք չկրկնվող գաղտնաբառեր</translation>
@@ -3327,6 +3329,7 @@
 <translation id="3262986719682892278">Ֆայլը չափազանց մեծ է</translation>
 <translation id="3264544094376351444">Sans-serif տառատեսակ</translation>
 <translation id="3264582393905923483">Համատեքստ</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />։ Հաղորդագրություն ձեր ադմինիստրատորից․ «<ph name="CUSTOM_MESSAGE" />»։</translation>
 <translation id="3265459715026181080">Close Window</translation>
 <translation id="3266022278425892773">Լինուքսի մշակման միջավայր</translation>
 <translation id="3266030505377585301">Այցելությունների պատմությունը այս սարքից ջնջելու, սակայն Google հաշվում պահպանելու համար <ph name="BEGIN_LINK" />դուրս եկեք հաշվից<ph name="END_LINK" />։</translation>
@@ -4443,6 +4446,7 @@
 <translation id="4010746393007464819">Հասանելի է Debian 12-ի (Bookworm) նորացում</translation>
 <translation id="4010917659463429001">Ձեր էջանիշները ձեր շարժական սարքում օգտագործելու համար <ph name="GET_IOS_APP_LINK" />:</translation>
 <translation id="4011073493055408531">Հյուսիսային բևեռափայլը քաղաքի վերևում՝ ներկված մանուշակագույն և կանաչ երանգներով։</translation>
+<translation id="4011897773956589748">Հաջորդ անգամ, երբ Gemini-ին անհրաժեշտ լինի այս հաշվի հասանելիություն, այն նորից կխնդրի ձեզ հասանելի դարձնել հաշիվը։</translation>
 <translation id="4012509903424054869">PDF ֆայլերը ավտոմատ կերպով փոխարկվում են, որպեսզի կարողանաք որոնել և տեքստ ընտրել</translation>
 <translation id="4014432863917027322">Վերանորոգե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="4015163439792426608">Օգտվո՞ւմ եք ընդլայնումներից: <ph name="BEGIN_LINK" />Կառավարեք ձեր ընդլայնումները<ph name="END_LINK" /> մեկ վայրում:</translation>
@@ -4860,7 +4864,6 @@
 <translation id="4314497418046265427">Աշխատեք ավելի արդյունավետ՝ միացնելով հեռախոսը <ph name="DEVICE_TYPE" /> սարքին</translation>
 <translation id="4314561087119792062">Ավելացնել մուտքի կետի նոր անվանում</translation>
 <translation id="4314815835985389558">Համաժամացման կառավարում</translation>
-<translation id="4314821834464582073">Դադարեցնել առաջադրանքը</translation>
 <translation id="4316850752623536204">Մշակողի վեբկայք</translation>
 <translation id="4317733381297736564">Գնումներ հավելվածից</translation>
 <translation id="4317820549299924617">Հաստատումը չհաջողվեց</translation>
@@ -6221,6 +6224,7 @@
 <translation id="5275084684151588738">Օգտատիրոջ բառարաններ</translation>
 <translation id="5275338516105640560">«Պահված ներդիրների խումբ» կոճակ</translation>
 <translation id="5275352920323889391">Շուն</translation>
+<translation id="5275946508817197540">Ձեր անվտանգության կարգավորումները թույլ չեն տալիս մեկուսացված վեբ հավելվածների տեղադրումը։ <ph name="CHANGE_PREFERENCE" />։</translation>
 <translation id="527605719918376753">Անջատել ներդիրի ձայնը</translation>
 <translation id="527605982717517565">Միշտ թույլ տալ JavaScript-ը <ph name="HOST" />-ում</translation>
 <translation id="5276357196618041410">Որպեսզի կազմաձևը պահվի, նախ մուտք գործեք հաշիվ</translation>
@@ -8667,6 +8671,7 @@
 <translation id="6997553674029032185">Անցնել կայք</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Գործողությունների մատյան</translation>
 <translation id="6997707937646349884">Ձեր սարքերում՝</translation>
+<translation id="6998036632333022623">Ներդիրների փոխանցում Google-ին</translation>
 <translation id="6998793565256476099">Սարքը գրանցել տեսակոնֆերանսների համար</translation>
 <translation id="6999956497249459195">Նոր խումբ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> տպիչը միացել է, բայց այն հարկավոր է կարգավորել</translation>

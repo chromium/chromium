@@ -254,6 +254,7 @@
 <translation id="1380591466760231819">Сгъване тип „писмо“</translation>
 <translation id="138218114945450791">светлосиньо</translation>
 <translation id="1382194467192730611">USB устройството е разрешено от администратора</translation>
+<translation id="1383876407941801731">Търсене</translation>
 <translation id="1384725838384960382">Лист за удостоверяване на идентификационни данни за сигурни плащания</translation>
 <translation id="1386623374109090026">Пояснения</translation>
 <translation id="138810468159004008">Разрешаване при посещение на сайта</translation>
@@ -1792,6 +1793,7 @@
 <translation id="3763752038825281594">По-рано не разрешихте на този сайт достъп до <ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">Пощенска кутия 9</translation>
 <translation id="3767485424735936570">Според администраторско правило копирането и поставянето на съдържание в(ъв) „<ph name="VM_NAME" />“ не се препоръчва</translation>
+<translation id="3769584711865378220"><ph name="URL" /> иска да промени достъпа до местоположението от приблизително на точно</translation>
 <translation id="3772211998634047851">Хартия (облигационна)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо бележка в Google Keep</translation>
 <translation id="3780694243617746492">Изходен контейнер</translation>
@@ -2073,6 +2075,7 @@
 <translation id="421066178035138955">Използва устройствата и данните за виртуална реалност</translation>
 <translation id="4213500579045346575">Бодибилдинг</translation>
 <translation id="4214357935346142455">потребителски профил за екрана за вход</translation>
+<translation id="4218327733815631046">Запазване на приблизителното местоположение</translation>
 <translation id="4219596572397833317">Преглеждайте историята на цените и др., за да пазарувате по-интелигентно.</translation>
 <translation id="4220128509585149162">Сривове</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Стъпка 1: Влезте в портала&lt;/h4&gt;
@@ -2996,6 +2999,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ви пренасочи твърде много пъти.</translation>
 <translation id="5619721953841297650">Предварително зададено</translation>
 <translation id="5624120631404540903">Управление на паролите</translation>
+<translation id="5627344039351500898">Промяна на „Точно“</translation>
 <translation id="5628060911499153873">Запазете информацията си, за да извършвате по-бързо различни неща в продуктите на Google. Данните ви се запазват в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="5629630648637658800">Зареждането на настройките за правилото не бе успешно</translation>
 <translation id="5630981295558454585">Бутон „Попитайте Google за тази страница“. Активирайте, за да попитате Google за тази страница</translation>

@@ -254,6 +254,7 @@
 <translation id="1380591466760231819">የደብዳቤ እጥፋት</translation>
 <translation id="138218114945450791">ፈካ ያለ ሰማያዊ</translation>
 <translation id="1382194467192730611">በእርስዎ አስተዳዳሪ የተፈቀደ የዩኤስቢ መሣሪያ</translation>
+<translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1384725838384960382">ደህንነቱ የተጠበቀ የክፍያ የመግቢያ ማስረጃ ማረጋገጫ ሉህ</translation>
 <translation id="1386623374109090026">ማብራሪያዎች</translation>
 <translation id="138810468159004008">ጣቢያውን እየተጎበኘ ሳለ ፍቀድ</translation>
@@ -1819,6 +1820,7 @@
 <translation id="380865868633614173">የካርድ መረጃ በማስቀመጥ ላይ</translation>
 <translation id="3810770279996899697">የሚስጥር ቁልፍ አስተዳዳሪ የ MacOS Keychain መዳረሻ ያስፈልገዋል</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />፣ <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ይህ በChromeOS ላይ የAndroid መተግበሪያዎችን አፈጻጸም የሚያሻሽል ወሳኝ ዝማኔ ነው።</translation>
 <translation id="3814865536373139791">ድርጅትዎ መመሪያዎችን እንዴት እንደሚያስተዳድር ያሳልጡ</translation>
 <translation id="3815434930383843058">8 x 12 ኢንች</translation>
@@ -2398,6 +2400,7 @@
 <translation id="4736934858538408121">ምናባዊ ካርድ</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> የፍለጋ አስተያየት ጥቆማ</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />፣ የተመረጠ ትር፣ <ph name="INDEX" /> ከ<ph name="TOTAL" />፣ በትሮች መካከል ለመቀያየር የግራ ወይም የቀኝ ቀስት ይጠቀሙ</translation>
 <translation id="4742407542027196863">የይለፍ ቃላትን ያስተዳድሩ...</translation>
 <translation id="474270528725216349">ከሠመሩ መሳሪያዎች ላይ ቢያንስ ከ1 ንጥል</translation>
 <translation id="4743275772928623722">የእርስዎ ስርዓት ተዘምኗል ነገር ግን አንዳንድ መተግበሪያዎችዎ እና ፋይሎችዎ ሊመለሱ አልቻሉም። መተግበሪያዎችዎ እንደገና በራስ-ሰር ይወርዳሉ።</translation>
@@ -2465,6 +2468,7 @@
 <translation id="4832961164064927107">ባርቢኪው እና መጥበስ</translation>
 <translation id="4835568975547260025">Chrome ለጥያቄዎችዎ የበለጠ የተበጁ መልሶችን እንዲያገኙ ለማገዝ አግባብነት ያላቸውን ክፍት ትሮች በነባሪ ያጋራል።</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>
+<translation id="4842365697443353018">በኋላ የመክፈል አማራጭን ለመጠቀም ቅጹን ያጽዱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4844937814014739139">የተጋሩ ትሮችን መሸብለል እና ማጉላት</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ላይ ተጨማሪ ቅናሽ ያግኙ እና ሌሎች</translation>

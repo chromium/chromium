@@ -333,6 +333,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4348548358339558429">Para makuha ang pag-personalize, isama ang Chrome sa Aktibidad sa Web at App</translation>
 <translation id="436060642166082913">Na-block ng Chrome ang pag-download na ito dahil puwedeng mapinsala ng file ang iyong mga personal na account at account sa social network</translation>
 <translation id="4367027658822022112">Puwede mong i-pin ang Google Lens para sa madaling pag-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
+<translation id="4372389195695053189">Chrome na ang iyong default browser</translation>
 <translation id="4389991535395284064">Kapag nagba-browse sa Incognito mode, bibigyan ka ng babala ng Chrome bago nito i-load ang isang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
 <translation id="4434353761996769206">Error sa installer: <ph name="INSTALLER_ERROR" /></translation>
@@ -618,7 +619,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7302361266603927550">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="7306401458628386911">Masimulan kaagad ang pag-browse: Puwede na ngayong ilunsad ang Chrome kapag nagsimula na ang Windows.</translation>
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
-<translation id="7339898014177206373">Bagong window</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="73786666777299047">Buksan ang Chrome Web Store</translation>
 <translation id="7386878009611068389">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, lumipat sa profile mo sa Chrome kung saan naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /></translation>

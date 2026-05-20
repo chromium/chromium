@@ -586,7 +586,6 @@
 <translation id="7318036098707714271">আপোনাৰ পচন্দৰ ফাইলটো ব্যৱহাৰযোগ্য নহয় বা অমান্য।
 
 Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্ধাৰ কৰিব নোৱাৰিলে।</translation>
-<translation id="7339898014177206373">নতুন ৱিণ্ড'</translation>
 <translation id="734373864078049451">আপোনাৰ ৱেব, বুকমার্ক আৰু আন Chromium বস্তুবোৰ ইয়াত থাকে।</translation>
 <translation id="7347827960336370838">আপোনাৰ পাছফ্ৰে’জ থকা লোকেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰে। পাছফ্ৰে’জটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, আপুনি <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচিব লাগিব<ph name="END_LINK" />।</translation>
 <translation id="7349591376906416160">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে Chromiumক <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ <ph name="ALTERNATIVE_BROWSER_NAME" /> খুলিবলৈ কনফিগাৰ কৰিছে।</translation>
@@ -595,6 +594,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7376384068949534168">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromiumএ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আঁতৰাইছে।</translation>
 <translation id="73786666777299047">Chrome Web Store খোলক</translation>
 <translation id="7384121030444253939">এই এক্সটেনশ্বনটো আৰু সমৰ্থিত নহয়। Chromiumএ তাৰ পৰিৱৰ্তে আপুনি এইটো আঁতৰোৱাটো চুপাৰিছ কৰে।</translation>
+<translation id="7407655596887111931">Chromium এতিয়া আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="7413153308467572558">আপুনি য’ত এৰিছিল তাৰ পৰা অব্যাহত ৰাখক: আপুনি প্ৰতিবাৰে ৰিষ্টাৰ্ট কৰোঁতে Chromiumএ আপোনাৰ টেবসমূহ পুনঃস্থাপন কৰে। এইটো অফ কৰিবলৈ ইয়ালৈ যাওক</translation>
 <translation id="7427879960656355200">Chromiumলৈ পাছৱৰ্ড আমদানি কৰক</translation>
 <translation id="744815265653811511">১) তলৰ <ph name="BUTTON_LABEL" />ত ক্লিক কৰক

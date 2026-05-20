@@ -254,6 +254,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1380591466760231819">Palosje si letër</translation>
 <translation id="138218114945450791">Blu e çelur</translation>
 <translation id="1382194467192730611">Pajisja USB është e lejuar nga administratori</translation>
+<translation id="1383876407941801731">Kërko</translation>
 <translation id="1384725838384960382">Fleta e vërtetimit të sigurt të kredencialeve të pagesës</translation>
 <translation id="1386623374109090026">Shënimet</translation>
 <translation id="138810468159004008">Lejo ndërsa viziton sajtin</translation>
@@ -1820,6 +1821,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="380865868633614173">Informacionet e kartës po ruhen</translation>
 <translation id="3810770279996899697">"Menaxheri i fjalëkalimeve" ka nevojë për qasje te MacOS Keychain</translation>
 <translation id="3810973564298564668">Menaxho</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Ky është një përditësim kritik që përmirëson performancën e aplikacioneve për Android në ChromeOS.</translation>
 <translation id="3814865536373139791">Përmirëso mënyrën se si i menaxhon organizata jote politikat</translation>
 <translation id="3815434930383843058">8 x 12 inç</translation>
@@ -2399,6 +2401,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4736934858538408121">Karta virtuale</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4738601419177586157">Sugjerim kërkimi për <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, skeda e zgjedhur, <ph name="INDEX" /> nga <ph name="TOTAL" />, përdor shigjetën majtas ose djathtas për të kaluar mes skedave</translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>
 <translation id="474270528725216349">Nga të paktën 1 sajt në pajisjet e sinkronizuara</translation>
 <translation id="4743275772928623722">Sistemi yt u përditësua, por disa nga aplikacionet dhe skedarët e tu nuk mund të rikuperoheshin. Aplikacionet e tua do të shkarkohen përsëri automatikisht.</translation>
@@ -2466,6 +2469,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4832961164064927107">Skara dhe pjekja në skarë</translation>
 <translation id="4835568975547260025">Chrome do të ndajë skedat e hapura përkatëse si parazgjedhje për të të ndihmuar të marrësh përgjigje më të personalizuara për pyetjet e tua.</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
+<translation id="4842365697443353018">Pastro formularin për të përdorur "Paguaj më vonë"</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4844937814014739139">Lëvizja dhe zmadhimi në skedat e ndara</translation>
 <translation id="484671803914931257">Merr zbritje në <ph name="MERCHANT_NAME" /> dhe të tjera</translation>

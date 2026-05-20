@@ -254,6 +254,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1380591466760231819">Piegatura a lettera</translation>
 <translation id="138218114945450791">Azzurro</translation>
 <translation id="1382194467192730611">Dispositivo USB consentito dall'amministratore</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1384725838384960382">Foglio per l'autenticazione delle credenziali di pagamento sicure</translation>
 <translation id="1386623374109090026">Annotazioni</translation>
 <translation id="138810468159004008">Consenti durante la visita al sito</translation>
@@ -1817,6 +1818,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="380865868633614173">Salvataggio dei dati della carta in corso…</translation>
 <translation id="3810770279996899697">Gestore delle password richiede l'accesso al Portachiavi di macOS</translation>
 <translation id="3810973564298564668">Gestisci</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Si tratta di un aggiornamento critico che migliora le prestazioni delle app per Android su ChromeOS.</translation>
 <translation id="3814865536373139791">Semplifica la gestione delle policy da parte della tua organizzazione</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
@@ -2396,6 +2398,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4736934858538408121">Carta virtuale</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> suggerimento di ricerca</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, scheda selezionata, <ph name="INDEX" /> di <ph name="TOTAL" />, usa la freccia sinistra o destra per passare da una scheda all'altra</translation>
 <translation id="4742407542027196863">Gestisci password…</translation>
 <translation id="474270528725216349">Da almeno 1 sito sui dispositivi sincronizzati</translation>
 <translation id="4743275772928623722">Il sistema è stato aggiornato, ma non è stato possibile recuperare alcuni file e app. Le tue app verranno scaricate di nuovo automaticamente.</translation>
@@ -2463,6 +2466,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4832961164064927107">BBQ e grigliate</translation>
 <translation id="4835568975547260025">Chrome condividerà le schede aperte pertinenti per impostazione predefinita per aiutarti a ricevere risposte più personalizzate alle tue domande.</translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
+<translation id="4842365697443353018">Cancella il modulo per utilizzare il pagamento posticipato</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4844937814014739139">Scorrimento e zoom delle schede condivise</translation>
 <translation id="484671803914931257">Ricevi uno sconto su <ph name="MERCHANT_NAME" /> e altri negozi</translation>
@@ -4081,7 +4085,7 @@ Ulteriori dettagli:
 <translation id="7359588939039777303">Annunci bloccati.</translation>
 <translation id="7360451453306104998">Quando Google trova sconti disponibili, li mostra nella fase di pagamento</translation>
 <translation id="7362281996276843968">Questo gruppo è chiuso</translation>
-<translation id="7363096869660964304">Non sei completamente invisibile: in modalità Incognito, la tua navigazione non viene nascosta al tuo datore di lavoro, al provider di servizi internet o ai siti web che visiti.</translation>
+<translation id="7363096869660964304">Non sei completamente invisibile: in modalità Incognito, la navigazione non viene nascosta al tuo datore di lavoro, al provider di servizi internet o ai siti web che visiti.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per aggiungere e gestire indirizzi nelle impostazioni di Chrome</translation>
 <translation id="7365849542400970216">Conoscere l'utilizzo del tuo dispositivo?</translation>
 <translation id="736592699917579616">Cibo</translation>
@@ -4092,7 +4096,7 @@ Ulteriori dettagli:
 <translation id="7372526636730851647">Foto (patinata)</translation>
 <translation id="7372973238305370288">risultato della ricerca</translation>
 <translation id="7374461526650987610">Gestori di protocollo</translation>
-<translation id="7374733840632556089">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chrome. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chrome vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
+<translation id="7374733840632556089">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chrome. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chrome vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al web.</translation>
 <translation id="73750335798090836">Per una maggiore protezione, usa sempre l'impronta, il volto o un altro metodo di blocco schermo quando usi informazioni sensibili come documenti di viaggio e di identità</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nessun sito autorizzato}=1{1 sito autorizzato}other{# siti autorizzati}}</translation>
 <translation id="7375818412732305729">Viene allegato un file</translation>

@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Организирајте ги следените производи во „Обележувачи“</translation>
 <translation id="1455845192930279203">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) од <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Штедете време, пишувајте помалку</translation>
+<translation id="146522654774760805">Лозинки и „Автоматско пополнување“</translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="147982357559798527">Променето</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, прикачена картичка „Инкогнито“ со исклучен звук</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
+<translation id="2022953316617983419">QR-код</translation>
 <translation id="2024195579772565064">Избришете го пребарувачот</translation>
 <translation id="2029669011553795746">Долниот лист со прифаќањето на „Известувања за совети“ е отворен на половина висина</translation>
 <translation id="2038563949887743358">Вклучи „Барај локација на работна површина“</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> и уште <ph name="TAB_COUNT" /> картички</translation>
 <translation id="441100617989818073">Некористени или дупликат картички и групи</translation>
 <translation id="4412123112245770507">Собери го делот</translation>
+<translation id="4412698727486357573">Центар за помош</translation>
 <translation id="4414179633735763985">Избришани: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Управувајте со сметката на Google</translation>
 <translation id="4425140285732600465">Цената се следи. Добивајте предупредувања ако цената се намали на кој било сајт.</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165">Менито за <ph name="MENU_NAME" /> е нагласено.</translation>
 <translation id="6983306615164277634">Може и да ја допрете и задржите лентата за адреси за да ја промените позицијата.</translation>
 <translation id="6987047470128880212">Инкогнито не е достапен на уредов</translation>
-<translation id="6989358895283601928">Зачувај и отпечати</translation>
 <translation id="6996145122199359148">Преземете ја страницава</translation>
 <translation id="7013762323294215682">Овој криптографски клуч ќе се зачува во вашиот Password Manager. Криптографскиот клуч ќе може да го користат сите што имаат пристап до Password Manager.</translation>
 <translation id="7020741890149022655">Додај во список за читање <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, избрана прикачена картичка со исклучен звук</translation>
 <translation id="7084115944294706056">Изберете ја позицијата на лентата за адреса</translation>
 <translation id="7085332316435785646">Изберете дали да се опфати историјата на Chrome за поперсонализирани доживувања во услугите на Google</translation>
+<translation id="7087066066828635014">Известувањата за совети се вклучени</translation>
 <translation id="7088681679121566888">Chrome е ажуриран</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, повеќекратно избрана картичка „Инкогнито“ со исклучен звук</translation>
 <translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
@@ -2002,6 +2005,7 @@
 <translation id="970715775301869095">Останаа <ph name="MINUTES" /> минути</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="983192555821071799">Затвори ги сите картички</translation>
+<translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="984756705737569814">Не може да се проверат лозинките во вашата сметка на Google</translation>
 <translation id="987264212798334818">Општо</translation>
 <translation id="988091779042748639">Затворете ги сите картички „Инкогнито“ за да се избрише историјата на прелистувањето во режимот „Инкогнито“ од уредот.</translation>

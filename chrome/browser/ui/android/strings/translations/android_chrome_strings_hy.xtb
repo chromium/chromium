@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">Էջանիշներում դասավորեք ապրանքները, որոնց հետևում եք</translation>
 <translation id="1455845192930279203">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը (<ph name="FILE_SIZE" />) <ph name="DOWNLOAD_DOMAIN" /> կայքից</translation>
 <translation id="1460751212339734034">Տնտեսեք ժամանակը, մուտքագրեք ավելի քիչ</translation>
+<translation id="146522654774760805">Գաղտնաբառեր և ինքնալրացում</translation>
 <translation id="1466383950273130737">Ընտրեք Chrome-ի լեզուն</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
 <translation id="147982357559798527">Փոխվել է</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">Ներառե՞լ շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որի ձայնն անջատված է</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
+<translation id="2022953316617983419">QR կոդ</translation>
 <translation id="2024195579772565064">Որոնողական համակարգի ջնջում</translation>
 <translation id="2029669011553795746">Խորհուրդները միացնելու առաջարկով ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="2038563949887743358">Միացնել կայքի ամբողջական տարբերակը</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ու ևս <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="441100617989818073">Չօգտագործված կամ կրկնօրինակ ներդիրներ և խմբեր</translation>
 <translation id="4412123112245770507">Ծալել բաժինը</translation>
+<translation id="4412698727486357573">Օգնության կենտրոն</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ջնջվեց</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4425140285732600465">Դուք հետևում եք այս ապրանքի գնին։ Երբ որևէ կայքում այն իջնի, դուք կստանաք ծանուցում։</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> ընտրացանկն ընդգծված է։</translation>
 <translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
 <translation id="6987047470128880212">Ինկոգնիտո ռեժիմը հասանելի չէ այս սարքում</translation>
-<translation id="6989358895283601928">Պահել և տպել</translation>
 <translation id="6996145122199359148">Ներբեռնել այս էջը</translation>
 <translation id="7013762323294215682">Այս մուտքի բանալին կպահվի ձեր գաղտնաբառի կառավարիչում։ Բոլորը, ովքեր թույլտվություն ունեն, կկարողանան օգտագործել այն։</translation>
 <translation id="7020741890149022655">Ավելացնել ընթերցանության ցանկում <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
@@ -1453,6 +1455,7 @@
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, ընտրված ներդիր, որն ամրացված է, և որի ձայնն անջատված է</translation>
 <translation id="7084115944294706056">Ընտրեք հասցեագոտու դիրքը</translation>
 <translation id="7085332316435785646">Ընտրեք, թե արդյոք ներառել Chromе-ի պատմությունը՝ Google-ի ծառայությունների ավելի անհատականացված օգտագործման համար։</translation>
+<translation id="7087066066828635014">Խորհուրդներով ծանուցումները միացված են</translation>
 <translation id="7088681679121566888">Chrome-ը թարմացված է</translation>
 <translation id="7098100324909062850">«<ph name="TAB_TITLE" />» ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որի ձայնն անջատված է</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
@@ -2002,6 +2005,7 @@
 <translation id="970715775301869095">Մնացել է <ph name="MINUTES" /> րոպե</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="983192555821071799">Փակել բոլոր ներդիրները</translation>
+<translation id="984275831282074731">Վճարման եղանակներ</translation>
 <translation id="984756705737569814">Չհաջողվեց ստուգել գաղտնաբառերը ձեր Google հաշվում</translation>
 <translation id="987264212798334818">Ընդհանուր</translation>
 <translation id="988091779042748639">Փակեք բոլոր ինկոգնիտո ներդիրները՝ ինկոգնիտո ռեժիմում այցելած էջերի պատմությունը սարքից ջնջելու համար։</translation>

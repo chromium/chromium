@@ -581,7 +581,6 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="7318036098707714271">Sozlamalaringiz saqlanadigan fayl noto‘g‘ri yoki yaroqsiz holatda.
 
 Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
-<translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="734373864078049451">Chromium’dagi barcha veb-sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
 <translation id="7347827960336370838">Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchirishingiz<ph name="END_LINK" /> kerak.</translation>
 <translation id="7349591376906416160">Tizim administratori tomonidan Chromium brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>
@@ -590,6 +589,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7376384068949534168">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="73786666777299047">Chrome internet-do‘konida ochish</translation>
 <translation id="7384121030444253939">Bu kengaytma endi dastaklanmaydi. Chromium uni olib tashlashni tavsiya qiladi.</translation>
+<translation id="7407655596887111931">Chromium endi birlamchi brauzeringiz</translation>
 <translation id="7413153308467572558">Ishni kelgan joyidan davom ettiring: Chromium har safar qayta ishga tushganda oxirgi varaqlarni tiklashi mumkin. Faolsizlantirish uchun bu yerga kiring:</translation>
 <translation id="7427879960656355200">Chromiumga parollarni import qilish</translation>
 <translation id="744815265653811511">1. Quyida <ph name="BUTTON_LABEL" /> tugmasini bosing

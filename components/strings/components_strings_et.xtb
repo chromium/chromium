@@ -254,6 +254,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1380591466760231819">Kirjakujuliselt volditud</translation>
 <translation id="138218114945450791">Helesinine</translation>
 <translation id="1382194467192730611">Teie administraator lubas selle USB-seadme</translation>
+<translation id="1383876407941801731">Otsi</translation>
 <translation id="1384725838384960382">Turvalise maksemandaadi autentimisleht</translation>
 <translation id="1386623374109090026">Märkused</translation>
 <translation id="138810468159004008">Luba saidi külastamise ajal</translation>
@@ -1820,6 +1821,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="380865868633614173">Kaardi teabe salvestamine</translation>
 <translation id="3810770279996899697">Paroolihaldur vajab juurdepääsu MacOS Keychainile</translation>
 <translation id="3810973564298564668">Halda</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">See on oluline värskendus, mis parandab Androidi rakenduste jõudlust ChromeOS-is.</translation>
 <translation id="3814865536373139791">Muutke sujuvamaks see, kuidas teie organisatsioon reegleid haldab</translation>
 <translation id="3815434930383843058">8 × 12 tolli</translation>
@@ -2399,6 +2401,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4736934858538408121">Virtuaalkaart</translation>
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4738601419177586157">Otsingusoovitus: <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, valitud vaheleht, <ph name="INDEX" />/<ph name="TOTAL" />, vahelehtede vahetamiseks kasutage vasak- või paremnooleklahvi</translation>
 <translation id="4742407542027196863">Halda paroole …</translation>
 <translation id="474270528725216349">Vähemalt ühelt saidilt sünkroonitud seadmetes</translation>
 <translation id="4743275772928623722">Teie süsteemi värskendati, kuid mõnda teie rakendust ja faili ei õnnestunud taastada. Teie rakendused laaditakse uuesti automaatselt alla.</translation>
@@ -2466,6 +2469,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4832961164064927107">Grillimine ja BBQ</translation>
 <translation id="4835568975547260025">Chrome jagab vaikimisi asjakohaseid avatud vahelehti, et aidata teil saada oma küsimustele paremini kohandatud vastuseid.</translation>
 <translation id="4840250757394056958">Chrome’i ajaloo vaatamine</translation>
+<translation id="4842365697443353018">Hiljem maksmise valiku kasutamiseks tühjendage vorm.</translation>
 <translation id="484462545196658690">Automaatne</translation>
 <translation id="4844937814014739139">Jagatud vahelehtede kerimine ja suumimine</translation>
 <translation id="484671803914931257">Saage allahindlust kaupmehe <ph name="MERCHANT_NAME" /> juures ja mujalgi</translation>

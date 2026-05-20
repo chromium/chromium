@@ -879,8 +879,8 @@
 <translation id="7774365994322694683">ಪಕ್ಷಿ</translation>
 <translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
-<translation id="7788080748068240085">"<ph name="FILE_NAME" />"  ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಉಳಿಸಲು ನೀವು ಹೆಚ್ಚುವರಿ <ph name="TOTAL_FILE_SIZE" /> ಸ್ಥಳವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಅವಶ್ಯಕತೆಯಿಲ್ಲದಂತಹ ಫೈಲ್‌ಗಳನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ<ph name="MARKUP_3" />
+<translation id="7788080748068240085">"<ph name="FILE_NAME" />" ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲು ನೀವು ಹೆಚ್ಚುವರಿ <ph name="TOTAL_FILE_SIZE" /> ಸ್ಥಳವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು:<ph name="MARKUP_1" />
+    <ph name="MARKUP_2" />ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಅವಶ್ಯಕತೆಯಿಲ್ಲದಂತಹ ಫೈಲ್‌ಗಳನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಫೋಲ್ಡರ್‌ನ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಿ<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ಸಾಧನವನ್ನು ಸ್ವರೂಪಗೊಳಿಸಿ</translation>
 <translation id="7799329977874311193"> HTML ಡಾಕ್ಯುಮೆಂಟ್</translation>

@@ -118,6 +118,7 @@
 <translation id="1448440926884431741">ორგანიზებულად დაალაგეთ თვალმიდევნებული პროდუქტები „სანიშნეებში“</translation>
 <translation id="1455845192930279203">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) <ph name="DOWNLOAD_DOMAIN" />-დან?</translation>
 <translation id="1460751212339734034">დაზოგეთ დრო, აკრიფეთ ნაკლები</translation>
+<translation id="146522654774760805">პაროლები და ავტომატური შევსება</translation>
 <translation id="1466383950273130737">აირჩიეთ Chrome-ის ენა</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა სერვერთან დაკავშირებული პრობლემების გამო.</translation>
 <translation id="147982357559798527">შეიცვალა</translation>
@@ -227,6 +228,7 @@
 <translation id="200114059308480249">გსურთ, დაურთოთ გარშემო ტექსტი Google ძიებებს?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ჩამაგრებული და დადუმებული ინკოგნიტო ჩანართი</translation>
 <translation id="2021896219286479412">სრულეკრანიანი რეჟიმის მართვა</translation>
+<translation id="2022953316617983419">QR კოდი</translation>
 <translation id="2024195579772565064">საძიებო სისტემის წაშლა</translation>
 <translation id="2029669011553795746">რჩევების შესახებ შეტყობინებებზე თანხმობის გვერდი გაიხსნა ნახევარ სიმაღლეზე</translation>
 <translation id="2038563949887743358">საიტის დესკტოპის ვერსიის მოთხოვნის ჩართვა</translation>
@@ -789,6 +791,7 @@
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> და <ph name="TAB_COUNT" /> სხვა ჩანართი</translation>
 <translation id="441100617989818073">გამოუყენებელი ან დუბლირებული ჩანართები და ჯგუფები</translation>
 <translation id="4412123112245770507">სექციის ჩაკეცვა</translation>
+<translation id="4412698727486357573">დახმარების ცენტრი</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> წაიშალა</translation>
 <translation id="4415276339145661267">თქვენი Google ანგარიშის მართვა</translation>
 <translation id="4425140285732600465">მიმდინარეობს ფასისთვის თვალის მიდევნება. თქვენ მიიღებთ გაფრთხილებებს, როცა ფასი დაიკლებს რომელიმე საიტზე.</translation>
@@ -1435,7 +1438,6 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> მენიუ გამოყოფილია.</translation>
 <translation id="6983306615164277634">პოზიციის შესაცვლელად შეგიძლიათ მისამართთა ზოლზე ხანგრძლივად შეხებაც.</translation>
 <translation id="6987047470128880212">ინკოგნიტო რეჟიმი ამ მოწყობილობაზე ხელმისაწვდომი არ არის</translation>
-<translation id="6989358895283601928">შენახვა და ბეჭდვა</translation>
 <translation id="6996145122199359148">ამ გვერდის ჩამოტვირთვა</translation>
 <translation id="7013762323294215682">წვდომის ეს გასაღები შეინახება თქვენს პაროლების მმართველში. მისით სარგებლობას შეძლებს ყველა, ვისთვისაც ხელმისაწვდომია წვდომის ეს გასაღები.</translation>
 <translation id="7020741890149022655">საკითხავ სიაში დამატება <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@
 <translation id="970715775301869095">დარჩენილია <ph name="MINUTES" /> წთ</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="983192555821071799">ყველა ჩანართის დახურვა</translation>
+<translation id="984275831282074731">გადახდის მეთოდები</translation>
 <translation id="984756705737569814">თქვენს Google ანგარიშში პაროლების შემოწმება ვერ ხერხდება</translation>
 <translation id="987264212798334818">ზოგადი</translation>
 <translation id="988091779042748639">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი.</translation>

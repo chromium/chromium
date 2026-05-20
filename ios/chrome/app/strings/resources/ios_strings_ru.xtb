@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Перейти к первой вкладке</translation>
 <translation id="2499505845365628575">Чтобы посмотреть историю браузера, выберите "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2511117522375201202">Раскрытых паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
+<translation id="2512709994717613803">Уровень <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Здесь хранятся группы вкладок</translation>
 <translation id="251837347827266434">Вы выйдете из аккаунта, вкладки будут закрыты, а данные о работе в браузере удалены</translation>
 <translation id="2520787026086861736">Чтобы отключить эту функцию, перейдите в раздел <ph name="BEGIN_LINK" />Автозаполнение и пароли<ph name="END_LINK" />.</translation>
@@ -1090,6 +1091,7 @@
 <translation id="4840495572919996524">Ваши закладки, пароли, история и другие данные больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="484280513275854557">Вы вышли из аккаунта, а данные о работе в браузере были удалены.</translation>
 <translation id="484462545196658690">Авто</translation>
+<translation id="4846662396507502151">Новая панель инструментов ускоряет работу с приложением.</translation>
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="4854068532375923088">Разрешите Gemini использовать камеру</translation>
 <translation id="4860895144060829044">Позвонить</translation>
@@ -1428,6 +1430,7 @@
 <translation id="5988097621740394599">Показывать скидки на вкладках</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
 <translation id="599343768974649785">Текст уведомления</translation>
+<translation id="6004988584831654445">Готово! Получайте уведомления о новых задачах.</translation>
 <translation id="6006672969046233841">Новая вкладка</translation>
 <translation id="6011308810877101166">Улучшать подсказки при поиске</translation>
 <translation id="6012140227487808125">Шифрование…</translation>
@@ -1659,6 +1662,7 @@
 <translation id="6685259053455152195">Сочетания клавиш для быстрого изменения настроек и использования функций из адресной строки.</translation>
 <translation id="6689342293888598653">Белый фон</translation>
 <translation id="6689685206615181381">Доступен только режим инкогнито</translation>
+<translation id="6705491067826837934">Инструменты управления всегда под рукой</translation>
 <translation id="6708501134077648845">Параметры паролей</translation>
 <translation id="6709964700841491574">Режим блокировки входа</translation>
 <translation id="6710079714193676716">Браузером управляет ваша организация. Некоторые функции могут быть недоступны. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1719,6 +1723,7 @@
 <translation id="6903282483217634857">Перейти вправо</translation>
 <translation id="6903907808598579934">Включить синхронизацию</translation>
 <translation id="6906448540340261898">Обеспечьте доступ к паролям в аккаунте Google.</translation>
+<translation id="6906978870282539723">Получайте помощь с задачами и вкладками.</translation>
 <translation id="6908734251759299256">Обновите браузер</translation>
 <translation id="6913136913033237761">Папка <ph name="FOLDER_NAME" />. Только на этом устройстве.</translation>
 <translation id="6914583639806229067">Поиск по скопированному изображению</translation>
@@ -1814,6 +1819,7 @@
 <translation id="7293429513719260019">Выбрать язык</translation>
 <translation id="7300448350764260141">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
+<translation id="7312823817809783355">Ваши задачи</translation>
 <translation id="7313347584264171202">Здесь вы найдете свои вкладки инкогнито</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} вариант автозаполнения показан над клавиатурой.}one{{count} вариант автозаполнения показан над клавиатурой.}few{{count} варианта автозаполнения показано над клавиатурой.}many{{count} вариантов автозаполнения показано над клавиатурой.}other{{count} варианта автозаполнения показано над клавиатурой.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1821,6 +1827,7 @@
 <translation id="7345061034321640811">Импорт запрещен</translation>
 <translation id="7347998088283246662">Импортируйте пароли, историю, закладки и другие данные.</translation>
 <translation id="7352651011704765696">Ошибка</translation>
+<translation id="7357999308187750900">Показать все</translation>
 <translation id="7364796246159120393">Выберите файл</translation>
 <translation id="736564850024123010">Переместите адресную строку в удобное место.</translation>
 <translation id="7366909168761621528">Данные о работе в браузере</translation>
@@ -2079,6 +2086,7 @@
 <translation id="8182037667962849780">{count,plural, =1{Для {website_1}}=2{Для {website_1} и {website_2}}=3{Для {website_1}, {website_2} и ещё 1}one{Для {website_1}, {website_2} и ещё {more_count}}few{Для {website_1}, {website_2} и ещё {more_count}}many{Для {website_1}, {website_2} и ещё {more_count}}other{Для {website_1}, {website_2} и ещё {more_count}}}</translation>
 <translation id="8184895727539791845">Для этого включите ее в настройках iOS.</translation>
 <translation id="8185076488803799132">Импортировать</translation>
+<translation id="8187200657863701733">Текущий уровень Chrome</translation>
 <translation id="8189615296021678665">Нажмите "Сохранить", чтобы быстро получить доступ к этому паролю при следующем входе.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавить пароль</translation>
@@ -2122,6 +2130,7 @@
 <translation id="8325455175867928593">Скрыть карточку "Отзывы, которые могут вас заинтересовать"</translation>
 <translation id="833647236762414178">Создавайте, сохраняйте и изменяйте пароли и ключи доступа, чтобы легко входить в аккаунты на сайтах и в приложениях. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Выполните ещё 1 задание, чтобы перейти на следующий уровень.}one{Выполните ещё {count} задание, чтобы перейти на следующий уровень.}few{Выполните ещё {count} задания, чтобы перейти на следующий уровень.}many{Выполните ещё {count} заданий, чтобы перейти на следующий уровень.}other{Выполните ещё {count} задания, чтобы перейти на следующий уровень.}}</translation>
 <translation id="8348530355586151720">Нажмите на значок меню в виде трех точек.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8361189290032177785">{count,plural, =1{Импортирована {count} закладка}one{Импортирована {count} закладка}few{Импортировано {count} закладки}many{Импортировано {count} закладок}other{Импортировано {count} закладки}}</translation>

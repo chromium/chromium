@@ -585,7 +585,6 @@
 <translation id="7318036098707714271">Реттеулер файлы бұзылған немесе жарамсыз.
 
 Chromium параметрлеріңізді қалпына келтіре алмайды.</translation>
-<translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="734373864078049451">Мұнда веб-беттер, бетбелгілер және басқа Chromium материалдары тұрады.</translation>
 <translation id="7347827960336370838">Құпия фразасы бар адам ғана шифрланған деректеріңізді оқи алады. Құпия фраза Google компаниясына жіберілмейді немесе ол құпия фразаңызды сақтамайды. Құпия фразаны ұмытып қалсаңыз немесе осы параметрді өзгерту керек болса, <ph name="BEGIN_LINK" />аккаунттағы Chromium деректерін жою<ph name="END_LINK" /> қажет.</translation>
 <translation id="7349591376906416160">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> бетіне кіргенде <ph name="ALTERNATIVE_BROWSER_NAME" /> браузері ашылатын етіп конфигурациялады.</translation>
@@ -594,6 +593,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7376384068949534168">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсаттарын өшірді.</translation>
 <translation id="73786666777299047">Chrome Web Store қызметін ашу</translation>
 <translation id="7384121030444253939">Бұл кеңейтімге енді қолдау көрсетілмейді. Chromium оны өшіруге кеңес береді.</translation>
+<translation id="7407655596887111931">Chromium енді әдепкі браузеріңіз.</translation>
 <translation id="7413153308467572558">Тоқтаған жерден жалғастырыңыз: өшіріп қосқан сайын, Chromium қойындыларды қалпына келтіреді. Мұны өшіру үшін келесі бөлімге өтіңіз:</translation>
 <translation id="7427879960656355200">Құпия сөздерді Chromium-ге экспорттау</translation>
 <translation id="744815265653811511">1. Төмендегі <ph name="BUTTON_LABEL" /> түймесін басыңыз.

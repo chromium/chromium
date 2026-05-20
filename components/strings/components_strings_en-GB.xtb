@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chromium. While some legitimate cases for monitoring do exist, like on a school or company network, Chromium wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="1024111578869940408">Attackers sometimes mimic sites by making hard-to-see changes to the web address.</translation>
 <translation id="1024913885641459127">Product Reviews and Price Comparisons</translation>
+<translation id="1025174656774447058">Automatically share open tabs for this thread?</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{None}=1{From 1 site. Signs you out of most sites. }other{From # sites. Signs you out of most sites. }}</translation>
@@ -254,6 +255,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1380591466760231819">Letter fold</translation>
 <translation id="138218114945450791">Light blue</translation>
 <translation id="1382194467192730611">USB device allowed by your administrator</translation>
+<translation id="1383876407941801731">Search</translation>
 <translation id="1384725838384960382">Secure payment credential authentication sheet</translation>
 <translation id="1386623374109090026">Annotations</translation>
 <translation id="138810468159004008">Allow while visiting the site</translation>
@@ -1024,6 +1026,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Use screen lock to confirm cards from now on</translation>
 <translation id="2552532158894206888">right key</translation>
+<translation id="2552601157105591479">Chrome will share relevant open tabs in each new thread to get better responses. Learn more about</translation>
 <translation id="2553352788023127673">Search history and passwords can be deleted in their management settings</translation>
 <translation id="2553853292994445426">Check your secure DNS settings. You may have configured a secure DNS server to which connections are failing.</translation>
 <translation id="255497580849974774">Please keep your device connected to a charger during the update.</translation>
@@ -1240,6 +1243,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2930531075747147366">Tab from your other device</translation>
 <translation id="2930577230479659665">Trim after each copy</translation>
 <translation id="2933624813161016821">Embossing foil</translation>
+<translation id="2935726091208500473">sharing your tabs</translation>
 <translation id="293796669683825859">Comments</translation>
 <translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – to show your cursor, switch apps, reload the page or go back</translation>
@@ -1267,6 +1271,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="297173220375858963">Desktop publishing</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2974468223369775963">This IBAN couldn't be saved in your Google Account. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
+<translation id="2976162850019490782">When on, Chrome will share all tabs in this window to help you to get more relevant responses. You can turn this on for all threads in Settings.</translation>
 <translation id="297667759942911166">Collaborate in tab groups</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -3320,6 +3325,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6133984428121856852">File extension is empty or malformed.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature with SHA-384</translation>
 <translation id="6139975341602920272">17 in x 22 in</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, selected</translation>
 <translation id="6143097244789397208">Augmented and virtual reality</translation>
 <translation id="614327212146763975">Motion and light sensors allowed</translation>
 <translation id="6146055958333702838">Check any cables and reboot any routers, modems or other network
@@ -4197,6 +4203,7 @@ Additional details:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME" /> will provide payment plans for you to choose from and complete your purchase.</translation>
 <translation id="7489392576326061356">Shampoos and Conditioners</translation>
 <translation id="7489919936111034362">Your Google Drive storage is full</translation>
+<translation id="7490026840522163531">Automatically share open tabs in every thread?</translation>
 <translation id="7495528107193238112">This content is blocked. Contact the site owner to fix the issue.</translation>
 <translation id="749865518782565832">Plumbing</translation>
 <translation id="7499188644237027195">When you make purchases in Chrome, see eWallet and Pix as options</translation>
@@ -5317,6 +5324,7 @@ Additional details:
 <translation id="964050462028070434">Manage passwords and passkeys…</translation>
 <translation id="964681140808832181">Yes, I want to cancel</translation>
 <translation id="969892804517981540">Official Build</translation>
+<translation id="970182982363142444">When on, Chrome will share all tabs in this window to help you to get more relevant responses. You can turn this on for all chats in</translation>
 <translation id="97054401902912338">Learn more about content filters</translation>
 <translation id="973788791897303708">This tab group is full</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 item}other{# items}}</translation>

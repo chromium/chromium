@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1263609676484797429">ಆ್ಯಪ್‌ಗಳು &gt; ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳು ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="1264694639515903274">ನೀವು ಈಗ ನಿಮ್ಮ ಹೋಮ್ ಪೇಜ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1289742167380433257">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಉಳಿಸಲು, ಈ ಪುಟದ ಚಿತ್ರಗಳನ್ನು Google ಮೂಲಕ ಆಪ್ಟಿಮೈಸ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">ಹ್ಯಾಂಗ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="1919950603503897840">ಸಂಪರ್ಕಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="1923695749281512248"><ph name="FILE_SIZE_WITH_UNITS" /> ರಲ್ಲಿ <ph name="BYTES_DOWNLOADED_WITH_UNITS" /> ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ</translation>
+<translation id="192926679114491605">ನನ್ನ ಹೋಮ್ ಪೇಜ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1939059826036755332">ಸ್ವಯಂಚಾಲಿತ ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್</translation>
 <translation id="1954597385941141174">ಸೈಟ್‌ಗಳು USB ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="1979673356880165407">ನೀವು ಭೇಟಿ ನೀಡುವ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿನ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ದೊಡ್ಡದಾಗಿ ಅಥವಾ ಚಿಕ್ಕದಾಗಿ ಮಾಡಿ</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">ವಿಸ್ತರಿಸಿ</translation>
 <translation id="4310738531374808763">ನಿಮ್ಮ ಹೋಮ್ ಪೇಜ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ}}</translation>
+<translation id="4336371609622603229">ಕಸ್ಟಮ್ ಥೀಮ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ Chrome ಅನ್ನು ನಿಮಗೆ ಬೇಕಾದ ಹಾಗೆ ರೂಪಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4338831206024587507">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳು <ph name="DOMAIN" /> ಅಡಿಯಲ್ಲಿವೆ</translation>
 <translation id="4340799661701629185">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="4341577178275615435">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಲು, F7 ಶಾರ್ಟ್‌ಕಟ್ ಬಳಸಿ</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">ನೀವು ಕಸ್ಟಮ್‌ ಝೂಮ್‌ ಲೆವೆಲ್‌ ಅನ್ನು ಸೇವ್‌ ಮಾಡುವ ಸೈಟ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="8748714929822124637">ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಇತರ ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="8751914237388039244">ಚಿತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="8775741625735357092">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಗೋಚರತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಆನ್ ಮಾಡಬಹುದು</translation>
 <translation id="8800034312320686233">ಸೈಟ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲವೇ?</translation>
 <translation id="8801436777607969138">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗೆ JavaScript ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="8801657293260363985">V8 ಎಂಬುದು Chrome ನ JavaScript ಮತ್ತು WebAssembly ಎಂಜಿನ್ ಆಗಿದ್ದು, ಸೈಟ್‌ನ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ</translation>

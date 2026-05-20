@@ -582,7 +582,6 @@
 <translation id="731795002583552498">‏در حال به‌روزرسانی Chromium</translation>
 <translation id="7318036098707714271">‏فایل اولویت‌های شما خراب یا نامعتبر است. 
 Chromium قادر به بازیابی تنظیمات شما نیست.</translation>
-<translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="734373864078049451">‏وب، نشانک‌ها و موارد دیگر Chromium شما در اینجا هستند.</translation>
 <translation id="7347827960336370838">‏فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید <ph name="BEGIN_LINK" />داده‌های Chromium ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
@@ -591,6 +590,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7376384068949534168">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت.</translation>
 <translation id="73786666777299047">‏باز کردن نت‌بازار Chrome</translation>
 <translation id="7384121030444253939">‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن را حذف کنید.</translation>
+<translation id="7407655596887111931">‏‫Chromium اکنون مرورگر پیش‌فرض شما است</translation>
 <translation id="7413153308467572558">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chromium هربار که آن را بازراه‌اندازی کنید، زبانه‌هایتان را بازمی‌گرداند. برای خاموش کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="7427879960656355200">‏وارد کردن گذرواژه‌ها به Chromium</translation>
 <translation id="744815265653811511">‏۱. روی <ph name="BUTTON_LABEL" /> در زیر کلیک کنید

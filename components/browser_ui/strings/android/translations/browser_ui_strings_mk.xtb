@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Совети за Chrome</translation>
 <translation id="1242008676835033345">Вметнато во <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Допрете „Апликации  &gt; Стандардни апликации“</translation>
+<translation id="1264694639515903274">Отсега може да ја приспособувате почетната страница</translation>
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1275718070701477396">Избран</translation>
 <translation id="1289742167380433257">Google ги оптимизираше сликите на страницава за да ви заштеди интернет.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Спушти</translation>
 <translation id="1919950603503897840">Изберете контакти</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Приспособи ја мојата почетна страница</translation>
 <translation id="1939059826036755332">Автоматска „Слика во слика“</translation>
 <translation id="1954597385941141174">Сајтовите може да прашуваат дали да се поврзат со USB-уредите</translation>
 <translation id="1979673356880165407">Направете текстот и сликите да се поголеми или помали на сите сајтови што ги посетувате</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome пак ќе блокира колачиња денес</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Барај понапред</translation>
+<translation id="3870711497942672548">Приспособете го Chrome со приспособени бои и слики за почетната страница</translation>
 <translation id="389521680295183045">Сајтовите може да прашуваат за да знаат кога активно го користите уредот</translation>
 <translation id="3895926599014793903">Присилно овозможи зумирање</translation>
 <translation id="3903738175795615004">Повлечете одозгора или притиснете го копчето Esc за да излезете од цел екран.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Прошири</translation>
 <translation id="4310738531374808763">Приспособете ја почетната страница</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Истекува утре}one{Истекува за # ден}other{Истекува за # дена}}</translation>
+<translation id="4336371609622603229">Приспособете го Chrome со избирање приспособена тема</translation>
 <translation id="4338831206024587507">Сите сајтови под <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Не им дозволувај на сајтовите да испраќаат известувања</translation>
 <translation id="4341577178275615435">За да вклучите или исклучите „Прелистување со курсор“, користете ја кратенката F7</translation>
@@ -750,7 +754,6 @@
 <translation id="8737426583868847403">Сајтовите за коишто зачувувате приспособен степен на зум ќе се појавуваат тука</translation>
 <translation id="8748714929822124637">Не дозволувај сајтовите да пристапуваат до други уреди во локалната мрежа</translation>
 <translation id="8751914237388039244">Изберете слика</translation>
-<translation id="8775741625735357092">Може да ја вклучите лентата со обележувачи во „Поставки &gt; Изглед“</translation>
 <translation id="8800034312320686233">Дали сајтот не работи?</translation>
 <translation id="8801436777607969138">Блокирај JavaScript за одреден сајт.</translation>
 <translation id="8801657293260363985">V8 е пребарувач на JavaScript и WebAssembly во Chrome што се користи за подобрување на изведбата на сајтот</translation>

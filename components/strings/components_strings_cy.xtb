@@ -254,6 +254,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1380591466760231819">Plyg llythyr</translation>
 <translation id="138218114945450791">Glas Golau</translation>
 <translation id="1382194467192730611">Dyfais USB a ganiateir gan eich gweinyddwr</translation>
+<translation id="1383876407941801731">Chwilio</translation>
 <translation id="1384725838384960382">Taflen ddilysu manylion talu ddiogel</translation>
 <translation id="1386623374109090026">Anodiadau</translation>
 <translation id="138810468159004008">Caniatáu tra'n ymweld â'r wefan</translation>
@@ -1820,6 +1821,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="380865868633614173">Wrthi'n cadw gwybodaeth cerdyn</translation>
 <translation id="3810770279996899697">Mae angen mynediad at MacOS Keychain ar y Rheolwr Cyfrineiriau</translation>
 <translation id="3810973564298564668">Rheoli</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Mae hwn yn ddiweddariad hanfodol sy'n gwella perfformiad apiau Android ar ChromeOS.</translation>
 <translation id="3814865536373139791">Symleiddio sut mae eich sefydliad yn rheoli polisïau</translation>
 <translation id="3815434930383843058">8 x 12 modfedd</translation>
@@ -2399,6 +2401,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4736934858538408121">Cerdyn rhithwir</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> awgrym chwilio</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, tab a ddewiswyd, <ph name="INDEX" /> o <ph name="TOTAL" />, defnyddiwch saeth chwith neu dde i newid rhwng tabiau</translation>
 <translation id="4742407542027196863">Rheoli cyfrineiriau…</translation>
 <translation id="474270528725216349">Gan o leiaf 1 wefan ar ddyfeisiau sydd wedi'u cysoni</translation>
 <translation id="4743275772928623722">Diweddarwyd eich system ond nid oedd modd adfer rhai o'ch apiau a'ch ffeiliau. Bydd eich apiau yn cael eu lawrlwytho eto yn awtomatig.</translation>
@@ -2466,6 +2469,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4832961164064927107">Barbeciw a Grilio</translation>
 <translation id="4835568975547260025">Bydd Chrome yn rhannu tabiau agored perthnasol yn ddiofyn i'ch helpu i gael atebion mwy pwrpasol i'ch cwestiynau.</translation>
 <translation id="4840250757394056958">Gweld eich hanes Chrome</translation>
+<translation id="4842365697443353018">Cliriwch y ffurflen i ddefnyddio talu'n ddiweddarach</translation>
 <translation id="484462545196658690">Awtomatig</translation>
 <translation id="4844937814014739139">Sgrolio a chwyddo tabiau a rennir</translation>
 <translation id="484671803914931257">Cael gostyngiad ar <ph name="MERCHANT_NAME" /> a rhagor</translation>

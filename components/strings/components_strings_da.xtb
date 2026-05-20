@@ -254,6 +254,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1380591466760231819">Viklefals</translation>
 <translation id="138218114945450791">Lyseblå</translation>
 <translation id="1382194467192730611">USB-enheden er tilladt af din administrator</translation>
+<translation id="1383876407941801731">Søg</translation>
 <translation id="1384725838384960382">Ark til godkendelse af loginoplysninger til sikker betaling</translation>
 <translation id="1386623374109090026">Annoteringer</translation>
 <translation id="138810468159004008">Tillad, mens du besøger websitet</translation>
@@ -1820,6 +1821,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="380865868633614173">Gemmer kortoplysninger</translation>
 <translation id="3810770279996899697">Adgangs­kode­admin­istrator skal have adgang til macOS-nøgleringen</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Dette er en vigtig opdatering, som forbedrer ydeevnen for Android-apps i ChromeOS.</translation>
 <translation id="3814865536373139791">Optimer, hvordan din organisation administrerer politikker</translation>
 <translation id="3815434930383843058">8 x 12 tommer</translation>
@@ -2399,6 +2401,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4738601419177586157"><ph name="TEXT" />-søgeforslag</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, valgt fane, <ph name="INDEX" /> af <ph name="TOTAL" />, brug venstre- eller højrepil til at skifte mellem faner</translation>
 <translation id="4742407542027196863">Administrer adgangskoder…</translation>
 <translation id="474270528725216349">Fra mindst 1 website på synkroniserede enheder</translation>
 <translation id="4743275772928623722">Dit system blev opdateret, men nogle af dine apps og filer kunne ikke gendannes. Dine apps downloades igen automatisk.</translation>
@@ -2466,6 +2469,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4832961164064927107">BBQ og grill</translation>
 <translation id="4835568975547260025">Chrome deler som standard relevante åbne faner for at hjælpe dig med at få mere tilpassede svar på dine spørgsmål.</translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
+<translation id="4842365697443353018">Ryd formularen for at bruge Betal senere</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4844937814014739139">Rulning og zoom på delte faner</translation>
 <translation id="484671803914931257">Få rabat på <ph name="MERCHANT_NAME" /> og meget mere</translation>

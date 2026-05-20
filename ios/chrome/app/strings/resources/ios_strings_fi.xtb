@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Siirry ensimmäiselle välilehdelle</translation>
 <translation id="2499505845365628575">Näet koko selaushistoriasi täältä: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> vaarantunutta salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
+<translation id="2512709994717613803">Taso <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Näet välilehtiryhmäsi täällä</translation>
 <translation id="251837347827266434">Sinut kirjataan ulos, välilehdet suljetaan ja selausdata poistetaan</translation>
 <translation id="2520787026086861736">Jos haluat laittaa asetuksen pois päältä, siirry kohtaan <ph name="BEGIN_LINK" />Automaattinen täyttö ja salasanat<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Täytä automaattisesti kortin numero, jonka loppuosa on <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Luotu <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kameran rulla</translation>
+<translation id="3743545564993953213">Sivusto yrittää avata Pikanäppäimet-sovelluksen.</translation>
 <translation id="3746269120925354434">Tiedot tallennettu Google Walletiin</translation>
 <translation id="3750225824417196283">Uusi sivu incognito-välilehdellä</translation>
 <translation id="3751873026576444885">Lopeta näytön hakeminen Google Lensillä</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Kirjanmerkkejä, historiaa, salasanoja tai muita tietojasi ei enää synkronoida Google-tilille.</translation>
 <translation id="484280513275854557">Sinut kirjattiin ulos ja selausdata poistettiin</translation>
 <translation id="484462545196658690">Automaattinen</translation>
+<translation id="4846662396507502151">Selaa nopeammin uuden yläpalkin avulla</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4854068532375923088">Salli "Geminin" käyttää kameraa</translation>
 <translation id="4860895144060829044">Soita</translation>
@@ -1427,6 +1430,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5988097621740394599">Katso hinnanalennukset välilehdiltä.</translation>
 <translation id="5988851877894965432">Avaa URL-osoitteet Chromessa</translation>
 <translation id="599343768974649785">Vain aikuisille tarkoitettua tekstiä</translation>
+<translation id="6004988584831654445">Valmista! Saat ilmoituksen, kun tehtäviä tulee lisää.</translation>
 <translation id="6006672969046233841">Uusi välilehti</translation>
 <translation id="6011308810877101166">Paranna hakuehdotuksia</translation>
 <translation id="6012140227487808125">Salataan…</translation>
@@ -1658,6 +1662,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6685259053455152195">Pikakuvakkeilla voit muuttaa asetuksia ja käyttää ominaisuuksia osoitepalkin kautta nopeasti.</translation>
 <translation id="6689342293888598653">Valkoinen taustaväri</translation>
 <translation id="6689685206615181381">Vain incognito-tila on käytettävissä</translation>
+<translation id="6705491067826837934">Asetukset aina tarvittaessa</translation>
 <translation id="6708501134077648845">Salasanavalinnat</translation>
 <translation id="6709964700841491574">Lukitustila</translation>
 <translation id="6710079714193676716">Organisaatiosi ylläpitämä. Kaikki ominaisuudet eivät välttämättä ole saatavilla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6903282483217634857">Siirrä oikealle</translation>
 <translation id="6903907808598579934">Ota synkronointi käyttöön</translation>
 <translation id="6906448540340261898">Varmista, että voit aina käyttää Google-tilisi salasanoja</translation>
+<translation id="6906978870282539723">Apua välilehtien ja tehtävien kanssa</translation>
 <translation id="6908734251759299256">Päivitä selain</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Vain tällä laitteella.</translation>
 <translation id="6914583639806229067">Hae kopioitua kuvaa</translation>
@@ -2078,6 +2084,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8182037667962849780">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ja 1 muu}other{{website_1}, {website_2} ja {more_count} muuta}}</translation>
 <translation id="8184895727539791845">Laita kamera päälle iOS-asetuksista, jotta Gemini voi käyttää kameraa</translation>
 <translation id="8185076488803799132">Tuo</translation>
+<translation id="8187200657863701733">Nykyinen Chrome-taso</translation>
 <translation id="8189615296021678665">Napauta Tallenna, niin voit käyttää salasanaa helposti seuraavalla kirjautumiskerralla.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lisää salasana</translation>
@@ -2121,6 +2128,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8325455175867928593">Piilota "Kiinnostuksen kohteisiisi perustuvat arvostelut"</translation>
 <translation id="833647236762414178">Luo, tallenna ja muokkaa salasanoja ja avainkoodeja, jotta voit kirjautua helposti sivustoille ja sovelluksiin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Suorita vielä yksi tehtävä, niin pääset seuraavalle tasolle}other{Suorita vielä {count} tehtävää, niin pääset seuraavalle tasolle}}</translation>
 <translation id="8348530355586151720">Napauta kolmen pisteen valikkoa</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} kirjanmerkki tuotu}other{{count} kirjanmerkkiä tuotu}}</translation>

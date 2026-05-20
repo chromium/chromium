@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Ir a la primera pestaña</translation>
 <translation id="2499505845365628575">Puedes encontrar todo tu historial de navegación en el <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas hackeadas que podrían poner en riesgo tu seguridad.</translation>
+<translation id="2512709994717613803">Nivel <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Encontrarás tus grupos de pestañas aquí</translation>
 <translation id="251837347827266434">Saldrás de tu cuenta, se cerrarán las pestañas y se borrarán los datos de navegación</translation>
 <translation id="2520787026086861736">Para desactivarla, ve a <ph name="BEGIN_LINK" />Autorrelleno y contraseñas<ph name="END_LINK" />.</translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Autocompletar el número de tarjeta que termina en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creación: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Galería de fotos</translation>
+<translation id="3743545564993953213">Este sitio está intentando abrir la aplicación "Shortcuts".</translation>
 <translation id="3746269120925354434">Se guardó la información en la Billetera de Google</translation>
 <translation id="3750225824417196283">Nueva página de pestaña de incógnito</translation>
 <translation id="3751873026576444885">Dejar de buscar en la pantalla con Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Ya no se sincronizarán los favoritos, el historial, las contraseñas ni otras opciones de configuración con tu Cuenta de Google.</translation>
 <translation id="484280513275854557">Saliste de tu cuenta; se borraron los datos de navegación</translation>
 <translation id="484462545196658690">Automático</translation>
+<translation id="4846662396507502151">Navega más rápido con la nueva barra de herramientas</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854068532375923088">Permite que “Gemini” use tu cámara</translation>
 <translation id="4860895144060829044">Llamar</translation>
@@ -1285,7 +1288,7 @@
 <translation id="5524590039848017563">Botón principal de la barra de herramientas contraído</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5532545557415295622">Diálogo de tiempo de espera de inactividad</translation>
-<translation id="5547868626772433490">Preguntarle a Gemini</translation>
+<translation id="5547868626772433490">Pregúntale a Gemini</translation>
 <translation id="5548760955356983418">Handoff te permite comenzar a navegar en un sitio web en este dispositivo y, luego, continuar fácilmente en tu Mac. El sitio web que está abierto ahora aparecerá en el Dock de tu Mac.
 
 Handoff también debe estar habilitado en la sección General de la configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
@@ -1427,6 +1430,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5988097621740394599">Visualiza los descuentos en las pestañas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
 <translation id="599343768974649785">Texto explícito</translation>
+<translation id="6004988584831654445">¡Eso es todo! Recibe notificaciones cuando lleguen tareas nuevas.</translation>
 <translation id="6006672969046233841">Nueva pestaña</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
@@ -1658,6 +1662,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6685259053455152195">Accesos directos para modificar rápidamente la configuración y usar funciones de la barra de direcciones</translation>
 <translation id="6689342293888598653">Color de fondo blanco</translation>
 <translation id="6689685206615181381">Solo está disponible el modo Incógnito</translation>
+<translation id="6705491067826837934">Tus controles, donde los necesitas</translation>
 <translation id="6708501134077648845">Opciones de contraseña</translation>
 <translation id="6709964700841491574">Modo hermético</translation>
 <translation id="6710079714193676716">Tu organización administra el navegador. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6903282483217634857">Mover hacia la derecha</translation>
 <translation id="6903907808598579934">Activar la sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de que siempre puedas usar las contraseñas en tu Cuenta de Google</translation>
+<translation id="6906978870282539723">Obtén ayuda con tus pestañas y tareas</translation>
 <translation id="6908734251759299256">Actualiza tu navegador</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Solo en este dispositivo.</translation>
 <translation id="6914583639806229067">Buscar la imagen que copiaste</translation>
@@ -2078,6 +2084,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
 <translation id="8184895727539791845">Para permitir que Gemini use tu cámara, activa la Cámara en la configuración de iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
+<translation id="8187200657863701733">Nivel actual de Chrome</translation>
 <translation id="8189615296021678665">Presiona “Guardar” para acceder fácilmente a esta contraseña la próxima vez que accedas.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Agregar contraseña</translation>
@@ -2121,6 +2128,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8325455175867928593">Ocultar "Opiniones basadas en tus intereses"</translation>
 <translation id="833647236762414178">Crea, guarda y administra tus contraseñas y llaves de acceso para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Completa 1 tarea más para subir de nivel}other{Completa {count} tareas más para subir de nivel}}</translation>
 <translation id="8348530355586151720">Presiona el menú de tres puntos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8361189290032177785">{count,plural, =1{Se importó {count} favorito}other{Se importaron {count} favoritos}}</translation>

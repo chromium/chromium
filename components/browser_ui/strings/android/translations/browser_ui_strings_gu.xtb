@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome વિશે ટિપ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> પર શામેલ કર્યું</translation>
 <translation id="1263609676484797429">ઍપ &gt; ડિફૉલ્ટ ઍપ પર ટૅપ કરો</translation>
+<translation id="1264694639515903274">હવે તમે તમારું હોમપેજ કસ્ટમાઇઝ કરી શકો છો</translation>
 <translation id="1272079795634619415">રોકો</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1289742167380433257">તમારો ડેટા બચાવવા માટે, આ પેજની છબીઓને Google દ્વારા ઑપ્ટિમાઇઝ કરવામાં આવી છે.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
 <translation id="1919950603503897840">સંપર્કો પસંદ કરો</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">મારું હોમપેજ કસ્ટમાઇઝ કરો</translation>
 <translation id="1939059826036755332">ઑટોમૅટિક રીતે ચિત્ર-માં-ચિત્ર મોડ</translation>
 <translation id="1954597385941141174">સાઇટ USB ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="1979673356880165407">તમે મુલાકાત લેતા હો એવી બધી સાઇટ માટે, ટેક્સ્ટ અને છબીઓનું કદ નાનું મોટું કરો</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
 <translation id="4310738531374808763">તમારું હોમપેજ કસ્ટમાઇઝ કરો</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{આવતીકાલે સમયસીમા સમાપ્ત થાય છે}one{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}other{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}}</translation>
+<translation id="4336371609622603229">કસ્ટમ થીમ પસંદ કરીને Chromeને તમારું પોતાનું બનાવો</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> હેઠળની બધી સાઇટ</translation>
 <translation id="4340799661701629185">સાઇટને નોટિફિકેશન મોકલવાની મંજૂરી આપશો નહીં</translation>
 <translation id="4341577178275615435">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરવા માટે, F7 શૉર્ટકટ કીનો ઉપયોગ કરો</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">તમે જે સાઇટ માટે કસ્ટમ ઝૂમ લેવલ સાચવો છો તે અહીં દેખાશે</translation>
 <translation id="8748714929822124637">સાઇટને તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસ ઍક્સેસ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="8751914237388039244">છબી પસંદ કરો</translation>
-<translation id="8775741625735357092">તમે સેટિંગ &gt; દેખાવમાં બુકમાર્ક બાર ચાલુ કરી શકો છો</translation>
 <translation id="8800034312320686233">સાઇટ કામ નથી કરતી?</translation>
 <translation id="8801436777607969138">કોઈ ચોક્કસ સાઇટ માટે JavaScriptને બ્લૉક કરો.</translation>
 <translation id="8801657293260363985">V8 એ Chromeનું JavaScript અને WebAssembly એન્જિન છે જેનો ઉપયોગ સાઇટનું પર્ફોર્મન્સ બહેતર બનાવવા માટે થાય છે</translation>

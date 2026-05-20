@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome браузеріне қатысты кеңестер</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> мекенжайына ендірілген</translation>
 <translation id="1263609676484797429">"Қолданбалар &gt; Әдепкі қолданбалар" тармағын түртіңіз.</translation>
+<translation id="1264694639515903274">Енді негізгі бетті бейімдей аласыз</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1289742167380433257">Деректеріңізді сақтау үшін бұл беттің суреттері Google арқылы оңтайландырылды.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1919950603503897840">Контактілерді таңдау</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Негізгі бетті бейімдеу</translation>
 <translation id="1939059826036755332">Автоматты "суреттегі сурет" режимі</translation>
 <translation id="1954597385941141174">Сайттар USB құрылғыларына қосылуға рұқсат сұрайды</translation>
 <translation id="1979673356880165407">Сіз кірген барлық сайт үшін мәтін мен суреттерді ұлғайтыңыз немесе кішірейтіңіз</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Жаю</translation>
 <translation id="4310738531374808763">Негізгі бетті бейімдеңіз</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Мерзімі ертең аяқталады}other{Мерзімі # күннен кейін аяқталады}}</translation>
+<translation id="4336371609622603229">Chrome-ды өзіңізге бейімдеу үшін арнаулы тақырып таңдаңыз.</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> доменіндегі барлық сайт</translation>
 <translation id="4340799661701629185">Сайттардың хабарландырулар жіберуіне рұқсат бермеу</translation>
 <translation id="4341577178275615435">Белсенді курсор режимін қосу немесе өшіру үшін F7 пернесін пайдаланыңыз.</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">Арнаулы масштабтау деңгейін сақтаған сайттар осы жерде көрсетіледі.</translation>
 <translation id="8748714929822124637">Сайттарға жергілікті желідегі басқа құрылғыларды пайдалануға рұқсат бермеу</translation>
 <translation id="8751914237388039244">Кескін таңдау</translation>
-<translation id="8775741625735357092">Бетбелгілер жолағын "Параметрлер &gt; Көрініс" бөлімінде қосуға болады.</translation>
 <translation id="8800034312320686233">Сайт жұмыс істемей ме?</translation>
 <translation id="8801436777607969138">Белгілі бір сайт үшін JavaScript бағдарламасын бөгеуге болады.</translation>
 <translation id="8801657293260363985">V8 — сайт өнімділігін арттыру үшін қолданылатын Chrome-ның JavaScript және WebAssembly жүйесі.</translation>

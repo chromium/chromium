@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Öppna första fliken</translation>
 <translation id="2499505845365628575">Du hittar all webbhistorik från <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> utsatta lösenord som kan innebära en säkerhetsrisk.</translation>
+<translation id="2512709994717613803">Nivå <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Du hittar dina flikgrupper här</translation>
 <translation id="251837347827266434">Du loggas ut, flikar stängs och webbinformationen rensas</translation>
 <translation id="2520787026086861736">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Autofyll och lösenord<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Autofyll kortnumret som slutar på <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Skapades <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerabilder</translation>
+<translation id="3743545564993953213">Den här webbplatsen försöker öppna appen Genvägar.</translation>
 <translation id="3746269120925354434">Informationen har sparats i Google Wallet</translation>
 <translation id="3750225824417196283">Ny fliksida i inkognitoläge</translation>
 <translation id="3751873026576444885">Sluta söka på skärmen med Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Bokmärken, historik, lösenord och annat synkroniseras inte längre med ditt Google-konto.</translation>
 <translation id="484280513275854557">Du har loggats ut och webbinformation har raderats</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4846662396507502151">Surfa snabbare med det nya verktygsfältet</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="4854068532375923088">Tillåt att Gemini använder kameran</translation>
 <translation id="4860895144060829044">Ring</translation>
@@ -1427,6 +1430,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5988097621740394599">Se sänkta priser på flikar</translation>
 <translation id="5988851877894965432">Öppna webbadresser i Chrome</translation>
 <translation id="599343768974649785">Explicit text</translation>
+<translation id="6004988584831654445">Nu är det klart! Få aviseringar när nya uppgifter kommer.</translation>
 <translation id="6006672969046233841">Ny flik</translation>
 <translation id="6011308810877101166">Förbättra sökförslag</translation>
 <translation id="6012140227487808125">Krypterar …</translation>
@@ -1658,6 +1662,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6685259053455152195">Genvägar till att snabbt ändra inställningar och använda funktioner från adressfältet.</translation>
 <translation id="6689342293888598653">Vit bakgrundsfärg</translation>
 <translation id="6689685206615181381">Endast inkognitoläget är tillgängligt</translation>
+<translation id="6705491067826837934">Dina kontroller, där du behöver dem</translation>
 <translation id="6708501134077648845">Lösenordsalternativ</translation>
 <translation id="6709964700841491574">Låsningsläge</translation>
 <translation id="6710079714193676716">Hanteras av organisationen. Vissa funktioner kanske inte är tillgängliga. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6903282483217634857">Flytta åt höger</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
 <translation id="6906448540340261898">Se till att du alltid kan använda lösenorden i Google-kontot</translation>
+<translation id="6906978870282539723">Få hjälp med flikar och uppgifter</translation>
 <translation id="6908734251759299256">Uppdatera webbläsaren</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Bara på den här enheten.</translation>
 <translation id="6914583639806229067">Sök efter kopierad bild</translation>
@@ -2078,6 +2084,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8182037667962849780">{count,plural, =1{För {website_1}}=2{För {website_1}, {website_2}}=3{För {website_1}, {website_2} och 1 till}other{För {website_1}, {website_2} och {more_count} till}}</translation>
 <translation id="8184895727539791845">Aktivera Kamera i iOS-inställningarna om du vill ge Gemini åtkomst till kameran</translation>
 <translation id="8185076488803799132">Importera</translation>
+<translation id="8187200657863701733">Nuvarande Chrome-nivå</translation>
 <translation id="8189615296021678665">Tryck på Spara för att enkelt komma åt lösenordet nästa gång du loggar in.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lägg till lösenord</translation>
@@ -2121,6 +2128,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8325455175867928593">Dölj Recensioner baserade på dina intressen</translation>
 <translation id="833647236762414178">Skapa, spara och hantera dina lösenord och nycklar för att enkelt logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
+<translation id="8345328955902001853">{count,plural, =1{Slutför 1 uppgift till för att gå upp en nivå}other{Slutför {count} uppgifter till för att gå upp en nivå}}</translation>
 <translation id="8348530355586151720">Tryck på menyn med tre punkter</translation>
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} bokmärke har importerats}other{{count} bokmärken har importerats}}</translation>

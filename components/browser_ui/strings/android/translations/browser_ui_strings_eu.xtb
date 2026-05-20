@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-ri buruzko aholkuak</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> helbidean kapsulatua</translation>
 <translation id="1263609676484797429">Sakatu Aplikazioak &gt; Aplikazio lehenetsiak.</translation>
+<translation id="1264694639515903274">Orain, orri nagusia pertsonaliza dezakezu</translation>
 <translation id="1272079795634619415">Gelditu</translation>
 <translation id="1275718070701477396">Hautatua</translation>
 <translation id="1289742167380433257">Datuak aurrezteko, orri honetako irudiak optimizatu egin ditu Google-k.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1919950603503897840">Hautatu kontaktuak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Pertsonalizatu orri nagusia</translation>
 <translation id="1939059826036755332">Pantaila txiki gainjarri automatikoa</translation>
 <translation id="1954597385941141174">Webguneek USB bidezko gailuetara konektatzea eska dezakete</translation>
 <translation id="1979673356880165407">Handitu edo txikitu testua eta irudiak bisitatzen dituzun webgune guztietan</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Gaur blokeatuko ditu cookieak berriro Chrome-k</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3859306556332390985">Aurreratu</translation>
+<translation id="3870711497942672548">Pertsonalizatu Chrome orri nagusirako kolore eta irudi pertsonalizatuekin</translation>
 <translation id="389521680295183045">Webguneek gailua noiz erabiltzen ari zaren jakitea eska dezakete</translation>
 <translation id="3895926599014793903">Behartu zooma gaitzera</translation>
 <translation id="3903738175795615004">Pantaila osotik irteteko, arrastatu hatza goitik edo sakatu Ihes tekla.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Zabaldu</translation>
 <translation id="4310738531374808763">Pertsonalizatu orri nagusia</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
+<translation id="4336371609622603229">Pertsonalizatu Chrome gai pertsonalizatu bat aukeratuz</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4340799661701629185">Ez eman jakinarazpenak bidaltzeko baimena webguneei</translation>
 <translation id="4341577178275615435">Testu-kurtsorearen bidez arakatzeko eginbidea aktibatu edo desaktibatzeko, erabili F7 lasterbidea</translation>
@@ -750,7 +754,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="8737426583868847403">Zoom maila pertsonalizatu batekin gordetzen dituzun webguneak hemen agertuko dira</translation>
 <translation id="8748714929822124637">Ez eman sare lokaleko beste gailuak erabiltzeko baimenik webguneei</translation>
 <translation id="8751914237388039244">Hautatu irudi bat</translation>
-<translation id="8775741625735357092">Laster-marken barra aktiba dezakezu Ezarpenak &gt; Itxura atalean</translation>
 <translation id="8800034312320686233">Ez al du funtzionatzen webguneak?</translation>
 <translation id="8801436777607969138">Blokeatu JavaScript webgune zehatz batean.</translation>
 <translation id="8801657293260363985">V8 Chrome-ren JavaScript eta WebAssembly motorra da, eta webguneen errendimendua hobetzeko balio du</translation>

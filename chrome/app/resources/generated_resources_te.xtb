@@ -774,7 +774,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android ఫోన్‌కు కనెక్ట్ చేయబడింది</translation>
 <translation id="1523279371236772909">గత నెలలో చూశారు</translation>
-<translation id="1523486680453956384">టాస్క్‌ను చూడండి</translation>
 <translation id="1523978563989812243">టెక్ట్స్-టు-స్పీచ్ ఇంజిన్‌లు</translation>
 <translation id="1524563461097350801">వద్దు, ధన్యవాదాలు</translation>
 <translation id="1525740877599838384">లొకేషన్‌ను గుర్తించడానికి Wi-Fiని మాత్రమే ఉపయోగించండి</translation>
@@ -1552,6 +1551,7 @@
 <translation id="2044750031738659219">{0,plural, =1{గెస్ట్ విండోను మూసివేయండి}other{గెస్ట్ విండోను మూసివేయండి (# విండోలు)}}</translation>
 <translation id="204497730941176055">Microsoft సర్టిఫికెట్ టెంప్లేట్ పేరు</translation>
 <translation id="2045211794962848221">మీకు ఈ నిర్దిష్ట మెసేజ్ మళ్లీ కనిపించదు</translation>
+<translation id="2045540927991079503">లింక్‌ను వీరి తరపున తెరువు</translation>
 <translation id="2045838962742066664">షార్ట్‌హ్యాండ్ టైపింగ్</translation>
 <translation id="204622017488417136">మీ పరికరం మునుపు ఇన్‌స్టాల్ చేసిన Chrome వెర్షన్‌కు తిరిగి మార్చబడింది. అన్ని వినియోగదారు ఖాతాలు మరియు స్థానిక డేటా తీసివేయబడుతుంది. దీన్ని రద్దు చేయడం సాధ్యపడదు.</translation>
 <translation id="2046702855113914483">రామెన్</translation>
@@ -1577,6 +1577,7 @@
 <translation id="206308717637808771">మీరు అన్ని విండోలను మూసివేసినప్పుడు డేటాను తొలగించండి. మీరు ప్రస్తుతం చూస్తున్న సైట్‌తో సమానంగా డేటా పరిగణించబడుతుంది</translation>
 <translation id="2066700471214517561">బీమ్‌ఫార్మింగ్ మైక్, తద్వారా Chromebookను ఉపయోగిస్తున్న వ్యక్తి వాయిస్ సరిగ్గా వినిపిస్తుంది.</translation>
 <translation id="2068581968816126410">డివైజ్‌ల అంతటా బుక్‌మార్క్‌లను ఉపయోగించండి</translation>
+<translation id="2069020119963193894">&amp;సైజ్ చేయండి</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" />‌కు ప్రింటింగ్‌ను పూర్తి చేసింది</translation>
 <translation id="2071393345806050157">స్థానిక లాగ్ ఫైల్ లేదు.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ఎక్స్‌టెన్షన్‌ను ఇన్‌స్టాల్ చేయడానికి క్లిక్ చేయండి}other{ఈ ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేయడానికి క్లిక్ చేయండి}}</translation>
@@ -1710,6 +1711,7 @@
 <translation id="2148892889047469596">ట్యాబ్‌ను ప్రసారం చేయండి</translation>
 <translation id="2149973817440762519">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2150139952286079145">గమ్యస్థానాలను వెతకండి</translation>
+<translation id="2150168665016482929">మి&amp;నిమైజ్ చేయండి</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />"ను జోడించాలా?</translation>
 <translation id="2151576029659734873">చెల్లని ట్యాబ్‌ సూచిక ఎంటర్ చేయ‌బడింది.</translation>
 <translation id="2153809900849531051">నెబ్యులా</translation>
@@ -2151,7 +2153,6 @@
 <translation id="2450849356604136918">సక్రియ వీక్షణలు లేవు</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది</translation>
-<translation id="245307875355990880">టాస్క్‌ను కొనసాగించండి</translation>
 <translation id="245322989586167203">మీ నెట్‌వర్క్‌ను సెటప్ చేయడం వంటి డేటా బదిలీ ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు సీరియల్ పోర్ట్‌లకు కనెక్ట్ అవుతాయి</translation>
 <translation id="2453860139492968684">ముగించు</translation>
 <translation id="2454206500483040640">విభజించబడ్డాయి</translation>
@@ -4124,6 +4125,7 @@
 <translation id="3796215473395753611">alt + పై వైపు బాణం గుర్తు</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, వాయిస్‌ను ప్రివ్యూ చేయడానికి కుడి వైపు బాణం గుర్తు కీని ఉపయోగించండి</translation>
 <translation id="3796648294839530037">ఇష్టమైన నెట్‌వర్క్‌లు:</translation>
+<translation id="3797330664967181051">స్ప్లిట్ వ్యూ</translation>
 <translation id="3797739167230984533">మీ సంస్థ మీ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" />ను నిర్వహిస్తోంది<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3798026281364973895">ఇన్‌స్టంట్ హాట్‌స్పాట్‌ను డిజేబుల్ చేయండి</translation>
@@ -4480,6 +4482,7 @@
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> సూచన అందింది</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ఫోల్డర్</translation>
 <translation id="4028467762035011525">ఇన్‌పుట్ విధానాలను జోడించండి</translation>
+<translation id="4028830198155575078">&amp;తరలించండి</translation>
 <translation id="4029024445166427442">లాంచర్ + shift + బ్యాక్‌స్పేస్</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> పేజీ నుండి వెనక్కి వెళ్ళు</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
@@ -4877,7 +4880,6 @@
 <translation id="4314497418046265427">మీ ఫోన్‌ను మీ <ph name="DEVICE_TYPE" />కు కనెక్ట్ చేసినప్పుడు మరిన్ని ప్రయోజనాలు పొందండి</translation>
 <translation id="4314561087119792062">కొత్త యాక్సెస్ స్థానం పేరును జోడించండి</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
-<translation id="4314821834464582073">టాస్క్‌ను పాజ్ చేయండి</translation>
 <translation id="4316850752623536204">డెవలపర్ వెబ్‌సైట్</translation>
 <translation id="4317733381297736564">యాప్‌లో కొనుగోళ్లు</translation>
 <translation id="4317820549299924617">వెరిఫికేషన్ విజయవంతం కాలేదు</translation>
@@ -6519,6 +6521,7 @@
 <translation id="5473099001878321374">కొనసాగించడం ద్వారా, ఈ పరికరం Google, మీ చిన్నారి క్యారియర్, అలాగే ఈ పరికర తయారీదారు నుండి ఆటోమేటిక్‌గా అప్‌డేట్‌లను, యాప్‌లను డౌన్‌లోడ్ చేసి, ఇన్‌స్టాల్ చేయవచ్చని ఇందుకు సెల్యులార్ డేటా ఉపయోగించబడవచ్చని మీరు అంగీకరిస్తున్నారు. ఈ యాప్‌లలో కొన్ని, 'యాప్‌లో కొనుగోళ్ల'ను ఆఫర్‌ చేయవచ్చు.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{పిన్ తప్పనిసరిగా కనీసం ఒక అక్షరాన్ని కలిగి ఉండాలి}other{పిన్ తప్పనిసరిగా కనీసం # అక్షరాలను ఉండాలి}}</translation>
 <translation id="5474859849784484111">ఇప్పుడే మీరు Wi-Fiకి కనెక్ట్ అయ్యి, అప్‌డేట్‌ను డౌన్‌లోడ్ చేయాలని <ph name="MANAGER" /> తెలియజేస్తోంది. లేదా డేటా నియంత్రణ ఉన్న కనెక్షన్ నుండి డౌన్‌లోడ్ చేయండి (ఛార్జీలు వర్తించవచ్చు).</translation>
+<translation id="547615291475756075">మా&amp;గ్జిమైజ్ చేయండి</translation>
 <translation id="5476957746413745956">ప్రతి దిశకు విడివిడిగా వేగాన్ని సర్దుబాటు చేయండి</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> హాట్‌స్పాట్‌ను కాన్ఫిగర్ చేయండి</translation>
 <translation id="5481273127572794904">ఆటోమేటిక్‌గా అనేక ఫైళ్లను డౌన్‌లోడ్ చేయడానికి అనుమతించబడలేదు</translation>
@@ -7750,6 +7753,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="6350745006329795504">మీ డివైజ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6350821834561350243">సమస్యను స్పష్టంగా వివరించండి, ఆ సమస్యను ఎలా రీప్రొడ్యూస్ చేయాలో తెలిపే దశలను కూడా వివరించండి (వీలైతే)</translation>
+<translation id="635100112331897007">అన్ని Chrome పాలసీలను చూడండి</translation>
 <translation id="6351178441572658285">యాప్ భాషలు</translation>
 <translation id="6352992678231622317">ట్యాబ్ కిందికి తరలించబడింది</translation>
 <translation id="6355632359041940003">టాస్క్‌ను మీ కంట్రోల్‌లోకి తీసుకోండి</translation>
@@ -8828,6 +8832,7 @@
 <translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>
 <translation id="7098447629416471489">సేవ్ చేసిన ఇతర సెర్చ్ ఇంజిన్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{యాప్‌ను తీసివేయండి}other{యాప్‌లను తీసివేయండి}}</translation>
+<translation id="7099027177878709408">&amp;మూసివేయండి</translation>
 <translation id="7099337801055912064">పెద్ద PPDని లోడ్ చేయడం సాధ్యం కాదు. గరిష్ట సైజ్‌ 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7100379916748214860">Chrome ఇప్పుడే ఒక ప్రమాదకరమైన ఫైల్‌ను డౌన్‌లోడ్ కానివ్వకుండా బ్లాక్ చేసింది. మెరుగైన రక్షణతో మరింత పటిష్టమైన సెక్యూరిటీని పొందండి.</translation>
@@ -9868,6 +9873,7 @@
 <translation id="7817361223956157679">స్క్రీన్‌పై కీబోర్డ్ ఇంకా Linux యాప్‌లలో పనిచేయడం లేదు</translation>
 <translation id="7818135753970109980">కొత్త థీమ్ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">ఎక్స్‌టెన్షన్‌లు అనేవి Chromeలో ఉపయోగించగల యాడ్-ఆన్‌లు, ఇవి మీకు మరిన్ని పనులను చేయడంలో సహాయపడతాయి</translation>
+<translation id="7819968103441522596">&amp;రీస్టోర్ చేయండి</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" />‌ను తొలగించండి, తద్వారా ఈ డివైజ్‌ను ఉపయోగించే ఇతర వ్యక్తులు మీ పాస్‌వర్డ్‌లను చూడలేరు</translation>
 <translation id="7820561748632634942">అదనపు స్విచ్‌లను అసైన్ చేయాలా?</translation>
 <translation id="782057141565633384">వీడియో అడ్రస్‌ను కా&amp;పీ చేయండి</translation>

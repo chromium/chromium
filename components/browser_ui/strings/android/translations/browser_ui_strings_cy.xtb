@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Awgrymiadau Chrome</translation>
 <translation id="1242008676835033345">Plannwyd ar <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tapiwch Apiau  &gt; Apiau diofyn</translation>
+<translation id="1264694639515903274">Gallwch bellach addasu eich hafan</translation>
 <translation id="1272079795634619415">Stopio</translation>
 <translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="1289742167380433257">Er mwyn cadw eich data, mae lluniau'r dudalen hon wedi'u hoptimeiddio gan Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1919950603503897840">Dewis cysylltiadau</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Addasu fy nhudalen hafan</translation>
 <translation id="1939059826036755332">Llun mewn llun awtomatig</translation>
 <translation id="1954597385941141174">Gall gwefannau ofyn am gysylltu â dyfeisiau USB</translation>
 <translation id="1979673356880165407">Gwnewch destun a lluniau yn fwy neu'n llai ar gyfer pob gwefan rydych yn ymweld â hi</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Bydd Chrome yn rhwystro cwcis eto heddiw</translation>
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3859306556332390985">Chwilio ymlaen</translation>
+<translation id="3870711497942672548">Gwnewch Chrome yn unigryw i chi gyda lliwiau a lluniau personol ar gyfer eich hafan</translation>
 <translation id="389521680295183045">Gall gwefannau ofyn am wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
 <translation id="3903738175795615004">Llusgwch o'r brig neu pwyswch y fysell Esc i adael y sgrîn lawn.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Ehangu</translation>
 <translation id="4310738531374808763">Addasu eich hafan</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
+<translation id="4336371609622603229">Gwnewch Chrome yn unigryw i chi trwy ddewis thema personol</translation>
 <translation id="4338831206024587507">Pob gwefan o dan <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Peidio â chaniatáu i wefannau anfon hysbysiadau</translation>
 <translation id="4341577178275615435">I droi pori caret ymlaen neu ei ddiffodd, defnyddiwch y llwybr byr F7</translation>
@@ -750,7 +754,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="8737426583868847403">Bydd gwefannau rydych yn cadw lefel chwyddo personol ar eu cyfer yn ymddangos yma</translation>
 <translation id="8748714929822124637">Peidiwch â chaniatáu i wefannau gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol</translation>
 <translation id="8751914237388039244">Dewiswch lun</translation>
-<translation id="8775741625735357092">Gallwch droi'r bar nodau tudalen ymlaen yn Gosodiadau &gt; Ymddangosiad</translation>
 <translation id="8800034312320686233">Gwefan ddim yn gweithio?</translation>
 <translation id="8801436777607969138">Rhwystro JavaScript ar gyfer gwefan benodol.</translation>
 <translation id="8801657293260363985">V8 yw injan JavaScript a WebAssembly Chrome a ddefnyddir i wella perfformiad gwefan</translation>

@@ -581,7 +581,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="7318036098707714271">Plik ustawień jest uszkodzony lub nieprawidłowy.
 
 Chromium nie może odzyskać ustawień.</translation>
-<translation id="7339898014177206373">Nowe okno</translation>
 <translation id="734373864078049451">Tu są Twoje strony, zakładki i inne dane z Chromium.</translation>
 <translation id="7347827960336370838">Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, musisz <ph name="BEGIN_LINK" />usunąć dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administrator systemu skonfigurował Chromium tak, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -590,6 +589,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7376384068949534168">Od jakiegoś czasu nie odwiedzasz tej witryny. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
 <translation id="7384121030444253939">To rozszerzenie nie jest już obsługiwane. Chromium zaleca jego usunięcie.</translation>
+<translation id="7407655596887111931">Chromium jest teraz Twoją przeglądarką domyślną</translation>
 <translation id="7413153308467572558">Wznawianie przeglądania od tego samego miejsca: Chromium po każdym ponownym uruchomieniu przywraca karty. Aby wyłączyć tę funkcję, otwórz</translation>
 <translation id="7427879960656355200">Importuj hasła do Chromium</translation>
 <translation id="744815265653811511">1. Kliknij <ph name="BUTTON_LABEL" /> poniżej

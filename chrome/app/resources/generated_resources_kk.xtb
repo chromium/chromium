@@ -771,7 +771,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android телефонына жалғанған.</translation>
 <translation id="1523279371236772909">Соңғы айда көрілген.</translation>
-<translation id="1523486680453956384">Тапсырманы көру</translation>
 <translation id="1523978563989812243">Мәтінді дыбыстау жүйелері</translation>
 <translation id="1524563461097350801">Жоқ, рақмет</translation>
 <translation id="1525740877599838384">Орынды анықтау үшін тек Wi-Fi желісін қолдану</translation>
@@ -2138,7 +2137,6 @@
 <translation id="2450849356604136918">Белсенді көру режимдері жоқ</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Ұйымыңыз сақтауға болатын нәрселерге шектеу қойды</translation>
-<translation id="245307875355990880">Тапсырманы жалғастыру</translation>
 <translation id="245322989586167203">Сайттар әдетте желі параметрлерін реттеу сияқты дерек тасымалдау функциялары үшін тізбекті порттарға қосылады.</translation>
 <translation id="2453860139492968684">Аяқтау</translation>
 <translation id="2454206500483040640">Бөлінген</translation>
@@ -4109,6 +4107,7 @@
 <translation id="3796215473395753611">alt + жоғары бағыт пернесі</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />. Дауысты алдын ала тыңдап көру үшін оң бағыт пернесін басыңыз</translation>
 <translation id="3796648294839530037">Таңдаулы желілер:</translation>
+<translation id="3797330664967181051">Бөлінген көрініс</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="END_LINK" /> ұйым басқарады.</translation>
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" сөзін <ph name="SEARCH_ENGINE" /> бойынша &amp;іздеу</translation>
 <translation id="3798026281364973895">Лезде қосылатын хотспотты өшіру</translation>
@@ -4862,7 +4861,6 @@
 <translation id="4314497418046265427">Телефонды <ph name="DEVICE_TYPE" /> құрылғысына жалғап, жұмыс өнімділігін арттырыңыз</translation>
 <translation id="4314561087119792062">Жаңа кіру нүктесінің атауын қосу</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
-<translation id="4314821834464582073">Тапсырманы кідірту</translation>
 <translation id="4316850752623536204">Әзірлеуші веб-сайты</translation>
 <translation id="4317733381297736564">Қолданбада сатып алу</translation>
 <translation id="4317820549299924617">Расталмады</translation>
@@ -7731,6 +7729,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
 <translation id="6350745006329795504">Құрылғыларыңызды басқару</translation>
 <translation id="6350821834561350243">Мәселені және оның пайда болу қадамдарын (мүмкін болса) анық сипаттаңыз.</translation>
+<translation id="635100112331897007">Барлық Chrome саясатын көру</translation>
 <translation id="6351178441572658285">Қолданба тілдері</translation>
 <translation id="6352992678231622317">Қойынды төмен жылжытылды</translation>
 <translation id="6355632359041940003">Тапсырманы өз қолыма алу</translation>

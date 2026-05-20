@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Suggerimenti per Chrome</translation>
 <translation id="1242008676835033345">Incorporato su <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tocca App &gt; App predefinite</translation>
+<translation id="1264694639515903274">Ora puoi personalizzare la tua home page</translation>
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1289742167380433257">Per ridurre il consumo di dati, le immagini di questa pagina sono state ottimizzate da Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1919950603503897840">Seleziona contatti</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> di <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Personalizza la mia home page</translation>
 <translation id="1939059826036755332">Modalità Picture in picture automatica</translation>
 <translation id="1954597385941141174">I siti possono chiedere di connettersi ai dispositivi USB</translation>
 <translation id="1979673356880165407">Ingrandisci o riduci testo e immagini per tutti i siti visitati</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome bloccherà nuovamente i cookie oggi</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3859306556332390985">Posiziona avanti</translation>
+<translation id="3870711497942672548">Personalizza Chrome con colori e immagini personalizzati per la tua home page</translation>
 <translation id="389521680295183045">I siti possono chiedere di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
 <translation id="3903738175795615004">Trascina dall'alto o premi il tasto Esc per uscire dalla modalità a schermo intero.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Espandi</translation>
 <translation id="4310738531374808763">Personalizza la tua home page</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>
+<translation id="4336371609622603229">Personalizza Chrome scegliendo un tema personalizzato</translation>
 <translation id="4338831206024587507">Tutti i siti in <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Non consentire ai siti di inviare notifiche</translation>
 <translation id="4341577178275615435">Per attivare o disattivare la navigazione con cursore, utilizza la scorciatoia F7</translation>
@@ -750,7 +754,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="8737426583868847403">I siti per i quali salvi un livello di zoom personalizzato verranno visualizzati qui</translation>
 <translation id="8748714929822124637">Non consentire ai siti di accedere ad altri dispositivi connessi alla rete locale</translation>
 <translation id="8751914237388039244">Seleziona un'immagine</translation>
-<translation id="8775741625735357092">Puoi attivare la barra dei preferiti in Impostazioni &gt; Aspetto</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8801436777607969138">Blocca JavaScript per un sito specifico.</translation>
 <translation id="8801657293260363985">V8 è il motore JavaScript e WebAssembly di Chrome utilizzato per migliorare le prestazioni del sito</translation>

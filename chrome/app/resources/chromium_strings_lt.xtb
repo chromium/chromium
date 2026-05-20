@@ -586,7 +586,6 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="7318036098707714271">Nuostatų failas sugadintas ar netinkamas.
 
 „Chromium“ negali atkurti nustatymų.</translation>
-<translation id="7339898014177206373">Naujas langas</translation>
 <translation id="734373864078049451">Čia saugoma žiniatinklio informacija, žymės ir kiti „Chromium“ duomenys.</translation>
 <translation id="7347827960336370838">Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, turėsite <ph name="BEGIN_LINK" />ištrinti „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Sistemos administratorius sukonfigūravo „Chromium“ atidaryti naršyklę „<ph name="ALTERNATIVE_BROWSER_NAME" />“, norint pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -595,6 +594,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="7376384068949534168">Pastaruoju metu nesilankėte. „Chromium“ pašalino <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Atidarykite „Chrome“ internetinę parduotuvę</translation>
 <translation id="7384121030444253939">Šis plėtinys nebepalaikomas. „Chromium“ rekomenduoja jį pašalinti.</translation>
+<translation id="7407655596887111931">„Chromium“ dabar yra numatytoji naršyklė</translation>
 <translation id="7413153308467572558">Tęskite nuo ten, kur baigėte: „Chromium“ atkuria skirtukus kiekvieną kartą, kai paleidžiate iš naujo. Jei norite tai išjungti, eikite į</translation>
 <translation id="7427879960656355200">Slaptažodžių importavimas į „Chromium“</translation>
 <translation id="744815265653811511">1. Spustelėkite toliau pateiktą mygtuką „<ph name="BUTTON_LABEL" />“.

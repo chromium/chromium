@@ -774,7 +774,6 @@
 <translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1521933835545997395">Android スマートフォンに接続しました</translation>
 <translation id="1523279371236772909">過去 1 か月以内に表示</translation>
-<translation id="1523486680453956384">タスクを表示</translation>
 <translation id="1523978563989812243">テキスト読み上げエンジン</translation>
 <translation id="1524563461097350801">スキップ</translation>
 <translation id="1525740877599838384">Wi-Fi のみを使用して現在地を特定する</translation>
@@ -2136,7 +2135,6 @@
 <translation id="2450849356604136918">アクティブ ビューなし</translation>
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="2453045048779611513">保存できるアイテムは組織によって制限されています</translation>
-<translation id="245307875355990880">タスクを再開</translation>
 <translation id="245322989586167203">多くのサイトは、ネットワークを設定するなど、データ転送機能を使用するためにシリアルポートに接続します</translation>
 <translation id="2453860139492968684">終了</translation>
 <translation id="2454206500483040640">分割</translation>
@@ -4105,6 +4103,7 @@
 <translation id="3796215473395753611">Alt+上矢印</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />、音声をプレビューするには右矢印キーを使用します</translation>
 <translation id="3796648294839530037">お気に入りのネットワーク:</translation>
+<translation id="3797330664967181051">分割ビュー</translation>
 <translation id="3797739167230984533">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は組織によって管理<ph name="END_LINK" />されています</translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> で「<ph name="SEARCH_TERMS" />」を検索(&amp;S)</translation>
 <translation id="3798026281364973895">インスタント アクセス ポイントを無効にする</translation>
@@ -4857,7 +4856,6 @@
 <translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> をリンクすれば、生産性が向上します</translation>
 <translation id="4314561087119792062">新しいアクセス ポイント名を追加</translation>
 <translation id="4314815835985389558">同期を管理</translation>
-<translation id="4314821834464582073">タスクを一時停止</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="4317733381297736564">アプリ内購入</translation>
 <translation id="4317820549299924617">確認が失敗しました</translation>
@@ -7725,6 +7723,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
 <translation id="6350745006329795504">デバイスの管理</translation>
 <translation id="6350821834561350243">問題の明確な説明と再現手順（可能な場合）を入力してください</translation>
+<translation id="635100112331897007">すべての Chrome ポリシーを表示</translation>
 <translation id="6351178441572658285">アプリの言語</translation>
 <translation id="6352992678231622317">タブを下に移動しました</translation>
 <translation id="6355632359041940003">タスクを引き継ぐ</translation>

@@ -584,7 +584,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="7318036098707714271">Teie eelistuste fail on rikutud või kehtetu.
 
 Chromium ei saa teie seadeid taastada.</translation>
-<translation id="7339898014177206373">Uus aken</translation>
 <translation id="734373864078049451">Siin asuvad teie veeb, järjehoidjad ja ülejäänud Chromiumi kraam.</translation>
 <translation id="7347827960336370838">Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, peate <ph name="BEGIN_LINK" />kustutama oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Teie süsteemiadministraator on seadistanud Chromiumi avama brauseri <ph name="ALTERNATIVE_BROWSER_NAME" />, et lehele <ph name="TARGET_URL_HOSTNAME" /> juurde pääseda.</translation>
@@ -593,6 +592,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7376384068949534168">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Ava Chrome'i veebipood</translation>
 <translation id="7384121030444253939">Seda laiendust enam ei toetata. Chromium soovitab selle eemaldada.</translation>
+<translation id="7407655596887111931">Chromium on nüüd teie vaikebrauser.</translation>
 <translation id="7413153308467572558">Jätkake sealt, kus pooleli jäite: Chromium taastab teie vahelehed iga kord, kui brauseri uuesti käivitate. Selle väljalülitamiseks avage</translation>
 <translation id="7427879960656355200">Paroolide importimine Chromiumi</translation>
 <translation id="744815265653811511">1. Klõpsake alloleval nupul <ph name="BUTTON_LABEL" />

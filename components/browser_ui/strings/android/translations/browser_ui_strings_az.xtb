@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome ipucuları</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> daxilində yerləşdirilib</translation>
 <translation id="1263609676484797429">Tətbiqlər &gt; Defolt tətbiqlər seçiminə toxunun</translation>
+<translation id="1264694639515903274">Artıq əsas səhifənizi fərdiləşdirə bilərsiniz</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
 <translation id="1275718070701477396">Seçilib</translation>
 <translation id="1289742167380433257">Datanızı yadda saxlamaq üçün bu səhifənin şəkilləri Google tərəfindən optimallaşdırılıb.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Dəstəyi qoyun</translation>
 <translation id="1919950603503897840">Kontaktları seçin</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Əsas səhifəmi fərdiləşdirin</translation>
 <translation id="1939059826036755332">Avtomatik şəkildə şəkil</translation>
 <translation id="1954597385941141174">Saytlar USB cihazlara qoşulmaq icazəsi istəyə bilər</translation>
 <translation id="1979673356880165407">Ziyarət etdiyiniz bütün saytlar üçün mətn və şəkilləri böyüdün və ya kiçildin</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome bu gün kukiləri yenidən bloklayacaq</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İrəli axtarın</translation>
+<translation id="3870711497942672548">Əsas səhifəniz üçün fərdi rənglər və şəkillərlə Chrome-u fərdiləşdirin</translation>
 <translation id="389521680295183045">Saytlar cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək üçün icazə istəyə bilər</translation>
 <translation id="3895926599014793903">Zoom'a icazə verməyə məcbur edin</translation>
 <translation id="3903738175795615004">Tam ekran rejimindən çıxmaq üçün yuxarıdan sürüşdürün və ya Esc düyməsinə basın.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Genişləndirin</translation>
 <translation id="4310738531374808763">Əsas səhifəni fərdiləşdirin</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
+<translation id="4336371609622603229">Fərdi tema seçməklə Chrome-u fərdiləşdirin</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domenindəki bütün saytlar</translation>
 <translation id="4340799661701629185">Saytlara bildirişlər göndərmək icazəsi verməyin</translation>
 <translation id="4341577178275615435">Klaviatura ilə baxışı aktiv və ya deaktiv etmək üçün F7 qısayolunu istifadə edin</translation>
@@ -750,7 +754,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="8737426583868847403">Fərdi zum səviyyəsini yadda saxladığınız saytlar burada görünəcək</translation>
 <translation id="8748714929822124637">Saytlara lokal şəbəkənizdəki digər cihazlara daxil olmaq icazəsi verməyin</translation>
 <translation id="8751914237388039244">Şəkil seçin</translation>
-<translation id="8775741625735357092">Parametrlər &gt; Görünüş bölməsində əlfəcinlər panelini aktivləşdirə bilərsiniz</translation>
 <translation id="8800034312320686233">Sayt işləmir?</translation>
 <translation id="8801436777607969138">JavaScript'i bəzi saytlarda blok edin.</translation>
 <translation id="8801657293260363985">V8 Chrome-un sayt performansını yaxşılaşdırmaq üçün istifadə edilən JavaScript və WebAssembly mexanizmidir</translation>

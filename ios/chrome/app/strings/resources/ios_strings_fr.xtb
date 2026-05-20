@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Accéder au premier onglet</translation>
 <translation id="2499505845365628575">Vous pouvez consulter tout votre historique de navigation en sélectionnant <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe compromis pouvant menacer votre sécurité.</translation>
+<translation id="2512709994717613803">Niveau <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Vos groupes d'onglets s'afficheront ici</translation>
 <translation id="251837347827266434">Vous allez être déconnecté. Les onglets seront fermés et les données de navigation seront supprimées.</translation>
 <translation id="2520787026086861736">Pour désactiver cette option, accédez à <ph name="BEGIN_LINK" />Remplissage automatique et mots de passe<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Saisir automatiquement le numéro de carte se terminant par <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Créé le <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Pellicule</translation>
+<translation id="3743545564993953213">Ce site essaie d'ouvrir l'application "Raccourcis".</translation>
 <translation id="3746269120925354434">Infos enregistrées dans Google Wallet</translation>
 <translation id="3750225824417196283">Page du nouvel onglet de navigation privée</translation>
 <translation id="3751873026576444885">Arrêter de rechercher sur l'écran avec Google Lens</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="484280513275854557">Vous avez été déconnecté. Les données de navigation ont été supprimées.</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4846662396507502151">Naviguez plus vite avec la nouvelle barre d'outils</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="4854068532375923088">Autorisez Gemini à utiliser votre appareil photo</translation>
 <translation id="4860895144060829044">Appeler</translation>
@@ -1427,6 +1430,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5988097621740394599">Les prix en baisse s'affichent dans les onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
 <translation id="599343768974649785">Texte explicite</translation>
+<translation id="6004988584831654445">Vous avez terminé ! Recevez une notification lorsque de nouvelles tâches arrivent.</translation>
 <translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Chiffrement…</translation>
@@ -1461,7 +1465,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="610083648014322104">Obtenez des réponses pertinentes en fonction du contenu de la page que vous consultez</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="611361228753138223">Sites consultés récemment sur cet appareil</translation>
-<translation id="611705554202268369">Appuyez de manière prolongée pour ajouter l'onglet à un groupe d'onglets</translation>
+<translation id="611705554202268369">Appuyer de manière prolongée pour ajouter l'onglet à un groupe d'onglets</translation>
 <translation id="6117260878488959646">Une erreur s'est produite. Réessayez plus tard.</translation>
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée ?</translation>
@@ -1658,6 +1662,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6685259053455152195">Raccourcis pour modifier rapidement les paramètres et utiliser les fonctionnalités de la barre d'adresse.</translation>
 <translation id="6689342293888598653">Couleur d'arrière-plan blanche</translation>
 <translation id="6689685206615181381">Seul le mode navigation privée est disponible</translation>
+<translation id="6705491067826837934">Vos commandes, là où vous en avez besoin</translation>
 <translation id="6708501134077648845">Options relatives aux mots de passe</translation>
 <translation id="6709964700841491574">Mode Blocage</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent être indisponibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6903282483217634857">Déplacer vers la droite</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6906448540340261898">Assurez-vous de toujours pouvoir utiliser les mots de passe de votre compte Google</translation>
+<translation id="6906978870282539723">Obtenez de l'aide pour vos onglets et vos tâches</translation>
 <translation id="6908734251759299256">Mettre à jour votre navigateur</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Uniquement sur cet appareil.</translation>
 <translation id="6914583639806229067">Rechercher l'image copiée</translation>
@@ -2078,6 +2084,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8182037667962849780">{count,plural, =1{Pour {website_1}}=2{Pour {website_1}, {website_2}}=3{Pour {website_1}, {website_2} et 1 de plus}one{Pour {website_1}, {website_2} et {more_count} de plus}other{Pour {website_1}, {website_2} et {more_count} de plus}}</translation>
 <translation id="8184895727539791845">Pour autoriser Gemini à utiliser votre appareil photo, activez-le dans les réglages iOS</translation>
 <translation id="8185076488803799132">Importer</translation>
+<translation id="8187200657863701733">Niveau Chrome actuel</translation>
 <translation id="8189615296021678665">Appuyez sur "Enregistrer" pour accéder facilement à ce mot de passe à votre prochaine connexion.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Ajouter un mot de passe</translation>
@@ -2121,6 +2128,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8325455175867928593">Masquer "Avis basés sur vos centres d'intérêt"</translation>
 <translation id="833647236762414178">Créez, enregistrez et gérez vos mots de passe et clés d'accès pour vous connecter facilement à des sites et applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Effectuez 1 tâche de plus pour passer au niveau supérieur}one{Effectuez {count} tâche de plus pour passer au niveau supérieur}other{Effectuez {count} tâches de plus pour passer au niveau supérieur}}</translation>
 <translation id="8348530355586151720">Appuyez sur l'icône du menu à trois points</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} favori importé}one{{count} favori importé}other{{count} favoris importés}}</translation>

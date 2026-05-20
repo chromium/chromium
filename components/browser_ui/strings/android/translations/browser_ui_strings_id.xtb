@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Tips untuk Chrome</translation>
 <translation id="1242008676835033345">Disematkan di <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Ketuk Aplikasi  &gt; Aplikasi default</translation>
+<translation id="1264694639515903274">Anda kini dapat menyesuaikan halaman beranda</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1289742167380433257">Untuk menghemat data Anda, gambar di halaman ini telah dioptimalkan oleh Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1919950603503897840">Pilih kontak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Sesuaikan halaman beranda saya</translation>
 <translation id="1939059826036755332">Picture-in-picture otomatis</translation>
 <translation id="1954597385941141174">Situs dapat meminta untuk terhubung ke perangkat USB</translation>
 <translation id="1979673356880165407">Perbesar atau perkecil teks dan gambar untuk semua situs yang Anda buka</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome akan memblokir cookie lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari maju</translation>
+<translation id="3870711497942672548">Personalisasi Chrome Anda dengan warna dan gambar kustom untuk halaman beranda</translation>
 <translation id="389521680295183045">Situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
 <translation id="3903738175795615004">Tarik dari atas atau tekan tombol Esc untuk keluar dari layar penuh.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4310738531374808763">Menyesuaikan halaman beranda</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Berakhir besok}other{Berakhir dalam # hari}}</translation>
+<translation id="4336371609622603229">Personalisasi Chrome Anda dengan memilih tema kustom</translation>
 <translation id="4338831206024587507">Semua situs di bawah <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Jangan izinkan situs mengirim notifikasi</translation>
 <translation id="4341577178275615435">Untuk mengaktifkan atau menonaktifkan penjelajahan dengan keyboard, gunakan pintasan F7</translation>
@@ -750,7 +754,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="8737426583868847403">Situs yang Anda simpan tingkat zoom khususnya akan muncul di sini</translation>
 <translation id="8748714929822124637">Jangan izinkan situs mengakses perangkat lain di jaringan lokal Anda</translation>
 <translation id="8751914237388039244">Pilih gambar</translation>
-<translation id="8775741625735357092">Anda dapat mengaktifkan kolom bookmark di Setelan &gt; Tampilan</translation>
 <translation id="8800034312320686233">Situs tidak berfungsi?</translation>
 <translation id="8801436777607969138">Blokir JavaScript untuk situs tertentu.</translation>
 <translation id="8801657293260363985">V8 adalah mesin WebAssembly dan JavaScript Chrome yang digunakan untuk meningkatkan performa situs</translation>

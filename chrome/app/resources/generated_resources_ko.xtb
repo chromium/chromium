@@ -775,7 +775,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android 휴대전화에 연결됨</translation>
 <translation id="1523279371236772909">지난달에 확인함</translation>
-<translation id="1523486680453956384">할 일 보기</translation>
 <translation id="1523978563989812243">텍스트 음성 변환 엔진</translation>
 <translation id="1524563461097350801">나중에</translation>
 <translation id="1525740877599838384">위치 파악에 Wi-Fi만 사용</translation>
@@ -2156,7 +2155,6 @@
 <translation id="2450849356604136918">활성화된 뷰 없음</translation>
 <translation id="2451298179137331965">2배</translation>
 <translation id="2453045048779611513">조직에서 저장할 수 있는 항목을 제한함</translation>
-<translation id="245307875355990880">할 일 재개</translation>
 <translation id="245322989586167203">사이트에서는 일반적으로 네트워크 설정과 같은 데이터 전송 기능을 사용하기 위해 직렬 포트에 연결합니다.</translation>
 <translation id="2453860139492968684">완료</translation>
 <translation id="2454206500483040640">분할됨</translation>
@@ -4129,6 +4127,7 @@
 <translation id="3796215473395753611">Alt + 위쪽 화살표</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, 오른쪽 화살표 키를 사용하여 음성 텍스트 미리보기</translation>
 <translation id="3796648294839530037">자주 이용하는 네트워크:</translation>
+<translation id="3797330664967181051">분할 뷰</translation>
 <translation id="3797739167230984533">조직에서 <ph name="BEGIN_LINK" />관리하는 <ph name="DEVICE_TYPE" /><ph name="END_LINK" />입니다.</translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />에서 '<ph name="SEARCH_TERMS" />' 검색(&amp;S)</translation>
 <translation id="3798026281364973895">인스턴트 핫스팟 사용 중지</translation>
@@ -4880,7 +4879,6 @@
 <translation id="4314497418046265427">휴대전화를 <ph name="DEVICE_TYPE" /> 기기와 연결하여 생산성 향상</translation>
 <translation id="4314561087119792062">새 액세스 포인트 네임(APN) 추가</translation>
 <translation id="4314815835985389558">동기화 관리</translation>
-<translation id="4314821834464582073">할 일 일시중지</translation>
 <translation id="4316850752623536204">개발자 웹사이트</translation>
 <translation id="4317733381297736564">인앱 구매</translation>
 <translation id="4317820549299924617">확인 실패</translation>
@@ -7754,6 +7752,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6350745006329795504">기기 관리</translation>
 <translation id="6350821834561350243">가능한 경우 문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다.</translation>
+<translation id="635100112331897007">모든 Chrome 정책 보기</translation>
 <translation id="6351178441572658285">앱 언어</translation>
 <translation id="6352992678231622317">탭을 아래로 이동함</translation>
 <translation id="6355632359041940003">작업 인계받기</translation>

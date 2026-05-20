@@ -584,7 +584,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="7318036098707714271">El fitxer de preferències està malmès o no és vàlid.
 
 Chromium no pot recuperar la configuració.</translation>
-<translation id="7339898014177206373">Finestra nova</translation>
 <translation id="734373864078049451">El vostre web, les adreces d'interès i altres coses de Chromium resideixen aquí.</translation>
 <translation id="7347827960336370838">Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, has de <ph name="BEGIN_LINK" />suprimir les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">L'administrador del sistema ha configurat Chromium perquè obri <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -593,6 +592,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7376384068949534168">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Obre Chrome Web Store</translation>
 <translation id="7384121030444253939">Aquesta extensió ja no s'admet. Chromium et recomana que la suprimeixis.</translation>
+<translation id="7407655596887111931">Ara Chromium és el teu navegador predeterminat</translation>
 <translation id="7413153308467572558">Continua des d'on ho vas deixar: Chromium restaura les teves pestanyes cada vegada que reinicies el navegador. Per desactivar-ho, ves a</translation>
 <translation id="7427879960656355200">Importa les contrasenyes a Chromium</translation>
 <translation id="744815265653811511">1. Fes clic a <ph name="BUTTON_LABEL" /> a continuació.

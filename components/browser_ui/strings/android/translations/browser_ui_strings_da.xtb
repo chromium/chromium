@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Tips til Chrome</translation>
 <translation id="1242008676835033345">Indlejret på <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tryk på Apps  &gt; Standardapps</translation>
+<translation id="1264694639515903274">Nu kan du tilpasse din startside</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1289742167380433257">Billederne på denne side er blevet optimeret af Google, så du sparer data.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1919950603503897840">Vælg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Tilpas min startside</translation>
 <translation id="1939059826036755332">Automatisk integreret billede</translation>
 <translation id="1954597385941141174">Websites kan anmode om tilladelse til at oprette forbindelse til USB-enheder</translation>
 <translation id="1979673356880165407">Gør tekst og billeder større eller mindre på alle websites, du besøger</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3859306556332390985">Spol fremad</translation>
+<translation id="3870711497942672548">Gør Chrome personlig med tilpassede farver og billeder på din startside</translation>
 <translation id="389521680295183045">Websites kan anmode om at få at vide, hvornår du aktivt bruger din enhed</translation>
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
 <translation id="3903738175795615004">Træk fra toppen af skærmen, eller tryk på Esc-tasten for at afslutte fuld skærm.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Udvid</translation>
 <translation id="4310738531374808763">Tilpas din startside</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
+<translation id="4336371609622603229">Tilpas Chrome til dig ved at vælge et tilpasset tema</translation>
 <translation id="4338831206024587507">Alle websites på <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Tillad ikke, at websites sender notifikationer</translation>
 <translation id="4341577178275615435">Brug genvejen F7 for at aktivere eller deaktivere tastenavigation</translation>
@@ -750,7 +754,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8737426583868847403">Websites, du har gemt et tilpasset zoomniveau for, vises her</translation>
 <translation id="8748714929822124637">Tillad ikke, at websites kan tilgå andre enheder på dit lokale netværk</translation>
 <translation id="8751914237388039244">Vælg et billede</translation>
-<translation id="8775741625735357092">Du kan aktivere bogmærkelinjen under Indstillinger &gt; Udseende</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>
 <translation id="8801657293260363985">V8 er Chromes JavaScript- og WebAssembly-maskine, der bruges til at forbedre websitets effektivitet</translation>

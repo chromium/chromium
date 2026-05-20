@@ -774,7 +774,6 @@
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1521933835545997395">已連線到 Android 手機</translation>
 <translation id="1523279371236772909">過去一個月看過</translation>
-<translation id="1523486680453956384">查看工作</translation>
 <translation id="1523978563989812243">文字轉語音的引擎</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1525740877599838384">僅使用 Wi-Fi 判斷所在位置</translation>
@@ -2141,7 +2140,6 @@
 <translation id="2450849356604136918">沒有可用的模式</translation>
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="2453045048779611513">貴機構對你能儲存的內容設有限制</translation>
-<translation id="245307875355990880">繼續執行工作</translation>
 <translation id="245322989586167203">網站通常會連線至序列埠，以提供設定網路等資料移轉功能</translation>
 <translation id="2453860139492968684">結束</translation>
 <translation id="2454206500483040640">已分區</translation>
@@ -4111,6 +4109,7 @@
 <translation id="3796215473395753611">alt + 向上鍵</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，點選播放按鈕可試聽語音</translation>
 <translation id="3796648294839530037">慣用的網路：</translation>
+<translation id="3797330664967181051">分割畫面</translation>
 <translation id="3797739167230984533">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 受到貴機構管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">透過 <ph name="SEARCH_ENGINE" /> 搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="3798026281364973895">停用即時無線基地台</translation>
@@ -4863,7 +4862,6 @@
 <translation id="4314497418046265427">將手機連接 <ph name="DEVICE_TYPE" />，提升工作效率</translation>
 <translation id="4314561087119792062">新增存取點名稱</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
-<translation id="4314821834464582073">暫停工作</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
 <translation id="4317733381297736564">應用程式內購</translation>
 <translation id="4317820549299924617">驗證失敗</translation>
@@ -7728,6 +7726,7 @@
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">管理你的裝置</translation>
 <translation id="6350821834561350243">請詳述問題，並盡可能提供重現問題的步驟</translation>
+<translation id="635100112331897007">查看所有 Chrome 政策</translation>
 <translation id="6351178441572658285">應用程式語言</translation>
 <translation id="6352992678231622317">分頁已往下移</translation>
 <translation id="6355632359041940003">接手工作</translation>
@@ -11153,7 +11152,7 @@
 <translation id="8710414664106871428">奇幻</translation>
 <translation id="8711402221661888347">漢堡</translation>
 <translation id="8711538096655725662">自動在你造訪的所有網站上執行</translation>
-<translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="8713110120305151436">在快速設定中顯示無障礙選項</translation>
 <translation id="8713570323158206935">傳送<ph name="BEGIN_LINK1" />系統資訊<ph name="END_LINK1" /></translation>
 <translation id="8713761545374852805">協助你撰寫評論、電子郵件、社群媒體貼文、文章等內容</translation>

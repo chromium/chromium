@@ -4570,6 +4570,13 @@ La policy può essere combinata con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLAT
 <translation id="3928726028264020458">Attiva i report sulle informazioni VPD del dispositivo</translation>
 <translation id="3935592079035695061">Millisecondi dalla mezzanotte.</translation>
 <translation id="3937800910397007337">Forza la priorità in primo piano per tutte le schede</translation>
+<translation id="3938885528378923718">Configura il modo in cui <ph name="PRODUCT_NAME" /> scarica il modello di base di AI generativa e lo utilizza localmente per l'inferenza.
+
+Se la policy viene impostata su Consentita (0) o se non viene configurata, il modello viene scaricato automaticamente e utilizzato per l'inferenza.
+
+Se la policy viene impostata su Disattivata (1), il modello non viene scaricato e il modello esistente (se già scaricato) viene eliminato.
+
+Sulle piattaforme desktop, il download del modello può essere disattivato anche impostando <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> su falso.</translation>
 <translation id="3941289958028934630">Disattiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="3943930334592166130">Questa policy controlla se all'utente viene richiesto di selezionare un certificato client quando più certificati corrispondono a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Se la policy viene impostata su Attivata, all'utente viene richiesto di selezionare un certificato client quando la policy di selezione automatica corrisponde a più certificati.
@@ -8427,13 +8434,6 @@ Se questa policy non viene configurata, il relativo comportamento viene determin
 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Disattiva le estensioni non pubblicate</translation>
-<translation id="6382287177674997281">Questa policy consente agli utenti di avviare qualsiasi tipo di aggiornamento firmware.
-
-      Se la policy viene attivata, gli utenti (ad es. il proprietario del dispositivo) possono avviare aggiornamenti firmware.
-
-      Se la policy viene disattivata o se non viene configurata, gli utenti non possono applicare gli aggiornamenti firmware.
-
-      Questa policy si applica al firmware per gli aggiornamenti firmware delle periferiche esterne e dei componenti interni per i dispositivi <ph name="PRODUCT_OS_FLEX_NAME" />. Questa policy non influisce sugli aggiornamenti firmware dei componenti interni per i dispositivi <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
 <translation id="6389240462871677239">Consenti alle origini delle app web isolate di utilizzare Controlled Frame</translation>

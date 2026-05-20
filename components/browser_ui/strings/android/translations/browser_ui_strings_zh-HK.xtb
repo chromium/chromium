@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1242008676835033345">嵌入至 <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">輕按 [應用程式] &gt; [預設應用程式]</translation>
+<translation id="1264694639515903274">你現可自訂首頁</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1289742167380433257">Google 已優化此網頁的圖片，以節省數據用量。</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1923695749281512248">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">自訂首頁</translation>
 <translation id="1939059826036755332">自動顯示畫中畫</translation>
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1979673356880165407">在您瀏覽的所有網站上縮放文字和圖片</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">展開</translation>
 <translation id="4310738531374808763">自訂首頁</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
+<translation id="4336371609622603229">選擇自訂主題，建立你的專屬 Chrome</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有網站</translation>
 <translation id="4340799661701629185">不允許網站傳送通知</translation>
 <translation id="4341577178275615435">如要開啟或關閉「鍵盤瀏覽」功能，請使用快速鍵 F7</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">已儲存自訂縮放等級的網站會在這裡顯示</translation>
 <translation id="8748714929822124637">不允許網站存取區域網絡上的其他裝置</translation>
 <translation id="8751914237388039244">選取圖片</translation>
-<translation id="8775741625735357092">你可以在 [設定] &gt; [外觀] 中開啟書籤列</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8801436777607969138">封鎖特定網站執行 JavaScript。</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>

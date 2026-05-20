@@ -254,6 +254,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1380591466760231819">Rullfalsning</translation>
 <translation id="138218114945450791">Ljusblå</translation>
 <translation id="1382194467192730611">USB-enhet som tillåtits av administratören</translation>
+<translation id="1383876407941801731">Sök</translation>
 <translation id="1384725838384960382">Arbetsblad för autentisering av användaruppgifter för säker betalning</translation>
 <translation id="1386623374109090026">Annoteringar</translation>
 <translation id="138810468159004008">Tillåt vid besök på webbplatsen</translation>
@@ -1820,6 +1821,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="380865868633614173">Sparar kortuppgifter</translation>
 <translation id="3810770279996899697">Lösenordshantering behöver åtkomst till MacOS-nyckelringen</translation>
 <translation id="3810973564298564668">Hantera</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Det här är en viktig uppdatering som förbättrar Android-appars prestanda i ChromeOS.</translation>
 <translation id="3814865536373139791">Effektivisera hur organisationen hanterar principer</translation>
 <translation id="3815434930383843058">8 x 12 tum</translation>
@@ -2399,6 +2401,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4736934858538408121">Virtuellt kort</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4738601419177586157">Sökförslag för <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, vald flik, <ph name="INDEX" /> av <ph name="TOTAL" />, använd vänster- eller högerpilen för att byta mellan flikar</translation>
 <translation id="4742407542027196863">Hantera lösenord …</translation>
 <translation id="474270528725216349">Från minst en webbplats på synkroniserade enheter</translation>
 <translation id="4743275772928623722">Systemet har uppdaterats men vissa av dina appar och filer kunde inte återställas. Apparna laddas ned igen automatiskt.</translation>
@@ -2466,6 +2469,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4832961164064927107">Grillning</translation>
 <translation id="4835568975547260025">Chrome delar relevanta öppna flikar som standard för att ge dig mer anpassade svar på dina frågor.</translation>
 <translation id="4840250757394056958">Visa Chrome-historiken</translation>
+<translation id="4842365697443353018">Rensa formuläret om du vill använda Betala senare</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrolla och zooma på delade flikar</translation>
 <translation id="484671803914931257">Få rabatt på <ph name="MERCHANT_NAME" /> med mera</translation>

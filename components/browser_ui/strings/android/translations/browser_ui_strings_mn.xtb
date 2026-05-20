@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-д оруулсан</translation>
 <translation id="1263609676484797429">Апп  &gt; Өгөгдмөл апп дээр товшино уу</translation>
+<translation id="1264694639515903274">Одоо та нүүр хуудсаа тусгайлан өөрчлөх боломжтой</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1289742167380433257">Таны өгөгдлийг хадгалахын тулд Google энэ хуудасны зургуудыг оновчилсон байна.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1919950603503897840">Харилцагчдыг сонгох</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Миний нүүр хуудсыг тусгайлан өөрчил</translation>
 <translation id="1939059826036755332">Автомат дэлгэц доторх дэлгэц</translation>
 <translation id="1954597385941141174">Сайтууд USB төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="1979673356880165407">Зочилдог бүх сайтынхаа текст болон зургийг том эсвэл жижиг болгоорой</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Өргөтгөх</translation>
 <translation id="4310738531374808763">Нүүр хуудсаа тусгайлан өөрчлөх</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Маргааш хугацаа нь дуусна}other{# хоногийн дараа хугацаа нь дуусна}}</translation>
+<translation id="4336371609622603229">Захиалгат загвар сонгож Chrome-г өөрийн болгоорой</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-н доорх бүх сайт</translation>
 <translation id="4340799661701629185">Сайтуудад мэдэгдэл илгээхийг бүү зөвшөөр</translation>
 <translation id="4341577178275615435">Сaret browsing-г асаах, эсвэл унтраахын тулд F7 товчлолыг ашиглана уу</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">Таны захиалгат томруулах түвшин хадгалсан сайтууд энд харагдана</translation>
 <translation id="8748714929822124637">Сайтуудад таны дотоод сүлжээн дээрх бусад төхөөрөмжид хандахыг бүү зөвшөөр</translation>
 <translation id="8751914237388039244">Зураг сонгох</translation>
-<translation id="8775741625735357092">Та Тохиргоо &gt; Харагдах байдлаас хавчуургын хэсгийг асаах боломжтой</translation>
 <translation id="8800034312320686233">Сайт ажиллахгүй байна уу?</translation>
 <translation id="8801436777607969138">Зарим сайт дээр JavaScript-г блоклоно уу.</translation>
 <translation id="8801657293260363985">V8 нь сайтын гүйцэтгэлийг сайжруулахад ашигладаг Chrome-н JavaScript болон WebAssembly-н систем юм</translation>

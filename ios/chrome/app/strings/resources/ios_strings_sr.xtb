@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Иде на прву картицу</translation>
 <translation id="2499505845365628575">Комплетну историју прегледања можете да прегледате помоћу дугмета <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Број угрожених лозинки које могу да угрозе безбедност је <ph name="NUMBER_OF_PASSWORDS" />.</translation>
+<translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. ниво</translation>
 <translation id="2513103768503127042">Овде ћете пронаћи групе картица</translation>
 <translation id="251837347827266434">Бићете одјављени, картице ће бити затворене, а подаци прегледања избрисани</translation>
 <translation id="2520787026086861736">Да бисте искључили, идите у <ph name="BEGIN_LINK" />Аутоматско попуњавање и лозинке<ph name="END_LINK" /></translation>
@@ -1090,6 +1091,7 @@
 <translation id="4840495572919996524">Обележивачи, историја, лозинке и други подаци више се неће синхронизовати са Google налогом.</translation>
 <translation id="484280513275854557">Одјављени сте; подаци прегледања су избрисани</translation>
 <translation id="484462545196658690">Аутоматски</translation>
+<translation id="4846662396507502151">Прегледајте брже помоћу нове траке с алаткама</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854068532375923088">Дозволите Gemini-ју да користи камеру</translation>
 <translation id="4860895144060829044">Позовите</translation>
@@ -1428,6 +1430,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5988097621740394599">Прегледајте снижења на картицама.</translation>
 <translation id="5988851877894965432">Отварајте URL-ове у Chrome-у</translation>
 <translation id="599343768974649785">Експлицитан текст</translation>
+<translation id="6004988584831654445">Спремни сте! Добијајте обавештења када стигну нови задаци.</translation>
 <translation id="6006672969046233841">Нова картица</translation>
 <translation id="6011308810877101166">Побољшајте предлоге за претрагу</translation>
 <translation id="6012140227487808125">Шифрује се…</translation>
@@ -1659,6 +1662,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6685259053455152195">Пречице за брзо мењање подешавања и коришћење функција из траке за адресу.</translation>
 <translation id="6689342293888598653">Бела боја позадине</translation>
 <translation id="6689685206615181381">Доступан је само режим без архивирања</translation>
+<translation id="6705491067826837934">Контроле на дохват руке</translation>
 <translation id="6708501134077648845">Опције за лозинке</translation>
 <translation id="6709964700841491574">Режим закључавања</translation>
 <translation id="6710079714193676716">Овим управља организација. Неке функције можда нису доступне. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -1719,6 +1723,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6903282483217634857">Помери удесно</translation>
 <translation id="6903907808598579934">Укључи синхронизацију</translation>
 <translation id="6906448540340261898">Уверите се да увек можете да користите лозинке на Google налогу</translation>
+<translation id="6906978870282539723">Затражите помоћ за картице и задатке</translation>
 <translation id="6908734251759299256">Ажурирајте прегледач</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />Само на овом уређају</translation>
 <translation id="6914583639806229067">Потражите слику коју сте копирали</translation>
@@ -2079,6 +2084,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и још 1}one{За {website_1}, {website_2} и још {more_count}}few{За {website_1}, {website_2} и још {more_count}}other{За {website_1}, {website_2} и још {more_count}}}</translation>
 <translation id="8184895727539791845">Да бисте дозволили Gemini-ју да користи камеру, укључите опцију Камера у подешавањима iOS-а</translation>
 <translation id="8185076488803799132">Import (Увези)</translation>
+<translation id="8187200657863701733">Тренутни ниво у Chrome-у</translation>
 <translation id="8189615296021678665">Додирните Сачувај да бисте лако приступали овој лозинци следећи пут када се пријавите.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинку</translation>
@@ -2122,6 +2128,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8325455175867928593">Сакриј Рецензије на основу интересовања</translation>
 <translation id="833647236762414178">Правите и чувајте лозинке и приступне кључеве и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Довршите још 1 задатак да бисте прешли на следећи ниво}one{Довршите још {count} задатак да бисте прешли на следећи ниво}few{Довршите још {count} задатка да бисте прешли на следећи ниво}other{Довршите још {count} задатака да бисте прешли на следећи ниво}}</translation>
 <translation id="8348530355586151720">Додирните мени са три тачке</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8361189290032177785">{count,plural, =1{Увезен је {count} обележивач}one{Увезен је {count} обележивач}few{Увезена су {count} обележивача}other{Увезено је {count} обележивача}}</translation>

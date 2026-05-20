@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome 도움말</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />에 삽입됨</translation>
 <translation id="1263609676484797429">앱 &gt; 기본 앱을 탭합니다.</translation>
+<translation id="1264694639515903274">이제 홈페이지를 맞춤설정할 수 있습니다</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1289742167380433257">데이터를 저장하기 위해 Google에서 이 페이지의 이미지를 최적화했습니다.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">종료</translation>
 <translation id="1919950603503897840">연락처 선택</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">홈페이지 맞춤설정</translation>
 <translation id="1939059826036755332">자동 PIP 모드</translation>
 <translation id="1954597385941141174">사이트에서 USB 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="1979673356880165407">방문하는 모든 사이트에서 텍스트 및 이미지 확대 또는 축소합니다.</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4310738531374808763">홈페이지 맞춤설정</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
+<translation id="4336371609622603229">맞춤형 테마를 선택하여 나만의 Chrome을 만들어 보세요.</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />의 모든 사이트</translation>
 <translation id="4340799661701629185">사이트에서 알림을 전송하도록 허용하지 않음</translation>
 <translation id="4341577178275615435">캐럿 브라우징을 사용 설정하거나 중지하려면 F7 단축키를 사용합니다.</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">맞춤 확대/축소 수준을 저장한 사이트가 여기에 표시됩니다</translation>
 <translation id="8748714929822124637">사이트에서 로컬 네트워크의 다른 기기에 액세스하도록 허용하지 않음</translation>
 <translation id="8751914237388039244">이미지 선택</translation>
-<translation id="8775741625735357092">설정 &gt; 모양에서 북마크바를 사용 설정할 수 있습니다.</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8801436777607969138">특정 사이트의 자바스크립트를 차단합니다.</translation>
 <translation id="8801657293260363985">V8은 사이트 속도를 개선하는 데 사용되는 Chrome의 JavaScript 및 WebAssembly 엔진입니다.</translation>

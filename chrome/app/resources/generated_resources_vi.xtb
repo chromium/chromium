@@ -775,7 +775,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1521655867290435174">Google Trang tính</translation>
 <translation id="1521933835545997395">Đã kết nối với điện thoại Android</translation>
 <translation id="1523279371236772909">Từng xem trong tháng trước</translation>
-<translation id="1523486680453956384">Xem việc cần làm</translation>
 <translation id="1523978563989812243">Các công cụ chuyển văn bản sang lời nói</translation>
 <translation id="1524563461097350801">Không, cảm ơn</translation>
 <translation id="1525740877599838384">Chỉ sử dụng Wi-Fi để xác định vị trí</translation>
@@ -2154,7 +2153,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2450849356604136918">Không có chế độ xem đang hoạt động nào</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Tổ chức của bạn giới hạn những nội dung bạn được lưu</translation>
-<translation id="245307875355990880">Tiếp tục việc cần làm</translation>
 <translation id="245322989586167203">Các trang web thường kết nối với cổng nối tiếp để hỗ trợ những tính năng chuyển dữ liệu, chẳng hạn như thiết lập mạng</translation>
 <translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2454206500483040640">Đã phân vùng</translation>
@@ -2584,7 +2582,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2730647855013151888">Bao gồm tất cả thông tin cá nhân</translation>
 <translation id="2730901670247399077">Biểu tượng cảm xúc đề xuất</translation>
 <translation id="273093730430620027">Trang này đang truy cập máy ảnh của bạn.</translation>
-<translation id="2731392572903530958">&amp;Mở lại Cửa sổ đã Đóng</translation>
+<translation id="2731392572903530958">&amp;Mở lại cửa sổ đã đóng</translation>
 <translation id="2731700343119398978">Vui lòng chờ...</translation>
 <translation id="2731971182069536520">Khi bạn khởi động lại thiết bị vào lần tiếp theo, quản trị viên sẽ tiến hành cập nhật một lần để xóa dữ liệu trên thiết bị của bạn.</translation>
 <translation id="2732134891301408122">Nội dung bổ sung <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
@@ -3369,7 +3367,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3282210178675490297">Đang chia sẻ một thẻ với <ph name="APP_NAME" /></translation>
 <translation id="3283148363895519428">Làm theo hướng dẫn trên điện thoại để tiếp tục thiết lập. Hãy đảm bảo điện thoại của bạn đang ở gần và đã bật Bluetooth.</translation>
 <translation id="3284050785966252943">Xem trước siêu dữ liệu tự động điền</translation>
-<translation id="3285322247471302225">&amp;Tab Mới</translation>
+<translation id="3285322247471302225">&amp;Thẻ mới</translation>
 <translation id="3285329711156774325">Tìm kiếm kỹ năng</translation>
 <translation id="3285500645985761267">Cho phép các trang web liên quan xem hoạt động của bạn trong nhóm</translation>
 <translation id="328571385944182268">Lưu mật khẩu của bạn?</translation>
@@ -4127,6 +4125,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3796215473395753611">alt + mũi tên lên</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, dùng phím mũi tên phải để nghe thử giọng</translation>
 <translation id="3796648294839530037">Mạng yêu thích:</translation>
+<translation id="3797330664967181051">Chế độ xem chia đôi màn hình</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> của bạn do<ph name="END_LINK" /> tổ chức của bạn quản lý</translation>
 <translation id="3797900183766075808">&amp;Tìm kiếm trên <ph name="SEARCH_ENGINE" /> cho “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798026281364973895">Tắt Điểm phát sóng tức thì</translation>
@@ -4880,7 +4879,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4314497418046265427">Làm việc năng suất hơn khi kết nối điện thoại với <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Thêm tên mới cho Điểm truy cập</translation>
 <translation id="4314815835985389558">Quản lý dữ liệu đồng bộ hóa</translation>
-<translation id="4314821834464582073">Tạm dừng việc cần làm</translation>
 <translation id="4316850752623536204">Trang web dành cho nhà phát triển</translation>
 <translation id="4317733381297736564">Mua hàng trong ứng dụng</translation>
 <translation id="4317820549299924617">Không xác minh được</translation>
@@ -5694,7 +5692,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4882848900607400156">Khi bạn chia sẻ vị trí chính xác của mình, Gemini có thể trả lời câu hỏi của bạn chính xác hơn. Dữ liệu của bạn không được dùng để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="4882919381756638075">Các trang web thường sử dụng micrô cho các tính năng giao tiếp như trò chuyện video</translation>
 <translation id="4883436287898674711">Tất cả trang web <ph name="WEBSITE_1" /></translation>
-<translation id="48838266408104654">&amp;Trình quản lý Tác vụ</translation>
+<translation id="48838266408104654">&amp;Trình quản lý tác vụ</translation>
 <translation id="4884937942297374058">Chế độ Bảo vệ nâng cao đang tắt</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Tiện ích này không có thêm quyền truy cập nào vào trang web</translation>
@@ -7754,6 +7752,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6349101878882523185">Cài đặt <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Quản lý thiết bị của bạn</translation>
 <translation id="6350821834561350243">Cung cấp thông tin mô tả rõ ràng về vấn đề và các bước giúp tái hiện vấn đề (nếu được)</translation>
+<translation id="635100112331897007">Xem tất cả các chính sách trên Chrome</translation>
 <translation id="6351178441572658285">Ngôn ngữ ứng dụng</translation>
 <translation id="6352992678231622317">Đã di chuyển thẻ xuống dưới</translation>
 <translation id="6355632359041940003">Tự thực hiện</translation>

@@ -254,6 +254,7 @@
 <translation id="1380591466760231819">Pli roulé</translation>
 <translation id="138218114945450791">Bleu clair</translation>
 <translation id="1382194467192730611">Appareil USB autorisé par votre administrateur</translation>
+<translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384725838384960382">Fiche d'authentification de l'authentifiant de paiement sécurisé</translation>
 <translation id="1386623374109090026">Annotations</translation>
 <translation id="138810468159004008">Autoriser lors de la visite du site</translation>
@@ -1820,6 +1821,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="380865868633614173">Enregistrement des informations de la carte en cours…</translation>
 <translation id="3810770279996899697">Le gestionnaire de mots de passe doit accéder au trousseau macOS</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Il s'agit d'une mise à jour essentielle qui améliore les performances des applications Android sur ChromeOS.</translation>
 <translation id="3814865536373139791">Optimisez la façon dont votre organisation gère les politiques</translation>
 <translation id="3815434930383843058">8 po x 12 po</translation>
@@ -2399,6 +2401,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4736934858538408121">Carte virtuelle</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4738601419177586157">Suggestion de recherche <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, onglet sélectionné, <ph name="INDEX" /> sur <ph name="TOTAL" />, utilisez la flèche vers la gauche ou vers la droite pour passer d'un onglet à l'autre</translation>
 <translation id="4742407542027196863">Gérer les mots de passe…</translation>
 <translation id="474270528725216349">D'au moins 1 site sur des appareils synchronisés</translation>
 <translation id="4743275772928623722">Votre système a été mis à jour, mais certains de vos fichiers et de vos applications n'ont pas pu être récupérés. Vos applications seront à nouveau téléchargées automatiquement.</translation>
@@ -2466,6 +2469,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4832961164064927107">Barbecue et grillade</translation>
 <translation id="4835568975547260025">Chrome partagera par défaut les onglets ouverts pertinents pour vous aider à obtenir des réponses plus personnalisées à vos questions.</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
+<translation id="4842365697443353018">Effacez le formulaire pour utiliser le paiement différé</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Zoomer et faire défiler les onglets partagés</translation>
 <translation id="484671803914931257">Bénéficiez d'un rabais sur <ph name="MERCHANT_NAME" /> et d'autres</translation>

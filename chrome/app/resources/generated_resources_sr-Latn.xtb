@@ -773,7 +773,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1521655867290435174">Google tabele</translation>
 <translation id="1521933835545997395">Povezano sa Android telefonom</translation>
 <translation id="1523279371236772909">Pregledali ste prethodnog meseca</translation>
-<translation id="1523486680453956384">Prikaži zadatak</translation>
 <translation id="1523978563989812243">Mehanizmi za pretvaranje teksta u govor</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1525740877599838384">Koristi samo WiFi za određivanje lokacije</translation>
@@ -2139,7 +2138,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2450849356604136918">Nema aktivnih prikaza</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Vaša organizacija ograničava sadržaj koji možete da čuvate</translation>
-<translation id="245307875355990880">Nastavi zadatak</translation>
 <translation id="245322989586167203">Sajtovi se obično povezuju sa serijskim portovima za potrebe funkcija za prenos podataka, na primer, pri podešavanju mreže</translation>
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2454206500483040640">Izdeljeno</translation>
@@ -4112,6 +4110,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3796215473395753611">alt + strelica nagore</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, koristite taster sa strelicom nadesno da biste preslušali glas</translation>
 <translation id="3796648294839530037">Omiljene mreže:</translation>
+<translation id="3797330664967181051">Podeljeni prikaz</translation>
 <translation id="3797739167230984533">Organizacija <ph name="BEGIN_LINK" />upravlja uređajem <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Pretraži „<ph name="SEARCH_TERMS" />“ na pretraživaču <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798026281364973895">Onemogući instant hotspot</translation>
@@ -4865,7 +4864,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4314497418046265427">Budite produktivniji kada povežete telefon i <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Dodajte novi naziv pristupne tačke</translation>
 <translation id="4314815835985389558">Upravljajte sinhronizacijom</translation>
-<translation id="4314821834464582073">Pauziraj zadatak</translation>
 <translation id="4316850752623536204">Veb-sajt programera</translation>
 <translation id="4317733381297736564">Kupovine u aplikaciji</translation>
 <translation id="4317820549299924617">Verifikacija nije uspela</translation>
@@ -7738,6 +7736,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6349101878882523185">Instalirajte <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Upravljajte uređajima</translation>
 <translation id="6350821834561350243">Jasno opišite problem i korake za njegovo reprodukovanje (ako je moguće)</translation>
+<translation id="635100112331897007">Prikaži sve Chrome smernice</translation>
 <translation id="6351178441572658285">Jezici aplikacija</translation>
 <translation id="6352992678231622317">Kartica je premeštena nadole</translation>
 <translation id="6355632359041940003">Preuzmi zadatak</translation>

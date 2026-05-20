@@ -118,6 +118,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="1448440926884431741">Atur produk yang dijejaki dalam Penanda Halaman</translation>
 <translation id="1455845192930279203">Adakah anda masih mahu memuat turun "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) daripada <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Jimatkan masa, kurangkan menaip</translation>
+<translation id="146522654774760805">Kata laluan dan autolengkap</translation>
 <translation id="1466383950273130737">Pilih bahasa Chrome</translation>
 <translation id="1477626028522505441">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh masalah pelayan.</translation>
 <translation id="147982357559798527">Diubah</translation>
@@ -227,6 +228,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="200114059308480249">Sertakan teks sekitar dalam carian Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Tab Inkognito Tersemat Yang Diredamkan</translation>
 <translation id="2021896219286479412">Kawalan tapak skrin penuh</translation>
+<translation id="2022953316617983419">Kod QR</translation>
 <translation id="2024195579772565064">Padamkan enjin carian</translation>
 <translation id="2029669011553795746">Pemberitahuan petua ikut serta dibuka pada ketinggian separuh</translation>
 <translation id="2038563949887743358">Hidupkan Minta tapak desktop</translation>
@@ -789,6 +791,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> dan <ph name="TAB_COUNT" /> tab lain</translation>
 <translation id="441100617989818073">Tab dan kumpulan yang tidak digunakan atau pendua</translation>
 <translation id="4412123112245770507">Kuncupkan bahagian</translation>
+<translation id="4412698727486357573">Pusat bantuan</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> dipadamkan</translation>
 <translation id="4415276339145661267">Urus Google Account anda</translation>
 <translation id="4425140285732600465">Menjejaki harga. Dapatkan makluman sekiranya harga jatuh pada mana-mana laman.</translation>
@@ -1435,7 +1438,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6980258170429555165">Menu <ph name="MENU_NAME" /> diserlahkan.</translation>
 <translation id="6983306615164277634">Anda juga boleh sentuh dan tahan bar alamat untuk menukar kedudukan.</translation>
 <translation id="6987047470128880212">Inkognito tidak tersedia pada peranti ini</translation>
-<translation id="6989358895283601928">Simpan dan cetak</translation>
 <translation id="6996145122199359148">Muat turun halaman ini</translation>
 <translation id="7013762323294215682">Kunci laluan akan disimpan pada Password Manager anda. Sesiapa sahaja yang boleh mengakses Password Manager anda akan dapat menggunakan kunci laluan ini.</translation>
 <translation id="7020741890149022655">Tambah pd senarai bacaan <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -2003,6 +2005,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="970715775301869095"><ph name="MINUTES" /> minit lagi</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
+<translation id="984275831282074731">Kaedah pembayaran</translation>
 <translation id="984756705737569814">Tidak dapat menyemak kata laluan dalam Google Account anda</translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="988091779042748639">Untuk memadamkan sejarah penyemakan imbas Inkognito daripada peranti anda, tutup semua tab Inkognito.</translation>

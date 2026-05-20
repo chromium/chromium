@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome'ду колдонуу кеңештери</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> кыналган</translation>
 <translation id="1263609676484797429">Колдонмолор &gt; Демейки колдонмолорду таптап коюңуз</translation>
+<translation id="1264694639515903274">Эми башкы бетти ыңгайлаштыра аласыз</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1275718070701477396">Тандалган</translation>
 <translation id="1289742167380433257">Интернет трафигин үнөмдөө үчүн Google бул барактагы сүрөттөрдү ыңгайлаштырды.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1919950603503897840">Байланыштарды тандоо</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Башкы бетти ыңгайлаштыруу</translation>
 <translation id="1939059826036755332">Сүрөттөгү сүрөт режимине автоматтык түрдө кирүү</translation>
 <translation id="1954597385941141174">Сайттар сиздин уруксатыңыз менен USB түзмөктөргө туташа алат</translation>
 <translation id="1979673356880165407">Сиз баш баккан бардык сайттарда текстти жана сүрөттөрдү чоңойтуп же кичирейтиңиз</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Chrome бүгүн cookie файлдарын кайра бөгөттөйт</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="3859306556332390985">Алдыга түрдүрүү</translation>
+<translation id="3870711497942672548">Башкы беттин түсүн жана сүрөттөрүн тандап, Chrome'ду өзүңүзгө ылайыкташтырыңыз</translation>
 <translation id="389521680295183045">Сайттар түзмөктү активдүү колдонуп жатканыңыз тууралуу маалыматты сурай алышат</translation>
 <translation id="3895926599014793903">Мажбурлап чоңойтууну иштетүү</translation>
 <translation id="3903738175795615004">Толук экран режиминен чыгуу үчүн жогорудан сүйрөп же Esc баскычын басыңыз.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
 <translation id="4310738531374808763">Башкы бетти ыңгайлаштыруу</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Мөөнөтү эртең бүтөт}other{Мөөнөтү # күндөн кийин бүтөт}}</translation>
+<translation id="4336371609622603229">Жеке теманы тандоо менен Chrome'ду өзүңүзгө ылайыкташтырыңыз</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> домениндеги бардык сайттар</translation>
 <translation id="4340799661701629185">Сайттар билдирмелерди жөнөтө албасын</translation>
 <translation id="4341577178275615435">Caret серептөөсүн күйгүзүү же өчүрүү үчүн F7 ыкчам баскычын колдонуңуз</translation>
@@ -750,7 +754,6 @@
 <translation id="8737426583868847403">Ыңгайлаштырылган масштабдоо деңгээли сакталган сайттар бул жерде пайда болот</translation>
 <translation id="8748714929822124637">Сайттарга жергиликтүү тармактагы башка түзмөктөрдү колдонууга тыюу салуу</translation>
 <translation id="8751914237388039244">Сүрөт тандоо</translation>
-<translation id="8775741625735357092">Параметрлер &gt; Көрүнүш аркылуу өтүп, кыстармалар тилкесин күйгүзсөңүз болот</translation>
 <translation id="8800034312320686233">Сайт иштебей жатабы?</translation>
 <translation id="8801436777607969138">Белгилүү бир сайтта JavaScript'ти бөгөттөө.</translation>
 <translation id="8801657293260363985">V8 — Chrome'дун JavaScript жана WebAssembly куралы. Ал сайттын ишин жакшыртуу үчүн колдонулат</translation>

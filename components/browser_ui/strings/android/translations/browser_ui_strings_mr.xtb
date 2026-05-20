@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome शी संबंधित टिपा</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> वर एम्बेड केले</translation>
 <translation id="1263609676484797429">अ‍ॅप्स  &gt; डीफॉल्ट ॲप्सवर टॅप करा</translation>
+<translation id="1264694639515903274">तुम्ही आता तुमचे होमपेज कस्टमाइझ करू शकता</translation>
 <translation id="1272079795634619415">थांबा</translation>
 <translation id="1275718070701477396">निवडले</translation>
 <translation id="1289742167380433257">तुमचा डेटा वाचवण्यासाठी, या पेजच्या इमेज Google ने ऑप्टिमाइझ केल्या आहेत.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">बंद करा</translation>
 <translation id="1919950603503897840">संपर्क निवडा</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">माझे होमपेज कस्टमाइझ करा</translation>
 <translation id="1939059826036755332">ऑटोमॅटिक चित्रात-चित्र</translation>
 <translation id="1954597385941141174">साइट USB डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="1979673356880165407">तुम्ही भेट देता त्या सर्व साइटसाठी मजकूर आणि इमेज मोठ्या किंवा लहान करा</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">विस्तृत करा</translation>
 <translation id="4310738531374808763">तुमचे होमपेज कस्टमाइझ करा</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{उद्या एक्स्पायर होईल}other{# दिवसांमध्ये एक्स्पायर होईल}}</translation>
+<translation id="4336371609622603229">कस्टम थीम निवडून Chrome हे तुमच्या आवडीनुसार बनवा</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अंतर्गत सर्व साइट</translation>
 <translation id="4340799661701629185">साइटना सूचना पाठवण्याची अनुमती देऊ नका</translation>
 <translation id="4341577178275615435">कॅरेट ब्राउझिंग सुरू किंवा बंद करण्यासाठी F7 हा शॉर्टकट वापरा</translation>
@@ -751,7 +754,6 @@
 <translation id="8737426583868847403">तुम्ही कस्टम झूम पातळी सेव्ह केलेल्या साइट इथे दिसतील</translation>
 <translation id="8748714929822124637">साइटना तुमच्या स्थानिक नेटवर्कवरील इतर डिव्हाइस ॲक्सेस करण्याची अनुमती देऊ नका</translation>
 <translation id="8751914237388039244">इमेज निवडा</translation>
-<translation id="8775741625735357092">तुम्ही सेटिंग्ज &gt; स्वरूप यामध्ये बुकमार्क बार सुरू करू शकता</translation>
 <translation id="8800034312320686233">साइट काम करत नाही का?</translation>
 <translation id="8801436777607969138">विशिष्ट साइटसाठी JavaScript ब्लॉक करा.</translation>
 <translation id="8801657293260363985">V8 हे Chrome चे JavaScript आणि WebAssembly इंजिन आहे, जे साइट परफॉर्मन्समध्ये सुधारणा करण्यासाठी वापरले जाते</translation>

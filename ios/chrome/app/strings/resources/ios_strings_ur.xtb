@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">پہلے ٹیب پر جائیں</translation>
 <translation id="2499505845365628575">آپ <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> سے اپنی براؤزنگ کی تمام سرگزشت تلاش کر سکتے ہیں۔</translation>
 <translation id="2511117522375201202">آپ کے پاس <ph name="NUMBER_OF_PASSWORDS" /> متاثرہ پاس ورڈز ہیں جن سے آپ کو سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔</translation>
+<translation id="2512709994717613803">لیول <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">آپ کو اپنے ٹیب گروپس یہاں ملیں گے</translation>
 <translation id="251837347827266434">آپ سائن آؤٹ ہو جائیں گے، ٹیبز بند ہو جائیں گے، براؤزنگ ڈیٹا حذف ہو جائے گا</translation>
 <translation id="2520787026086861736">آف کرنے کے لیے، <ph name="BEGIN_LINK" />آٹو فل اور پاس ورڈز<ph name="END_LINK" /> پر جائیں</translation>
@@ -1090,6 +1091,7 @@
 <translation id="4840495572919996524">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز وغیرہ کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔</translation>
 <translation id="484280513275854557">آپ کو سائن آؤٹ کر دیا گیا؛ برؤزنگ ڈیٹا کو حذف کر دیا گیا</translation>
 <translation id="484462545196658690">خودکار</translation>
+<translation id="4846662396507502151">نئے ٹول بار کے ساتھ تیزی سے براؤز کریں</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4854068532375923088">‏‫"Gemini" کو اپنا کیمرا استعمال کرنے کی اجازت دیں</translation>
 <translation id="4860895144060829044">کال کریں</translation>
@@ -1428,6 +1430,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5988097621740394599">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں۔</translation>
 <translation id="5988851877894965432">‏URLs کو Chrome میں کھولیں</translation>
 <translation id="599343768974649785">فُحش ٹیکسٹ</translation>
+<translation id="6004988584831654445">آپ پوری طرح سے تیار ہیں! نئے ٹاسکس آنے پر اطلاع حاصل کریں۔</translation>
 <translation id="6006672969046233841">نیا ٹیب</translation>
 <translation id="6011308810877101166">تلاش کی تجاویز کو بہتر بنائیں</translation>
 <translation id="6012140227487808125">مرموز کاری ہو رہی ہے…</translation>
@@ -1659,6 +1662,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6685259053455152195">ترتیبات میں تیزی سے ترمیم کرنے اور ایڈریس بار سے خصوصیات کو استعمال کرنے کے لیے شارٹ کٹس۔</translation>
 <translation id="6689342293888598653">سفید پس منظر کا رنگ</translation>
 <translation id="6689685206615181381">صرف پوشیدگی وضع دستیاب ہے</translation>
+<translation id="6705491067826837934">آپ کے کنٹرولز، جہاں آپ کو ان کی ضرورت ہے</translation>
 <translation id="6708501134077648845">پاس ورڈ کے اختیارات</translation>
 <translation id="6709964700841491574">لاک ڈاؤن وضع</translation>
 <translation id="6710079714193676716">آپ کی تنظیم کے زیر انتظام۔ ہو سکتا ہے کہ کچھ خصوصیات دستیاب نہ ہوں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -1719,6 +1723,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6903282483217634857">دائیں منتقل کریں</translation>
 <translation id="6903907808598579934">مطابقت پذیری آن کریں</translation>
 <translation id="6906448540340261898">‏یقینی بنائیں کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں</translation>
+<translation id="6906978870282539723">اپنے ٹیبز اور ٹاسکس میں مدد حاصل کریں</translation>
 <translation id="6908734251759299256">اپنے براؤزر کو اپ ڈیٹ کریں</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />۔ صرف اس آلے پر۔</translation>
 <translation id="6914583639806229067">وہ تصویر تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
@@ -2079,6 +2084,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8182037667962849780">{count,plural, =1{{website_1} کیلئے}=2{{website_1}، {website_2} کیلئے}=3{{website_1}، {website_2} اور 1 مزید کیلئے}other{{website_1}، {website_2} اور {more_count} مزید کیلئے}}</translation>
 <translation id="8184895727539791845">‏‫Gemini کو اپنا کیمرا استعمال کرنے کی اجازت دینے کے لیے، iOS کی ترتیبات میں کیمرا آن کریں</translation>
 <translation id="8185076488803799132">ایکسپورٹ کریں</translation>
+<translation id="8187200657863701733">‏موجودہ Chrome لیول</translation>
 <translation id="8189615296021678665">"محفوظ کریں" پر تھپتھپائیں تاکہ اگلی بار سائن ان کرتے وقت آپ کو آسانی سے یہ پاس ورڈ دستیاب ہو۔</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">پاس ورڈ شامل کریں</translation>
@@ -2122,6 +2128,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8325455175867928593">"آپ کی دلچسپیوں پر مبنی جائزے" کو چھپائیں</translation>
 <translation id="833647236762414178">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کے لیے اپنے پاس ورڈز اور پاس کیز بنائیں، محفوظ کریں اور ان کا نظم کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
+<translation id="8345328955902001853">{count,plural, =1{لیول میں اضافہ کے لیے 1 مزید ٹاسک مکمل کریں}other{لیول میں اضافہ کے لیے {count} مزید ٹاسکس مکمل کریں}}</translation>
 <translation id="8348530355586151720">تین نقطے والے مینیو پر تھپتھپائیں</translation>
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8361189290032177785">{count,plural, =1{‫{count} بُک مارک کو درآمد کیا گیا}other{‫{count} بُک مارکس کو درآمد کیا گیا}}</translation>

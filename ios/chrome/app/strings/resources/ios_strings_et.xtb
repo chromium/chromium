@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Esimesele vahelehele liikumine</translation>
 <translation id="2499505845365628575">Kogu oma sirvimisajaloo leiate, kui vajutate nuppu <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Teil on <ph name="NUMBER_OF_PASSWORDS" /> ohustatud parooli, mis võivad teie turvalisuse ohtu seada.</translation>
+<translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. tase</translation>
 <translation id="2513103768503127042">Siit leiate oma vahelegrupid</translation>
 <translation id="251837347827266434">Teid logitakse välja, vahelehed suletakse ja sirvimisandmed kustutatakse</translation>
 <translation id="2520787026086861736">Väljalülitamiseks avage <ph name="BEGIN_LINK" />Automaattäide ja paroolid<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="372676576864368480">Numbritega <ph name="LAST_DIGITS" /> lõppeva kaardinumbri automaatne sisestamine</translation>
 <translation id="3738428049780661523">Loodi <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kaamera album</translation>
+<translation id="3743545564993953213">See sait üritab avada rakendust „Shortcuts“.</translation>
 <translation id="3746269120925354434">Google Walletisse salvestatud teave</translation>
 <translation id="3750225824417196283">Uue inkognito vahelehe leht</translation>
 <translation id="3751873026576444885">Lõpetage Google Lensiga ekraanil kuvatu otsimine</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4840495572919996524">Teie järjehoidjaid, ajalugu, paroole ja muud sisu ei sünkroonita enam teie Google'i kontoga.</translation>
 <translation id="484280513275854557">Teid logiti välja; sirvimisandmed kustutati</translation>
 <translation id="484462545196658690">Automaatne</translation>
+<translation id="4846662396507502151">Uus tööriistariba aitab kiiremini sirvida.</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4854068532375923088">Geminile kaameraloa andmine</translation>
 <translation id="4860895144060829044">Helista</translation>
@@ -1427,6 +1430,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5988097621740394599">Näete vahelehtedel hinnalangusi.</translation>
 <translation id="5988851877894965432">Avage URL-id Chrome'is</translation>
 <translation id="599343768974649785">Kuvatav tekst</translation>
+<translation id="6004988584831654445">Valmis! Saate märguandeid uute ülesannete saabumise kohta.</translation>
 <translation id="6006672969046233841">Uus vaheleht</translation>
 <translation id="6011308810877101166">Otsingusoovituste täiustamine</translation>
 <translation id="6012140227487808125">Krüpteerimine …</translation>
@@ -1658,6 +1662,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6685259053455152195">Otseteed kiirelt seadete muutmiseks ja funktsioonide kasutamiseks aadressiribalt.</translation>
 <translation id="6689342293888598653">Valge taustavärv</translation>
 <translation id="6689685206615181381">Saadaval on ainult inkognito režiim</translation>
+<translation id="6705491067826837934">Kõik vajalikud nupud seal, kus vaja</translation>
 <translation id="6708501134077648845">Paroolivalikud</translation>
 <translation id="6709964700841491574">Lukustamisrežiim</translation>
 <translation id="6710079714193676716">Haldab teie organisatsioon. Mõni funktsioon ei pruugi olla saadaval. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -1718,6 +1723,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6903282483217634857">Liiguta paremale</translation>
 <translation id="6903907808598579934">Lülita sünkroonimine sisse</translation>
 <translation id="6906448540340261898">Veenduge, et saaksite alati kasutada oma Google'i kontol paroole</translation>
+<translation id="6906978870282539723">Aitab vahelehtede ja ülesannetega.</translation>
 <translation id="6908734251759299256">Värskendage oma brauserit</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Ainult selles seadmes.</translation>
 <translation id="6914583639806229067">Otsi kopeeritud pilti</translation>
@@ -2078,6 +2084,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8182037667962849780">{count,plural, =1{Saidi {website_1} jaoks}=2{Saitide {website_1} ja {website_2} jaoks}=3{Saitide {website_1} ja {website_2} ning veel ühe jaoks}other{Saitide {website_1} ja {website_2} ning veel {more_count} jaoks}}</translation>
 <translation id="8184895727539791845">Et lubada Geminil teie kaamerat kasutada, lülitage iOS-i seadetes sisse kaameraluba.</translation>
 <translation id="8185076488803799132">Impordi</translation>
+<translation id="8187200657863701733">Praegune Chrome'i tase</translation>
 <translation id="8189615296021678665">Puudutage valikut „Salvesta“, et järgmisel sisselogimiskorral sellele paroolile hõlpsasti juurde pääseda.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Teie seadmed<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parooli lisamine</translation>
@@ -2121,6 +2128,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8325455175867928593">Valiku „Teie huvidel põhinevad arvustused” peitmine</translation>
 <translation id="833647236762414178">Looge, salvestage ja hallake oma paroole ning pääsuvõtmeid, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Taseme tõstmiseks täitke veel 1 ülesanne.}other{Taseme tõstmiseks täitke veel {count} ülesannet.}}</translation>
 <translation id="8348530355586151720">Puudutage kolme punktiga menüüd</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} järjehoidja imporditi}other{{count} järjehoidjat imporditi}}</translation>

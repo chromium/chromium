@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Mga tip sa Chrome</translation>
 <translation id="1242008676835033345">Naka-embed sa <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">I-tap ang Mga App &gt; Mga default na app</translation>
+<translation id="1264694639515903274">Puwede mo nang i-customize ang iyong homepage</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1289742167380433257">Para makatipid ka ng data, na-optimize ng Google ang mga larawan ng page na ito.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1919950603503897840">Pumili ng mga contact</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">I-customize ang aking homepage</translation>
 <translation id="1939059826036755332">Awtomatikong picture-in-picture</translation>
 <translation id="1954597385941141174">Puwedeng hilingin ng mga site na kumonekta sa mga USB device</translation>
 <translation id="1979673356880165407">Mas palakihin o mas paliitin ang text at mga larawan para sa lahat ng site na binibisita mo</translation>
@@ -285,6 +287,7 @@
 <translation id="3843916486309149084">Magba-block ulit ang Chrome ng cookies ngayong araw</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3859306556332390985">Maghanap nang pasulong</translation>
+<translation id="3870711497942672548">Gawing iyo ang Chrome gamit ang mga custom na kulay at larawan para sa iyong homepage</translation>
 <translation id="389521680295183045">Puwedeng hilingin ng mga site na malaman kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="3895926599014793903">Puwersahang i-enable ang zoom</translation>
 <translation id="3903738175795615004">Mag-drag mula sa itaas o pindutin ang Esc key para lumabas sa full screen.</translation>
@@ -329,6 +332,7 @@
 <translation id="42981349822642051">Palawakin</translation>
 <translation id="4310738531374808763">I-customize ang iyong homepage</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Mag-e-expire bukas}one{Mag-e-expire sa loob ng # araw}other{Mag-e-expire sa loob ng # na araw}}</translation>
+<translation id="4336371609622603229">Gawing pansarili mo ang Chrome sa pamamagitan ng pagpili ng custom na tema</translation>
 <translation id="4338831206024587507">Lahat ng site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Huwag payagan ang mga site na magpadala ng mga notification</translation>
 <translation id="4341577178275615435">Para i-on o i-off ang caret browsing, gamitin ang shortcut na F7</translation>
@@ -750,7 +754,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="8737426583868847403">Lalabas dito ang mga site kung para saan ka nag-save ng custom na level ng pag-zoom</translation>
 <translation id="8748714929822124637">Huwag payagan ang mga site na i-access ang iba pang device sa iyong lokal na network</translation>
 <translation id="8751914237388039244">Pumili ng larawan</translation>
-<translation id="8775741625735357092">Puwede mong i-on ang bookmarks bar sa Mga Setting &gt; Hitsura</translation>
 <translation id="8800034312320686233">Hindi gumagana ang site?</translation>
 <translation id="8801436777607969138">I-block ang JavaScript para sa isang partikular na site.</translation>
 <translation id="8801657293260363985">V8 ang JavaScript at WebAssembly engine ng Chrome na ginagamit para pahusayin ang performance ng site</translation>

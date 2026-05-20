@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Tap Apps  &gt; Default apps</translation>
+<translation id="1264694639515903274">Now you can customise your homepage</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1289742167380433257">To save you data, this page's images have been optimised by Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1919950603503897840">Select contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Customise my homepage</translation>
 <translation id="1939059826036755332">Automatic picture-in-picture</translation>
 <translation id="1954597385941141174">Sites can ask to connect to USB devices</translation>
 <translation id="1979673356880165407">Make text and images larger or smaller for all sites that you visit</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Expand</translation>
 <translation id="4310738531374808763">Customise your homepage</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expires tomorrow}other{Expires in # days}}</translation>
+<translation id="4336371609622603229">Make Chrome your own by choosing a custom theme</translation>
 <translation id="4338831206024587507">All sites under <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Don't allow sites to send notifications</translation>
 <translation id="4341577178275615435">To turn caret browsing on or off, use the shortcut F7</translation>
@@ -751,7 +754,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="8737426583868847403">Sites that you save a custom zoom level for will appear here</translation>
 <translation id="8748714929822124637">Don't allow sites to access other devices on your local network</translation>
 <translation id="8751914237388039244">Select an image</translation>
-<translation id="8775741625735357092">You can turn on the bookmarks bar in Settings &gt; Appearance</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>
 <translation id="8801657293260363985">V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance</translation>

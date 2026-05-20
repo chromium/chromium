@@ -4499,6 +4499,13 @@ Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3928726028264020458">Activer les rapports sur les données VPD de l'appareil</translation>
 <translation id="3935592079035695061">Millisecondes depuis minuit.</translation>
 <translation id="3937800910397007337">Forcer la priorité au premier plan pour tous les onglets</translation>
+<translation id="3938885528378923718">Configurez la manière dont <ph name="PRODUCT_NAME" /> télécharge le modèle de fondation de la GenAI et l'utilise pour l'inférence en local.
+
+Si cette règle est définie sur "Autorisé" (0) ou qu'elle n'est pas configurée, le modèle est téléchargé automatiquement et est utilisé pour l'inférence.
+
+Si elle est définie sur "Désactivé" (1), le modèle n'est pas téléchargé, et le modèle existant (s'il a déjà été téléchargé) est supprimé.
+
+Sur les plates-formes de bureau, le téléchargement du modèle peut également être désactivé en définissant <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> sur "false".</translation>
 <translation id="3941289958028934630">Désactiver la lecture vocale sur l'écran de connexion</translation>
 <translation id="3943930334592166130">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client quand la règle <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.
@@ -8305,13 +8312,6 @@ Si cette règle n'est pas configurée, son comportement est déterminé par la r
 
 Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Désactiver les extensions dont la publication est annulée</translation>
-<translation id="6382287177674997281">Cette règle permet aux utilisateurs de lancer n'importe quel type de mise à jour du micrologiciel.
-
-      Si cette règle est activée, les utilisateurs, comme le propriétaire de l'appareil, peuvent lancer des mises à jour du micrologiciel.
-
-      Si cette règle est désactivée ou si elle n'est pas configurée, aucun utilisateur ne peut appliquer de mises à jour du micrologiciel.
-
-      Cette règle s'applique aux mises à jour du micrologiciel des périphériques externes et des composants internes pour les appareils <ph name="PRODUCT_OS_FLEX_NAME" />. Cette règle n'a pas d'incidence sur les mises à jour du micrologiciel des composants internes pour les appareils <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6383774771168138899">Configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Activer l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
 <translation id="6389240462871677239">Autoriser les origines d'applications Web isolées à utiliser Controlled Frame</translation>

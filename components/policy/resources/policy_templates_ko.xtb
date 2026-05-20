@@ -4556,6 +4556,13 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="3928726028264020458">기기 VPD 정보 보고 사용 설정</translation>
 <translation id="3935592079035695061">자정부터 경과된 밀리초입니다.</translation>
 <translation id="3937800910397007337">모든 탭에 포그라운드 우선순위 강제 적용</translation>
+<translation id="3938885528378923718"><ph name="PRODUCT_NAME" />에서 기본적인 생성형 AI 모델을 다운로드하고 로컬에서 추론에 사용하는 방법을 구성합니다.
+
+정책을 허용됨(0)으로 설정하거나 설정하지 않으면 모델이 자동으로 다운로드되어 추론에 사용됩니다.
+
+정책을 사용 안 함(1)으로 설정하면 모델이 다운로드되지 않으며 기존 모델(이미 다운로드된 경우)이 삭제됩니다.
+
+데스크톱 플랫폼의 경우 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 정책을 false로 설정하여 모델 다운로드를 사용 중지할 수도 있습니다.</translation>
 <translation id="3941289958028934630">로그인 화면에서 음성 피드백 사용 중지</translation>
 <translation id="3943930334592166130">이 정책은 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />와 일치하는 인증서가 여러 개일 때 사용자에게 클라이언트 인증서를 선택하라는 메시지를 표시할지 제어합니다.
       정책을 사용으로 설정하면 자동 선택 정책과 일치하는 인증서가 여러 개 있을 때마다 사용자에게 클라이언트 인증서를 선택하라는 메시지가 표시됩니다.
@@ -8429,13 +8436,6 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 
 생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="6382209369210116232">게시가 취소된 확장 프로그램 사용 중지</translation>
-<translation id="6382287177674997281">이 정책을 사용하면 사용자가 모든 종류의 펌웨어 업데이트를 시작할 수 있습니다.
-
-      정책을 '사용'으로 설정하면 기기 소유자와 같은 사용자가 펌웨어 업데이트를 시작할 수 있습니다.
-
-      정책을 '사용 안함'으로 설정하거나 설정하지 않으면 모든 사용자가 펌웨어 업데이트를 적용할 수 없습니다.
-
-      이 정책은 외부 주변기기 펌웨어 업데이트의 펌웨어 및 <ph name="PRODUCT_OS_FLEX_NAME" /> 기기의 내부 구성요소 펌웨어 업데이트에 적용됩니다. <ph name="PRODUCT_OS_NAME" /> 기기의 내부 구성요소 펌웨어 업데이트는 이 정책의 영향을 받지 않습니다.</translation>
 <translation id="6383774771168138899"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> 및 <ph name="MICROSOFT_365_NAME" />의 <ph name="CLOUD_UPLOAD_NAME" /> 흐름 구성</translation>
 <translation id="6384542789059421431">브라우저 측면 패널에 기본 검색엔진 결과 페이지 표시를 사용 설정합니다.</translation>
 <translation id="6389240462871677239">분리형 웹 앱 출처에서 제어된 프레임을 사용하도록 허용</translation>

@@ -775,7 +775,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521933835545997395">Android फोनशी कनेक्ट केले आहे</translation>
 <translation id="1523279371236772909">गेल्या महिन्यामध्ये पाहिला होता</translation>
-<translation id="1523486680453956384">टास्क पहा</translation>
 <translation id="1523978563989812243">टेक्‍स्‍ट टू स्‍पीच इंजिने</translation>
 <translation id="1524563461097350801">नाही, नको</translation>
 <translation id="1525740877599838384">स्थान निर्धारित करण्‍यासाठी फक्त वाय-फाय वापरा</translation>
@@ -1555,6 +1554,7 @@
 <translation id="2044750031738659219">{0,plural, =1{अतिथी विंडो बंद करा}other{अतिथी (# विंडो) बंद करा}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045211794962848221">तुम्हाला हा विशिष्ट मेसेज पुन्हा दिसणार नाही</translation>
+<translation id="2045540927991079503">म्हणून लिंक उघडा</translation>
 <translation id="2045838962742066664">शॉर्टहँड टायपिंग</translation>
 <translation id="204622017488417136">तुमचे डिव्हाइस Chrome च्या मागील इंस्टॉल केलेल्या आवृत्तीवर परत जाईल. सर्व वापरकर्ता खाती आणि स्थानिक डेटा काढला जाईल. हे पूर्ववत केले जाऊ शकत नाही.</translation>
 <translation id="2046702855113914483">रामेन</translation>
@@ -1580,6 +1580,7 @@
 <translation id="206308717637808771">तुम्ही सर्व विंडो बंद करता, तेव्हा डेटा हटवा. डेटा हा तुम्ही पाहत असलेल्या साइटप्रमाणेच हाताळला जातो</translation>
 <translation id="2066700471214517561">बीमफॉर्मिंग माइक, जेणेकरून Chromebook वापरणाऱ्या व्यक्तीचा आवाज स्पष्ट ऐकू येईल.</translation>
 <translation id="2068581968816126410">सर्व डिव्हाइसवर बुकमार्क वापरा</translation>
+<translation id="2069020119963193894">आणि आकार</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ने <ph name="PRINTER_NAME" /> प्रिंट करणे पूर्ण केले आहे</translation>
 <translation id="2071393345806050157">स्थानिक लॉग फाइल नाही.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशन इंस्टॉल करण्यासाठी क्लिक करा}other{ही एक्स्टेंशन इंस्टॉल करण्यासाठी क्लिक करा}}</translation>
@@ -1713,6 +1714,7 @@
 <translation id="2148892889047469596">टॅब कास्ट करा</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
 <translation id="2150139952286079145">शोध गंतव्ये</translation>
+<translation id="2150168665016482929">लहान करा</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोडायचे ?</translation>
 <translation id="2151576029659734873">चुकीची टॅब अनुक्रमणिका एंटर केली.</translation>
 <translation id="2153809900849531051">नेब्युला</translation>
@@ -2154,7 +2156,6 @@
 <translation id="2450849356604136918">कोणतेही सक्रिय व्ह्यू नाहीत</translation>
 <translation id="2451298179137331965">२x</translation>
 <translation id="2453045048779611513">तुम्ही काय सेव्ह करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत</translation>
-<translation id="245307875355990880">टास्क पुन्‍हा सुरू करा</translation>
 <translation id="245322989586167203">तुमचे नेटवर्क सेट करणे यासारख्या डेटा ट्रान्सफर वैशिष्ट्यांसाठी साइट सामान्यपणे सिरीअल पोर्टशी कनेक्ट करतात</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2454206500483040640">विभागणी केलेल्या</translation>
@@ -4127,6 +4128,7 @@
 <translation id="3796215473395753611">alt + up arrow</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, आवाजाचे पूर्वावलोकन करण्यासाठी राइट अ‍ॅरो की वापरा</translation>
 <translation id="3796648294839530037">आवडीचे नेटवर्क:</translation>
+<translation id="3797330664967181051">विभाजित दृश्य</translation>
 <translation id="3797739167230984533">तुमच्या संस्थेद्वारे तुमचे <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> व्यवस्थापित केले आहे</translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” साठी <ph name="SEARCH_ENGINE" /> &amp;शोधा</translation>
 <translation id="3798026281364973895">इंस्टंट हॉटस्पॉट बंद करा</translation>
@@ -4483,6 +4485,7 @@
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फोल्डर</translation>
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
+<translation id="4028830198155575078">आणि हलवा</translation>
 <translation id="4029024445166427442">launcher + shift + backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेजवरून मागे जा</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
@@ -4878,7 +4881,6 @@
 <translation id="4314497418046265427">तुम्ही तुमचा फोन तुमच्या <ph name="DEVICE_TYPE" /> शी कनेक्ट करताना आणखी उत्पादनक्षम व्हा</translation>
 <translation id="4314561087119792062">नवीन अ‍ॅक्सेस पॉइंट नाव जोडा</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापित करा</translation>
-<translation id="4314821834464582073">टास्क थांबवा</translation>
 <translation id="4316850752623536204">डेव्हलपर वेबसाइट</translation>
 <translation id="4317733381297736564">अ‍ॅपमधील खरेदी</translation>
 <translation id="4317820549299924617">पडताळणी यशस्वी झाली नाही</translation>
@@ -6521,6 +6523,7 @@
 <translation id="5473099001878321374">पुढे सुरू ठेवून, तुम्ही सहमती दर्शवता, की हे डिव्हाइस कदाचित मोबाइल डेटा वापरून Google, तुमच्या लहान मुलाचा वाहक आणि या डिव्हाइसचा उत्पादक यांच्याकडून अपडेट व अ‍ॅप्स आपोआप डाउनलोड आणि इंस्टॉलदेखील करू शकेल. यांपैकी काही अ‍ॅप्स अ‍ॅपमधील खरेदी करण्याचा पर्याय देऊ शकतात.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{पिन हा किमान एका वर्णाचा असणे आवश्यक आहे}other{पिन हा किमान # वर्णांचा असणे आवश्यक आहे}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्क लागू शकते).</translation>
+<translation id="547615291475756075">मोठी करा</translation>
 <translation id="5476957746413745956">प्रत्येक दिशेसाठी वेग स्वतंत्रपणे अ‍ॅडजस्ट करा</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> हॉटस्पॉट कॉन्फिगर करा</translation>
 <translation id="5481273127572794904">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती नाही</translation>
@@ -7755,6 +7758,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
 <translation id="6350745006329795504">तुमची डिव्हाइस व्यवस्थापित करा</translation>
 <translation id="6350821834561350243">समस्या रीप्रोड्यूस करण्यासाठी समस्येचे स्पष्ट वर्णन आणि पायऱ्या द्या (शक्य असल्यास)</translation>
+<translation id="635100112331897007">सर्व Chrome धोरणे पहा</translation>
 <translation id="6351178441572658285">ॲपच्या भाषा</translation>
 <translation id="6352992678231622317">टॅब खाली हलवला आहे</translation>
 <translation id="6355632359041940003">टास्कचे नियंत्रण मिळवा</translation>
@@ -8833,6 +8837,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7098389117866926363">USB-C डिव्‍हाइस (मागील बाजूचे डावे पोर्ट)</translation>
 <translation id="7098447629416471489">इतर सेव्ह शोध इंजीन येथे दिसून येतील</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
+<translation id="7099027177878709408">आणि बंद करा</translation>
 <translation id="7099337801055912064">मोठ्या PPD लोड करू शकत नाही. कमाल आकार 250kB आहे.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="7100379916748214860">Chrome ने आताच धोकादायक फाइल या डाउनलोड करण्यापासून ब्लॉक केल्या आहेत. वर्धित संरक्षणासह आणखी मजबूत सुरक्षा मिळवा.</translation>
@@ -9873,6 +9878,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7817361223956157679">ऑन-स्क्रीन कीबोर्ड सध्या Linux ॲप्समध्ये काम करत नाही</translation>
 <translation id="7818135753970109980">नवीन थीम जोडली (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">एक्स्टेंशन ही Chrome साठी अ‍ॅड-ऑन आहेत, जी तुम्हाला आणखी बरेच काही करण्यात मदत करू शकतात</translation>
+<translation id="7819968103441522596">आणि रिस्टोअर करा</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> हटवा, जेणेकरून हे डिव्हाइस वापरणारे इतर लोक तुमचे पासवर्ड पाहू शकणार नाहीत</translation>
 <translation id="7820561748632634942">अतिरिक्त स्विच असाइन करायचे आहेत का?</translation>
 <translation id="782057141565633384">व्हिडिओ पत्ता कॉपी करा</translation>

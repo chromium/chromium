@@ -254,6 +254,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1380591466760231819">Brieffaltung</translation>
 <translation id="138218114945450791">Hellblau</translation>
 <translation id="1382194467192730611">USB-Gerät wurde von deinem Administrator zugelassen</translation>
+<translation id="1383876407941801731">Suchen</translation>
 <translation id="1384725838384960382">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen</translation>
 <translation id="1386623374109090026">Anmerkungen</translation>
 <translation id="138810468159004008">Beim Besuch der Website erlauben</translation>
@@ -1818,6 +1819,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="380865868633614173">Kartendaten werden gespeichert</translation>
 <translation id="3810770279996899697">Der Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
 <translation id="3810973564298564668">Verwalten</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Mit diesem wichtigen Update wird die Leistung von Android-Apps unter ChromeOS verbessert.</translation>
 <translation id="3814865536373139791">Verwaltung von Richtlinien in deiner Organisation vereinfachen</translation>
 <translation id="3815434930383843058">8 × 12 Zoll</translation>
@@ -2397,6 +2399,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4736934858538408121">Virtuelle Karte</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4738601419177586157">Suchvorschlag: <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, ausgewählter Tab, <ph name="INDEX" /> von <ph name="TOTAL" />, mit dem Links- oder Rechtspfeil zwischen Tabs wechseln</translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
 <translation id="474270528725216349">Von mindestens 1 Website auf synchronisierten Geräten</translation>
 <translation id="4743275772928623722">Dein System wurde aktualisiert, aber einige deiner Apps und Dateien konnten nicht wiederhergestellt werden. Deine Apps werden automatisch wieder heruntergeladen.</translation>
@@ -2464,6 +2467,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4832961164064927107">Barbecue und Grillen</translation>
 <translation id="4835568975547260025">Chrome teilt relevante geöffnete Tabs standardmäßig, damit du besser auf dich zugeschnittene Antworten auf deine Fragen erhältst.</translation>
 <translation id="4840250757394056958">Chrome-Verlauf ansehen</translation>
+<translation id="4842365697443353018">Formular löschen, um die Option „Später bezahlen“ zu verwenden</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrollen und Zoomen auf geteilten Tabs</translation>
 <translation id="484671803914931257">Erhalte Rabatte bei <ph name="MERCHANT_NAME" /> und weiteren Händlern</translation>
