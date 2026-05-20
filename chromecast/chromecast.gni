@@ -60,9 +60,6 @@ declare_args() {
   # TODO(ziyangch): make the parsing logic have ability to quote/escape characters.
   default_command_line_flags = []
 
-  # Set to true to disable secure flac/opus support in EME, when using
-  # cast CMA media backend and supporting Widevine or Playready.
-  disable_secure_flac_and_opus_decoding = false
 
 
   # Set to true to enable external Mojo services to communicate with services

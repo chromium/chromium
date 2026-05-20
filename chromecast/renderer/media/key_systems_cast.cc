@@ -42,9 +42,7 @@ SupportedCodecs GetCastEmeSupportedCodecs() {
                            ::media::EME_CODEC_VP9_PROFILE2 |
                            ::media::EME_CODEC_VP8;
 
-#if !BUILDFLAG(DISABLE_SECURE_FLAC_OPUS_DECODING)
   codecs |= ::media::EME_CODEC_FLAC | ::media::EME_CODEC_OPUS;
-#endif  // BUILDFLAG(DISABLE_SECURE_FLAC_OPUS_DECODING)
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   codecs |= ::media::EME_CODEC_HEVC_PROFILE_MAIN;
