@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -12,6 +14,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -25,6 +28,7 @@
 #include "ui/views/accessibility/tree/view_accessibility_ax_tree_source.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_observer.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -80,6 +84,15 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   void OnChildManagerAdded(WidgetAXManager& child_manager);
   void OnChildManagerRemoved(WidgetAXManager& child_manager);
+
+  // Hosts this widget's AX tree in `host_view_ax` by wiring this tree's
+  // parent_tree_id to the host view's widget tree and setting the host view's
+  // child tree id to this tree.
+  void HostAXTreeInView(ViewAccessibility& host_view_ax);
+
+  // Keeps the host view's child tree id alive until pending updates/events can
+  // flush, then clears the child-tree hosting relationship.
+  void ScheduleUnhostAXTree();
 
   gfx::NativeViewAccessible GetNativeViewAccessibleForId(ui::AXNodeID id);
 
@@ -150,6 +163,11 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   void SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id);
   void UpdateParentAXTreeIDFromWidget();
 
+  void ClearAXTreeHost();
+  static void UnhostAXTreeAfterFlush(base::WeakPtr<WidgetAXManager> manager,
+                                     ui::AXTreeID child_tree_id,
+                                     uint32_t host_generation);
+
   void StartObservingFocus();
   ui::AXNodeID GetFocusedViewNodeId() const;
 
@@ -164,6 +182,13 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   // The AXTreeID of the parent widget's accessibility tree, if any.
   ui::AXTreeID parent_ax_tree_id_;
+
+  // The view currently hosting this widget's AX tree, if any.
+  ViewTracker ax_tree_host_tracker_;
+
+  // Incremented whenever the hosting relationship changes so a scheduled
+  // unhost task cannot clear a newer hosting relationship.
+  uint32_t ax_tree_host_generation_ = 0;
 
   std::unique_ptr<WidgetViewAXCache> cache_;
 

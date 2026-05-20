@@ -11,6 +11,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +20,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -56,6 +59,13 @@ class WidgetAXManagerTest : public test::WidgetTest {
     view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     view->GetViewAccessibility().SetName("Focusable test view");
     return view;
+  }
+
+  void RunPendingTasks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  private:
@@ -338,6 +348,101 @@ TEST_F(WidgetAXManagerTest, RemovingChildResetsParent) {
   child_widget.reset();
 }
 
+TEST_F(WidgetAXManagerTest, HostAXTreeInViewSetsParentAndChildTreeIds) {
+  View* host_view = AddFocusableView();
+  WidgetAutoclosePtr hosted_widget(CreateTopLevelPlatformWidget());
+  WidgetAXManager* hosted_manager = hosted_widget->ax_manager();
+
+  WidgetAXManagerTestApi host_api(manager());
+  {
+    WidgetAXManagerTestApi hosted_api(hosted_manager);
+
+    hosted_manager->HostAXTreeInView(host_view->GetViewAccessibility());
+
+    EXPECT_EQ(host_api.ax_tree_id(), hosted_api.parent_ax_tree_id());
+    EXPECT_EQ(hosted_api.ax_tree_id(),
+              host_view->GetViewAccessibility().GetChildTreeID());
+  }
+}
+
+TEST_F(WidgetAXManagerTest, HostAXTreeInViewWithSameWidgetClearsHost) {
+  View* host_view = AddFocusableView();
+  WidgetAutoclosePtr hosted_widget(CreateTopLevelPlatformWidget());
+  WidgetAXManager* hosted_manager = hosted_widget->ax_manager();
+  View* hosted_view =
+      hosted_widget->GetRootView()->AddChildView(std::make_unique<View>());
+
+  {
+    WidgetAXManagerTestApi hosted_api(hosted_manager);
+
+    hosted_manager->HostAXTreeInView(host_view->GetViewAccessibility());
+    ASSERT_EQ(hosted_api.ax_tree_id(),
+              host_view->GetViewAccessibility().GetChildTreeID());
+
+    hosted_manager->HostAXTreeInView(hosted_view->GetViewAccessibility());
+
+    EXPECT_EQ(ui::AXTreeIDUnknown(), hosted_api.parent_ax_tree_id());
+    EXPECT_EQ(ui::AXTreeIDUnknown(),
+              host_view->GetViewAccessibility().GetChildTreeID());
+    EXPECT_EQ(ui::AXTreeIDUnknown(),
+              hosted_view->GetViewAccessibility().GetChildTreeID());
+  }
+}
+
+TEST_F(WidgetAXManagerTest, ScheduleUnhostAXTreeClearsAfterPostedTask) {
+  View* host_view = AddFocusableView();
+  WidgetAutoclosePtr hosted_widget(CreateTopLevelPlatformWidget());
+  WidgetAXManager* hosted_manager = hosted_widget->ax_manager();
+
+  WidgetAXManagerTestApi host_api(manager());
+  {
+    WidgetAXManagerTestApi hosted_api(hosted_manager);
+
+    hosted_manager->HostAXTreeInView(host_view->GetViewAccessibility());
+    hosted_manager->ScheduleUnhostAXTree();
+
+    EXPECT_EQ(host_api.ax_tree_id(), hosted_api.parent_ax_tree_id());
+    EXPECT_EQ(hosted_api.ax_tree_id(),
+              host_view->GetViewAccessibility().GetChildTreeID());
+
+    RunPendingTasks();
+
+    EXPECT_EQ(ui::AXTreeIDUnknown(), hosted_api.parent_ax_tree_id());
+    EXPECT_EQ(ui::AXTreeIDUnknown(),
+              host_view->GetViewAccessibility().GetChildTreeID());
+  }
+}
+
+TEST_F(WidgetAXManagerTest, ScheduleUnhostAXTreeDoesNotClearNewHost) {
+  View* old_host_view = AddFocusableView();
+  View* new_host_view = AddFocusableView();
+  WidgetAutoclosePtr hosted_widget(CreateTopLevelPlatformWidget());
+  WidgetAXManager* hosted_manager = hosted_widget->ax_manager();
+
+  WidgetAXManagerTestApi host_api(manager());
+  {
+    WidgetAXManagerTestApi hosted_api(hosted_manager);
+
+    hosted_manager->HostAXTreeInView(old_host_view->GetViewAccessibility());
+    hosted_manager->ScheduleUnhostAXTree();
+    hosted_manager->HostAXTreeInView(new_host_view->GetViewAccessibility());
+
+    EXPECT_EQ(ui::AXTreeIDUnknown(),
+              old_host_view->GetViewAccessibility().GetChildTreeID());
+    EXPECT_EQ(host_api.ax_tree_id(), hosted_api.parent_ax_tree_id());
+    EXPECT_EQ(hosted_api.ax_tree_id(),
+              new_host_view->GetViewAccessibility().GetChildTreeID());
+
+    RunPendingTasks();
+
+    EXPECT_EQ(ui::AXTreeIDUnknown(),
+              old_host_view->GetViewAccessibility().GetChildTreeID());
+    EXPECT_EQ(host_api.ax_tree_id(), hosted_api.parent_ax_tree_id());
+    EXPECT_EQ(hosted_api.ax_tree_id(),
+              new_host_view->GetViewAccessibility().GetChildTreeID());
+  }
+}
+
 class WidgetAXManagerOffTest : public ViewsTestBase {
  protected:
   WidgetAXManagerOffTest() {
@@ -504,7 +609,7 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
 
   // First batch.
   manager()->OnDataChanged(v->GetViewAccessibility());
-  task_environment()->RunUntilIdle();
+  RunPendingTasks();
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());

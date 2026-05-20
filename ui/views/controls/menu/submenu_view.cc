@@ -25,6 +25,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -64,6 +65,7 @@ SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   // Menus in Chrome are always traversed in a vertical direction.
   GetViewAccessibility().SetIsVertical(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
+  GetViewAccessibility().SetIsIgnored(true);
 }
 
 SubmenuView::~SubmenuView() {
@@ -521,6 +523,14 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
     }
   }
 
+  // Nested submenus live in their own widget trees. Host that tree on the
+  // owning menu item so generated accessibility events can walk to the root.
+  if (WidgetAXManager* host_ax_manager = host_->ax_manager()) {
+    host_ax_manager->HostAXTreeInView(GetMenuItem()->GetViewAccessibility());
+  }
+
+  GetViewAccessibility().SetIsIgnored(false);
+
   // Only fire kMenuStart when a top level menu is being shown to notify that
   // menu interaction is about to begin. Note that the ScrollViewContainer
   // is not exposed as a kMenu, but as a kMenuBar for most platforms and a
@@ -580,7 +590,20 @@ void SubmenuView::Hide() {
     }
     // Fire these kMenuPopupEnd for each menu/submenu that closes/hides.
     if (host_->IsVisible()) {
-      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd, true);
+      if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+        // ViewsAX generates the close event from the ignored state transition,
+        // so serialize that state while the menu host can still fire events.
+        GetViewAccessibility().SetIsIgnored(true);
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd,
+                                           true);
+      } else {
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd,
+                                           true);
+        GetViewAccessibility().SetIsIgnored(true);
+      }
+      if (WidgetAXManager* host_ax_manager = host_->ax_manager()) {
+        host_ax_manager->ScheduleUnhostAXTree();
+      }
     }
 
     host_->HideMenuHost();
