@@ -4,14 +4,17 @@
 
 #include "chrome/browser/optimization_guide/private_ai_model_execution_fetcher.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/testing/mock_private_ai_client.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +31,8 @@ class PrivateAiModelExecutionFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   private_ai::MockPrivateAiClient mock_private_ai_client_;
   std::unique_ptr<PrivateAiModelExecutionFetcher> fetcher_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 TEST_F(PrivateAiModelExecutionFetcherTest,
@@ -147,6 +152,41 @@ TEST_F(PrivateAiModelExecutionFetcherTest,
   EXPECT_EQ(zss_response->suggestions(0).label(), "Hello");
   EXPECT_EQ(zss_response->suggestions(1).label(), "Привіт");
   EXPECT_EQ(zss_response->suggestions(2).label(), "你好");
+}
+
+TEST_F(PrivateAiModelExecutionFetcherTest, PopulatesPrivateExecuteRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kPrivateExecuteRequest);
+
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"123", "456"}, "");
+
+  proto::ZeroStateSuggestionsRequest request;
+
+  EXPECT_CALL(
+      mock_private_ai_client_,
+      SendPaicRequest(
+          testing::Eq(
+              private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](private_ai::proto::FeatureName feature_name,
+             const private_ai::proto::PaicMessage& request,
+             private_ai::Client::OnPaicMessageRequestCompletedCallback callback,
+             const private_ai::Client::RequestOptions& options) {
+            EXPECT_TRUE(request.has_private_execute_request_ext());
+            auto private_execute_request =
+                request.private_execute_request_ext();
+            EXPECT_EQ(private_execute_request.variations_size(), 2);
+            EXPECT_EQ(private_execute_request.variations(0), 123);
+            EXPECT_EQ(private_execute_request.variations(1), 456);
+            std::move(callback).Run(base::ok(private_ai::proto::PaicMessage()));
+          });
+
+  fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
+                         /*identity_manager=*/nullptr, request,
+                         /*timeout=*/std::nullopt, base::DoNothing());
 }
 
 }  // namespace optimization_guide

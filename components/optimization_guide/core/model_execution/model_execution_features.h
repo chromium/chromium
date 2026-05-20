@@ -40,6 +40,9 @@ BASE_DECLARE_FEATURE(kFindsGraduated);
 // Feature for disabling the model execution user account capability check.
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 
+// Feature flag to populate PrivateExecuteRequest instead of ExecuteRequest.
+BASE_DECLARE_FEATURE(kPrivateExecuteRequest);
+
 // Checks if the provided `feature` is graduated from experimental AI settings.
 bool IsGraduatedFeature(UserVisibleFeatureKey feature);
 

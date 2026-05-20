@@ -47,6 +47,8 @@ BASE_FEATURE(kFindsGraduated, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kModelExecutionCapabilityDisable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateExecuteRequest, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
   bool is_graduated = false;
   switch (feature) {

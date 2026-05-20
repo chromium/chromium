@@ -68,6 +68,8 @@ message PaicMessage {
   // fields instead which have the same serialized format.
   optimization_guide.proto.ExecuteRequest execute_request_ext = 530000002;
   optimization_guide.proto.ExecuteResponse execute_response_ext = 530000003;
+  optimization_guide.proto.PrivateExecuteRequest private_execute_request_ext =
+      530000016;
 }
 
 message GenerateContentRequest {

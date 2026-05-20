@@ -23,6 +23,14 @@ message ExecuteRequest {
   optional Any request_metadata = 2;
 }
 
+// PrivateExecuteRequest is the request for PaicMessage.
+message PrivateExecuteRequest {
+  // The execute request.
+  optional ExecuteRequest request = 1;
+  // The list of variations.
+  repeated int32 variations = 2;
+}
+
 message ExecuteResponse {
   reserved 3;
 

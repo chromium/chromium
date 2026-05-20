@@ -104,6 +104,7 @@ source_set("impl") {
       "//components/private_ai",
       "//components/private_ai:proto",
       "//components/private_ai/phosphor",
+      "//components/variations",
     ]
   }
 }
