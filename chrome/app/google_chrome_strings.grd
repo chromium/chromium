@@ -3282,6 +3282,11 @@ If this page isn’t working as expected, try allowing optimization.
       <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BUTTON_LABEL" desc="Label of the sign-in button in the send-tab-to-self sign-in promo bubble.">
         Sign in to Chrome
       </message>
+
+       <!-- Contextual Tasks -->
+      <message name="IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP_V2" desc="The tooltip text used for contextual task toolbar button">
+        Reopen Google Search AI Mode
+      </message>
     </messages>
   </release>
 </grit>

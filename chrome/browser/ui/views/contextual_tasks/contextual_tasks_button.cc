@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
@@ -181,7 +183,15 @@ ContextualTasksButton::ContextualTasksButton(
       browser_window_interface_(browser_window_interface) {
   SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
   const std::u16string button_tooltip =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      (contextual_tasks::kShowEntryPoint.Get() ==
+       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded)
+          ? l10n_util::GetStringUTF16(
+                IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP_V2)
+          : l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
+#else
       l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
+#endif
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
 
