@@ -11,6 +11,11 @@
   (deny iokit-get-properties process-info* nvram*)
 )
 
+(if (not (param-true? enable-distributed-notifications))
+  (deny distributed-notification-post (with no-log))
+  (deny distributed-notification-post)
+)
+
 ; Allow cf prefs to work.
 (allow user-preference-read)
 
@@ -75,9 +80,14 @@
 ; mach IPC
 (allow mach-lookup
   (global-name "com.apple.cvmsServ")  ; https://crbug.com/850021
-  (global-name "com.apple.distributed_notifications@Uv3")  ; https://crbug.com/792257
   (global-name "com.apple.lsd.mapdb")
   (global-name "com.apple.system.notification_center")  ; https://crbug.com/792217
+)
+
+(if (param-true? enable-distributed-notifications)
+  (allow mach-lookup
+    (global-name "com.apple.distributed_notifications@Uv3")
+  )
 )
 
 ; IOKit properties.

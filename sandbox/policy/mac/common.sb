@@ -25,6 +25,10 @@
 (define darwin-user-dir "DARWIN_USER_DIR")
 (define darwin-user-temp-dir "DARWIN_USER_TEMP_DIR")
 
+; Whether to allow processes to post and look up distributed notifications.
+; See https://crbug.com/513454805.
+(define enable-distributed-notifications "ENABLE_DISTRIBUTED_NOTIFICATIONS")
+
 ; Sandboxed processes which use Metal may need to disable the shader cache.
 (define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
