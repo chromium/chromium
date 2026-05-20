@@ -532,6 +532,7 @@ CGFloat CompactButtonHorizontalPadding() {
   if (hideToolbar) {
     self.hidden = YES;
     [self updateBackgroundVisibility];
+    [self invalidateIntrinsicContentSize];
     return;
   }
 
@@ -547,6 +548,7 @@ CGFloat CompactButtonHorizontalPadding() {
     _viewTopConstraint.active = YES;
     _containerToolbar.hidden = NO;
     [self updateBackgroundVisibility];
+    [self invalidateIntrinsicContentSize];
     return;
   }
 
@@ -572,6 +574,7 @@ CGFloat CompactButtonHorizontalPadding() {
     _viewTopConstraint.active = YES;
     _containerToolbar.hidden = NO;
     [self updateBackgroundVisibility];
+    [self invalidateIntrinsicContentSize];
     return;
   }
 
@@ -581,6 +584,7 @@ CGFloat CompactButtonHorizontalPadding() {
   _viewTopConstraint.active = YES;
   _containerToolbar.hidden = YES;
   [self updateBackgroundVisibility];
+  [self invalidateIntrinsicContentSize];
 }
 
 // Returns YES if the `_largeNewTabButton` is showing on the toolbar.

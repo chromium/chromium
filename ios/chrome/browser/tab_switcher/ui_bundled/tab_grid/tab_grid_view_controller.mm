@@ -107,6 +107,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 @interface TabGridViewController () <GestureInProductHelpViewDelegate,
                                      GridViewControllerDelegate,
+                                     LayoutStateObserver,
                                      PinnedTabsViewControllerDelegate,
                                      TabGroupsPanelViewControllerUIDelegate,
                                      UIGestureRecognizerDelegate,
@@ -181,6 +182,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // The constraints for the bottom anchor of the bottom toolbar.
   NSLayoutConstraint* _bottomToolbarBottomConstraint;
+  NSLayoutConstraint* _bottomToolbarAppBarConstraint;
+  // The layout guide for the AppBar.
+  UILayoutGuide* _appBarGuide;
+  // Tracks the last known visibility of the bottom toolbar used for pinned
+  // tabs.
+  BOOL _bottomToolbarHiddenForPinnedTabs;
 }
 
 - (instancetype)initWithPageConfiguration:
@@ -191,6 +198,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     _dragSessionInProgress = NO;
   }
   return self;
+}
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  if (_layoutState) {
+    [_layoutState removeObserver:self];
+  }
+  _layoutState = layoutState;
+  if (_layoutState) {
+    [_layoutState addObserver:self];
+  }
 }
 
 - (void)didSetupChildViewsForTesting {
@@ -265,18 +285,27 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (IsChromeNextIaEnabled() &&
-      self.layoutState.appBarPosition == AppBarPosition::kBottom) {
-    UIView* appBar =
-        [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
-    CGFloat appBarHeight = appBar.bounds.size.height;
-    _bottomToolbarBottomConstraint.constant = -appBarHeight;
-  } else {
-    _bottomToolbarBottomConstraint.constant = 0;
+  if (IsChromeNextIaEnabled()) {
+    if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
+      _bottomToolbarBottomConstraint.active = NO;
+      _bottomToolbarAppBarConstraint.active = YES;
+    } else {
+      _bottomToolbarAppBarConstraint.active = NO;
+      _bottomToolbarBottomConstraint.active = YES;
+      _bottomToolbarBottomConstraint.constant = 0;
+    }
   }
 
   // Modify Incognito and Regular Tabs Insets.
   [self setInsetForGridViews];
+
+  if (IsPinnedTabsEnabled()) {
+    BOOL isBottomToolbarHidden = self.bottomToolbar.hidden;
+    if (isBottomToolbarHidden != _bottomToolbarHiddenForPinnedTabs) {
+      _bottomToolbarHiddenForPinnedTabs = isBottomToolbarHidden;
+      [self updatePinnedTabsViewControllerConstraints];
+    }
+  }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -915,6 +944,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     _bottomToolbarBottomConstraint = [bottomToolbar.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor];
 
+    _appBarGuide = [self.layoutGuideCenter makeLayoutGuideNamed:kAppBarGuide];
+    [self.view addLayoutGuide:_appBarGuide];
+    _bottomToolbarAppBarConstraint = [bottomToolbar.bottomAnchor
+        constraintEqualToAnchor:_appBarGuide.topAnchor];
+
     [NSLayoutConstraint activateConstraints:@[
       [bottomToolbar.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor],
@@ -957,6 +991,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [pinnedTabsViewController didMoveToParentViewController:self];
 
   [self updatePinnedTabsViewControllerConstraints];
+  _bottomToolbarHiddenForPinnedTabs = self.bottomToolbar.hidden;
 }
 
 - (void)configureViewControllerForCurrentSizeClassesAndPage {
@@ -1967,7 +2002,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self hideScrim];
   }
 
-  [self setInsetForGridViews];
+  [self configureViewControllerForCurrentSizeClassesAndPage];
+  [self.view setNeedsLayout];
   self.scrollView.scrollEnabled = (_mode == TabGridMode::kNormal);
 }
 
@@ -2123,6 +2159,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [[NSMutableArray alloc] init];
   BOOL compactLayout = [self shouldUseCompactLayout];
 
+  BOOL bottomToolbarHidden = self.bottomToolbar.hidden;
+  BOOL useAppBar = IsChromeNextIaEnabled() && bottomToolbarHidden &&
+                   self.layoutState.appBarPosition == AppBarPosition::kBottom &&
+                   _appBarGuide != nil;
+
+  NSLayoutYAxisAnchor* bottomAnchor = self.bottomToolbar.topAnchor;
+  if (bottomToolbarHidden) {
+    bottomAnchor = useAppBar ? _appBarGuide.topAnchor
+                             : self.view.safeAreaLayoutGuide.bottomAnchor;
+  }
+
   if (compactLayout) {
     [pinnedTabsConstraints addObjectsFromArray:@[
       [pinnedView.leadingAnchor
@@ -2132,7 +2179,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           constraintEqualToAnchor:self.view.trailingAnchor
                          constant:-kPinnedViewHorizontalPadding],
       [pinnedView.bottomAnchor
-          constraintEqualToAnchor:self.bottomToolbar.topAnchor
+          constraintEqualToAnchor:bottomAnchor
                          constant:-kPinnedViewBottomPadding],
     ]];
   } else {
@@ -2143,7 +2190,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           constraintEqualToAnchor:self.view.widthAnchor
                        multiplier:kPinnedViewMaxWidthInPercent],
       [pinnedView.bottomAnchor
-          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:bottomAnchor
                          constant:-kPinnedViewBottomPadding],
     ]];
   }
@@ -2201,6 +2248,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         _backgroundedSinceEntering = YES;
         break;
     }
+  }
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  if (IsPinnedTabsEnabled()) {
+    [self updatePinnedTabsViewControllerConstraints];
   }
 }
 
