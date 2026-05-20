@@ -39,6 +39,7 @@
           "project": "chromium"
         }
       ],
+      "retry_without_patch": false,
       "targets_spec_directory": "infra/config/generated/builders/try/tvos-rel-fyi/targets"
     }
   },

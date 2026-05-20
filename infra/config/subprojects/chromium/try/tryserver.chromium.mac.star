@@ -831,6 +831,9 @@ ios_builder(
 ios_builder(
     name = "tvos-rel-fyi",
     mirrors = ["ci/tvos-rel-fyi"],
+    builder_config_settings = builder_config.try_settings(
+        retry_without_patch = False,
+    ),
     gn_args = "ci/tvos-rel-fyi",
     builderless = True,
     cpu = cpu.ARM64,
