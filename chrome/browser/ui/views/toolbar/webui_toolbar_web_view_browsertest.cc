@@ -3143,7 +3143,7 @@ class WebUIPinnedToolbarActionsBrowserTest
           {kActionQrCodeGenerator,
            toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator},
           {kActionRouteMedia,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle},
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia},
           {kActionSidePanelShowReadAnything,
            toolbar_ui_api::mojom::PinnedToolbarAction::
                kSidePanelShowReadAnything},
@@ -3207,45 +3207,42 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
 
   struct Test {
     base::raw_ref<const gfx::VectorIcon> icon;
-    toolbar_ui_api::mojom::PinnedToolbarAction mojom_action;
     std::string_view expected_icon;
   };
 
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia;
+
   const auto kRouteMediaIcons = std::to_array<Test>({
       {base::raw_ref(vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
-       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle,
        std::string_view("pinned-toolbar-action:RouteMediaIdle")},
       {base::raw_ref(vector_icons::kMediaRouterWarningChromeRefreshOldIcon),
-       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning,
        std::string_view("pinned-toolbar-action:RouteMediaWarning")},
       {base::raw_ref(vector_icons::kMediaRouterPausedOldIcon),
-       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused,
        std::string_view("pinned-toolbar-action:RouteMediaPaused")},
       {base::raw_ref(vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
-       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive,
        std::string_view("pinned-toolbar-action:RouteMediaActive")},
       {base::raw_ref(features::IsRoundedIconsEnabled()
                          ? kCastIcon
                          : kCastChromeRefreshOldIcon),
-       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia,
        std::string_view("pinned-toolbar-action:RouteMedia")},
   });
 
   for (const auto& test : kRouteMediaIcons) {
-    SCOPED_TRACE(test.mojom_action);
+    SCOPED_TRACE(test.expected_icon);
     action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(*test.icon));
-    PinAction(kActionRouteMedia, test.mojom_action);
+    PinAction(kActionRouteMedia, mojom_action);
 
     // Make sure the icon got wired through.
     EXPECT_EQ(test.expected_icon,
               EvalJsOnPinnedButton(
-                  web_contents, test.mojom_action,
+                  web_contents, mojom_action,
                   "return btn?.getAttribute('iron-icon') || '(null)'"));
     EXPECT_EQ("(null)", EvalJsOnPinnedButton(
-                            web_contents, test.mojom_action,
+                            web_contents, mojom_action,
                             "return btn?.getAttribute('style') || '(null)'"));
 
-    UnpinAction(kActionRouteMedia, test.mojom_action);
+    UnpinAction(kActionRouteMedia, mojom_action);
   }
 }
 

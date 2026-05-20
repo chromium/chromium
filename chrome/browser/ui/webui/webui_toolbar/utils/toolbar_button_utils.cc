@@ -233,20 +233,11 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : kQrCodeChromeRefreshOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator;
     case kActionRouteMedia:
-      if (icon == &vector_icons::kMediaRouterIdleChromeRefreshOldIcon) {
-        return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle;
-      } else if (icon ==
-                 &vector_icons::kMediaRouterWarningChromeRefreshOldIcon) {
-        return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning;
-      } else if (icon == &vector_icons::kMediaRouterPausedOldIcon) {
-        return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused;
-      } else if (icon ==
-                 &vector_icons::kMediaRouterActiveChromeRefreshOldIcon) {
-        return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive;
-      }
-      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
-                           ? kCastIcon
-                           : kCastChromeRefreshOldIcon));
+      CHECK(icon == &vector_icons::kMediaRouterIdleChromeRefreshOldIcon ||
+            icon == &vector_icons::kMediaRouterWarningChromeRefreshOldIcon ||
+            icon == &vector_icons::kMediaRouterPausedOldIcon ||
+            icon == &vector_icons::kMediaRouterActiveChromeRefreshOldIcon ||
+            icon == &kCastChromeRefreshOldIcon || icon == &kCastIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia;
     case kActionSidePanelShowReadAnything:
       CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
@@ -356,10 +347,6 @@ std::optional<actions::ActionId> PinnedToolbarActionToActionId(
     case toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator:
       return kActionQrCodeGenerator;
     case toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia:
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle:
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning:
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused:
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive:
       return kActionRouteMedia;
     case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowReadAnything:
       return kActionSidePanelShowReadAnything;

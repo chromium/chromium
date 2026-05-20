@@ -135,10 +135,6 @@ export class PinnedToolbarActionElement extends CrLitElement {
       case PinnedToolbarAction.kQrCodeGenerator:
         return ContextMenuType.kPinnedActionQrCodeGenerator;
       case PinnedToolbarAction.kRouteMedia:
-      case PinnedToolbarAction.kRouteMediaIdle:
-      case PinnedToolbarAction.kRouteMediaWarning:
-      case PinnedToolbarAction.kRouteMediaPaused:
-      case PinnedToolbarAction.kRouteMediaActive:
         return ContextMenuType.kPinnedActionRouteMedia;
       case PinnedToolbarAction.kSidePanelShowReadAnything:
         return ContextMenuType.kPinnedActionSidePanelShowReadAnything;
