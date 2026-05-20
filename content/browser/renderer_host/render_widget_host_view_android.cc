@@ -1240,6 +1240,7 @@ bool RenderWidgetHostViewAndroid::IsSurfaceAvailableForCopy() {
 
 void RenderWidgetHostViewAndroid::ShowWithVisibility(
     PageVisibilityState page_visibility) {
+  TRACE_EVENT0("content", "RenderWidgetHostViewAndroid::ShowWithVisibility");
   DCHECK_NE(page_visibility, PageVisibilityState::kHidden);
   Visibility next_view_visibility = view_visibility_;
   if (page_visibility == PageVisibilityState::kVisible) {
@@ -1252,6 +1253,7 @@ void RenderWidgetHostViewAndroid::ShowWithVisibility(
 }
 
 void RenderWidgetHostViewAndroid::Hide() {
+  TRACE_EVENT0("content", "RenderWidgetHostViewAndroid::Hide");
   TryUpdateVisibilities(Visibility::HIDDEN, PageVisibilityState::kHidden);
 }
 

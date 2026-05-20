@@ -1255,6 +1255,7 @@ class CONTENT_EXPORT WebContentsImpl
   void NotifySwappedRWHVChildFrameFromRenderManager(
       RenderWidgetHostViewChildFrame* new_view,
       bool allow_paint_holding) override;
+  void PrimaryMainFrameSwapComplete(RenderFrameHostImpl* new_frame) override;
 
   // PageDelegate -------------------------------------------------------------
 
@@ -2132,6 +2133,10 @@ class CONTENT_EXPORT WebContentsImpl
   // the value returned by GetLastActiveTimeTicks().
   void UpdateVisibilityAndNotifyPageAndView(Visibility new_visibility,
                                             bool is_activity = true);
+
+  // Updates the visibility for the main RenderWidgetHostView and child views
+  // for this WebContents.
+  void SetPrimaryMainFrameViewVisibility(Visibility visibility);
 
   // Returns UKM source id for the currently displayed page.
   // Intentionally kept private, prefer using

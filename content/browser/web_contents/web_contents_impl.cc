@@ -5038,10 +5038,9 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   PageVisibilityState page_visibility =
       CalculatePageVisibilityState(new_visibility);
 
-  // A crashed frame might be covered by a sad tab. See docs on SadTabHelper
-  // exactly when it is or isn't. Either way, don't make it visible.
-  bool view_is_visible =
-      !IsCrashed() && page_visibility != PageVisibilityState::kHidden;
+  TRACE_EVENT1("content",
+               "WebContentsImpl::UpdateVisibilityAndNotifyPageAndView",
+               "page_visibility", page_visibility);
 
   // True if the instance is being hidden or revealed.
   const bool hide_or_reveal = (visibility_ == Visibility::HIDDEN) !=
@@ -5099,24 +5098,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
   }
 
-  // |GetRenderWidgetHostView()| can be null if the user middle clicks a link to
-  // open a tab in the background, then closes the tab before selecting it.
-  // This is because closing the tab calls WebContentsImpl::Destroy(), which
-  // removes the |GetRenderViewHost()|; then when we actually destroy the
-  // window, OnWindowPosChanged() notices and calls WasHidden() (which
-  // calls us).
-  if (auto* view = GetRenderWidgetHostView()) {
-    if (view_is_visible) {
-      static_cast<RenderWidgetHostViewBase*>(view)->ShowWithVisibility(
-          page_visibility);
-    } else if (new_visibility == Visibility::HIDDEN) {
-      view->Hide();
-    } else {
-      view->WasOccluded();
-    }
-  }
-
-  SetVisibilityForChildViews(view_is_visible);
+  SetPrimaryMainFrameViewVisibility(new_visibility);
 
   if (page_visibility == PageVisibilityState::kHidden) {
     // Similar to when showing the page, we only hide the page after
@@ -5181,6 +5163,38 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
       }
     }
   }
+}
+
+void WebContentsImpl::SetPrimaryMainFrameViewVisibility(Visibility visibility) {
+  PageVisibilityState page_visibility =
+      CalculatePageVisibilityState(visibility);
+
+  // A crashed frame might be covered by a sad tab. See docs on SadTabHelper
+  // exactly when it is or isn't. Either way, don't make it visible.
+  bool view_is_visible =
+      !IsCrashed() && page_visibility != PageVisibilityState::kHidden;
+
+  TRACE_EVENT1("content", "WebContentsImpl::SetPrimaryMainFrameViewVisibility",
+               "view_is_visible", view_is_visible);
+
+  // |GetRenderWidgetHostView()| can be null if the user middle clicks a link to
+  // open a tab in the background, then closes the tab before selecting it.
+  // This is because closing the tab calls WebContentsImpl::Destroy(), which
+  // removes the |GetRenderViewHost()|; then when we actually destroy the
+  // window, OnWindowPosChanged() notices and calls WasHidden() (which
+  // calls us).
+  if (auto* view = GetRenderWidgetHostView()) {
+    if (view_is_visible) {
+      static_cast<RenderWidgetHostViewBase*>(view)->ShowWithVisibility(
+          page_visibility);
+    } else if (visibility == Visibility::HIDDEN) {
+      view->Hide();
+    } else {
+      view->WasOccluded();
+    }
+  }
+
+  SetVisibilityForChildViews(view_is_visible);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -10815,6 +10829,12 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   }
 
   NotifyFrameSwapped(old_frame, new_frame);
+}
+
+void WebContentsImpl::PrimaryMainFrameSwapComplete(
+    RenderFrameHostImpl* new_frame) {
+  CHECK(new_frame->GetView() == GetRenderWidgetHostView());
+  SetPrimaryMainFrameViewVisibility(GetVisibility());
 }
 
 void WebContentsImpl::NotifySwappedFromRenderManagerWithoutFallbackContent(

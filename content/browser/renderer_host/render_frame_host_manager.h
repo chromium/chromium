@@ -248,6 +248,11 @@ class CONTENT_EXPORT RenderFrameHostManager {
         RenderWidgetHostViewChildFrame* new_view,
         bool allow_paint_holding) = 0;
 
+    // Called when the frame swap from a commit is complete and the new frame is
+    // ready to be shown.
+    virtual void PrimaryMainFrameSwapComplete(
+        RenderFrameHostImpl* new_frame) = 0;
+
    protected:
     virtual ~Delegate() = default;
   };
