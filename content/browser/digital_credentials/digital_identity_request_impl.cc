@@ -259,30 +259,45 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
   return true;
 }
 
-bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
-    const base::Value& request) {
-  CHECK(request.is_dict());
-  const base::DictValue* request_dict = &request.GetDict();
+const base::DictValue* GetOpenId4VpRequestPayload(
+    const base::Value& request,
+    std::optional<base::Value>& out_payload) {
+  const base::DictValue* request_dict = request.GetIfDict();
+  if (!request_dict) {
+    return nullptr;
+  }
 
-  // The request may be a JWT. In that case, we need to parse the JWT to get to
-  // the actual request payload.
-  std::optional<base::Value> payload;
   if (const std::string* jwt_str = request_dict->FindString("request")) {
     std::optional<base::ListValue> parsed_jwt = sdjwt::Jwt::Parse(*jwt_str);
     if (!parsed_jwt) {
-      return false;
+      return nullptr;
     }
     std::optional<sdjwt::Jwt> jwt = sdjwt::Jwt::From(*parsed_jwt);
     if (!jwt) {
-      return false;
+      return nullptr;
     }
 
-    payload = base::JSONReader::Read(jwt->payload.value(),
-                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    if (!payload || !payload->is_dict()) {
-      return false;
+    out_payload = base::JSONReader::Read(jwt->payload.value(),
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!out_payload) {
+      return nullptr;
     }
-    request_dict = &payload->GetDict();
+    request_dict = out_payload->GetIfDict();
+    if (!request_dict) {
+      return nullptr;
+    }
+  }
+
+  return request_dict;
+}
+
+bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
+    const base::Value& request) {
+  std::optional<base::Value> payload;
+  const base::DictValue* request_dict =
+      GetOpenId4VpRequestPayload(request, payload);
+  if (!request_dict) {
+    return false;
   }
 
   if (request_dict->contains(kDcqlQuery)) {
@@ -326,6 +341,40 @@ blink::mojom::RequestDigitalIdentityStatus ToRequestDigitalIdentityStatus(
     case RequestStatusForMetrics::kErrorInvalidJson:
       return blink::mojom::RequestDigitalIdentityStatus::kErrorInvalidJson;
   }
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OpenId4VpResponseMode)
+enum class OpenId4VpResponseMode {
+  kDcApi = 0,
+  kDcApiJwt = 1,
+  kOther = 2,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:OpenId4VpResponseMode)
+
+void RecordOpenId4VpResponseMode(const base::Value& request) {
+  std::optional<base::Value> payload;
+  const base::DictValue* request_dict =
+      GetOpenId4VpRequestPayload(request, payload);
+  if (!request_dict) {
+    return;
+  }
+
+  const std::string* response_mode = request_dict->FindString("response_mode");
+  if (!response_mode) {
+    return;
+  }
+
+  OpenId4VpResponseMode mode = OpenId4VpResponseMode::kOther;
+  if (*response_mode == "dc_api") {
+    mode = OpenId4VpResponseMode::kDcApi;
+  } else if (*response_mode == "dc_api.jwt") {
+    mode = OpenId4VpResponseMode::kDcApiJwt;
+  }
+  base::UmaHistogramEnumeration(
+      "Blink.DigitalIdentityRequest.OpenId4VpResponseMode", mode);
 }
 
 }  // anonymous namespace
@@ -542,6 +591,12 @@ void DigitalIdentityRequestImpl::Get(
   if (digital_credential_requests.empty()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorNoRequests);
     return;
+  }
+
+  for (const auto& request : digital_credential_requests) {
+    if (request->protocol.starts_with(kOpenid4vpProtocolPrefix)) {
+      RecordOpenId4VpResponseMode(request->data);
+    }
   }
 
   WebContents* web_contents =

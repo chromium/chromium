@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -1634,6 +1635,102 @@ TEST_F(DigitalIdentityRequestImplVirtualWalletTest,
               Run(RequestDigitalIdentityStatus::kError, Eq(std::nullopt), _));
   digital_identity_request_impl()->Create(MakeCreateRequests(),
                                           mock_callback.Get());
+}
+
+TEST_F(DigitalIdentityRequestImplTest, RecordOpenId4VpResponseMode) {
+  struct TestCase {
+    std::string response_mode;
+    int expected_bucket;
+  } test_cases[] = {
+      {"dc_api", 0},
+      {"dc_api.jwt", 1},
+      {"other_mode", 2},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RecreateService();
+    base::HistogramTester histogram_tester;
+    DigitalCredentialGetRequestPtr digital_credential_request =
+        DigitalCredentialGetRequest::New();
+    digital_credential_request->protocol = kOpenid4vpUnsignedProtocol;
+
+    base::DictValue request_data;
+    request_data.Set("response_mode", test_case.response_mode);
+    digital_credential_request->data = base::Value(std::move(request_data));
+
+    std::vector<DigitalCredentialGetRequestPtr> requests;
+    requests.push_back(std::move(digital_credential_request));
+
+    EXPECT_CALL(*mock_digital_identity_provider(), Get)
+        .Times(testing::AnyNumber());
+
+    digital_identity_request_impl()->Get(std::move(requests),
+                                         base::DoNothing());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.DigitalIdentityRequest.OpenId4VpResponseMode",
+        test_case.expected_bucket, 1);
+  }
+}
+
+TEST_F(DigitalIdentityRequestImplTest, RecordOpenId4VpResponseModeMissing) {
+  base::HistogramTester histogram_tester;
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kOpenid4vpUnsignedProtocol;
+  digital_credential_request->data = base::Value(base::DictValue());
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .Times(testing::AnyNumber());
+
+  digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
+
+  histogram_tester.ExpectTotalCount(
+      "Blink.DigitalIdentityRequest.OpenId4VpResponseMode", 0);
+}
+
+TEST_F(DigitalIdentityRequestImplTest, RecordOpenId4VpResponseModeFromJwt) {
+  base::HistogramTester histogram_tester;
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kOpenid4vpUnsignedProtocol;
+
+  base::Value request_data = GenerateSignedOnlyAgeOpenid4VpRequestWithDCQL();
+  digital_credential_request->data = std::move(request_data);
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .Times(testing::AnyNumber());
+
+  digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DigitalIdentityRequest.OpenId4VpResponseMode", 0, 1);
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       RecordOpenId4VpResponseModeInvalidRequest) {
+  base::HistogramTester histogram_tester;
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kOpenid4vpUnsignedProtocol;
+  digital_credential_request->data = base::Value("not a dict");
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .Times(testing::AnyNumber());
+
+  digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
+
+  histogram_tester.ExpectTotalCount(
+      "Blink.DigitalIdentityRequest.OpenId4VpResponseMode", 0);
 }
 
 }  // namespace content

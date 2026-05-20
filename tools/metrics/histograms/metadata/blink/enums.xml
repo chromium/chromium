@@ -8443,6 +8443,16 @@ Called by update_use_counter_css.py.-->
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
 
+<!-- LINT.IfChange(OpenId4VpResponseMode) -->
+
+<enum name="OpenId4VpResponseMode">
+  <int value="0" label="dc_api"/>
+  <int value="1" label="dc_api.jwt"/>
+  <int value="2" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/digital_credentials/digital_identity_request_impl.cc:OpenId4VpResponseMode) -->
+
 <!-- LINT.IfChange(OriginStatusOnSubresource) -->
 
 <enum name="OriginStatusOnSubresource">
