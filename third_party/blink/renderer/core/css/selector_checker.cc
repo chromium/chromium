@@ -519,40 +519,6 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 
 namespace {
 
-PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
-                                          const ComputedStyle& style) {
-  if (argument == AtomicString("*")) {
-    return kPseudoIdScrollButton;
-  }
-  if (argument == AtomicString("block-start")) {
-    return kPseudoIdScrollButtonBlockStart;
-  }
-  if (argument == AtomicString("inline-start")) {
-    return kPseudoIdScrollButtonInlineStart;
-  }
-  if (argument == AtomicString("inline-end")) {
-    return kPseudoIdScrollButtonInlineEnd;
-  }
-  if (argument == AtomicString("block-end")) {
-    return kPseudoIdScrollButtonBlockEnd;
-  }
-  PhysicalToLogical<bool> mapping(
-      style.GetWritingDirection(), argument == AtomicString("up"),
-      argument == AtomicString("right"), argument == AtomicString("down"),
-      argument == AtomicString("left"));
-  if (mapping.BlockStart()) {
-    return kPseudoIdScrollButtonBlockStart;
-  }
-  if (mapping.InlineStart()) {
-    return kPseudoIdScrollButtonInlineStart;
-  }
-  if (mapping.InlineEnd()) {
-    return kPseudoIdScrollButtonInlineEnd;
-  }
-  CHECK(mapping.BlockEnd());
-  return kPseudoIdScrollButtonBlockEnd;
-}
-
 bool MatchScrollButton(const Element& element,
                        const SelectorChecker::SelectorCheckingContext& context,
                        SelectorChecker::MatchResult& result) {
@@ -569,7 +535,8 @@ bool MatchScrollButton(const Element& element,
   const ComputedStyle* style = element.ParentComputedStyle();
   CHECK(style);
   PseudoId pseudo_id =
-      PseudoIdFromScrollButtonArgument(context.selector->Argument(), *style);
+      ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
+          context.selector->Argument(), *style);
   // Check that pseudo ids match when checking for pseudo-element,
   // but always match if checking for regular element to set the style
   // flag.

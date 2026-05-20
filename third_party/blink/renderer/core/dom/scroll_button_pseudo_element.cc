@@ -19,11 +19,63 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
+
+PseudoId ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
+    const AtomicString& argument,
+    const ComputedStyle& originating_element_style) {
+  DEFINE_STATIC_LOCAL(AtomicString, wildcard, ("*"));
+  DEFINE_STATIC_LOCAL(AtomicString, block_start, ("block-start"));
+  DEFINE_STATIC_LOCAL(AtomicString, inline_start, ("inline-start"));
+  DEFINE_STATIC_LOCAL(AtomicString, inline_end, ("inline-end"));
+  DEFINE_STATIC_LOCAL(AtomicString, block_end, ("block-end"));
+
+  if (argument == wildcard) {
+    return kPseudoIdScrollButton;
+  }
+  if (argument == block_start) {
+    return kPseudoIdScrollButtonBlockStart;
+  }
+  if (argument == inline_start) {
+    return kPseudoIdScrollButtonInlineStart;
+  }
+  if (argument == inline_end) {
+    return kPseudoIdScrollButtonInlineEnd;
+  }
+  if (argument == block_end) {
+    return kPseudoIdScrollButtonBlockEnd;
+  }
+
+  DEFINE_STATIC_LOCAL(AtomicString, up, ("up"));
+  DEFINE_STATIC_LOCAL(AtomicString, right, ("right"));
+  DEFINE_STATIC_LOCAL(AtomicString, down, ("down"));
+  DEFINE_STATIC_LOCAL(AtomicString, left, ("left"));
+
+  if (argument != up && argument != right && argument != down &&
+      argument != left) {
+    return kPseudoIdScrollButton;
+  }
+
+  PhysicalToLogical<bool> mapping(
+      originating_element_style.GetWritingDirection(), argument == up,
+      argument == right, argument == down, argument == left);
+  if (mapping.BlockStart()) {
+    return kPseudoIdScrollButtonBlockStart;
+  }
+  if (mapping.InlineStart()) {
+    return kPseudoIdScrollButtonInlineStart;
+  }
+  if (mapping.InlineEnd()) {
+    return kPseudoIdScrollButtonInlineEnd;
+  }
+  CHECK(mapping.BlockEnd());
+  return kPseudoIdScrollButtonBlockEnd;
+}
 
 namespace {
 

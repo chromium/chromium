@@ -145,6 +145,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -10810,6 +10811,12 @@ Element* Element::GetStyledPseudoElement(
         pseudo_id = style->HasScrollMarkerGroupBefore()
                         ? kPseudoIdScrollMarkerGroupBefore
                         : kPseudoIdScrollMarkerGroupAfter;
+      }
+    }
+    if (pseudo_id == kPseudoIdScrollButton) {
+      if (const ComputedStyle* style = GetComputedStyle()) {
+        pseudo_id = ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
+            pseudo_argument, *style);
       }
     }
     if (PseudoElement* result = GetPseudoElement(pseudo_id, pseudo_argument)) {

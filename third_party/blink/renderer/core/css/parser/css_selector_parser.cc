@@ -1060,6 +1060,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
   }
 
   switch (pseudo_id) {
+    case kPseudoIdScrollButton:
     case kPseudoIdHighlight: {
       argument = result.Argument();
       return pseudo_id;
