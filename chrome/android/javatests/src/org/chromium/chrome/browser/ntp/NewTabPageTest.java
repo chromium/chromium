@@ -941,6 +941,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton() {
         View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
@@ -954,6 +955,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton_fusebox() {
         if (mActivityTestRule.getActivity().isTablet()) return;
 
@@ -971,6 +973,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton_fuseboxWithoutRedirect() {
         if (mActivityTestRule.getActivity().isTablet()) return;
 

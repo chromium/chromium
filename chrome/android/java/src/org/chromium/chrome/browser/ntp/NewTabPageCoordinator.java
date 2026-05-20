@@ -187,9 +187,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private @Nullable FeedSurfaceScrollDelegate mScrollDelegate;
     private @Nullable Callback<Logo> mOnLogoAvailableCallback;
 
-    // mIsComposeplateEnabled is null before checking whether to initialize composeplate view in
+    // mCanShowComposeplateButton is null before checking whether to initialize composeplate view in
     // NewTabPageCoordinator#initialize().
-    private @Nullable Boolean mIsComposeplateEnabled;
+    private @Nullable Boolean mCanShowComposeplateButton;
     private boolean mIsComposeplatePolicyEnabled;
     private boolean mIsComposeplateViewInitialized;
     private @Nullable Supplier<GURL> mComposeplateUrlSupplier;
@@ -360,7 +360,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         initializeSearchBoxTextView();
 
         initializeComposeplateFlags(mProfile);
-        if (assumeNonNull(mIsComposeplateEnabled)) {
+        if (assumeNonNull(mCanShowComposeplateButton)) {
             initializeComposeplate();
         }
 
@@ -394,7 +394,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         Resources resources = mActivity.getResources();
         int searchBoxHeight =
                 NtpCustomizationUtils.getSearchBoxHeight(
-                        resources, assumeNonNull(mIsComposeplateEnabled));
+                        resources, assumeNonNull(mCanShowComposeplateButton));
         if (mNtpSearchBox != null) {
             mNtpSearchBox.setHeight(searchBoxHeight);
         }
@@ -488,9 +488,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void initializeComposeplateFlags(Profile profile) {
-        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(profile);
+        mCanShowComposeplateButton = ComposeplateUtils.canShowComposeplateButtonOnNtp(profile);
         mIsComposeplatePolicyEnabled =
-                mIsComposeplateEnabled && ComposeplateUtils.isEnabledByPolicy(profile);
+                mCanShowComposeplateButton && ComposeplateUtils.isEnabledByPolicy(profile);
     }
 
     private void initializeComposeplate() {
@@ -749,21 +749,21 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // Skips if the flag hasn't been initialized since the initialization of the following
         // components will be called again in #initialize().
-        if (mIsComposeplateEnabled != null) {
-            // when mSearchProviderIsGoogle is changed, mIsComposeplateEnabled might be changed too,
-            // recalculate its value.
+        if (mCanShowComposeplateButton != null) {
+            // When mSearchProviderIsGoogle is changed, mCanShowComposeplateButton might be changed
+            // too, recalculate its value.
             if (isSearchProviderIsGoogleChanged) {
-                boolean previousIsComposeplateEnabled = mIsComposeplateEnabled;
+                boolean previousCanShowComposeplateButton = mCanShowComposeplateButton;
                 initializeComposeplateFlags(mProfile);
-                if (!previousIsComposeplateEnabled
-                        && mIsComposeplateEnabled
+                if (!previousCanShowComposeplateButton
+                        && mCanShowComposeplateButton
                         && mComposeplateCoordinator == null) {
                     // If the composeplate view is enabled while mComposeplateCoordinator hasn't
                     // been initialized yet, initialize it now.
                     initializeComposeplate();
                 }
 
-                if (previousIsComposeplateEnabled != mIsComposeplateEnabled) {
+                if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
                     // When the flag value is changed, the height of search box might be changed.
                     setSearchBoxHeightBoundsVerticalInset();
                     // Updates the composeplate view's visibility.
@@ -974,7 +974,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // Skips now if the composeplate flag hasn't been initialized. This prevents logging the
         // impression metrics incorrectly due to the status of whether to show the composeplate
         // button hasn't been initialized.
-        if (mIsComposeplateEnabled == null) return;
+        if (mCanShowComposeplateButton == null) return;
 
         mNtpSearchBox.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
         mNtpSearchBox.setLensButtonVisibility(shouldShowLensButton);
@@ -983,7 +983,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // visibility.
         if (mComposeplateCoordinator != null) {
             shouldShowComposeplateButton =
-                    mIsComposeplateEnabled
+                    mCanShowComposeplateButton
                             && mSearchProviderIsGoogle
                             && IncognitoUtils.isIncognitoModeEnabled(mProfile);
             mComposeplateCoordinator.setVisibility(
@@ -1420,7 +1420,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         // If composeplate view flags haven't been initialized yet, returns now.
-        if (mIsComposeplateEnabled == null) {
+        if (mCanShowComposeplateButton == null) {
             return;
         }
 
