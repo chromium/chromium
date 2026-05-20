@@ -151,12 +151,19 @@ class RemoveLocalAuthFactorsScreenTest : public LoginManagerTest {
 
   void DisableAllAllowedAuthFactorsPolicy() {
     base::Value allowed_auth_factors(base::Value::Type::LIST);
-    policy::PolicyMap user_policy;
-    user_policy.Set(policy::key::kAllowedLocalAuthFactors,
-                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                    policy::POLICY_SOURCE_CLOUD,
-                    std::move(allowed_auth_factors), nullptr);
-    provider_.UpdateChromePolicy(user_policy);
+    user_policy_.Set(policy::key::kAllowedLocalAuthFactors,
+                     policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                     policy::POLICY_SOURCE_CLOUD,
+                     std::move(allowed_auth_factors), nullptr);
+    provider_.UpdateChromePolicy(user_policy_);
+  }
+
+  void SetQuickUnlockModePolicy(base::Value allowed_factors) {
+    user_policy_.Set(policy::key::kQuickUnlockModeAllowlist,
+                     policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                     policy::POLICY_SOURCE_CLOUD, std::move(allowed_factors),
+                     nullptr);
+    provider_.UpdateChromePolicy(user_policy_);
   }
 
   void CreateEarlyPrefsDirectory(const AccountId& account_id) {
@@ -178,6 +185,7 @@ class RemoveLocalAuthFactorsScreenTest : public LoginManagerTest {
     login_manager_mixin_.WaitForActiveSession();
     CreateEarlyPrefsDirectory(account_id);
     DisableAllAllowedAuthFactorsPolicy();
+    SetQuickUnlockModePolicy(base::Value(base::Value::Type::LIST));
     user_manager::UserManager::Get()->SaveForceOnlineSignin(
         account_id, /*force_online_signin=*/true);
   }
@@ -232,6 +240,7 @@ class RemoveLocalAuthFactorsScreenTest : public LoginManagerTest {
   std::unique_ptr<base::AutoReset<bool>> ignore_sync_errors_for_test_;
 
  private:
+  policy::PolicyMap user_policy_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
   base::test::ScopedFeatureList feature_list_;
@@ -283,18 +292,42 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAuthFactorsScreenTest, AuthSessionKeptAlive) {
 }
 
 IN_PROC_BROWSER_TEST_F(RemoveLocalAuthFactorsScreenTest,
-                       PRE_AuthFactorsNotRemovedForGaiaPasswordPinUser) {
+                       PRE_AuthFactorsRemovedForGaiaPasswordPinUser) {
   // Test Setup: Log the user in offline and apply a policy disabling all
   // local auth factors.
   LoginOfflineAndSetPolicy(gaia_password_and_pin_user_.account_id);
 }
 
 IN_PROC_BROWSER_TEST_F(RemoveLocalAuthFactorsScreenTest,
-                       AuthFactorsNotRemovedForGaiaPasswordPinUser) {
+                       AuthFactorsRemovedForGaiaPasswordPinUser) {
   // Test Setup is handled by the PRE_ test above.
 
   // Test Execution: User attempts to re-authenticate (via Gaia),
   // triggering the local auth factors removal flow.
+  ReauthUser(gaia_password_and_pin_user_.account_id);
+  WaitForRemoveLocalAuthFactorsSuccessScreen();
+
+  // Test Verification: Confirm that the session starts.
+  VerifyLocalAuthFactorsRemovedAndSessionStarted(
+      gaia_password_and_pin_user_.account_id);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RemoveLocalAuthFactorsScreenTest,
+    PRE_AuthFactorsNotRemovedForGaiaPasswordPinUserWithQuickUnlock) {
+  // Test Setup: Log the user in offline and apply a policy disabling all
+  // local auth factors and then only enabling the QuickUnlock Pin.
+  LoginOfflineAndSetPolicy(gaia_password_and_pin_user_.account_id);
+  SetQuickUnlockModePolicy(base::Value(base::ListValue().Append("PIN")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RemoveLocalAuthFactorsScreenTest,
+    AuthFactorsNotRemovedForGaiaPasswordPinUserWithQuickUnlock) {
+  // Test Setup is handled by the PRE_ test above.
+
+  // Test Execution: User attempts to re-authenticate (via Gaia),
+  // not triggering the local auth factors removal flow.
   ReauthUser(gaia_password_and_pin_user_.account_id);
 
   // Test Verification: Confirm that the session starts.
@@ -419,7 +452,8 @@ INSTANTIATE_TEST_SUITE_P(
     RemoveLocalAuthFactorsScreenTestWithRecoveryInstantiation,
     RemoveLocalAuthFactorsScreenTestWithRecovery,
     ::testing::ValuesIn({UserType::kLocalPasswordUser, UserType::kPinUser,
-                         UserType::kLocalPasswordAndPinUser}));
+                         UserType::kLocalPasswordAndPinUser,
+                         UserType::kGaiaPasswordAndPinUser}));
 
 // Instantiate the parameterized tests for users with local passwords.
 INSTANTIATE_TEST_SUITE_P(
