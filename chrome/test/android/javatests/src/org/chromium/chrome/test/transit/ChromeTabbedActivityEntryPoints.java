@@ -98,7 +98,10 @@ public class ChromeTabbedActivityEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(getOriginalNativeNtpUrl()))
+        return sentinel.runTo(
+                        () ->
+                                ctaTestRule.startMainActivityWithTrustedURL(
+                                        getOriginalNativeNtpUrl()))
                 .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
     }
 

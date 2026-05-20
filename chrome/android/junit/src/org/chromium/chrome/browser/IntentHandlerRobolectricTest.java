@@ -519,7 +519,9 @@ public class IntentHandlerRobolectricTest {
         assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
     }
 
-    /** Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents. */
+    /**
+     * Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents.
+     */
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
@@ -725,6 +727,9 @@ public class IntentHandlerRobolectricTest {
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
 
         untrustedIntent.setData(Uri.parse("chrome-native://newtab"));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
+
+        untrustedIntent.addCategory("com.fake.category");
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
     }
 

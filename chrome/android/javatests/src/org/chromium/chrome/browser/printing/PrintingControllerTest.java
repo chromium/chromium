@@ -463,7 +463,8 @@ public class PrintingControllerTest {
     @SmallTest
     @Feature({"Printing"})
     public void testDisallowPrintOnNativePage() {
-        mActivityTestRule.startOnUrl(UrlConstants.HISTORY_URL);
+        mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.loadUrl(UrlConstants.HISTORY_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab currentTab = ThreadUtils.runOnUiThreadBlocking(() -> cta.getActivityTab());
         ToastManager toastManager = Mockito.mock(ToastManager.class);

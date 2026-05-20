@@ -106,8 +106,21 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     }
 
     /**
-     * Starts the Main activity and open a blank page.
-     * This is faster and less flakiness-prone than starting on the NTP.
+     * Starts the Main activity on the specified URL. Passing a null URL ensures the default page is
+     * loaded, which is the NTP with a new profile .
+     */
+    public void startMainActivityWithTrustedURL(String url) {
+        Assert.assertFalse(TextUtils.isEmpty(url));
+        // Only launch Chrome.
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        prepareUrlIntent(intent, url);
+        IntentUtils.addTrustedIntentExtras(intent);
+        startMainActivityFromIntent(intent, url);
+    }
+
+    /**
+     * Starts the Main activity and open a blank page. This is faster and less flakiness-prone than
+     * starting on the NTP.
      */
     public void startMainActivityOnBlankPage() {
         startMainActivityWithURL("about:blank");
