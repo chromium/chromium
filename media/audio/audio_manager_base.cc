@@ -320,7 +320,8 @@ void AudioManagerBase::GetAudioInputDeviceDescriptions(
       &AudioManagerBase::GetGroupIDInput);
   base::UmaHistogramEnumeration(
       "Media.Audio.InputDeviceEnumerationOutcome",
-      GetAudioEnumerationOutcome(success, device_descriptions->empty()));
+      GetAudioEnumerationOutcome(
+          success, /*has_devices=*/!device_descriptions->empty()));
   GetDeviceLogHelper()->LogDeviceList(true, __func__, *device_descriptions);
 }
 
@@ -334,7 +335,8 @@ void AudioManagerBase::GetAudioOutputDeviceDescriptions(
       &AudioManagerBase::GetGroupIDOutput);
   base::UmaHistogramEnumeration(
       "Media.Audio.OutputDeviceEnumerationOutcome",
-      GetAudioEnumerationOutcome(success, device_descriptions->empty()));
+      GetAudioEnumerationOutcome(
+          success, /*has_devices=*/!device_descriptions->empty()));
   GetDeviceLogHelper()->LogDeviceList(false, __func__, *device_descriptions);
 }
 
