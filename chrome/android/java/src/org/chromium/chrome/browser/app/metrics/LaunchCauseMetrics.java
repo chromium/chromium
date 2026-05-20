@@ -120,7 +120,6 @@ public abstract class LaunchCauseMetrics
         LaunchCause.AUTH_TAB,
         LaunchCause.RECREATION,
         LaunchCause.HANDOFF,
-        LaunchCause.DEV_TOOLS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
@@ -147,9 +146,8 @@ public abstract class LaunchCauseMetrics
         int AUTH_TAB = 19;
         int RECREATION = 20;
         int HANDOFF = 21;
-        int DEV_TOOLS = 22;
 
-        int NUM_ENTRIES = 24;
+        int NUM_ENTRIES = 23;
     }
 
     /**
