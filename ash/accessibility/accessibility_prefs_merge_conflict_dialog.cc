@@ -256,38 +256,25 @@ AccessibilityPrefsMergeConflictDialog::AddScrollListToggleItem(
     const gfx::VectorIcon& icon,
     const std::u16string& text,
     std::string_view pref_name,
-    bool checked,
-    bool enterprise_managed) {
+    bool checked) {
   HoverHighlightView* item = AddScrollListItem(container, icon, text);
   item->SetAccessibilityState(
       checked ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
               : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
 
-  // TODO(https://crbug.com/479890756): Test and ensure that the behavior is as
-  // expected for enterprise-enabled devices.
-  if (enterprise_managed) {
-    // Show the enterprise "building" icon at the end.
-    item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED, text));
-    ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
-        kSystemMenuBusinessIcon, kColorAshIconColorPrimary, kMenuIconSize);
-    item->AddRightIcon(enterprise_managed_icon,
-                       enterprise_managed_icon.Size().width());
-  } else {
-    Switch* toggle = AddToggleToEnd(item);
-    toggle->SetIsOn(checked);
-    toggle->SetCanProcessEventsWithinSubtree(false);
-    toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  Switch* toggle = AddToggleToEnd(item);
+  toggle->SetIsOn(checked);
+  toggle->SetCanProcessEventsWithinSubtree(false);
+  toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 
-    item->SetCallback(base::BindRepeating(
-        &AccessibilityPrefsMergeConflictDialog::OnPrefRowPressed,
-        weak_factory_.GetWeakPtr(), item, pref_name));
+  item->SetCallback(base::BindRepeating(
+      &AccessibilityPrefsMergeConflictDialog::OnPrefRowPressed,
+      weak_factory_.GetWeakPtr(), item, pref_name));
 
-    // Ignore the toggle for accessibility.
-    auto& view_accessibility = toggle->GetViewAccessibility();
-    view_accessibility.SetIsLeaf(true);
-    view_accessibility.SetIsIgnored(true);
-  }
+  // Ignore the toggle for accessibility.
+  auto& view_accessibility = toggle->GetViewAccessibility();
+  view_accessibility.SetIsLeaf(true);
+  view_accessibility.SetIsIgnored(true);
 
   return item;
 }

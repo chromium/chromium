@@ -54,8 +54,7 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictDialog
                                               const gfx::VectorIcon& icon,
                                               const std::u16string& text,
                                               std::string_view pref_name,
-                                              bool checked,
-                                              bool enterprise_managed = false);
+                                              bool checked);
   HoverHighlightView* AddScrollListItem(views::View* container,
                                         const gfx::VectorIcon& icon,
                                         const std::u16string& text);
