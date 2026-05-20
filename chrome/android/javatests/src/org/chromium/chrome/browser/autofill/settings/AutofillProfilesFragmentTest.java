@@ -2234,6 +2234,72 @@ public class AutofillProfilesFragmentTest {
     }
 
     @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testAutofillAiEntities_notShownWhenHoTEnabled() throws Exception {
+        EntityType vehicleType = TestUtils.getVehicleEntityType();
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
+
+        // Trigger a rebuild of the profile list to pick up the mock entities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        // Verify that the entity is NOT rendered.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference vehicleEntity =
+                            mSettingsActivityTestRule.getFragment().findPreference("guid1");
+                    Criteria.checkThat(
+                            "Vehicle entity should NOT exist", vehicleEntity, Matchers.nullValue());
+                });
+
+        // Verify that the category is also NOT rendered.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PreferenceCategory category =
+                            mSettingsActivityTestRule.getFragment().findPreference("Vehicle");
+                    assertNull(category);
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER
+    })
+    public void testDisabledWalletDataSharingDataCard_notShownWhenHoTEnabled() throws Exception {
+        // Set up conditions to normally show the wallet data sharing card.
+        when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        // Verify that the card is NOT rendered.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference card =
+                            mSettingsActivityTestRule
+                                    .getFragment()
+                                    .findPreference(
+                                            AutofillAiDelegate.DISABLED_WALLET_DATA_SHARING);
+                    Criteria.checkThat(
+                            "Disabled wallet data sharing card should NOT exist",
+                            card,
+                            Matchers.nullValue());
+                });
+    }
+
+    @Test
     @SmallTest
     public void testHelpMenuTriggersAutofillHelp() {
         onView(withId(R.id.menu_id_targeted_help)).perform(click());

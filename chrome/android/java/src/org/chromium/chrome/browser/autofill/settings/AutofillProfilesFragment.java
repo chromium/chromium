@@ -168,7 +168,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (mAddressEditor != null) {
             mAddressEditor.onConfigurationChanged();
         }
-        mAutofillAiDelegate.onConfigurationChanged();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            mAutofillAiDelegate.onConfigurationChanged();
+        }
     }
 
     @Override
@@ -188,7 +190,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         // LINT.IfChange(RebuildProfileList)
         mAutofillAiDelegate.maybeAddDisabledSettingsInfoCard(
                 screen, AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT);
-        mAutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(screen);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            mAutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(screen);
+        }
 
         addAutofillSwitch(screen);
         addProfilePreferences(screen);
@@ -196,7 +201,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             addAddAddressButton(screen);
         }
         // LINT.ThenChange(:DynamicPreferences)
-        mAutofillAiDelegate.addAutofillAiEntities(screen, /* typeFilter= */ null);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            mAutofillAiDelegate.addAutofillAiEntities(screen, /* typeFilter= */ null);
+        }
         updateDynamicPreferences(getProfile());
     }
 
@@ -316,13 +323,17 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         PersonalDataManagerFactory.getForProfile(getProfile()).registerDataObserver(this);
-        mAutofillAiDelegate.onActivityCreated();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            mAutofillAiDelegate.onActivityCreated();
+        }
     }
 
     @Override
     public void onDestroyView() {
         PersonalDataManagerFactory.getForProfile(getProfile()).unregisterDataObserver(this);
-        mAutofillAiDelegate.onDestroyView();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            mAutofillAiDelegate.onDestroyView();
+        }
         super.onDestroyView();
     }
 
@@ -429,8 +440,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         addAddAddressButton(indexData, profile, getPrefFragmentName());
                     }
 
-                    AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
-                            indexData, profile, getPrefFragmentName());
+                    if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+                        AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
+                                indexData, profile, getPrefFragmentName());
+                    }
                     addAutofillSwitch(indexData);
                     // LINT.ThenChange(:RebuildProfileList)
                 }
@@ -462,8 +476,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             }
         }
 
-        AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
-                indexData, profile, prefFragmentName);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
+                    indexData, profile, prefFragmentName);
+        }
         indexData.resolveIndex();
     }
 
