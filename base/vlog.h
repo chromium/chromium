@@ -37,8 +37,8 @@ class BASE_EXPORT VlogInfo {
   // against the whole pathname and not just the module.  E.g.,
   // "*/foo/bar/*=2" would change the logging level for all code in
   // source files under a "foo/bar" directory.
-  VlogInfo(const std::string& v_switch,
-           const std::string& vmodule_switch,
+  VlogInfo(std::string_view v_switch,
+           std::string_view vmodule_switch,
            int& min_log_level);
   VlogInfo(const VlogInfo&) = delete;
   VlogInfo& operator=(const VlogInfo&) = delete;
@@ -50,7 +50,7 @@ class BASE_EXPORT VlogInfo {
 
   // Returns a new VlogInfo based on `this` but with extra modules/levels added
   // according to `vmodule_switch`.
-  VlogInfo* WithSwitches(const std::string& vmodule_switch) const;
+  VlogInfo* WithSwitches(std::string_view vmodule_switch) const;
 
  private:
   void SetMaxVlogLevel(int level);
@@ -61,7 +61,7 @@ class BASE_EXPORT VlogInfo {
   struct VmodulePattern {
     enum MatchTarget { MATCH_MODULE, MATCH_FILE };
 
-    explicit VmodulePattern(const std::string& pattern);
+    explicit VmodulePattern(std::string pattern);
 
     VmodulePattern();
 
@@ -75,7 +75,7 @@ class BASE_EXPORT VlogInfo {
   // Parses `VmodulePatterns` from a string, typically provided on the
   // commandline.
   static std::vector<VmodulePattern> ParseVmoduleLevels(
-      const std::string& vmodule_switch);
+      std::string_view vmodule_switch);
 
   const std::vector<VmodulePattern> vmodule_levels_;
   raw_ref<int> const min_log_level_;

@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -19,13 +20,13 @@ namespace logging {
 
 const int VlogInfo::kDefaultVlogLevel = 0;
 
-VlogInfo::VmodulePattern::VmodulePattern(const std::string& pattern)
-    : pattern(pattern),
+VlogInfo::VmodulePattern::VmodulePattern(std::string pattern)
+    : pattern(std::move(pattern)),
       vlog_level(VlogInfo::kDefaultVlogLevel),
       match_target(MATCH_MODULE) {
   // If the pattern contains a {forward,back} slash, we assume that
   // it's meant to be tested against the entire __FILE__ string.
-  std::string::size_type first_slash = pattern.find_first_of("\\/");
+  std::string::size_type first_slash = this->pattern.find_first_of("\\/");
   if (first_slash != std::string::npos) {
     match_target = MATCH_FILE;
   }
@@ -36,27 +37,27 @@ VlogInfo::VmodulePattern::VmodulePattern()
 
 // static
 std::vector<VlogInfo::VmodulePattern> VlogInfo::ParseVmoduleLevels(
-    const std::string& vmodule_switch) {
+    std::string_view vmodule_switch) {
   std::vector<VmodulePattern> vmodule_levels;
-  base::StringPairs kv_pairs;
-  if (!base::SplitStringIntoKeyValuePairs(vmodule_switch, '=', ',',
-                                          &kv_pairs)) {
+  base::StringViewPairs kv_pairs;
+  if (!base::SplitStringIntoKeyValueViewPairs(vmodule_switch, '=', ',',
+                                              &kv_pairs)) {
     DLOG(WARNING) << "Could not fully parse vmodule switch \"" << vmodule_switch
                   << "\"";
   }
-  for (const auto& pair : kv_pairs) {
-    VmodulePattern pattern(pair.first);
+  for (std::pair<std::string_view, std::string_view> pair : kv_pairs) {
+    VmodulePattern pattern(std::string(pair.first));
     if (!base::StringToInt(pair.second, &pattern.vlog_level)) {
       DLOG(WARNING) << "Parsed vlog level for \"" << pair.first << "="
                     << pair.second << "\" as " << pattern.vlog_level;
     }
-    vmodule_levels.push_back(pattern);
+    vmodule_levels.push_back(std::move(pattern));
   }
   return vmodule_levels;
 }
 
-VlogInfo::VlogInfo(const std::string& v_switch,
-                   const std::string& vmodule_switch,
+VlogInfo::VlogInfo(std::string_view v_switch,
+                   std::string_view vmodule_switch,
                    int& min_log_level)
     : vmodule_levels_(ParseVmoduleLevels(vmodule_switch)),
       min_log_level_(min_log_level) {
@@ -123,12 +124,12 @@ VlogInfo::VlogInfo(std::vector<VmodulePattern> vmodule_levels,
     : vmodule_levels_(std::move(vmodule_levels)),
       min_log_level_(min_log_level) {}
 
-VlogInfo* VlogInfo::WithSwitches(const std::string& vmodule_switch) const {
+VlogInfo* VlogInfo::WithSwitches(std::string_view vmodule_switch) const {
   std::vector<VmodulePattern> vmodule_levels = vmodule_levels_;
   std::vector<VmodulePattern> additional_vmodule_levels =
       ParseVmoduleLevels(vmodule_switch);
-  vmodule_levels.insert(vmodule_levels.end(), additional_vmodule_levels.begin(),
-                        additional_vmodule_levels.end());
+  vmodule_levels.append_range(
+      base::RangeAsRvalues(std::move(additional_vmodule_levels)));
   return new VlogInfo(std::move(vmodule_levels), *min_log_level_);
 }
 
