@@ -552,7 +552,9 @@ HttpCache::HttpCache(
               [](base::WeakPtr<HttpCache> self, bool has_file) {
                 bool create_backend = false;
                 if (self && has_file) {
-                  self->CreateBackend(CompletionOnceCallback());
+                  if (!self->disk_cache_.get()) {
+                    self->CreateBackend(CompletionOnceCallback());
+                  }
                   create_backend = true;
                 }
                 base::UmaHistogramBoolean("HttpCache.CreateBackendEarly",
