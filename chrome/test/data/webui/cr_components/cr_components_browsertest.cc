@@ -42,6 +42,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, HorizontalCarousel) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsTest, AudioLevelsProcessorTest) {
+  RunTest("cr_components/composebox/composebox_audio_levels_test.js",
+          "mocha.run()");
+}
+
 class CrComponentsHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsHistoryEmbeddingsTest() {

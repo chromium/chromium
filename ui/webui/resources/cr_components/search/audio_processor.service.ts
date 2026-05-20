@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AudioLevelsProcessor} from './audio_levels.js';
+
 export class AudioProcessorService {
   private audioContext: AudioContext|null = null;
   private analyser: AnalyserNode|null = null;
-  private levels: Uint8Array<ArrayBuffer>|null = null;
+  private levels: Uint8Array<ArrayBuffer>|Float32Array<ArrayBuffer>|null = null;
+  private audioLevelsProcessor = new AudioLevelsProcessor();
   private mediaStream: MediaStream|null = null;
   private microphoneSource: MediaStreamAudioSourceNode|null = null;
 
-  // Number of buckets to clip useless audio from low end and high end of
-  // frequency spectrum. See comments on `startMonitoringLevels()` for more
-  // details on frequency range cutoffs and bucket calculations.
-  private lowEndClip = 6;
-  private highEndClip = 128;
+
 
   // Returning a boolean lets the UI know if it actually worked
   async startMonitoringLevels(): Promise<boolean> {
@@ -45,20 +44,22 @@ export class AudioProcessorService {
       // Fast Fourier Transform - higher means more detail, but slower
       // calculations.
       this.analyser.fftSize = 1024;
-      this.analyser.smoothingTimeConstant = 0.2;
+
+      // Set the default smoothing to 0 to utilize the Chrome custom smoother.
+      this.analyser.smoothingTimeConstant = 0;
 
       // frequencyBinCount is half of fftSize, so 512 in this case.
       // Assuming a 16000Hz sample rate, the maximum measurable frequency
-      // is 8000Hz.  Each bucket represents 15.625 Hz (8000Hz / 512).
-      //   Bucket [0, 6): low frequencies (0 to ~93Hz; rumble, so will be
+      // is 8000Hz. Each bucket represents 15.625 Hz (8000Hz / 512).
+      // `AudioLevelsProcessor` limits speech band analysis to bins [7, 70]:
+      //   - Bucket [0, 7): low frequencies (0 to ~109Hz; rumbles, hums,
       //   clipped).
-      //   Bucket [6, 384): frequencies containing human voice (up to 6000Hz;
-      //   will be used).
-      //   Bucket [384, 512): high frequencies (6000Hz to 8000Hz; noise,
-      //   so it will be clipped).
+      //   - Bucket [7, 70]: speech band fundamental frequencies (~109Hz to
+      //   ~1094Hz, used).
+      //   - Bucket (70, 512): high frequencies (>1094Hz; noise, clicks,
+      //   sibilance, clipped).
       const bucketSize = this.analyser.frequencyBinCount;
-      // Speech webkit requires data structure of values from 0-255.
-      this.levels = new Uint8Array(bucketSize);
+      this.levels = new Float32Array(bucketSize);
       return true;
 
     } catch (err) {
@@ -74,23 +75,10 @@ export class AudioProcessorService {
     if (!this.analyser || !this.levels) {
       return 0;
     }
-    this.analyser.getByteFrequencyData(this.levels);
 
-    // Clip unusable low and high frequencies that are often just noise (like HPF/LPF).
-    // See comments on startMonitoringLevels()` for frequency range details.
-    const usableLevels = this.levels.slice(
-        this.lowEndClip,
-        this.levels.length - this.highEndClip,
-    );
-
-    if (usableLevels.length === 0) {
-      return 0;
-    }
-    const sum = usableLevels.reduce((a, b) => a + b, 0);
-    const averageAmplitude = sum / usableLevels.length;
-    // Normalize the amplitude based on Uint8 to
-    // 0 and 1, which the UI expects.
-    return averageAmplitude / 255;
+    const floatBuffer = this.levels as Float32Array<ArrayBuffer>;
+    this.analyser.getFloatFrequencyData(floatBuffer);
+    return this.audioLevelsProcessor.process(floatBuffer, performance.now());
   }
 
   // Cleanup.
