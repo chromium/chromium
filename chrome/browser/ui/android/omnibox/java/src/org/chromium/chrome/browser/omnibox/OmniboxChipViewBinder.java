@@ -10,6 +10,9 @@ import static org.chromium.chrome.browser.omnibox.OmniboxChipProperties.ICON;
 import static org.chromium.chrome.browser.omnibox.OmniboxChipProperties.ON_CLICK;
 import static org.chromium.chrome.browser.omnibox.OmniboxChipProperties.TEXT;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -31,7 +34,11 @@ class OmniboxChipViewBinder {
         if (TEXT.equals(propertyKey)) {
             updatePaddingAndText(view, model);
         } else if (ICON.equals(propertyKey)) {
-            view.setIcon(model.get(ICON));
+            Drawable icon = model.get(ICON);
+            if (icon != null) {
+                icon = scaleIcon(view.getContext(), icon);
+            }
+            view.setIcon(icon);
         } else if (CONTENT_DESC.equals(propertyKey)) {
             String contentDesc = model.get(CONTENT_DESC);
             view.setContentDescription(contentDesc);
@@ -83,5 +90,14 @@ class OmniboxChipViewBinder {
             view.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             view.setPaddingRelative(paddingStart, paddingVertical, paddingEnd, paddingVertical);
         }
+    }
+
+    private static Drawable scaleIcon(Context context, Drawable drawable) {
+        int iconSize = AttrUtils.getDimensionPixelSize(context, R.attr.listItemIconSize);
+        assert iconSize >= 0;
+
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {drawable});
+        layerDrawable.setLayerSize(0, iconSize, iconSize);
+        return layerDrawable;
     }
 }
