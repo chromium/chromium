@@ -36,6 +36,39 @@ bool ContainsStringIgnoreCaseASCII(const Collection& collection,
   });
 }
 
+// Checks whether a study is applicable for |client_groups| per filter with
+// include/exclude groups.
+template <typename FilterGroupType,
+          typename ClientGroupType,
+          typename RepeatedFieldType>
+bool CheckStudyGroup(const RepeatedFieldType& include_groups,
+                     const RepeatedFieldType& exclude_groups,
+                     const base::flat_set<ClientGroupType>& client_groups) {
+  if (!include_groups.empty()) {
+    if (std::ranges::none_of(include_groups,
+                             [&client_groups](const FilterGroupType& group) {
+                               return client_groups.contains(group);
+                             })) {
+      // An include group filter was specified, and the client is not a member
+      // of any of the groups.
+      return false;
+    }
+  }
+
+  if (!exclude_groups.empty()) {
+    if (std::ranges::any_of(exclude_groups,
+                            [&client_groups](const FilterGroupType& group) {
+                              return client_groups.contains(group);
+                            })) {
+      // An exclude group filter was specified, and the client is a member of
+      // at least one of the groups.
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace internal {
@@ -260,38 +293,16 @@ bool CheckStudyEnterprise(const Study::Filter& filter,
 
 bool CheckStudyGoogleGroup(const Study::Filter& filter,
                            const ClientFilterableState& client_state) {
-  if (filter.google_group_size() == 0 &&
-      filter.exclude_google_group_size() == 0) {
-    // This study doesn't have any google group configuration, so break early.
-    return true;
-  }
+  return CheckStudyGroup<int64_t>(filter.google_group(),
+                                  filter.exclude_google_group(),
+                                  client_state.GoogleGroups());
+}
 
-  // Fetch the groups this client is a member of.
-  base::flat_set<uint64_t> client_groups = client_state.GoogleGroups();
-
-  if (filter.google_group_size() > 0) {
-    if (std::ranges::none_of(filter.google_group(),
-                             [&client_groups](int64_t group) {
-                               return client_groups.contains(group);
-                             })) {
-      // A google_group filter was specified, and the client is not a member of
-      // any of the groups.
-      return false;
-    }
-  }
-
-  if (filter.exclude_google_group_size() > 0) {
-    if (std::ranges::any_of(filter.exclude_google_group(),
-                            [&client_groups](int64_t group) {
-                              return client_groups.contains(group);
-                            })) {
-      // An exclude_google_group filter was specified, and the client is a
-      // member of at least one of the groups.
-      return false;
-    }
-  }
-
-  return true;
+bool CheckStudyEnterpriseGroup(const Study::Filter& filter,
+                               const ClientFilterableState& client_state) {
+  return CheckStudyGroup<std::string>(filter.enterprise_group(),
+                                      filter.exclude_enterprise_group(),
+                                      client_state.EnterpriseGroups());
 }
 
 const std::string& GetClientCountryForStudy(
@@ -441,6 +452,12 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
     if (!CheckStudyGoogleGroup(study.filter(), client_state)) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to Google groups membership checks.";
+      return false;
+    }
+
+    if (!CheckStudyEnterpriseGroup(study.filter(), client_state)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to enterprise groups membership checks.";
       return false;
     }
   }

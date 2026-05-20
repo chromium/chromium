@@ -58,6 +58,12 @@ std::unique_ptr<ClientFilterableState> ClientFilterableStateForGoogleGroups(
       base::BindLambdaForTesting([=]() { return google_groups; }));
 }
 
+std::unique_ptr<ClientFilterableState> ClientFilterableStateForEnterpriseGroups(
+    const base::flat_set<std::string> enterprise_groups) {
+  return ClientFilterableState::CreateWithEnterpriseGroups(
+      base::BindLambdaForTesting([=]() { return enterprise_groups; }));
+}
+
 }  // namespace
 
 TEST(VariationsStudyFilteringTest, CheckStudyChannel) {
@@ -803,6 +809,84 @@ TEST(VariationsStudyFilteringTest, CheckStudyBothGoogleGroupFiltersSet) {
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
       *ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1, 2}))));
+}
+
+TEST(VariationsStudyFilteringTest, CheckStudyEnterpriseGroupFilterNotSet) {
+  Study::Filter filter;
+
+  // Check that if the filter is not set, the study always applies.
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>())));
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a"}))));
+}
+
+TEST(VariationsStudyFilteringTest, CheckStudyEnterpriseGroupFilterSet) {
+  Study::Filter filter;
+
+  // Check that if a enterprise_group filter is set, then only members of that
+  // group match.
+  filter.add_enterprise_group("a");
+  filter.add_enterprise_group("b");
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>())));
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a"}))));
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"c"}))));
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a", "c"}))));
+}
+
+TEST(VariationsStudyFilteringTest, CheckStudyExcludeEnterpriseGroupFilterSet) {
+  Study::Filter filter;
+
+  // Check that if an exclude_enterprise_group filter is set, then only
+  // non-members of that group match.
+  filter.add_exclude_enterprise_group("a");
+  filter.add_exclude_enterprise_group("b");
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>())));
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a"}))));
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"c"}))));
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a", "c"}))));
+}
+
+TEST(VariationsStudyFilteringTest, CheckStudyBothEnterpriseGroupFiltersSet) {
+  Study::Filter filter;
+
+  // Check that both enterprise_group and exclude_enterprise_group filter is
+  // set, the study is filtered out.
+  filter.add_enterprise_group("a");
+  filter.add_exclude_enterprise_group("b");
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>())));
+  EXPECT_TRUE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a"}))));
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"b"}))));
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"c"}))));
+  EXPECT_FALSE(internal::CheckStudyEnterpriseGroup(
+      filter, *ClientFilterableStateForEnterpriseGroups(
+                  base::flat_set<std::string>({"a", "b"}))));
 }
 
 TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
