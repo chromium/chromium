@@ -107,6 +107,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
         this.tooltip_.style.left = `${left}px`;
         this.tooltip_.style.top = `${top}px`;
         this.tooltip_.style.right = 'auto';
+        this.tooltip_.style.bottom = 'auto';
       }
     }
   }
