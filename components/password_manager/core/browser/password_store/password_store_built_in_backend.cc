@@ -256,11 +256,8 @@ void PasswordStoreBuiltInBackend::InitBackend(
       weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
-  os_crypt_async_->GetInstance(
-      metrics_util::TimeCallback(
-          std::move(init_database_callback),
-          "PasswordManager.OsCryptAsync.GetInstanceTime"),
-      os_crypt_async::Encryptor::Option::kNone);
+  os_crypt_async_->GetInstance(std::move(init_database_callback),
+                               os_crypt_async::Encryptor::Option::kNone);
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsAsync(

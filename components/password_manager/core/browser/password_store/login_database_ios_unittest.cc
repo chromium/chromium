@@ -295,7 +295,6 @@ TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
   DeleteEncryptedPasswordFromKeychain(
       initial_credentials[0].keychain_identifier);
 
-  base::HistogramTester histogram_tester;
   login_db_->DeleteAndRecreateDatabaseFile();
 
   // Verify that all passwords are gone.
@@ -314,11 +313,6 @@ TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
   EXPECT_EQ(errSecItemNotFound,
             GetTextFromKeychainIdentifier(
                 initial_credentials[2].keychain_identifier, &password_value));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.LoginDatabase.DeleteFromKeychain"),
-      BucketsInclude(Bucket(errSecSuccess, 2), Bucket(errSecItemNotFound, 1)));
 }
 
 class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {

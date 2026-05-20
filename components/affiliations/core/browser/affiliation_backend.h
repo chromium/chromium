@@ -170,9 +170,6 @@ class AffiliationBackend : public FacetManagerHost,
   std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   std::unique_ptr<AffiliationFetchThrottler> throttler_;
 
-  base::Time construction_time_;
-  base::Time last_request_time_;
-
   // Contains a FacetManager for each facet URI that need ongoing attention. To
   // save memory, managers are discarded as soon as they become redundant.
   std::unordered_map<FacetURI, std::unique_ptr<FacetManager>, FacetURIHash>

@@ -75,7 +75,7 @@ public class PasswordMetricsUtil {
     public static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
 
     public static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
-            "PasswordManager.PasswordCheckup.Launch.Success";
+            "PasswordManager.PasswordCheckup.Launch.Success2";
 
     /**
      * This is a helper that logs the results of password export which could be triggered from

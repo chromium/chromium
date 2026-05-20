@@ -47,8 +47,7 @@ AffiliationBackend::AffiliationBackend(
     const base::TickClock* time_tick_source)
     : task_runner_(task_runner),
       clock_(time_source),
-      tick_clock_(time_tick_source),
-      construction_time_(clock_->Now()) {
+      tick_clock_(time_tick_source) {
   DCHECK_LT(base::Time(), clock_->Now());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -421,19 +420,6 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
 void AffiliationBackend::ReportStatistics(size_t requested_facet_uri_count) {
   UMA_HISTOGRAM_COUNTS_100("PasswordManager.AffiliationBackend.FetchSize",
                            requested_facet_uri_count);
-
-  if (last_request_time_.is_null()) {
-    base::TimeDelta delay = clock_->Now() - construction_time_;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "PasswordManager.AffiliationBackend.FirstFetchDelay", delay,
-        base::Seconds(1), base::Days(3), 50);
-  } else {
-    base::TimeDelta delay = clock_->Now() - last_request_time_;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "PasswordManager.AffiliationBackend.SubsequentFetchDelay", delay,
-        base::Seconds(1), base::Days(3), 50);
-  }
-  last_request_time_ = clock_->Now();
 }
 
 }  // namespace affiliations
