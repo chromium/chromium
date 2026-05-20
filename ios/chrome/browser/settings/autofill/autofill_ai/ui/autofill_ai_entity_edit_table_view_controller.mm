@@ -26,8 +26,14 @@
 #import "url/gurl.h"
 
 namespace {
+
+// 16pt padding to make the combined padding between attributes and
+// the footer text 24pt.
+constexpr CGFloat kAttributesSectionFooterHeight = 16.0;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAttributes = kSectionIdentifierEnumZero,
+  SectionIdentifierFooter,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -143,7 +149,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER);
   }
 
-  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierAttributes];
+  [model addSectionWithIdentifier:SectionIdentifierFooter];
+  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierFooter];
 }
 
 #pragma mark - Setup
@@ -410,12 +417,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
-  if (sectionIdentifier == SectionIdentifierAttributes) {
+  if (sectionIdentifier == SectionIdentifierFooter) {
     TableViewLinkHeaderFooterView* linkView =
         base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
   }
   return view;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+  if (sectionIdentifier == SectionIdentifierAttributes) {
+    return kAttributesSectionFooterHeight;
+  }
+  return [super tableView:tableView heightForFooterInSection:section];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return 0;
 }
 
 - (NSIndexPath*)tableView:(UITableView*)tableView

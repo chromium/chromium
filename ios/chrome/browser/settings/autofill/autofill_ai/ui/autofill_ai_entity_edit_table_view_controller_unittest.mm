@@ -89,7 +89,7 @@ class AutofillAIEntityEditTableViewControllerTest
 
 TEST_F(AutofillAIEntityEditTableViewControllerTest, TestInitialization) {
   CheckController();
-  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(2, NumberOfSections());
 }
 
 TEST_F(AutofillAIEntityEditTableViewControllerTest, TestLoadModel) {
@@ -102,7 +102,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestLoadModel) {
   [view_controller setEditItems:@[ item ]];
 
   CheckController();
-  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(2, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
 }
 
@@ -212,7 +212,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestFooterForLocalItem) {
 
   TableViewLinkHeaderFooterItem* footer =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
-          [view_controller.tableViewModel footerForSectionIndex:0]);
+          [view_controller.tableViewModel footerForSectionIndex:1]);
 
   EXPECT_TRUE(footer);
   EXPECT_NSEQ(footer.text,
@@ -232,7 +232,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
 
   TableViewLinkHeaderFooterItem* footer =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
-          [view_controller.tableViewModel footerForSectionIndex:0]);
+          [view_controller.tableViewModel footerForSectionIndex:1]);
 
   EXPECT_TRUE(footer);
   EXPECT_EQ(1U, footer.urls.count);

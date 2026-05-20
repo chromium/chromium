@@ -25,6 +25,9 @@ namespace {
 constexpr CGFloat kSaveFormTopPadding = 16.0;
 constexpr CGFloat kUpdateFormSectionSpacing = 32.0;
 
+// 16pt padding between attributes and the footer text.
+constexpr CGFloat kFooterTopExtraPadding = 16.0;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierNewEntity = 0,
   SectionIdentifierOldEntity,
@@ -259,9 +262,16 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
     return UITableViewAutomaticDimension;
   }
 
-  if (sectionIdentifier == SectionIdentifierNewEntity &&
-      [self isUpdateDialog]) {
-    return kUpdateFormSectionSpacing;
+  if (sectionIdentifier == SectionIdentifierOldEntity) {
+    return kFooterTopExtraPadding;
+  }
+
+  if (sectionIdentifier == SectionIdentifierNewEntity) {
+    if ([self isUpdateDialog]) {
+      return kUpdateFormSectionSpacing;
+    } else {
+      return kFooterTopExtraPadding;
+    }
   }
 
   return 0;
