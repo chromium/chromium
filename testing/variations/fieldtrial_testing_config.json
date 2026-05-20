@@ -13383,6 +13383,21 @@
             ]
         }
     ],
+    "IOSEnterpriseFileDownloadConnector": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFileDownloadConnectorIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExpandedSetupList": [
         {
             "platforms": [
