@@ -285,7 +285,7 @@
   {
     "name": "android-desktop-webprefs-large-display",
     "owners": [ "lokeric@google.com", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 149
+    "expiry_milestone": 152
   },
   {
     "name": "android-desktop-zoom-scaling",
