@@ -43,8 +43,8 @@ public class TabClosureParams {
      * @return A TabClosureParams for the tab group or null if the group is not found.
      */
     public static TabClosureParams.@Nullable CloseTabsBuilder forCloseTabGroup(
-            TabGroupModelFilter filter, @Nullable Token tabGroupId) {
-        List<Tab> relatedTabs = filter.getTabsInGroup(tabGroupId);
+            TabModel tabModel, @Nullable Token tabGroupId) {
+        List<Tab> relatedTabs = tabModel.getTabsInGroup(tabGroupId);
         if (relatedTabs.isEmpty()) return null;
 
         TabClosureParams.CloseTabsBuilder builder =
@@ -257,8 +257,7 @@ public class TabClosureParams {
         }
     }
 
-    // TODO(crbug.com/356445932): Consider package protecting these fields once TabGroupModelFilter
-    // is merged into TabModel.
+    // TODO(crbug.com/356445932): Consider package protecting these fields.
     public final @Nullable List<Tab> tabs;
     public final boolean isAllTabs;
     public final @Nullable Tab recommendedNextTab;

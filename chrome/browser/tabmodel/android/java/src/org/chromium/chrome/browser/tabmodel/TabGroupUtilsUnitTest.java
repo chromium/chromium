@@ -141,7 +141,6 @@ public class TabGroupUtilsUnitTest {
     @Test
     public void testOpenUrlInGroup() {
         when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(Arrays.asList(mTab1));
-        when(mTabModel.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;

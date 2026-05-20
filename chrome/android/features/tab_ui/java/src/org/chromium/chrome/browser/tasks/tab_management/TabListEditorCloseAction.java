@@ -72,7 +72,6 @@ public class TabListEditorCloseAction extends TabListEditorAction {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
         // We only allow undo for non peripherals.
         getTabModel()
-                .getTabModel()
                 .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs)

@@ -241,7 +241,6 @@ public class StripLayoutHelperManagerTest {
 
     private void initializeTest() {
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mStandardTabModel);
-        when(mStandardTabModel.getTabModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         when(mStandardTabModel.getProfile()).thenReturn(mProfile);

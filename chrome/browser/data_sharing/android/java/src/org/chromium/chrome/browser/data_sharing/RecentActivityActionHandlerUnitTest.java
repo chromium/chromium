@@ -67,7 +67,6 @@ public class RecentActivityActionHandlerUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
         List<Tab> relatedTabs = new ArrayList<>();
         relatedTabs.add(mTab1);

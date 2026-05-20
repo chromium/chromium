@@ -563,10 +563,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(false).when(mIncognitoReauthControllerMock).isReauthPageShowing();
     }
 
-    /**
-     * Preparation to mock the "final" method TabGroupModelFilter#getTabsWithNoOtherRelatedTabs
-     * which plays a part to enable group tabs.
-     */
+    /** Preparation to mock {@link TabModel} methods which play a part to enable group tabs. */
     private void prepareMocksForGroupTabsOnTabModel(TabModel tabmodel) {
         when(tabmodel.getCount()).thenReturn(2);
         Tab mockTab1 = mock(Tab.class);
@@ -3912,15 +3909,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
     public void testTabGroupsSubmenu_WithGroups() {
-        TabModel tabModelWithFilter = Mockito.mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModelWithFilter);
-        when(mTabModelSelector.getModel(false)).thenReturn(tabModelWithFilter);
-        when(tabModelWithFilter.getProfile()).thenReturn(mProfile);
+        TabModel tabModel = Mockito.mock(TabModel.class);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getProfile()).thenReturn(mProfile);
 
         Token token1 = new Token(1L, 1L);
-        when(tabModelWithFilter.getAllTabGroupIds()).thenReturn(java.util.Set.of(token1));
-        when(tabModelWithFilter.getTabGroupTitle(token1)).thenReturn("Group 1");
-        when(tabModelWithFilter.getTabGroupColorWithFallback(token1))
+        when(tabModel.getAllTabGroupIds()).thenReturn(java.util.Set.of(token1));
+        when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
+        when(tabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(org.chromium.components.tab_groups.TabGroupColorId.BLUE);
 
         setUpMocksForPageMenu();

@@ -1141,7 +1141,6 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabModel.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_ID);
         when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});

@@ -31,7 +31,7 @@ public class TabClosureParamsUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Runnable mUndoRunnable;
@@ -117,9 +117,9 @@ public class TabClosureParamsUnitTest {
     @Test
     public void testCloseTabsParams_TabGroup() {
         List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB_GROUP_ID).build();
+                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID).build();
 
         assertEquals("Tabs should be mTab1, mTab2", tabs, params.tabs);
         assertFalse("Should not be all tabs", params.isAllTabs);

@@ -198,12 +198,12 @@ public class TabModelMultiWindowTest {
                 /* incognito= */ false);
     }
 
-    private List<Tab> createTabGroup(int numberOfTabs, TabGroupModelFilter filter) {
+    private List<Tab> createTabGroup(int numberOfTabs, TabModel tabModel) {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < numberOfTabs; i++) tabs.add(createTab());
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        filter.mergeListOfTabsToGroup(
+                        tabModel.mergeListOfTabsToGroup(
                                 tabs,
                                 tabs.get(0),
                                 /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY));

@@ -329,11 +329,6 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {}
 
     @Override
-    public TabModel getTabModel() {
-        return this;
-    }
-
-    @Override
     public List<Tab> getRepresentativeTabList() {
         return Collections.emptyList();
     }

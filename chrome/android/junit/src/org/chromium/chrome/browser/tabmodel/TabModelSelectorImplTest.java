@@ -484,7 +484,6 @@ public class TabModelSelectorImplTest {
                         /* startIncognito= */ false,
                         SupportedProfileType.MIXED);
         when(regularModel.isActiveModel()).thenReturn(true);
-        when(regularModel.getTabModel()).thenReturn(regularModel);
         mTabModelSelector.initializeForTesting(
                 TabModelHolderFactory.createTabModelHolderForTesting(regularModel),
                 TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));

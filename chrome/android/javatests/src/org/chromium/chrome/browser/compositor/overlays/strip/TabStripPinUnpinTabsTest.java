@@ -223,7 +223,7 @@ public class TabStripPinUnpinTabsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var tab = mTabModel.getTabById(tabToPin.getTabId());
-                    assertEquals(firstGroupedIndex, regularTabModel.getTabModel().indexOf(tab));
+                    assertEquals(firstGroupedIndex, regularTabModel.indexOf(tab));
                     assertFalse(tabToPin.getIsPinned());
                     assertNotNull(tab.getTabGroupId());
                 });
@@ -241,7 +241,7 @@ public class TabStripPinUnpinTabsTest {
                             "Tab should be ungrouped.",
                             regularTabModel.isTabInTabGroup(mTabModel.getTabAt(firstGroupedIndex)));
                     var tab = mTabModel.getTabById(tabToPin.getTabId());
-                    assertEquals(0, regularTabModel.getTabModel().indexOf(tab));
+                    assertEquals(0, regularTabModel.indexOf(tab));
                     assertTrue(tabToPin.getIsPinned());
                 });
 

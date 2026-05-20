@@ -471,8 +471,6 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabModel.getTabUngrouper()).thenReturn(mIncognitoTabUngrouper);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mIncognitoTabModel.getTabRemover()).thenReturn(mIncognitoTabRemover);
-        doReturn(mTabModel).when(mTabModel).getTabModel();
-        doReturn(mIncognitoTabModel).when(mIncognitoTabModel).getTabModel();
         mCurrentTabModelSupplier.set(mTabModel);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
@@ -5655,7 +5653,6 @@ public class TabListMediatorUnitTest {
 
         verify(mActorUiTabController, atLeastOnce()).addObserver(any());
 
-        doReturn(mTabModel).when(mTabModel).getTabModel();
         when(mTabModel.iterator()).thenAnswer(inv -> List.of(mTab1).iterator());
 
         mMediator.resetWithListOfTabs(null, null, false);

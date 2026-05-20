@@ -513,11 +513,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public TabModel getTabModel() {
-        return this;
-    }
-
-    @Override
     public List<Tab> getRepresentativeTabList() {
         return mDelegateModel.getRepresentativeTabList();
     }

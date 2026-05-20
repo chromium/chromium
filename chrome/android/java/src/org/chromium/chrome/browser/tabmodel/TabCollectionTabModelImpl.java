@@ -1089,7 +1089,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         return tabCount == 0 || mClosingTabsCount == tabCount;
     }
 
-    // TabGroupModelFilter overrides.
+    // Tab group methods.
 
     @Override
     public void addTabGroupObserver(TabGroupModelFilterObserver observer) {
@@ -1101,11 +1101,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {
         assertOnUiThread();
         mTabGroupObservers.removeObserver(observer);
-    }
-
-    @Override
-    public TabModel getTabModel() {
-        return this;
     }
 
     @Override

@@ -63,8 +63,8 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
@@ -730,8 +730,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             submenuItems.add(buildCreateNewTabGroupItem());
         }
 
-        TabGroupModelFilter filter = mTabModelSelector.getCurrentModel();
-        Set<Token> groupIds = filter.getAllTabGroupIds();
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        Set<Token> groupIds = tabModel.getAllTabGroupIds();
         if (groupIds.isEmpty()) {
             return submenuItems;
         }
@@ -743,11 +743,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // TODO(crbug.com/509065807): Observe TabModel to update this while the menu is open.
         for (Token groupId : groupIds) {
-            String title = filter.getTabGroupTitle(groupId);
+            String title = tabModel.getTabGroupTitle(groupId);
             if (TextUtils.isEmpty(title)) {
                 title =
                         TabGroupTitleUtils.getDefaultTitle(
-                                mContext, filter.getTabCountForGroup(groupId));
+                                mContext, tabModel.getTabCountForGroup(groupId));
             }
 
             GradientDrawable drawable = new GradientDrawable();
@@ -755,7 +755,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             drawable.setColor(
                     TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                             mContext,
-                            filter.getTabGroupColorWithFallback(groupId),
+                            tabModel.getTabGroupColorWithFallback(groupId),
                             isIncognitoShowing()));
             int size =
                     mContext.getResources()

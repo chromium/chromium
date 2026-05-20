@@ -1632,7 +1632,7 @@ public class TabGridDialogTest {
         TabModel tabModel = selector.getModel(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Token tabGroupId = tabModel.getTabModel().getTabAt(0).getTabGroupId();
+                    Token tabGroupId = tabModel.getTabAt(0).getTabGroupId();
                     tabModel.setTabGroupTitle(tabGroupId, CUSTOMIZED_TITLE1);
                 });
         collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
@@ -1671,7 +1671,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Token tabGroupId = tabModel.getTabModel().getTabAt(0).getTabGroupId();
+                    Token tabGroupId = tabModel.getTabAt(0).getTabGroupId();
                     tabModel.deleteTabGroupTitle(tabGroupId);
                 });
         verifyShowingDialog(cta, 2, null);
@@ -1692,7 +1692,7 @@ public class TabGridDialogTest {
         // Programmatically ungroup.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Tab tab = tabModel.getTabModel().getTabAt(0);
+                    Tab tab = tabModel.getTabAt(0);
                     tabModel.getTabUngrouper()
                             .ungroupTabs(
                                     List.of(tab), /* trailing= */ true, /* allowDialog= */ false);
