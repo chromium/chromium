@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -129,7 +130,8 @@ Status ParseDeviceName(const std::string& device_name,
 
   if (status.IsError()) {
     return Status(kInvalidArgument,
-                  "'" + device_name + "' must be a valid device", status);
+                  base::StrCat({"'", device_name, "' must be a valid device"}),
+                  status);
   }
 
   capabilities->mobile_device = std::move(device);
@@ -547,11 +549,11 @@ Status ParseSwitches(const base::Value& option,
   for (const base::Value& arg : option.GetList()) {
     if (!arg.is_string())
       return Status(kInvalidArgument, "each argument must be a string");
-    std::string arg_string = arg.GetString();
-    base::TrimWhitespaceASCII(arg_string, base::TRIM_ALL, &arg_string);
+    std::string_view arg_string =
+        base::TrimWhitespaceASCII(arg.GetString(), base::TRIM_ALL);
     if (arg_string.empty() || arg_string == "--")
       return Status(kInvalidArgument, "argument is empty");
-    capabilities->switches.SetUnparsedSwitch(std::move(arg_string));
+    capabilities->switches.SetUnparsedSwitch(arg_string);
   }
   return Status(kOk);
 }
@@ -593,10 +595,10 @@ Status ParseProxy(bool w3c_compliant,
   } else if (proxy_type == "autodetect") {
     capabilities->switches.SetSwitch("proxy-auto-detect");
   } else if (proxy_type == "manual") {
-    const char* const proxy_servers_options[][2] = {
-        {"ftpProxy", "ftp"}, {"httpProxy", "http"}, {"sslProxy", "https"},
-        {"socksProxy", "socks"}};
-    const std::string kSocksProxy = "socksProxy";
+    const char* const proxy_servers_options[][2] = {{"ftpProxy", "ftp"},
+                                                    {"httpProxy", "http"},
+                                                    {"sslProxy", "https"},
+                                                    {"socksProxy", "socks"}};
     const base::Value* option_value = nullptr;
     std::string proxy_servers;
     for (const char* const* proxy_servers_option : proxy_servers_options) {
@@ -610,6 +612,7 @@ Status ParseProxy(bool w3c_compliant,
                                          proxy_servers_option[0]));
       }
       std::string value = option_value->GetString();
+      static constexpr std::string_view kSocksProxy = "socksProxy";
       if (proxy_servers_option[0] == kSocksProxy) {
         int socks_version = proxy_dict->FindInt("socksVersion").value_or(-1);
         if (socks_version < 0 || socks_version > 255)
@@ -635,14 +638,16 @@ Status ParseProxy(bool w3c_compliant,
       // In practice, library implementations are not always consistent,
       // so we accept both formats regardless of the W3C mode setting.
       if (option_value->is_list()) {
+        std::vector<std::string_view> item_strings;
+        item_strings.reserve(option_value->GetList().size());
         for (const base::Value& item : option_value->GetList()) {
           if (!item.is_string())
             return Status(kInvalidArgument,
                           "'noProxy' must be a list of strings");
-          if (!proxy_bypass_list.empty())
-            proxy_bypass_list += ",";
-          proxy_bypass_list += item.GetString();
+          item_strings.push_back(item.GetString());
         }
+        proxy_bypass_list = base::JoinString(item_strings, ",");
+
       } else if (option_value->is_string()) {
         proxy_bypass_list = option_value->GetString();
       } else {
@@ -673,10 +678,11 @@ Status ParseExcludeSwitches(const base::Value& option,
       return Status(kInvalidArgument,
                     "each switch to be removed must be a string");
     }
-    std::string switch_name = switch_value.GetString();
-    if (switch_name.substr(0, 2) == "--")
+    std::string_view switch_name = switch_value.GetString();
+    if (switch_name.starts_with("--")) {
       switch_name = switch_name.substr(2);
-    capabilities->exclude_switches.insert(std::move(switch_name));
+    }
+    capabilities->exclude_switches.emplace(switch_name);
   }
   return Status(kOk);
 }
@@ -702,7 +708,7 @@ Status ParseNetAddress(NetAddress* to_set,
                        Capabilities* capabilities) {
   if (!option.is_string())
     return Status(kInvalidArgument, "must be 'host:port'");
-  std::string server_addr = option.GetString();
+  std::string_view server_addr = option.GetString();
   std::vector<std::string> values;
   if (base::StartsWith(server_addr, "[")) {
     size_t ipv6_terminator_pos = server_addr.find(']');
@@ -710,7 +716,7 @@ Status ParseNetAddress(NetAddress* to_set,
       return Status(kInvalidArgument,
                     "ipv6 address must be terminated with ']'");
     }
-    values.push_back(server_addr.substr(0, ipv6_terminator_pos + 1));
+    values.emplace_back(server_addr.substr(0, ipv6_terminator_pos + 1));
     std::vector<std::string> remaining =
         base::SplitString(server_addr.substr(ipv6_terminator_pos + 1), ":",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -744,9 +750,9 @@ Status ParseLoggingPrefs(const base::Value& option,
     const std::string* level_name = pref.second.GetIfString();
     if (!level_name || !WebDriverLog::NameToLevel(*level_name, &level)) {
       return Status(kInvalidArgument,
-                    "invalid log level for '" + type + "' log");
+                    base::StrCat({"invalid log level for '", type, "' log"}));
     }
-    capabilities->logging_prefs.insert(std::make_pair(type, level));
+    capabilities->logging_prefs.emplace(type, level);
   }
   return Status(kOk);
 }
@@ -1027,17 +1033,18 @@ void Switches::SetFromSwitches(const Switches& switches) {
   }
 }
 
-void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
-  std::string value;
+void Switches::SetUnparsedSwitch(std::string_view unparsed_switch) {
+  std::string_view value;
   size_t equals_index = unparsed_switch.find('=');
   if (equals_index != std::string::npos)
     value = unparsed_switch.substr(equals_index + 1);
 
-  std::string name;
   size_t start_index = 0;
-  if (unparsed_switch.substr(0, 2) == "--")
+  if (unparsed_switch.starts_with("--")) {
     start_index = 2;
-  name = unparsed_switch.substr(start_index, equals_index - start_index);
+  }
+  std::string_view name =
+      unparsed_switch.substr(start_index, equals_index - start_index);
 
   if (name.find_first_of(" \t\n\r\"\'") != std::string::npos) {
     LOG(WARNING) << "Ignoring switch with invalid name: " << name;
@@ -1046,9 +1053,9 @@ void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
 
   const auto iter = kMultivaluedSwitches.find(name);
   if (iter != kMultivaluedSwitches.end()) {
-    SetMultivaluedSwitch(name, value, iter->second);
+    SetMultivaluedSwitch(std::string(name), std::string(value), iter->second);
   } else {
-    SetSwitch(name, value);
+    SetSwitch(std::string(name), std::string(value));
   }
 }
 
@@ -1057,7 +1064,7 @@ void Switches::RemoveSwitch(const std::string& name) {
 }
 
 bool Switches::HasSwitch(const std::string& name) const {
-  return switch_map_.count(name) > 0;
+  return switch_map_.contains(name);
 }
 
 std::string Switches::GetSwitchValue(const std::string& name) const {
@@ -1091,12 +1098,12 @@ std::string Switches::ToString() const {
   std::string str;
   auto iter = switch_map_.begin();
   while (iter != switch_map_.end()) {
-    str += "--" + iter->first;
+    base::StrAppend(&str, {"--", iter->first});
     std::string value = GetSwitchValue(iter->first);
     if (value.length()) {
       if (value.find(' ') != std::string::npos)
         value = base::GetQuotedJSONString(value);
-      str += "=" + value;
+      base::StrAppend(&str, {"=", value});
     }
     ++iter;
     if (iter == switch_map_.end())

@@ -51,7 +51,7 @@ class Switches {
   void SetFromSwitches(const Switches& switches);
 
   // Sets a switch from the capabilities, of the form [--]name[=value].
-  void SetUnparsedSwitch(const std::string& unparsed_switch);
+  void SetUnparsedSwitch(std::string_view unparsed_switch);
 
   void RemoveSwitch(const std::string& name);
 
