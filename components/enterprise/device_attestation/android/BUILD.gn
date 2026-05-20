@@ -42,6 +42,8 @@ robolectric_library("junit") {
 
 static_library("android") {
   sources = [
+    "android_attestation_client.cc",
+    "android_attestation_client.h",
     "attestation_utils.cc",
     "attestation_utils.h",
   ]

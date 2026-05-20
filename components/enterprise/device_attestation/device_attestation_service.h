@@ -7,9 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "components/enterprise/device_attestation/common/device_attestation_types.h"
+
+namespace enterprise_management {
+class ChromeProfileReportRequest;
+}
 
 namespace enterprise {
 
@@ -18,18 +23,27 @@ namespace enterprise {
 class DeviceAttestationService {
  public:
   using DeviceAttestationCallback =
-      base::OnceCallback<void(const BlobGenerationResult&)>;
+      base::OnceCallback<void(const AttestationResult&)>;
 
   DeviceAttestationService();
   DeviceAttestationService(const DeviceAttestationService&) = delete;
   DeviceAttestationService& operator=(const DeviceAttestationService&) = delete;
   virtual ~DeviceAttestationService();
 
-  virtual void GetAttestationResponse(std::string_view flow_name,
-                                      std::string_view request_payload,
-                                      std::string_view timestamp,
-                                      std::string_view nonce,
-                                      DeviceAttestationCallback callback);
+  // Asynchronously generates the attestation blob that will bind the profile
+  // `report` to the device, using the `timestamp` and `nonce` to strengthen the
+  // bound. `flow_name` is the name registered with the attestation library by
+  // the calling flow. Note: when ContentBindingVersioningEnabled is true,
+  // `report` is used, otherwise `legacy_request_payload` is used to represent
+  // the report.
+  // Invokes `callback` upon completion with the generated AttestationResult.
+  virtual void GetAttestationResponse(
+      std::string_view flow_name,
+      const enterprise_management::ChromeProfileReportRequest& report,
+      std::string_view legacy_request_payload,
+      std::string_view timestamp,
+      std::string_view nonce,
+      DeviceAttestationCallback callback);
 };
 
 }  // namespace enterprise

@@ -32,34 +32,6 @@ std::string GetHashString(std::string_view payload) {
 
 namespace enterprise {
 
-// TODO(crbug.com/445677557): Add C++ test coverage once internal logic is
-// implemented, if Java test coverage is insufficient.
-BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
-                                             std::string_view request_payload,
-                                             std::string_view timestamp,
-                                             std::string_view nonce) {
-  AttestationHashes hashes =
-      CreateAttestationHashes(request_payload, timestamp, nonce);
-  {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    JNIEnv* env = base::android::AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> generation_result =
-        Java_AttestationBlobGenerator_generate(
-            env, base::android::ConvertUTF8ToJavaString(env, flow_name),
-            base::android::ConvertUTF8ToJavaString(env, hashes.request_hash),
-            base::android::ConvertUTF8ToJavaString(env, hashes.timestamp_hash),
-            base::android::ConvertUTF8ToJavaString(env, hashes.nonce_hash));
-
-    return {base::android::ConvertJavaStringToUTF8(
-                env, Java_BlobGenerationResult_getAttestationBlob(
-                         env, generation_result)),
-            base::android::ConvertJavaStringToUTF8(
-                env, Java_BlobGenerationResult_getErrorMessage(
-                         env, generation_result))};
-  }
-}
-
 AttestationHashes CreateAttestationHashes(std::string_view request_payload,
                                           std::string_view timestamp,
                                           std::string_view nonce) {

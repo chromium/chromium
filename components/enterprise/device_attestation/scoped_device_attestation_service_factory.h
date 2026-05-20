@@ -25,6 +25,10 @@ class ScopedDeviceAttestationServiceFactory
   // factory.
   static std::string GetExpectedAttestationBlob();
 
+  // Get the expected content binding version that's hardcoded in the scoped
+  // factory.
+  static int GetExpectedContentBindingVersion();
+
   // DeviceAttestationServiceFactory:
   std::unique_ptr<DeviceAttestationService> CreateDeviceAttestationService()
       override;

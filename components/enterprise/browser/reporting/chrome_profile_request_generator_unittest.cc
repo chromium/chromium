@@ -4,7 +4,6 @@
 
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 
-#include <tuple>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -154,7 +153,7 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
 
 class ChromeProfileRequestGeneratorTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  protected:
   ChromeProfileRequestGeneratorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -172,28 +171,16 @@ class ChromeProfileRequestGeneratorTest
           enterprise_signals::features::kDetectedAgentSignalCollectionEnabled);
     }
 
-    if (is_content_binding_versioning_enabled()) {
-      enabled_features.push_back(
-          enterprise_signals::features::kContentBindingVersioningEnabled);
-    } else {
-      disabled_features.push_back(
-          enterprise_signals::features::kContentBindingVersioningEnabled);
-    }
-
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool is_agent_collection_enabled() const { return std::get<0>(GetParam()); }
-  bool is_content_binding_versioning_enabled() const {
-    return std::get<1>(GetParam());
-  }
+  bool is_agent_collection_enabled() const { return GetParam(); }
 
   void VerifyReportContent(
       const ReportRequestQueue& requests,
       em::ChromeProfileReportRequest::ReportType expected_report_type,
       bool is_profile_id_null = false,
-      bool agent_collection_enabled = false,
-      bool content_binding_versioning_enabled = false) {
+      bool agent_collection_enabled = false) {
     // True if a status report-exclusive field is expected to be filled
     // correctly, status reports with signals also count.
     bool expect_status_report_only_value =
@@ -285,14 +272,9 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_FALSE(attestation_payload.nonce().empty());
       EXPECT_EQ(attestation_payload.attestation_blob(),
                 scoped_service_factory_.GetExpectedAttestationBlob());
-
-      if (content_binding_versioning_enabled) {
-        EXPECT_TRUE(attestation_payload.has_content_binding_version());
-        EXPECT_EQ(attestation_payload.content_binding_version(),
-                  GetCurrentContentBindingsVersion());
-      } else {
-        EXPECT_FALSE(attestation_payload.has_content_binding_version());
-      }
+      EXPECT_TRUE(attestation_payload.has_content_binding_version());
+      EXPECT_EQ(attestation_payload.content_binding_version(),
+                scoped_service_factory_.GetExpectedContentBindingVersion());
     }
 
     ASSERT_TRUE(request->GetChromeProfileReportRequest().has_browser_report());
@@ -367,8 +349,7 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateFullReportNoSecuritySignals) {
   base::RunLoop().RunUntilIdle();
   VerifyReportContent(
       requests.value(), em::ChromeProfileReportRequest::PROFILE_REPORT,
-      /*is_profile_id_null=*/false, is_agent_collection_enabled(),
-      is_content_binding_versioning_enabled());
+      /*is_profile_id_null=*/false, is_agent_collection_enabled());
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest,
@@ -397,8 +378,7 @@ TEST_P(ChromeProfileRequestGeneratorTest,
   VerifyReportContent(
       requests.value(),
       em::ChromeProfileReportRequest::PROFILE_REPORT_WITH_SECURITY_SIGNALS,
-      /*is_profile_id_null=*/false, agent_collection_enabled,
-      is_content_binding_versioning_enabled());
+      /*is_profile_id_null=*/false, agent_collection_enabled);
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
@@ -424,8 +404,7 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
   base::RunLoop().RunUntilIdle();
   VerifyReportContent(requests.value(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
-                      /*is_profile_id_null=*/false, agent_collection_enabled,
-                      is_content_binding_versioning_enabled());
+                      /*is_profile_id_null=*/false, agent_collection_enabled);
 }
 
 // Test that no issue is encountered when a nullopt value is collected, on an
@@ -454,8 +433,7 @@ TEST_P(ChromeProfileRequestGeneratorTest, NoProfileId) {
   base::RunLoop().RunUntilIdle();
   VerifyReportContent(requests.value(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
-                      /*is_profile_id_null=*/true, agent_collection_enabled,
-                      is_content_binding_versioning_enabled());
+                      /*is_profile_id_null=*/true, agent_collection_enabled);
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest, IncorrectReportType) {
@@ -501,8 +479,6 @@ TEST_P(ChromeProfileRequestGeneratorTest, AbortsWhenProfileReportIsEmpty) {
   EXPECT_EQ(result.error(), ReportGenerationError::kProfileEmptyReport);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeProfileRequestGeneratorTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(, ChromeProfileRequestGeneratorTest, testing::Bool());
 
 }  // namespace enterprise_reporting

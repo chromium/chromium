@@ -7,34 +7,43 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/enterprise/device_attestation/device_attestation_service.h"
 
 namespace enterprise {
 
-// Class to provide attestation service for devices, implementation varies
-// depending on the platform.
+class AndroidAttestationClient;
+
+// Class to provide attestation service for Android devices.
 class DeviceAttestationServiceAndroid : public DeviceAttestationService {
  public:
-  DeviceAttestationServiceAndroid();
+  explicit DeviceAttestationServiceAndroid(
+      std::unique_ptr<AndroidAttestationClient> client);
   DeviceAttestationServiceAndroid(const DeviceAttestationServiceAndroid&) =
       delete;
   DeviceAttestationServiceAndroid& operator=(
       const DeviceAttestationServiceAndroid&) = delete;
   ~DeviceAttestationServiceAndroid() override;
 
-  void GetAttestationResponse(std::string_view flow_name,
-                              std::string_view request_payload,
-                              std::string_view timestamp,
-                              std::string_view nonce,
-                              DeviceAttestationCallback callback) override;
+  // DeviceAttestationService:
+  void GetAttestationResponse(
+      std::string_view flow_name,
+      const enterprise_management::ChromeProfileReportRequest& report,
+      std::string_view legacy_request_payload,
+      std::string_view timestamp,
+      std::string_view nonce,
+      DeviceAttestationCallback callback) override;
 
  private:
-  void OnAttestationResponse(
-      DeviceAttestationCallback callback,
-      const BlobGenerationResult& blob_generation_result);
+  void OnAttestationResponse(DeviceAttestationCallback callback,
+                             BlobGenerationResult blob_generation_result);
 
+  std::string GenerateV1ContentBindingString(
+      const enterprise_management::ChromeProfileReportRequest& report);
+
+  std::unique_ptr<AndroidAttestationClient> client_;
   base::WeakPtrFactory<DeviceAttestationServiceAndroid> weak_ptr_factory_{this};
 };
 

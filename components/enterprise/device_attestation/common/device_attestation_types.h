@@ -14,6 +14,11 @@ struct BlobGenerationResult {
   std::string error_message;
 };
 
+struct AttestationResult {
+  BlobGenerationResult blob_generation_result;
+  int content_binding_version;
+};
+
 }  // namespace enterprise
 
 #endif  // COMPONENTS_ENTERPRISE_DEVICE_ATTESTATION_COMMON_DEVICE_ATTESTATION_TYPES_H_

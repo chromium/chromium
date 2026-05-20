@@ -203,7 +203,6 @@ source_set("unit_tests") {
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/pref_url_list_matcher_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
-    "browser/reporting/report_util_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_aggregation_utils_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_report_factory_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_report_scheduler_unittest.cc",

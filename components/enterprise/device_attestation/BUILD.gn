@@ -23,6 +23,8 @@ static_library("device_attestation") {
   deps = [
     ":common",
     "//base",
+    "//components/device_signals/core/common:features",
+    "//components/policy/proto",
   ]
 
   if (is_android) {

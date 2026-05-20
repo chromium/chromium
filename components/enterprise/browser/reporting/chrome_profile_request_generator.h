@@ -73,7 +73,7 @@ class ChromeProfileRequestGenerator {
       std::string_view nonce,
       ReportCallback callback,
       std::unique_ptr<ReportRequest> request,
-      const enterprise::BlobGenerationResult& attestation_result);
+      const enterprise::AttestationResult& attestation_result);
 
   void OnRequestReady(std::unique_ptr<ReportRequest> request,
                       ReportCallback callback);

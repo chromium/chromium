@@ -15,6 +15,8 @@ namespace enterprise::test {
 
 const char kFakeAttestationBlob[] = "FakeBlobForTesting";
 
+const int kFakeContentBindingVersion = 3;
+
 ScopedDeviceAttestationServiceFactory::ScopedDeviceAttestationServiceFactory() {
   DeviceAttestationServiceFactory::SetInstanceForTesting(this);
 }
@@ -29,15 +31,22 @@ ScopedDeviceAttestationServiceFactory::GetExpectedAttestationBlob() {
   return kFakeAttestationBlob;
 }
 
+int ScopedDeviceAttestationServiceFactory::GetExpectedContentBindingVersion() {
+  return kFakeContentBindingVersion;
+}
+
 std::unique_ptr<DeviceAttestationService>
 ScopedDeviceAttestationServiceFactory::CreateDeviceAttestationService() {
   auto mocked_service = std::make_unique<MockDeviceAttestationService>();
   ON_CALL(*mocked_service.get(), GetAttestationResponse)
       .WillByDefault(
-          [](std::string_view, std::string_view, std::string_view,
-             std::string_view,
+          [](std::string_view,
+             const enterprise_management::ChromeProfileReportRequest&,
+             std::string_view, std::string_view, std::string_view,
              DeviceAttestationService::DeviceAttestationCallback callback) {
-            std::move(callback).Run({kFakeAttestationBlob, std::string()});
+            std::move(callback).Run(
+                AttestationResult{{kFakeAttestationBlob, std::string()},
+                                  kFakeContentBindingVersion});
           });
   return mocked_service;
 }

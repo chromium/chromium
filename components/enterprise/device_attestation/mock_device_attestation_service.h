@@ -8,6 +8,10 @@
 #include "components/enterprise/device_attestation/device_attestation_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace enterprise_management {
+class ChromeProfileReportRequest;
+}
+
 namespace enterprise::test {
 
 // Mock implementation of the DeviceAttestationService interface.
@@ -20,6 +24,7 @@ class MockDeviceAttestationService : public DeviceAttestationService {
   MOCK_METHOD(void,
               GetAttestationResponse,
               (std::string_view,
+               const enterprise_management::ChromeProfileReportRequest&,
                std::string_view,
                std::string_view,
                std::string_view,
