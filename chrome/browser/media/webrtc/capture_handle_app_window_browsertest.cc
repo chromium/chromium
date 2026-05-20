@@ -823,6 +823,7 @@ class CaptureHandleSystemWebAppBrowserTest
         GetCapturedWindowTitle());
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
  protected:
@@ -832,9 +833,8 @@ class CaptureHandleSystemWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/514395138):  Reenable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(CaptureHandleSystemWebAppBrowserTest,
-                       DISABLED_IgnoresHandleFromSystemWebApp) {
+                       IgnoresHandleFromSystemWebApp) {
   WaitForTestSystemAppInstall();
   content::WebContents* swa_contents =
       LaunchApp(ash::SystemWebAppType::SETTINGS);
