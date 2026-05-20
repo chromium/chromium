@@ -13,9 +13,10 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -51,15 +52,13 @@ class GlicPrivateApiTest : public GlicPrivateApiTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class GlicPrivateApiFullyEnabledTest : public GlicPrivateApiTest {
+class GlicPrivateApiFullyEnabledTest
+    : public glic::GlicBrowserTestMixin<GlicPrivateApiTest> {
  public:
   void SetUpOnMainThread() override {
     GlicPrivateApiTest::SetUpOnMainThread();
     SetupIdentityAndCapabilities();
   }
-
- private:
-  glic::GlicTestEnvironment glic_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, GetState) {
@@ -169,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
 
   auto interceptor = CreateMockPromptResponseInterceptor();
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   EXPECT_TRUE(RunExtensionTest(
       "glic_private",
@@ -179,11 +178,11 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
 
   // Verify that at least one new tab was created.
   // Note: The test may run twice (in service worker and page), opening 2 tabs.
-  EXPECT_GE(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  EXPECT_GE(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
 
   // Verify that the active tab is the new tab page.
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
   content::WaitForLoadStop(active_contents);
   EXPECT_EQ(active_contents->GetLastCommittedURL(),
             chrome::ChromeUINewTabURLAsGURL());
@@ -209,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiNewTabInBackgroundTest,
 
   auto interceptor = CreateMockPromptResponseInterceptor();
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   EXPECT_TRUE(RunExtensionTest(
       "glic_private",
@@ -218,11 +217,11 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiNewTabInBackgroundTest,
       << message_;
 
   // Verify that at least one new tab was created.
-  EXPECT_GE(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  EXPECT_GE(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
 
   // Verify that the active tab is not the new tab page.
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
   content::WaitForLoadStop(active_contents);
   EXPECT_NE(active_contents->GetLastCommittedURL(),
             chrome::ChromeUINewTabURLAsGURL());
@@ -273,6 +272,63 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, InvokeServerErrors) {
       {.load_as_component = true}))
       << message_;
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, HasConversation) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "has_conversation_false"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, HasConversation_True) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  RegisterConversation(instance, "test_conversation_id");
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "has_conversation_true"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
+                       HasConversation_Released) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  // Create a second tab and activate it.
+  tabs::TabInterface* second_tab = CreateAndActivateTab(
+      embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Open Glic for this new active tab and register the conversation.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  RegisterConversation(instance, "test_conversation_id");
+
+  // Verify it is present.
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "has_conversation_true"},
+      {.load_as_component = true}))
+      << message_;
+
+  // Close the second tab.
+  GetTabListInterface()->CloseTab(second_tab->GetHandle());
+
+  // Verify that it is no longer present.
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "has_conversation_false"},
+      {.load_as_component = true}))
+      << message_;
+}
 
 }  // namespace extensions

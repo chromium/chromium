@@ -251,6 +251,11 @@ bool GlicInstanceCoordinatorImpl::IsAnyPanelShowing() const {
   return false;
 }
 
+bool GlicInstanceCoordinatorImpl::IsConversationPresent(
+    const std::string& conversation_id) const {
+  return !!GetInstanceImplForConversationId(conversation_id);
+}
+
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
     const tabs::TabInterface* tab) const {
   return GetInstanceImplForTab(tab);
@@ -514,7 +519,7 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetActiveInstance() {
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForConversationId(
-    const std::string& conversation_id) {
+    const std::string& conversation_id) const {
   for (const auto& [id, instance] : instances_) {
     if (instance->conversation_id() == conversation_id) {
       return instance.get();

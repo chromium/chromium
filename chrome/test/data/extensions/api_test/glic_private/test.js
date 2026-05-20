@@ -61,6 +61,12 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
     case 'account_mismatch':
       tests_runAccountMismatch(documentId);
       return;
+    case 'has_conversation_false':
+      tests_runHasConversationFalse(documentId);
+      return;
+    case 'has_conversation_true':
+      tests_runHasConversationTrue(documentId);
+      return;
     default:
       chrome.test.fail('invalid mode provided.');
       return;
@@ -68,24 +74,26 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 })();
 
 function tests_runFullyEnabled(documentId) {
-  chrome.test.runTests([async function getState() {
-    const state = await chrome.glicPrivate.getState(documentId);
-    chrome.test.assertNoLastError();
-    chrome.test.assertTrue(!!state);
+  chrome.test.runTests([
+    async function getState() {
+      const state = await chrome.glicPrivate.getState(documentId);
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(!!state);
 
-    chrome.test.assertTrue(state.isEnabled, 'isEnabled should be true');
-    chrome.test.assertTrue(
-        state.isEnabledAndConsented, 'isEnabledAndConsented should be true');
-    chrome.test.assertEq('ready', state.readyState);
+      chrome.test.assertTrue(state.isEnabled, 'isEnabled should be true');
+      chrome.test.assertTrue(
+          state.isEnabledAndConsented, 'isEnabledAndConsented should be true');
+      chrome.test.assertEq('ready', state.readyState);
 
-    chrome.test.assertTrue(state.liveAllowed, 'liveAllowed should be true');
-    chrome.test.assertTrue(
-        state.shareImageAllowed, 'shareImageAllowed should be true');
-    chrome.test.assertTrue(
-        state.actuationAllowed, 'actuationAllowed should be true');
+      chrome.test.assertTrue(state.liveAllowed, 'liveAllowed should be true');
+      chrome.test.assertTrue(
+          state.shareImageAllowed, 'shareImageAllowed should be true');
+      chrome.test.assertTrue(
+          state.actuationAllowed, 'actuationAllowed should be true');
 
-    chrome.test.succeed();
-  }]);
+      chrome.test.succeed();
+    },
+  ]);
 }
 
 function tests_runDisabled(documentId) {
@@ -206,6 +214,28 @@ function tests_runInvokeServerError(documentId) {
             documentId,
           }),
           'Error: http-error');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runHasConversationFalse(documentId) {
+  chrome.test.runTests([
+    async function hasConversationFalse() {
+      const isPresent =
+          await chrome.glicPrivate.hasConversation('test_conversation_id');
+      chrome.test.assertFalse(isPresent, 'conversation should not be present');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runHasConversationTrue(documentId) {
+  chrome.test.runTests([
+    async function hasConversationTrue() {
+      const isPresent =
+          await chrome.glicPrivate.hasConversation('test_conversation_id');
+      chrome.test.assertTrue(isPresent, 'conversation should be present');
       chrome.test.succeed();
     },
   ]);

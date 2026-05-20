@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -489,6 +490,28 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
 
   Respond(GetPromptResponseValueAndLog(
       extensions::api::glic_private::ErrorCode::kNone));
+}
+
+GlicPrivateHasConversationFunction::GlicPrivateHasConversationFunction() =
+    default;
+GlicPrivateHasConversationFunction::~GlicPrivateHasConversationFunction() =
+    default;
+
+ExtensionFunction::ResponseAction GlicPrivateHasConversationFunction::Run() {
+  std::optional<api::glic_private::HasConversation::Params> params =
+      api::glic_private::HasConversation::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
+                                                         /*create=*/true);
+  CHECK(glic_service);
+
+  return RespondNow(
+      ArgumentList(api::glic_private::HasConversation::Results::Create(
+          glic_service->instance_coordinator().IsConversationPresent(
+              params->conversation_id))));
 }
 
 }  // namespace extensions

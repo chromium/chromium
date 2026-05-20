@@ -2907,6 +2907,7 @@ Called by update_extension_histograms.py.-->
   <int value="1969" label="MIMEHANDLER_ABORTANDFALLBACKTONATIVEHANDLER"/>
   <int value="1970" label="MIMEHANDLER_SETMIMEHANDLEROPTIONS"/>
   <int value="1971" label="MIMEHANDLER_GETMIMEHANDLEROPTIONS"/>
+  <int value="1972" label="GLICPRIVATE_HASCONVERSATION"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

@@ -2034,6 +2034,7 @@ enum HistogramValue {
   MIMEHANDLER_ABORTANDFALLBACKTONATIVEHANDLER = 1969,
   MIMEHANDLER_SETMIMEHANDLEROPTIONS = 1970,
   MIMEHANDLER_GETMIMEHANDLEROPTIONS = 1971,
+  GLICPRIVATE_HASCONVERSATION = 1972,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

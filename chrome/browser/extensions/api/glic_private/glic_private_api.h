@@ -53,6 +53,24 @@ class GlicPrivateInvokeFunction : public ExtensionFunction {
                          std::optional<std::string> prompt);
 };
 
+class GlicPrivateHasConversationFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("glicPrivate.hasConversation",
+                             GLICPRIVATE_HASCONVERSATION)
+
+  GlicPrivateHasConversationFunction();
+  GlicPrivateHasConversationFunction(
+      const GlicPrivateHasConversationFunction&) = delete;
+  GlicPrivateHasConversationFunction& operator=(
+      const GlicPrivateHasConversationFunction&) = delete;
+
+ protected:
+  ~GlicPrivateHasConversationFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_GLIC_PRIVATE_GLIC_PRIVATE_API_H_

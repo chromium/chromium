@@ -57,6 +57,8 @@ class GlicInstanceCoordinator {
   virtual ~GlicInstanceCoordinator() = default;
 
   virtual bool IsAnyPanelShowing() const = 0;
+  virtual bool IsConversationPresent(
+      const std::string& conversation_id) const = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
   virtual void CreateNewConversationForTabs(

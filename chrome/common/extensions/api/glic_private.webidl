@@ -84,6 +84,11 @@ interface GlicPrivate {
   // Invokes glic with details.
   // |Returns|: Promise that resolves when invocation is successful.
   static Promise<undefined> invoke(InvokeDetails details);
+
+  // Checks whether a particular conversation ID is present.
+  // |Returns|: Promise that resolves to true if the conversation is present.
+  // |PromiseValue|: isPresent: True if conversation is present, false otherwise.
+  static Promise<boolean> hasConversation(DOMString conversationId);
 };
 
 partial interface Browser {

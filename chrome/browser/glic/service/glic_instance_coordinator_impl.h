@@ -111,6 +111,7 @@ class GlicInstanceCoordinatorImpl
   int GetVisibleInstanceCount() const override;
 
   bool IsAnyPanelShowing() const override;
+  bool IsConversationPresent(const std::string& conversation_id) const override;
   // GlicInstanceCoordinator implementation
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
   // Sorts instances by recency and returns the instance id and
@@ -205,7 +206,7 @@ class GlicInstanceCoordinatorImpl
   // Returns a pointer to an instance with the given conversation id or nullptr
   // if no such instance exists.
   GlicInstanceImpl* GetInstanceImplForConversationId(
-      const std::string& conversation_id);
+      const std::string& conversation_id) const;
   GlicInstanceImpl* GetOrCreateInstanceImplForConversationId(
       const std::string& conversation_id,
       const std::optional<std::string>& turn_id);
