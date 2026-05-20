@@ -105,11 +105,14 @@ suite('SiteSettingsPage', function() {
     assertEquals('b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b'));
     assertEquals('a', defaultSettingLabel(ContentSetting.ALLOW, 'a', 'b', 'c'));
     assertEquals('b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b', 'c'));
-    assertEquals(
-        'c', defaultSettingLabel(ContentSetting.SESSION_ONLY, 'a', 'b', 'c'));
-    assertEquals(
-        'c', defaultSettingLabel(ContentSetting.DEFAULT, 'a', 'b', 'c'));
     assertEquals('c', defaultSettingLabel(ContentSetting.ASK, 'a', 'b', 'c'));
+    assertEquals(
+        'c',
+        defaultSettingLabel(
+            ContentSetting.SESSION_ONLY, 'a', 'b', undefined, 'c'));
+    assertEquals(
+        'c',
+        defaultSettingLabel(ContentSetting.DEFAULT, 'a', 'b', undefined, 'c'));
   });
 
   test('CookiesLinkRowSublabel', async function() {

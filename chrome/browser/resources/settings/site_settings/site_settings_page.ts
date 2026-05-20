@@ -363,6 +363,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:sensors',
       enabledLabel: 'siteSettingsSensorsAllowed',
       disabledLabel: 'siteSettingsSensorsBlocked',
+      askLabel: 'siteSettingsSensorsAsk',
     },
     {
       route: routes.SITE_SETTINGS_SERIAL_PORTS,

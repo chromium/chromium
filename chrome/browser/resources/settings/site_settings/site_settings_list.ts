@@ -33,18 +33,22 @@ export interface CategoryListItem {
   icon?: string;
   enabledLabel?: string;
   disabledLabel?: string;
+  askLabel?: string;
   otherLabel?: string;
   shouldShow?: () => boolean;
 }
 
 export function defaultSettingLabel(
-    setting: string, enabled: string, disabled: string,
+    setting: string, enabled: string, disabled: string, ask?: string,
     other?: string): string {
   if (setting === ContentSetting.BLOCK) {
     return disabled;
   }
   if (setting === ContentSetting.ALLOW) {
     return enabled;
+  }
+  if (setting === ContentSetting.ASK && ask) {
+    return ask;
   }
 
   return other || enabled;
@@ -204,6 +208,7 @@ class SettingsSiteSettingsListElement extends
             setting,
             dataItem.enabledLabel ? this.i18n(dataItem.enabledLabel) : '',
             dataItem.disabledLabel ? this.i18n(dataItem.disabledLabel) : '',
+            dataItem.askLabel ? this.i18n(dataItem.askLabel) : undefined,
             dataItem.otherLabel ? this.i18n(dataItem.otherLabel) : undefined));
   }
 
