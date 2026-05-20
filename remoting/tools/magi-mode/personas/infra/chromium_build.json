@@ -12,7 +12,8 @@
       "to parent targets."
     ],
     "autoninja_usage": [
-      "Use `autoninja` instead of raw `ninja` for faster builds."
+      "Use `autoninja` instead of raw `ninja`. Ensure the command aligns ",
+      "with the environment's `use_reclient` and `output_directory` settings."
     ]
   }
 }

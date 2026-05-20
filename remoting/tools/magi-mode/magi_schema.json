@@ -94,6 +94,8 @@
         "vcs",
         "harness",
         "orchestration_pattern",
+        "use_reclient",
+        "is_debug_build",
         "repo_type",
         "output_directory"
       ]

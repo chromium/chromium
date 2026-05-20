@@ -165,6 +165,9 @@ are deterministic.*
      Orchestrator MUST pause for human intervention. If
      `ambiguity_level == "LOW"` AND `context_resolved == true`, the Orchestrator
      MAY auto-proceed to the next stage.
+   - **Confirmation Details:** During the gate, Scoping MUST present the
+     discovered `goal`, `target_files`, and **Build Parameters** (Debug/Release,
+     reclient status, and `output_directory`) to the user for verification.
 6. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](./EXAMPLES.md) for
    a full example. *Tooling Selection:* The combination of `repo_type`, `vcs`,
    and `harness` in the `environment` block determines the exact build, test,

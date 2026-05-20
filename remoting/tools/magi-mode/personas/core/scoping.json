@@ -15,6 +15,11 @@
       "Pattern) before writing the spec. Select CENTRALIZED for JETSKI and ",
       "DECENTRALIZED for GENERIC_CLI."
     ],
+    "build_config_discovered": [
+      "Discover the build environment. Prefer Debug builds over Release; ",
+      "fallback to Release only if no Debug configuration is found. Detect ",
+      "if reclient (use_remoteexec=true) is active in args.gn."
+    ],
     "context_successfully_retrieved": [
       "Read all external URLs/bugs. Halt and ask the human if you encounter a ",
       "login wall or error. DO NOT HALLUCINATE."

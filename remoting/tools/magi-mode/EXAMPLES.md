@@ -23,6 +23,9 @@ protocol.
     "repo_type": "CHROMIUM",
     "vcs": "JJ",
     "harness": "JETSKI",
+    "orchestration_pattern": "CENTRALIZED",
+    "use_reclient": true,
+    "is_debug_build": true,
     "output_directory": "out/Default"
   }
 }
