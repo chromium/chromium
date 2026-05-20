@@ -68,7 +68,12 @@ WebViewSidePanelView::WebViewSidePanelView(
 
   loading_indicator_web_view_ =
       AddChildView(CreateWebView(this, browser_context));
-  loading_indicator_web_view_->GetWebContents()->GetController().LoadURL(
+  auto* loading_contents = loading_indicator_web_view_->GetWebContents();
+  loading_contents->SetDelegate(this);
+  loading_contents->SetUserData(
+      kWebViewSidePanelWebContentsUserDataKey,
+      std::make_unique<WebViewSidePanelWebContentsUserData>(AsWeakPtr()));
+  loading_contents->GetController().LoadURL(
       GURL(loading_screen_url), content::Referrer(),
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
