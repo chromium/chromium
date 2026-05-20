@@ -93,6 +93,7 @@ source_set("browser_prefs") {
     "//components/signin/core/browser",
     "//components/signin/public/identity_manager",
     "//components/strings",
+    "//components/subscription_eligibility",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",

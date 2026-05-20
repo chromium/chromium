@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/subscription_eligibility",
+  "+ios/chrome/browser/shared/model/profile",
+]

@@ -93,6 +93,7 @@ specific_include_rules = {
     "+ios/chrome/browser/share_extension/model",
     "+ios/chrome/browser/share_kit/model",
     "+ios/chrome/browser/sharing_message/model",
+    "+ios/chrome/browser/subscription_eligibility/model",
     "+ios/chrome/browser/sync/model",
     "+ios/chrome/browser/sync/model/prefs",
     "+ios/chrome/browser/tab_switcher/model",

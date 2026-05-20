@@ -237,6 +237,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model/trusted_vault:trusted_vault_factory",
+    "//ios/chrome/browser/subscription_eligibility/model",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model",

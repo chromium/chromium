@@ -20,7 +20,6 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -399,7 +398,7 @@ enum {
   kDesktopToiOSLensPromoLastImpressionTimestamp = 100335,
   kDesktopToiOSLensPromoImpressionsCounter = 100336,
   kDesktopToiOSLensPromoOptOut = 100337,
-  kSubscriptionEligibilityAiSubscriptionTier = 100338,
+  // kSubscriptionEligibilityAiSubscriptionTier = 100338, (moved to common)
   kAccessibilityCursorHighlightEnabled = 100339,
   kAccessibilityCursorColorEnabled = 100340,
   kAccessibilityCursorColor = 100341,
@@ -1904,11 +1903,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {glic::prefs::kGlicRolloutEligibility,
      {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
-      sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
-      sync_preferences::MergeBehavior::kNone}},
-    {subscription_eligibility::prefs::kAiSubscriptionTier,
-     {syncable_prefs_ids::kSubscriptionEligibilityAiSubscriptionTier,
-      syncer::PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       sync_preferences::MergeBehavior::kNone}},
 });
