@@ -39,10 +39,9 @@ chrome.test.runTests([
     const testAnnotation = getTestAnnotation(
         {locationX: 195, locationY: 147, height: 50, width: 50});
 
-    function startNewAnnotationAndVerifyMessage(
-        expectedIsEdited: boolean, existing: boolean = false) {
+    function startNewAnnotationAndVerifyMessage(expectedIsEdited: boolean) {
       mockPlugin.clearMessages();
-      initializeBox(manager, 100, 100, 400, 300, existing);
+      initializeBox(manager, 100, 100, 400, 300);
       verifyFinishTextAnnotationMessage(
           mockPlugin, testAnnotation, expectedIsEdited, 2.0);
     }
@@ -90,8 +89,9 @@ chrome.test.runTests([
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
     mockPlugin.clearMessages();
+    // TODO(crbug.com/440552067): This should initialize an existing box.
     // Initialize an existing box to set up the next test.
-    initializeBox(manager, 100, 100, 400, 300, true);
+    initializeBox(manager, 100, 100, 400, 300);
     await microtasksFinished();
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('finishTextAnnotation'));
@@ -100,7 +100,8 @@ chrome.test.runTests([
     // regardless of edits or text.
     chrome.test.assertTrue(isVisible(textbox));
     testAnnotation.text = 'Hello World';
-    startNewAnnotationAndVerifyMessage(false, /* existing= */ true);
+    // TODO(crbug.com/440552067): This should initialize an existing box.
+    startNewAnnotationAndVerifyMessage(false);
     await microtasksFinished();
 
     // Existing box, text cleared.
@@ -109,7 +110,8 @@ chrome.test.runTests([
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
     testAnnotation.text = '';
-    startNewAnnotationAndVerifyMessage(true, /* existing= */ true);
+    // TODO(crbug.com/440552067): This should initialize an existing box.
+    startNewAnnotationAndVerifyMessage(true);
     await microtasksFinished();
 
     // Message should also be sent if the element is disconnected.
@@ -177,7 +179,8 @@ chrome.test.runTests([
     // When existing text is not edited, commitTextAnnotation() will trigger a
     // plugin message.
     textBoxStates = [];
-    initializeBox(manager, 100, 100, 400, 300, true);
+    // TODO(crbug.com/440552067): This should initialize an existing box.
+    initializeBox(manager, 100, 100, 400, 300);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     assertDeepEquals([TextBoxState.NEW], textBoxStates);

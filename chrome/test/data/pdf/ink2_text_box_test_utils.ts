@@ -45,12 +45,10 @@ export function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
 
 export function initializeBox(
     manager: Ink2Manager, width: number, height: number, x: number, y: number,
-    existing?: boolean, orientation?: number) {
+    orientation?: number) {
   const annotation =
       getTestAnnotation({height, locationX: x, locationY: y, width});
-  if (!existing) {
-    annotation.text = '';
-  }
+  annotation.text = '';
   if (orientation) {
     annotation.textOrientation = orientation;
   }

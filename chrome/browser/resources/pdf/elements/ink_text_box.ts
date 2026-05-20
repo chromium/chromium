@@ -436,6 +436,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     const target = e.composedPath()[0];
     if (target === this.$.textbox) {
       this.focus();
+      this.fire('ink-text-box-focused-for-test');
     } else {
       this.commitTextAnnotation();
     }
@@ -454,6 +455,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     // Backspace/Delete key not in the textbox deletes the annotation.
     if (e.key === 'Backspace' || e.key === 'Delete') {
       this.textValue_ = '';
+      this.textBoxEdited_();
       this.commitTextAnnotation();
       return;
     }

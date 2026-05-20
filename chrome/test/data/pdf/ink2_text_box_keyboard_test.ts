@@ -11,6 +11,31 @@ import {getRequiredElement} from './test_util.js';
 
 const {manager, mockPlugin, textbox, viewport} = setupTextBoxTest();
 
+async function setUpExistingAnnotation() {
+  // Initialize and commit a new annotation to make it "existing".
+  initializeBox(manager, 100, 100, 55, 10);
+  await microtasksFinished();
+  const testAnnotation =
+      getTestAnnotation({locationX: 0, locationY: 7, height: 100, width: 100});
+  textbox.$.textbox.value = testAnnotation.text;
+  textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+  await microtasksFinished();
+  keyDownOn(textbox, 0, [], 'Escape');
+  await microtasksFinished();
+  chrome.test.assertTrue(textbox.hidden);
+
+  // Re-initialize the box as an existing annotation by simulating a click on
+  // it.
+  const clicked = manager.initializeTextAnnotation({x: 105, y: 60});
+  chrome.test.assertTrue(clicked, 'Failed to click existing annotation');
+  await microtasksFinished();
+  chrome.test.assertFalse(textbox.hidden);
+  chrome.test.assertTrue(isVisible(textbox));
+  chrome.test.assertEq('Hello World', textbox.$.textbox.value);
+
+  return testAnnotation;
+}
+
 chrome.test.runTests([
   async function testResizeWithKeyboard() {
     // Initialize to a 100x200 box at 400, 300.
@@ -134,11 +159,12 @@ chrome.test.runTests([
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
     // Escape on the textarea blurs the textarea to focus the top level box.
-    // This won't actually fire a focus event to the textbox since focus stays
-    // within the box, so we wait for the blur event instead.
-    const whenBlurred = eventToPromise('blur', textbox.$.textbox);
+    // Wait for the test-only focus event, as browser focus/blur events may
+    // be flaky in tests.
+    const whenFocused =
+        eventToPromise('ink-text-box-focused-for-test', textbox);
     keyDownOn(textbox.$.textbox, 0, [], 'Escape');
-    await whenBlurred;
+    await whenFocused;
     // Textbox is still visible, because this event does not commit the
     // annotation.
     chrome.test.assertFalse(textbox.hidden);
@@ -207,22 +233,16 @@ chrome.test.runTests([
 
   async function testDeleteWithBackspaceKey() {
     viewport.setZoom(1.0);
+    manager.clearAnnotationsForTesting();
+    manager.resetStackForTesting();
+    const testAnnotation = await setUpExistingAnnotation();
 
-    // Initialize to a 100x100 box at 55, 10 with some text content. Use
-    // "Backspace" to clear all the content, which will trigger a message since
-    // this is for an existing annotation.
-    initializeBox(manager, 100, 100, 55, 10, true);
-    await microtasksFinished();
-    chrome.test.assertFalse(textbox.hidden);
-    chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
     keyDownOn(textbox, 0, [], 'Backspace');
     await microtasksFinished();
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
-    const testAnnotation = getTestAnnotation(
-        {locationX: 0, locationY: 7, height: 100, width: 100});
     testAnnotation.text = '';
     verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true, 1.0);
 
@@ -231,22 +251,16 @@ chrome.test.runTests([
 
   async function testDeleteWithDeleteKey() {
     viewport.setZoom(1.0);
+    manager.clearAnnotationsForTesting();
+    manager.resetStackForTesting();
+    const testAnnotation = await setUpExistingAnnotation();
 
-    // Initialize to a 100x100 box at 55, 10 with some text content. Use
-    // "Delete" to clear all the content, which will trigger a message since
-    // this is for an existing annotation.
-    initializeBox(manager, 100, 100, 55, 10, true);
-    await microtasksFinished();
-    chrome.test.assertFalse(textbox.hidden);
-    chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
     keyDownOn(textbox, 0, [], 'Delete');
     await microtasksFinished();
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
-    const testAnnotation = getTestAnnotation(
-        {locationX: 0, locationY: 7, height: 100, width: 100});
     testAnnotation.text = '';
     verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true, 1.0);
 

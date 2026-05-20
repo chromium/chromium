@@ -40,8 +40,11 @@ chrome.test.runTests([
     chrome.test.assertEq(46, textbox.$.textbox.clientHeight);
     chrome.test.assertEq('', textbox.$.textbox.value);
 
-    // Update to a 100x200 box at 400, 300 with existing "Hello World" text.
-    initializeBox(manager, 100, 200, 400, 300, true);
+    // Update to a 100x200 box at 400, 300 with "Hello World" text.
+    initializeBox(manager, 100, 200, 400, 300);
+    await microtasksFinished();
+    textbox.$.textbox.value = 'Hello World';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     assertPositionAndSize(textbox, '124px', '220px', '383px', '285px');
