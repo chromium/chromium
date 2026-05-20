@@ -133,6 +133,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kOpenGemini";
     case SuggestionType::kAtMemoryNoConnection:
       return "kAtMemoryNoConnection";
+    case SuggestionType::kAtMemorySearchAffordance:
+      return "kAtMemorySearchAffordance";
   }
   NOTREACHED();
 }

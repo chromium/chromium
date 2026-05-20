@@ -413,6 +413,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       suggestion.type == SuggestionType::kVirtualCreditCardEntry ||
       suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
       suggestion.type == SuggestionType::kFillAutofillAi ||
+      suggestion.type == SuggestionType::kAtMemorySearchAffordance ||
       (base::FeatureList::IsEnabled(kAutofillUndoIos) &&
        suggestion.type == SuggestionType::kUndoOrClear) ||
       (base::FeatureList::IsEnabled(
@@ -730,6 +731,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kLoadingThrobber:
       case SuggestionType::kAtMemorySearchResult:
       case SuggestionType::kAtMemoryInactivityNudge:
+      case SuggestionType::kAtMemorySearchAffordance:
       case SuggestionType::kBnplFootnote:
       case SuggestionType::kAutocompleteAtMemoryButton:
       case SuggestionType::kOpenGemini:

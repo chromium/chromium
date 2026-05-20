@@ -252,6 +252,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       return false;
   }
 }
@@ -621,6 +622,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -904,6 +906,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       NOTREACHED();  // Should be handled elsewhere.
   }
 
@@ -1025,6 +1028,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       return false;
   }
 }

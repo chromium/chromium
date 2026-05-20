@@ -118,6 +118,7 @@ bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kOneTimePasswordEntry:

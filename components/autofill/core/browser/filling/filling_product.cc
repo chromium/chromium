@@ -114,6 +114,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       return FillingProduct::kNone;
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:

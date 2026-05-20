@@ -198,8 +198,11 @@ enum class SuggestionType {
   // Suggestion to display when @memory search fails to connect to the server.
   kAtMemoryNoConnection = 83,
 
-  // Next ID: 84
-  kMaxValue = kAtMemoryNoConnection
+  // Suggestion that triggers AtMemory search when accepted.
+  kAtMemorySearchAffordance = 84,
+
+  // Next ID: 85
+  kMaxValue = kAtMemorySearchAffordance
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

@@ -321,6 +321,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       NOTREACHED();
   }
   NOTREACHED();
@@ -730,6 +731,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       return false;
   }
 }

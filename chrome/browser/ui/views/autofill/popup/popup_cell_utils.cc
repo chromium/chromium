@@ -368,6 +368,7 @@ bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
       return false;
   }
 }
