@@ -2,7 +2,7 @@
 #include <string.h>
 #include "utf.h"
 
-char *
+const char *
 utfutf(const char *s1, const char *s2)
 {
 	const char *p;
@@ -16,7 +16,7 @@ utfutf(const char *s1, const char *s2)
 	n2 = strlen(s2);
 	for(p = s1; (p = utfrune(p, r)); p += n1)
 		if(!strncmp(p, s2, n2))
-			return (char *)p;
+			return p;
 
 	return NULL;
 }

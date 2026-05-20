@@ -1,0 +1,91 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Adrian Ratiu <adrian.ratiu@collabora.com>
+Date: Thu, 7 May 2026 17:00:00 +0000
+Subject: [PATCH] third_party/utf: fix const-correctness exposed by glibc 2.43
+
+glibc 2.43 makes strchr/strrchr/strstr preserve const via _Generic
+macros. utfrune/utfrrune/utfutf pass a const char *s straight through
+those functions but are declared to return char *, which now fails
+-Werror.
+
+Change the three return types (and their utf.h prototypes) to const
+char * to match what they return, dropping two now-redundant (char *)
+casts. No external callers exist in the tree (re2 and libphonenumber
+bundle their own utf copies).
+
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+---
+ third_party/utf/src/include/utf.h | 6 +++---
+ third_party/utf/src/utf/utfrrune.c | 4 ++--
+ third_party/utf/src/utf/utfrune.c  | 2 +-
+ third_party/utf/src/utf/utfutf.c   | 4 ++--
+ 4 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/third_party/utf/src/include/utf.h b/third_party/utf/src/include/utf.h
+--- a/third_party/utf/src/include/utf.h
++++ b/third_party/utf/src/include/utf.h
+@@ -26,9 +26,9 @@ int charntorune(Rune*, const char*, size_t);
+ int runetochar(char*, const Rune*);
+ size_t utflen(const char*);
+ size_t utfnlen(const char*, size_t);
+-char* utfrune(const char*, Rune);
+-char* utfrrune(const char*, Rune);
+-char* utfutf(const char*, const char*);
++const char* utfrune(const char*, Rune);
++const char* utfrrune(const char*, Rune);
++const char* utfutf(const char*, const char*);
+ char* utfecpy(char*, char*, const char*);
+
+ int isalnumrune(Rune);
+diff --git a/third_party/utf/src/utf/utfrrune.c b/third_party/utf/src/utf/utfrrune.c
+--- a/third_party/utf/src/utf/utfrrune.c
++++ b/third_party/utf/src/utf/utfrrune.c
+@@ -2,7 +2,7 @@
+ #include <string.h>
+ #include "utf.h"
+
+-char *
++const char *
+ utfrrune(const char *s, Rune r)
+ {
+ 	const char *p = NULL;
+@@ -17,5 +17,5 @@ utfrrune(const char *s, Rune r)
+ 		if(r == r0)
+ 			p = s;
+ 	}
+-	return (char *)p;
++	return p;
+ }
+diff --git a/third_party/utf/src/utf/utfrune.c b/third_party/utf/src/utf/utfrune.c
+--- a/third_party/utf/src/utf/utfrune.c
++++ b/third_party/utf/src/utf/utfrune.c
+@@ -2,7 +2,7 @@
+ #include <string.h>
+ #include "utf.h"
+
+-char *
++const char *
+ utfrune(const char *s, Rune r)
+ {
+ 	char buf[UTFmax+1];
+diff --git a/third_party/utf/src/utf/utfutf.c b/third_party/utf/src/utf/utfutf.c
+--- a/third_party/utf/src/utf/utfutf.c
++++ b/third_party/utf/src/utf/utfutf.c
+@@ -2,7 +2,7 @@
+ #include <string.h>
+ #include "utf.h"
+
+-char *
++const char *
+ utfutf(const char *s1, const char *s2)
+ {
+ 	const char *p;
+@@ -16,7 +16,7 @@ utfutf(const char *s1, const char *s2)
+ 	n2 = strlen(s2);
+ 	for(p = s1; (p = utfrune(p, r)); p += n1)
+ 		if(!strncmp(p, s2, n2))
+-			return (char *)p;
++			return p;
+
+ 	return NULL;
+ }

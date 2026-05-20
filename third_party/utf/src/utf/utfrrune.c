@@ -2,7 +2,7 @@
 #include <string.h>
 #include "utf.h"
 
-char *
+const char *
 utfrrune(const char *s, Rune r)
 {
 	const char *p = NULL;
@@ -17,5 +17,5 @@ utfrrune(const char *s, Rune r)
 		if(r == r0)
 			p = s;
 	}
-	return (char *)p;
+	return p;
 }

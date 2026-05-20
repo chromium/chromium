@@ -26,9 +26,9 @@ size_t runenlen(const Rune*, size_t);
 int runetochar(char*, const Rune*);
 size_t utflen(const char*);
 size_t utfnlen(const char*, size_t);
-char* utfrune(const char*, Rune);
-char* utfrrune(const char*, Rune);
-char* utfutf(const char*, const char*);
+const char* utfrune(const char*, Rune);
+const char* utfrrune(const char*, Rune);
+const char* utfutf(const char*, const char*);
 char* utfecpy(char*, char*, const char*);
 
 int isalnumrune(Rune);

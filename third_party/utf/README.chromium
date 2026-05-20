@@ -21,6 +21,7 @@ Modifications:
 - Add CJK ideographs to the range set for isalpharune. See crbug/1184370 for details (patches/0001-adding-CJK-ideograph-to-isalpha.patch)
 - Add Korean characters to the isalpharune ranges (patches/0001-adding-korean-characters-to-ranges.patch)
  (patched for korean characters)
+- Fix const-correctness of utfrune/utfrrune/utfutf exposed by glibc 2.43 (patches/0001-fix-const-correctness-glibc-2.43.patch)
 
 Update Process:
 1) Clone the libutf github repo at the desired commit into src/

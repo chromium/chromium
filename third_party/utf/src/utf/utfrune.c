@@ -2,7 +2,7 @@
 #include <string.h>
 #include "utf.h"
 
-char *
+const char *
 utfrune(const char *s, Rune r)
 {
 	char buf[UTFmax+1];
