@@ -149,7 +149,7 @@ bool DateComponents::ParseYear(const String& src,
   return true;
 }
 
-static bool WithinHTMLDateLimits(int year, int month) {
+static bool WithinHtmlDateLimits(int year, int month) {
   if (year < DateComponents::MinimumYear())
     return false;
   if (year < DateComponents::MaximumYear())
@@ -157,7 +157,7 @@ static bool WithinHTMLDateLimits(int year, int month) {
   return month <= kMaximumMonthInMaximumYear;
 }
 
-static bool WithinHTMLDateLimits(int year, int month, int month_day) {
+static bool WithinHtmlDateLimits(int year, int month, int month_day) {
   if (year < DateComponents::MinimumYear())
     return false;
   if (year < DateComponents::MaximumYear())
@@ -167,7 +167,7 @@ static bool WithinHTMLDateLimits(int year, int month, int month_day) {
   return month_day <= kMaximumDayInMaximumMonth;
 }
 
-static bool WithinHTMLDateLimits(int year,
+static bool WithinHtmlDateLimits(int year,
                                  int month,
                                  int month_day,
                                  int hour,
@@ -203,8 +203,9 @@ bool DateComponents::ParseMonth(const String& src,
   if (!ToInt(src, index, 2, month) || month < 1 || month > 12)
     return false;
   --month;
-  if (!WithinHTMLDateLimits(year_, month))
+  if (!WithinHtmlDateLimits(year_, month)) {
     return false;
+  }
   month_ = month;
   end = index + 2;
   type_ = kMonth;
@@ -228,8 +229,9 @@ bool DateComponents::ParseDate(const String& src,
   if (!ToInt(src, index, 2, day) || day < 1 ||
       day > MaxDayOfMonth(year_, month_))
     return false;
-  if (!WithinHTMLDateLimits(year_, month_, day))
+  if (!WithinHtmlDateLimits(year_, month_, day)) {
     return false;
+  }
   month_day_ = day;
   end = index + 2;
   type_ = kDate;
@@ -336,9 +338,10 @@ bool DateComponents::ParseDateTimeLocal(const String& src,
   ++index;
   if (!ParseTime(src, index, end))
     return false;
-  if (!WithinHTMLDateLimits(year_, month_, month_day_, hour_, minute_, second_,
-                            millisecond_))
+  if (!WithinHtmlDateLimits(year_, month_, month_day_, hour_, minute_, second_,
+                            millisecond_)) {
     return false;
+  }
   type_ = kDateTimeLocal;
   return true;
 }
@@ -389,8 +392,9 @@ bool DateComponents::SetMillisecondsSinceEpochForDate(double ms) {
     return false;
   if (!SetMillisecondsSinceEpochForDateInternal(round(ms)))
     return false;
-  if (!WithinHTMLDateLimits(year_, month_, month_day_))
+  if (!WithinHtmlDateLimits(year_, month_, month_day_)) {
     return false;
+  }
   type_ = kDate;
   return true;
 }
@@ -403,9 +407,10 @@ bool DateComponents::SetMillisecondsSinceEpochForDateTimeLocal(double ms) {
   SetMillisecondsSinceMidnightInternal(ToMillisecondsSinceMidnight(ms));
   if (!SetMillisecondsSinceEpochForDateInternal(ms))
     return false;
-  if (!WithinHTMLDateLimits(year_, month_, month_day_, hour_, minute_, second_,
-                            millisecond_))
+  if (!WithinHtmlDateLimits(year_, month_, month_day_, hour_, minute_, second_,
+                            millisecond_)) {
     return false;
+  }
   type_ = kDateTimeLocal;
   return true;
 }
@@ -416,8 +421,9 @@ bool DateComponents::SetMillisecondsSinceEpochForMonth(double ms) {
     return false;
   if (!SetMillisecondsSinceEpochForDateInternal(round(ms)))
     return false;
-  if (!WithinHTMLDateLimits(year_, month_))
+  if (!WithinHtmlDateLimits(year_, month_)) {
     return false;
+  }
   type_ = kMonth;
   return true;
 }
@@ -441,8 +447,9 @@ bool DateComponents::SetMonthsSinceEpoch(double months) {
     return false;
   int year = static_cast<int>(double_year);
   int month = static_cast<int>(double_month);
-  if (!WithinHTMLDateLimits(year, month))
+  if (!WithinHtmlDateLimits(year, month)) {
     return false;
+  }
   year_ = year;
   month_ = month;
   type_ = kMonth;
