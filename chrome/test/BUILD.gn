@@ -3610,7 +3610,6 @@ if (!is_android) {
       "../app/chrome_main_delegate_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
       "../browser/battery/battery_metrics_browsertest.cc",
-      "../browser/browser_commands_core_browsertest.cc",
       "../browser/browser_encoding_browsertest.cc",
       "../browser/chained_back_navigation_tracker_browsertest.cc",
       "../browser/chrome_back_forward_cache_browsertest.cc",
@@ -8359,6 +8358,7 @@ test("unit_tests") {
     sources += [
       "../browser/apps/intent_helper/intent_chip_display_prefs_unittest.cc",
       "../browser/autofill/ui/autofill_image_fetcher_impl_unittest.cc",
+      "../browser/browser_commands_unittest.cc",
       "../browser/component_updater/captcha_provider_component_installer_unittest.cc",
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_language_pack_component_installer_unittest.cc",
