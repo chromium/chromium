@@ -750,8 +750,8 @@ source_set("web_applications") {
 
 source_set("sub_apps_service") {
   sources = [
-    "sub_apps_service_impl.cc",
-    "sub_apps_service_impl.h",
+    "sub_apps/sub_apps_service_impl.cc",
+    "sub_apps/sub_apps_service_impl.h",
   ]
 
   deps = [
@@ -1287,7 +1287,6 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/policy/isolated_web_app_policy_manager_browsertest.cc",
     "isolated_web_apps/unframed_browsertest.cc",
     "isolated_web_apps/update/isolated_web_app_update_manager_browsertest.cc",
-    "isolated_web_apps/update/sub_app_update_browsertest.cc",
     "navigation_capturing_browser_navigator_browsertest.cc",
     "navigation_capturing_forced_off_browsertest.cc",
     "policy/pre_redirection_url_observer_browsertest.cc",
@@ -1296,8 +1295,9 @@ source_set("web_applications_browser_tests") {
     "preinstalled_web_apps_browsertest.cc",
     "replace_migration_suggested_app_browsertest.cc",
     "sampling_metrics_provider_browsertest.cc",
-    "sub_apps_permissions_policy_browsertest.cc",
-    "sub_apps_service_impl_browsertest.cc",
+    "sub_apps/sub_app_update_browsertest.cc",
+    "sub_apps/sub_apps_permissions_policy_browsertest.cc",
+    "sub_apps/sub_apps_service_impl_browsertest.cc",
     "user_uninstalled_preinstalled_web_app_prefs_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",
     "web_app_automation_browsertest.cc",
@@ -1330,7 +1330,7 @@ source_set("web_applications_browser_tests") {
       "isolated_web_apps/isolated_web_app_device_attributes_browsertest.cc",
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_browsertest.cc",
-      "sub_apps_admin_policy_browsertest.cc",
+      "sub_apps/sub_apps_admin_policy_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
     ]
   }
