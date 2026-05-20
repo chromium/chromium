@@ -379,7 +379,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
 
   [self removeAllFakeboxButtonsFromStack];
+  [self removeLeadingView];
+
   [self addFakeboxButtonsToStack];
+
+  if (self.fakeOmniboxContainer) {
+    [self addLeadingViewToSearchField:self.fakeOmniboxContainer];
+  }
 }
 
 - (void)setupSubviews {
@@ -1383,6 +1389,14 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   for (UIView* arrangedSubview in _buttonStack.arrangedSubviews) {
     [arrangedSubview removeFromSuperview];
   }
+}
+
+// Clears the leading views.
+- (void)removeLeadingView {
+  [_plusButton removeFromSuperview];
+  [_logoView removeFromSuperview];
+  _plusButton = nil;
+  _logoView = nil;
 }
 
 // Adds the necessary buttons to the fakebox stack.
