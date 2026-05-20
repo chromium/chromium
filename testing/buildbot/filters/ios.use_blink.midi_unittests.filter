@@ -1,0 +1,7 @@
+# TODO(crbug.com/514425873): MidiManagerTest crashes on iOS Blink.
+-MidiManagerTest.AbortSession
+-MidiManagerTest.ReproduceLifecycleRace
+-MidiManagerTest.StartAndEndSession
+-MidiManagerTest.StartAndEndSessionWithError
+-MidiManagerTest.StartMultipleSessions
+-MidiManagerTest.TooManyPendingSessions

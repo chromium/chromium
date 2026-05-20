@@ -5290,6 +5290,12 @@ targets.bundle(
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
             ],
         ),
+        "midi_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.midi_unittests.filter",
+            ],
+        ),
         "mojo_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",

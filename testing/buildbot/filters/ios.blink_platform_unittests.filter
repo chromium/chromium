@@ -6,3 +6,6 @@
 -RTCVideoEncoderFactoryTest.GetSupportedFormatsReturnsAllExpectedModes
 -RTCVideoEncoderFactoryTest.GetSupportedFormatsReturnsAllModesExceptH265L1T2AndL1T3
 -RTCVideoEncoderFactoryTest.GetSupportedFormatsReturnsAllModesExceptH265L1T3
+
+# TODO(crbug.com/514425872): The test crashes on iOS Blink.
+-DarkModeImageClassifierTest.ImageWithHighlySaturatedColors

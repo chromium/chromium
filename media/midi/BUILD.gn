@@ -184,6 +184,12 @@ test("midi_unittests") {
     frameworks = [ "CoreMIDI.framework" ]
   }
 
+  if (is_ios && use_blink) {
+    bundle_deps = [
+      "//testing/buildbot/filters:midi_unittests_use_blink_filters_bundle_data",
+    ]
+  }
+
   if (use_alsa && use_udev) {
     sources += [ "midi_manager_alsa_unittest.cc" ]
   }

@@ -38,7 +38,10 @@
 
 # TODO(crbug.com/503810632): These tests have been failing since
 # https://crrev.com/c/7539316 and httpc://crrev.com/c/7763951 on the bot.
+-SurfaceEmbedBrowserTest.DisplayNonePropagates
 -SurfaceEmbedBrowserTest.EmbedMultipleTagsCreatesMultiplePlugins
 -SurfaceEmbedBrowserTest.EmbedPixelTest
 -SurfaceEmbedBrowserTest.EmbedTagCreatesPlugin
 -SurfaceEmbedBrowserTest.EmbedTagInvalidContentId
+-SurfaceEmbedBrowserTest.VisibilityHiddenPropagates
+
