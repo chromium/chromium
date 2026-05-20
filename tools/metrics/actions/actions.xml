@@ -15589,6 +15589,24 @@ should be able to be added at any place in this file.
   <description>The Glic instance WebUI is holding loading.</description>
 </action>
 
+<action name="Glic.Instance.WebUiStateChanged.IneligibleAccount">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI is unavailable due to account capabilities. Logged
+    when the WebUI state transitions to kIneligibleAccount.
+  </description>
+</action>
+
+<action name="Glic.Instance.WebUiStateChanged.LocationMismatch">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI is unavailable due to country location mismatch.
+    Logged when the WebUI state transitions to kLocationMismatch.
+  </description>
+</action>
+
 <action name="Glic.Instance.WebUiStateChanged.Offline">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

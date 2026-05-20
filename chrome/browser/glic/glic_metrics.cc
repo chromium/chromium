@@ -768,16 +768,22 @@ void GlicMetrics::OnImpressionTimerFired() {
 
   // Profile eligible and completed FRE
   EntryPointStatus impression;
-  bool is_os_entrypoint_enabled =
-      g_browser_process->local_state()->GetBoolean(prefs::kGlicLauncherEnabled);
-  if (is_pinned_ && is_os_entrypoint_enabled) {
-    impression = EntryPointStatus::kAfterFreBrowserAndOs;
-  } else if (is_pinned_) {
-    impression = EntryPointStatus::kAfterFreBrowserOnly;
-  } else if (is_os_entrypoint_enabled) {
-    impression = EntryPointStatus::kAfterFreOsOnly;
+  auto enablement = GlicEnabling::EnablementForProfile(profile_);
+  if (enablement.anchor_entrypoint_override_active) {
+    impression = EntryPointStatus::kAfterFreAnchoredButIneligible;
   } else {
-    impression = EntryPointStatus::kAfterFreThreeDotOnly;
+    bool is_os_entrypoint_enabled =
+        g_browser_process->local_state()->GetBoolean(
+            prefs::kGlicLauncherEnabled);
+    if (is_pinned_ && is_os_entrypoint_enabled) {
+      impression = EntryPointStatus::kAfterFreBrowserAndOs;
+    } else if (is_pinned_) {
+      impression = EntryPointStatus::kAfterFreBrowserOnly;
+    } else if (is_os_entrypoint_enabled) {
+      impression = EntryPointStatus::kAfterFreOsOnly;
+    } else {
+      impression = EntryPointStatus::kAfterFreThreeDotOnly;
+    }
   }
   base::UmaHistogramEnumeration("Glic.EntryPoint.Status", impression);
 

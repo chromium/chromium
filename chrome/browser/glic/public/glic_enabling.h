@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "chrome/browser/glic/public/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -137,7 +138,12 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // controllers) is created for the profile.
   //
   // Always returns false if `IsEnabledByGlobalCriteria()` is off.
-  static bool IsProfileEligible(const Profile* profile);
+  static bool IsProfileEligible(Profile* profile);
+
+  // Returns true if the profile is technically ineligible due to global
+  // criteria but the entry point remains anchored because the user has
+  // onboarded previously.
+  static bool IsAnchoredButIneligible(bool global_criteria_met, bool consented);
 
   // This is a convenience method for code outside of //chrome/browser/glic.
   // Code inside should use instance method IsAllowed() instead.
@@ -176,6 +182,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
 
+  // The Glic Button is shown when:
+  // * Glic is enabled for the client and profile
+  // * OR the user has lost access for a reason that may be recoverable.
+  static bool ShouldShowGlicButton(Profile* profile);
+
   // Whether the auto open for pdf flow is enabled.
   static bool IsAutoOpenForPdfEnabled(Profile* profile);
 
@@ -209,7 +220,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     bool disallowed_by_chrome_policy : 1 = false;
     bool disallowed_by_remote_admin : 1 = false;
     bool disallowed_by_remote_other : 1 = false;
-    bool not_consented : 1 = false;
+    bool consented : 1 = true;
 
     // Whether disallowed by country filtering.
     bool disallowed_by_country_filter : 1 = false;
@@ -223,6 +234,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     // Whether system requirements (relevant to ChromeOS only) for Glic are not
     // met.
     bool system_requirement_not_met : 1 = false;
+
+    // Whether the user has onboarded with this profile previously which keeps
+    // Glic partially enabled to show error states instead of hiding the button.
+    bool anchor_entrypoint_override_active : 1 = false;
 
     // Whether live (audio) functionality is disallowed for this account type.
     bool live_disallowed : 1 = false;
@@ -260,13 +275,18 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     }
 
     bool IsEnabled() const {
-      return IsProfileEligible() && !not_rolled_out &&
-             !primary_account_not_capable && !DisallowedByAdmin() &&
-             !disallowed_by_remote_other && !disallowed_by_country_filter &&
-             !disallowed_by_locale_filter;
+      bool base_checks = IsProfileEligible() && !not_rolled_out &&
+                         !primary_account_not_capable && !DisallowedByAdmin() &&
+                         !disallowed_by_remote_other;
+
+      if (!base_checks) {
+        return false;
+      }
+
+      return !disallowed_by_country_filter && !disallowed_by_locale_filter;
     }
 
-    bool IsEnabledAndConsented() const { return IsEnabled() && !not_consented; }
+    bool IsEnabledAndConsented() const { return IsEnabled() && consented; }
 
     bool ShouldShowSettingsPage() const {
       const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(
@@ -281,7 +301,23 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       return show_ai_settings_for_testing ||
              (IsProfileEligible() && !not_rolled_out &&
               !primary_account_not_capable && !disallowed_by_remote_other &&
-              !not_consented);
+              consented);
+    }
+
+    bool ShouldShowGlicButton() const {
+      if (feature_flag_disabled) {
+        return false;
+      }
+      if (IsEnabled()) {
+        return true;
+      }
+      if (anchor_entrypoint_override_active) {
+        if (DisallowedByAdmin() || not_rolled_out) {
+          return false;
+        }
+        return true;
+      }
+      return false;
     }
 
     bool EligibleForLive() const {
@@ -337,6 +373,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   bool HasConsented() const;
 
   // Returns the FRE status.
+  static prefs::FreStatus GetCompletedFre(Profile* profile);
   prefs::FreStatus GetCompletedFre() const;
   // Sets the FRE status.
   void SetCompletedFre(prefs::FreStatus status);
@@ -457,7 +494,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   void UpdateConsentStatus();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  static bool IsChromeOSProfileEligible(const Profile* profile);
+  static bool IsChromeOSProfileEligible(Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool recorded_startup_metrics_ = false;

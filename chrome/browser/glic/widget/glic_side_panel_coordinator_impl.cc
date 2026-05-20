@@ -45,7 +45,7 @@ GlicSidePanelCoordinatorImpl::GlicSidePanelCoordinatorImpl(
       glic_service->enabling().RegisterAllowedChanged(base::BindRepeating(
           &GlicSidePanelCoordinatorImpl::OnGlicEnabledChanged,
           base::Unretained(this)));
-  if (glic_service->enabling().IsAllowed()) {
+  if (glic::GlicEnabling::ShouldShowGlicButton(tab_->GetProfile())) {
     CreateAndRegisterEntry();
   }
 }
@@ -159,7 +159,7 @@ void GlicSidePanelCoordinatorImpl::OnEntryShown(SidePanelEntry* entry) {
 
 void GlicSidePanelCoordinatorImpl::OnGlicEnabledChanged() {
   // Maybe register side panel entry if not yet registered.
-  if (glic::GlicEnabling::IsEnabledForProfile(tab_->GetProfile())) {
+  if (glic::GlicEnabling::ShouldShowGlicButton(tab_->GetProfile())) {
     CreateAndRegisterEntry();
   }
 }

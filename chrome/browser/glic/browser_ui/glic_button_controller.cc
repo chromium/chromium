@@ -79,11 +79,10 @@ void GlicButtonController::UpdateButton() {
   // cases is handled by GlicProfileManager instead.
   glic_keyed_service_->enabling().MaybeRecordStartupMetrics();
 
-  const bool is_enabled_for_profile =
-      GlicEnabling::IsEnabledForProfile(profile_);
+  const bool should_show_button = GlicEnabling::ShouldShowGlicButton(profile_);
   const bool is_pinned_to_tabstrip =
       profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
-  if (!is_enabled_for_profile || !is_pinned_to_tabstrip) {
+  if (!should_show_button || !is_pinned_to_tabstrip) {
     // If the button shouldn't be shown, just hide it.
     tab_strip_glic_controller_delegate_->SetGlicShowState(false);
     toolbar_glic_controller_delegate_->SetGlicShowState(false);

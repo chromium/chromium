@@ -183,6 +183,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Both Tabstrip and OS entrypoints enabled."/>
   <int value="7" label="Only three-dot menu entry enabled."/>
   <int value="8" label="Completed the FRE and not eligible."/>
+  <int value="9" label="Anchored but technically ineligible."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:EntryPointStatus) -->
@@ -446,6 +447,8 @@ chromium-metrics-reviews@google.com.
   <int value="48" label="Open"/>
   <int value="49" label="WebUI State Warmed"/>
   <int value="50" label="Open2"/>
+  <int value="51" label="WebUI State Location Mismatch"/>
+  <int value="52" label="WebUI State Ineligible Account"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceEvent) -->
@@ -572,6 +575,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="User already went through the FRE"/>
   <int value="16" label="Invalid - Disabled for testing."/>
   <int value="17" label="Not Pinned To Tabstrip"/>
+  <int value="18" label="Profile Not Eligible (Location Mismatch)"/>
+  <int value="19" label="Profile Not Eligible (Account Capabilities)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_profile_manager.h:GlicPrewarmingChecksResult) -->
@@ -1131,6 +1136,8 @@ chromium-metrics-reviews@google.com.
       label="Web view is displayed, but it is displaying an error page"/>
   <int value="12" label="Glic is disabled by the administrator"/>
   <int value="13" label="Web contents is warmed"/>
+  <int value="14" label="Glic is unavailable due to country location mismatch"/>
+  <int value="15" label="Glic is unavailable due to account capabilities"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->

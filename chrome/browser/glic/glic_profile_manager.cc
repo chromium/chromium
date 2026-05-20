@@ -205,6 +205,13 @@ void GlicProfileManager::ShouldPreloadForProfile(
     case mojom::ProfileReadyState::kDisabledByAdmin:
       result = GlicPrewarmingChecksResult::kProfileDisallowedByAdmin;
       break;
+    case mojom::ProfileReadyState::kLocationMismatch:
+      result = GlicPrewarmingChecksResult::kProfileNotEligibleLocationMismatch;
+      break;
+    case mojom::ProfileReadyState::kIneligibleAccount:
+      result =
+          GlicPrewarmingChecksResult::kProfileNotEligibleAccountCapabilities;
+      break;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));

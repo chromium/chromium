@@ -910,14 +910,19 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     glic::GlicKeyedService* glic_service =
         glic::GlicKeyedService::Get(browser_view->GetProfile());
     if (glic_service) {
-      glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
-          browser_view->GetProfile(), *browser_,
+      auto* tab_strip_container =
           BrowserElementsViews::From(browser_view->browser())
               ->GetViewAs<TabStripActionContainer>(
-                  kTabStripActionContainerElementId),
+                  kTabStripActionContainerElementId);
+      auto* toolbar_view =
           BrowserElementsViews::From(browser_view->browser())
-              ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId),
-          glic_service);
+              ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId);
+
+      if (tab_strip_container && toolbar_view) {
+        glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
+            browser_view->GetProfile(), *browser_, tab_strip_container,
+            toolbar_view, glic_service);
+      }
 
       if (base::FeatureList::IsEnabled(features::kGlicActor) &&
           base::FeatureList::IsEnabled(features::kGlicActorUi) &&
@@ -931,12 +936,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         // Includes browser twice to enable injecting for testing.
         glic_actor_nudge_controller_ =
             GetUserDataFactory().CreateInstance<glic::GlicActorNudgeController>(
-                *browser_, browser_,
-                BrowserElementsViews::From(browser_view->browser())
-                    ->GetViewAs<TabStripActionContainer>(
-                        kTabStripActionContainerElementId),
-                BrowserElementsViews::From(browser_view->browser())
-                    ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId));
+                *browser_, browser_, tab_strip_container, toolbar_view);
       }
     }
 

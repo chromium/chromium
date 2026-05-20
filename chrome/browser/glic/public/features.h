@@ -101,6 +101,7 @@ BASE_DECLARE_FEATURE(kGlicOptInImpressionMetrics);
 
 BASE_DECLARE_FEATURE(kGlicContentsInitiallyHidden);
 
+BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

@@ -127,7 +127,9 @@ enum class GlicInstanceEvent {
   kOpen = 48,
   kWebUiStateWarmed = 49,
   kOpen2 = 50,
-  kMaxValue = kOpen2,
+  kWebUiStateLocationMismatch = 51,
+  kWebUiStateIneligibleAccount = 52,
+  kMaxValue = kWebUiStateIneligibleAccount,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 

@@ -68,7 +68,7 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
   // Set some reasons for disablement
   enablement.feature_disabled = true;
   enablement.not_rolled_out = true;
-  enablement.not_consented = true;
+  enablement.consented = false;
   enablement.live_disallowed = true;
   enablement.primary_account_not_fully_signed_in = true;
 

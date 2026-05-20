@@ -192,9 +192,17 @@ enum class GlicPrewarmingChecksResult {
   // production code.
   kPrewarmingDisabledForTesting = 16,
 
+  // Glic is not pinned to the tabstrip.
   kNotPinnedToTabstrip = 17,
 
-  kMaxValue = kNotPinnedToTabstrip,
+  // The profile is not eligible to use Glic due to a country location mismatch.
+  kProfileNotEligibleLocationMismatch = 18,
+
+  // The profile is not eligible to use Glic due to account capability
+  // restrictions.
+  kProfileNotEligibleAccountCapabilities = 19,
+
+  kMaxValue = kProfileNotEligibleAccountCapabilities,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingChecksResult)
 

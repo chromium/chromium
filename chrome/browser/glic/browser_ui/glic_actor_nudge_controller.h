@@ -66,10 +66,13 @@ class GlicActorNudgeController {
 
   void CallOnBoth(base::RepeatingCallback<void(GlicActorNudgeDelegate&)> fn);
 
+  bool IsDelegateActive(GlicActorNudgeDelegate* delegate) const;
+  GlicActorNudgeDelegate* GetActiveDelegate() const;
+
   const raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
-  raw_ref<GlicActorNudgeDelegate> horizontal_tabs_delegate_;
-  raw_ref<GlicActorNudgeDelegate> vertical_tabs_delegate_;
+  raw_ptr<GlicActorNudgeDelegate> horizontal_tabs_delegate_;
+  raw_ptr<GlicActorNudgeDelegate> vertical_tabs_delegate_;
 
   std::vector<base::CallbackListSubscription>
       actor_nudge_state_change_callback_subscription_;

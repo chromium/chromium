@@ -59,7 +59,7 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->disallowed_by_chrome_policy = enablement.disallowed_by_chrome_policy;
   result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
   result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
-  result->not_consented = enablement.not_consented;
+  result->not_consented = !enablement.consented;
   result->disallowed_by_country_filter =
       enablement.disallowed_by_country_filter;
   result->disallowed_by_locale_filter = enablement.disallowed_by_locale_filter;

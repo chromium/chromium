@@ -158,4 +158,6 @@ BASE_FEATURE(kGlicOptInImpressionMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 // set to hidden when the Glic panel is warming.
 BASE_FEATURE(kGlicContentsInitiallyHidden, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

@@ -2001,6 +2001,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Glic.ProfileEnablement.AnchoredDespiteEligibilityFailureReason.{Suffix}"
+    enum="GlicFeatureDisabledReason" expires_after="2026-09-27">
+  <owner>birnie@google.com</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Logged when the Glic entry point remains anchored for an existing user
+    despite the profile failing global eligibility criteria for a transient
+    reason (e.g. country override, temporary flag disablement). Records the
+    specific reason the button would have been hidden. Multiple reasons may be
+    recorded per client. This is {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
 <histogram name="Glic.ProfileEnablement.DisabledReason.{Suffix}"
     enum="GlicProfileEnablementReason" expires_after="2026-09-27">
   <owner>dewittj@chromium.org</owner>

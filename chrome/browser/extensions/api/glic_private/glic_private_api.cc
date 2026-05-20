@@ -131,6 +131,10 @@ api::glic_private::ProfileReadyState ConvertProfileReadyState(
       return api::glic_private::ProfileReadyState::kIneligible;
     case glic::mojom::ProfileReadyState::kDisabledByAdmin:
       return api::glic_private::ProfileReadyState::kDisabledByAdmin;
+    case glic::mojom::ProfileReadyState::kLocationMismatch:
+      return api::glic_private::ProfileReadyState::kLocationMismatch;
+    case glic::mojom::ProfileReadyState::kIneligibleAccount:
+      return api::glic_private::ProfileReadyState::kIneligibleAccount;
   }
 }
 

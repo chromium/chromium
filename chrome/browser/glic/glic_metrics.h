@@ -119,7 +119,8 @@ enum class EntryPointStatus {
   kAfterFreBrowserAndOs = 6,
   kAfterFreThreeDotOnly = 7,
   kAfterFreNotEligible = 8,
-  kMaxValue = kAfterFreNotEligible,
+  kAfterFreAnchoredButIneligible = 9,
+  kMaxValue = kAfterFreAnchoredButIneligible,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointStatus)
 

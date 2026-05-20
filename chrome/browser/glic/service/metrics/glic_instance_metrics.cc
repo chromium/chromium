@@ -788,6 +788,11 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
           "Glic.Instance.WebUiStateChanged.Unavailable"));
       LogEvent(GlicInstanceEvent::kWebUiStateUnavailable);
       break;
+    case mojom::WebUiState::kIneligibleAccount:
+      base::RecordAction(base::UserMetricsAction(
+          "Glic.Instance.WebUiStateChanged.IneligibleAccount"));
+      LogEvent(GlicInstanceEvent::kWebUiStateIneligibleAccount);
+      break;
     case mojom::WebUiState::kReady: {
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.Ready"));
@@ -838,6 +843,11 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.kWarmed"));
       LogEvent(GlicInstanceEvent::kWebUiStateWarmed);
+      break;
+    case mojom::WebUiState::kLocationMismatch:
+      base::RecordAction(base::UserMetricsAction(
+          "Glic.Instance.WebUiStateChanged.LocationMismatch"));
+      LogEvent(GlicInstanceEvent::kWebUiStateLocationMismatch);
       break;
   }
 }

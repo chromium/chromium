@@ -266,7 +266,7 @@ void GlicKeyedService::ToggleUIInternal(
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
-  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
+  CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
 
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   if (glic_profile_manager) {

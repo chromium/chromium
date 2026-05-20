@@ -115,7 +115,11 @@ void GlobalFeatures::PostBrowserProcessInit() {
 
   PostBrowserProcessInitCore();
 
-  if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
+  // Create Glic global features for all users in case they are only
+  // temporarily ineligible (in which case we continue to show the entrypoint
+  // but surface IPH dialogs instead of the webclient).
+  // Many tests do not initialize profile_manager so we gate on that too.
+  if (g_browser_process->profile_manager()) {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
 #if !BUILDFLAG(IS_ANDROID)
     glic_background_mode_manager_ =

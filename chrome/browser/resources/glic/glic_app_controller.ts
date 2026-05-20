@@ -496,6 +496,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     switch (readyState) {
       case ProfileReadyState.kIneligible:
       case ProfileReadyState.kUnknownError:
+      case ProfileReadyState.kIneligibleAccount:
+      case ProfileReadyState.kLocationMismatch:
         this.setState(WebUiState.kUnavailable);
         return;
       case ProfileReadyState.kDisabledByAdmin:
@@ -849,6 +851,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       switch (this.profileReadyState) {
         case ProfileReadyState.kUnknownError:
         case ProfileReadyState.kIneligible:
+        case ProfileReadyState.kIneligibleAccount:
+        case ProfileReadyState.kLocationMismatch:
           this.setState(WebUiState.kUnavailable);
           break;
         case ProfileReadyState.kDisabledByAdmin:

@@ -80,7 +80,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   void ChildPreferredSizeChanged(views::View* child) override;
   views::View* GetDefaultFocusableChild() override;
 
-  const Profile* profile() { return profile_; }
+  Profile* profile() { return profile_; }
 
   TabStrip* tab_strip() { return tab_strip_; }
 
@@ -144,7 +144,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
   bool tab_strip_set_ = false;
 
-  raw_ptr<const Profile> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> tab_strip_container_ = nullptr;
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;

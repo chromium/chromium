@@ -13,7 +13,11 @@ enum ProfileReadyState {
   "disabled-by-admin",
   // Not eligible to use Gemini in Chrome based on account capability
   // values.
-  "ineligible"
+  "ineligible",
+  // Not eligible due to country location mismatch.
+  "location-mismatch",
+  // Not eligible due to account capabilities.
+  "ineligible-account"
 };
 
 dictionary ProfileState {
