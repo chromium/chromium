@@ -40,8 +40,6 @@ const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList{
 const base::FeatureParam<int> kGlicSelectionPromptWidgetMaxTotalDismisses{
     &kGlicSelectionPrompt, "max_total_dismisses", 10};
 
-BASE_FEATURE(kGlicDaisyChainViaCoordinator, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

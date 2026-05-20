@@ -69,7 +69,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -140,64 +139,6 @@ GetSaasUsageReportingController(Profile* profile) {
 #endif
 }
 }  // namespace
-
-// Web Contents Observer for the tab bound with its respective glic
-// embedder.
-class GlicTabContentsObserver : public content::WebContentsObserver {
- public:
-  GlicTabContentsObserver(content::WebContents* web_contents,
-                          GlicInstanceImpl* instance)
-      : content::WebContentsObserver(web_contents), instance_(instance) {}
-
-  // content::WebContentsObserver:
-  // This is called whenever a navigation happens from clicking a link within
-  // the observed web contents.
-  void DidOpenRequestedURL(content::WebContents* new_contents,
-                           content::RenderFrameHost* source_render_frame_host,
-                           const GURL& url,
-                           const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
-                           ui::PageTransition transition,
-                           bool started_from_context_menu,
-                           bool renderer_initiated) override {
-    if (!new_contents) {
-      return;
-    }
-
-    tabs::TabInterface* tab_to_bind =
-        tabs::TabInterface::MaybeGetFromContents(new_contents);
-
-    if (!tab_to_bind) {
-      LOG(ERROR) << "Invalid tab_to_bind, null";
-      return;
-    }
-    if (tab_to_bind->GetProfile() != instance_->profile()) {
-      LOG(ERROR) << "Invalid tab_to_bind, wrong profile";
-      return;
-    }
-    if (!GlicInstanceHelper::From(tab_to_bind)) {
-      LOG(ERROR) << "Invalid tab_to_bind, no GlicInstanceHelper in its "
-                    "UnownedUserData";
-      return;
-    }
-
-    if (!tab_to_bind || (tab_to_bind->GetProfile() != instance_->profile()) ||
-        !GlicInstanceHelper::From(tab_to_bind)) {
-      LOG(ERROR) << "Invalid tab_to_bind, null or wrong profile or no "
-                    "GlicInstanceHelper in its UnownedUserData";
-      return;
-    }
-
-    tabs::TabInterface* source_tab = tabs::TabInterface::GetFromContents(
-        content::WebContents::FromRenderFrameHost(source_render_frame_host));
-
-    instance_->MaybeDaisyChainToTab(source_tab, tab_to_bind,
-                                    DaisyChainSource::kTabContents);
-  }
-
- private:
-  raw_ptr<GlicInstanceImpl> instance_ = nullptr;
-};
 
 void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
                                             tabs::TabInterface* target_tab,
@@ -1255,10 +1196,6 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   new_entry.tab_activation_subscription = tab->RegisterDidActivate(
       base::BindRepeating(&GlicInstanceImpl::OnBoundTabActivated,
                           weak_ptr_factory_.GetWeakPtr()));
-  if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
-    new_entry.tab_web_contents_observer =
-        std::make_unique<GlicTabContentsObserver>(tab->GetContents(), this);
-  }
 
   if (pin_on_bind && ShouldPinOnBind()) {
     // Auto-pin on bind.

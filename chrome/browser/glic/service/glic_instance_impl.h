@@ -53,7 +53,6 @@ class ContextualCueingService;
 class GlicMetrics;
 class GlicUiEmbedder;
 class EmptyEmbedderDelegate;
-class GlicTabContentsObserver;
 class GlicSkillsManagerImpl;
 class GlicZeroStateSuggestionsManager;
 
@@ -295,7 +294,6 @@ class GlicInstanceImpl : public GlicInstance,
     std::unique_ptr<GlicUiEmbedder> embedder;
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
-    std::unique_ptr<GlicTabContentsObserver> tab_web_contents_observer;
     bool user_input_submitted_while_bound = false;
   };
 

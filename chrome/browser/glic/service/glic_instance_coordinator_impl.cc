@@ -98,13 +98,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
-  if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
-      base::FeatureList::IsEnabled(features::kGlicTabRestoration) ||
-      base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
-    tab_observer_ = GlicTabObserver::Create(
-        profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
-                                      weak_ptr_factory_.GetWeakPtr()));
-  }
+  tab_observer_ = GlicTabObserver::Create(
+      profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
+                                    weak_ptr_factory_.GetWeakPtr()));
   hotkey_manager_ = std::make_unique<InstanceIndependentHotkeyManager>(this);
   metrics_.StartPeriodicMemoryMetricsRecording();
 }
@@ -934,10 +930,6 @@ void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
 
 void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromLinkClick(
     const TabCreationEvent& event) {
-  if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
-    return;
-  }
-
   if (event.creation_type != TabCreationType::kFromLink || !event.opener ||
       !event.new_tab) {
     return;
@@ -954,10 +946,6 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromLinkClick(
 
 void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromBookmark(
     const TabCreationEvent& event) {
-  if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
-    return;
-  }
-
   if (event.creation_type != TabCreationType::kFromBookmark || !event.old_tab ||
       !event.new_tab) {
     return;
