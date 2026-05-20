@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_OMNIBOX_AUTOFILL_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_OMNIBOX_AUTOFILL_DELEGATE_H_
 
+#include <optional>
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
@@ -33,6 +36,9 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer {
       AutofillManager& manager,
       AutofillDriver::LifecycleState previous,
       AutofillDriver::LifecycleState current) override;
+  void OnAfterFormsSeen(AutofillManager& manager,
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override;
 
   void OnGetIntersectionObserverInfo(bool is_visible);
 
@@ -45,6 +51,8 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer {
   // Checks if the given `field` is in the main frame.
   bool FieldIsInMainFrame(AutofillManager& manager,
                           const AutofillField& field) const;
+
+  FormGlobalId trigger_form_global_id_;
 
   const raw_ref<AutofillClient> client_;
 

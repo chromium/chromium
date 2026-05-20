@@ -134,6 +134,18 @@ void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
   }
 }
 
+void OmniboxAutofillDelegate::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  for (const FormGlobalId& id : removed_forms) {
+    if (id == trigger_form_global_id_) {
+      client_->GetPaymentsAutofillClient()->HideOmniboxAutofillChip();
+      return;
+    }
+  }
+}
+
 void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
   if (!is_visible) {
     return;
