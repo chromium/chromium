@@ -174,6 +174,15 @@ EntityInstance GetMergedEntity(
                         /*frecency_override=*/"");
 }
 
+// Returns whether saving an entity with the given (`type`, `record_type`)
+// combination is asynchronous. If saving an entity of the given
+// (`type`, `record_type`) is not supported, the function returns false.
+bool IsSaveAsynchronous(EntityType type,
+                        EntityInstance::RecordType record_type) {
+  return GetWalletPassType(type, record_type) ==
+         EntityInstance::WalletPassType::kPrivate;
+}
+
 }  // namespace
 
 AutofillAiManager::EntityImportPromptCandidate::EntityImportPromptCandidate(

@@ -531,15 +531,6 @@ constexpr EntityInstance::WalletPassType GetWalletPassType(
   return EntityInstance::WalletPassType::kUnsupported;
 }
 
-// Returns whether saving an entity with the given (`type`, `record_type`)
-// combination is asynchronous. If saving an entity of the given
-// (`type`, `record_type`) is not supported, the function returns false.
-constexpr bool IsSaveAsynchronous(EntityType type,
-                                  EntityInstance::RecordType record_type) {
-  return GetWalletPassType(type, record_type) ==
-         EntityInstance::WalletPassType::kPrivate;
-}
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
