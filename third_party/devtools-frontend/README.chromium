@@ -1,7 +1,7 @@
 Name: Devtools-Frontend
 URL: https://chromium.googlesource.com/devtools/devtools-frontend
 Version: N/A
-Revision: 15467553e15a03c46e72b7b690cd024ae8b65184
+Revision: 53df97e01cc8c5649d0bfa7068ddac65d932d01c
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: src/LICENSE
