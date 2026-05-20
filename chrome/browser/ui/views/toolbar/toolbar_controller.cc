@@ -327,8 +327,8 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
 std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
   return std::vector<ui::ElementIdentifier>(
-      {kToolbarHomeButtonElementId, kToolbarMediaButtonElementId,
-       kToolbarForwardButtonElementId, kToolbarBatterySaverButtonElementId,
+      {kToolbarMediaButtonElementId, kToolbarBatterySaverButtonElementId,
+       kToolbarHomeButtonElementId, kToolbarForwardButtonElementId,
        kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
        ContextualTasksButton::kContextualTasksToolbarButton});
 }
