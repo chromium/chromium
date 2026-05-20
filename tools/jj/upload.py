@@ -174,13 +174,16 @@ def main(args, unknown_args):
       with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as f:
         out = pathlib.Path(f.name)
       try:
-        run_command([
+        presubmit_cmd = [
             'git',
             'cl',
             'presubmit',
             # Allows it to run with a dirty tree and on no branch
             '--force',
-            '--parallel',
+        ]
+        if args.parallel:
+          presubmit_cmd.append('--parallel')
+        presubmit_cmd.extend([
             # Unfortunately, upload skips certain checks which would be
             # useful. However, it also skips certain checks we really don't
             # want to run. CheckTreeIsOpen(), for example.
@@ -188,6 +191,7 @@ def main(args, unknown_args):
             f'--json={out}',
             next(iter(immutable_parents))
         ])
+        run_command(presubmit_cmd)
         results = json.loads(out.read_text())
         if results.get('errors', []) or results.get('warnings', []):
           if not args.allow_warnings:
@@ -250,6 +254,11 @@ if __name__ == '__main__':
   parser.add_argument(
       '--allow-warnings',
       help='Prevents presubmit warnings from blocking upload',
+      action='store_true',
+  )
+  parser.add_argument(
+      '--parallel',
+      help='Runs git cl presubmit checks in parallel',
       action='store_true',
   )
 
