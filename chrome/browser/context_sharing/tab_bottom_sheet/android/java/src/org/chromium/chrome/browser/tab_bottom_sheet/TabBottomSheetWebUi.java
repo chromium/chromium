@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityFinishingOrDestroyed;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.View;
@@ -219,8 +219,7 @@ public class TabBottomSheetWebUi {
         }
 
         mWebViewResizingHelper.reset();
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (activity == null || activity.isDestroyed() || activity.isFinishing()) {
+        if (isActivityFinishingOrDestroyed(mWindowAndroid)) {
             return;
         }
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -38,6 +39,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
@@ -205,7 +207,7 @@ public class TabBottomSheetWebUiTest {
         // Verify that mThinWebView's destroy was called (the first one is destroyed).
         verify(mThinWebView, times(1)).destroy();
         // Verify that mThinWebView is now null in the WebUi.
-        org.junit.Assert.assertNull(mWebUi.getThinWebViewForTesting());
+        assertNull(mWebUi.getThinWebViewForTesting());
     }
 
     @Test
@@ -226,7 +228,7 @@ public class TabBottomSheetWebUiTest {
         // Verify that mThinWebView's destroy was called (the first one is destroyed).
         verify(mThinWebView, times(1)).destroy();
         // Verify that mThinWebView is now null in the WebUi.
-        org.junit.Assert.assertNull(mWebUi.getThinWebViewForTesting());
+        assertNull(mWebUi.getThinWebViewForTesting());
     }
 
     @Test
@@ -234,7 +236,7 @@ public class TabBottomSheetWebUiTest {
         mWebUi.setWebContents(mWebContents);
         mWebUi.destroy();
         verify(mThinWebView).destroy();
-        org.junit.Assert.assertNull(mWebUi.getWebContents());
+        assertNull(mWebUi.getWebContents());
     }
 
     @Test
@@ -252,7 +254,7 @@ public class TabBottomSheetWebUiTest {
         verify(mThinWebView).attachWebContents(eq(mWebContents), any(), paramsCaptor.capture());
 
         ThinWebViewAttachParams params = paramsCaptor.getValue();
-        org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid delegate =
+        WebContentsDelegateAndroid delegate =
                 params.webContentsDelegate;
         assertNotNull(delegate);
 

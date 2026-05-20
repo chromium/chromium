@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityInactive;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -15,9 +17,7 @@ import android.view.Window;
 
 import androidx.annotation.Px;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.Log;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -578,12 +578,12 @@ public class TabBottomSheetCoordinator {
     }
 
     private void setToFlexibleHeight() {
-        if (isActivityInactive()) return;
+        if (isActivityInactive(mWindowAndroid)) return;
         mMediator.setToFlexibleHeight();
     }
 
     private void setToFixedHeightOrFallback() {
-        if (isActivityInactive()) return;
+        if (isActivityInactive(mWindowAndroid)) return;
         @Px int fixedHeight = (int) (getVisibleViewportHeight() * getDefaultHeightRatio());
         mMediator.setToFixedHeight(fixedHeight);
 
@@ -666,14 +666,5 @@ public class TabBottomSheetCoordinator {
 
     @Nullable TabBottomSheetContent getSheetContentForTesting() {
         return mSheetContent;
-    }
-
-    @EnsuresNonNullIf(value = "mWindowAndroid", result = false)
-    private boolean isActivityInactive() {
-        if (mWindowAndroid == null) return true;
-        @ActivityState int activityState = mWindowAndroid.getActivityState();
-        return activityState == ActivityState.PAUSED
-                || activityState == ActivityState.STOPPED
-                || activityState == ActivityState.DESTROYED;
     }
 }
