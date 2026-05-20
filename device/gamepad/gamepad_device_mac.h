@@ -110,8 +110,8 @@ class GamepadDeviceMac final : public AbstractHapticGamepad {
   // Force feedback
   FFDeviceObjectReference ff_device_ref_;
   FFEffectObjectReference ff_effect_ref_;
-  FFEFFECT ff_effect_;
-  FFCUSTOMFORCE ff_custom_force_;
+  FFEFFECT ff_effect_{};
+  FFCUSTOMFORCE ff_custom_force_{};
   LONG force_data_[2];
   DWORD axes_data_[2];
   LONG direction_data_[2];
