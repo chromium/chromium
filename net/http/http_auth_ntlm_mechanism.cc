@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
@@ -55,7 +56,7 @@ int SetAuthTokenFromBinaryToken(std::string* auth_token,
   std::string encode_output = base::Base64Encode(std::string_view(
       reinterpret_cast<const char*>(next_token.data()), next_token.size()));
 
-  *auth_token = std::string("NTLM ") + encode_output;
+  *auth_token = base::StrCat({"NTLM ", encode_output});
   return OK;
 }
 

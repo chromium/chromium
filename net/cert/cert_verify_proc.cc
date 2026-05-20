@@ -589,8 +589,8 @@ void CertVerifyProc::LogNameNormalizationResult(
     const std::string& histogram_suffix,
     NameNormalizationResult result) {
   base::UmaHistogramEnumeration(
-      std::string("Net.CertVerifier.NameNormalizationPrivateRoots") +
-          histogram_suffix,
+      base::StrCat(
+          {"Net.CertVerifier.NameNormalizationPrivateRoots", histogram_suffix}),
       result);
 }
 

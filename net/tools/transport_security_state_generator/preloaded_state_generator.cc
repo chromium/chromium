@@ -35,7 +35,7 @@ std::string FormatRejectedKeyName(const std::string& name) {
 }
 
 std::string FormatPinsetName(const std::string& name) {
-  return "k" + name + "Pinset";
+  return base::StrCat({"k", name, "Pinset"});
 }
 
 std::string FormatBool(bool value) {
@@ -272,19 +272,17 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
 void PreloadedStateGenerator::ProcessPinEntries(const PinEntries& pin_entries,
                                                 std::string* tpl) {
   std::string output =
-      "base::MakeFixedFlatMap<std::string_view, "
-      "net::TransportSecurityStateSource::HostPin>({";
-  output.append(kNewLine);
+      base::StrCat({"base::MakeFixedFlatMap<std::string_view, "
+                    "net::TransportSecurityStateSource::HostPin>({",
+                    kNewLine});
 
   for (const auto& pin_entry : pin_entries) {
-    output.append(kIndent);
-    output.append("{\"" + pin_entry->hostname + "\", ");
     std::string uppercased_name = pin_entry->pinset;
     uppercased_name[0] = base::ToUpperASCII(uppercased_name[0]);
-    output.append("{&" + FormatPinsetName(uppercased_name) + ", " +
-                  FormatBool(pin_entry->include_subdomains) + "}");
-    output.append("},");
-    output.append(kNewLine);
+    base::StrAppend(
+        &output, {kIndent, "{\"", pin_entry->hostname, "\", {&",
+                  FormatPinsetName(uppercased_name), ", ",
+                  FormatBool(pin_entry->include_subdomains), "}},", kNewLine});
   }
 
   output.append("})");

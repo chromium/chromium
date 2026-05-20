@@ -13,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -341,8 +342,8 @@ std::string CreateSignedTreeHeadJsonString(
     base::span<const uint8_t> sha256_root_hash,
     std::string_view tree_head_signature) {
   std::string sth_json =
-      std::string("{\"tree_size\":") + base::NumberToString(tree_size) +
-      std::string(",\"timestamp\":") + base::NumberToString(timestamp);
+      base::StrCat({"{\"tree_size\":", base::NumberToString(tree_size),
+                    ",\"timestamp\":", base::NumberToString(timestamp)});
 
   if (!sha256_root_hash.empty()) {
     std::string root_hash_b64 = base::Base64Encode(sha256_root_hash);

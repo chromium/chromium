@@ -2186,8 +2186,8 @@ void QuicSessionPool::MarkAllActiveSessionsGoingAway(
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY);
   base::UmaHistogramCounts10000(
-      std::string("Net.QuicActiveSessionCount.") +
-          AllActiveSessionsGoingAwayReasonToString(reason),
+      base::StrCat({"Net.QuicActiveSessionCount.",
+                    AllActiveSessionsGoingAwayReasonToString(reason)}),
       active_sessions_.size());
   while (!active_sessions_.empty()) {
     QuicChromiumClientSession* session = active_sessions_.begin()->second;
