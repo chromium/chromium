@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
@@ -24,9 +25,6 @@ namespace ash {
 // CancelScan (fails with OPERATION_RESULT_UNKNOWN for already cancelled jobs).
 // Other than that, tests are free to configure the various operations's
 // responses.
-//
-// TODO(crbug.com/479031241): Revisit the design (setters vs fake behavior) once
-// the document service has been fully migrated away from crosapi.
 class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
  public:
   FakeLorgnetteScannerManager();
@@ -63,14 +61,20 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
             PageCallback page_callback,
             CompletionCallback completion_callback) override;
   void CancelScan(CancelCallback cancel_callback) override;
-  // TODO(crbug.com/479031241): Fix edge cases. 
+  // TODO(crbug.com/479031241): Fix edge cases.
   void CancelScan(const lorgnette::CancelScanRequest& request,
                   CancelScanCallback callback) override;
 
   // Flips a flag to simulate D-Bus failure for OpenScanner and SetOptions, i.e.
   // make them pass std::nullopt to their response callbacks.
-  // TODO(crbug.com/479031241): Make this affect all relevant operations.
+  // TODO(crbug.com/479031241): Make this affect all relevant operations but
+  // make the behavior mimic production: the current behavior is too simplistic.
   void SimulateDBusFailure(bool simulate);
+
+  // Flips a flag to simulate failure when the scanner tries to scan. This
+  // affects the ReadScanData and Scan operations: They will result in an
+  // IO error (OPERATION_RESULT_IO_ERROR and SCAN_FAILURE_MODE_IO_ERROR,
+  // respectively). Note that simulated DBus failure (see above) takes priority.
   void SimulateScannerFailure(bool simulate);
 
   // Registers a scanner with a template configuration. A subsequent OpenScanner
@@ -84,15 +88,16 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                   std::optional<lorgnette::ScannerCapabilities> capabilities =
                       std::nullopt);
 
-  // Feeds data to be produced by all future scan jobs.
+  // Feeds data to be produced by all future scan jobs of the given scanner.
   // In the case of StartPreparedScan, associated ReadScanData invocations will
   // produce the given chunks in order (with result OPERATION_RESULT_SUCCESS),
-  // followed by OPERATTION_RESULT_EOF.
+  // followed by OPERATION_RESULT_EOF.
   // In the case of Scan, the chunks represent pages and are returned in order
   // via repeated invocations of Scan's page callback, followed by a completion
   // callback invocation.
   // Note: Behavior can be overridden by Simulate{DBus,Scanner}Failure.
-  void SetDataForFutureScanJobs(std::vector<std::string> data_chunks);
+  void SetDataForFutureScanJobs(std::string_view scanner_name,
+                                std::vector<std::string> data);
 
   // Returns the settings passed to the most recent call to Scan().
   const std::optional<lorgnette::ScanSettings>& last_scan_settings() const {
@@ -121,6 +126,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
     lorgnette::ScannerInfo info;
     lorgnette::ScannerConfig template_config;
     lorgnette::ScannerCapabilities capabilities;
+    std::vector<std::string> scan_data_;
     std::optional<ScannerSession> active_session;
   };
 
@@ -133,17 +139,21 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
     ~JobState();
 
     bool cancelled = false;
-    base::queue<std::string> remaining_chunks;
+    base::queue<std::string> remaining_data;
   };
 
   std::string CreateFreshHandle();
+  base::optional_ref<ScannerState> GetScannerByHandle(
+      std::string_view scanner_handle);
+  // TODO(neis): Use either "scanner_name" or "scanner_id", right now we mix.
+  base::optional_ref<ScannerState> GetScannerByName(
+      std::string_view scanner_name);
 
   bool simulate_dbus_failure_ = false;
   bool simulate_scanner_failure_ = false;
   size_t handle_count_ = 0;
   std::vector<ScannerState> scanners_;
   absl::flat_hash_map<std::string, JobState> scan_jobs_;
-  std::vector<std::string> scan_data_;
   std::optional<lorgnette::ScanSettings> last_scan_settings_;
 };
 

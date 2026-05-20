@@ -68,7 +68,7 @@ std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
   info.set_name(kFirstTestScannerName);
   manager->AddScanner(std::move(info), lorgnette::ScannerConfig(),
                       CreateLorgnetteScannerCapabilities());
-  manager->SetDataForFutureScanJobs({CreateJpeg()});
+  manager->SetDataForFutureScanJobs(kFirstTestScannerName, {CreateJpeg()});
   return manager;
 }
 

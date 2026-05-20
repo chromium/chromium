@@ -370,11 +370,13 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
-  AddScanners({CreateTestScannerInfo()});
+  lorgnette::ScannerInfo scanner_info = CreateTestScannerInfo();
+  AddScanners({scanner_info});
   const std::string data = kScanDataItem;
   const std::vector<std::string> scan_data = {"", data.substr(0, 5),
                                               data.substr(5)};
-  GetLorgnetteScannerManager()->SetDataForFutureScanJobs(scan_data);
+  GetLorgnetteScannerManager()->SetDataForFutureScanJobs(scanner_info.name(),
+                                                         scan_data);
 
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
@@ -406,7 +408,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
   test_scanner.set_display_name(kVirtualUSBPrinterName);
   AddScanners({CreateTestScannerInfo(), std::move(test_scanner)});
   const std::vector<std::string> scan_data = {kScanDataItem};
-  GetLorgnetteScannerManager()->SetDataForFutureScanJobs(scan_data);
+  GetLorgnetteScannerManager()->SetDataForFutureScanJobs(kVirtualUSBPrinterName,
+                                                         scan_data);
 
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png", "testing"},
@@ -1679,10 +1682,11 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_DBusFailure) {
 TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
   MarkExtensionTrusted(kExtensionId);
 
-  std::string scanner_handle = OpenScannerForExtension(extension_);
+  const std::string scanner_id = CreateScannerIdForExtension(extension_);
+  std::string scanner_handle = OpenScannerWithId(extension_, scanner_id);
   EXPECT_FALSE(scanner_handle.empty());
   GetLorgnetteScannerManager()->SetDataForFutureScanJobs(
-      {kScanDataItem, kScanDataItem, ""});
+      scanner_id, {kScanDataItem, kScanDataItem, ""});
   std::string job_handle = StartScanForScannerHandle(
       extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
@@ -1737,10 +1741,11 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
 TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
   MarkExtensionTrusted(kExtensionId);
 
-  std::string scanner_handle = OpenScannerForExtension(extension_);
+  const std::string scanner_id = CreateScannerIdForExtension(extension_);
+  std::string scanner_handle = OpenScannerWithId(extension_, scanner_id);
   EXPECT_FALSE(scanner_handle.empty());
   GetLorgnetteScannerManager()->SetDataForFutureScanJobs(
-      {kScanDataItem, kScanDataItem, ""});
+      scanner_id, {kScanDataItem, kScanDataItem, ""});
   std::string job_handle = StartScanForScannerHandle(
       extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
@@ -1795,7 +1800,7 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromReopenedScannerFails) {
   EXPECT_FALSE(open_response1.scanner_handle->empty());
 
   GetLorgnetteScannerManager()->SetDataForFutureScanJobs(
-      {kScanDataItem, kScanDataItem, ""});
+      scanner_id, {kScanDataItem, kScanDataItem, ""});
   const std::string job_handle = StartScanForScannerHandle(
       extension_, /*user_gesture=*/false, *open_response1.scanner_handle);
   EXPECT_FALSE(job_handle.empty());
