@@ -38,7 +38,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -78,7 +77,6 @@ import java.util.Map;
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
 @Features.EnableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
 @Features.DisableFeatures({PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS})
-@DisableLeakChecks("crbug.com/512492695 (AndroidPaymentAppFinderUnitTest)")
 public class AndroidPaymentAppFinderUnitTest {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";
@@ -88,8 +86,6 @@ public class AndroidPaymentAppFinderUnitTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
@@ -108,7 +104,7 @@ public class AndroidPaymentAppFinderUnitTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -116,10 +112,11 @@ public class AndroidPaymentAppFinderUnitTest {
         mWindowAndroid =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
+                            Activity activity = sActivityTestRule.getActivity();
                             return new ActivityWindowAndroid(
-                                    sActivity,
+                                    activity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(sActivity),
+                                    IntentRequestTracker.createFromActivity(activity),
                                     mInsetObserver,
                                     /* occlusionTrackingAllowed= */ true);
                         });

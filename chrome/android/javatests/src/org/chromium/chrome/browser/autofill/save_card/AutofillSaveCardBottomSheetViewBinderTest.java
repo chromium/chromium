@@ -10,7 +10,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
 
-import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,7 +28,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -46,15 +44,12 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link AutofillSaveCardBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512491186 (AutofillSaveCardBottomSheetViewBinderTest)")
 public class AutofillSaveCardBottomSheetViewBinderTest {
     @DrawableRes private static final int TEST_DRAWABLE_RES = R.drawable.arrow_up;
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     private PropertyModel.Builder mModelBuilder;
     private PropertyModel mModel;
@@ -86,14 +81,15 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
     public void setUp() throws Exception {
         mModelBuilder = new PropertyModel.Builder(AutofillSaveCardBottomSheetProperties.ALL_KEYS);
-        mView = new AutofillSaveCardBottomSheetView(sActivity);
-        ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mView.mContentView));
+        mView = new AutofillSaveCardBottomSheetView(sActivityTestRule.getActivity());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getActivity().setContentView(mView.mContentView));
         bind(mModelBuilder);
     }
 

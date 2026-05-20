@@ -49,7 +49,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -87,7 +86,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512491428 (TabListEditorMenuTest)")
 public class TabListEditorMenuTest {
     private static final int TAB_COUNT = 3;
     private static final Integer TAB_ID_0 = 0;
@@ -102,8 +100,6 @@ public class TabListEditorMenuTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -183,7 +179,7 @@ public class TabListEditorMenuTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -200,32 +196,32 @@ public class TabListEditorMenuTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Activity activity = sActivityTestRule.getActivity();
                     mSelectionDelegate = new SelectionDelegate<>(true);
-                    LinearLayout layout = new LinearLayout(sActivity);
+                    LinearLayout layout = new LinearLayout(activity);
                     LinearLayout.LayoutParams layoutParams =
                             new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
                                     LinearLayout.LayoutParams.MATCH_PARENT);
                     layout.setLayoutParams(layoutParams);
 
-                    LayoutInflater inflater = LayoutInflater.from(sActivity);
+                    LayoutInflater inflater = LayoutInflater.from(activity);
                     mToolbar =
                             (TabListEditorToolbar)
                                     inflater.inflate(R.layout.tab_list_editor_toolbar, null);
                     layoutParams =
                             new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
-                                    sActivity
-                                            .getResources()
+                                    activity.getResources()
                                             .getDimensionPixelSize(
                                                     R.dimen.toolbar_height_no_shadow));
                     layout.addView(mToolbar, layoutParams);
-                    sActivity.setContentView(layout);
+                    activity.setContentView(layout);
                     mToolbar.initialize(mSelectionDelegate, 0, 0, 0, true);
 
                     mPropertyListModel = new PropertyListModel<>();
                     mTabListEditorMenu =
-                            new TabListEditorMenu(sActivity, mToolbar.getActionViewLayout());
+                            new TabListEditorMenu(activity, mToolbar.getActionViewLayout());
                     mMenuButton = mToolbar.getActionViewLayout().getListMenuButtonForTesting();
                     mSelectionDelegate.addObserver(mTabListEditorMenu);
                     mChangeProcessor =
@@ -249,17 +245,18 @@ public class TabListEditorMenuTest {
     }
 
     private void configureMenuWithActions(List<FakeTabListEditorAction> actions) {
+        Activity activity = sActivityTestRule.getActivity();
         mPropertyListModel.clear();
         List<PropertyModel> models = new ArrayList<>();
         for (FakeTabListEditorAction action : actions) {
             action.getPropertyModel()
                     .set(
                             TabListEditorActionProperties.TEXT_TINT,
-                            sActivity.getColorStateList(R.color.default_text_color_list));
+                            activity.getColorStateList(R.color.default_text_color_list));
             action.getPropertyModel()
                     .set(
                             TabListEditorActionProperties.ICON_TINT,
-                            sActivity.getColorStateList(R.color.default_icon_color_tint_list));
+                            activity.getColorStateList(R.color.default_icon_color_tint_list));
             action.configure(
                     () -> mTabModel,
                     mSelectionDelegate,
@@ -279,7 +276,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON_AND_TEXT,
@@ -311,7 +308,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON_AND_TEXT,
@@ -343,7 +340,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
@@ -376,7 +373,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
@@ -429,7 +426,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
@@ -467,7 +464,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
@@ -522,7 +519,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
@@ -531,7 +528,7 @@ public class TabListEditorMenuTest {
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_group_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
@@ -559,7 +556,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
@@ -568,7 +565,7 @@ public class TabListEditorMenuTest {
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_group_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
@@ -611,7 +608,7 @@ public class TabListEditorMenuTest {
                     numberRoll.setStringForZero(R.string.close_all_tabs_dialog_message_incognito);
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
@@ -620,7 +617,7 @@ public class TabListEditorMenuTest {
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_group_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
@@ -649,7 +646,7 @@ public class TabListEditorMenuTest {
                 () -> {
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
@@ -658,7 +655,7 @@ public class TabListEditorMenuTest {
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
                             new FakeTabListEditorAction(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     R.id.tab_list_editor_group_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.ICON,

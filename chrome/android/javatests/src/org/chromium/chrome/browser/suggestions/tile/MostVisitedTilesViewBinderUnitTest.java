@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -38,13 +37,11 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests for {@link MostVisitedTilesViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512492958 (MostVisitedTilesViewBinderUnitTest)")
 public final class MostVisitedTilesViewBinderUnitTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private static Activity sActivity;
     private LinearLayout mMvTilesContainerLayout;
     private MostVisitedTilesLayout mMvTilesLayout;
     private TileView mFirstChildView;
@@ -55,25 +52,26 @@ public final class MostVisitedTilesViewBinderUnitTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mMvTilesLayout = new MostVisitedTilesLayout(sActivity, null);
+                    Activity activity = sActivityTestRule.getActivity();
+                    mMvTilesLayout = new MostVisitedTilesLayout(activity, null);
                     mMvTilesLayout.setId(R.id.mv_tiles_layout);
-                    mFirstChildView = new TileView(sActivity, null);
-                    mSecondChildView = new TileView(sActivity, null);
-                    mThirdChildView = new TileView(sActivity, null);
+                    mFirstChildView = new TileView(activity, null);
+                    mSecondChildView = new TileView(activity, null);
+                    mThirdChildView = new TileView(activity, null);
                     mMvTilesLayout.addView(mFirstChildView);
                     mMvTilesLayout.addView(mSecondChildView);
                     mMvTilesLayout.addView(mThirdChildView);
 
-                    mMvTilesContainerLayout = new LinearLayout(sActivity);
+                    mMvTilesContainerLayout = new LinearLayout(activity);
                     mMvTilesContainerLayout.addView(mMvTilesLayout);
-                    sActivity.setContentView(mMvTilesContainerLayout);
+                    activity.setContentView(mMvTilesContainerLayout);
 
                     mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
                     PropertyModelChangeProcessor.create(

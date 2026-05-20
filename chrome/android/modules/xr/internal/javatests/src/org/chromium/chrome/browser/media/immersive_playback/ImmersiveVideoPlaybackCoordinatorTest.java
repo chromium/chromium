@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.ui.base.WindowAndroid;
@@ -52,7 +51,6 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 /** Tests for {@link ImmersiveVideoPlaybackCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@DisableLeakChecks("crbug.com/512491370 (ImmersiveVideoPlaybackCoordinatorTest)")
 public class ImmersiveVideoPlaybackCoordinatorTest {
     @ClassRule
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -72,11 +70,10 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     private FakePanelEntityHolder mMainPanelEntity;
     private FakePanelEntityHolder mControlPanelHolder;
     private ImmersiveVideoPlaybackCoordinator mCoordinator;
-    private static Activity sActivity;
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -95,7 +92,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
                 () -> {
                     mCoordinator =
                             new TestImmersiveVideoPlaybackCoordinator(
-                                    sActivity,
+                                    sActivityTestRule.getActivity(),
                                     mWindowAndroid,
                                     mVideoControlDelegate,
                                     mXrSceneCoreSessionManager,

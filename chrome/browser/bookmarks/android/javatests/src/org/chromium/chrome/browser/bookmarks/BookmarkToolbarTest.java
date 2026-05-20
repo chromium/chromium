@@ -44,7 +44,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -73,7 +72,6 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableLeakChecks("crbug.com/512492757 (BookmarkToolbarTest)")
 public class BookmarkToolbarTest {
     private static final List<Integer> SELECTION_MENU_IDS =
             Arrays.asList(
@@ -97,8 +95,6 @@ public class BookmarkToolbarTest {
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private static Activity sActivity;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock BookmarkDelegate mBookmarkDelegate;
@@ -116,7 +112,7 @@ public class BookmarkToolbarTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -130,19 +126,19 @@ public class BookmarkToolbarTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Activity activity = sActivityTestRule.getActivity();
                     mWindowAndroid =
-                            new WindowAndroid(sActivity, /* occlusionTrackingAllowed= */ true);
-                    mContentView = new LinearLayout(sActivity);
+                            new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
+                    mContentView = new LinearLayout(activity);
                     mContentView.setBackgroundColor(Color.WHITE);
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                    sActivity.setContentView(mContentView, params);
+                    activity.setContentView(mContentView, params);
 
                     mBookmarkToolbar =
-                            sActivity
-                                    .getLayoutInflater()
+                            activity.getLayoutInflater()
                                     .inflate(R.layout.bookmark_toolbar, mContentView, true)
                                     .findViewById(R.id.bookmark_toolbar);
                     mBookmarkToolbar.setSortMenuIds(BookmarkToolbarMediator.SORT_MENU_IDS);

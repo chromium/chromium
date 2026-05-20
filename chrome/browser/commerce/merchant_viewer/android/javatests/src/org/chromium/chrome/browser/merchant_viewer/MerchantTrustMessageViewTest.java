@@ -32,7 +32,6 @@ import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageActionsHandler;
@@ -55,7 +54,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512492300 (MerchantTrustMessageViewTest)")
 public class MerchantTrustMessageViewTest {
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -64,8 +62,6 @@ public class MerchantTrustMessageViewTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -91,23 +87,23 @@ public class MerchantTrustMessageViewTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
     public void setUp() {
+        Activity activity = sActivityTestRule.getActivity();
         mMessageBannerView =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 (MessageBannerView)
-                                        LayoutInflater.from(sActivity)
+                                        LayoutInflater.from(activity)
                                                 .inflate(
                                                         R.layout.message_banner_view, null, false));
         mParams =
                 new LayoutParams(
                         LayoutParams.MATCH_PARENT,
-                        sActivity
-                                .getResources()
+                        activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_main_content_height));
     }
 
@@ -117,14 +113,15 @@ public class MerchantTrustMessageViewTest {
     }
 
     private void createModelAndSetView(MerchantInfo merchantInfo) {
+        Activity activity = sActivityTestRule.getActivity();
         PropertyModel propertyModel =
                 MerchantTrustMessageViewModel.create(
-                        sActivity, merchantInfo, "fake_url", mMockActionHandler);
+                        activity, merchantInfo, "fake_url", mMockActionHandler);
         PropertyModelChangeProcessor.create(
                 propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         mMessageBannerContent = getMessageBannerMainContent();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sActivity.setContentView(mMessageBannerContent, mParams));
+                () -> activity.setContentView(mMessageBannerContent, mParams));
     }
 
     @Test

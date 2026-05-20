@@ -37,7 +37,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -58,13 +57,10 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288344
-@DisableLeakChecks("crbug.com/512491776 (FullScreenIncognitoReauthViewTest)")
 public class FullScreenIncognitoReauthViewTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     private View mView;
     private PropertyModel mPropertyModel;
@@ -88,7 +84,7 @@ public class FullScreenIncognitoReauthViewTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -96,11 +92,12 @@ public class FullScreenIncognitoReauthViewTest {
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivity.setContentView(R.layout.incognito_reauth_view);
-                    mView = sActivity.findViewById(android.R.id.content);
+                    Activity activity = sActivityTestRule.getActivity();
+                    activity.setContentView(R.layout.incognito_reauth_view);
+                    mView = activity.findViewById(android.R.id.content);
                     mIncognitoReauthMenuDelegate =
                             new IncognitoReauthMenuDelegate(
-                                    sActivity, mCloseAllIncognitoTabsRunnable);
+                                    activity, mCloseAllIncognitoTabsRunnable);
                 });
     }
 

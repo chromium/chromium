@@ -34,7 +34,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -58,13 +57,10 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Batch(Batch.UNIT_TESTS)
-@DisableLeakChecks("crbug.com/512492162 (PriceTrackingBottomSheetContentRenderTest)")
 public class PriceTrackingBottomSheetContentRenderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -92,13 +88,14 @@ public class PriceTrackingBottomSheetContentRenderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
     public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Activity activity = sActivityTestRule.getActivity();
                     mPriceTrackingStateSupplier = ObservableSuppliers.createNonNull(false);
                     doReturn(mMockProfile).when(mMockTab).getProfile();
                     doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
@@ -115,9 +112,9 @@ public class PriceTrackingBottomSheetContentRenderTest {
 
                     mCoordinator =
                             new PriceTrackingBottomSheetContentCoordinator(
-                                    sActivity, () -> mMockTab, mMockPriceInsightsDelegate);
+                                    activity, () -> mMockTab, mMockPriceInsightsDelegate);
                     mContentView = mCoordinator.getContentViewForTesting();
-                    sActivity.setContentView(mContentView);
+                    activity.setContentView(mContentView);
                 });
     }
 

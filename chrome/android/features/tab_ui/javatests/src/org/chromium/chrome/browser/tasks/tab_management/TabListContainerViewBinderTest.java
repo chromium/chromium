@@ -43,7 +43,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -56,13 +55,10 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests for {@link TabListRecyclerView} and {@link TabListContainerViewBinder} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512492502 (TabListContainerViewBinderTest)")
 public class TabListContainerViewBinderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     private PropertyModel mContainerModel;
     private PropertyModelChangeProcessor mMCP;
@@ -75,24 +71,24 @@ public class TabListContainerViewBinderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
     public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivity.setContentView(R.layout.tab_switcher_pane_layout);
-                    mContentView = sActivity.findViewById(android.R.id.content);
+                    Activity activity = sActivityTestRule.getActivity();
+                    activity.setContentView(R.layout.tab_switcher_pane_layout);
+                    mContentView = activity.findViewById(android.R.id.content);
                     mRecyclerView =
                             (TabListRecyclerView)
-                                    sActivity
-                                            .getLayoutInflater()
+                                    activity.getLayoutInflater()
                                             .inflate(R.layout.tab_list_recycler_view_layout, null);
                     ((FrameLayout) mContentView.findViewById(R.id.tab_list_container))
                             .addView(mRecyclerView);
                     mHairline = mContentView.findViewById(R.id.pane_hairline);
-                    mSupplementaryContainer = new LinearLayout(sActivity);
+                    mSupplementaryContainer = new LinearLayout(activity);
                     mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
                     mMCP =
@@ -112,7 +108,8 @@ public class TabListContainerViewBinderTest {
     private void setUpGridLayoutManager() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mGridLayoutManager = spy(new GridLayoutManager(sActivity, 2));
+                    mGridLayoutManager =
+                            spy(new GridLayoutManager(sActivityTestRule.getActivity(), 2));
                     mRecyclerView.setLayoutManager(mGridLayoutManager);
                 });
     }

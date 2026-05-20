@@ -29,7 +29,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -43,7 +42,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512492768 (AutoPipPermissionDialogViewRenderTest)")
 public class AutoPipPermissionDialogViewRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -52,8 +50,6 @@ public class AutoPipPermissionDialogViewRenderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     private final @ColorInt int mFakeBgColor;
     private FrameLayout mContentView;
@@ -75,7 +71,7 @@ public class AutoPipPermissionDialogViewRenderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
     }
 
     // This helper function waits until the view is rendered trying to prevent flakiness.
@@ -100,7 +96,7 @@ public class AutoPipPermissionDialogViewRenderTest {
     private void setUpViews() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = sActivity;
+                    Activity activity = sActivityTestRule.getActivity();
                     mContentView = new FrameLayout(activity);
                     mView =
                             new AutoPipPermissionDialogView(

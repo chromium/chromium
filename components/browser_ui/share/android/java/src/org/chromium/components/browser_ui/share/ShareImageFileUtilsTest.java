@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.share;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -46,7 +45,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
@@ -60,7 +58,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests of {@link ShareImageFileUtils}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableLeakChecks("crbug.com/512492320 (ShareImageFileUtilsTest)")
 public class ShareImageFileUtilsTest {
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final byte[] TEST_IMAGE_DATA = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -111,8 +108,6 @@ public class ShareImageFileUtilsTest {
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private static Activity sActivity;
-
     @Mock ClipboardManager mMockClipboardManager;
 
     @Nullable ClipData mPrimaryClip;
@@ -120,7 +115,7 @@ public class ShareImageFileUtilsTest {
 
     @BeforeClass
     public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
+        sActivityTestRule.launchActivity(null);
 
         Looper.prepare();
     }
@@ -246,7 +241,10 @@ public class ShareImageFileUtilsTest {
     }
 
     public void deleteExternalStorageFiles() {
-        File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File externalStorageDir =
+                sActivityTestRule
+                        .getActivity()
+                        .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         String[] children = externalStorageDir.list();
         for (int i = 0; i < children.length; i++) {
             new File(externalStorageDir, children[i]).delete();
@@ -294,7 +292,10 @@ public class ShareImageFileUtilsTest {
     @SmallTest
     public void testGetNextAvailableFile() throws IOException {
         String fileName = TEST_IMAGE_FILE_NAME + "_next_availble";
-        File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File externalStorageDir =
+                sActivityTestRule
+                        .getActivity()
+                        .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         File imageFile =
                 ShareImageFileUtils.getNextAvailableFile(
                         externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
