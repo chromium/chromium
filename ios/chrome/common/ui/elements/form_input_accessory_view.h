@@ -151,6 +151,10 @@ extern NSString* const
 // Returns the group of buttons currently being shown.
 - (FormInputAccessoryViewSubitemGroup)currentGroup;
 
+// Overrides the interface style of subviews, such as the trailing view and
+// close button.
+- (void)setSubviewsOverrideUserInterfaceStyle:(UIUserInterfaceStyle)style;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_ELEMENTS_FORM_INPUT_ACCESSORY_VIEW_H_

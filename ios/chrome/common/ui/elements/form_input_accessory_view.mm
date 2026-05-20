@@ -211,6 +211,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIButton* _closeButton;
   // Current subitem group that is visible.
   FormInputAccessoryViewSubitemGroup _currentGroup;
+  // Container view for the close button when split view is enabled.
+  UIView* _closeButtonContainerView;
 }
 
 #pragma mark - Public
@@ -331,6 +333,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return _currentGroup;
 }
 
+- (void)setSubviewsOverrideUserInterfaceStyle:(UIUserInterfaceStyle)style {
+  self.trailingView.overrideUserInterfaceStyle = style;
+  _closeButtonContainerView.overrideUserInterfaceStyle = style;
+  _closeButton.overrideUserInterfaceStyle = style;
+}
+
 #pragma mark - UIInputViewAudioFeedback
 
 - (BOOL)enableInputClicksWhenVisible {
@@ -371,6 +379,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   AddSameConstraints(effectView, _closeButton);
 
   [self addSubview:effectView];
+
+  _closeButtonContainerView = effectView;
+
   [NSLayoutConstraint activateConstraints:@[
     [_closeButton.trailingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
@@ -819,8 +830,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // active.
 - (UIImage*)applySymbolTintForCloseButton:(UIImage*)image {
   if ([self isSplitViewActive]) {
-    return [image imageWithTintColor:[UIColor colorNamed:kStaticBlueColor]
-                       renderingMode:UIImageRenderingModeAlwaysOriginal];
+    return [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   } else {
     return [self applySymbolTint:image];
   }

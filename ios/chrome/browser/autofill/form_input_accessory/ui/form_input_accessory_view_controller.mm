@@ -640,8 +640,9 @@ UIImage* GetManualFillSymbol() {
     // tint color.
     self.formSuggestionView.overrideUserInterfaceStyle =
         self.traitCollection.userInterfaceStyle;
-    self.formInputAccessoryView.trailingView.overrideUserInterfaceStyle =
-        self.traitCollection.userInterfaceStyle;
+    [self.formInputAccessoryView
+        setSubviewsOverrideUserInterfaceStyle:self.traitCollection
+                                                  .userInterfaceStyle];
   }
 }
 
