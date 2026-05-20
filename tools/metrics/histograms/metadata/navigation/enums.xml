@@ -284,15 +284,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kSubframe"/>
 </enum>
 
-<enum name="LinkPreviewZoomUsage">
-  <int value="0"
-      label="kOnlyDefaultUsed: A preview was started with default zoom level
-             and not changed."/>
-  <int value="1"
-      label="kNonDefaultUsed: A preview was shown with non default zoom level
-             in some timing in a preview lifecycle."/>
-</enum>
-
 <enum name="MojoInterfaceName">
   <int value="-1403116593" label="content.mojom.FrameHost"/>
   <int value="-1370606112" label="blink.mojom.LocalFrameHost"/>
