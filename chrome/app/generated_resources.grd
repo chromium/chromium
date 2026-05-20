@@ -20264,6 +20264,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_REPORT_UNSAFE_SITE_CONFIRMATION_TOAST" desc="Message confirmation after unsafe-site-report sends to Google">
       Report sent
     </message>
+    <message name="IDS_REPORT_UNSAFE_SITE_A11Y_IMAGE_TEXT" desc="Aria label for the screenshot image of the site to be reported to Google.">
+      Screenshot
+    </message>
 
 
     <!-- Indigo -->

@@ -18,7 +18,8 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
   </label>
   <div class="two-cols">
     ${this.includeScreenshot_ ? html`
-      <img id="screenshot-image" src="${this.screenshotDataUri_}">
+      <img id="screenshot-image" src="${this.screenshotDataUri_}"
+          alt="$i18n{reportUnsafeSiteA11yImageText}">
     ` : html`
       <div id="screenshot-placeholder">
         <cr-icon icon="report_unsafe_site:visibility-off"></cr-icon>
