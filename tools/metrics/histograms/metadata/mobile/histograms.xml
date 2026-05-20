@@ -1175,6 +1175,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MobileSignInPromo.SettingsAutofillAndPasswords.ImpressionsTilSigninButtons"
+    units="impressions" expires_after="2027-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times one of the &quot;sign in&quot; buttons (any of the
+    signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
+    |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
+    impression in the autofill and passwords settings. Recorded when one of
+    those buttons from the autofill and passwords settings sign-in promo is
+    clicked.
+  </summary>
+</histogram>
+
+<histogram
+    name="MobileSignInPromo.SettingsAutofillAndPasswords.ImpressionsTilXButton"
+    units="impressions" expires_after="2027-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the explicit &quot;X&quot;-to-close button is clicked
+    per impression in the autofill and passwords settings. Recorded when the
+    &quot;X&quot;-to-close button from the autofill and passwords settings
+    sign-in promo is clicked.
+  </summary>
+</histogram>
+
 <histogram name="MobileStartup.DailyLaunchCount" units="units"
     expires_after="2026-11-15">
   <owner>tedchoc@chromium.org</owner>

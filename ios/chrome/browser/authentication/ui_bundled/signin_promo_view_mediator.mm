@@ -66,6 +66,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kRecentTabs:
     case signin_metrics::AccessPoint::kNtpFeedTopPromo:
     case signin_metrics::AccessPoint::kReadingList:
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
       return true;
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
@@ -143,7 +144,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kIosPageActionMenu:
-    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
     case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
@@ -170,6 +170,12 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kReadingList:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons",
+          displayed_count);
+      break;
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.SettingsAutofillAndPasswords."
+          "ImpressionsTilSigninButtons",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::kSettings:
@@ -249,7 +255,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kIosPageActionMenu:
-    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
     case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
@@ -279,6 +284,12 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
           "MobileSignInPromo.ReadingList.ImpressionsTilXButton",
           displayed_count);
       break;
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.SettingsAutofillAndPasswords."
+          "ImpressionsTilXButton",
+          displayed_count);
+      break;
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
@@ -356,7 +367,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kIosPageActionMenu:
-    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
     case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
@@ -375,6 +385,8 @@ const char* DisplayedCountPreferenceKey(
       return prefs::kIosNtpFeedTopSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListSigninPromoDisplayedCount;
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
+      return prefs::kIosSettingsAutofillAndPasswordsSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
@@ -452,7 +464,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kIosPageActionMenu:
-    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
     case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
@@ -470,6 +481,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
       return prefs::kIosNtpFeedTopPromoAlreadySeen;
     case signin_metrics::AccessPoint::kReadingList:
       return prefs::kIosReadingListPromoAlreadySeen;
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
+      return prefs::kIosSettingsAutofillAndPasswordsPromoAlreadySeen;
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kRecentTabs:
@@ -547,7 +560,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kIosPageActionMenu:
-    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
     case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
@@ -669,6 +681,11 @@ id<SystemIdentity> GetDisplayedIdentity(
                                 false);
   registry->RegisterIntegerPref(prefs::kIosReadingListSigninPromoDisplayedCount,
                                 0);
+  // Autofill and Passwords
+  registry->RegisterBooleanPref(
+      prefs::kIosSettingsAutofillAndPasswordsPromoAlreadySeen, false);
+  registry->RegisterIntegerPref(
+      prefs::kIosSettingsAutofillAndPasswordsSigninPromoDisplayedCount, 0);
 }
 
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:

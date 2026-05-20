@@ -463,6 +463,17 @@ inline constexpr char kIosReadingListSettingsPromoAlreadySeen[] =
 inline constexpr char kIosReadingListSigninPromoDisplayedCount[] =
     "ios.reading_list.signin_promo_displayed_count";
 
+// Preference that holds a boolean indicating if the user has already dismissed
+// the sign-in promo in the autofill and passwords settings.
+inline constexpr char kIosSettingsAutofillAndPasswordsPromoAlreadySeen[] =
+    "ios.settings.autofill_and_passwords.promo_already_seen";
+
+// Integer to represent the number of times the sign-in promo has been displayed
+// in the autofill and passwords settings.
+inline constexpr char
+    kIosSettingsAutofillAndPasswordsSigninPromoDisplayedCount[] =
+        "ios.settings.autofill_and_passwords.signin_promo_displayed_count";
+
 // Preference that holds a boolean indicating whether the "Reading mode
 // available" message is shown.
 inline constexpr char kIosReaderModeShowAvailability[] =
