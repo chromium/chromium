@@ -90,6 +90,7 @@ source_set("internal") {
     "//build:branding_buildflags",
     "//components/google/core/common",
     "//components/keyed_service/core",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/pref_registry",
     "//components/prefs",
     "//components/reporting/proto:record_proto",

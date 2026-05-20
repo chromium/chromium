@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
+#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 
 class PrefService;
 
@@ -63,6 +64,9 @@ class POLICY_EXPORT PolicyStatusProvider {
 
   // Returns a dictionary with metadata about policies.
   virtual base::DictValue GetStatus();
+  // TODO: crbug.com/40897784 - once all providers implement `GetStatusMojo`
+  // remove `GetStatus` and `SupportsMojoStatus`.
+  virtual policy::mojom::StatusPtr GetStatusMojo();
 
   // Returns a dictionary with metadata about policies from a
   // CloudPolicyCore instance. If |is_extension_install_policy| is true, the
@@ -86,6 +90,10 @@ class POLICY_EXPORT PolicyStatusProvider {
   static std::u16string GetPolicyStatusFromStore(const CloudPolicyStore*,
                                                  const CloudPolicyClient*);
   static std::u16string GetTimeSinceLastActionString(base::Time);
+
+  // TODO: crbug.com/40897784 - remove once all status providers implement the
+  // mojo version of `GetStatus()`.
+  static policy::mojom::StatusPtr DictStatusToMojo(const base::DictValue& dict);
 
   // Add policy push information along with conditional refresh interval into
   // policy `status` dictionary.

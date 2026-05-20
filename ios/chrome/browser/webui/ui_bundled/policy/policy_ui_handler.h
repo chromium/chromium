@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -16,6 +17,7 @@
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "ios/chrome/browser/policy/model/status_provider/user_cloud_policy_status_provider.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -169,6 +171,7 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Get a value dictionary of cloud policies' status information for each scope
   // that has cloud policy enabled (device and/or user).
   base::DictValue GetStatusValue() const;
+  base::flat_map<std::string, policy::mojom::StatusPtr> GetStatus();
 
   void SendStatus();
 
@@ -186,6 +189,8 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
 
   // Provider that supplies status information for user policy.
   std::unique_ptr<policy::PolicyStatusProvider> user_policy_status_provider_;
+
+  inline bool IsMojoEnabled() const { return client_.is_bound(); }
 
   base::ScopedObservation<policy::PolicyStatusProvider,
                           policy::PolicyStatusProvider::Observer>

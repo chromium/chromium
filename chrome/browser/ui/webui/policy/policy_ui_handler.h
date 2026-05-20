@@ -169,6 +169,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // Builds a raw JSON string representation of all the policies.
   std::string GetPoliciesJsonImpl(policy::mojom::GetPoliciesReason reason);
 
+  inline bool IsMojoMigrationEnabled() const { return client_.is_bound(); }
+
   std::unique_ptr<policy::PolicyValueAndStatusAggregator>
       policy_value_and_status_aggregator_;
 

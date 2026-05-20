@@ -25,6 +25,7 @@
 #import "components/policy/core/browser/policy_conversions.h"
 #import "components/policy/core/browser/webui/json_generation.h"
 #import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
+#import "components/policy/core/browser/webui/policy_status_provider.h"
 #import "components/policy/core/browser/webui/policy_webui_constants.h"
 #import "components/policy/core/browser/webui/statistics_collector.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -38,6 +39,7 @@
 #import "components/policy/core/common/schema.h"
 #import "components/policy/core/common/schema_map.h"
 #import "components/policy/policy_constants.h"
+#import "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
@@ -501,9 +503,24 @@ base::DictValue PolicyUIHandler::GetStatusValue() const {
   return status;
 }
 
+base::flat_map<std::string, policy::mojom::StatusPtr>
+PolicyUIHandler::GetStatus() {
+  policy::mojom::StatusPtr machine_status =
+      machine_status_provider_->GetStatusMojo();
+  machine_status->machine.reset();
+
+  base::flat_map<std::string, policy::mojom::StatusPtr> result;
+  result.emplace("machine", std::move(machine_status));
+  result.emplace("user", user_policy_status_provider_->GetStatusMojo());
+  return result;
+}
+
 void PolicyUIHandler::SendStatus() {
-  base::DictValue status = GetStatusValue();
-  web_ui()->FireWebUIListener("status-updated", status);
+  if (IsMojoEnabled()) {
+    client_->StatusUpdated(GetStatus());
+  } else {
+    web_ui()->FireWebUIListener("status-updated", GetStatusValue());
+  }
 }
 
 void PolicyUIHandler::OnRefreshPoliciesDone() {

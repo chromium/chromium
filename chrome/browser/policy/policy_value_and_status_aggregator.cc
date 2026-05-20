@@ -22,6 +22,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -239,6 +240,22 @@ base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
   return status;
 }
 
+base::flat_map<std::string, policy::mojom::StatusPtr>
+PolicyValueAndStatusAggregator::GetAggregatedPolicyStatusMojo() {
+  std::vector<std::pair<std::string, policy::mojom::StatusPtr>> entries;
+  for (const auto& status_provider_description_pair : status_providers_) {
+    DVLOG_POLICY(3, POLICY_PROCESSING)
+        << status_provider_description_pair.first
+        << " status: " << status_provider_description_pair.second->GetStatus();
+
+    entries.emplace_back(
+        status_provider_description_pair.first,
+        status_provider_description_pair.second->GetStatusMojo());
+  }
+  return base::flat_map<std::string, policy::mojom::StatusPtr>(
+      std::move(entries));
+}
+
 base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyValues() {
   base::DictValue policy_values;
   base::ListValue policy_ids;
@@ -302,8 +319,9 @@ void PolicyValueAndStatusAggregator::OnProfileWillBeDestroyed(
 }
 
 void PolicyValueAndStatusAggregator::NotifyValueAndStatusChange() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPolicyValueAndStatusChanged();
+  }
 }
 
 void PolicyValueAndStatusAggregator::AddPolicyValueProvider(

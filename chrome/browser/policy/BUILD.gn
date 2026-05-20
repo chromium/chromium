@@ -718,6 +718,7 @@ source_set("policy") {
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/prefs",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_configuration",

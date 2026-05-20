@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -42,6 +41,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/policy_utils.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/version_info/channel.h"
@@ -301,6 +301,9 @@ class PolicyTestHandlerTest : public base::test::WithFeatureOverride,
     }
   }
 
+  void StatusUpdated(
+      base::flat_map<std::string, policy::mojom::StatusPtr> status) override {}
+
  private:
   content::TestWebUI web_ui_;
 
@@ -344,7 +347,6 @@ IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTest,
       prefs->GetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup);
   EXPECT_TRUE(pref_value.empty());
 }
-
 
 IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTest,
                        HandleSetLocalTestPoliciesNotSupported) {

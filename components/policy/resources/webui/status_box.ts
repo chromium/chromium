@@ -8,39 +8,8 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
+import type {Status} from './policy.mojom-webui.js';
 import {getTemplate} from './status_box.html.js';
-
-export interface Status {
-  policyDescriptionKey: string;
-  flexOrgWarning: boolean;
-  assetId?: string;
-  location?: string;
-  directoryApiId?: string;
-  clientId: string;
-  isOffHoursActive?: boolean;
-  deviceId: string;
-  enrollmentToken: string;
-  domain: string;
-  machine?: string;
-  version?: string;
-  username: string;
-  gaiaId: string;
-  profileId: string;
-  status: string;
-  extensionInstallStatus: string;
-  refreshInterval: string;
-  timeSinceLastRefresh: string;
-  timeSinceLastFetchAttempt: string;
-  extensionInstallTimeSinceLastRefresh: string;
-  extensionInstallTimeSinceLastFetchAttempt: string;
-  enterpriseDomainManager: string;
-  isAffiliated: boolean;
-  lastCloudReportSentTimestamp: string;
-  timeSinceLastCloudReportSent: string;
-  policiesPushAvailable: boolean;
-  error: boolean;
-  extensionInstallError: boolean;
-}
 
 export class StatusBoxElement extends CustomElement {
   static override get template() {
@@ -126,14 +95,16 @@ export class StatusBoxElement extends CustomElement {
       this.setLabelAndShow('.machine-enrollment-domain', status.domain);
       this.setLabelAndShow('.machine-enrollment-token', status.enrollmentToken);
       this.setLabelAndShow('.client-id', status.clientId);
-      this.setLabelAndShow('.profile-id', status.profileId);
+      this.setLabelAndShow(
+          '.profile-id', status.profileId ?? notSpecifiedString);
     } else {
       // Populate the topmost item with the username.
-      this.setLabelAndShow('.username', status.username);
+      this.setLabelAndShow('.username', status.username ?? notSpecifiedString);
       // Populate the user gaia id.
       this.setLabelAndShow('.gaia-id', status.gaiaId || notSpecifiedString);
       this.setLabelAndShow('.client-id', status.clientId);
-      this.setLabelAndShow('.profile-id', status.profileId);
+      this.setLabelAndShow(
+          '.profile-id', status.profileId ?? notSpecifiedString);
 
       if (status.isAffiliated != null) {
         this.setLabelAndShow(

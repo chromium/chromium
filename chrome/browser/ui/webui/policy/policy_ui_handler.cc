@@ -14,6 +14,8 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
+#include "base/feature.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -523,13 +525,18 @@ void PolicyUIHandler::SendPolicies() {
 }
 
 void PolicyUIHandler::SendStatus() {
-  if (!IsJavascriptAllowed()) {
-    return;
-  }
+  if (IsMojoMigrationEnabled()) {
+    client_->StatusUpdated(
+        policy_value_and_status_aggregator_->GetAggregatedPolicyStatusMojo());
+  } else {
+    if (!IsJavascriptAllowed()) {
+      return;
+    }
 
-  FireWebUIListener(
-      "status-updated",
-      policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
+    FireWebUIListener(
+        "status-updated",
+        policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
