@@ -191,7 +191,7 @@ void AutocompleteControllerAndroid::Start(
   input_.set_current_url(current_url);
   input_.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
   input_.set_prefer_keyword(prefer_keyword);
-  input_.set_in_keyword_mode(in_keyword_mode);
+  input_.set_in_keyword_mode(prefer_keyword || in_keyword_mode);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_omit_asynchronous_matches(!want_asynchronous_matches);
 

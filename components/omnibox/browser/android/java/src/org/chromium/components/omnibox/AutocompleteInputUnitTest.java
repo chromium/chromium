@@ -231,6 +231,16 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    public void isInZeroPrefixContext_withSiteSearch() {
+        mInput.setUserText("");
+        assertTrue(mInput.isInZeroPrefixContext());
+
+        mInput.setSiteSearchData(new AutocompleteInput.SiteSearchData("example.com", "Example"));
+        // Even with empty user text, it shouldn't be zero-prefix context if site search is active.
+        assertFalse(mInput.isInZeroPrefixContext());
+    }
+
+    @Test
     public void getPageClassification() {
         // Test initial value
         assertEquals(PageClassification.BLANK_VALUE, mInput.getPageClassification());

@@ -1244,8 +1244,7 @@ class AutocompleteMediator
         // Otherwise, it might be the chip losing focus because the user started typing.
         if (mIgnoreOmniboxItemSelection && siteSearchData == null) return;
 
-        // Prevent clearing the text from triggering a new autocomplete request.
-        mAutocompleteInput.setAutocompleteState(AutocompleteState.STANDBY);
+        mShouldPreventOmniboxAutocomplete = true;
 
         if (siteSearchData != null) {
             mIgnoreOmniboxItemSelection = true;
@@ -1275,6 +1274,9 @@ class AutocompleteMediator
             // Do not clear the text. The text belongs to the user or the suggestion.
             mAutocompleteInput.setSiteSearchData(null);
         }
+
+        mShouldPreventOmniboxAutocomplete = false;
+        onInputChanged();
     }
 
     private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {
