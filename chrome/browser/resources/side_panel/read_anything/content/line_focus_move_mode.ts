@@ -14,7 +14,7 @@ import {LineFocusMovement} from './read_anything_types.js';
 // Used to prevent microadjustments of the line focus window when adjusting to
 // new line heights as it can be distracting for no functional difference.
 // Determined by experimentation and should be tweaked as needed.
-const BASE_MOVEMENT_THRESHOLD = 10;
+const BASE_MOVEMENT_THRESHOLD = 8;
 
 // Interface for communicating notifications back to the main
 // LineFocusController.
@@ -254,6 +254,8 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
     // jarring movement / jitter.
     this.model_.setAdaptMultiLineWindow(false);
     this.setFocalPoint(this.getCenterY());
+    // Start at the first text line on activate by scrolling to it if needed.
+    this.recenterCurrentTextLineIfNeeded(/*instant=*/ true);
   }
 
   // Static mode ignores mouse movements.
@@ -322,7 +324,8 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const wasEnabled = this.model_.isSessionActive();
     this.setupEnabledMode(container, height);
     this.model_.setAdaptMultiLineWindow(true);
-    this.setFocalPoint(this.getMinFocalPoint_(this.model_.getFocalPoint()));
+    this.setFocalPoint(Math.max(
+        this.getFirstVisibleFocalPoint_(), this.model_.getFocalPoint()));
     if (!wasEnabled && this.model_.getTextBounds().length > 0) {
       this.initializeSnapIndex(/*isForward=*/ true);
     }
@@ -331,7 +334,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
   onMouseMove(y: number): void {
     this.model_.setCurrentLineIndex(null);
     const previousFocalPoint = this.model_.getFocalPoint();
-    this.setFocalPoint(this.getMinFocalPoint_(y));
+    this.setFocalPoint(Math.max(this.model_.getMinY(), y));
     chrome.readingMode.addLineFocusMouseDistance(
         Math.round(Math.abs(this.model_.getFocalPoint() - previousFocalPoint)));
   }
@@ -341,7 +344,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     // in the toolbar, which means they are likely trying to change some
     // settings. onAllMenusClose will notify them of the final position when
     // all the settings menus are closed.
-    this.setFocalPoint(this.getMinFocalPoint_(y), /*quietly=*/ true);
+    this.setFocalPoint(Math.max(this.model_.getMinY(), y), /*quietly=*/ true);
   }
 
   onScrollEnd(newScrollTop: number): void {
@@ -353,7 +356,13 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
 
     this.updatePositions(container, height);
     this.updateScrollBuffer();
-    this.recenterCurrentTextLineIfNeeded(/*instant=*/ true);
+    // If the user is focusing on a particular line when font size or spacing
+    // changes, recenter that text line if it would go off screen to keep their
+    // place.
+    if (this.model_.getCurrentLineIndex() !== null &&
+        !this.model_.getInitiatedScroll()) {
+      this.recenterCurrentTextLineIfNeeded(/*instant=*/ true);
+    }
 
     if (currentIndex !== null) {
       const newFocalPoint = this.styleMode_.getDesiredCenter(currentIndex);
@@ -377,7 +386,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     return this.styleMode_.getOffScreenDiff(currentIndex);
   }
 
-  private getMinFocalPoint_(focalPoint: number) {
+  private getFirstVisibleFocalPoint_() {
     const bounds = this.model_.getTextBounds();
     if (bounds.length === 0) {
       return this.model_.getMinY();
@@ -385,10 +394,9 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
 
     const firstVisibleRect =
         bounds.find(rect => rect.top >= this.model_.getMinY());
-    const min = firstVisibleRect ?
+    return firstVisibleRect ?
         this.styleMode_.getFocalPointForRect(firstVisibleRect) :
         this.model_.getMinY();
-    return Math.max(min, focalPoint);
   }
 }
 

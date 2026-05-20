@@ -128,6 +128,12 @@ suite('LineFocusMoveMode', () => {
       assertEquals(3, model.getTextBounds().length);
     });
 
+    test('onActivated scrolls to first line', () => {
+      const container = createShortContainer();
+      mode.onActivated(container, defaultHeight);
+      assertNotEquals(0, scrollDiffReceived);
+    });
+
     test('onActivated sets center focal point', () => {
       const container = createShortContainer();
 
@@ -585,16 +591,11 @@ suite('LineFocusMoveMode', () => {
 
     test('onMouseMove honors min y with line', () => {
       const minY = 10;
-      const lineHeight = 20;
-      const lineBottom = minY + lineHeight;
       model.setMinY(minY);
-      model.setTextBounds(
-          [new DOMRect(0, 0, 10, 5), new DOMRect(0, minY, 10, lineHeight)]);
 
       mode.onMouseMove(0);
 
-      // The line should align with the bottom of the first visible line.
-      assertEquals(lineBottom, model.getTop());
+      assertEquals(minY, model.getTop());
       assertEquals(0, model.getWindowHeight());
     });
 
@@ -641,16 +642,12 @@ suite('LineFocusMoveMode', () => {
 
     test('onMouseMoveInToolbar honors min y with line', () => {
       const minY = 10;
-      const lineHeight = 20;
-      const lineBottom = minY + lineHeight;
       model.setMinY(minY);
-      model.setTextBounds(
-          [new DOMRect(0, 0, 10, 5), new DOMRect(0, minY, 10, lineHeight)]);
 
       mode.onMouseMoveInToolbar(0);
 
       // The line should align with the bottom of the first visible line.
-      assertEquals(lineBottom, model.getTop());
+      assertEquals(minY, model.getTop());
       assertEquals(0, model.getWindowHeight());
     });
 
