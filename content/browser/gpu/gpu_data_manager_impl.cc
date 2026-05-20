@@ -231,6 +231,21 @@ void GpuDataManagerImpl::TerminateInfoCollectionGpuProcess() {
   base::AutoLock auto_lock(lock_);
   private_->TerminateInfoCollectionGpuProcess();
 }
+
+void GpuDataManagerImpl::SetUseAdapterLuid(const CHROME_LUID& luid) {
+  base::AutoLock auto_lock(lock_);
+  private_->SetUseAdapterLuid(luid);
+}
+
+void GpuDataManagerImpl::ClearUseAdapterLuid() {
+  base::AutoLock auto_lock(lock_);
+  private_->ClearUseAdapterLuid();
+}
+
+std::optional<CHROME_LUID> GpuDataManagerImpl::GetUseAdapterLuid() const {
+  base::AutoLock auto_lock(lock_);
+  return private_->GetUseAdapterLuid();
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void GpuDataManagerImpl::PostCreateThreads() {
