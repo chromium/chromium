@@ -427,6 +427,19 @@ This is the order of the import groups:
 1. java
 1. javax
 
+### Class Qualification and Imports
+
+* Importing classes is preferred over inline fully qualified class names
+  (`org.chromium.foo.Bar`). Only use fully qualified class names inline when
+  absolutely necessary (e.g. to disambiguate name collisions).
+* Inner classes with descriptive names should be directly imported rather than
+  referenced via their outer class. E.g., prefer
+  `import org.chromium.foo.OuterClass.DescriptiveInner;` and using
+  `DescriptiveInner` over `OuterClass.DescriptiveInner`.
+* Outer-qualified naming (`OuterClass.InnerClass`) should be reserved for
+  generically named inner classes, such as `Observer`, where mentioning the
+  outer class provides essential context.
+
 ## Testing
 
 Googlers, see [go/clank-test-strategy](http://go/clank-test-strategy).
