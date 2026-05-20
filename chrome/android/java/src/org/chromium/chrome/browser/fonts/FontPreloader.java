@@ -23,7 +23,7 @@ import org.chromium.chrome.R;
 public class FontPreloader {
     private static @Nullable FontPreloader sInstance;
 
-    private static final Integer[] FONTS = {
+    private static final int[] FONTS = {
         R.font.chrome_google_sans,
         R.font.chrome_google_sans_medium,
         R.font.chrome_google_sans_bold,
@@ -33,11 +33,11 @@ public class FontPreloader {
 
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    private final Integer[] mFonts;
+    private final int[] mFonts;
     private boolean mInitialized;
 
     @VisibleForTesting
-    FontPreloader(Integer[] fonts) {
+    FontPreloader(int[] fonts) {
         mFonts = fonts;
     }
 

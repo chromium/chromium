@@ -32,6 +32,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fonts.FontPreloaderUnitTest.ShadowResourcesCompat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link FontPreloader}. */
@@ -40,7 +41,7 @@ import java.util.List;
         manifest = Config.NONE,
         shadows = {ShadowResourcesCompat.class})
 public class FontPreloaderUnitTest {
-    private static final Integer[] FONTS = {
+    private static final int[] FONTS = {
         R.font.chrome_google_sans, R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold
     };
 
@@ -82,6 +83,7 @@ public class FontPreloaderUnitTest {
 
     @Test
     public void testGetFontCalledForAllFontsInArray() {
-        assertThat(ShadowResourcesCompat.sFontsRequested, containsInAnyOrder(FONTS));
+        Integer[] expected = Arrays.stream(FONTS).boxed().toArray(Integer[]::new);
+        assertThat(ShadowResourcesCompat.sFontsRequested, containsInAnyOrder(expected));
     }
 }
