@@ -23,9 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
-#include "components/signin/internal/identity_manager/fake_account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -67,7 +65,6 @@ class PrimaryAccountManagerTest : public testing::Test,
     // initialization.
     signin::SetUpFakeAccountManagerFacade();
 #endif
-    AccountFetcherService::RegisterPrefs(user_prefs_.registry());
     AccountTrackerService::RegisterPrefs(user_prefs_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());
@@ -77,13 +74,6 @@ class PrimaryAccountManagerTest : public testing::Test,
     token_service_ = std::make_unique<ProfileOAuth2TokenService>(
         &user_prefs_,
         std::make_unique<FakeProfileOAuth2TokenServiceDelegate>());
-    account_fetcher_ = std::make_unique<AccountFetcherService>();
-    auto account_fetcher_factory = std::make_unique<FakeAccountFetcherFactory>(
-        *token_service_.get(), *signin_client());
-    account_fetcher_->Initialize(
-        &test_signin_client_, token_service_.get(), account_tracker_.get(),
-        std::make_unique<image_fetcher::FakeImageDecoder>(),
-        std::move(account_fetcher_factory));
   }
 
   ~PrimaryAccountManagerTest() override {
@@ -96,7 +86,6 @@ class PrimaryAccountManagerTest : public testing::Test,
   TestSigninClient* signin_client() { return &test_signin_client_; }
 
   AccountTrackerService* account_tracker() { return account_tracker_.get(); }
-  AccountFetcherService* account_fetcher() { return account_fetcher_.get(); }
   PrefService* prefs() { return &user_prefs_; }
 
   // Seed the account tracker with information from logged in user.  Normally
@@ -201,7 +190,6 @@ class PrimaryAccountManagerTest : public testing::Test,
   std::unique_ptr<metrics::ProfileMetricsService> profile_metrics_service_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
   std::unique_ptr<ProfileOAuth2TokenService> token_service_;
-  std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;
   std::vector<std::string> cookies_;
