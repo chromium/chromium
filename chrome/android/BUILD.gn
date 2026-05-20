@@ -143,7 +143,6 @@ if (_is_default_toolchain) {
       "java/res_base/font/chrome_google_sans_medium.xml",
       "java/res_base/font/chrome_google_sans_text.xml",
       "java/res_base/font/chrome_google_sans_text_medium.xml",
-      "java/res_base/raw/keep_base.xml",
       "java/res_base/values/values.xml",
       "java/res_base/xml/network_security_config.xml",
       "java/res_chromium_base/drawable/themed_app_icon.xml",
@@ -2847,8 +2846,10 @@ if (_is_default_toolchain) {
               mapping_files + [
                 "apks/$_trichrome_library_basename_for_size",
                 "apks/$_trichrome_chrome_basename_for_size",
+                "apks/$_trichrome_chrome_bundle_for_size.unused_resources",
                 "apks/$_trichrome_chrome_bundle_for_size.R.txt",
                 "apks/$_trichrome_webview_basename_for_size",
+                "apks/$_trichrome_webview_bundle_for_size.unused_resources",
                 "apks/$_trichrome_webview_bundle_for_size.R.txt",
                 "${_symbol_dir_for_size}/libmonochrome__combined.so",
               ]

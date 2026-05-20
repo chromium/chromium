@@ -161,10 +161,6 @@ def _ParseOptions():
       '--feature-jars',
       action='append',
       help='GN list of path to jars which comprise the corresponding feature.')
-  parser.add_argument('--feature-resources',
-                      action='append',
-                      help='List of feature resource zips to shrink: '
-                      'feature_name:proto_path:shrunk_proto_path')
   parser.add_argument(
       '--dex-dest',
       action='append',
@@ -215,12 +211,6 @@ def _ParseOptions():
       help='File to touch upon success. Mutually exclusive with --output-path')
   parser.add_argument('--desugared-library-keep-rule-output',
                       help='Path to desugared library keep rule output file.')
-
-  parser.add_argument('--resources-input',
-                      help='Path to resource proto file for the main module.')
-  parser.add_argument(
-      '--resources-output',
-      help='Path to optimized resource proto file for the main module.')
 
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
@@ -284,17 +274,6 @@ def _ParseOptions():
           parser.error('"%s" referenced in --uses-split not present.' % name)
       split_map[child] = parent
   options.uses_split = split_map
-
-  feature_resources = {}
-  if options.feature_resources:
-    for feat_res in options.feature_resources:
-      feat_name, proto_path, shrunk_proto_path = feat_res.split(':')
-      if feat_name not in options.feature_names:
-        parser.error(
-            '"%s" referenced in --feature-resources not present in features.' %
-            feat_name)
-      feature_resources[feat_name] = (proto_path, shrunk_proto_path)
-  options.feature_resources = feature_resources
 
   return options
 
@@ -459,26 +438,11 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
           options.input_art_profile,
       ]
 
-    if options.resources_input:
-      cmd += [
-          '--android-resources', options.resources_input,
-          options.resources_output
-      ]
-
     for split_context in split_contexts_by_name.values():
       if split_context is base_context:
         continue
-      sorted_jars = sorted(split_context.input_jars)
-      for in_jar in sorted_jars:
+      for in_jar in sorted(split_context.input_jars):
         cmd += ['--feature', in_jar, split_context.staging_dir]
-
-      feat_res = options.feature_resources.get(split_context.name)
-      if feat_res:
-        proto_in, shrunk_out = feat_res
-        cmd += [
-            '--feature', f':{proto_in}',
-            f'{split_context.staging_dir}:{shrunk_out}'
-        ]
 
     cmd += sorted(base_context.input_jars)
 
@@ -689,9 +653,6 @@ def _Run(options):
                                    exclude_generated=True)
 
   depfile_inputs = options.proguard_configs + options.input_paths + libraries
-  if options.feature_resources:
-    for proto_in, _ in options.feature_resources.values():
-      depfile_inputs.append(proto_in)
   if options.expected_file:
     diff_utils.CheckExpectations(merged_configs, options)
     if options.only_verify_expectations:
