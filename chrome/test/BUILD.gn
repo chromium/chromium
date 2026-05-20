@@ -4625,7 +4625,6 @@ if (!is_android) {
         "../browser/profiles/profile_window_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
         "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest.cc",
-        "../browser/ui/views/accessibility/menu_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/accessibility/tree_view_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/button_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/checkbox_dump_accessibility_events_browsertest.cc",

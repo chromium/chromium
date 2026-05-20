@@ -1,6 +1,0 @@
-MenuClosed
-MenuClosed
-MenuModeEnd
-MenuModeEnd on role=menubar
-MenuModeStart on role=menubar
-MenuOpened on role=menu

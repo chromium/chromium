@@ -1,6 +1,0 @@
-AXMenuClosed
-AXMenuClosed
-AXMenuClosed
-AXMenuOpened on role=AXMenu
-AXMenuOpened on role=AXMenu
-AXMenuOpened on role=AXMenu
