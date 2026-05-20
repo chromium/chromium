@@ -45,12 +45,19 @@ autoninja --quiet -C out/Debug-iphonesimulator ios_chrome_ui_eg2tests_module
 
 ## Running Unit Tests
 
-To build and run unit tests inside `//ios/chrome`, use the
-`ios/tools/run_unittests.py` script.
+To build and run unit tests, use the `ios/tools/run_unittests.py` script.
+
+Note: By default, the script targets `ios_chrome_unittests` (for tests inside
+`//ios/chrome/`). To run tests in other directories like `//components/`, you
+must explicitly provide the correct `--test-target` (e.g.,
+`--test-target components_unittests`).
 
 ```sh
 # Run specific tests using gtest_filter
 ios/tools/run_unittests.py --gtest_filter="ExampleTest1.*:ExampleTest2.*"
+
+# Run tests in a directory other than `//ios/chrome/` (e.g., //components/)
+ios/tools/run_unittests.py --test-target components_unittests --gtest_filter="SomeComponentTest.*"
 
 # Run tests instantly, skipping the compilation check if already compiled
 ios/tools/run_unittests.py --no-build --gtest_filter="ExampleTest1.*"
