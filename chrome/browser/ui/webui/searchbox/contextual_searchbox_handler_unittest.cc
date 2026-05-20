@@ -1954,7 +1954,7 @@ TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
   handler().omnibox_controller()->SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
 
-  handler().QueryAutocomplete(u"test", false);
+  handler().QueryAutocomplete(u"test", false, 0);
 
   EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
   EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
@@ -1987,7 +1987,7 @@ TEST_F(ContextualSearchboxHandlerTest,
     handler().omnibox_controller()->SetAutocompleteControllerForTesting(
         std::move(autocomplete_controller));
 
-    handler().QueryAutocomplete(u"test", false);
+    handler().QueryAutocomplete(u"test", false, 0);
     EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
     EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
               "xyz");
@@ -2010,7 +2010,7 @@ TEST_F(ContextualSearchboxHandlerTest,
     handler().omnibox_controller()->SetAutocompleteControllerForTesting(
         std::move(autocomplete_controller));
 
-    handler().QueryAutocomplete(u"test", false);
+    handler().QueryAutocomplete(u"test", false, 0);
     EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
   }
 }

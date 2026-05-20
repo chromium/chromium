@@ -210,7 +210,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
+    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false, 0);
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -236,7 +236,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
+    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false, 0);
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");
@@ -467,7 +467,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
         .WillRepeatedly(Return(suggest_inputs));
 
-    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
+    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false, 0);
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -519,7 +519,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
         .WillRepeatedly(Return(suggest_inputs));
 
-    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
+    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false, 0);
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");

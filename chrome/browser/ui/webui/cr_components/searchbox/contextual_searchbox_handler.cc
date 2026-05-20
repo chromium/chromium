@@ -1256,12 +1256,14 @@ void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {
 
 void ContextualSearchboxHandler::QueryAutocomplete(
     const std::u16string& input,
-    bool prevent_inline_autocomplete) {
+    bool prevent_inline_autocomplete,
+    uint32_t cursor_position) {
   if (contextual_tasks_context_service_) {
     contextual_tasks_context_service_->OnTypedQuery();
   }
 
-  SearchboxHandler::QueryAutocomplete(input, prevent_inline_autocomplete);
+  SearchboxHandler::QueryAutocomplete(input, prevent_inline_autocomplete,
+                                      cursor_position);
 }
 
 void ContextualSearchboxHandler::OnContextUploadStatusChanged(

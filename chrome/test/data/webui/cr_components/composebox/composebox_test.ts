@@ -16,7 +16,7 @@ import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as 
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -435,9 +435,50 @@ suite('ComposeboxTest', () => {
     // Verify the file was deleted.
     assertEquals(0, composebox.files.size);
   });
+
+  test('queryAutocomplete passes cursor position', async () => {
+    composebox.input = 'hello';
+    await composebox.updateComplete;
+
+    const inputElement = composebox.getInputElement();
+    inputElement.inputElement.focus();
+    inputElement.inputElement.selectionStart = 3;
+    inputElement.inputElement.selectionEnd = 3;
+
+    // Clear the `queryAutocomplete` called for ZPS.
+    searchboxHandler.resetResolver('queryAutocomplete');
+    composebox.queryAutocomplete(/*clearMatches=*/ false);
+
+    const args = await searchboxHandler.whenCalled('queryAutocomplete');
+    assertDeepEquals(args, ['hello', false, 3]);
+  });
+
+  test(
+      'queryAutocomplete passes cursor position when input is out of sync',
+      async () => {
+        composebox.input = 'hello';
+        await composebox.updateComplete;
+
+        const inputElement = composebox.getInputElement();
+        inputElement.inputElement.focus();
+        inputElement.inputElement.selectionStart = 3;
+        inputElement.inputElement.selectionEnd = 3;
+
+        // Simulate a programming update of the input as happens when, e.g., the
+        // user closes the composebox. This update won't be immediately
+        // reflected in the DOM.
+        composebox.input = 'hello world';
+
+        // Clear the `queryAutocomplete` called for ZPS.
+        searchboxHandler.resetResolver('queryAutocomplete');
+        composebox.queryAutocomplete(/*clearMatches=*/ false);
+
+        const args = await searchboxHandler.whenCalled('queryAutocomplete');
+        assertDeepEquals(args, ['hello world', false, 11]);
+      });
 });
 
-suite('composeboxSharedMountAutoRepostionDefault', () => {
+suite('composeboxSharedMountAutoRepositionDefault', () => {
   let composebox: ComposeboxElement;
 
   setup(async () => {

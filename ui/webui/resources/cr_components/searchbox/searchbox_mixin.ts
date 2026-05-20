@@ -128,7 +128,17 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
       preventInlineAutocomplete = preventInlineAutocomplete ||
           this.getInputElement().preventInlineAutocomplete(input);
-      this.pageHandler().queryAutocomplete(input, preventInlineAutocomplete);
+      // Get the cursor position from the DOM. Since DOM updates are async in
+      // lit, if the input was set via code rather than user interaction, the
+      // cursor position fetched from the dom would be stale, so use the text
+      // length instead, since that's what the dom cursor position will be set
+      // to once the update propagates.
+      const cursorPosition =
+          this.getInputElement().inputElement.value === input ?
+          this.getInputElement().inputElement.selectionStart || 0 :
+          input.length;
+      this.pageHandler().queryAutocomplete(
+          input, preventInlineAutocomplete, cursorPosition);
 
       this.dispatchEvent(new CustomEvent('query-autocomplete', {
         bubbles: true,

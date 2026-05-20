@@ -137,8 +137,12 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('onThumbnailRemoved', {});
   }
 
-  queryAutocomplete(input: String16, preventInlineAutocomplete: boolean) {
-    this.methodCalled('queryAutocomplete', {input, preventInlineAutocomplete});
+  queryAutocomplete(
+      input: String16, preventInlineAutocomplete: boolean,
+      cursorPosition: number) {
+    this.methodCalled(
+        'queryAutocomplete',
+        {input, preventInlineAutocomplete, cursorPosition});
   }
 
   stopAutocomplete(clearResult: boolean) {

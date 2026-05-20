@@ -4,8 +4,16 @@
 
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 
+#include <algorithm>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -1055,7 +1063,13 @@ void SearchboxHandler::OnFocusChanged(bool focused) {
 }
 
 void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
-                                         bool prevent_inline_autocomplete) {
+                                         bool prevent_inline_autocomplete,
+                                         uint32_t cursor_position) {
+  // This shouldn't happen, but, e.g., users may do unintended actions in the
+  // developer console and crashing with a `CHECK()` doesn't seem warranted.
+  cursor_position =
+      std::min(static_cast<size_t>(cursor_position), input.length());
+
   // TODO(tommycli): We use the input being empty as a signal we are requesting
   // on-focus suggestions. It would be nice if we had a more explicit signal.
   bool is_on_focus = input.empty();

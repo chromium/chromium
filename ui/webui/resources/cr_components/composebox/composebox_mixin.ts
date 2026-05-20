@@ -409,8 +409,7 @@ export const ComposeboxEmbedderMixin =
           if (changedPrivateProperties.has('selectedMatchIndex')) {
             if (this.selectedMatch) {
               // Update the input.
-              const text = this.selectedMatch.fillIntoEdit;
-              this.input = text;
+              this.input = this.selectedMatch.fillIntoEdit;
             } else if (!this.lastQueriedInput) {
               // This is for cases when focus leaves the matches/input.
               // If there was already text in the input do not clear it.
@@ -1507,7 +1506,17 @@ export const ComposeboxEmbedderMixin =
           }
           this.lastQueriedInput = this.input;
           this.haveReceivedSynchronousAutocompleteResponse = false;
-          this.getSearchboxHandler().queryAutocomplete(this.input, false);
+          // Get the cursor position from the DOM. Since DOM updates are async
+          // in lit, if the input was set via code rather than user interaction,
+          // the cursor position fetched from the dom would be stale, so use the
+          // text length instead, since that's what the dom cursor position will
+          // be set to once the update propagates.
+          const cursorPosition =
+              this.getInputElement().inputElement.value === this.input ?
+              this.getInputElement().inputElement.selectionStart || 0 :
+              this.input.length;
+          this.getSearchboxHandler().queryAutocomplete(
+              this.input, false, cursorPosition);
         }
 
         clearAutocompleteMatches() {

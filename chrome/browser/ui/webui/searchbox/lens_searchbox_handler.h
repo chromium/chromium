@@ -32,7 +32,8 @@ class LensSearchboxHandler : public SearchboxHandler {
   // searchbox::mojom::PageHandler:
   void OnFocusChanged(bool focused) override;
   void QueryAutocomplete(const std::u16string& input,
-                         bool prevent_inline_autocomplete) override;
+                         bool prevent_inline_autocomplete,
+                         uint32_t cursor_position) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override {}
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,

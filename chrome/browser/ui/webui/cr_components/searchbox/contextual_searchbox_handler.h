@@ -155,7 +155,8 @@ class ContextualSearchboxHandler
       ShouldShowDriveDisclaimerCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
   void QueryAutocomplete(const std::u16string& input,
-                         bool prevent_inline_autocomplete) override;
+                         bool prevent_inline_autocomplete,
+                         uint32_t cursor_position) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // drive_picker_host::mojom::DrivePickerResultHandler:

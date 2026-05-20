@@ -111,7 +111,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // searchbox::mojom::PageHandler:
   void OnFocusChanged(bool focused) override;
   void QueryAutocomplete(const std::u16string& input,
-                         bool prevent_inline_autocomplete) override;
+                         bool prevent_inline_autocomplete,
+                         uint32_t cursor_position) override;
   void StopAutocomplete(bool clear_result) override;
   void OpenAutocompleteMatch(uint8_t line,
                              const GURL& url,

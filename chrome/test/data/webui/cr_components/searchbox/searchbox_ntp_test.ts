@@ -656,6 +656,35 @@ suite('SearchboxTest', () => {
     testProxy.handler.reset();
   });
 
+  test('queryAutocomplete passes cursor position', async () => {
+    realbox.$.input.inputElement.value = 'hello';
+    realbox.$.input.inputElement.selectionStart = 3;
+    realbox.$.input.inputElement.selectionEnd = 3;
+    realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
+
+    const args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(args.input, 'hello');
+    assertEquals(args.cursorPosition, 3);
+  });
+
+  test(
+      'queryAutocomplete passes cursor position when input is out of sync',
+      async () => {
+        // Simulate a programmatic update that makes them out of sync
+        realbox.$.input.inputElement.value = 'hello';
+        realbox.$.input.inputElement.selectionStart = 3;
+        realbox.$.input.inputElement.selectionEnd = 3;
+
+        // Dispatch event with 'hello world' but DOM is still 'hello'
+        realbox.$.input.dispatchEvent(new CustomEvent(
+            'searchbox-input-text-updated',
+            {detail: {value: 'hello world', isComposing: false}}));
+
+        const args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals(args.input, 'hello world');
+        assertEquals(args.cursorPosition, 11);
+      });
+
   test('clearing the input stops autocomplete', async () => {
     realbox.$.input.inputElement.value = 'h';
     realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
