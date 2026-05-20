@@ -17901,12 +17901,12 @@
                 {
                     "name": "enabled_512K_20260420",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"*\":{\"main\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false},\"amsc\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
-                        "enabled-processes": "browser-only"
+                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"*\":{\"main\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false},\"amsc\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}},\"gpu-process\":{\"*\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
+                        "enabled-processes": "browser-and-gpu"
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
+                        "PartitionAllocSchedulerLoopQuarantineTaskControlledPurge",
                         "PartitionAllocWithAdvancedChecks"
                     ],
                     "disable_features": [
