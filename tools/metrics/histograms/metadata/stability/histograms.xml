@@ -568,8 +568,12 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-analysis-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    Collects various counters related to stability. The majority of them are
-    crash types.
+    Collects various counters related to stability. For the crash-related
+    buckets, see
+    https://chromium.googlesource.com/chromium/src/+/main/docs/stability.md for
+    details on what aspects of stability are being measured and how, how the
+    measured aspects reflect (or don't reflect) crashes, and how they relate to
+    crash reports in the Crash database.
 
     In M129 we are more accurately tracking renderer process launch failures,
     and expect to find a significant spike in volume for this bucket.
