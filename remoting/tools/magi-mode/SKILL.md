@@ -13,10 +13,10 @@ and ambiguity:
 
 1. **FAST_PATH (Efficiency):** Used for low-complexity, low-ambiguity tasks
    (e.g., surgical bug fixes). *Workflow:* Scoping (Spec) -> Synthesis (Code) ->
-   Single Auditor (Architect).
+   Single Auditor (Core Auditor).
 2. **RIGOR_PATH (Correctness):** Used for high-complexity, high-ambiguity, or
    security-sensitive tasks. *Workflow:* Scoping (Spec + Scaffold) -> Synthesis
-   (Code) -> Multiple Tier 1 Scanners (Security, Perf, Architect).
+   (Code) -> Multiple Tier 1 Scanners (Security, Perf, Auditor).
 
 ## The Core Modules (Execution)
 
@@ -28,7 +28,7 @@ specific task.
 - **Synthesis:** Writes the actual C++ code by combining technical requirements
   and adhering to constraints.
 - **The Scanners (Auditors):** Specialized technical mandates (Security,
-  Performance, Architect, etc.) that perform rigorous, boolean-checklist-based
+  Performance, Auditor, etc.) that perform rigorous, boolean-checklist-based
   audits of the generated code.
 
 ## The Auxiliary Modules
@@ -83,9 +83,9 @@ across the stages:
   keys in their `ReviewFeedback` checklist. The Orchestrator (or Consolidation
   in RIGOR_PATH) performs a **Logical AND** consolidation across all reviews. A
   key in the consolidated `state_block.magi.json#checklist` only becomes `true`
-  if **ALL** scanners evaluating that key asserted `true`. Any `false` keys or
-  `unlisted_issues_found` are translated into strict constraints in
-  `constraints.magi.[iteration].json`.
+  if **ALL** scanners that have that specific key defined in their persona
+  asserted `true`. Any `false` keys or `unlisted_issues_found` are translated
+  into strict constraints in `constraints.magi.[iteration].json`.
 - **Upgrades (Stage 3, Step 3):** Once consensus is reached (all checklist items
   are `true`), the Training agent uses `unlisted_issues_found` history to append
   new keys to the appropriate `personas/**/*.json` checklists.
@@ -96,11 +96,10 @@ of the MAGI protocol to the user (e.g., "MAGI Stage 2: Generate").
 
 **DECENTRALIZED HANDOFFS:** To reduce Orchestrator overhead, agents SHOULD
 include a `next_stage` field in their JSON output to signal the intended
-successor.
+successor. *Note: Scanners and Scoping sub-agents are exempt as their successors
+are deterministic.*
 
-- **Scoping:** `SCAFFOLDING` (or `PREPARATION` if `task_type` is `REVIEW`)
-- **Architect / Test Expert:** `PREPARATION`
-- **Scanners:** `ANALYSIS`
+- **Implementation / Test Expert:** `PREPARATION`
 - **Consolidation:** `SYNTHESIS` (if iteration needed) or `TRAINING`
 - **Synthesis:** `TEST_FILLING` (if implementation) or `ANALYSIS` (if review)
 - **Training:** `VALIDATION`
@@ -175,20 +174,21 @@ successor.
 
 *This stage is ONLY executed if `task_type` is `IMPLEMENTATION`.*
 
-#### Step 1: Scaffold (The Architect)
+#### Step 1: Scaffold (Implementation)
 
-1. **Roughing In:** Invoke an Architect sub-agent. The Architect MUST read
-   `project.magi.json` to understand the goal. Their mandate is to create
+1. **Roughing In:** Invoke an Implementation sub-agent. The Implementation MUST
+   read `project.magi.json` to understand the goal. Their mandate is to create
    necessary files, define class interfaces, set up Mojo pipes, and GN/DEPS
    rules. Leave implementation details empty or stubbed (e.g.,
-   `NOTIMPLEMENTED()`). The Architect MUST signal `next_stage: SCAFFOLDING`.
+   `NOTIMPLEMENTED()`). The Implementation MUST signal
+   `next_stage: SCAFFOLDING`.
 
 #### Step 2: TDD Boundary (The Test Expert)
 
-1. **Test-Driven Development:** After the Architect completes the scaffold,
+1. **Test-Driven Development:** After the Implementation completes the scaffold,
    invoke a Test Expert sub-agent to establish the testing boundaries. Their
    mandate is to add test files (`*_unittest.cc`), define the required test
-   fixtures, and stub out the critical test cases based on the Architect's
+   fixtures, and stub out the critical test cases based on the Implementation's
    scaffold. To ensure failure in Chromium's GTest framework (confirming TDD
    behavior), the Test Expert MUST insert `ADD_FAILURE() << "NOT IMPLEMENTED"`
    into the stubbed test cases. The Test Expert SHOULD signal
@@ -206,8 +206,8 @@ successor.
 1. **Needs Assessment:** The Orchestrator reads `project.magi.json` and
    `src/remoting/tools/magi-mode/ROUTING.md` (the routing catalog) to select the
    appropriate Scanners (Auditors) based on the execution path:
-   - **FAST_PATH:** Select a single auditor (typically the Architect).
-   - **RIGOR_PATH:** Select the "Big Three" (Security, Performance, Architect)
+   - **FAST_PATH:** Select a single auditor (typically the Auditor).
+   - **RIGOR_PATH:** Select the "Big Three" (Security, Performance, Auditor)
      plus any relevant domain modules.
 2. **State Initialization:** The Orchestrator writes the initial State Block to
    `state_block.magi.json`. The `checklist` field is initialized with the
@@ -237,13 +237,15 @@ successor.
    - **Test Hooks & Accessors:** Modules MUST provide any necessary public
      accessors, test-only hooks, or `friend` declarations in the production code
      that the Test Expert will need to verify internal state.
+   - **Signature Integrity Lock:** Modules MUST NOT change scaffolded signatures
+     (function names, parameters, or return types). If a module identifies a
+     necessary API change, it MUST signal `next_stage: ESCALATION` and produce a
+     detailed `conflict_report` for human review.
 3. **File I/O:** Each sub-agent MUST read `project.magi.json` to ground their
    implementation in the actual requirements. They MUST securely save their
    draft to disk using the versioned naming convention
    `[filename].[persona].magi.[iteration]` (e.g., `host.cc.security.magi.1`).
-   Sub-agents SHOULD signal `next_stage: SYNTHESIS` upon completion. *Note:
-   Sub-agents are permitted to change scaffolded signatures if their priority
-   requires it.*
+   Sub-agents SHOULD signal `next_stage: SYNTHESIS` upon completion.
 
 #### Step 5: Synthesize (Synthesis)
 
@@ -281,8 +283,7 @@ successor.
    > MANDATE: Perform technical audit of synthesized code. INPUT: [filename]
    > SPEC: project.magi.json RULESET: [persona_file_path] OUTPUT: JSON object
    > conforming to magi_schema.json#definitions/ReviewFeedback TARGET:
-   > review.[persona].magi.[iteration].json NEXT_STAGE: ANALYSIS TONE: Zero
-   > Preamble. Artifacts only.
+   > review.[persona].magi.[iteration].json TONE: Zero Preamble. Artifacts only.
 
 #### Step 2: Consolidate (The Orchestrator / Consolidation)
 
@@ -291,8 +292,9 @@ successor.
    generates `constraints.magi.[iteration].json` and loops back to synthesis.
 2. **Path B: RIGOR_PATH:** The Orchestrator invokes the **Consolidation**
    sub-agent to consolidate multiple scanner reports. Consolidation performs a
-   **Logical AND** across all checklists and generates a prioritized list of
-   Actionable Constraints in `constraints.magi.[iteration].json`.
+   **Logical AND** across all checklists (restricted to scanners that evaluate
+   each specific key) and generates a prioritized list of Actionable Constraints
+   in `constraints.magi.[iteration].json`.
 3. **Conflict Detection (Oscillation):** Consolidation MUST proactively detect
    mutually exclusive requirements.
    - **Oscillation:** If a checklist key toggles state (`True -> False -> True`)
@@ -340,7 +342,7 @@ successor.
 1. **Handoff:** Once Validation passes, the Orchestrator pauses its own actions
    and delegates strictly to the **Release** sub-agent. The Orchestrator passes
    only two pieces of information: the name of the feature/bug, and the list of
-   MAGI files updated by Training/Recruiter.
+   MAGI files updated by Training.
 2. **Exclusive Mandate:** Release's exclusive mandate is:
    - **Workspace Hygiene:** Read the discovered VCS from
      `project.magi.json#environment/vcs`. Run `jj st` (for JJ) or `git status`
@@ -353,7 +355,7 @@ successor.
      Rule).
    - **The MAGI CL:** Create a separate change/bookmark (for JJ) or branch (for
      Git). Stage and upload the `PERSONAS.md` and `personas/**/*.json` files
-     updated by the Recruiter or Training as a secondary CL.
+     updated by Training as a secondary CL.
 
 ### Specialized Modes
 
@@ -375,8 +377,8 @@ Synthesis MUST ensure:
    atomically sound or strictly sequence-enforced to prevent double-runs.
 
 **VCS Isolation Rule:** Any modifications to MAGI files (e.g., adding/updating
-personas by the Recruiter or Training) MUST be excluded from the feature/bugfix
-CL. The staging and submission workflow branches dynamically based on
+personas by Training) MUST be excluded from the feature/bugfix CL. The staging
+and submission workflow branches dynamically based on
 `project.magi.json#environment/vcs`:
 
 - **For JJ (Jujutsu):** Work in parallel sibling changes (both rooted at

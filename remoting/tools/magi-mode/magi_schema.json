@@ -33,7 +33,7 @@
         },
         "output_directory": { "type": "string" }
       },
-      "required": ["vcs", "harness", "repo_type"]
+      "required": ["vcs", "harness", "repo_type", "output_directory"]
     },
     "StateBlock": {
       "type": "object",
@@ -57,17 +57,6 @@
           "type": "array",
           "items": { "type": "string" }
         },
-        "ignored_constraints": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "constraint": { "type": "string" },
-              "rationale": { "type": "string" }
-            },
-            "required": ["constraint", "rationale"]
-          }
-        },
         "next_stage": {
           "type": "string",
           "enum": [
@@ -78,7 +67,7 @@
         },
         "state_transport": {
           "type": "string",
-          "enum": ["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]
+          "enum": ["FILE_IO", "EPHEMERAL_WITH_LOGS"]
         }
       },
       "required": [
@@ -115,15 +104,6 @@
         "anti_goals": { "type": "array", "items": { "type": "string" } },
         "edge_cases": { "type": "array", "items": { "type": "string" } },
         "build_targets": { "type": "array", "items": { "type": "string" } },
-        "next_stage": {
-          "type": "string",
-          "enum": ["SCAFFOLDING", "PREPARATION"]
-        },
-        "paranoia_mode": { "type": "boolean" },
-        "auditability_level": {
-          "type": "string",
-          "enum": ["NORMAL", "VERBOSE"]
-        },
         "context_resolved": {
           "type": "boolean",
           "description": "True only if all external bugs/links were successfully read and no hallucinations occurred."
@@ -137,10 +117,6 @@
           "enum": ["LOW", "HIGH"],
           "description": "Assessment of how prescriptive the human instructions were versus how much discovery/decision-making is required."
         },
-        "ambiguity_rationale": {
-          "type": "string",
-          "description": "Brief explanation justifying the ambiguity_level."
-        },
         "environment": { "$ref": "#/definitions/EnvironmentDef" }
       },
       "required": [
@@ -149,15 +125,9 @@
         "complexity_level",
         "goal",
         "target_files",
-        "anti_goals",
-        "edge_cases",
-        "next_stage",
-        "paranoia_mode",
-        "auditability_level",
         "context_resolved",
         "approach_confirmed",
         "ambiguity_level",
-        "ambiguity_rationale",
         "environment"
       ]
     },
@@ -182,13 +152,9 @@
             },
             "required": ["file", "comment"]
           }
-        },
-        "next_stage": {
-          "type": "string",
-          "enum": ["ANALYSIS"]
         }
       },
-      "required": ["checklist", "verdict", "reasoning", "next_stage"]
+      "required": ["checklist", "verdict", "reasoning"]
     },
     "Constraints": {
       "type": "object",

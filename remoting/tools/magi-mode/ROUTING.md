@@ -13,7 +13,7 @@ synthesis.
   `src/remoting/tools/magi-mode/personas/core/scoping.json`
 - **Synthesis:** Maintainability, Chromium idioms, `//base` primitives, and
   final code synthesis. *Path:*
-  `src/remoting/tools/magi-mode/personas/core/architect.json`
+  `src/remoting/tools/magi-mode/personas/core/implementation.json`
 
 ## Scanners (Auditors)
 
@@ -23,8 +23,8 @@ Specialized experts who perform rigorous, boolean-checklist-based audits.
   `src/remoting/tools/magi-mode/personas/core/security.json`
 - **The Performance Scanner:** Latency, zero-copy, sequence affinity. *Path:*
   `src/remoting/tools/magi-mode/personas/core/performance.json`
-- **The Architect Scanner:** Consistency with existing patterns and idioms.
-  *Path:* `src/remoting/tools/magi-mode/personas/core/architect.json`
+- **The Core Auditor:** Consistency with existing patterns and idioms. *Path:*
+  `src/remoting/tools/magi-mode/personas/core/auditor.json`
 - **The Test Expert:** Testability, edge-cases, framework usage. *Path:*
   `src/remoting/tools/magi-mode/personas/auxiliary/test.json`
 - **The Concurrency Expert:** `base::PostTask` safety, preventing deadlocks.

@@ -13,7 +13,6 @@
     "conflict_report": [],
     "active_constraints": [],
     "resolved_constraints": [],
-    "ignored_constraints": [],
     "next_stage": "CRITIQUE",
     "state_transport": "FILE_IO"
 }

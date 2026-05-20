@@ -531,51 +531,6 @@ def CheckJsonFiles(input_api, output_api):
                             f'File {f.LocalPath()} has oscillation_detected: '
                             'true but next_stage is not ESCALATION.'))
 
-            # Cross-file validation for state_transport
-            state_transport = content.get('state_transport')
-            if state_transport in ('EPHEMERAL', 'EPHEMERAL_WITH_LOGS'):
-                project_file_path = input_api.os_path.join(
-                    input_api.os_path.dirname(f.AbsoluteLocalPath()),
-                    'project.magi.json',
-                )
-                if project_file_path not in project_content_cache:
-                    proj_content_str = None
-                    if project_file_path in affected_files_map:
-                        proj_content_str = input_api.ReadFile(
-                            affected_files_map[project_file_path])
-
-                    if not proj_content_str and input_api.os_path.exists(
-                            project_file_path):
-                        try:
-                            with open(project_file_path, 'r',
-                                      encoding='utf-8') as proj_f:
-                                proj_content_str = proj_f.read()
-                        except IOError:
-                            pass
-
-                    if proj_content_str:
-                        try:
-                            project_content_cache[
-                                project_file_path] = json.loads(
-                                    proj_content_str)
-                        except ValueError:
-                            pass
-
-                proj_content = project_content_cache.get(project_file_path, {})
-                if proj_content.get('paranoia_mode') is True:
-                    results.append(
-                        output_api.PresubmitError(
-                            f'File {f.LocalPath()} has state_transport '
-                            f'{state_transport} but project.magi.json has '
-                            'paranoia_mode: true.'))
-                if (state_transport == 'EPHEMERAL' and
-                        proj_content.get('auditability_level') == 'VERBOSE'):
-                    results.append(
-                        output_api.PresubmitError(
-                            f'File {f.LocalPath()} has state_transport '
-                            'EPHEMERAL but project.magi.json has '
-                            'auditability_level: VERBOSE. Consider using '
-                            'EPHEMERAL_WITH_LOGS instead.'))
         elif filename.startswith('project'):
 
             if 'environment' in content:
@@ -613,8 +568,12 @@ def CheckJsonFiles(input_api, output_api):
                                 f'CHROMIUM or GOOGLE_INTERNAL, got {repo_type}'
                             ))
 
-                    if output_directory is not None and not isinstance(
-                            output_directory, str):
+                    if 'output_directory' not in environment:
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} environment is missing required '
+                                f'key "output_directory".'))
+                    elif not isinstance(output_directory, str):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment.output_directory '

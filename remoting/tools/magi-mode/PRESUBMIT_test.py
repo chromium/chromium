@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import os
 import re
 import unittest
@@ -264,7 +265,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"iteration": 1, "oscillation_detected": false, '
             '"active_constraints": [], "resolved_constraints": [], '
             '"conflict_report": [], '
-            '"state_transport": "EPHEMERAL", '
+            '"state_transport": "EPHEMERAL_WITH_LOGS", '
             '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
@@ -284,7 +285,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
             '"oscillation_detected", "active_constraints", '
-            '"resolved_constraints", "conflict_report", '
+            '"resolved_constraints", '
             '"state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
@@ -293,13 +294,12 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"type": "boolean"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
             '{"type": "array"}, "conflict_report": {"type": "array"}, '
-            '"ignored_constraints": {"type": "array"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
             '"TEST_FILLING", "ANALYSIS", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}, '
             '"state_transport": {"type": "string", "enum": '
-            '["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]}}}}}')
+            '["FILE_IO", "EPHEMERAL_WITH_LOGS"]}}}}}')
         schema_path = os.path.normpath(
             os.path.join(os.path.abspath('fake_repo'),
                          'remoting/tools/magi-mode/magi_schema.json'))
@@ -327,7 +327,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"iteration": 1, "oscillation_detected": false, '
             '"active_constraints": [], "resolved_constraints": [], '
             '"conflict_report": [], '
-            '"state_transport": "EPHEMERAL", '
+            '"state_transport": "EPHEMERAL_WITH_LOGS", '
             '"next_stage": "INVALID_STAGE"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json':
@@ -345,7 +345,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"iteration": "1", "oscillation_detected": false, '
             '"active_constraints": [], "resolved_constraints": [], '
             '"conflict_report": [], '
-            '"state_transport": "EPHEMERAL", '
+            '"state_transport": "EPHEMERAL_WITH_LOGS", '
             '"next_stage": "CRITIQUE"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json': wrong_type_json
@@ -364,7 +364,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"unlisted_issues_found": [], "iteration": 1, '
             '"oscillation_detected": false, "active_constraints": [], '
             '"resolved_constraints": [], "conflict_report": [], '
-            '"state_transport": "EPHEMERAL", '
+            '"state_transport": "EPHEMERAL_WITH_LOGS", '
             '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
@@ -382,7 +382,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
             '"oscillation_detected", "active_constraints", '
-            '"resolved_constraints", "conflict_report", '
+            '"resolved_constraints", '
             '"state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
@@ -393,7 +393,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"type": "array"}, "conflict_report": {"type": "array"}, '
             '"next_stage": {"type": "string"}, '
             '"state_transport": {"type": "string", "enum": '
-            '["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]}}}}}')
+            '["FILE_IO", "EPHEMERAL_WITH_LOGS"]}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -408,11 +408,12 @@ class MagiPresubmitTest(unittest.TestCase):
         valid_json = (
             '{"task_type": "IMPLEMENTATION", "unlisted_issues_found": [], '
             '"goal": "Test", "target_files": ["foo.cc"], "anti_goals": [], '
-            '"edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "context_resolved": true, '
+            '"edge_cases": [], "context_resolved": true, '
             '"approach_confirmed": true, "ambiguity_level": "LOW", '
-            '"ambiguity_rationale": "Test", "execution_path": "RIGOR_PATH", '
-            '"complexity_level": "MEDIUM", "next_stage": "SCAFFOLDING"}')
+            '"execution_path": "RIGOR_PATH", '
+            '"complexity_level": "MEDIUM", '
+            '"environment": {"repo_type": "CHROMIUM", "vcs": "JJ", '
+            '"harness": "JETSKI", "output_directory": "out/Default"}}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
         ]
@@ -423,27 +424,20 @@ class MagiPresubmitTest(unittest.TestCase):
         # We need to mock the schema file
         schema_json = (
             '{"definitions": {"ProjectSpec": {"required": ["task_type", '
-            '"goal", "target_files", "anti_goals", "edge_cases", '
-            '"next_stage", "paranoia_mode", "auditability_level", '
+            '"goal", "target_files", '
             '"context_resolved", "approach_confirmed", "ambiguity_level", '
-            '"ambiguity_rationale", "execution_path", "complexity_level"], '
+            '"execution_path", "complexity_level", "environment"], '
             '"properties": {"task_type": {"type": "string", "enum": '
             '["IMPLEMENTATION", "REVIEW", "AUDIT"]}, '
             '"unlisted_issues_found": {"type": "array"}, '
             '"goal": {"type": "string"}, "target_files": {"type": "array"}, '
             '"anti_goals": {"type": "array"}, "edge_cases": {"type": "array"}, '
-            '"paranoia_mode": {"type": "boolean"}, '
-            '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
-            '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
-            '"TEST_FILLING", "ANALYSIS", "TRAINING", '
-            '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}, '
-            '"auditability_level": {"type": "string", "enum": ["NORMAL", '
-            '"VERBOSE"]}, "context_resolved": {"type": "boolean"}, '
+            '"context_resolved": {"type": "boolean"}, '
             '"approach_confirmed": {"type": "boolean"}, '
             '"ambiguity_level": {"type": "string", "enum": ["LOW", "HIGH"]}, '
-            '"ambiguity_rationale": {"type": "string"}, '
             '"execution_path": {"type": "string"}, '
-            '"complexity_level": {"type": "string"}}}}}')
+            '"complexity_level": {"type": "string"}, '
+            '"environment": {"type": "object"}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -462,46 +456,12 @@ class MagiPresubmitTest(unittest.TestCase):
                                                self.mock_output)
             self.assertTrue(any('missing required keys' in r for r in results))
 
-        # Wrong boolean type
-        wrong_bool_json = (
-            '{"task_type": "IMPLEMENTATION", "goal": "Test", '
-            '"target_files": ["foo.cc"], "anti_goals": [], '
-            '"edge_cases": [], "paranoia_mode": "false", '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING"}')
-        self.mock_input.files_content = {
-            'remoting/tools/magi-mode/project.magi.json': wrong_bool_json
-        }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
-            self.assertTrue(
-                any("key 'paranoia_mode' should be boolean" in r
-                    for r in results))
-
-        # Invalid generic enum
-        invalid_enum_json = (
-            '{"task_type": "IMPLEMENTATION", "goal": "Test", '
-            '"target_files": ["foo.cc"], "anti_goals": [], '
-            '"edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "UNKNOWN", "next_stage": "SCAFFOLDING"}')
-        self.mock_input.files_content = {
-            'remoting/tools/magi-mode/project.magi.json': invalid_enum_json
-        }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
-            self.assertTrue(
-                any("key 'auditability_level' must be one of" in r
-                    for r in results))
-
     def testJsonReviewFeedbackValidation(self):
         # Valid review feedback
         valid_json = (
             '{"checklist": {}, "verdict": "REJECT", "reasoning": ["Bad"], '
-            '"comments": [{"file": "foo.cc", "line": 10, "comment": "Fix this"}], '
-            '"next_stage": "ANALYSIS"}')
+            '"comments": [{"file": "foo.cc", "line": 10, "comment": "Fix this"}]}'
+        )
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/review.security.magi.1.json')
@@ -512,15 +472,11 @@ class MagiPresubmitTest(unittest.TestCase):
 
         schema_json = (
             '{"definitions": {"ReviewFeedback": {"required": ["checklist", '
-            '"verdict", "reasoning", "next_stage"], "properties": {'
+            '"verdict", "reasoning"], "properties": {'
             '"checklist": {"type": "object"}, '
             '"verdict": {"type": "string", "enum": ["ACCEPT", "REJECT"]}, '
             '"reasoning": {"type": "array"}, '
-            '"comments": {"type": "array"}, '
-            '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
-            '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
-            '"TEST_FILLING", "ANALYSIS", "TRAINING", '
-            '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}}}}}')
+            '"comments": {"type": "array"}}}} }')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -531,7 +487,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid verdict
         invalid_verdict_json = (
             '{"checklist": {}, "unlisted_issues_found": [], '
-            '"verdict": "MAYBE", "reasoning": [], "next_stage": "ANALYSIS"}')
+            '"verdict": "MAYBE", "reasoning": []}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/review.security.magi.1.json':
             invalid_verdict_json
@@ -575,39 +531,6 @@ class MagiPresubmitTest(unittest.TestCase):
             self.assertEqual(len(results), 0)
 
     def testDecisionGraphValidation(self):
-        # Invalid next_stage for project
-        invalid_project = (
-            '{"task_type": "IMPLEMENTATION", "unlisted_issues_found": [], '
-            '"goal": "T", "target_files": [], "anti_goals": [], '
-            '"edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", '
-            '"next_stage": "SYNTHESIS"}')
-        self.mock_input.affected_files = [
-            MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
-        ]
-        self.mock_input.files_content = {
-            'remoting/tools/magi-mode/project.magi.json': invalid_project
-        }
-        schema_json = (
-            '{"definitions": {"ProjectSpec": {"required": ["task_type", '
-            '"goal", "target_files", "anti_goals", "edge_cases", '
-            '"paranoia_mode", "auditability_level", "next_stage"], '
-            '"properties": {"task_type": {"type": "string", "enum": '
-            '["IMPLEMENTATION", "REVIEW", "AUDIT"]}, '
-            '"unlisted_issues_found": {"type": "array"}, '
-            '"goal": {"type": "string"}, "target_files": {"type": "array"}, '
-            '"anti_goals": {"type": "array"}, "edge_cases": {"type": '
-            '"array"}, "paranoia_mode": {"type": "boolean"}, '
-            '"auditability_level": {"type": "string"}, '
-            '"next_stage": {"type": "string", "enum": ["SCAFFOLDING", "PREPARATION"]}}}}}'
-        )
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
-            self.assertTrue(
-                any("key 'next_stage' must be one of" in r for r in results))
-
         # Invalid handoff for constraints
         invalid_constraints = (
             '{"iteration": 1, "constraints": [], '
@@ -636,65 +559,6 @@ class MagiPresubmitTest(unittest.TestCase):
             self.assertTrue(
                 any('must signal SYNTHESIS, TRAINING, or ESCALATION' in r
                     for r in results))
-
-    def testCrossFileValidation(self):
-        schema_json = '{"definitions": {}}'
-
-        state_json = ('{"checklist": {}, "unlisted_issues_found": [], '
-                      '"iteration": 1, "oscillation_detected": false, '
-                      '"active_constraints": [], "resolved_constraints": [], '
-                      '"conflict_report": [], '
-                      '"state_transport": "EPHEMERAL", '
-                      '"next_stage": "CRITIQUE"}')
-
-        proj_paranoia = '{"paranoia_mode": true}'
-        proj_verbose = '{"auditability_level": "VERBOSE"}'
-
-        self.mock_input.affected_files = [
-            MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
-            MockAffectedFile(
-                'remoting/tools/magi-mode/personas/core/security.json')
-        ]
-
-        def mock_exists(path):
-            return 'project.magi.json' in path
-
-        # Test EPHEMERAL with paranoia_mode: true
-        self.mock_input.files_content = {
-            'remoting/tools/magi-mode/state_block.magi.json':
-            state_json,
-            'remoting/tools/magi-mode/personas/core/security.json':
-            ('{"checklist": {}}')
-        }
-
-        with patch('os.path.exists', side_effect=mock_exists):
-
-            def mock_open_impl(path, *args, **kwargs):
-                if 'project.magi.json' in path:
-                    return unittest.mock.mock_open(read_data=proj_paranoia)()
-                return unittest.mock.mock_open(read_data=schema_json)()
-
-            with patch('builtins.open', side_effect=mock_open_impl):
-                results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                                   self.mock_output)
-                self.assertTrue(
-                    any('project.magi.json has paranoia_mode: true' in r
-                        for r in results))
-
-        # Test EPHEMERAL with auditability_level: VERBOSE
-        with patch('os.path.exists', side_effect=mock_exists):
-
-            def mock_open_impl2(path, *args, **kwargs):
-                if 'project.magi.json' in path:
-                    return unittest.mock.mock_open(read_data=proj_verbose)()
-                return unittest.mock.mock_open(read_data=schema_json)()
-
-            with patch('builtins.open', side_effect=mock_open_impl2):
-                results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                                   self.mock_output)
-                self.assertTrue(
-                    any('project.magi.json has auditability_level: VERBOSE' in
-                        r for r in results))
 
     def testJsonPersonaDefValidation(self):
         valid_json = (
@@ -769,8 +633,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid build_targets type (string instead of array)
         invalid_type_json = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
-            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
+            '"anti_goals": [], "edge_cases": [], '
             '"build_targets": "//remoting/host:host"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
@@ -792,8 +655,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid element in build_targets (integer instead of string)
         invalid_elem_json = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", "target_files": [], '
-            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
+            '"anti_goals": [], "edge_cases": [], '
             '"build_targets": [123]}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/project.magi.json': invalid_elem_json
@@ -810,8 +672,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Missing repo_type
         invalid_env_1 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", "target_files": [], '
-            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
+            '"anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI"}}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
@@ -832,8 +693,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid repo_type
         invalid_env_2 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", "target_files": [], '
-            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
+            '"anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", "repo_type": "INVALID"}}'
         )
         self.mock_input.files_content = {
@@ -850,8 +710,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid output_directory type
         invalid_env_3 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", "target_files": [], '
-            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
+            '"anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", "repo_type": "CHROMIUM", "output_directory": 123}}'
         )
         self.mock_input.files_content = {
@@ -913,6 +772,50 @@ class MagiPresubmitTest(unittest.TestCase):
                                                self.mock_output)
         self.assertTrue(any('is in the .temp/ directory' in r
                             for r in results))
+
+    def testSchemaHealth(self):
+        # Validate that the actual magi_schema.json on disk is valid.
+        schema_path = os.path.join(os.path.dirname(__file__),
+                                   'magi_schema.json')
+        with open(schema_path, 'r', encoding='utf-8') as f:
+            schema = json.load(f)
+
+        self.assertIn('definitions', schema)
+        self.assertIn('ProjectSpec', schema['definitions'])
+        self.assertIn('StateBlock', schema['definitions'])
+        self.assertIn('PersonaDef', schema['definitions'])
+
+    def testTestDataConsistency(self):
+        # Ensure our testdata/project.magi.json is valid against the real schema.
+        magi_dir = os.path.dirname(__file__)
+        schema_path = os.path.join(magi_dir, 'magi_schema.json')
+        project_path = os.path.join(magi_dir, 'tests', 'testdata',
+                                    'project.magi.json')
+
+        with open(schema_path, 'r', encoding='utf-8') as f:
+            schema = json.load(f)
+        with open(project_path, 'r', encoding='utf-8') as f:
+            project = json.load(f)
+
+        # Mock the InputApi to use the real files
+        self.mock_input.affected_files = [
+            MockAffectedFile(
+                'remoting/tools/magi-mode/tests/testdata/project.magi.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/tests/testdata/project.magi.json':
+            json.dumps(project)
+        }
+
+        # We need to mock 'builtins.open' because PRESUBMIT.py reads the schema from disk
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=json.dumps(schema))):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+
+        self.assertEqual(
+            len(results), 0,
+            f"Test data is inconsistent with real schema: {results}")
 
     def testColdLogicStaticAnalysis(self):
         # Missing MANDATE: prefix

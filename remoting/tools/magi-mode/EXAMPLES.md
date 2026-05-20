@@ -15,14 +15,10 @@ protocol.
   "target_files": ["Absolute paths to the files that must be modified."],
   "anti_goals": ["What should explicitly NOT be changed."],
   "edge_cases": ["Specific warnings from logs or code context."],
-  "build_targets": ["//remoting/host:host"],
-  "next_stage": "SCAFFOLDING",
-  "paranoia_mode": false,
-  "auditability_level": "NORMAL",
+  "build_targets": ["//remoting:remoting_unittests"],
   "context_resolved": true,
   "approach_confirmed": true,
   "ambiguity_level": "LOW",
-  "ambiguity_rationale": "Direct request to modify a specific file.",
   "environment": {
     "repo_type": "CHROMIUM",
     "vcs": "JJ",
@@ -45,9 +41,8 @@ protocol.
   "conflict_report": [],
   "active_constraints": [],
   "resolved_constraints": [],
-  "ignored_constraints": [],
   "unlisted_issues_found": [],
   "next_stage": "[Determined by task type]",
-  "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"
+  "state_transport": "[FILE_IO/EPHEMERAL_WITH_LOGS]"
 }
 ```

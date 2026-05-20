@@ -11,16 +11,13 @@
     "build_targets": [
         "//remoting/tools/magi-mode/tests/testdata:test_target"
     ],
-    "next_stage": "SCAFFOLDING",
-    "paranoia_mode": false,
-    "auditability_level": "NORMAL",
     "context_resolved": true,
     "approach_confirmed": true,
     "ambiguity_level": "LOW",
-    "ambiguity_rationale": "Test case with direct goal.",
     "environment": {
         "repo_type": "CHROMIUM",
         "vcs": "JJ",
-        "harness": "JETSKI"
+        "harness": "JETSKI",
+        "output_directory": "out/Default"
     }
 }
