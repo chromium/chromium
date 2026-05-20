@@ -530,8 +530,6 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
   return view;
 }
 
-// TODO(crbug.com/477689220): Add screenshot tests to cover this UI and other
-// Pay Later tab related UIs.
 std::unique_ptr<PopupRowContentView> CreateBnplPopupRowContentView(
     const Suggestion& suggestion,
     FillingProduct main_filling_product) {

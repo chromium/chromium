@@ -14,13 +14,16 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/core/browser/fake_plus_address_allocator.h"
@@ -33,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 
 namespace autofill {
 namespace {
@@ -205,6 +209,19 @@ std::vector<Suggestion> CreateAutocompleteSuggestions() {
                      SuggestionType::kAutocompleteEntry)};
 }
 
+Suggestion CreateBnplEntrySuggestion() {
+  Suggestion suggestion(u"Bnpl entry", SuggestionType::kBnplEntry);
+  BnplIssuer issuer(1234, BnplIssuer::IssuerId::kBnplZip, {});
+  suggestion.payload = Suggestion::BnplIssuer(issuer);
+  return suggestion;
+}
+
+Suggestion CreateBnplFootnoteSuggestion() {
+  Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
+  bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
+  return bnpl_footnote;
+}
+
 class PopupViewViewsBrowsertestBase
     : public PopupPixelTest<PopupViewViews, MockAutofillPopupController> {
  public:
@@ -217,7 +234,10 @@ class PopupViewViewsBrowsertestBase
     }
 
     search_bar_config_ = std::nullopt;
+    tabbed_pane_config_ = std::nullopt;
     popup_has_parent_ = false;
+    selected_tab_ = std::nullopt;
+    focus_footnote_ = false;
     popup_parent_.reset();
     PopupPixelTest::TearDownOnMainThread();
   }
@@ -231,6 +251,8 @@ class PopupViewViewsBrowsertestBase
   }
 
   void PrepareSelectedCell(CellIndex cell) { selected_cell_ = cell; }
+  void PrepareSelectedTab(size_t tab_index) { selected_tab_ = tab_index; }
+  void PrepareFocusFootnote(bool focus) { focus_footnote_ = focus; }
 
   void ShowUi(const std::string& name) override {
     PopupPixelTest::ShowUi(name);
@@ -239,13 +261,25 @@ class PopupViewViewsBrowsertestBase
       view()->SetSelectedCell(selected_cell_,
                               PopupCellSelectionSource::kNonUserInput);
     }
+    if (selected_tab_) {
+      test_api(*view()).tabbed_pane()->SelectTabAt(*selected_tab_);
+    }
+    if (focus_footnote_) {
+      if (auto* footnote = test_api(*view()).GetBnplFootnoteView()) {
+        footnote->FocusSettingsLink();
+      }
+    }
   }
 
-  void ShowAndVerifyUi(bool popup_has_parent = false,
-                       std::optional<AutofillPopupView::SearchBarConfig>
-                           search_bar_config = std::nullopt) {
+  void ShowAndVerifyUi(
+      bool popup_has_parent = false,
+      std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
+          std::nullopt,
+      std::optional<AutofillPopupView::TabbedPaneConfig> tabbed_pane_config =
+          std::nullopt) {
     popup_has_parent_ = popup_has_parent;
     search_bar_config_ = std::move(search_bar_config);
+    tabbed_pane_config_ = std::move(tabbed_pane_config);
     PopupPixelTest::ShowAndVerifyUi();
   }
 
@@ -257,16 +291,20 @@ class PopupViewViewsBrowsertestBase
                                 test_api(*popup_parent_).GetWeakPtr(),
                                 popup_parent_->GetWidget());
     }
-    return new PopupViewViews(controller.GetWeakPtr(), search_bar_config_);
+    return new PopupViewViews(controller.GetWeakPtr(), search_bar_config_,
+                              tabbed_pane_config_);
   }
 
  private:
   // The index of the selected cell. No cell is selected by default.
   std::optional<CellIndex> selected_cell_;
+  std::optional<size_t> selected_tab_;
 
   // Controls whether the view is created as a sub-popup (i.e. having a parent).
   bool popup_has_parent_ = false;
+  bool focus_footnote_ = false;
   std::optional<AutofillPopupView::SearchBarConfig> search_bar_config_;
+  std::optional<AutofillPopupView::TabbedPaneConfig> tabbed_pane_config_;
   std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
@@ -491,6 +529,41 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
       /*popup_has_parent=*/false,
       AutofillPopupView::SearchBarConfig{
           .placeholder = u"Search", .no_results_message = u"No suggestions"});
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_BnplFootnote) {
+  PrepareSuggestions(
+      {CreateBnplEntrySuggestion(), CreateBnplFootnoteSuggestion()});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_BnplFootnote_Selected) {
+  PrepareSuggestions(
+      {CreateBnplEntrySuggestion(), CreateBnplFootnoteSuggestion()});
+  PrepareFocusFootnote(true);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_TabbedPane_PayNow) {
+  PrepareSuggestions(CreateCreditCardSuggestions());
+  ShowAndVerifyUi(/*popup_has_parent=*/false,
+                  /*search_bar_config=*/std::nullopt,
+                  AutofillPopupView::TabbedPaneConfig(
+                      {{TabbedPaneTabType::kPayNow, u"Pay now"},
+                       {TabbedPaneTabType::kPayLater, u"Pay later"}}));
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_TabbedPane_PayLater) {
+  PrepareSuggestions(
+      {CreateBnplEntrySuggestion(), CreateBnplFootnoteSuggestion()});
+  PrepareSelectedTab(1);
+  ShowAndVerifyUi(/*popup_has_parent=*/false,
+                  /*search_bar_config=*/std::nullopt,
+                  AutofillPopupView::TabbedPaneConfig(
+                      {{TabbedPaneTabType::kPayNow, u"Pay now"},
+                       {TabbedPaneTabType::kPayLater, u"Pay later"}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -50,6 +50,8 @@ class PopupViewViewsTestApi {
     return view_->rows_;
   }
 
+  views::TabbedPane* tabbed_pane() { return view_->tabbed_pane_; }
+
   PopupBnplFootnoteView* GetBnplFootnoteView() const&& {
     return view_->GetBnplFootnoteView();
   }
