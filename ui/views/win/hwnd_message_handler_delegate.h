@@ -51,6 +51,12 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // will handle it or Chrome will custom draw it.
   virtual FrameMode GetFrameMode() const = 0;
 
+  // Shows the custom system menu at the given screen coordinates.
+  virtual void ShowCustomSystemMenu(const gfx::Point& screen_point) = 0;
+
+  // Returns true if the window uses the native system menu.
+  virtual bool UsesNativeSystemMenu() const = 0;
+
   // True if a frame should be drawn. This will return true for some windows
   // that don't have a visible frame. Those usually have the WS_POPUP style, for
   // which Windows will remove the frame automatically if the frame mode is

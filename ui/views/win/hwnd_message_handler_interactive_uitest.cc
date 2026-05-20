@@ -34,6 +34,8 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   }
   bool HasNonClientView() const override { return false; }
   FrameMode GetFrameMode() const override { return FrameMode::SYSTEM_DRAWN; }
+  void ShowCustomSystemMenu(const gfx::Point& screen_point) override {}
+  bool UsesNativeSystemMenu() const override { return true; }
   bool HasFrame() const override { return false; }
   bool ShouldPaintAsActive() const override { return false; }
   void SchedulePaint() override {}
@@ -281,6 +283,48 @@ TEST_F(HWNDMessageHandlerTest, RawInputButtonStateResetOnDisable) {
   handler->set_using_wm_input(false);
   EXPECT_FALSE(handler->using_wm_input());
   EXPECT_EQ(ui::EF_NONE, handler->raw_input_button_state_for_testing());
+
+  handler->CloseNow();
+}
+
+TEST_F(HWNDMessageHandlerTest, UsesNativeSystemMenuControlsCapture) {
+  class MockDelegate : public TestHWNDMessageHandlerDelegate {
+   public:
+    void set_uses_native_system_menu(bool uses) { uses_native_ = uses; }
+    bool UsesNativeSystemMenu() const override { return uses_native_; }
+    void ShowCustomSystemMenu(const gfx::Point& screen_point) override {}
+
+   private:
+    bool uses_native_ = true;
+  };
+
+  MockDelegate delegate;
+  std::unique_ptr<HWNDMessageHandler> handler(
+      HWNDMessageHandler::Create(&delegate, "test"));
+  ASSERT_TRUE(handler);
+  handler->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(handler->hwnd());
+
+  // Case 1: UsesNativeSystemMenu is true.
+  delegate.set_uses_native_system_menu(true);
+
+  ::SetCapture(nullptr);  // Clear capture first.
+  ::SendMessage(handler->hwnd(), WM_NCRBUTTONDOWN, HTCAPTION,
+                MAKELPARAM(10, 10));
+
+  EXPECT_EQ(handler->hwnd(), ::GetCapture());
+
+  // Clean up capture.
+  ::ReleaseCapture();
+
+  // Case 2: UsesNativeSystemMenu is false.
+  delegate.set_uses_native_system_menu(false);
+
+  ::SetCapture(nullptr);  // Clear capture first.
+  ::SendMessage(handler->hwnd(), WM_NCRBUTTONDOWN, HTCAPTION,
+                MAKELPARAM(10, 10));
+
+  EXPECT_NE(handler->hwnd(), ::GetCapture());
 
   handler->CloseNow();
 }

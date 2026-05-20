@@ -33,6 +33,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/win/event_creation_utils.h"
@@ -50,6 +51,7 @@
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/path_win.h"
@@ -875,6 +877,13 @@ FrameMode DesktopWindowTreeHostWin::GetFrameMode() const {
   return FrameMode::SYSTEM_DRAWN;
 }
 
+void DesktopWindowTreeHostWin::ShowCustomSystemMenu(
+    const gfx::Point& screen_point) {}
+
+bool DesktopWindowTreeHostWin::UsesNativeSystemMenu() const {
+  return true;
+}
+
 bool DesktopWindowTreeHostWin::HasFrame() const {
   return !remove_standard_frame_;
 }
@@ -1251,6 +1260,18 @@ void DesktopWindowTreeHostWin::HandleKeyEvent(ui::KeyEvent* event) {
       (event->flags() & ui::EF_ALT_DOWN) &&
       !(event->flags() & ui::EF_CONTROL_DOWN)) {
     if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
+      if (!UsesNativeSystemMenu()) {
+        // Show the Views version of the window frame context menu if it should
+        // be used instead of the OS native version. Default location for the
+        // menu is the origin (0, 0) of the browser.
+        gfx::Point point = widget->non_client_view()
+                               ->frame_view()
+                               ->GetKeyboardContextMenuLocation();
+        ShowCustomSystemMenu(point);
+        event->SetHandled();
+        return;
+      }
+
       return;
     }
   }

@@ -3312,7 +3312,11 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
     w_param = static_cast<WPARAM>(::SendMessage(
         hwnd(), WM_NCHITTEST, 0, MAKELPARAM(screen_point.x, screen_point.y)));
     if (w_param == HTCAPTION || w_param == HTSYSMENU) {
-      ShowSystemMenuAtScreenPixelLocation(hwnd(), gfx::Point(screen_point));
+      if (delegate_->UsesNativeSystemMenu()) {
+        ShowSystemMenuAtScreenPixelLocation(hwnd(), gfx::Point(screen_point));
+      } else {
+        delegate_->ShowCustomSystemMenu(gfx::Point(screen_point));
+      }
       return 0;
     }
   } else if (message == WM_NCLBUTTONDOWN &&
@@ -3344,7 +3348,9 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
     // We SetCapture() to ensure we only show the menu when the button
     // down and up are both on the caption. Note: this causes the button up to
     // be WM_RBUTTONUP instead of WM_NCRBUTTONUP.
-    SetCapture();
+    if (delegate_->UsesNativeSystemMenu()) {
+      SetCapture();
+    }
   }
 
   LONG message_time = GetMessageTime();

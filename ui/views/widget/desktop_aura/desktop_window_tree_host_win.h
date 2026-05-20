@@ -206,6 +206,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   ui::InputMethod* GetHWNDMessageDelegateInputMethod() override;
   bool HasNonClientView() const override;
   FrameMode GetFrameMode() const override;
+  void ShowCustomSystemMenu(const gfx::Point& screen_point) override;
+  bool UsesNativeSystemMenu() const override;
   bool HasFrame() const override;
   void SchedulePaint() override;
   bool ShouldPaintAsActive() const override;
