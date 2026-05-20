@@ -28,10 +28,10 @@ class InlineChildLayoutContext;
 class InlineItem;
 class InlineLayoutStateStack;
 class InlineNode;
+class LeadingFloats;
 class LineInfo;
 class LogicalLineContainer;
 struct InlineItemResult;
-struct LeadingFloats;
 
 // A class for laying out an inline formatting context, i.e. a block with inline
 // children.

@@ -3720,11 +3720,17 @@ void LineBreaker::HandleFloat(const InlineItem& item,
   }
 
   // Make sure we populate the positioned_float inside the |item_result|.
-  if (current_.item_index <= leading_floats_.handled_index &&
-      !leading_floats_.floats.empty()) {
-    DCHECK_LT(leading_floats_index_, leading_floats_.floats.size());
-    item_result->positioned_float =
-        leading_floats_.floats[leading_floats_index_++];
+  if (current_.item_index <= leading_floats_.HandledIndex() &&
+      !leading_floats_.Empty()) {
+    DCHECK_LT(leading_floats_index_, leading_floats_.Count());
+
+    const LeadingFloat& leading_float =
+        leading_floats_.At(leading_floats_index_++);
+    item_result->positioned_float = leading_float.positioned_float;
+    if (leading_float.parallel_flow_break_token) {
+      line_info->PropagateParallelFlowBreakToken(
+          leading_float.parallel_flow_break_token);
+    }
 
     // Save a backup copy of `exclusion_space_` even if leading floats don't
     // modify it. See `RewindFloats`.
@@ -3827,9 +3833,9 @@ void LineBreaker::RewindFloats(unsigned new_end,
 
       // Adjust `leading_floats_index_` if this is a leading float. See
       // `HandleFloat` and `PositionLeadingFloats`.
-      if (item_index < leading_floats_.handled_index) {
-        for (unsigned i = 0; i < leading_floats_.floats.size(); ++i) {
-          if (leading_floats_.floats[i].layout_result ==
+      if (item_index < leading_floats_.HandledIndex()) {
+        for (unsigned i = 0; i < leading_floats_.Count(); ++i) {
+          if (leading_floats_.At(i).positioned_float.layout_result ==
               item_result.positioned_float->layout_result) {
             leading_floats_index_ = i;
             // Need to restore `exclusion_space_` even if leading floats don't
@@ -4164,7 +4170,7 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
   }
 
   if (applied_text_indent_ && width_to_rewind > LayoutUnit() &&
-      is_first_formatted_line_ && !leading_floats_.floats.empty()) {
+      is_first_formatted_line_ && !leading_floats_.Empty()) {
     // If there is no inflow content and there are only leading floats, also
     // rewind text indentation. The idea here is that text-indent alone
     // shouldn't contribute to overflow (and it doesn't even belong on this

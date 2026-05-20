@@ -21,7 +21,7 @@ class InlineBreakToken;
 class InlineNode;
 class LineInfoList;
 class LineWidths;
-struct LeadingFloats;
+class LeadingFloats;
 
 //
 // This class computes line break points using penalties and scores, similar to
