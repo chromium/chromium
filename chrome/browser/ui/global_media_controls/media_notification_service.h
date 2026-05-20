@@ -151,8 +151,6 @@ class MediaNotificationService
   friend class MediaNotificationServiceCastTest;
   friend class MediaToolbarButtonControllerTest;
   friend class ash::GlobalMediaControlsCastStartTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
-                           CreateCastDialogControllerWithRemotePlayback);
 
   // Instantiates a MediaRouterViewsUI object associated with the Session with
   // the given |session_id|.
@@ -172,6 +170,9 @@ class MediaNotificationService
       mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
           client_remote,
       std::optional<std::string> remoting_session_id);
+
+  // True if there is a presentation context for the given session ID.
+  bool HasPresentationContextForSession(const std::string& session_id);
 
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(
