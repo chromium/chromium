@@ -327,6 +327,13 @@ BASE_DECLARE_FEATURE(kGlicMessageFirstFre);
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlic);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicSupportLinks);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicLocationMismatchHelpUrl;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicIneligibleAccountHelpUrl;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicMinRequiredRamMb;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

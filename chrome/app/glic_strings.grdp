@@ -108,6 +108,12 @@
   <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER" desc="This is the headline on the glic disabled by admin notice." formatter_data="android_java">
     Your organization has turned off this feature
   </message>
+  <message name="IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE_HEADER" desc="This is the headline on the Gemini ineligible account notice.">
+    You don't have access to Gemini in Chrome
+  </message>
+  <message name="IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE" desc="This is the text of the Gemini ineligible account notice.">
+    Check that you're eligible and meet the requirements
+  </message>
 
   <message name="IDS_GLIC_MANAGED_BY_ORGANIZATION" desc="Text shown when the feature is managed by the organization but not disabled." formatter_data="android_java">
     Managed by your organization
@@ -534,5 +540,14 @@
   <!-- Tab bottom sheet -->
   <message name="IDS_TAB_BOTTOM_SHEET_RESIZING_VIEW_TEXT" desc="Text shown while the web view is resizing." formatter_data="android_java">
     Resizing Gemini...
+  </message>
+  <message name="IDS_GLIC_LOCATION_MISMATCH_NOTICE_HEADER" desc="Headline on the notice when Gemini is unavailable in the current dynamic location.">
+    Gemini in Chrome isn't available
+  </message>
+  <message name="IDS_GLIC_LOCATION_MISMATCH_NOTICE" desc="Text of the notice explaining location mismatch for travelers or VPN users.">
+    Gemini in Chrome is expanding to different locations but isn't available everywhere.
+  </message>
+  <message name="IDS_GLIC_GET_HELP" desc="Link or button label text to open help documentation.">
+    Get help
   </message>
 </grit-part>

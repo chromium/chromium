@@ -167,6 +167,9 @@ GlicUI::GlicUI(content::WebUI* web_ui)
        IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON},
       {"ineligibleProfileNoticeHeader",
        IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER},
+      {"ineligibleAccountNotice", IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE},
+      {"ineligibleAccountNoticeHeader",
+       IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE_HEADER},
       {"disabledByAdminNotice", IDS_GLIC_DISABLED_BY_ADMIN_NOTICE},
       {"disabledByAdminNoticeCloseButton",
        IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON},
@@ -179,6 +182,10 @@ GlicUI::GlicUI(content::WebUI* web_ui)
       {"signInNoticeActionButton", IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON},
       {"signInNoticeHeader", IDS_GLIC_SIGN_IN_NOTICE_HEADER},
       {"unresponsiveMessage", IDS_GLIC_UNRESPONSIVE_MESSAGE},
+      {"locationMismatchNoticeHeader",
+       IDS_GLIC_LOCATION_MISMATCH_NOTICE_HEADER},
+      {"locationMismatchNotice", IDS_GLIC_LOCATION_MISMATCH_NOTICE},
+      {"getHelp", IDS_GLIC_GET_HELP},
   };
 
   content::BrowserContext* browser_context =

@@ -281,6 +281,11 @@ struct ZssConfig {
   string? additional_content;
 };
 
+enum HelpCenterTopic {
+  kLocationMismatch,
+  kIneligibleAccount,
+};
+
 // Page handler for the glic WebUI.
 interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
@@ -301,6 +306,9 @@ interface PageHandler {
 
   // Closes the Glic panel.
   ClosePanel() => ();
+
+  // Opens a help center topic and closes the Glic panel.
+  OpenHelpCenterTopicAndClosePanel(HelpCenterTopic topic);
 
   // Opens the profile picker, and closes the Glic panel.
   OpenProfilePickerAndClosePanel();

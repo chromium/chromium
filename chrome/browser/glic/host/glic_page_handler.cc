@@ -2026,6 +2026,27 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
       base::UserMetricsAction("Glic.DisabledByAdminPanelLinkClicked"));
 }
 
+void GlicPageHandler::OpenHelpCenterTopicAndClosePanel(
+    glic::mojom::HelpCenterTopic topic) {
+  // Safe fallback URL in case a newer web client passes a topic not yet
+  // supported by this version of Chrome.
+  GURL help_url = GURL(features::kGlicIneligibleAccountHelpUrl.Get());
+  switch (topic) {
+    case mojom::HelpCenterTopic::kLocationMismatch:
+      help_url = GURL(features::kGlicLocationMismatchHelpUrl.Get());
+      break;
+    case mojom::HelpCenterTopic::kIneligibleAccount:
+      help_url = GURL(features::kGlicIneligibleAccountHelpUrl.Get());
+      break;
+  }
+  auto params = std::make_unique<NavigateParams>(
+      Profile::FromBrowserContext(browser_context_), help_url,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  glic::Navigate(std::move(params));
+  host().ClosePanel(this);
+}
+
 void GlicPageHandler::SignInAndClosePanel() {
   GetGlicService()->GetAuthController().ShowReauthForAccount(webui_contents_);
 }

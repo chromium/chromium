@@ -72,6 +72,9 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   void OpenDisabledByAdminLinkAndClosePanel() override;
 
+  void OpenHelpCenterTopicAndClosePanel(
+      glic::mojom::HelpCenterTopic topic) override;
+
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override;
