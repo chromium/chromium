@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -462,7 +463,11 @@ void WebAppBrowserController::OnWebAppUninstalled(
     const webapps::AppId& uninstalled_app_id,
     webapps::WebappUninstallSource uninstall_source) {
   if (uninstalled_app_id == app_id()) {
+    // Forcibly close the window, skipping any beforeunload prompts.
+    UnloadController::From(browser())->set_force_skip_warning_user_on_close(
+        true);
     chrome::CloseWindow(browser());
+    UpdateCustomTabBarVisibility(/*animate=*/false);
   }
 }
 

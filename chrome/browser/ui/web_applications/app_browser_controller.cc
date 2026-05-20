@@ -286,7 +286,11 @@ AppBrowserController::~AppBrowserController() {
 
 bool AppBrowserController::ShouldShowCustomTabBar() const {
   if (!IsInstalled()) {
-    return false;
+    // If the app is uninstalled, the window should be closed. If it is
+    // somehow kept open (e.g. due to a download in progress), we must show
+    // the custom tab bar as a failsafe to reveal the URL/origin and prevent
+    // origin spoofing.
+    return true;
   }
 
   content::WebContents* web_contents =
