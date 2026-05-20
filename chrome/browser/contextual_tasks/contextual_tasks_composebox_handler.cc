@@ -59,21 +59,45 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#else
+#include "base/android/content_uri_utils.h"
 #endif
 
 namespace {
 
+std::string ExtractMimeType(const base::FilePath& path) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    return base::GetContentUriMimeType(path);
+  }
+#endif
 
-std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
+  std::string mime_type;
+  const base::FilePath::StringType extension = path.Extension();
+  if (!extension.empty()) {
+    // substr(1) strips the leading dot from the extension
+    net::GetMimeTypeFromExtension(extension.substr(1), &mime_type);
+  }
+  return mime_type;
+}
+
+std::unique_ptr<FileData> ReadFileAndProcess(
+    const base::FilePath& local_path,
+    const base::FilePath::StringType& display_name) {
   auto file_data = std::make_unique<FileData>();
 
   if (!base::ReadFileToString(local_path, &file_data->bytes)) {
     LOG(ERROR) << "Failed to read file from path: "
                << local_path.AsUTF8Unsafe();
   }
-  net::GetMimeTypeFromExtension(local_path.Extension().substr(1),
-                                &file_data->mime_type);
-  file_data->name = local_path.BaseName().AsUTF8Unsafe();
+
+  file_data->mime_type = ExtractMimeType(local_path);
+
+  const base::FilePath name_path = display_name.empty()
+                                       ? local_path.BaseName()
+                                       : base::FilePath(display_name);
+  file_data->name = name_path.AsUTF8Unsafe();
+
   return file_data;
 }
 
@@ -557,7 +581,8 @@ void ContextualTasksComposeboxHandler::FileSelected(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ReadFileAndProcess, file.path()),
+      FROM_HERE,
+      base::BindOnce(&ReadFileAndProcess, file.path(), file.display_name),
       base::BindOnce(&ContextualTasksComposeboxHandler::OnFileRead,
                      weak_factory_.GetWeakPtr()));
   file_dialog_.reset();
