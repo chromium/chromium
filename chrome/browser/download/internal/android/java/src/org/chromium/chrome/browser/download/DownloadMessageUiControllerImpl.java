@@ -551,11 +551,13 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             return false;
         }
 
-        // Some downloads are displayed as dangerous here due to a warning from Safe Browsing. Note
-        // that this is different from {@link OfflineItem#isDangerous} and the equivalent concept of
+        // Some downloads are displayed as dangerous here due to a warning from Safe Browsing or
+        // because the file is blocked by enterprise policy. Note that this is different from
+        // {@link OfflineItem#isDangerous} and the equivalent concept of
         // `DownloadItemImpl::IsDangerous()` in native, which is a broader category and should not
         // generally be visible in this UI.
-        if (shouldDisplayItemAsDangerousInMessage(offlineItem)) {
+        if (shouldDisplayItemAsDangerousInMessage(offlineItem)
+                || shouldDisplayItemAsBlockedSensitiveInMessage(offlineItem)) {
             return true;
         } else if (offlineItem.isDangerous) {
             return false;
@@ -1261,6 +1263,17 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private static void recordIncognitoDownloadMessage(@IncognitoMessageEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Download.Incognito.Message", event, IncognitoMessageEvent.NUM_ENTRIES);
+    }
+
+    /**
+     * Whether the item is a sensitive blocked download that should be displayed in the download
+     * message.
+     */
+    private static boolean shouldDisplayItemAsBlockedSensitiveInMessage(
+            @Nullable OfflineItem item) {
+        if (item == null) return false;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD)
+                && DownloadUtils.isBlockedSensitiveDownload(item);
     }
 
     /**

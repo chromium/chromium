@@ -89,6 +89,18 @@ public class DownloadMessageUiControllerTest {
                 .apply();
     }
 
+    public void enableShowBlockedSensitiveDownload(boolean enabled) {
+        if (enabled) {
+            FeatureOverrides.newBuilder()
+                    .enable(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD)
+                    .apply();
+        } else {
+            FeatureOverrides.newBuilder()
+                    .disable(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD)
+                    .apply();
+        }
+    }
+
     static class TestDelegate implements DownloadMessageUiController.Delegate {
         public boolean mMaybeSwitchToFocusedActivityCalled;
 
@@ -282,6 +294,33 @@ public class DownloadMessageUiControllerTest {
         mTestController.onItemUpdated(item);
         mTestController.verify(MESSAGE_DOWNLOAD_FAILED, DESCRIPTION_BLOCKED);
         mTestController.verifyIgnoreAction(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testSingleOfflineItemBlockedSensitive() {
+        enableShowBlockedSensitiveDownload(true);
+        OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
+        item.failState = FailState.FILE_BLOCKED;
+        item.isDangerous = true;
+        item.dangerType = DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
+        mTestController.onItemUpdated(item);
+        mTestController.verify(MESSAGE_DOWNLOAD_FAILED, DESCRIPTION_BLOCKED);
+        mTestController.verifyIgnoreAction(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testSingleOfflineItemBlockedSensitiveWithFeatureDisabled() {
+        enableShowBlockedSensitiveDownload(false);
+        OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
+        item.failState = FailState.FILE_BLOCKED;
+        item.isDangerous = true;
+        item.dangerType = DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
     }
 
     @Test
