@@ -17,22 +17,36 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ShareServiceImplTest {
+    // Verifies all the file names that are not allowed to be shared on Android.
     @Test
     @SmallTest
-    public void testExtensionFormatting() {
-        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("foo/bar.txt"));
-        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("foo\\bar\u03C0.txt"));
+    public void testExtensionFormattingDisallowed() {
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foo/bar.txt"));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foo\\bar\u03C0.txt"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foo\\bar.tx\u03C0t"));
-        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("https://example.com/a/b.html"));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("https://example.com/a/b.html"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foo/bar.txt/"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foobar.tx\\t"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("hello"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("hellotxt"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename(".txt"));
-        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("https://example.com/a/.txt"));
-        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("/.txt"));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("https://example.com/a/.txt"));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("/.txt"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename(".."));
-        Assert.assertTrue(ShareServiceImpl.isDangerousFilename(".hello.txt"));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("bar.tx\u03C0t"));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename("."));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename(" my_name "));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename(" . "));
+        Assert.assertTrue(ShareServiceImpl.isDangerousFilename(".config"));
+    }
+
+    // Verifies all the file names that are allowed to be shared on Android.
+    @Test
+    @SmallTest
+    public void testExtensionFormattingAllowed() {
+        Assert.assertFalse(ShareServiceImpl.isDangerousFilename(".hello.txt"));
+        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("bar.txt"));
+        Assert.assertFalse(ShareServiceImpl.isDangerousFilename("bar\u03C0.txt"));
     }
 
     @Test

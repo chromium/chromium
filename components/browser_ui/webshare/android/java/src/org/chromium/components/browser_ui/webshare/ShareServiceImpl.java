@@ -308,10 +308,42 @@ public class ShareServiceImpl implements ShareService {
         }.executeOnTaskRunner(TASK_RUNNER);
     }
 
+    // This function mimics the checks created by `SafeBaseName::Create()` as much as possible.
     static boolean isDangerousFilename(String name) {
-        // Reject filenames without a permitted extension.
-        return name.indexOf('.') <= 0
-                || !PERMITTED_EXTENSIONS.contains(FileUtils.getExtension(name));
+        // Empty name, invalid.
+        if (name == null || name.isEmpty()) {
+            return true;
+        }
+
+        // 1. Check for directory traversal components ".."
+        if (name.contains("..") || name.equals(".")) {
+            return true;
+        }
+
+        // 2. Check for directory separators '/' or '\\', as a `SafeBaseName` shouldn't have those.
+        if (name.contains("/") || name.contains("\\")) {
+            return true;
+        }
+
+        // 3. Check for leading/trailing spaces or dots that can be problematic.
+        String trimmedName = name.trim();
+        if (!name.equals(trimmedName) || trimmedName.endsWith(".")) {
+            return true;
+        }
+
+        // 4. Original extension check: Reject filenames without a permitted extension.
+        int dotIndex = trimmedName.lastIndexOf('.');
+        if (dotIndex <= 0) {
+            return true;
+        }
+
+        String extension = FileUtils.getExtension(trimmedName);
+        if (!PERMITTED_EXTENSIONS.contains(extension)) {
+            return true;
+        }
+
+        // If the above validation passed, the file is safe to be shared.
+        return false;
     }
 
     static boolean isDangerousMimeType(String contentType) {
