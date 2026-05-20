@@ -37,9 +37,16 @@ message Event {
   // Optional. IP addresses of the user.
   repeated string local_ips = 5;
 
-  // TODO(b/443747355): Add field to event converter. See: cl/840724098.
-  // Boolean. CEP Customer.
-  bool cep_customer = 6;
+  // Optional. Boolean. Deprecated. Do not use.
+  bool cep_customer = 6 [deprecated = true];
+
+  // Optional. Boolean. Indicates if the event has been enriched with additional
+  // data (e.g. URL risk info). This should only be used by the event's final
+  // consumer (e.g. SecOps). As enrichment may happen at multiple stages in the
+  // event pipeline, a `true` value at any point before the event is fully
+  // processed and sent to consumers does not guarantee that the event has been
+  // fully enriched by all available additional info at that particular point.
+  bool enriched = 7;
 
   // Required. Details about the actual event.
   oneof event {
@@ -109,7 +116,10 @@ message Event {
     // A SaaS usage report event.
     SaasUsageReportEvent saas_usage_report_event = 121;
 
-    // Next ID: 122
+    // User launched the browser.
+    BrowserLaunchEvent browser_launch_event = 122;
+
+    // Next ID: 123
   }
 }
 

@@ -266,6 +266,7 @@ void AddCrowdstrikeSignalsToEvent(
     case Event::kPrototypeRawEvent:
     case Event::kTelomereEvent:
     case Event::kSaasUsageReportEvent:
+    case Event::kBrowserLaunchEvent:
       break;
   }
 }
