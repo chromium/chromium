@@ -183,13 +183,7 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Controls whether the GeoLanguage system is enabled. GeoLanguage uses IP-based
-// coarse geolocation to provide an estimate (for use by other Chrome features
-// such as Translate) of the local/regional language(s) corresponding to the
-// device's location. If this feature is disabled, the GeoLanguage provider is
-// not initialized at startup, and clients calling it will receive an empty list
-// of languages.
-BASE_FEATURE(kGeoLanguage, base::FEATURE_DISABLED_BY_DEFAULT);
+
 
 // Controls whether the actor component of Glic is enabled.
 #if BUILDFLAG(IS_ANDROID)
