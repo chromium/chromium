@@ -19,6 +19,13 @@
   padding: 0 24px;
 }
 
+:host-context([webui-refresh-2026]) {
+  a:focus {
+    border-radius: 2px;
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+}
+
 :host([is-managed_]) {
   display: flex;
 }

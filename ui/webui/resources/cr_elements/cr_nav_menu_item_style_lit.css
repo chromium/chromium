@@ -57,6 +57,17 @@
     --cr-nav-menu-item-icon-color: var(--color-nav-menu-item);
     --cr-nav-menu-item-icon-color-selected: var(--color-nav-menu-item-selected);
   }
+
+  /**
+   * Set the outline style to solid so the browser will use the values here
+   * instead of delegating to the OS with auto.
+   */
+  .cr-nav-menu-item:focus{
+    outline: solid 2px var(--cr-focus-outline-color);
+    outline-offset: -2px;
+    border-start-start-radius: 10px;
+    border-end-start-radius: 10px;
+  }
 }
 
 :host-context(cr-drawer) .cr-nav-menu-item {
