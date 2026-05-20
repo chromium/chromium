@@ -1541,6 +1541,15 @@ void ToolbarView::InitLayout() {
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
+  if (glic_button_ &&
+      base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
+    glic_button_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
+            views::MaximumFlexSizeRule::kPreferred));
+  }
+
   if (app_menu_button_ &&
       base::FeatureList::IsEnabled(features::kToolbarAppMenuLabelResizing)) {
     app_menu_button_->SetProperty(

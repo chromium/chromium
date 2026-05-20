@@ -522,6 +522,8 @@ BASE_FEATURE(kToolbarAppMenuLabelResizing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarProfileChipResizing, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kToolbarGlicButtonResizing, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOSCryptAsyncAvailabilityInfoBar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
