@@ -405,4 +405,70 @@ TEST_F(VideoCaptureServiceTest,
   EXPECT_FALSE(remote_device.is_connected());
 }
 
+TEST_F(VideoCaptureServiceTest, VirtualDeviceCanBeReopenedAfterClosing) {
+  const std::string virtual_device_id = "/virtual/device";
+  auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
+
+  mojo::Remote<mojom::VideoSource> video_source_remote;
+  video_source_provider_->GetVideoSource(
+      virtual_device_id, video_source_remote.BindNewPipeAndPassReceiver());
+
+  // First subscription
+  {
+    base::RunLoop wait_loop;
+    mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber;
+    auto dummy = std::make_unique<video_capture::MockVideoFrameHandler>(
+        subscriber.InitWithNewPipeAndPassReceiver());
+    mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
+        subscription;
+
+    base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
+        callback;
+    EXPECT_CALL(callback, Run)
+        .WillOnce(
+            [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,
+                         const media::VideoCaptureParams& param) {
+              EXPECT_TRUE(result_code->is_success_code());
+              wait_loop.Quit();
+            });
+
+    video_source_remote->CreatePushSubscription(
+        std::move(subscriber), requestable_settings_,
+        false /*force_reopen_with_new_settings*/,
+        subscription.BindNewPipeAndPassReceiver(), callback.Get());
+    wait_loop.Run();
+
+    // Close the first subscription
+    base::RunLoop close_loop;
+    subscription->Close(close_loop.QuitClosure());
+    close_loop.Run();
+  }
+
+  // Second subscription on the same video source
+  {
+    base::RunLoop wait_loop;
+    mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber;
+    auto dummy = std::make_unique<video_capture::MockVideoFrameHandler>(
+        subscriber.InitWithNewPipeAndPassReceiver());
+    mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
+        subscription;
+
+    base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
+        callback;
+    EXPECT_CALL(callback, Run)
+        .WillOnce(
+            [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,
+                         const media::VideoCaptureParams& param) {
+              EXPECT_TRUE(result_code->is_success_code());
+              wait_loop.Quit();
+            });
+
+    video_source_remote->CreatePushSubscription(
+        std::move(subscriber), requestable_settings_,
+        false /*force_reopen_with_new_settings*/,
+        subscription.BindNewPipeAndPassReceiver(), callback.Get());
+    wait_loop.Run();
+  }
+}
+
 }  // namespace video_capture

@@ -179,6 +179,11 @@ void VirtualDeviceEnabledDeviceFactory::OnDeviceFactoryDeviceCreated(
 
 void VirtualDeviceEnabledDeviceFactory::StopDevice(
     const std::string device_id) {
+  auto virtual_device_iter = virtual_devices_by_id_.find(device_id);
+  if (virtual_device_iter != virtual_devices_by_id_.end()) {
+    virtual_device_iter->second.StopDevice();
+    return;
+  }
   device_factory_->StopDevice(device_id);
 }
 

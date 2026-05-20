@@ -210,8 +210,8 @@ void VideoSourceImpl::StopDeviceAsynchronously() {
 
   // Stop the device by closing the connection to it. Stopping is complete when
   // OnStopDeviceComplete() gets invoked.
-  device_factory_->StopDevice(device_id_);
   device_status_ = DeviceStatus::kStoppingAsynchronously;
+  device_factory_->StopDevice(device_id_);
 }
 
 void VideoSourceImpl::OnStopDeviceComplete() {
