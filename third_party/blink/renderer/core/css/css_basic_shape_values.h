@@ -157,20 +157,20 @@ class CSSBasicShapePolygonValue final : public CSSValue {
 
 class CSSBasicShapeInsetValue final : public CSSValue {
  public:
-  CSSBasicShapeInsetValue(CSSValue* top,
-                          CSSValue* right,
-                          CSSValue* bottom,
-                          CSSValue* left)
+  CSSBasicShapeInsetValue(const CSSValue& top,
+                          const CSSValue& right,
+                          const CSSValue& bottom,
+                          const CSSValue& left)
       : CSSValue(kBasicShapeInsetClass),
         top_(top),
         right_(right),
         bottom_(bottom),
         left_(left) {}
 
-  CSSValue* Top() const { return top_.Get(); }
-  CSSValue* Right() const { return right_.Get(); }
-  CSSValue* Bottom() const { return bottom_.Get(); }
-  CSSValue* Left() const { return left_.Get(); }
+  const CSSValue& Top() const { return *top_; }
+  const CSSValue& Right() const { return *right_; }
+  const CSSValue& Bottom() const { return *bottom_; }
+  const CSSValue& Left() const { return *left_; }
 
   CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
   CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
@@ -205,10 +205,10 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<CSSValue> top_;
-  Member<CSSValue> right_;
-  Member<CSSValue> bottom_;
-  Member<CSSValue> left_;
+  Member<const CSSValue> top_;
+  Member<const CSSValue> right_;
+  Member<const CSSValue> bottom_;
+  Member<const CSSValue> left_;
 
   Member<CSSValuePair> top_left_radius_;
   Member<CSSValuePair> top_right_radius_;
@@ -218,10 +218,10 @@ class CSSBasicShapeInsetValue final : public CSSValue {
 
 class CSSBasicShapeRectValue final : public CSSValue {
  public:
-  CSSBasicShapeRectValue(CSSValue* top,
-                         CSSValue* right,
-                         CSSValue* bottom,
-                         CSSValue* left)
+  CSSBasicShapeRectValue(const CSSValue& top,
+                         const CSSValue& right,
+                         const CSSValue& bottom,
+                         const CSSValue& left)
       : CSSValue(kBasicShapeRectClass),
         top_(top),
         right_(right),
@@ -230,10 +230,10 @@ class CSSBasicShapeRectValue final : public CSSValue {
     Validate();
   }
 
-  CSSValue* Top() const { return top_.Get(); }
-  CSSValue* Right() const { return right_.Get(); }
-  CSSValue* Bottom() const { return bottom_.Get(); }
-  CSSValue* Left() const { return left_.Get(); }
+  const CSSValue& Top() const { return *top_; }
+  const CSSValue& Right() const { return *right_; }
+  const CSSValue& Bottom() const { return *bottom_; }
+  const CSSValue& Left() const { return *left_; }
 
   CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
   CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
@@ -269,10 +269,10 @@ class CSSBasicShapeRectValue final : public CSSValue {
  private:
   void Validate() const;
 
-  Member<CSSValue> top_;
-  Member<CSSValue> right_;
-  Member<CSSValue> bottom_;
-  Member<CSSValue> left_;
+  Member<const CSSValue> top_;
+  Member<const CSSValue> right_;
+  Member<const CSSValue> bottom_;
+  Member<const CSSValue> left_;
 
   Member<CSSValuePair> top_left_radius_;
   Member<CSSValuePair> top_right_radius_;
@@ -282,10 +282,10 @@ class CSSBasicShapeRectValue final : public CSSValue {
 
 class CSSBasicShapeXYWHValue final : public CSSValue {
  public:
-  CSSBasicShapeXYWHValue(CSSPrimitiveValue* x,
-                         CSSPrimitiveValue* y,
-                         CSSPrimitiveValue* width,
-                         CSSPrimitiveValue* height)
+  CSSBasicShapeXYWHValue(const CSSPrimitiveValue& x,
+                         const CSSPrimitiveValue& y,
+                         const CSSPrimitiveValue& width,
+                         const CSSPrimitiveValue& height)
       : CSSValue(kBasicShapeXYWHClass),
         x_(x),
         y_(y),
@@ -294,10 +294,10 @@ class CSSBasicShapeXYWHValue final : public CSSValue {
     Validate();
   }
 
-  CSSPrimitiveValue* X() const { return x_.Get(); }
-  CSSPrimitiveValue* Y() const { return y_.Get(); }
-  CSSPrimitiveValue* Width() const { return width_.Get(); }
-  CSSPrimitiveValue* Height() const { return height_.Get(); }
+  const CSSPrimitiveValue& X() const { return *x_; }
+  const CSSPrimitiveValue& Y() const { return *y_; }
+  const CSSPrimitiveValue& Width() const { return *width_; }
+  const CSSPrimitiveValue& Height() const { return *height_; }
 
   CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
   CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
@@ -333,10 +333,10 @@ class CSSBasicShapeXYWHValue final : public CSSValue {
  private:
   void Validate() const;
 
-  Member<CSSPrimitiveValue> x_;
-  Member<CSSPrimitiveValue> y_;
-  Member<CSSPrimitiveValue> width_;
-  Member<CSSPrimitiveValue> height_;
+  Member<const CSSPrimitiveValue> x_;
+  Member<const CSSPrimitiveValue> y_;
+  Member<const CSSPrimitiveValue> width_;
+  Member<const CSSPrimitiveValue> height_;
 
   Member<CSSValuePair> top_left_radius_;
   Member<CSSValuePair> top_right_radius_;

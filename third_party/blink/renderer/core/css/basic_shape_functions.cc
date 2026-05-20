@@ -551,14 +551,14 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       const auto& inset = To<BasicShapeInset>(basic_shape);
       auto* inset_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>(
-              CSSPrimitiveValue::CreateFromLength(inset.Top(),
-                                                  style.EffectiveZoom()),
-              CSSPrimitiveValue::CreateFromLength(inset.Right(),
-                                                  style.EffectiveZoom()),
-              CSSPrimitiveValue::CreateFromLength(inset.Bottom(),
-                                                  style.EffectiveZoom()),
-              CSSPrimitiveValue::CreateFromLength(inset.Left(),
-                                                  style.EffectiveZoom()));
+              *CSSPrimitiveValue::CreateFromLength(inset.Top(),
+                                                   style.EffectiveZoom()),
+              *CSSPrimitiveValue::CreateFromLength(inset.Right(),
+                                                   style.EffectiveZoom()),
+              *CSSPrimitiveValue::CreateFromLength(inset.Bottom(),
+                                                   style.EffectiveZoom()),
+              *CSSPrimitiveValue::CreateFromLength(inset.Left(),
+                                                   style.EffectiveZoom()));
 
       InitializeBorderRadius(inset, style, *inset_value);
       return inset_value;
@@ -569,11 +569,8 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
 }
 
 static Length ConvertToLength(const StyleResolverState& state,
-                              const CSSPrimitiveValue* value) {
-  if (!value) {
-    return Length::Fixed(0);
-  }
-  return value->ConvertToLength(state.CssToLengthConversionData());
+                              const CSSPrimitiveValue& value) {
+  return value.ConvertToLength(state.CssToLengthConversionData());
 }
 
 static LengthSize ConvertToLengthSize(const StyleResolverState& state,
@@ -583,8 +580,8 @@ static LengthSize ConvertToLengthSize(const StyleResolverState& state,
   }
 
   return LengthSize(
-      ConvertToLength(state, &To<CSSPrimitiveValue>(value->First())),
-      ConvertToLength(state, &To<CSSPrimitiveValue>(value->Second())));
+      ConvertToLength(state, To<CSSPrimitiveValue>(value->First())),
+      ConvertToLength(state, To<CSSPrimitiveValue>(value->Second())));
 }
 
 static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
@@ -596,14 +593,14 @@ static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
   CSSValueID keyword = CSSValueID::kTop;
   if (!value) {
     keyword = CSSValueID::kCenter;
-  } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+  } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(*value)) {
     keyword = identifier_value->GetValueID();
-  } else if (auto* value_pair = DynamicTo<CSSValuePair>(value)) {
+  } else if (auto* value_pair = DynamicTo<CSSValuePair>(*value)) {
     keyword = To<CSSIdentifierValue>(value_pair->First()).GetValueID();
     offset =
-        ConvertToLength(state, &To<CSSPrimitiveValue>(value_pair->Second()));
+        ConvertToLength(state, To<CSSPrimitiveValue>(value_pair->Second()));
   } else {
-    offset = ConvertToLength(state, To<CSSPrimitiveValue>(value));
+    offset = ConvertToLength(state, To<CSSPrimitiveValue>(*value));
   }
 
   switch (keyword) {
@@ -644,7 +641,7 @@ static BasicShapeRadius CssValueToBasicShapeRadius(
     return BasicShapeRadius(BasicShapeRadius::kClosestSide);
   }
 
-  if (auto* radius_identifier_value = DynamicTo<CSSIdentifierValue>(radius)) {
+  if (auto* radius_identifier_value = DynamicTo<CSSIdentifierValue>(*radius)) {
     switch (radius_identifier_value->GetValueID()) {
       case CSSValueID::kClosestSide:
         return BasicShapeRadius(BasicShapeRadius::kClosestSide);
@@ -660,7 +657,7 @@ static BasicShapeRadius CssValueToBasicShapeRadius(
   }
 
   return BasicShapeRadius(
-      ConvertToLength(state, To<CSSPrimitiveValue>(radius)));
+      ConvertToLength(state, To<CSSPrimitiveValue>(*radius)));
 }
 
 BasicShape* BasicShapeForValue(const StyleResolverState& state,
@@ -702,13 +699,13 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
     polygon->SetWindRule(polygon_value->GetWindRule());
     if (polygon_value->RoundingRadius()) {
       polygon->SetRoundingRadius(
-          ConvertToLength(state, polygon_value->RoundingRadius()));
+          ConvertToLength(state, *polygon_value->RoundingRadius()));
     }
     const HeapVector<Member<CSSPrimitiveValue>>& values =
         polygon_value->Values();
     for (unsigned i = 0; i < values.size(); i += 2) {
-      polygon->AppendPoint(ConvertToLength(state, values.at(i).Get()),
-                           ConvertToLength(state, values.at(i + 1).Get()));
+      polygon->AppendPoint(ConvertToLength(state, *values.at(i)),
+                           ConvertToLength(state, *values.at(i + 1)));
     }
 
     return polygon;
@@ -746,14 +743,14 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
         DCHECK_EQ(auto_value->GetValueID(), CSSValueID::kAuto);
         return Length::Percent(0);
       }
-      Length edge_length = ConvertToLength(state, &To<CSSPrimitiveValue>(edge));
+      Length edge_length = ConvertToLength(state, To<CSSPrimitiveValue>(edge));
       return is_right_or_bottom ? edge_length.SubtractFromOneHundredPercent()
                                 : edge_length;
     };
-    inset->SetTop(get_inset_length(*rect_value->Top(), false));
-    inset->SetRight(get_inset_length(*rect_value->Right(), true));
-    inset->SetBottom(get_inset_length(*rect_value->Bottom(), true));
-    inset->SetLeft(get_inset_length(*rect_value->Left(), false));
+    inset->SetTop(get_inset_length(rect_value->Top(), false));
+    inset->SetRight(get_inset_length(rect_value->Right(), true));
+    inset->SetBottom(get_inset_length(rect_value->Bottom(), true));
+    inset->SetLeft(get_inset_length(rect_value->Left(), false));
 
     InitializeBorderRadius(state, *rect_value, *inset);
     return inset;

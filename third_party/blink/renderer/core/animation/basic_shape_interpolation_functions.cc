@@ -574,21 +574,21 @@ InterpolationValue ConvertCSSValue(
 void FillCanonicalRect(InterpolableList* list,
                        const cssvalue::CSSBasicShapeRectValue& rect) {
   // rect(t r b l) => inset(t calc(100% - r) calc(100% - b) l).
-  list->Set(kInsetTopIndex, ConvertCSSLengthOrAuto(*rect.Top(), 0));
+  list->Set(kInsetTopIndex, ConvertCSSLengthOrAuto(rect.Top(), 0));
   list->Set(kInsetRightIndex,
-            ConvertCSSLengthOrAutoSubtractedFrom100Percent(*rect.Right(), 0));
+            ConvertCSSLengthOrAutoSubtractedFrom100Percent(rect.Right(), 0));
   list->Set(kInsetBottomIndex,
-            ConvertCSSLengthOrAutoSubtractedFrom100Percent(*rect.Bottom(), 0));
-  list->Set(kInsetLeftIndex, ConvertCSSLengthOrAuto(*rect.Left(), 0));
+            ConvertCSSLengthOrAutoSubtractedFrom100Percent(rect.Bottom(), 0));
+  list->Set(kInsetLeftIndex, ConvertCSSLengthOrAuto(rect.Left(), 0));
 }
 
 void FillCanonicalRect(InterpolableList* list,
                        const cssvalue::CSSBasicShapeXYWHValue& xywh) {
   // xywh(x y w h) => inset(y calc(100% - (x + w)) calc(100% - (y + h)) x).
-  const CSSPrimitiveValue& x = *xywh.X();
-  const CSSPrimitiveValue& y = *xywh.Y();
-  const CSSPrimitiveValue& w = *xywh.Width();
-  const CSSPrimitiveValue& h = *xywh.Height();
+  const CSSPrimitiveValue& x = xywh.X();
+  const CSSPrimitiveValue& y = xywh.Y();
+  const CSSPrimitiveValue& w = xywh.Width();
+  const CSSPrimitiveValue& h = xywh.Height();
   list->Set(kInsetTopIndex, ConvertCSSLength(y));
   // calc(100% - (x + w)) = calc(100% - x - w).
   list->Set(kInsetRightIndex, ConvertCSSLengthsSubtractedFrom100Percent(x, w));

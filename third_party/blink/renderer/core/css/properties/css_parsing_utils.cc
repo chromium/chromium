@@ -638,7 +638,7 @@ cssvalue::CSSBasicShapeInsetValue* ConsumeBasicShapeInset(
   Complete4Sides(sides);
 
   auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>(
-      sides[0], sides[1], sides[2], sides[3]);
+      *sides[0], *sides[1], *sides[2], *sides[3]);
   if (!ConsumeBorderRadiusCommon(args, context, local_context, shape)) {
     return nullptr;
   }
@@ -668,7 +668,7 @@ cssvalue::CSSBasicShapeRectValue* ConsumeBasicShapeRect(
   }
 
   auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(
-      lengths[0], lengths[1], lengths[2], lengths[3]);
+      *lengths[0], *lengths[1], *lengths[2], *lengths[3]);
 
   if (!ConsumeBorderRadiusCommon(args, context, local_context, shape)) {
     return nullptr;
@@ -694,7 +694,7 @@ cssvalue::CSSBasicShapeXYWHValue* ConsumeBasicShapeXYWH(
   }
 
   auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeXYWHValue>(
-      lengths[0], lengths[1], lengths[2], lengths[3]);
+      *lengths[0], *lengths[1], *lengths[2], *lengths[3]);
 
   if (!ConsumeBorderRadiusCommon(args, context, local_context, shape)) {
     return nullptr;
