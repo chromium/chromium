@@ -88,6 +88,9 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
       const ScriptMessage& message,
       ScriptMessageReplyCallback callback) override;
 
+  // Clones `message` and sets it to `last_received_message_`.
+  void SetLastReceivedMessage(const ScriptMessage& message);
+
   raw_ptr<WebState, DanglingUntriaged> last_received_web_state_ = nullptr;
   std::unique_ptr<const ScriptMessage> last_received_message_;
   int received_message_count_ = 0;

@@ -132,7 +132,7 @@ void FakeJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
   last_received_web_state_ = web_state;
-  last_received_message_ = std::make_unique<const ScriptMessage>(message);
+  SetLastReceivedMessage(message);
   received_message_count_++;
 }
 
@@ -141,7 +141,7 @@ void FakeJavaScriptFeature::ScriptMessageReceivedWithReply(
     const ScriptMessage& message,
     ScriptMessageReplyCallback callback) {
   last_received_web_state_ = web_state;
-  last_received_message_ = std::make_unique<const ScriptMessage>(message);
+  SetLastReceivedMessage(message);
   received_message_count_++;
 
   if (response_to_next_message_) {
@@ -151,6 +151,14 @@ void FakeJavaScriptFeature::ScriptMessageReceivedWithReply(
   } else {
     std::move(callback).Run(nullptr, @"Error");
   }
+}
+
+void FakeJavaScriptFeature::SetLastReceivedMessage(
+    const ScriptMessage& message) {
+  last_received_message_ = std::make_unique<const ScriptMessage>(
+      std::make_unique<base::Value>(message.body()->Clone()),
+      message.is_user_interacting(), message.is_main_frame(),
+      message.request_url(), message.security_origin());
 }
 
 }  // namespace web

@@ -25,7 +25,8 @@ class ScriptMessage {
   ~ScriptMessage();
 
   ScriptMessage& operator=(const ScriptMessage&) = delete;
-  ScriptMessage(const ScriptMessage&);
+  ScriptMessage(const ScriptMessage&) = delete;
+  ScriptMessage(ScriptMessage&& message);
 
   // Returns the message body.
   base::Value* body() const { return body_.get(); }

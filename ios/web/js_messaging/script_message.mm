@@ -23,14 +23,10 @@ ScriptMessage::ScriptMessage(std::unique_ptr<base::Value> body,
       security_origin_(std::move(security_origin)) {}
 ScriptMessage::~ScriptMessage() = default;
 
-ScriptMessage::ScriptMessage(const ScriptMessage& other)
-    : is_user_interacting_(other.is_user_interacting_),
-      is_main_frame_(other.is_main_frame_),
-      request_url_(other.request_url_),
-      security_origin_(other.security_origin_) {
-  if (other.body_) {
-    body_ = std::make_unique<base::Value>(other.body_->Clone());
-  }
-}
+ScriptMessage::ScriptMessage(ScriptMessage&& message)
+    : body_(std::move(message.body_)),
+      is_user_interacting_((message.is_user_interacting_)),
+      is_main_frame_(message.is_main_frame_),
+      request_url_(std::move(message.request_url_)) {}
 
 }  // namespace web
