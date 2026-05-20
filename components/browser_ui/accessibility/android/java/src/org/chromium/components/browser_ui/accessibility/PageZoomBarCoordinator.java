@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.accessibility;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
@@ -62,6 +63,7 @@ public class PageZoomBarCoordinator {
      *
      * @param webContents WebContents that this zoom UI will control.
      */
+    @SuppressLint("ClickableViewAccessibility")
     public void show(@Nullable WebContents webContents) {
         PageZoomUma.logAppMenuSliderOpenedHistogram();
 
@@ -81,6 +83,12 @@ public class PageZoomBarCoordinator {
 
         // Consume hover events so screen readers do not select web contents behind slider.
         mView.setOnHoverListener((v, event) -> true);
+
+        // Consume touch events so they do not fall through to the web contents behind.
+        mView.setOnTouchListener((v, event) -> true);
+
+        // Consume generic motion events so they do not fall through to the web contents behind.
+        mView.setOnGenericMotionListener((v, event) -> true);
 
         // Adjust bottom margin for any bottom controls
         setBottomMargin(mBottomControlsOffset);
