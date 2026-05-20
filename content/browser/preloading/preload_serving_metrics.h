@@ -68,6 +68,8 @@ struct CONTENT_EXPORT PrefetchContainerMetrics final {
   std::optional<base::TimeDelta> create_stream_delay;
   std::optional<base::TimeDelta> connected_callback_delay;
   std::optional<base::TimeDelta> initialize_stream_delay;
+
+  bool is_constructed_from_pre_prefetch = false;
 };
 
 // Debug information of prefetch ahead of prerender at prefetch matching.

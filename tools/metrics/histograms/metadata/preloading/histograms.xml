@@ -146,6 +146,14 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for a navigation without preloads."/>
   <variant name="WithPrefetch"
       summary="Recorded for a navigation used prefetch."/>
+  <variant name="WithPrefetch.WithoutPrePrefetch"
+      summary="Recorded for a navigation used prefetch that was not
+               constructed from a PrePrefetch. Only recorded when
+               `kPrefetchOffTheMainThread` is enabled."/>
+  <variant name="WithPrefetch.WithPrePrefetch"
+      summary="Recorded for a navigation used prefetch that was constructed
+               from a PrePrefetch. Only recorded when
+               `kPrefetchOffTheMainThread` is enabled."/>
   <variant name="WithPrerender"
       summary="Recorded for a navigation used prerender."/>
 </variants>
