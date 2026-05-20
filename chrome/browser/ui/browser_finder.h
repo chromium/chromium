@@ -28,8 +28,8 @@ class WebContents;
 // There are a few functions that have valid use cases. For example, we can
 // imagine a hypothetical feature of the task manager (which is not conceptually
 // associated with any given browser window) which wants to display the number
-// of incognito browser windows to the user. This would be a valid use case for
-// GetIncognitoBrowserCount().
+// of browser windows for a given profile to the user. This would be a valid
+// use case for GetBrowserCount().
 //
 // More colloquial explanation:
 // There are two problems with FindBrowser(*) methods.
@@ -93,20 +93,6 @@ Browser* FindBrowserWithTab(const content::WebContents* web_contents);
 // WARNING: this function includes browsers scheduled for deletion whereas
 // the majority of other functions do not.
 size_t GetBrowserCount(Profile* profile);
-
-// Returns the number of incognito browsers excluding devtools windows.
-size_t GetIncognitoBrowserCount();
-
-// Returns the number of off-the-record browser windows associated with
-// `profile`, excluding DevTools windows.
-size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile);
-
-// Returns true if any off-the-record browser is using `profile` or one of its
-// related profiles.
-bool IsOffTheRecordBrowserInUse(Profile* profile);
-
-// Returns the number of Guest browsers excluding DevTools windows.
-size_t GetGuestBrowserCount();
 
 }  // namespace chrome
 
