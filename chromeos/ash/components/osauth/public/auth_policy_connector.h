@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPolicyConnector {
   virtual std::optional<AuthFactorsSet> AllowedLocalAuthFactors(
       const AccountId& account) = 0;
 
+  virtual std::optional<bool> IsPinAllowedByQuickUnlockPolicy(
+      const AccountId& account) = 0;
+
   virtual bool IsAuthFactorManaged(const AccountId& account,
                                    AshAuthFactor auth_factor) = 0;
   virtual bool IsAuthFactorUserModifiable(const AccountId& account,

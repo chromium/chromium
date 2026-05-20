@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -123,6 +124,21 @@ ProfilePrefsAuthPolicyConnector::AllowedLocalAuthFactors(
   const base::ListValue* allowed_auth_factors =
       &pref_service->GetList(prefs::kAllowedLocalAuthFactors);
   return GetAuthFactorsSetFromPolicyList(allowed_auth_factors);
+}
+
+std::optional<bool>
+ProfilePrefsAuthPolicyConnector::IsPinAllowedByQuickUnlockPolicy(
+    const AccountId& account) {
+  const PrefService* pref_service = GetPrefsForUser(account);
+  if (!pref_service->HasPrefPath(prefs::kQuickUnlockModeAllowlist)) {
+    // Return true means no restrictions, HasPrefPath checks for default and
+    // this is only default for consumers and in that case it makes sense to
+    // return empty here.
+    return std::nullopt;
+  }
+  const base::ListValue* quick_unlock_factors =
+      &pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
+  return HasPinFactor(quick_unlock_factors);
 }
 
 bool ProfilePrefsAuthPolicyConnector::IsAuthFactorManaged(

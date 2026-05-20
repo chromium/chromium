@@ -28,6 +28,9 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
 bool IsPinEnabledAsMainFactorByPolicy(const PrefService* pref_service);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
+bool HasPinFactor(const base::ListValue* auth_factors);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
 bool IsGaiaPassword(const cryptohome::AuthFactor& factor);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)

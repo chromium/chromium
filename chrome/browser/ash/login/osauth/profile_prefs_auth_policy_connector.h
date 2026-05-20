@@ -36,6 +36,9 @@ class ProfilePrefsAuthPolicyConnector : public KeyedService,
   std::optional<AuthFactorsSet> AllowedLocalAuthFactors(
       const AccountId& account) override;
 
+  std::optional<bool> IsPinAllowedByQuickUnlockPolicy(
+      const AccountId& account) override;
+
   bool IsAuthFactorManaged(const AccountId& account,
                            AshAuthFactor auth_factor) override;
   bool IsAuthFactorUserModifiable(const AccountId& account,

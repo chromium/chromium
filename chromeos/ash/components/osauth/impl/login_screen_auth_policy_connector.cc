@@ -57,6 +57,13 @@ LoginScreenAuthPolicyConnector::AllowedLocalAuthFactors(
   return {};
 }
 
+std::optional<bool>
+LoginScreenAuthPolicyConnector::IsPinAllowedByQuickUnlockPolicy(
+    const AccountId& account) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 bool LoginScreenAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

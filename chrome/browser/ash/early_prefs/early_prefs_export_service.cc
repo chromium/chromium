@@ -43,6 +43,10 @@ EarlyPrefsExportService::EarlyPrefsExportService(const base::FilePath& root_dir,
 
   // Used for determining which local auth factors have been enabled.
   StoreAndTrackPref(prefs::kAllowedLocalAuthFactors);
+
+  // Used for handling the interactions between local auth factors and quick
+  // unlock.
+  StoreAndTrackPref(prefs::kQuickUnlockModeAllowlist);
 }
 
 EarlyPrefsExportService::~EarlyPrefsExportService() = default;

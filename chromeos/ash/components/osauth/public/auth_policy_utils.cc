@@ -56,6 +56,10 @@ bool IsPinEnabledAsMainFactorByPolicy(const PrefService* pref_service) {
          policy_list->Has(ash::AshAuthFactor::kCryptohomePin);
 }
 
+bool HasPinFactor(const base::ListValue* auth_factors) {
+  return auth_factors->contains("PIN");
+}
+
 bool IsGaiaPassword(const cryptohome::AuthFactor& factor) {
   if (factor.ref().type() != cryptohome::AuthFactorType::kPassword) {
     return false;
