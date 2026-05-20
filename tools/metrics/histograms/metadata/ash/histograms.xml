@@ -10074,14 +10074,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mouse.ScrollAcceleration{PreferenceChangeType}"
-    enum="BooleanEnabled" expires_after="2025-12-01">
+    enum="BooleanEnabled" expires_after="2026-11-03">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Whether mouse scroll acceleration is enabled. Only reported on Chrome OS.
 
-    Warning: this histogram was expired from 2022-06-15 to M123; data may be
-    missing. {PreferenceChangeType}
+    Warning: this histogram was expired from 2025-12-01 to 2026-05-18; data may
+    be missing. {PreferenceChangeType}
   </summary>
 </histogram>
 
