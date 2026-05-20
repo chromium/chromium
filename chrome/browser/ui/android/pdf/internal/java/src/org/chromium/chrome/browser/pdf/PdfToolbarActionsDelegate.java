@@ -30,4 +30,15 @@ public interface PdfToolbarActionsDelegate {
      * @param pageIndex The 0-based index of the page to navigate to.
      */
     void toggleFitToPage(boolean fitToPageHeight, int pageIndex);
+
+    /**
+     * Toggles whether the PDF viewer should display two pages per row.
+     *
+     * @param twoPagesPerRowEnabled Whether the PDF viewer should display two pages per row.
+     * @param zoomLevel The current zoom level. This is used to maintain the current zoom level when
+     *     toggling between one and two pages per row.
+     * @param currentPageIndex The current page index. This is used to maintain the current page
+     *     position when toggling between one and two pages per row.
+     */
+    void toggleTwoPagesPerRow(boolean twoPagesPerRowEnabled, float zoomLevel, int currentPageIndex);
 }

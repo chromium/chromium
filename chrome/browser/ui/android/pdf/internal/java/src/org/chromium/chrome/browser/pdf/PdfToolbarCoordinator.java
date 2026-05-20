@@ -42,6 +42,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                         .with(PdfToolbarProperties.ON_CLICK_LISTENER, this)
                         .with(PdfToolbarProperties.ZOOM_LEVEL, 1.0f)
                         .with(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, true)
+                        .with(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false)
                         .build();
 
         // Set up the MCP to sync the Model and View
@@ -73,6 +74,11 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                 mDelegate.toggleFitToPage(false, currentPageNumber - 1);
                 mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, true);
             }
+        } else if (actionId == R.id.two_page_button) {
+            boolean isCurrentlyActive = mModel.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE);
+            boolean newState = !isCurrentlyActive;
+            mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, newState);
+            mDelegate.toggleTwoPagesPerRow(newState, currentZoomFactor, currentPageNumber - 1);
         }
     }
 

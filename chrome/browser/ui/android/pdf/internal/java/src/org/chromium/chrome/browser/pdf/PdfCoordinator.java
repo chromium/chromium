@@ -364,6 +364,12 @@ public class PdfCoordinator
             }
         }
 
+        void setPagesPerRow(boolean twoPagesPerRowEnabled) {
+            if (mPdfView != null) {
+                mPdfView.setPagesPerRow(twoPagesPerRowEnabled ? 2 : 1);
+            }
+        }
+
         void zoomTo(float zoomLevel) {
             if (mPdfView != null) {
                 mPdfView.setZoom(zoomLevel);
@@ -711,5 +717,14 @@ public class PdfCoordinator
     public void onViewportChanged(int pageIndex, float zoomLevel) {
         assert mToolbarCoordinator != null;
         mToolbarCoordinator.onViewportChanged(pageIndex, zoomLevel);
+    }
+
+    @Override
+    public void toggleTwoPagesPerRow(
+            boolean twoPagesPerRowEnabled, float zoomLevel, int currentPageIndex) {
+        assert mToolbarCoordinator != null;
+        mChromePdfViewerFragment.setPagesPerRow(twoPagesPerRowEnabled);
+        mChromePdfViewerFragment.zoomTo(zoomLevel);
+        mChromePdfViewerFragment.scrollToPage(currentPageIndex);
     }
 }

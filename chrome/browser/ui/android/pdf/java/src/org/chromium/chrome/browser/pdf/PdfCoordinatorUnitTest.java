@@ -323,10 +323,48 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.toggleFitToPage(true, 0);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testToggleTwoPagesPerRow() {
+        createPdfCoordinator();
+        float zoomLevel = 1.5f;
+        int currentPageIndex = 2;
+
+        // Test toggling to two pages per row.
+        mPdfCoordinator.toggleTwoPagesPerRow(true, zoomLevel, currentPageIndex);
+
+        // Assert
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertEquals(2, shadowPdfView.mPagesPerRow);
+        assertEquals(zoomLevel, shadowPdfView.mZoom, 0.001f);
+
+        float expectedYOffsetPoints = (PDF_CONTENT_HEIGHT / 2f) / zoomLevel;
+        assertEquals(
+                new PdfPoint(currentPageIndex, 0f, expectedYOffsetPoints), shadowPdfView.mPdfPoint);
+
+        // Test toggling back to one page per row.
+        mPdfCoordinator.toggleTwoPagesPerRow(false, zoomLevel, currentPageIndex);
+
+        // Assert
+        assertEquals(1, shadowPdfView.mPagesPerRow);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testToggleTwoPagesPerRow_PdfViewNull() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(null);
+
+        // Verify that no exception is thrown when mPdfView is null.
+        mPdfCoordinator.toggleTwoPagesPerRow(true, 1.5f, 2);
+    }
+
     @Implements(PdfView.class)
     public static class ShadowPdfView extends ShadowView {
         public PdfPoint mPdfPoint;
         public float mZoom = 1.0f;
+        public int mPagesPerRow = 1;
 
         public ShadowPdfView() {}
 
@@ -341,6 +379,13 @@ public class PdfCoordinatorUnitTest {
         }
 
         @Implementation
-        public void testGetZoom() {}
+        public void setPagesPerRow(int pagesPerRow) {
+            mPagesPerRow = pagesPerRow;
+        }
+
+        @Implementation
+        public float getZoom() {
+            return mZoom;
+        }
     }
 }

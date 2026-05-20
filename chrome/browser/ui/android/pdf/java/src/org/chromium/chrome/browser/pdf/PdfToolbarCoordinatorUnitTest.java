@@ -156,4 +156,18 @@ public class PdfToolbarCoordinatorUnitTest {
         fitToPageButton.performClick();
         verify(mDelegate).toggleFitToPage(false, 98);
     }
+
+    @Test
+    public void testTwoPagesPerRowToggle() {
+        // Default current page is 99 (1-indexed) and zoom level is 1.0f
+        View twoPageButton = mPdfPageView.findViewById(R.id.two_page_button);
+
+        // Initial state: click toggles two pages per row to active (true)
+        twoPageButton.performClick();
+        verify(mDelegate).toggleTwoPagesPerRow(true, 1.0f, 98);
+
+        // Second click: click toggles two pages per row to inactive (false)
+        twoPageButton.performClick();
+        verify(mDelegate).toggleTwoPagesPerRow(false, 1.0f, 98);
+    }
 }
