@@ -46,6 +46,34 @@ config("libgav1_config") {
 }
 
 if (use_libgav1_parser) {
+  static_library("libgav1_utils_constants") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libgav1_config" ]
+
+    public_configs = [ ":libgav1_public_config" ]
+
+    sources = [
+      "//third_party/libgav1/src/src/utils/constants.cc",
+      "//third_party/libgav1/src/src/utils/constants.h",
+    ]
+  }
+
+  static_library("libgav1_dsp_common") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libgav1_config" ]
+
+    public_configs = [ ":libgav1_public_config" ]
+
+    sources = [
+      "//third_party/libgav1/src/src/dsp/common.h",
+      "//third_party/libgav1/src/src/dsp/constants.cc",
+      "//third_party/libgav1/src/src/dsp/constants.h",
+    ]
+    deps = [ ":libgav1_utils_constants" ]
+  }
+
   static_library("libgav1_parser") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -56,6 +84,7 @@ if (use_libgav1_parser) {
     sources = [
       "//third_party/libgav1/src/src/buffer_pool.cc",
       "//third_party/libgav1/src/src/buffer_pool.h",
+      "//third_party/libgav1/src/src/decoder_state.h",
       "//third_party/libgav1/src/src/frame_buffer.cc",
       "//third_party/libgav1/src/src/internal_frame_buffer_list.cc",
       "//third_party/libgav1/src/src/internal_frame_buffer_list.h",
@@ -68,8 +97,8 @@ if (use_libgav1_parser) {
       "//third_party/libgav1/src/src/symbol_decoder_context.h",
       "//third_party/libgav1/src/src/utils/bit_reader.cc",
       "//third_party/libgav1/src/src/utils/bit_reader.h",
-      "//third_party/libgav1/src/src/utils/constants.cc",
-      "//third_party/libgav1/src/src/utils/constants.h",
+      "//third_party/libgav1/src/src/utils/cpu.cc",
+      "//third_party/libgav1/src/src/utils/cpu.h",
       "//third_party/libgav1/src/src/utils/logging.cc",
       "//third_party/libgav1/src/src/utils/logging.h",
       "//third_party/libgav1/src/src/utils/raw_bit_reader.cc",
@@ -82,6 +111,10 @@ if (use_libgav1_parser) {
       "//third_party/libgav1/src/src/warp_prediction.h",
       "//third_party/libgav1/src/src/yuv_buffer.cc",
       "//third_party/libgav1/src/src/yuv_buffer.h",
+    ]
+    deps = [
+      ":libgav1_dsp_common",
+      ":libgav1_utils_constants",
     ]
   }
 
@@ -99,12 +132,161 @@ if (use_libgav1_parser) {
       "//third_party/libgav1/src/examples/logging.h",
       "//third_party/libgav1/src/tests/fuzzer/obu_parser_fuzzer.cc",
     ]
-    deps = [ ":libgav1_parser" ]
+    deps = [
+      ":libgav1_decoder",
+      ":libgav1_parser",
+    ]
     defines = [ "LIBGAV1_EXAMPLES_ENABLE_LOGGING=0" ]
     additional_configs = [ ":libgav1_config" ]
 
     # Clang's libcxx recently made this warn on more things by default, and
     # libgav1 doesn't have the annotations necessary to support its analysis.
     cflags_cc = [ "-Wno-thread-safety" ]
+  }
+
+  # This target is included only for testing purposes, e.g. bitstream parsing
+  # and validation. The assembly and vector optimizations are disabled to
+  # maximize portability.
+  static_library("libgav1_dsp") {
+    testonly = true
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libgav1_config" ]
+
+    public_configs = [ ":libgav1_public_config" ]
+
+    defines = [
+      "LIBGAV1_ENABLE_SSE4_1=0",
+      "LIBGAV1_ENABLE_AVX2=0",
+      "LIBGAV1_ENABLE_NEON=0",
+    ]
+
+    sources = [
+      "src/src/dsp/average_blend.cc",
+      "src/src/dsp/average_blend.h",
+      "src/src/dsp/cdef.cc",
+      "src/src/dsp/cdef.h",
+      "src/src/dsp/cdef.inc",
+      "src/src/dsp/convolve.cc",
+      "src/src/dsp/convolve.h",
+      "src/src/dsp/convolve.inc",
+      "src/src/dsp/distance_weighted_blend.cc",
+      "src/src/dsp/distance_weighted_blend.h",
+      "src/src/dsp/dsp.cc",
+      "src/src/dsp/dsp.h",
+      "src/src/dsp/film_grain.cc",
+      "src/src/dsp/film_grain.h",
+      "src/src/dsp/film_grain_common.h",
+      "src/src/dsp/intra_edge.cc",
+      "src/src/dsp/intra_edge.h",
+      "src/src/dsp/intrapred.cc",
+      "src/src/dsp/intrapred.h",
+      "src/src/dsp/intrapred_cfl.cc",
+      "src/src/dsp/intrapred_cfl.h",
+      "src/src/dsp/intrapred_directional.cc",
+      "src/src/dsp/intrapred_directional.h",
+      "src/src/dsp/intrapred_filter.cc",
+      "src/src/dsp/intrapred_filter.h",
+      "src/src/dsp/intrapred_smooth.cc",
+      "src/src/dsp/intrapred_smooth.h",
+      "src/src/dsp/inverse_transform.cc",
+      "src/src/dsp/inverse_transform.h",
+      "src/src/dsp/inverse_transform.inc",
+      "src/src/dsp/loop_filter.cc",
+      "src/src/dsp/loop_filter.h",
+      "src/src/dsp/loop_restoration.cc",
+      "src/src/dsp/loop_restoration.h",
+      "src/src/dsp/mask_blend.cc",
+      "src/src/dsp/mask_blend.h",
+      "src/src/dsp/motion_field_projection.cc",
+      "src/src/dsp/motion_field_projection.h",
+      "src/src/dsp/motion_vector_search.cc",
+      "src/src/dsp/motion_vector_search.h",
+      "src/src/dsp/obmc.cc",
+      "src/src/dsp/obmc.h",
+      "src/src/dsp/obmc.inc",
+      "src/src/dsp/smooth_weights.inc",
+      "src/src/dsp/super_res.cc",
+      "src/src/dsp/super_res.h",
+      "src/src/dsp/warp.cc",
+      "src/src/dsp/warp.h",
+      "src/src/dsp/weight_mask.cc",
+      "src/src/dsp/weight_mask.h",
+    ]
+    deps = [
+      ":libgav1_dsp_common",
+      ":libgav1_parser",
+      ":libgav1_utils_constants",
+    ]
+  }
+
+  # This target is included only for testing purposes, e.g. bitstream parsing
+  # and validation. The assembly and vector optimizations are disabled to
+  # maximize portability.
+  static_library("libgav1_decoder") {
+    testonly = true
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libgav1_config" ]
+
+    public_configs = [ ":libgav1_public_config" ]
+
+    defines = [
+      "LIBGAV1_ENABLE_SSE4_1=0",
+      "LIBGAV1_ENABLE_AVX2=0",
+      "LIBGAV1_ENABLE_NEON=0",
+    ]
+
+    sources = [
+      "src/src/decoder.cc",
+      "src/src/decoder_impl.cc",
+      "src/src/decoder_impl.h",
+      "src/src/decoder_settings.cc",
+      "src/src/film_grain.cc",
+      "src/src/film_grain.h",
+      "src/src/frame_scratch_buffer.h",
+      "src/src/loop_restoration_info.cc",
+      "src/src/loop_restoration_info.h",
+      "src/src/motion_vector.cc",
+      "src/src/motion_vector.h",
+      "src/src/post_filter.h",
+      "src/src/post_filter/cdef.cc",
+      "src/src/post_filter/deblock.cc",
+      "src/src/post_filter/loop_restoration.cc",
+      "src/src/post_filter/post_filter.cc",
+      "src/src/post_filter/super_res.cc",
+      "src/src/prediction_mask.cc",
+      "src/src/prediction_mask.h",
+      "src/src/reconstruction.cc",
+      "src/src/reconstruction.h",
+      "src/src/residual_buffer_pool.cc",
+      "src/src/residual_buffer_pool.h",
+      "src/src/threading_strategy.cc",
+      "src/src/threading_strategy.h",
+      "src/src/tile.h",
+      "src/src/tile/bitstream/mode_info.cc",
+      "src/src/tile/bitstream/palette.cc",
+      "src/src/tile/bitstream/partition.cc",
+      "src/src/tile/bitstream/transform_size.cc",
+      "src/src/tile/prediction.cc",
+      "src/src/tile/tile.cc",
+      "src/src/tile_scratch_buffer.h",
+      "src/src/utils/block_parameters_holder.cc",
+      "src/src/utils/block_parameters_holder.h",
+      "src/src/utils/entropy_decoder.cc",
+      "src/src/utils/entropy_decoder.h",
+      "src/src/utils/executor.cc",
+      "src/src/utils/executor.h",
+      "src/src/utils/threadpool.cc",
+      "src/src/utils/threadpool.h",
+      "src/src/version.cc",
+    ]
+
+    deps = [
+      ":libgav1_dsp",
+      ":libgav1_dsp_common",
+      ":libgav1_parser",
+      ":libgav1_utils_constants",
+    ]
   }
 }
