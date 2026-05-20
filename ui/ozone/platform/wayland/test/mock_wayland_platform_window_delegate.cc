@@ -63,7 +63,9 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
   }
 
   if (!on_state_update_callback_.is_null()) {
-    on_state_update_callback_.Run();
+    if (!on_state_update_callback_.Run()) {
+      return -1;
+    }
   }
 
   if (!latest.WillProduceFrameOnUpdateFrom(old)) {

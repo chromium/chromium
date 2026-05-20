@@ -473,6 +473,16 @@ TEST_P(WaylandWindowTest, Shutdown) {
   window_->OnDragSessionClose(mojom::DragOperation::kNone);
 }
 
+// Regression test for https://crbug.com/495948109.
+TEST_P(WaylandWindowTest, DeleteWindowFromOnStateUpdate) {
+  delegate_.set_on_state_update_callback(base::BindLambdaForTesting([&]() {
+    window_.reset();
+    return false;
+  }));
+
+  window_->SetBoundsInDIP(gfx::Rect(1024, 768));
+}
+
 TEST_P(WaylandWindowTest, SetTitle) {
   window_->SetTitle(u"hello");
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
@@ -4809,8 +4819,10 @@ TEST_P(WaylandWindowTest, ReentrantApplyStateWorks) {
     EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
   });
 
-  delegate_.set_on_state_update_callback(
-      base::BindLambdaForTesting([&]() { window_->SetBoundsInDIP(kBounds3); }));
+  delegate_.set_on_state_update_callback(base::BindLambdaForTesting([&]() {
+    window_->SetBoundsInDIP(kBounds3);
+    return true;
+  }));
   window_->SetBoundsInDIP(kBounds2);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   VerifyAndClearExpectations();
