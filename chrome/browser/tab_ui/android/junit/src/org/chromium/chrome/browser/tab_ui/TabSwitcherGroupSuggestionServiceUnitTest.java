@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -62,7 +62,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Mock private SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
     @Mock private JniOnceCallback<UserResponseMetadata> mUserResponseCallback;
 
-    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<UserResponseMetadata> mUserResponseMetadataCaptor;
 
@@ -247,9 +247,9 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     }
 
     @Test
-    public void testTabGroupModelFilterObserver() {
-        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
-        TabGroupModelFilterObserver observer = mTabGroupModelFilterObserverCaptor.getValue();
+    public void testTabGroupObserver() {
+        verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
+        TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Tab mockTab = mock();
 

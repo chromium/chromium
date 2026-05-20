@@ -38,7 +38,7 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
      * @param tabModelSelector A {@link TabModelSelector}.
      */
     public SelectionPopupBackPressHandler(TabModelSelector tabModelSelector) {
-        tabModelSelector.addTabGroupModelFilterObserver(this);
+        tabModelSelector.addObserverToAllModels(this);
     }
 
     @Override

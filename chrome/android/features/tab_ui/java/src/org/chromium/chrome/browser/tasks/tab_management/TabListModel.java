@@ -342,7 +342,7 @@ public class TabListModel extends ModelList {
      * TabListModel} that the moved tab should exist in. The source index may be invalid if a group
      * of size 1 is created or the tab was moved between groups. In the case of moving between
      * groups as the other group will be updated by {@link
-     * TabGroupModelFilterObserver#didMoveTabOutOfGroup(Tab, int)}.
+     * TabGroupObserver#didMoveTabOutOfGroup(Tab, int)}.
      *
      * @param tabModel The tabModel that owns the tabs.
      * @param movedTab The tab that is being merged.

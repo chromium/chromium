@@ -234,7 +234,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabModel.setTabCreatorForTesting(mTabCreator);
         mTotalTabCountSupplier = ObservableSuppliers.createNonNull(3);
         when(mTabModel.getTabCountSupplier()).thenReturn(mTotalTabCountSupplier);
-        mTabsInGroup = setUpTabGroupModelFilter();
+        mTabsInGroup = setUpTabsInGroup();
         when(mProfile.isOffTheRecord()).thenReturn(true);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
@@ -709,7 +709,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         }
     }
 
-    private List<Tab> setUpTabGroupModelFilter() {
+    private List<Tab> setUpTabsInGroup() {
         MockTab tab = mTabModel.addTab(TAB_ID);
         tab.setTabGroupId(TAB_GROUP_ID);
         tab.setUrl(EXAMPLE_URL);

@@ -328,10 +328,10 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void addTabGroupObserver(TabGroupModelFilterObserver observer) {}
+    public void addTabGroupObserver(TabGroupObserver observer) {}
 
     @Override
-    public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {}
+    public void removeTabGroupObserver(TabGroupObserver observer) {}
 
     @Override
     public List<Tab> getRepresentativeTabList() {

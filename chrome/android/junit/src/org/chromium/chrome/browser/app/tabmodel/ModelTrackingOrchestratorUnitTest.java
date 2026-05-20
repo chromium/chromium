@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
@@ -64,7 +64,7 @@ public class ModelTrackingOrchestratorUnitTest {
     private static final String WINDOW_TAG = "window_1";
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoObserverCaptor;
-    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
 
     @Mock private PersistentStoreMigrationManager mMigrationManager;
     @Mock private TabModelSelector mTabModelSelector;
@@ -307,7 +307,7 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
         verify(mRegularTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
-        TabGroupModelFilterObserver observer = mTabGroupObserverCaptor.getValue();
+        TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Token groupId = Token.createRandom();
         MockTab tab = new MockTab(1, mProfile);
@@ -328,7 +328,7 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
         verify(mRegularTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
-        TabGroupModelFilterObserver observer = mTabGroupObserverCaptor.getValue();
+        TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Token groupId = Token.createRandom();
         MockTab tab = new MockTab(1, mProfile);
@@ -351,7 +351,7 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
         verify(mRegularTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
-        TabGroupModelFilterObserver observer = mTabGroupObserverCaptor.getValue();
+        TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Token groupId = Token.createRandom();
         MockTab tab = new MockTab(1, mProfile);

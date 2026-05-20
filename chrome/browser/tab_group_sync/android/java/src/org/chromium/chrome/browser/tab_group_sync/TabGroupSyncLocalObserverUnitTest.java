@@ -47,8 +47,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -95,7 +95,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     private TabGroupSyncLocalObserver mLocalObserver;
 
     private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    private @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    private @Captor ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
     private @Captor ArgumentCaptor<EventDetails> mEventDetailsCaptor;
     private @Captor ArgumentCaptor<SavedTabGroup> mSavedTabGroupCaptor;
 
@@ -131,9 +131,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
 
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        doNothing()
-                .when(mTabModel)
-                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        doNothing().when(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
         doNothing().when(mTabGroupSyncService).recordTabGroupEvent(mEventDetailsCaptor.capture());
         mNavigationTracker = new NavigationTracker();
         mRemoteMutationHelper =
@@ -318,9 +316,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testWillCloseTabGroup_NullGroup() {
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .willCloseTabGroup(TOKEN_1, /* isHiding= */ true);
+        mTabGroupObserverCaptor.getValue().willCloseTabGroup(TOKEN_1, /* isHiding= */ true);
         verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(any(), anyInt());
         assertFalse(mLocalObserver.hasAnyPendingTabGroupClosuresForTesting());
     }
@@ -337,9 +333,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab1);
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .willCloseTabGroup(TOKEN_1, /* isHiding= */ true);
+        mTabGroupObserverCaptor.getValue().willCloseTabGroup(TOKEN_1, /* isHiding= */ true);
         verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(any(), anyInt());
         verify(mTabGroupSyncService, never()).removeGroup(anyString());
         assertTrue(mLocalObserver.hasAnyPendingTabGroupClosuresForTesting());
@@ -357,9 +351,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab1);
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .willCloseTabGroup(TOKEN_1, /* isHiding= */ false);
+        mTabGroupObserverCaptor.getValue().willCloseTabGroup(TOKEN_1, /* isHiding= */ false);
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1, ClosingSource.DELETED_BY_USER);
         verify(mTabGroupSyncService).removeGroup(SYNC_ID);
@@ -382,7 +374,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
         when(mTabModel.getTabsInGroup(TOKEN_1)).thenReturn(List.of(mTab1, mTab2));
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
-        TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
+        TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 
         // Close starting.
         groupObserver.willCloseTabGroup(TOKEN_1, hiding);
@@ -418,7 +410,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
         when(mTabModel.getTabsInGroup(TOKEN_1)).thenReturn(List.of(mTab1, mTab2));
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
-        TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
+        TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 
         // Close starting.
         groupObserver.willCloseTabGroup(TOKEN_1, hiding);
@@ -457,7 +449,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         boolean hiding = true;
         when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
-        TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
+        TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 
         // Close starting.
         groupObserver.willCloseTabGroup(TOKEN_1, hiding);
@@ -491,7 +483,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         boolean hiding = false;
         when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
-        TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
+        TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 
         // Close starting.
         groupObserver.willCloseTabGroup(TOKEN_1, hiding);
@@ -529,7 +521,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         boolean hiding = false;
         when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
-        TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
+        TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 
         // Close starting.
         groupObserver.willCloseTabGroup(TOKEN_1, hiding);
@@ -552,9 +544,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidMergeTabToGroup() {
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
         verify(mTabGroupSyncService, times(1)).addGroup(mSavedTabGroupCaptor.capture());
         Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
         verify(mTabModel, never()).getRelatedTabList(anyInt());
@@ -571,7 +561,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
 
         // Move tab 2 out of group and verify.
-        mTabGroupModelFilterObserverCaptor
+        mTabGroupObserverCaptor
                 .getValue()
                 .willMoveTabOutOfGroup(mTab2, /* destinationTabGroupId= */ null);
         verify(mTabGroupSyncService, times(1)).removeTab(eq(LOCAL_TAB_GROUP_ID_1), eq(2));
@@ -579,7 +569,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidCreateNewGroup() {
-        mTabGroupModelFilterObserverCaptor.getValue().didCreateNewGroup(mTab1, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab1, mTabModel);
         verify(mTabGroupSyncService, times(1)).addGroup(mSavedTabGroupCaptor.capture());
         Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
     }
@@ -587,7 +577,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     @Test
     public void testDidMoveTabWithinGroup() {
         when(mTabModel.getIndexOfTabInGroup(mTab1)).thenReturn(0);
-        mTabGroupModelFilterObserverCaptor.getValue().didMoveWithinGroup(mTab1, 0, 1);
+        mTabGroupObserverCaptor.getValue().didMoveWithinGroup(mTab1, 0, 1);
         verify(mTabGroupSyncService, times(1))
                 .moveTab(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyInt());
     }
@@ -596,15 +586,13 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidChangeTitle() {
         // Valid title.
         when(mTabModel.getTabGroupTitle(TOKEN_1)).thenReturn(TITLE_1);
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, TITLE_1);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, TITLE_1);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(TITLE_1), anyInt());
 
         // Unset title.
         when(mTabModel.getTabGroupTitle(TOKEN_1)).thenReturn(UNSET_TAB_GROUP_TITLE);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupTitle(TOKEN_1, UNSET_TAB_GROUP_TITLE);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, UNSET_TAB_GROUP_TITLE);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(UNSET_TAB_GROUP_TITLE), anyInt());
     }
@@ -614,9 +602,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         // Mock that we have a stored color (red) stored with reference to ROOT_ID_1.
         when(mTabModel.getTabGroupColor(TOKEN_1)).thenReturn(TabGroupColorId.RED);
 
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupColor(TOKEN_1, TabGroupColorId.RED);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupColor(TOKEN_1, TabGroupColorId.RED);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TabGroupColorId.RED));
     }
@@ -625,11 +611,11 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidChangeTitleAndColorForNonExistingGroup() {
         when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(false);
         // Handle updates for non-existing groups.
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, TITLE_1);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, TITLE_1);
         verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
 
         // Handle updates for non-existing groups.
-        mTabGroupModelFilterObserverCaptor
+        mTabGroupObserverCaptor
                 .getValue()
                 .didChangeTabGroupColor(new Token(437289L, 783492L), TabGroupColorId.BLUE);
         verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
@@ -637,7 +623,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidRemoveGroup_Close() {
-        mTabGroupModelFilterObserverCaptor
+        mTabGroupObserverCaptor
                 .getValue()
                 .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.CLOSE);
         verify(mTabGroupSyncService, never()).removeGroup(LOCAL_TAB_GROUP_ID_1);
@@ -645,7 +631,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidRemoveGroup_Merge() {
-        mTabGroupModelFilterObserverCaptor
+        mTabGroupObserverCaptor
                 .getValue()
                 .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.MERGE);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
@@ -653,7 +639,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidRemoveGroup_Ungroup() {
-        mTabGroupModelFilterObserverCaptor
+        mTabGroupObserverCaptor
                 .getValue()
                 .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.UNGROUP);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);

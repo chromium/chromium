@@ -572,7 +572,7 @@ public class SelectableTabListEditorTest {
         prepareBlankTabGroup(3, false);
         prepareBlankTabGroup(1, false);
         prepareBlankTabGroup(2, false);
-        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
+        List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -752,7 +752,7 @@ public class SelectableTabListEditorTest {
         prepareTabGroupWithUrls(urls, false);
         prepareBlankTabGroup(2, false);
 
-        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
+        List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         // Url string formatting
         for (int i = 0; i < urls.size(); i++) {
@@ -804,7 +804,7 @@ public class SelectableTabListEditorTest {
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
         prepareTabGroupWithUrls(urls, false);
 
-        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
+        List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         // Url string formatting
         urls.add(0, httpsCanonicalUrl);
@@ -925,7 +925,7 @@ public class SelectableTabListEditorTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     public void testToolbarMenuItem_BookmarkActionGroupsOnly() {
         prepareBlankTabGroup(2, false);
-        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
+        List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -983,7 +983,7 @@ public class SelectableTabListEditorTest {
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
 
         prepareTabGroupWithUrls(urls, false);
-        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
+        List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1609,7 +1609,7 @@ public class SelectableTabListEditorTest {
                 .clickToolbarMenuItem("Add tabs to new group");
 
         mRobot.resultRobot.verifyTabListEditorIsHidden();
-        assertEquals(3, getTabsInCurrentTabGroupModelFilter().size());
+        assertEquals(3, getRepresentativeTabsInCurrentTabModel().size());
     }
 
     @Test
@@ -1702,7 +1702,7 @@ public class SelectableTabListEditorTest {
      * Retrieves all non-grouped tabs and the last focused tab in each tab group from the current
      * tab model
      */
-    private List<Tab> getTabsInCurrentTabGroupModelFilter() {
+    private List<Tab> getRepresentativeTabsInCurrentTabModel() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<Tab> tabs = new ArrayList<>();

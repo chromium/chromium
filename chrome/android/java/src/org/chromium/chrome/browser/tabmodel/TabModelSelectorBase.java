@@ -63,7 +63,7 @@ public abstract class TabModelSelectorBase
 
     private final Callback<TabModel> mIncognitoReauthDialogDelegateCallback;
 
-    private final List<TabModelObserver> mPendingTabModelFilterObserver = new ArrayList<>();
+    private final List<TabModelObserver> mPendingObservers = new ArrayList<>();
 
     protected @Nullable IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
 
@@ -102,12 +102,12 @@ public abstract class TabModelSelectorBase
         assert activeModelIndex != MODEL_NOT_FOUND;
 
         // Register pending observers now that the models exist.
-        for (TabModelObserver observer : mPendingTabModelFilterObserver) {
+        for (TabModelObserver observer : mPendingObservers) {
             for (TabModelInternal tabModel : mTabModelInternals) {
                 tabModel.addObserver(observer);
             }
         }
-        mPendingTabModelFilterObserver.clear();
+        mPendingObservers.clear();
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -132,7 +132,7 @@ public abstract class TabModelSelectorBase
                     }
                 };
 
-        addTabGroupModelFilterObserver(tabModelObserver);
+        addObserverToAllModels(tabModelObserver);
 
         if (sObserverForTesting != null) {
             addObserver(sObserverForTesting);
@@ -397,7 +397,7 @@ public abstract class TabModelSelectorBase
         for (TabModelSelectorObserver listener : mObservers) listener.onDestroyed();
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
 
-        mPendingTabModelFilterObserver.clear();
+        mPendingObservers.clear();
 
         if (mIncognitoTabModel != null) {
             mIncognitoTabModel.removeIncognitoObserver(this);
@@ -492,9 +492,9 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public void addTabGroupModelFilterObserver(TabModelObserver observer) {
+    public void addObserverToAllModels(TabModelObserver observer) {
         if (mTabModelInternals.isEmpty()) {
-            mPendingTabModelFilterObserver.add(observer);
+            mPendingObservers.add(observer);
             return;
         }
 
@@ -504,9 +504,9 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public void removeTabGroupModelFilterObserver(TabModelObserver observer) {
-        if (mTabModelInternals.isEmpty() && !mPendingTabModelFilterObserver.isEmpty()) {
-            mPendingTabModelFilterObserver.remove(observer);
+    public void removeObserverFromAllModels(TabModelObserver observer) {
+        if (mTabModelInternals.isEmpty() && !mPendingObservers.isEmpty()) {
+            mPendingObservers.remove(observer);
             return;
         }
 

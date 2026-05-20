@@ -362,7 +362,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
 
     /**
      * Updates {@code mStripTabs} and the {@code idealX} for the dragged {@link StripLayoutView}s in
-     * response to a {@link TabGroupModelFilter#moveRelatedTabs}. This "fakes" a tab strip rebuild.
+     * response to a {@link TabModel#moveRelatedTabs}. This "fakes" a tab strip rebuild.
      */
     private void mockRebuildForViews(StripLayoutView[] draggedGroup, float deltaFromNewPosition) {
         doAnswer(

@@ -19,7 +19,7 @@ import java.util.List;
  * <p>NOTE: Any changes to this interface including the addition of new methods should be applied to
  * {@link TabModel} and {@link TabModelObserverJniBridge}.
  *
- * <p>TODO(crbug.com/476144237): Merge this interface with TabGroupModelFilterObserver.
+ * <p>TODO(crbug.com/476144237): Merge this interface with TabGroupObserver.
  */
 @NullMarked
 public interface TabModelObserver {
@@ -234,7 +234,7 @@ public interface TabModelObserver {
 
     /**
      * Called after a tab group is created. Note that new code should prefer using {@link
-     * TabGroupModelFilterObserver} for tab groups over this interface and method.
+     * TabGroupObserver} for tab groups over this interface and method.
      *
      * @param groupId The ID of the group that was created.
      */
@@ -242,7 +242,7 @@ public interface TabModelObserver {
 
     /**
      * Called just before a tab group is removed. Note that new code should prefer using {@link
-     * TabGroupModelFilterObserver} for tab groups over this interface and method.
+     * TabGroupObserver} for tab groups over this interface and method.
      *
      * @param groupId The ID of the group that will be removed.
      */
@@ -250,7 +250,7 @@ public interface TabModelObserver {
 
     /**
      * Called after a tab group is moved to a new position. Note that new code should prefer using
-     * {@link TabGroupModelFilterObserver} for tab groups over this interface and method.
+     * {@link TabGroupObserver} for tab groups over this interface and method.
      *
      * @param groupId The ID of the group that was moved.
      * @param oldIndex The previous index of the group in the tab strip.
@@ -259,8 +259,7 @@ public interface TabModelObserver {
 
     /**
      * Called after a tab group's visual data (title, color, etc.) is changed. Note that new code
-     * should prefer using {@link TabGroupModelFilterObserver} for tab groups over this interface
-     * and method.
+     * should prefer using {@link TabGroupObserver} for tab groups over this interface and method.
      *
      * @param groupId The ID of the group that was changed.
      */

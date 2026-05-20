@@ -163,7 +163,7 @@ public class TabModelRemoverUnitTest {
     }
 
     @Test
-    public void testGetTabGroupModelFilter() {
+    public void testGetTabModelInternal() {
         assertEquals(mTabModel, mTabModelRemover.getTabModelInternal());
     }
 

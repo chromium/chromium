@@ -119,7 +119,7 @@ public class TabGroupSyncControllerImplUnitTest {
         createController();
         mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
 
-        // Open a tab group. It should invoke TabGroupModelFilter to create a tab group.
+        // Open a tab group. It should invoke TabModel to create a tab group.
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
         mController.openTabGroup(savedTabGroup.syncId);
@@ -133,7 +133,7 @@ public class TabGroupSyncControllerImplUnitTest {
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         createController();
 
-        // Open a tab group. It should not invoke TabGroupModelFilter to create groups.
+        // Open a tab group. It should not invoke TabModel to create groups.
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
         mController.openTabGroup(savedTabGroup.syncId);

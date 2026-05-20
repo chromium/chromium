@@ -82,7 +82,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -157,8 +157,7 @@ public class TabGroupUiMediatorUnitTest {
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
-    @Captor
-    private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverArgumentCaptor;
+    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverArgumentCaptor;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
@@ -334,7 +333,7 @@ public class TabGroupUiMediatorUnitTest {
         doNothing().when(mTab2).addObserver(mTabObserverCaptor.capture());
         doNothing().when(mTab3).addObserver(mTabObserverCaptor.capture());
 
-        // Setup TabGroupModelFilter.
+        // Setup TabModel.
         doReturn(2).when(mTabModel).getIndividualTabAndGroupCount();
         doReturn(mTabGroup1).when(mTabModel).getRelatedTabList(TAB1_ID);
         doReturn(mTabGroup2).when(mTabModel).getRelatedTabList(TAB2_ID);
@@ -343,9 +342,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab3);
 
-        doNothing()
-                .when(mTabModel)
-                .addTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
+        doNothing().when(mTabModel).addTabGroupObserver(mTabGroupObserverArgumentCaptor.capture());
 
         // Set up TabModelSelector.
         List<TabModel> tabModelList = new ArrayList<>();
@@ -358,7 +355,7 @@ public class TabGroupUiMediatorUnitTest {
 
         doNothing()
                 .when(mTabModelSelector)
-                .addTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
+                .addObserverToAllModels(mTabModelObserverArgumentCaptor.capture());
 
         // Set up OverviewModeBehavior.
         doNothing().when(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
@@ -922,13 +919,12 @@ public class TabGroupUiMediatorUnitTest {
         mTabGroupUiMediator.destroy();
 
         verify(mTabModelSelector)
-                .removeTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
+                .removeObserverFromAllModels(mTabModelObserverArgumentCaptor.capture());
         verify(mLayoutManager).removeObserver(mLayoutStateObserverCaptor.capture());
         assertFalse(mTabModelSupplier.hasObservers());
-        verify(mTabModel)
-                .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
+        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverArgumentCaptor.capture());
         verify(mIncognitoTabModel)
-                .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
+                .removeTabGroupObserver(mTabGroupObserverArgumentCaptor.capture());
         verify(mThemeColorProvider).removeThemeColorObserver(mThemeColorObserverCaptor.getValue());
         verify(mThemeColorProvider).removeTintObserver(mTintObserverCaptor.getValue());
     }
@@ -940,7 +936,7 @@ public class TabGroupUiMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab3));
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB3_ID);
         doReturn(false).when(mTabModel).isTabInTabGroup(mTab3);
-        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
+        mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
 
         verifyResetStrip(false, null);
     }
@@ -953,7 +949,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB3_ID);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab3);
         doReturn(new Token(1L, TAB3_ROOT_ID)).when(mTab3).getTabGroupId();
-        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
+        mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
 
         verifyResetStrip(true, tabs);
     }
@@ -966,7 +962,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB1_ID);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
         doReturn(new Token(1L, TAB2_ROOT_ID)).when(mTab1).getTabGroupId();
-        mTabGroupModelFilterObserverArgumentCaptor
+        mTabGroupObserverArgumentCaptor
                 .getValue()
                 .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
 
@@ -977,7 +973,7 @@ public class TabGroupUiMediatorUnitTest {
     public void uiNotVisibleAfterMergeNonCurrentTabToGroup() {
         initAndAssertProperties(mTab1);
 
-        mTabGroupModelFilterObserverArgumentCaptor
+        mTabGroupObserverArgumentCaptor
                 .getValue()
                 .didMergeTabToGroup(mTab3, /* isDestinationTab= */ false);
 

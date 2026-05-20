@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -76,7 +76,7 @@ public class TabModelNotificationDotManagerUnitTest {
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
 
     private final PersistentMessage mDirtyTabMessage = new PersistentMessage();
     private final PersistentMessage mNonDirtyTabMessage = new PersistentMessage();
@@ -134,7 +134,7 @@ public class TabModelNotificationDotManagerUnitTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
         verifyHidden();
 
         mPersistentMessageObserverCaptor.getValue().onMessagingBackendServiceInitialized();
@@ -150,7 +150,7 @@ public class TabModelNotificationDotManagerUnitTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
         verifyShown();
     }
 
@@ -212,14 +212,12 @@ public class TabModelNotificationDotManagerUnitTest {
     }
 
     @Test
-    public void testComputeUpdateTabGroupModelFilterObserver() {
+    public void testComputeUpdateTabGroupObserver() {
         initializeBothBackends();
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
         when(mTab.getTabGroupId()).thenReturn(null);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didMergeTabToGroup(mTab, /* isDestinationTab= */ false);
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab, /* isDestinationTab= */ false);
         verifyHidden();
     }
 
@@ -287,7 +285,7 @@ public class TabModelNotificationDotManagerUnitTest {
         mPersistentMessageObserverCaptor.getValue().onMessagingBackendServiceInitialized();
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
     }
 
     private void createDirtyTabMessageForIds(List<Integer> ids) {

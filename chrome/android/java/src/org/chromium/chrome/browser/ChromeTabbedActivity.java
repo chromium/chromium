@@ -901,7 +901,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     mTabModelSelector.getCurrentModel().getProfile())
                             ::getTabModel);
 
-            // Defer creation of this helper so it triggers after TabGroupModelFilter observers.
+            // Defer creation of this helper so it triggers after TabModel observers.
             mUndoRefocusHelper =
                     new UndoRefocusHelper(
                             mTabModelSelector, getLayoutManagerSupplier(), isTablet());
@@ -1923,7 +1923,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 TabGroupSyncServiceFactory.getForProfile(mTabModelProfileSupplier.get());
         // The following logic does not support operations for tab groups in incognito.
         // TODO(crbug.com/435227138): Update the PaneId and conversion of dependence on
-        // TabGroupSyncService to the TabGroupModelFilter when opening the tab group dialog.
+        // TabGroupSyncService to the TabModel when opening the tab group dialog.
         if (tabGroupSyncService == null || tabGroupId == null) return;
 
         @Nullable SavedTabGroup syncGroup = tabGroupSyncService.getGroup(tabGroupId);

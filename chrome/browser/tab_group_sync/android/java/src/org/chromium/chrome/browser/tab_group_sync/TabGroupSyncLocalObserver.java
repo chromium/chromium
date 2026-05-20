@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,7 +45,7 @@ public final class TabGroupSyncLocalObserver {
     private final RemoteTabGroupMutationHelper mRemoteTabGroupMutationHelper;
 
     private final TabModelObserver mTabModelObserver;
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
+    private final TabGroupObserver mTabGroupObserver;
     private final NavigationTracker mNavigationTracker;
     private final NavigationObserver mNavigationObserver;
     private final HashSet<Integer> mTabIdsSelectedInSession = new HashSet<>();
@@ -73,9 +73,9 @@ public final class TabGroupSyncLocalObserver {
 
         // Start observing tab groups and tab model.
         mTabModelObserver = createTabModelObserver();
-        mTabGroupModelFilterObserver = createTabGroupModelFilterObserver();
+        mTabGroupObserver = createTabGroupObserver();
         mTabModel.addObserver(mTabModelObserver);
-        mTabModel.addTabGroupObserver(mTabGroupModelFilterObserver);
+        mTabModel.addTabGroupObserver(mTabGroupObserver);
 
         // Start observing navigations.
         mNavigationObserver =
@@ -84,7 +84,7 @@ public final class TabGroupSyncLocalObserver {
 
     /** Called on destroy. */
     public void destroy() {
-        mTabModel.removeTabGroupObserver(mTabGroupModelFilterObserver);
+        mTabModel.removeTabGroupObserver(mTabGroupObserver);
         mTabModel.removeObserver(mTabModelObserver);
     }
 
@@ -199,8 +199,8 @@ public final class TabGroupSyncLocalObserver {
         };
     }
 
-    private TabGroupModelFilterObserver createTabGroupModelFilterObserver() {
-        return new TabGroupModelFilterObserver() {
+    private TabGroupObserver createTabGroupObserver() {
+        return new TabGroupObserver() {
             @Override
             public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
                 if (!mIsObserving) return;

@@ -378,18 +378,18 @@ public interface TabModel extends TabList {
     void removeObserver(TabModelObserver observer);
 
     /**
-     * This method adds a {@link TabGroupModelFilterObserver} to be notified on tab group changes.
+     * This method adds a {@link TabGroupObserver} to be notified on tab group changes.
      *
-     * @param observer The {@link TabGroupModelFilterObserver} to add.
+     * @param observer The {@link TabGroupObserver} to add.
      */
-    void addTabGroupObserver(TabGroupModelFilterObserver observer);
+    void addTabGroupObserver(TabGroupObserver observer);
 
     /**
-     * This method removes a {@link TabGroupModelFilterObserver}.
+     * This method removes a {@link TabGroupObserver}.
      *
-     * @param observer The {@link TabGroupModelFilterObserver} to remove.
+     * @param observer The {@link TabGroupObserver} to remove.
      */
-    void removeTabGroupObserver(TabGroupModelFilterObserver observer);
+    void removeTabGroupObserver(TabGroupObserver observer);
 
     /**
      * Returns a list of {@link Tab} objects with a tab group being represented by one tab from its
@@ -564,7 +564,7 @@ public interface TabModel extends TabList {
      * Undoes a group operation.
      *
      * @param undoGroupMetadata Metadata to undo the operation provided by {@link
-     *     TabGroupModelFilterObserver#showUndoGroupSnackbar}.
+     *     TabGroupObserver#showUndoGroupSnackbar}.
      */
     void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata);
 
@@ -572,7 +572,7 @@ public interface TabModel extends TabList {
      * Notifies that the undo window for a group operation has expired.
      *
      * @param undoGroupMetadata Metadata to undo the operation provided by {@link
-     *     TabGroupModelFilterObserver#showUndoGroupSnackbar}.
+     *     TabGroupObserver#showUndoGroupSnackbar}.
      */
     void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata);
 

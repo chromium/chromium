@@ -122,7 +122,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
                 continue;
             }
 
-            // {@link TabGroupModelFilter} removes tabs from its data model as soon as they are
+            // {@link TabModel} removes tabs from its data model as soon as they are
             // pending closure so it cannot be directly relied upon for group structure. Instead
             // rely on the underlying tab group ID in the tab's persisted data which is used to
             // restore groups across an pending closure cancellation (undo).

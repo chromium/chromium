@@ -817,7 +817,7 @@ public class StripLayoutHelperManager
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
         if (mTabModelSelector != null) {
-            mTabModelSelector.removeTabGroupModelFilterObserver(mTabModelObserver);
+            mTabModelSelector.removeObserverFromAllModels(mTabModelObserver);
 
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
 
@@ -1441,7 +1441,7 @@ public class StripLayoutHelperManager
                         updateTitleForTab(tab);
                     }
                 };
-        modelSelector.addTabGroupModelFilterObserver(mTabModelObserver);
+        modelSelector.addObserverToAllModels(mTabModelObserver);
 
         mTabModelSelector = modelSelector;
 

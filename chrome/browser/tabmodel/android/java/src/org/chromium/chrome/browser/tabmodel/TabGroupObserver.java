@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 // TODO(crbug.com/434015906): Remove all references to RootId after TabCollections is launched.
-/** An interface to be notified about changes to a {@link TabGroupModelFilter}. */
+/** An interface to be notified about tab group changes on a {@link TabModel}. */
 @NullMarked
-public interface TabGroupModelFilterObserver {
-    /** The reason for the tab group being removed from {@link TabGroupModelFilter}. */
+public interface TabGroupObserver {
+    /** The reason for the tab group being removed. */
     @IntDef({
         DidRemoveTabGroupReason.MERGE,
         DidRemoveTabGroupReason.UNGROUP,
@@ -80,8 +80,8 @@ public interface TabGroupModelFilterObserver {
      */
     default void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {}
 
-    // TODO(crbug.com/434015906): Passing the last tab here is a limitation of the current
-    // TabGroupModelFilterImpl, we should fix this once tab collections is launched.
+    // TODO(crbug.com/434015906): Passing the last tab here is a limitation of the current impl,
+    // we should fix this once tab collections is launched.
     /**
      * This method is called after a group is moved.
      *
@@ -104,8 +104,7 @@ public interface TabGroupModelFilterObserver {
      * This method is called after a tab within a group is moved out of the group.
      *
      * @param movedTab The tab which has been moved.
-     * @param prevFilterIndex The index in {@link TabGroupModelFilter} of the group where {@code
-     *     moveTab} was before ungrouping.
+     * @param prevFilterIndex The index of the group where {@code moveTab} was before ungrouping.
      */
     default void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {}
 
@@ -163,8 +162,8 @@ public interface TabGroupModelFilterObserver {
     default void didChangeGroupRootId(int oldRootId, int newRootId) {}
 
     /**
-     * Called when a tab group is removed from tab group model filter. This could be the result of
-     * merging tabs, ungrouping tabs or closing tabs.
+     * Called when a tab group is removed from the tab model. This could be the result of merging
+     * tabs, ungrouping tabs or closing tabs.
      *
      * @param oldRootId The root id the group previous used.
      * @param oldTabGroupId The tab group ID the group previously used, may be null if being

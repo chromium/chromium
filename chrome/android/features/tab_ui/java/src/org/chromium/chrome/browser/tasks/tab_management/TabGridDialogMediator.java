@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
@@ -246,7 +246,7 @@ public class TabGridDialogMediator
     private final @Nullable MessagingBackendService mMessagingBackendService;
     private final @Nullable PersistentMessageObserver mPersistentMessageObserver;
     private final TabModelObserver mTabModelObserver;
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
+    private final TabGroupObserver mTabGroupObserver;
     private final Runnable mScrimClickRunnable;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final BottomSheetObserver mBottomSheetObserver;
@@ -507,8 +507,8 @@ public class TabGridDialogMediator
                     }
                 };
 
-        mTabGroupModelFilterObserver =
-                new TabGroupModelFilterObserver() {
+        mTabGroupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                         if (currentTabGroupIdMatches(tabGroupId)
@@ -1347,14 +1347,14 @@ public class TabGridDialogMediator
             boolean isIncognito = newTabModel.isIncognito();
             updateColorProperties(mActivity, isIncognito);
             newTabModel.addObserver(mTabModelObserver);
-            newTabModel.addTabGroupObserver(mTabGroupModelFilterObserver);
+            newTabModel.addTabGroupObserver(mTabGroupObserver);
         }
     }
 
     private void removeTabModelObserver(@Nullable TabModel tabModel) {
         if (tabModel != null) {
             tabModel.removeObserver(mTabModelObserver);
-            tabModel.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            tabModel.removeTabGroupObserver(mTabGroupObserver);
         }
     }
 

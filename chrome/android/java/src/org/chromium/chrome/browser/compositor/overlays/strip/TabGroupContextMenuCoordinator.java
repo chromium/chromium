@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -115,8 +115,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     @SuppressWarnings("HidingField")
     protected CollaborationService mCollaborationService;
 
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
-            new TabGroupModelFilterObserver() {
+    private final TabGroupObserver mTabGroupObserver =
+            new TabGroupObserver() {
                 @Override
                 public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                     if (isMenuShowing() && mTabGroupId.equals(tabGroupId)) {
@@ -161,7 +161,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 isShowing -> {
                     if (!isShowing) updateTabGroupTitle();
                 };
-        getTabModel().addTabGroupObserver(mTabGroupModelFilterObserver);
+        getTabModel().addTabGroupObserver(mTabGroupObserver);
         mCollaborationService = collaborationService;
     }
 
@@ -763,7 +763,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     }
 
     public void destroy() {
-        getTabModel().removeTabGroupObserver(mTabGroupModelFilterObserver);
+        getTabModel().removeTabGroupObserver(mTabGroupObserver);
     }
 
     @Nullable EditText getGroupTitleEditTextForTesting() {

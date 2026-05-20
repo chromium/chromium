@@ -221,14 +221,14 @@ public interface TabModelSelector {
      *
      * @param observer {@link TabModelObserver} to add.
      */
-    void addTabGroupModelFilterObserver(TabModelObserver observer);
+    void addObserverToAllModels(TabModelObserver observer);
 
     /**
      * This method removes {@link TabModelObserver} from both {@link TabModel}s.
      *
      * @param observer {@link TabModelObserver} to remove.
      */
-    void removeTabGroupModelFilterObserver(TabModelObserver observer);
+    void removeObserverFromAllModels(TabModelObserver observer);
 
     /** Reset the internal tab model list to allow initialization again. */
     void resetTabModelListForTesting(); // IN-TEST

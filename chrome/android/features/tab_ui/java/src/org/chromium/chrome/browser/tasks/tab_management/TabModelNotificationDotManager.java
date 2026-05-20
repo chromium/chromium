@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -76,8 +76,8 @@ public class TabModelNotificationDotManager implements Destroyable {
 
     // Any operation aside from grouping a tab for restoring from TabGroupSyncService should "just
     // work" via the MessagingBackendService so no need to observe anything else.
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
-            new TabGroupModelFilterObserver() {
+    private final TabGroupObserver mTabGroupObserver =
+            new TabGroupObserver() {
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                     maybeUpdateForTab(movedTab, /* mayAddDot= */ true);
@@ -159,7 +159,7 @@ public class TabModelNotificationDotManager implements Destroyable {
                 mCallbackController.makeCancelable(
                         unused -> {
                             mTabModelSelectorInitialized = true;
-                            mTabModel.addTabGroupObserver(mTabGroupModelFilterObserver);
+                            mTabModel.addTabGroupObserver(mTabGroupObserver);
                             mTabModel.addObserver(mTabModelObserver);
 
                             computeUpdate();
@@ -181,7 +181,7 @@ public class TabModelNotificationDotManager implements Destroyable {
             mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
         }
         if (mTabModel != null) {
-            mTabModel.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mTabModel.removeTabGroupObserver(mTabGroupObserver);
             mTabModel.removeObserver(mTabModelObserver);
         }
     }

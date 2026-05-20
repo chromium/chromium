@@ -131,8 +131,8 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -1023,7 +1023,7 @@ public class StripLayoutHelperTest {
         // Notify group removal and verify state.
         when(mModel.isTabInTabGroup(any())).thenReturn(false);
         mStripLayoutHelper
-                .getTabGroupModelFilterObserverForTesting()
+                .getTabGroupObserverForTesting()
                 .didRemoveTabGroup(
                         Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
         int numClosingGroupTitles = mStripLayoutHelper.getClosingGroupTitlesForTesting().size();
@@ -1073,7 +1073,7 @@ public class StripLayoutHelperTest {
         // Notify group removal and verify state.
         when(mModel.isTabInTabGroup(any())).thenReturn(false);
         mStripLayoutHelper
-                .getTabGroupModelFilterObserverForTesting()
+                .getTabGroupObserverForTesting()
                 .didRemoveTabGroup(
                         Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
         int numClosingGroupTitles = mStripLayoutHelper.getClosingGroupTitlesForTesting().size();
@@ -2672,7 +2672,7 @@ public class StripLayoutHelperTest {
         mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
         mStripLayoutHelper.multipleTabsClosed(closingTabs);
         mStripLayoutHelper
-                .getTabGroupModelFilterObserverForTesting()
+                .getTabGroupObserverForTesting()
                 .didRemoveTabGroup(
                         Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
 
@@ -5346,7 +5346,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onClick(
                 TIMESTAMP, views[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
 
-        // Verify the proper event was sent to the TabGroupModelFilter.
+        // Verify the proper event was sent to the TabModel.
         verify(mModel)
                 .setTabGroupCollapsed(TAB_GROUP_ID_1, /* isCollapsed= */ true, /* animate= */ true);
         // Verify we record the correct metric.
@@ -5371,7 +5371,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onClick(
                 TIMESTAMP, views[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
 
-        // Verify the proper event was sent to the TabGroupModelFilter.
+        // Verify the proper event was sent to the TabModel.
         verify(mModel)
                 .setTabGroupCollapsed(
                         TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ true);
@@ -5928,8 +5928,7 @@ public class StripLayoutHelperTest {
     public void testSetTabModel() {
         // Setup and verify initial state.
         initializeTest(false, false, 0);
-        TabGroupModelFilterObserver observer =
-                mStripLayoutHelper.getTabGroupModelFilterObserverForTesting();
+        TabGroupObserver observer = mStripLayoutHelper.getTabGroupObserverForTesting();
         verify(mModel).addTabGroupObserver(observer);
 
         // Set a new TabModel.
@@ -5960,8 +5959,7 @@ public class StripLayoutHelperTest {
     public void testDestroy() {
         // Setup.
         initializeTest(false, false, 0);
-        TabGroupModelFilterObserver observer =
-                mStripLayoutHelper.getTabGroupModelFilterObserverForTesting();
+        TabGroupObserver observer = mStripLayoutHelper.getTabGroupObserverForTesting();
 
         // Destroy the instance.
         mStripLayoutHelper.destroy();

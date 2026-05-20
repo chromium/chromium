@@ -107,7 +107,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -222,7 +222,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mCollaborationActivityMessageCardCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mMessageCardModelCaptor;
@@ -302,9 +302,7 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        doNothing()
-                .when(mTabModel)
-                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        doNothing().when(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
         doReturn(mView).when(mAnimationSourceViewProvider).getAnimationSourceViewForTabGroup(any());
         doReturn(mEditable).when(mTitleTextView).getText();
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
@@ -318,7 +316,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
-        assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(false));
+        assertThat(mTabGroupObserverCaptor.getAllValues().isEmpty(), equalTo(false));
     }
 
     @Test
@@ -1768,7 +1766,7 @@ public class TabGridDialogMediatorUnitTest {
 
         assertNotEquals(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), COLOR_3);
 
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupColor(TAB_GROUP_ID, COLOR_3);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupColor(TAB_GROUP_ID, COLOR_3);
 
         assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
     }
@@ -1785,9 +1783,7 @@ public class TabGridDialogMediatorUnitTest {
 
         String newTitle = "BAR";
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(newTitle);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);
 
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(newTitle));
     }

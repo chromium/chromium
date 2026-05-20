@@ -91,7 +91,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -680,8 +680,8 @@ class TabListMediator implements TabListNotificationHandler {
                 }
             };
 
-    private final TabGroupModelFilterObserver mTabGroupObserver =
-            new TabGroupModelFilterObserver() {
+    private final TabGroupObserver mTabGroupObserver =
+            new TabGroupObserver() {
                 @Override
                 public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                     assert mShowingTabs;
@@ -937,7 +937,7 @@ class TabListMediator implements TabListNotificationHandler {
                             TabGroupUtils.getSelectedTabInGroupForTab(tabModel, movedTab);
                     int curPosition = mModelList.indexFromTabId(currentGroupSelectedTab.getId());
                     if (curPosition == TabModel.INVALID_TAB_INDEX) {
-                        // Sync TabListModel with updated TabGroupModelFilter.
+                        // Sync TabListModel with updated TabModel.
                         int indexToUpdate =
                                 mModelList.indexOfNthTabCard(
                                         tabModel.representativeIndexOf(
@@ -3057,7 +3057,7 @@ class TabListMediator implements TabListNotificationHandler {
         Set<Token> checkedTabGroupIds = new HashSet<>();
 
         // Migrating this to tab group id requires a rewrite as the root id based logic assumes that
-        // TabGroupModelFilter treats individual tabs similar to tab groups.
+        // TabModel treats individual tabs similar to tab groups.
         for (Tab tab : unfilteredTabs) {
             if (!tabModel.isTabInTabGroup(tab)) {
                 filteredTabs.add(tab);

@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -161,7 +161,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
     private final LayoutStateObserver mLayoutStateObserver;
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
+    private final TabGroupObserver mTabGroupObserver;
     private final Callback<Boolean> mOmniboxFocusObserver;
 
     private CallbackController mCallbackController = new CallbackController();
@@ -337,8 +337,8 @@ public class TabGroupUiMediator implements BackPressHandler {
 
         mCurrentTabModelObserver = (tabModel) -> resetTabStrip();
 
-        mTabGroupModelFilterObserver =
-                new TabGroupModelFilterObserver() {
+        mTabGroupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                         resetTabStrip();
@@ -350,13 +350,13 @@ public class TabGroupUiMediator implements BackPressHandler {
                     }
                 };
 
-        tabModelSelector.getModel(false).addTabGroupObserver(mTabGroupModelFilterObserver);
-        tabModelSelector.getModel(true).addTabGroupObserver(mTabGroupModelFilterObserver);
+        tabModelSelector.getModel(false).addTabGroupObserver(mTabGroupObserver);
+        tabModelSelector.getModel(true).addTabGroupObserver(mTabGroupObserver);
 
         mOmniboxFocusObserver = isFocus -> resetTabStrip();
         mOmniboxFocusStateSupplier.addSyncObserverAndPostIfNonNull(mOmniboxFocusObserver);
 
-        tabModelSelector.addTabGroupModelFilterObserver(mTabModelObserver);
+        tabModelSelector.addObserverToAllModels(mTabModelObserver);
         mTabModelSelector
                 .getCurrentTabModelSupplier()
                 .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
@@ -581,15 +581,11 @@ public class TabGroupUiMediator implements BackPressHandler {
     @SuppressWarnings("NullAway")
     public void destroy() {
         if (mTabModelSelector != null) {
-            mTabModelSelector.removeTabGroupModelFilterObserver(mTabModelObserver);
+            mTabModelSelector.removeObserverFromAllModels(mTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
-            if (mTabGroupModelFilterObserver != null) {
-                mTabModelSelector
-                        .getModel(false)
-                        .removeTabGroupObserver(mTabGroupModelFilterObserver);
-                mTabModelSelector
-                        .getModel(true)
-                        .removeTabGroupObserver(mTabGroupModelFilterObserver);
+            if (mTabGroupObserver != null) {
+                mTabModelSelector.getModel(false).removeTabGroupObserver(mTabGroupObserver);
+                mTabModelSelector.getModel(true).removeTabGroupObserver(mTabGroupObserver);
             }
         }
 

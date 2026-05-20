@@ -52,8 +52,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
-    private final ObserverList<TabGroupModelFilterObserver> mTabGroupObservers =
-            new ObserverList<>();
+    private final ObserverList<TabGroupObserver> mTabGroupObservers = new ObserverList<>();
     private final ObserverList<Callback<TabModelInternal>> mDelegateModelObservers =
             new ObserverList<>();
     private final Callback<@Nullable Tab> mDelegateModelCurrentTabSupplierObserver;
@@ -131,7 +130,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
-        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+        for (TabGroupObserver observer : mTabGroupObservers) {
             mDelegateModel.addTabGroupObserver(observer);
         }
         for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
@@ -506,13 +505,13 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void addTabGroupObserver(TabGroupModelFilterObserver observer) {
+    public void addTabGroupObserver(TabGroupObserver observer) {
         mTabGroupObservers.addObserver(observer);
         mDelegateModel.addTabGroupObserver(observer);
     }
 
     @Override
-    public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {
+    public void removeTabGroupObserver(TabGroupObserver observer) {
         mTabGroupObservers.removeObserver(observer);
         mDelegateModel.removeTabGroupObserver(observer);
     }

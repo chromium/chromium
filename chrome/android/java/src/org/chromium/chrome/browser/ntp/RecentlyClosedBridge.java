@@ -108,8 +108,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
      * Initializes this class with the given profile.
      *
      * @param profile The {@link Profile} whose recently closed tabs will be queried.
-     * @param tabModelSelector The {@link TabModelSelector} to use to get {@link
-     *     TabGroupModelFilter}s.
+     * @param tabModelSelector The {@link TabModelSelector} to use to get {@link TabModel}s.
      */
     public RecentlyClosedBridge(Profile profile, TabModelSelector tabModelSelector) {
         mNativeBridge = RecentlyClosedBridgeJni.get().init(this, profile);

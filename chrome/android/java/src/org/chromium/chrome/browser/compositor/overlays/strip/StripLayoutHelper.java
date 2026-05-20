@@ -102,7 +102,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -228,9 +228,9 @@ public class StripLayoutHelper
     @VisibleForTesting static final int MIN_HOVER_CARD_DELAY_MS = 300;
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER = 300;
 
-    // An observer that is notified of changes to a {@link TabGroupModelFilter} object.
-    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
-            new TabGroupModelFilterObserver() {
+    // An observer that is notified of changes to a {@link TabModel} object.
+    private final TabGroupObserver mTabGroupObserver =
+            new TabGroupObserver() {
                 @Nullable Token mSourceTabGroupId;
 
                 @Override
@@ -896,7 +896,7 @@ public class StripLayoutHelper
             mDataSharingService = null;
         }
         if (mModel != null) {
-            mModel.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mModel.removeTabGroupObserver(mTabGroupObserver);
             mModel.removeObserver(mTabModelObserver);
             mModel = null;
         }
@@ -1297,7 +1297,7 @@ public class StripLayoutHelper
     public void setTabModel(TabModel model, TabCreator tabCreator, boolean tabStateInitialized) {
         if (mModel == model) return;
         if (mModel != null) {
-            mModel.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mModel.removeTabGroupObserver(mTabGroupObserver);
         }
         mModel = model;
         mTabCreator = tabCreator;
@@ -1322,7 +1322,7 @@ public class StripLayoutHelper
             tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
         }
         mModel.addObserver(mTabModelObserver);
-        mModel.addTabGroupObserver(mTabGroupModelFilterObserver);
+        mModel.addTabGroupObserver(mTabGroupObserver);
 
         Profile profile = mModel.getProfile();
         mReorderDelegate.initialize(
@@ -1491,8 +1491,8 @@ public class StripLayoutHelper
         return collaborationService.getServiceStatus().isAllowedToJoin();
     }
 
-    TabGroupModelFilterObserver getTabGroupModelFilterObserverForTesting() {
-        return mTabGroupModelFilterObserver;
+    TabGroupObserver getTabGroupObserverForTesting() {
+        return mTabGroupObserver;
     }
 
     /**
@@ -4197,8 +4197,8 @@ public class StripLayoutHelper
 
     /**
      * Returns the tab group count. Should only be called when rebuilding the tab strip, as we've
-     * previously seen {@link TabGroupModelFilter#getTabGroupCount()} be incorrect on startup. That
-     * said, other call-sites should use the aforementioned TabGroupModelFilter method if possible.
+     * previously seen {@link TabModel#getTabGroupCount()} be incorrect on startup. That said, other
+     * call-sites should use the aforementioned TabModel method if possible.
      * TODO(crbug.com/454960178): Investigate if this is still needed.
      */
     private int getTabGroupCount() {

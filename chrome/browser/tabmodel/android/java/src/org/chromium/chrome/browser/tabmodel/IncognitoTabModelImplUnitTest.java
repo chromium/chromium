@@ -39,7 +39,7 @@ public class IncognitoTabModelImplUnitTest {
     @Mock private IncognitoTabModelDelegate mIncognitoTabModelDelegate;
     @Mock private Profile mProfile;
     @Mock private IncognitoTabModelObserver mIncognitoTabModelObserver;
-    @Mock private TabGroupModelFilterObserver mMockTabGroupModelFilterObserver;
+    @Mock private TabGroupObserver mMockTabGroupObserver;
     @Mock private TabCreator mTabCreator;
 
     private IncognitoTabModelImpl mIncognitoTabModel;
@@ -84,24 +84,24 @@ public class IncognitoTabModelImplUnitTest {
 
     @Test
     public void testTabGroupObserverAttachedToDelegate() {
-        mIncognitoTabModel.addTabGroupObserver(mMockTabGroupModelFilterObserver);
+        mIncognitoTabModel.addTabGroupObserver(mMockTabGroupObserver);
 
         MockTab tab = new MockTab(1, mProfile);
         mIncognitoTabModel.addTab(
                 tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
-        verify(mMockTabModel).addTabGroupObserver(mMockTabGroupModelFilterObserver);
+        verify(mMockTabModel).addTabGroupObserver(mMockTabGroupObserver);
     }
 
     @Test
     public void testTabGroupObserverReattachedOnModelRecreation() {
-        mIncognitoTabModel.addTabGroupObserver(mMockTabGroupModelFilterObserver);
+        mIncognitoTabModel.addTabGroupObserver(mMockTabGroupObserver);
 
         // 1. Create model
         MockTab tab1 = new MockTab(1, mProfile);
         mIncognitoTabModel.addTab(
                 tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        verify(mMockTabModel).addTabGroupObserver(mMockTabGroupModelFilterObserver);
+        verify(mMockTabModel).addTabGroupObserver(mMockTabGroupObserver);
 
         // 2. Destroy model (by removing last tab)
         mIncognitoTabModel.removeTab(tab1);
@@ -115,6 +115,6 @@ public class IncognitoTabModelImplUnitTest {
         mIncognitoTabModel.addTab(
                 tab2, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
-        verify(newMockTabModel).addTabGroupObserver(mMockTabGroupModelFilterObserver);
+        verify(newMockTabModel).addTabGroupObserver(mMockTabGroupObserver);
     }
 }

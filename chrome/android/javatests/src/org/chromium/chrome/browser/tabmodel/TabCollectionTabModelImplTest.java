@@ -750,8 +750,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper didMergeTabToGroupHelper = new CallbackHelper();
         CallbackHelper didCreateNewGroupHelper = new CallbackHelper();
 
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {
                         assertEquals(tab0, movedTab);
@@ -883,8 +883,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper didMoveTabOutOfGroupHelper = new CallbackHelper();
         CallbackHelper didRemoveTabGroupHelper = new CallbackHelper();
 
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void willMoveTabOutOfGroup(Tab movedTab, Token destinationTabGroupId) {
                         assertEquals(tab1, movedTab);
@@ -939,8 +939,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper willMoveTabGroupHelper = new CallbackHelper();
         CallbackHelper didMoveTabGroupHelper = new CallbackHelper();
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
                         assertEquals(1, currentIndex);
@@ -1061,8 +1061,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper didMoveTabGroupHelper = new CallbackHelper();
         CallbackHelper didMoveTabHelper = new CallbackHelper();
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
                         fail("willMoveTabGroup should not be called for individual tab.");
@@ -1172,8 +1172,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper didMoveOutOfGroup = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void willMoveTabOutOfGroup(
                                         Tab movedTab, Token destinationTabGroupId) {
@@ -1226,8 +1226,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper willMoveOutOfGroup = new CallbackHelper();
         CallbackHelper didMoveOutOfGroup = new CallbackHelper();
         CallbackHelper didRemoveGroup = new CallbackHelper();
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willMoveTabOutOfGroup(Tab movedTab, Token destinationTabGroupId) {
                         assertEquals(tab1, movedTab);
@@ -1340,8 +1340,8 @@ public class TabCollectionTabModelImplTest {
 
         CallbackHelper willMoveOutOfGroup = new CallbackHelper();
         CallbackHelper didMoveOutOfGroup = new CallbackHelper();
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willMoveTabOutOfGroup(Tab movedTab, Token destinationTabGroupId) {
                         assertEquals(tab0, movedTab);
@@ -1396,8 +1396,8 @@ public class TabCollectionTabModelImplTest {
 
         final String testTitle = "Test Title";
         CallbackHelper titleChangedHelper = new CallbackHelper();
-        TabGroupModelFilterObserver titleObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver titleObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupTitle(Token id, String newTitle) {
                         assertEquals(tabGroupId, id);
@@ -1416,8 +1416,8 @@ public class TabCollectionTabModelImplTest {
         titleChangedHelper.waitForOnly("setTabGroupTitle failed");
 
         CallbackHelper titleDeletedHelper = new CallbackHelper();
-        TabGroupModelFilterObserver titleDeleteObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver titleDeleteObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupTitle(Token id, String newTitle) {
                         assertEquals(tabGroupId, id);
@@ -1437,8 +1437,8 @@ public class TabCollectionTabModelImplTest {
 
         final int testColor = TabGroupColorId.BLUE;
         CallbackHelper colorChangedHelper = new CallbackHelper();
-        TabGroupModelFilterObserver colorObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver colorObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupColor(Token id, int newColor) {
                         assertEquals(tabGroupId, id);
@@ -1460,8 +1460,8 @@ public class TabCollectionTabModelImplTest {
         colorChangedHelper.waitForOnly("setTabGroupColor failed");
 
         CallbackHelper colorDeletedHelper = new CallbackHelper();
-        TabGroupModelFilterObserver colorDeleteObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver colorDeleteObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupColor(Token id, int newColor) {
                         assertEquals(tabGroupId, id);
@@ -1481,8 +1481,8 @@ public class TabCollectionTabModelImplTest {
         colorDeletedHelper.waitForOnly("deleteTabGroupColor failed");
 
         CallbackHelper collapsedChangedHelper = new CallbackHelper();
-        TabGroupModelFilterObserver collapsedObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver collapsedObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupCollapsed(
                             Token id, boolean isCollapsed, boolean animate) {
@@ -1503,8 +1503,8 @@ public class TabCollectionTabModelImplTest {
         collapsedChangedHelper.waitForOnly("setTabGroupCollapsed true failed");
 
         CallbackHelper collapsedDeletedHelper = new CallbackHelper();
-        TabGroupModelFilterObserver collapsedDeleteObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver collapsedDeleteObserver =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupCollapsed(
                             Token id, boolean isCollapsed, boolean animate) {
@@ -1542,8 +1542,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper colorCallback = new CallbackHelper();
         CallbackHelper collapsedCallback = new CallbackHelper();
 
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupTitle(Token groupTitleId, String groupTitle) {
                         if (!tabGroupId.equals(groupTitleId)) return;
@@ -1610,8 +1610,8 @@ public class TabCollectionTabModelImplTest {
                 tabGroupId, title, color, collapsed, /* animate= */ false);
 
         CallbackHelper callbackHelper = new CallbackHelper();
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupTitle(Token groupTitleId, String groupTitle) {
                         callbackHelper.notifyCalled();
@@ -1805,8 +1805,8 @@ public class TabCollectionTabModelImplTest {
 
         CallbackHelper colorCallback = new CallbackHelper();
 
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupColor(Token groupColorId, int groupColor) {
                         if (!tabGroupId.equals(groupColorId)) return;
@@ -1852,8 +1852,8 @@ public class TabCollectionTabModelImplTest {
 
         CallbackHelper titleCallback = new CallbackHelper();
 
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void didChangeTabGroupTitle(Token groupTitleId, String groupTitle) {
                         if (!tabGroupId.equals(groupTitleId)) return;
@@ -1935,8 +1935,8 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(groupId);
 
         CallbackHelper didRemoveTabGroupHelper = new CallbackHelper();
-        TabGroupModelFilterObserver observer =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void didRemoveTabGroup(
                             int tabId, Token tabGroupId, @DidRemoveTabGroupReason int reason) {
@@ -2208,8 +2208,8 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void didCreateNewGroup(
                                         Tab destinationTab, TabModel tabModel) {
@@ -2292,8 +2292,8 @@ public class TabCollectionTabModelImplTest {
                     Token groupId2 = tab2.getTabGroupId();
                     assertNotNull(groupId2);
 
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void didRemoveTabGroup(
                                         int tabId, Token tabGroupId, int reason) {
@@ -2559,8 +2559,8 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void showUndoGroupSnackbar(
                                         UndoGroupMetadata undoGroupMetadata) {
@@ -2626,8 +2626,8 @@ public class TabCollectionTabModelImplTest {
 
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void showUndoGroupSnackbar(
                                         UndoGroupMetadata undoGroupMetadata) {
@@ -2707,8 +2707,8 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupId);
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
 
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void showUndoGroupSnackbar(
                                         UndoGroupMetadata undoGroupMetadata) {
@@ -2773,8 +2773,8 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupId);
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
 
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void showUndoGroupSnackbar(
                                         UndoGroupMetadata undoGroupMetadata) {
@@ -2841,8 +2841,8 @@ public class TabCollectionTabModelImplTest {
                     Token groupId2 = tab1.getTabGroupId();
                     assertNotNull(groupId2);
 
-                    TabGroupModelFilterObserver observer =
-                            new TabGroupModelFilterObserver() {
+                    TabGroupObserver observer =
+                            new TabGroupObserver() {
                                 @Override
                                 public void showUndoGroupSnackbar(
                                         UndoGroupMetadata undoGroupMetadata) {
@@ -3853,8 +3853,8 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper onTabCloseUndoneHelper = new CallbackHelper();
         AtomicBoolean hidingInWillClose = new AtomicBoolean();
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willCloseTabGroup(Token id, boolean hiding) {
                         assertEquals(tabGroupId, id);
@@ -3950,8 +3950,8 @@ public class TabCollectionTabModelImplTest {
         AtomicBoolean hidingInWillClose = new AtomicBoolean();
         AtomicBoolean hidingInCommitted = new AtomicBoolean();
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willCloseTabGroup(Token id, boolean hiding) {
                         assertEquals(tabGroupId, id);
@@ -4026,8 +4026,8 @@ public class TabCollectionTabModelImplTest {
         AtomicBoolean hidingInWillClose = new AtomicBoolean();
         AtomicBoolean hidingInCommitted = new AtomicBoolean();
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willCloseTabGroup(Token id, boolean hiding) {
                         assertEquals(tabGroupId, id);
@@ -4083,8 +4083,8 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(tabGroupId);
         assertTabsInOrderAre(List.of(tab0, tab1, tab2));
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willCloseTabGroup(Token id, boolean hiding) {
                         fail("willCloseTabGroup should not be called for partial closure.");
@@ -4143,8 +4143,8 @@ public class TabCollectionTabModelImplTest {
         // Should get reset to false.
         AtomicBoolean hidingInWillClose = new AtomicBoolean(true);
 
-        TabGroupModelFilterObserver groupObserver =
-                new TabGroupModelFilterObserver() {
+        TabGroupObserver groupObserver =
+                new TabGroupObserver() {
                     @Override
                     public void willCloseTabGroup(Token id, boolean hiding) {
                         assertEquals(tabGroupId, id);
