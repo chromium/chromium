@@ -65,6 +65,7 @@ enum MaterialType {
   kYoutubeVideo,
   kLink,
   kForm,
+  kGuidedLearning,
 };
 
 // Represents a material attached to a course assignment.

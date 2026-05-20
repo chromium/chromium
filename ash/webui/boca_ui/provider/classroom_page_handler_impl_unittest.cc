@@ -560,7 +560,8 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
           "updateTime": "2025-01-01T00:00:00.000Z",
           "materials": [
             { "driveFile": { "driveFile": { "title": "drive-file-title" } } },
-            { "youtubeVideo": { "title": "youtube-video-title" } }
+            { "youtubeVideo": { "title": "youtube-video-title" } },
+            { "guidedLearning": { "title": "guided-learning-title" } }
           ]
         },
         {
@@ -657,13 +658,16 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllAssignments) {
   EXPECT_EQ(
       google_apis::util::FormatTimeAsString(response.at(0)->last_update_time),
       "2025-01-01T00:00:00.000Z");
-  EXPECT_EQ(response.at(0)->materials.size(), 2u);
+  EXPECT_EQ(response.at(0)->materials.size(), 3u);
   EXPECT_EQ(response.at(0)->materials.at(0)->title, "drive-file-title");
   EXPECT_EQ(response.at(0)->materials.at(0)->type,
             mojom::MaterialType::kSharedDriveFile);
   EXPECT_EQ(response.at(0)->materials.at(1)->title, "youtube-video-title");
   EXPECT_EQ(response.at(0)->materials.at(1)->type,
             mojom::MaterialType::kYoutubeVideo);
+  EXPECT_EQ(response.at(0)->materials.at(2)->title, "guided-learning-title");
+  EXPECT_EQ(response.at(0)->materials.at(2)->type,
+            mojom::MaterialType::kGuidedLearning);
 
   EXPECT_EQ(response.at(1)->title, "assignment-link-materials-title");
   EXPECT_EQ(response.at(1)->url,

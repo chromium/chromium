@@ -192,6 +192,7 @@ export enum MaterialType {
   YOUTUBE_VIDEO = 2,
   LINK = 3,
   FORM = 4,
+  GUIDED_LEARNING = 5,
 }
 
 /**

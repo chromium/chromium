@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GeminiEnablementState, UrlType} from 'chrome-untrusted://boca-app/app/boca_app.js';
+import {GeminiEnablementState, MaterialType, UrlType} from 'chrome-untrusted://boca-app/app/boca_app.js';
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, CreateSessionError, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, RenotifyStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
-import {GeminiEnablementState as GeminiEnablementStateMojom, PageHandlerRemote, SubmitAccessCodeError, UrlType as UrlTypeMojo} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {GeminiEnablementState as GeminiEnablementStateMojom, MaterialType as MaterialTypeMojo, PageHandlerRemote, SubmitAccessCodeError, UrlType as UrlTypeMojo} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertDeepEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -82,8 +82,11 @@ class MockRemoteHandler extends PageHandlerRemote {
           url: 'url1',
           lastUpdateTime: new Date(1000000),
           materials: [
-            {title: 'material-title-1', type: 0},
-            {title: 'material-title-2', type: 1},
+            {title: 'material-title-1', type: MaterialTypeMojo.kUnknown},
+            {
+              title: 'material-title-2',
+              type: MaterialTypeMojo.kSharedDriveFile,
+            },
           ],
           type: 0,
         },
@@ -92,8 +95,9 @@ class MockRemoteHandler extends PageHandlerRemote {
           url: 'url2',
           lastUpdateTime: new Date(2000000),
           materials: [
-            {title: 'material-title-3', type: 2},
-            {title: 'material-title-4', type: 3},
+            {title: 'material-title-3', type: MaterialTypeMojo.kYoutubeVideo},
+            {title: 'material-title-4', type: MaterialTypeMojo.kLink},
+            {title: 'material-title-5', type: MaterialTypeMojo.kGuidedLearning},
           ],
           type: 1,
         },
@@ -534,8 +538,11 @@ suite('ClientDelegateTest', function() {
                 url: 'url1',
                 lastUpdateTime: new Date(1000000),
                 materials: [
-                  {title: 'material-title-1', type: 0},
-                  {title: 'material-title-2', type: 1},
+                  {title: 'material-title-1', type: MaterialType.UNKNOWN},
+                  {
+                    title: 'material-title-2',
+                    type: MaterialType.SHARED_DRIVE_FILE,
+                  },
                 ],
                 type: 0,
               },
@@ -544,8 +551,12 @@ suite('ClientDelegateTest', function() {
                 url: 'url2',
                 lastUpdateTime: new Date(2000000),
                 materials: [
-                  {title: 'material-title-3', type: 2},
-                  {title: 'material-title-4', type: 3},
+                  {title: 'material-title-3', type: MaterialType.YOUTUBE_VIDEO},
+                  {title: 'material-title-4', type: MaterialType.LINK},
+                  {
+                    title: 'material-title-5',
+                    type: MaterialType.GUIDED_LEARNING,
+                  },
                 ],
                 type: 1,
               },
