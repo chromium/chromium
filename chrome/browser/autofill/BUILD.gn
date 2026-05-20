@@ -247,6 +247,7 @@ source_set("browser_tests") {
       "autofill_server_browsertest.cc",
       "email_verification_browsertest.cc",
       "form_structure_browsertest.cc",
+      "omnibox_autofill_delegate_browsertest.cc",
     ]
   }
 
