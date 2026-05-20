@@ -653,6 +653,15 @@ public class MultiWindowUtils implements ActivityStateListener {
         return getInstanceCount(PersistedInstanceType.ANY) > 1;
     }
 
+    /**
+     * @return Whether the IPH for Chrome's window manager should be shown.
+     */
+    public static boolean shouldShowInstanceSwitcherIph() {
+        int instanceCount = getInstanceCount(PersistedInstanceType.ANY);
+        int threshold = DeviceInfo.isDesktop() ? 10 : 1;
+        return instanceCount > threshold;
+    }
+
     static boolean isRestorableInstance(Set<Integer> appTaskIds, int index) {
         int taskId = ChromeMultiInstancePersistentStore.readTaskId(index);
         boolean isActiveTask = appTaskIds.contains(taskId);

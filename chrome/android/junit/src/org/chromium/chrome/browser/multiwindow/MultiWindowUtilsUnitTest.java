@@ -48,6 +48,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
@@ -1132,6 +1133,49 @@ public class MultiWindowUtilsUnitTest {
                 ids.size());
         assertTrue("Should contain INSTANCE_ID_0.", ids.contains(INSTANCE_ID_0));
         assertTrue("Should contain INSTANCE_ID_1.", ids.contains(INSTANCE_ID_1));
+    }
+
+    @Test
+    public void testShouldShowInstanceSwitcherIph_NonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // 0 instances -> should return false
+        assertFalse(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+
+        // 1 instance -> should return false
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        assertFalse(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+
+        // 2 instances -> should return true
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 1, /* incognitoTabCount= */ 0, TASK_ID_6);
+        assertTrue(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+    }
+
+    @Test
+    public void testShouldShowInstanceSwitcherIph_Desktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // 1 instance -> should return false
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        assertFalse(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+
+        // Create up to 10 instances -> should return false
+        for (int i = 1; i < 10; i++) {
+            writeInstanceInfo(i, "url" + i, /* tabCount= */ 1, /* incognitoTabCount= */ 0, 100 + i);
+        }
+        assertFalse(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+
+        // 11 instances -> should return true
+        writeInstanceInfo(10, "url10", /* tabCount= */ 1, /* incognitoTabCount= */ 0, 110);
+        assertTrue(MultiWindowUtils.shouldShowInstanceSwitcherIph());
+
+        // Reset DeviceInfo setting
+        DeviceInfo.setIsDesktopForTesting(false);
     }
 
     @Test
