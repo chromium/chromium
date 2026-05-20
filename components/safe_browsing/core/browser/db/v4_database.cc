@@ -64,17 +64,26 @@ std::vector<ListIdentifier> VerifyChecksums(
 }
 
 // Returns hash prefixes matching the collection of stores.
-FullHashToStoreAndHashPrefixesMap CheckStores(
+DbLookupResult CheckStores(
     const std::vector<FullHashStr>& full_hashes,
-    std::vector<std::pair<ListIdentifier, V4Store*>> stores) {
-  FullHashToStoreAndHashPrefixesMap results;
+    std::vector<std::pair<ListIdentifier, V4Store*>> stores,
+    base::TimeTicks db_thread_post_time) {
+  base::TimeTicks db_thread_start_time = base::TimeTicks::Now();
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.DbThreadQueueDelay",
+      db_thread_start_time - db_thread_post_time);
+
+  DbLookupResult lookup_result;
+  lookup_result.db_thread_post_time = db_thread_post_time;
+  lookup_result.db_thread_start_time = db_thread_start_time;
+
   for (const auto& store : stores) {
     base::TimeTicks start = base::TimeTicks::Now();
     for (const auto& full_hash : full_hashes) {
       HashPrefixStr hash_prefix =
           store.second->GetMatchingHashPrefix(full_hash);
       if (!hash_prefix.empty()) {
-        results[full_hash].emplace_back(store.first, hash_prefix);
+        lookup_result.results[full_hash].emplace_back(store.first, hash_prefix);
       }
     }
     if (store.first.threat_type() == ThreatType::HIGH_CONFIDENCE_ALLOWLIST) {
@@ -84,7 +93,14 @@ FullHashToStoreAndHashPrefixesMap CheckStores(
           base::TimeTicks::Now() - start);
     }
   }
-  return results;
+
+  base::TimeTicks db_thread_end_time = base::TimeTicks::Now();
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.StoreLookupDuration",
+      db_thread_end_time - db_thread_start_time);
+
+  lookup_result.db_thread_end_time = db_thread_end_time;
+  return lookup_result;
 }
 
 }  // namespace
@@ -303,8 +319,7 @@ bool V4Database::AreAllStoresAvailable(
 void V4Database::GetStoresMatchingFullHash(
     const std::vector<FullHashStr>& full_hashes,
     const StoresToCheck& stores_to_check,
-    base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
-  FullHashToStoreAndHashPrefixesMap results;
+    base::OnceCallback<void(DbLookupResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::pair<ListIdentifier, V4Store*>> stores;
@@ -317,13 +332,14 @@ void V4Database::GetStoresMatchingFullHash(
     stores.emplace_back(identifier, store_pair->second.get());
   }
 
-  auto check_stores =
-      base::BindOnce(CheckStores, full_hashes, std::move(stores));
+  base::TimeTicks db_thread_post_time = base::TimeTicks::Now();
+  auto check_stores = base::BindOnce(CheckStores, full_hashes,
+                                     std::move(stores), db_thread_post_time);
 
-    // The V4Stores ptrs are guaranteed to be valid because their deletion would
-    // be sequenced on the DB thread, after this posted task is serviced.
-    db_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, std::move(check_stores), std::move(callback));
+  // The V4Stores ptrs are guaranteed to be valid because their deletion would
+  // be sequenced on the DB thread, after this posted task is serviced.
+  db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(check_stores), std::move(callback));
 }
 
 void V4Database::ResetStores(

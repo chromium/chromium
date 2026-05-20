@@ -177,9 +177,11 @@ class FakeV4Database : public V4Database {
   void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
-      base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback)
-      override {
-    FullHashToStoreAndHashPrefixesMap results;
+      base::OnceCallback<void(DbLookupResult)> callback) override {
+    DbLookupResult lookup_result;
+    lookup_result.db_thread_post_time = base::TimeTicks::Now();
+    lookup_result.db_thread_start_time = base::TimeTicks::Now();
+
     for (const auto& full_hash : full_hashes) {
       for (const StoreAndHashPrefix& stored_sahp : store_and_hash_prefixes_) {
         if (stores_to_check.count(stored_sahp.list_id) == 0) {
@@ -187,13 +189,15 @@ class FakeV4Database : public V4Database {
         }
         const PrefixSize& prefix_size = stored_sahp.hash_prefix.size();
         if (!full_hash.compare(0, prefix_size, stored_sahp.hash_prefix)) {
-          results[full_hash].push_back(stored_sahp);
+          lookup_result.results[full_hash].push_back(stored_sahp);
         }
       }
     }
-      // Simulate async behavior of real implementation.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
+    lookup_result.db_thread_end_time = base::TimeTicks::Now();
+    // Simulate async behavior of real implementation.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(lookup_result)));
   }
 
   // V4Database implementation
@@ -590,6 +594,7 @@ TEST_F(V4LocalDatabaseManagerTest,
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
+  base::HistogramTester histograms;
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -610,6 +615,17 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
 
   // Wait for PerformFullHashCheck to complete.
   WaitForTasksOnTaskRunner();
+
+  histograms.ExpectTotalCount("SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+                              1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay", 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashDuration", 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration", 1);
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
@@ -998,6 +1014,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
+  base::HistogramTester histograms;
   const GURL url("https://www.example.com/");
   TestClient client(SB_THREAT_TYPE_SAFE, url);
   EXPECT_TRUE(GetQueuedChecks().empty());
@@ -1006,9 +1023,23 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   // The database is unavailable so the check should get queued.
   EXPECT_EQ(1ul, GetQueuedChecks().size());
 
-  // The following function waits for the DB to load.
+  // Wait for the DB to load and dequeue the check.
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(GetQueuedChecks().empty());
+
+  // Wait for the DB thread search and UI thread reply callback to execute.
+  WaitForTasksOnTaskRunner();
+
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay", 1);
+  histograms.ExpectTotalCount("SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+                              1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.DbThreadQueueDelay", 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.StoreLookupDuration", 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
 
   ResetV4Database();
   v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,

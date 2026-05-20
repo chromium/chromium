@@ -50,6 +50,23 @@ using DatabaseUpdatedCallback = base::RepeatingClosure;
 // storage on disk.
 using StoreMap = std::unordered_map<ListIdentifier, V4StorePtr>;
 
+// Results and timings of a local database lookup.
+struct DbLookupResult {
+  // The matching full hashes and stores found in the local database.
+  FullHashToStoreAndHashPrefixesMap results;
+
+  // The timestamp when the lookup task was posted from the UI thread to the DB
+  // thread. Used to calculate DB thread queue delay.
+  base::TimeTicks db_thread_post_time;
+
+  // The timestamp when the lookup task started executing on the DB thread.
+  base::TimeTicks db_thread_start_time;
+
+  // The timestamp when the lookup task completed execution on the DB thread.
+  // Used to calculate UI thread return hop delay.
+  base::TimeTicks db_thread_end_time;
+};
+
 // Associates metadata for a list with its ListIdentifier.
 class ListInfo {
  public:
@@ -155,7 +172,7 @@ class V4Database {
   virtual void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
-      base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback);
+      base::OnceCallback<void(DbLookupResult)> callback);
 
   // Returns the file size of the store in bytes. Returns 0 if the store is not
   // found.

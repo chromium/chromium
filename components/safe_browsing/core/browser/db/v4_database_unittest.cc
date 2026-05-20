@@ -348,10 +348,10 @@ TEST_F(V4DatabaseTest, TestAllStoresMatchFullHash) {
                          /*simple_task_runners_to_wait_for=*/{});
 
   StoresToCheck stores_to_check({linux_malware_id_, win_malware_id_});
-  base::test::TestFuture<FullHashToStoreAndHashPrefixesMap> results;
+  base::test::TestFuture<DbLookupResult> results;
   v4_database_->GetStoresMatchingFullHash({"anything"}, stores_to_check,
                                           results.GetCallback());
-  FullHashToStoreAndHashPrefixesMap map = results.Get();
+  FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(2u, store_and_hash_prefixes.size());
   StoresToCheck stores_found;
@@ -369,11 +369,11 @@ TEST_F(V4DatabaseTest, TestNoStoreMatchesFullHash) {
   WaitForV4DatabaseReady(CreateTaskRunner(),
                          /*simple_task_runners_to_wait_for=*/{});
 
-  base::test::TestFuture<FullHashToStoreAndHashPrefixesMap> results;
+  base::test::TestFuture<DbLookupResult> results;
   v4_database_->GetStoresMatchingFullHash(
       {"anything"}, StoresToCheck({linux_malware_id_, win_malware_id_}),
       results.GetCallback());
-  FullHashToStoreAndHashPrefixesMap map = results.Get();
+  FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_TRUE(store_and_hash_prefixes.empty());
 }
@@ -392,11 +392,11 @@ TEST_F(V4DatabaseTest, TestSomeStoresMatchFullHash) {
       v4_database_->store_map_->at(win_malware_id_).get());
   store->set_hash_prefix_matches(true);
 
-  base::test::TestFuture<FullHashToStoreAndHashPrefixesMap> results;
+  base::test::TestFuture<DbLookupResult> results;
   v4_database_->GetStoresMatchingFullHash(
       {"anything"}, StoresToCheck({linux_malware_id_, win_malware_id_}),
       results.GetCallback());
-  FullHashToStoreAndHashPrefixesMap map = results.Get();
+  FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(1u, store_and_hash_prefixes.size());
   EXPECT_EQ(store_and_hash_prefixes.begin()->list_id, win_malware_id_);
@@ -414,10 +414,10 @@ TEST_F(V4DatabaseTest, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
                          /*simple_task_runners_to_wait_for=*/{});
 
   // Don't add win_malware_id_ to the StoresToCheck.
-  base::test::TestFuture<FullHashToStoreAndHashPrefixesMap> results;
+  base::test::TestFuture<DbLookupResult> results;
   v4_database_->GetStoresMatchingFullHash(
       {"anything"}, StoresToCheck({linux_malware_id_}), results.GetCallback());
-  FullHashToStoreAndHashPrefixesMap map = results.Get();
+  FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(1u, store_and_hash_prefixes.size());
   EXPECT_EQ(store_and_hash_prefixes.begin()->list_id, linux_malware_id_);

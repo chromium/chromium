@@ -181,6 +181,23 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // cached full hash response).
     base::TimeTicks full_hash_check_start;
 
+    // The timestamp when the check was added to queued_checks_ because the
+    // database was not yet ready at startup. Used to calculate the database
+    // not ready queue delay.
+    base::TimeTicks queue_start_time;
+
+    // The timestamp when the local database lookup step was initiated on the
+    // UI thread. Used to calculate the total local lookup duration.
+    base::TimeTicks local_db_lookup_start_time;
+
+    // The timestamp when the get full hash phase was scheduled/queued.
+    // Used to calculate get full hash queue delay.
+    base::TimeTicks get_full_hash_queue_start_time;
+
+    // The timestamp when the get full hash request/cache check was actually
+    // started on the UI thread. Used to calculate get full hash duration.
+    base::TimeTicks get_full_hash_request_start_time;
+
     // The SafeBrowsing lists to check hash prefixes in.
     const StoresToCheck stores_to_check;
 
@@ -256,9 +273,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Identifies the prefixes and the store they matched in, for a given
   // |check|.  The callback is run asynchronously with the identifier of
   // the stores along with the matching hash prefixes.
-  void GetPrefixMatches(
-      PendingCheck* check,
-      base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback);
+  void GetPrefixMatches(PendingCheck* check,
+                        base::OnceCallback<void(DbLookupResult)> callback);
 
   // Goes over the |full_hash_infos| and stores the most severe SBThreatType in
   // |most_severe_threat_type|, and the corresponding metadata in |metadata|.
@@ -278,7 +294,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void HandleCheck(std::unique_ptr<PendingCheck> check);
 
   void HandleCheckContinuation(std::unique_ptr<PendingCheck> check,
-                               FullHashToStoreAndHashPrefixesMap results);
+                               DbLookupResult lookup_result);
 
   // Like HandleCheck, but for allowlists that have both full-hashes and
   // partial hashes in the DB. It will schedule performing
@@ -287,11 +303,10 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
                             bool allow_async_full_hash_check,
                             base::OnceCallback<void(bool)> callback);
 
-  void HandleAllowlistCheckContinuation(
-      std::unique_ptr<PendingCheck> check,
-      bool allow_async_full_hash_check,
-      base::OnceCallback<void(bool)> callback,
-      FullHashToStoreAndHashPrefixesMap results);
+  void HandleAllowlistCheckContinuation(std::unique_ptr<PendingCheck> check,
+                                        bool allow_async_full_hash_check,
+                                        base::OnceCallback<void(bool)> callback,
+                                        DbLookupResult lookup_result);
 
   // Computes the hashes of URLs that have artificially been marked as unsafe
   // using any of the following command line flags: "mark_as_phishing",
@@ -322,9 +337,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // while the database was loading from disk.
   void ProcessQueuedChecks();
 
-  void ProcessQueuedChecksContinuation(
-      std::unique_ptr<PendingCheck> check,
-      FullHashToStoreAndHashPrefixesMap results);
+  void ProcessQueuedChecksContinuation(std::unique_ptr<PendingCheck> check,
+                                       DbLookupResult lookup_result);
 
   // Called on StopOnUIThread, it responds to the clients that are (1) waiting
   // for the database to become available with the verdict as SAFE, or (2)

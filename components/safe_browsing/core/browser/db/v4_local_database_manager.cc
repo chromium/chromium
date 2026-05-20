@@ -230,8 +230,8 @@ void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
 }
 
 void HandleUrlCallback(base::OnceCallback<void(bool)> callback,
-                       FullHashToStoreAndHashPrefixesMap results) {
-  bool allowed = !results.empty();
+                       DbLookupResult lookup_result) {
+  bool allowed = !lookup_result.results.empty();
   // This callback was already run asynchronously so no need for another
   // thread hop.
   std::move(callback).Run(allowed);
@@ -718,10 +718,11 @@ void V4LocalDatabaseManager::GetArtificialPrefixMatches(
 
 void V4LocalDatabaseManager::GetPrefixMatches(
     PendingCheck* check,
-    base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
+    base::OnceCallback<void(DbLookupResult)> callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(IsDatabaseReady());
 
+  check->local_db_lookup_start_time = base::TimeTicks::Now();
   v4_database_->GetStoresMatchingFullHash(
       check->full_hashes, check->stores_to_check, std::move(callback));
 }
@@ -807,7 +808,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
     std::unique_ptr<PendingCheck> check,
     bool allow_async_full_hash_check,
     base::OnceCallback<void(bool)> callback,
-    FullHashToStoreAndHashPrefixesMap results) {
+    DbLookupResult lookup_result) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   AsyncMatch local_match;
@@ -824,7 +825,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
 
     RemovePendingCheck(it);
 
-  check->full_hash_to_store_and_hash_prefixes = results;
+  check->full_hash_to_store_and_hash_prefixes = lookup_result.results;
   GetArtificialPrefixMatches(check);
   if (check->full_hash_to_store_and_hash_prefixes.empty() &&
       check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
@@ -873,6 +874,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
 
 void V4LocalDatabaseManager::HandleCheck(std::unique_ptr<PendingCheck> check) {
   if (!v4_database_) {
+    check->queue_start_time = base::TimeTicks::Now();
     queued_checks_.push_back(std::move(check));
     return;
   }
@@ -888,11 +890,19 @@ void V4LocalDatabaseManager::HandleCheck(std::unique_ptr<PendingCheck> check) {
 
 void V4LocalDatabaseManager::HandleCheckContinuation(
     std::unique_ptr<PendingCheck> check,
-    FullHashToStoreAndHashPrefixesMap results) {
+    DbLookupResult lookup_result) {
   if (!IsDatabaseReady()) {
     DCHECK(pending_checks_.empty());
     return;
   }
+
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+      base::TimeTicks::Now() - check->local_db_lookup_start_time);
+
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+      base::TimeTicks::Now() - lookup_result.db_thread_end_time);
 
   const auto it = pending_checks_.find(check.get());
   if (it == pending_checks_.end()) {
@@ -904,15 +914,16 @@ void V4LocalDatabaseManager::HandleCheckContinuation(
 
   if (check->client_callback_type == ClientCallbackType::CHECK_BROWSE_URL) {
     UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckBrowseUrl.HasLocalMatch2",
-                          !results.empty());
+                          !lookup_result.results.empty());
   }
 
-  check->full_hash_to_store_and_hash_prefixes = results;
+  check->full_hash_to_store_and_hash_prefixes = lookup_result.results;
   GetArtificialPrefixMatches(check);
   if (check->full_hash_to_store_and_hash_prefixes.empty() &&
       check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
     RespondToClient(std::move(check));
   } else {
+    check->get_full_hash_queue_start_time = base::TimeTicks::Now();
     ScheduleFullHashCheck(std::move(check));
   }
 }
@@ -987,6 +998,12 @@ void V4LocalDatabaseManager::HandleUrl(
 void V4LocalDatabaseManager::OnFullHashResponse(
     std::unique_ptr<PendingCheck> check,
     const std::vector<FullHashInfo>& full_hash_infos) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!check->get_full_hash_request_start_time.is_null()) {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashDuration",
+        now - check->get_full_hash_request_start_time);
+  }
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (!IsDatabaseReady()) {
@@ -1000,10 +1017,15 @@ void V4LocalDatabaseManager::OnFullHashResponse(
     return;
   }
 
+  base::TimeTicks start_processing = base::TimeTicks::Now();
   // Find out the most severe threat, if any, to report to the client.
   GetSeverestThreatTypeAndMetadata(
       full_hash_infos, check->full_hashes, &check->full_hash_threat_types,
       &check->most_severe_threat_type, &check->url_metadata);
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration",
+      base::TimeTicks::Now() - start_processing);
+
   RemovePendingCheck(it);
   RespondToClient(std::move(check));
 }
@@ -1017,6 +1039,12 @@ void V4LocalDatabaseManager::PerformFullHashCheck(
   // If the database isn't ready, the service has been turned off, so silently
   // drop the check.
   if (IsDatabaseReady()) {
+    if (!check->get_full_hash_queue_start_time.is_null()) {
+      base::UmaHistogramTimes(
+          "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay",
+          base::TimeTicks::Now() - check->get_full_hash_queue_start_time);
+    }
+    check->get_full_hash_request_start_time = base::TimeTicks::Now();
     FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
         check->full_hash_to_store_and_hash_prefixes;
     v4_get_hash_protocol_manager_->GetFullHashes(
@@ -1038,6 +1066,11 @@ void V4LocalDatabaseManager::ProcessQueuedChecks() {
   for (auto& it : checks) {
     PendingCheck* check_ptr = it.get();
 
+    if (!check_ptr->queue_start_time.is_null()) {
+      base::UmaHistogramTimes(
+          "SafeBrowsing.V4CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay",
+          base::TimeTicks::Now() - check_ptr->queue_start_time);
+    }
     AddPendingCheck(check_ptr);
 
     GetPrefixMatches(
@@ -1049,26 +1082,35 @@ void V4LocalDatabaseManager::ProcessQueuedChecks() {
 
 void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
     std::unique_ptr<PendingCheck> check,
-    FullHashToStoreAndHashPrefixesMap results) {
-    if (!IsDatabaseReady()) {
-      DCHECK(pending_checks_.empty());
-      return;
-    }
+    DbLookupResult lookup_result) {
+  if (!IsDatabaseReady()) {
+    DCHECK(pending_checks_.empty());
+    return;
+  }
 
-    const auto it = pending_checks_.find(check.get());
-    if (it == pending_checks_.end()) {
-      // The check has since been cancelled.
-      return;
-    }
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+      base::TimeTicks::Now() - check->local_db_lookup_start_time);
 
-    RemovePendingCheck(it);
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+      base::TimeTicks::Now() - lookup_result.db_thread_end_time);
 
-  check->full_hash_to_store_and_hash_prefixes = results;
+  const auto it = pending_checks_.find(check.get());
+  if (it == pending_checks_.end()) {
+    // The check has since been cancelled.
+    return;
+  }
+
+  RemovePendingCheck(it);
+
+  check->full_hash_to_store_and_hash_prefixes = lookup_result.results;
   GetArtificialPrefixMatches(check);
   if (check->full_hash_to_store_and_hash_prefixes.empty() &&
       check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
     RespondToClient(std::move(check));
   } else {
+    check->get_full_hash_queue_start_time = base::TimeTicks::Now();
     ScheduleFullHashCheck(std::move(check));
   }
 }

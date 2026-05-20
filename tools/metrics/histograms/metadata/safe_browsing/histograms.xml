@@ -158,6 +158,26 @@ chromium-metrics-reviews@google.com.
   <variant name=".UrlRealTimeCheck"/>
 </variants>
 
+<variants name="V4CheckUrlStep">
+  <variant name="DatabaseNotReadyQueueDelay"
+      summary="time spent waiting in queue because database was not ready"/>
+  <variant name="GetFullHashDuration"
+      summary="total duration of get full hash wait (cache or network)"/>
+  <variant name="GetFullHashQueueDelay"
+      summary="wait time in UI thread message loop before starting get full
+               hash"/>
+  <variant name="LocalLookup"
+      summary="total end-to-end local lookup time on the UI thread"/>
+  <variant name="LocalLookup.DbThreadQueueDelay"
+      summary="time spent waiting in the DB thread's task queue"/>
+  <variant name="LocalLookup.StoreLookupDuration"
+      summary="actual lookup execution time in V4Store on DB thread"/>
+  <variant name="LocalLookup.UiCallbackQueueDelay"
+      summary="wait time returning back to UI thread message loop"/>
+  <variant name="ResponseProcessingDuration"
+      summary="time spent parsing and handling response on UI thread"/>
+</variants>
+
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
     enum="AdvancedProtectionEnabledStatus" expires_after="2024-02-04">
   <owner>meacer@chromium.org</owner>
@@ -3684,6 +3704,17 @@ useful for Chirp alerts (go/crca-alerts). -->
     Tracks the the URL lookup verdicts from URL real-time lookups and the
     background HPRT lookups.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4CheckUrl.TimeTaken.{StepName}" units="ms"
+    expires_after="2027-05-10">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration of the {StepName} step in a Safe Browsing V4 URL check.
+    Logged when this step completes.
+  </summary>
+  <token key="StepName" variants="V4CheckUrlStep"/>
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.SizeLinear{ThreatTypeKB}"
