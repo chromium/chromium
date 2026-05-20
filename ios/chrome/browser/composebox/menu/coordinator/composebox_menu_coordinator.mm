@@ -93,13 +93,12 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                 entrypoint:(ComposeboxEntrypoint)entrypoint {
-  return
-      [self initWithBaseViewController:viewController
-                               browser:browser
-                preselectedAttachments:nil
-                            inputState:nil
-                       metricsRecorder:[[ComposeboxMetricsRecorder alloc] init]
-                            entrypoint:entrypoint];
+  return [self initWithBaseViewController:viewController
+                                  browser:browser
+                   preselectedAttachments:nil
+                               inputState:nil
+                          metricsRecorder:nil
+                               entrypoint:entrypoint];
 }
 
 - (void)start {
@@ -118,8 +117,12 @@ CGFloat const kSheetTopPadding = 40.0f;
         std::move(configParams),
         contextual_search::ContextualSearchSource::kNewTabPage,
         lens::LensOverlayInvocationSource::kNtpContextualQuery);
-    _metricsRecorder.contextualSearchMetricsRecorder =
-        _sessionHandle->GetMetricsRecorder();
+
+    _metricsRecorder = [[ComposeboxMetricsRecorder alloc] init];
+    if (_sessionHandle) {
+      _metricsRecorder.contextualSearchMetricsRecorder =
+          _sessionHandle->GetMetricsRecorder();
+    }
 
     ComposeboxModeHolder* modeHolder = [[ComposeboxModeHolder alloc] init];
 
