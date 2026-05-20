@@ -1476,7 +1476,7 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter;../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.interactive_ui_tests.filter",
                 ],
                 swarming = targets.swarming(
-                    shards = 5,
+                    shards = 12,
                 ),
             ),
         },
