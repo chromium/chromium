@@ -493,49 +493,17 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_metricsRecorder recordDragAndDropAttempt:type];
 }
 
-- (void)composeboxViewControllerDidTapAIMButton:
-            (ComposeboxInputPlateViewController*)viewController
-                               activationSource:
-                                   (AiModeActivationSource)activationSource {
-  if (_modeHolder.mode == ComposeboxMode::kAIM) {
-    _modeHolder.mode = ComposeboxMode::kRegularSearch;
-  } else {
-    _modeHolder.mode = ComposeboxMode::kAIM;
-    [_metricsRecorder recordAiModeActivationSource:activationSource];
-  }
-}
-
-- (void)composeboxViewControllerDidTapImageGenerationButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController {
-  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
-    _modeHolder.mode = ComposeboxMode::kRegularSearch;
-  } else {
-    _modeHolder.mode = ComposeboxMode::kImageGeneration;
-  }
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+                      didTapTool:(ComposeboxMode)toolMode
+                activationSource:(AiModeActivationSource)activationSource {
+  [self selectTool:toolMode activationSource:activationSource];
 }
 
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapSendButton:(UIButton*)button {
   [_omniboxCoordinator acceptInput];
-}
-
-- (void)composeboxViewControllerDidTapCanvasButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController {
-  if (_modeHolder.mode == ComposeboxMode::kCanvas) {
-    _modeHolder.mode = ComposeboxMode::kRegularSearch;
-  } else {
-    _modeHolder.mode = ComposeboxMode::kCanvas;
-  }
-}
-
-- (void)composeboxViewControllerDidTapDeepSearchButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController {
-  if (_modeHolder.mode == ComposeboxMode::kDeepSearch) {
-    _modeHolder.mode = ComposeboxMode::kRegularSearch;
-  } else {
-    _modeHolder.mode = ComposeboxMode::kDeepSearch;
-  }
 }
 
 - (void)didFailToAttachDueToIneligibleAttachments:
@@ -678,6 +646,24 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 #pragma mark - Private helpers
+
+/// Updates the active tool mode in the composebox, toggling it off if it's
+/// already active, and records associated metrics.
+- (void)selectTool:(ComposeboxMode)toolMode
+    activationSource:(AiModeActivationSource)activationSource {
+  if (_modeHolder.mode == toolMode) {
+    ComposeboxMode defaultMode = _entrypoint == ComposeboxEntrypoint::kCobrowse
+                                     ? ComposeboxMode::kAIM
+                                     : ComposeboxMode::kRegularSearch;
+    _modeHolder.mode = defaultMode;
+  } else {
+    _modeHolder.mode = toolMode;
+    if (toolMode == ComposeboxMode::kAIM) {
+      [_metricsRecorder recordAiModeActivationSource:activationSource];
+    }
+    [_metricsRecorder recordToolSelected:toolMode];
+  }
+}
 
 - (void)focusComposebox {
   [_omniboxCoordinator focusOmnibox];
@@ -841,16 +827,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
                        didTapTool:(ComposeboxMode)toolMode {
-  if (_modeHolder.mode == toolMode) {
-    ComposeboxMode defaultMode = _entrypoint == ComposeboxEntrypoint::kCobrowse
-                                     ? ComposeboxMode::kAIM
-                                     : ComposeboxMode::kRegularSearch;
-    _modeHolder.mode = defaultMode;
-
-  } else {
-    _modeHolder.mode = toolMode;
-    [_metricsRecorder recordToolSelected:toolMode];
-  }
+  [self selectTool:toolMode activationSource:AiModeActivationSource::kToolMenu];
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator

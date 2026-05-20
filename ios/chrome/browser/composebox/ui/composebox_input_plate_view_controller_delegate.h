@@ -65,23 +65,11 @@ enum class FuseboxAttachmentButtonType;
             (ComposeboxInputPlateViewController*)viewController
        didAttemptDragAndDropType:(ComposeboxDragAndDropType)type;
 
-/// Informs the delegate that a user did tap on the AI button.
-- (void)composeboxViewControllerDidTapAIMButton:
+/// Informs the delegate that a user did tap on a tool button.
+- (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
-                               activationSource:
-                                   (AiModeActivationSource)activationSource;
-
-/// Informs the delegate that a user did tap on the image generation button.
-- (void)composeboxViewControllerDidTapImageGenerationButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-
-/// Informs the delegate that a user did tap on the canvas button.
-- (void)composeboxViewControllerDidTapCanvasButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-
-/// Informs the delegate that a user did tap on the deep search button.
-- (void)composeboxViewControllerDidTapDeepSearchButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
+                      didTapTool:(ComposeboxMode)toolMode
+                activationSource:(AiModeActivationSource)activationSource;
 
 /// Informs the delegate that a user did tap on the plus button.
 - (void)composeboxViewControllerDidTapPlusButton:

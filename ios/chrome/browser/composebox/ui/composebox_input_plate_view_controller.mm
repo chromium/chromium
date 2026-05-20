@@ -626,23 +626,32 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)aimButtonTapped {
   [self.delegate
-      composeboxViewControllerDidTapAIMButton:self
-                             activationSource:AiModeActivationSource::
-                                                  kDedicatedButton];
+      composeboxViewController:self
+                    didTapTool:ComposeboxMode::kAIM
+              activationSource:AiModeActivationSource::kDedicatedButton];
 }
 
 - (void)imageGenerationButtonTapped {
-  [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
+  [self.delegate
+      composeboxViewController:self
+                    didTapTool:ComposeboxMode::kImageGeneration
+              activationSource:AiModeActivationSource::kDedicatedButton];
 }
 
 // Called when the canvas button in the input plate is tapped.
 - (void)canvasButtonTapped {
-  [self.delegate composeboxViewControllerDidTapCanvasButton:self];
+  [self.delegate
+      composeboxViewController:self
+                    didTapTool:ComposeboxMode::kCanvas
+              activationSource:AiModeActivationSource::kDedicatedButton];
 }
 
 // Called when the deep search button in the input plate is tapped.
 - (void)deepSearchButtonTapped {
-  [self.delegate composeboxViewControllerDidTapDeepSearchButton:self];
+  [self.delegate
+      composeboxViewController:self
+                    didTapTool:ComposeboxMode::kDeepSearch
+              activationSource:AiModeActivationSource::kDedicatedButton];
 }
 
 // Called when the Ask about this page button in the input plate is tapped.
@@ -836,28 +845,32 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
 }
 
-/// Notifies the delegate to handle AIM tapped from the tool menu.
 - (void)handleAIMTappedFromToolMenu {
-  [self.delegate composeboxViewControllerDidTapAIMButton:self
-                                        activationSource:
-                                            AiModeActivationSource::kToolMenu];
+  [self.delegate composeboxViewController:self
+                               didTapTool:ComposeboxMode::kAIM
+                         activationSource:AiModeActivationSource::kToolMenu];
 }
 
 /// Notifies the delegate to handle canvas button tapped from the tool menu.
 - (void)handleImageGenTappedFromToolMenu {
-  [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
+  [self.delegate composeboxViewController:self
+                               didTapTool:ComposeboxMode::kImageGeneration
+                         activationSource:AiModeActivationSource::kToolMenu];
 }
 
 /// Notifies the delegate to handle canvas tapped from the tool menu.
 - (void)handleCanvasTappedFromToolMenu {
-  [self.delegate composeboxViewControllerDidTapCanvasButton:self];
+  [self.delegate composeboxViewController:self
+                               didTapTool:ComposeboxMode::kCanvas
+                         activationSource:AiModeActivationSource::kToolMenu];
 }
 
 /// Notifies the delegate to handle deep search tapped from the tool menu.
 - (void)handleDeepSearchTappedFromToolMenu {
-  [self.delegate composeboxViewControllerDidTapDeepSearchButton:self];
+  [self.delegate composeboxViewController:self
+                               didTapTool:ComposeboxMode::kDeepSearch
+                         activationSource:AiModeActivationSource::kToolMenu];
 }
-
 /// Notifies the mutator to handle the selection of a new model option.
 - (void)handleModelChangeFromToolsMenuWithOption:
     (ComposeboxModelOption)modelOption {
