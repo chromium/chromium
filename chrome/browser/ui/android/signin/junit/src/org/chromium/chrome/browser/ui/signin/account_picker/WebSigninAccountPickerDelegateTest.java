@@ -48,7 +48,7 @@ public class WebSigninAccountPickerDelegateTest {
     private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
     private static final int TAB_ID = 123;
     private static final DelegateContext DELEGATE_CONTEXT =
-            new WebSigninDelegateContext(TAB_ID, CONTINUE_URL);
+            new SigninDelegateContext(TAB_ID, CONTINUE_URL);
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());

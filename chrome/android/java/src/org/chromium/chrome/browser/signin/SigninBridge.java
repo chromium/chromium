@@ -40,8 +40,8 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
-import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninDelegateContext;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -338,7 +338,7 @@ final class SigninBridge {
                             WebSigninAndHistorySyncCoordinatorSupplier.getValueOrNullFrom(
                                     windowAndroid));
             coordinator.startSigninFlow(
-                    config, new WebSigninDelegateContext(tab.getId(), continueUrl));
+                    config, new SigninDelegateContext(tab.getId(), continueUrl));
             return;
         }
 

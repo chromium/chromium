@@ -15,16 +15,16 @@ import org.chromium.url.GURL;
 
 import java.util.Objects;
 
-/** Holds the runtime context for a single web sign-in flow. */
+/** Holds the runtime context for a single sign-in flow. */
 @NullMarked
-public class WebSigninDelegateContext extends DelegateContext {
-    private static final String KEY_TAB_ID = "WebSigninDelegateContext.TabId";
-    private static final String KEY_CONTINUE_URL = "WebSigninDelegateContext.ContinueUrl";
+public class SigninDelegateContext extends DelegateContext {
+    private static final String KEY_TAB_ID = "SigninDelegateContext.TabId";
+    private static final String KEY_CONTINUE_URL = "SigninDelegateContext.ContinueUrl";
 
     private final @TabId int mTabId;
     private final GURL mContinueUrl;
 
-    public WebSigninDelegateContext(@TabId int tabId, GURL continueUrl) {
+    public SigninDelegateContext(@TabId int tabId, GURL continueUrl) {
         mTabId = tabId;
         mContinueUrl = continueUrl;
     }
@@ -37,18 +37,18 @@ public class WebSigninDelegateContext extends DelegateContext {
         return bundle;
     }
 
-    public static WebSigninDelegateContext fromBundle(Bundle bundle) {
-        return new WebSigninDelegateContext(
+    public static SigninDelegateContext fromBundle(Bundle bundle) {
+        return new SigninDelegateContext(
                 bundle.getInt(KEY_TAB_ID, Tab.INVALID_TAB_ID),
                 new GURL(bundle.getString(KEY_CONTINUE_URL, "")));
     }
 
     @Override
     public boolean equals(@Nullable Object object) {
-        if (!(object instanceof WebSigninDelegateContext)) {
+        if (!(object instanceof SigninDelegateContext)) {
             return false;
         }
-        WebSigninDelegateContext other = (WebSigninDelegateContext) object;
+        SigninDelegateContext other = (SigninDelegateContext) object;
         return mTabId == other.mTabId && Objects.equals(mContinueUrl, other.mContinueUrl);
     }
 

@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
-import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninDelegateContext;
+import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -494,8 +494,8 @@ public class SigninBridgeTest {
         Assert.assertNotNull(delegateContextCaptor.getValue());
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         Assert.assertEquals(accountId, config.selectedCoreAccountId);
-        WebSigninDelegateContext delegateContext =
-                (WebSigninDelegateContext) delegateContextCaptor.getValue();
+        SigninDelegateContext delegateContext =
+                (SigninDelegateContext) delegateContextCaptor.getValue();
         Assert.assertEquals(CONTINUE_URL, delegateContext.getContinueUrl());
         Assert.assertEquals(TAB_ID, delegateContext.getTabId());
     }

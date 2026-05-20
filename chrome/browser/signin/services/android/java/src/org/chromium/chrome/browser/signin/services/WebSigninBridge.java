@@ -22,8 +22,7 @@ import java.util.Objects;
 /**
  * Used by the web sign-in flow to detect when the flow is completed or failed. Every instance of
  * this class will be destroyed once the callback is run correctly to release native resources but
- * the case where where the callback was not invoked {@link #destroy()} must still be explicitly
- * called.
+ * the case where the callback was not invoked {@link #destroy()} must still be explicitly called.
  */
 @MainThread
 @NullMarked
@@ -34,7 +33,7 @@ public class WebSigninBridge {
          * Creates a WebSigninBridge object.
          *
          * @param profile The profile to use for the sign-in.
-         * @param account The primary account account used for the sign-in process.
+         * @param accountId The primary account used for the sign-in process.
          * @param callback The callback to be notified about sign-in result.
          */
         public WebSigninBridge createWithCoreAccountId(
@@ -48,7 +47,7 @@ public class WebSigninBridge {
          * Creates a WebSigninBridge object.
          *
          * @param profile The profile to use for the sign-in.
-         * @param email The primary account account email used for the sign-in process.
+         * @param email The primary account email used for the sign-in process.
          * @param callback The callback to be notified about sign-in result.
          */
         public WebSigninBridge createWithEmail(
@@ -64,7 +63,7 @@ public class WebSigninBridge {
      * or with an error. Successful completion means that the primary account is available in
      * cookies.
      *
-     * @param account The primary account account used for the sign-in process.
+     * @param accountId The primary account used for the sign-in process.
      * @param callback The callback to be notified about sign-in result.
      */
     private WebSigninBridge(
@@ -86,7 +85,7 @@ public class WebSigninBridge {
      * or with an error. Successful completion means that the primary account is available in
      * cookies. Should be explicitly destroyed using {@link #destroy()} to release native resources.
      *
-     * @param account The primary account account used for the sign-in process.
+     * @param email The primary account email used for the sign-in process.
      * @param callback The callback to be notified about sign-in result.
      */
     private WebSigninBridge(
