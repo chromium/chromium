@@ -18,6 +18,10 @@ ANGLE or V8 currently support more platforms.
 listed as [per-file OWNERS of the
 doc](https://source.chromium.org/chromium/chromium/src/+/main:docs/OWNERS;l=1?q=docs%2FOWNERS&sq=&ss=chromium).
 
+**Note**: If you notice gaps between accessibility and accountability (e.g.,
+accountability for upholding performance on benchmarks to which you don't have
+access), reach out to chrome-atls@google.com to inform them of the gap.
+
 Definitions of Terms
 --------------------
 
