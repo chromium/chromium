@@ -210,6 +210,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               GetLastCommittedOrigin,
               (),
               (const, override));
+  MOCK_METHOD(int, GetId, (), (const, override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -330,11 +331,13 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
 }
 
 // Create predictions for |form| using field predictions |field_predictions|.
-std::map<FormSignature, FormPredictions> CreatePredictions(
-    const FormData& form,
-    std::vector<std::pair<int, FieldType>> field_predictions,
-    bool is_override = false) {
+std::map<std::pair<autofill::FormSignature, int>, FormPredictions>
+CreatePredictions(const FormData& form,
+                  std::vector<std::pair<int, FieldType>> field_predictions,
+                  bool is_override = false,
+                  int driver_id = 0) {
   FormPredictions predictions;
+  predictions.driver_id = driver_id;
   for (const auto& index_prediction : field_predictions) {
     autofill::FieldRendererId renderer_id =
         form.fields()[index_prediction.first].renderer_id();
@@ -344,8 +347,9 @@ std::map<FormSignature, FormPredictions> CreatePredictions(
     predictions.fields.emplace_back(renderer_id, field_signature, server_type,
                                     is_override);
   }
-  FormSignature form_signature = CalculateFormSignature(form);
-  return {{form_signature, predictions}};
+  autofill::FormSignature form_signature =
+      autofill::CalculateFormSignature(form);
+  return {{{form_signature, driver_id}, predictions}};
 }
 
 // Create simple predictions on single username field.
@@ -989,8 +993,8 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsWithinDelay) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
   Mock::VerifyAndClearExpectations(&driver_);
 
-  std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
-      observed_form_, {std::make_pair(2, autofill::PASSWORD)});
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
 
   // Expect filling without delay on receiving server predictions.
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(1);
@@ -998,6 +1002,31 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsWithinDelay) {
   Mock::VerifyAndClearExpectations(&driver_);
 
   // Expect no filling on receiving predictions again.
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
+  form_manager_->ProcessServerPredictions(predictions);
+}
+
+// Tests that PasswordFormManager does not adopt server predictions if they
+// belong to a different driver.
+TEST_P(PasswordFormManagerTest, ServerPredictionsDriverIdMismatch) {
+  EXPECT_CALL(driver_, GetId()).WillRepeatedly(Return(1));
+  CreateFormManager(observed_form_);
+
+  // Expects no filling on save matches receiving.
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  Mock::VerifyAndClearExpectations(&driver_);
+
+  auto base_predictions = CreatePredictions(
+      observed_form_, {std::make_pair(2, autofill::PASSWORD)});
+
+  std::map<std::pair<autofill::FormSignature, int>, FormPredictions>
+      predictions;
+  predictions[{autofill::CalculateFormSignature(observed_form_), 2}] =
+      base_predictions.begin()->second;
+
+  // Expect NO filling on receiving server predictions because driver_id
+  // mismatches.
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
   form_manager_->ProcessServerPredictions(predictions);
 }
@@ -1013,8 +1042,8 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsAfterDelay) {
   task_environment_.FastForwardUntilNoTasksRemain();
   Mock::VerifyAndClearExpectations(&driver_);
 
-  std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
-      observed_form_, {std::make_pair(2, autofill::PASSWORD)});
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
 
   // Expect filling on receiving server predictions because it was less than
   // kMaxTimesAutofill attempts to fill.
@@ -1031,8 +1060,8 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsBeforeFetcher) {
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
   CreateFormManager(observed_form_);
 
-  std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
-      observed_form_, {std::make_pair(2, autofill::PASSWORD)});
+  auto predictions = CreatePredictions(observed_form_,
+                                       {std::make_pair(2, autofill::PASSWORD)});
   form_manager_->ProcessServerPredictions(predictions);
   Mock::VerifyAndClearExpectations(&driver_);
 
@@ -1193,7 +1222,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsEmptyName) {
   test_api(anonymous_signup).field(2).set_name({});
   test_api(anonymous_signup).field(2).set_value(u"a password");
   // Mark the password field as new-password.
-  std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
+  auto predictions = CreatePredictions(
       observed_form_, {std::make_pair(2, autofill::ACCOUNT_CREATION_PASSWORD)});
 
   form_manager_->ProcessServerPredictions(predictions);
@@ -3793,7 +3822,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowFillSingleUsernameForm) {
 
   // Provide server predictions for the single username form, which will trigger
   // FillNow().
-  std::map<FormSignature, FormPredictions> predictions =
+  auto predictions =
       CreatePredictions(non_password_form_,
                         {std::make_pair(kUsernameFieldIndex, SINGLE_USERNAME)});
   form_manager_->ProcessServerPredictions(predictions);
@@ -4208,7 +4237,7 @@ TEST_P(PasswordFormManagerTest, ResetPasswordFormSubmitted) {
 // not provisionally saved.
 TEST_P(PasswordFormManagerTest, ProvisinallySavedOnSingleUsernameForm) {
   CreateFormManager(non_password_form_);
-  std::map<FormSignature, FormPredictions> predictions =
+  auto predictions =
       CreatePredictions(non_password_form_,
                         {std::make_pair(kUsernameFieldIndex, SINGLE_USERNAME)});
   form_manager_->ProcessServerPredictions(predictions);
@@ -4667,7 +4696,7 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsIgnoredOnLocalhost) {
 
   // Expect no filling on receiving predictions.
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
-  form_manager_->ProcessServerPredictions({{kFormSignature, predictions}});
+  form_manager_->ProcessServerPredictions({{{kFormSignature, 0}, predictions}});
 }
 
 // Tests that crowdsourcing votes are not uploaded for forms on localhost.
@@ -4850,7 +4879,7 @@ TEST_P(PasswordFormManagerTest, SetCreditCardFieldsAsBanned) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   // Server prediction marks element on index three as a credit card field.
-  std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
+  auto predictions = CreatePredictions(
       observed_form_, {std::make_pair(3, autofill::CREDIT_CARD_NAME_FULL)});
 
   PasswordFormFillData fill_data;

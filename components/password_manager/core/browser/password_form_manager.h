@@ -166,7 +166,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // |observed_form()|, initiates filling and stores predictions in
   // |predictions_|.
   void ProcessServerPredictions(
-      const std::map<autofill::FormSignature, FormPredictions>& predictions);
+      const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+          predictions);
 
   // Stores model predictions in the `parser_`.
   void ProcessModelPredictions(
@@ -182,7 +183,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // for server predictions.
   void UpdateFormManagerWithFormChanges(
       const autofill::FormData& observed_form_data,
-      const std::map<autofill::FormSignature, FormPredictions>& predictions);
+      const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+          predictions);
 
   void UpdateSubmissionIndicatorEvent(
       autofill::mojom::SubmissionIndicatorEvent event);
@@ -421,7 +423,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Updates the server predictions stored in `parser_` with predictions
   // relevant for `observed_form_or_digest_`.
   void UpdateServerPredictionsForObservedForm(
-      const std::map<autofill::FormSignature, FormPredictions>& predictions);
+      const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+          predictions);
 
   // Creates a timer to wait for server side predictions. On timeout (or on
   // receiving server side predictions), `Fill()` is triggered.

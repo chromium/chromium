@@ -140,7 +140,8 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   manager_->AddFieldInfo(info, /*predictions=*/std::nullopt);
 
   // Create test predictions.
-  std::map<autofill::FormSignature, FormPredictions> predictions;
+  std::map<std::pair<autofill::FormSignature, int>, FormPredictions>
+      predictions;
   FormPredictions form_prediction =
       CreateTestPredictions(kTestDriverId, kTestFormSignature,
                             kTestFieldSignature, kTestFieldId, kTestFieldType);
@@ -149,13 +150,14 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   form_prediction.fields.emplace_back(kAnotherFieldId, kAnotherFieldSignature,
                                       kAnotherFieldType, /*is_override=*/false);
 
-  predictions[kTestFormSignature] = form_prediction;
+  predictions[{kTestFormSignature, kTestDriverId}] = form_prediction;
 
   // Add a prediction with the same field id, but different driver.
   FormPredictions different_driver_prediction = CreateTestPredictions(
       kAnotherDriverId, kAnotherFormSignature, kAnotherFieldSignature,
       kTestFieldId, kAnotherFieldType);
-  predictions[kAnotherFormSignature] = different_driver_prediction;
+  predictions[{kAnotherFormSignature, kAnotherDriverId}] =
+      different_driver_prediction;
 
   manager_->ProcessServerPredictions(predictions);
 
