@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -110,6 +111,7 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
     glic::GlicKeyedService::Get(browser()->profile())
         ->enabling()
         .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+    browser()->window()->Activate();
   }
 
   void TearDownOnMainThread() override {
