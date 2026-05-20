@@ -91,6 +91,16 @@ display::Display GetDisplayForWindow(NSWindow* window) {
       gfx::NativeWindow(window));
 }
 
+bool IsBackgroundEffectView(NSView* view) {
+  if ([view isKindOfClass:[NSVisualEffectView class]]) {
+    return true;
+  }
+
+  Class glass_effect_view_class = NSClassFromString(@"NSGlassEffectView");
+  return glass_effect_view_class &&
+         [view isKindOfClass:glass_effect_view_class];
+}
+
 }  // namespace
 
 @class NSWindowRestorationOptions;
@@ -254,14 +264,13 @@ NSComparisonResult SubviewSorter(__kindof NSView* lhs,
                                  void* rank_as_void) {
   DCHECK_NE(lhs, rhs);
 
-  // Put `NSVisualEffectView` before `ViewsCompositorSuperview` otherwise when
-  // using `NSVisualEffectView` for `vibrancy` it will hide content displayed by
-  // the compositor.
-  if ([lhs isKindOfClass:[NSVisualEffectView class]]) {
+  // Put background effect views before `ViewsCompositorSuperview`, otherwise
+  // they can cover content displayed by the compositor.
+  if (IsBackgroundEffectView(lhs)) {
     return NSOrderedAscending;
   }
   if ([lhs isKindOfClass:[ViewsCompositorSuperview class]]) {
-    if ([rhs isKindOfClass:[NSVisualEffectView class]]) {
+    if (IsBackgroundEffectView(rhs)) {
       return NSOrderedDescending;
     }
     return NSOrderedAscending;
