@@ -47,8 +47,9 @@ methods/logic added, and then add `jamesleung@` to the cc list.
 
 #### NTP
 
-Please add a comment `"// TODO: crbug.com/486707841 - Move to the NTP embedder"`
-to the methods/logic added and then add `jonnalad@` to the cc list.
+Please update `NtpComposeboxElement` in
+`chrome/browser/resources/new_tab_page/ntp_composebox.ts` in addition to
+`composebox.ts`.
 
 #### Omnibox
 
