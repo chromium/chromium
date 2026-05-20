@@ -341,13 +341,14 @@ TEST(VideoFrameLayout, FitsInContiguousBufferOfSize) {
   EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(sizes[0] + sizes[1]));
 
   // Validate offset exceeds plane size.
-  planes[2].offset = 301;
+  planes[2].offset += 1;
   layout =
       VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
   ASSERT_TRUE(layout.has_value());
   EXPECT_TRUE(
       layout->FitsInContiguousBufferOfSize(sizes[0] + sizes[1] + sizes[2] + 1));
   EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(sizes[0]));
+  planes[2].offset -= 1;
 
   // Validate overflow.
   planes[0].offset = std::numeric_limits<size_t>::max() / 2 + 2;
