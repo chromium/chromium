@@ -904,7 +904,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
-                    mModel.get(SCREEN_VIEW_MODEL).set(SETTINGS_LINK_CALLBACK, v -> {});
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -924,12 +923,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         TextView valuePropMessage3 = mView.getContentView().findViewById(R.id.value_prop_message_3);
         assertThat(valuePropMessage3.getText(), is("Encryption protects your personal info"));
         assertNotNull(valuePropMessage3.getCompoundDrawablesRelative()[0]);
-
-        TextView settingsLink =
-                mView.getContentView().findViewById(R.id.pix_code_detection_settings_link);
-        assertThat(
-                settingsLink.getText().toString(),
-                is("To turn off Pix code detection, go to Chrome settings"));
 
         ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
         assertThat(acceptButton.getText(), is("Enable Pix in Wallet"));
