@@ -4713,8 +4713,9 @@
     {
       // getType() on a ClipboardItem triggers the
       // clipboard read operation, implementing lazy loading for clipboard data.
+      // Chrome status entry - https://chromestatus.com/feature/5203433409871872
       name: "ReadClipboardDataOnClipboardItemGetType",
-      status: "test",
+      status: "stable",
     },
     {
       // Enables correct reading-flow ordering when slots are involved.
