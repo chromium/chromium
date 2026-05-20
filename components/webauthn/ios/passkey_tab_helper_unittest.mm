@@ -145,6 +145,29 @@ class PasskeyTabHelperTest : public PlatformTest {
     }
   }
 
+  // Sets up a web frame manager without any web frames, and returns the
+  // manager.
+  web::FakeWebFramesManager* SetUpWebFramesManagerWithoutFrame() {
+    web::ContentWorld passkey_world =
+        PasskeyJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+    fake_web_state_.SetWebFramesManager(passkey_world,
+                                        std::move(frames_manager));
+
+    web::ContentWorld autofill_world =
+        autofill::AutofillJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    if (passkey_world != autofill_world) {
+      fake_web_state_.SetWebFramesManager(
+          autofill_world, std::make_unique<web::FakeWebFramesManager>());
+    }
+
+    // Manually register the tab helper as observer to the frames manager.
+    frames_manager_ptr->AddObserver(passkey_tab_helper());
+    return frames_manager_ptr;
+  }
+
   // Sets up the IOSPasswordManagerDriver needed to retrieve the
   // WebAuthnCredentialsDelegate.
   void SetUpIOSPasswordManagerDriver() {
@@ -708,6 +731,121 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
   EXPECT_NE(last_call.find(u"\\\"crossOrigin\\\":true"), std::u16string::npos);
   EXPECT_NE(last_call.find(u"\\\"topOrigin\\\":\\\"https://example.com\\\""),
             std::u16string::npos);
+}
+
+// Tests that when the passkey model is not ready, assertion requests are
+// queued and then executed when the model becomes ready.
+TEST_F(PasskeyTabHelperTest, GetRequestedDeferredUntilModelReady) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  // Make model not ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
+
+  // Send get request.
+  AssertionRequestParams params = BuildAssertionRequestParams({});
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // Suggestion sheet should NOT be shown.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+
+  // Make model ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(true);
+
+  // Suggestion sheet should now be shown.
+  EXPECT_TRUE(client_->DidShowSuggestionBottomSheet());
+}
+
+// Tests that when the passkey model is not ready, registration requests are
+// queued and then executed when the model becomes ready.
+TEST_F(PasskeyTabHelperTest, CreateRequestedDeferredUntilModelReady) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  // Make model not ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
+
+  // Send create request.
+  RegistrationRequestParams params = BuildRegistrationRequestParams({});
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+
+  // Creation bottom sheet should NOT be shown.
+  EXPECT_FALSE(client_->DidShowCreationBottomSheet());
+
+  // Make model ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(true);
+
+  // Creation bottom sheet should now be shown.
+  EXPECT_TRUE(client_->DidShowCreationBottomSheet());
+}
+// Tests that when neither the passkey model nor the web frame is ready when the
+// request is made, and the passkey model becomes ready first, followed by the
+// web frame, the request is executed successfully.
+TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_ModelThenFrame) {
+  web::FakeWebFramesManager* frames_manager_ptr =
+      SetUpWebFramesManagerWithoutFrame();
+
+  SetUpIOSPasswordManagerDriver();
+
+  // Make passkey model not ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
+
+  // Send get request.
+  AssertionRequestParams params = BuildAssertionRequestParams({});
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // Neither ready -> shouldn't show suggestion sheet.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+
+  // Make the model ready first.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(true);
+
+  // Model is ready but frame is still not ready -> shouldn't show suggestion
+  // sheet.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+
+  // Make the web frame available.
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kOriginURL));
+  frame->set_browser_state(&fake_browser_state_);
+  frames_manager_ptr->AddWebFrame(std::move(frame));
+
+  // Now both are ready -> suggestion sheet should be shown!
+  EXPECT_TRUE(client_->DidShowSuggestionBottomSheet());
+}
+
+// Tests that when neither the passkey model nor the web frame is ready when the
+// request is made, and the web frame becomes ready first, followed by the
+// passkey model, the request is executed successfully.
+TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_FrameThenModel) {
+  web::FakeWebFramesManager* frames_manager_ptr =
+      SetUpWebFramesManagerWithoutFrame();
+
+  SetUpIOSPasswordManagerDriver();
+
+  // Make passkey model not ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
+
+  // Send get request.
+  AssertionRequestParams params = BuildAssertionRequestParams({});
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // Neither ready -> shouldn't show suggestion sheet.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+
+  // Make the web frame available first.
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kOriginURL));
+  frame->set_browser_state(&fake_browser_state_);
+  frames_manager_ptr->AddWebFrame(std::move(frame));
+
+  // Web frame is ready but model is still not ready -> shouldn't show
+  // suggestion sheet.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+
+  // Make the passkey model ready.
+  static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(true);
+
+  // Now both are ready -> suggestion sheet should be shown!
+  EXPECT_TRUE(client_->DidShowSuggestionBottomSheet());
 }
 
 }  // namespace webauthn

@@ -9,6 +9,7 @@
 #import <variant>
 
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -39,7 +40,8 @@ namespace webauthn {
 class PasskeyTabHelper : public web::WebStateObserver,
                          public web::WebStateUserData<PasskeyTabHelper>,
                          public web::WebFramesManager::Observer,
-                         public password_manager::PasswordStoreConsumer {
+                         public password_manager::PasswordStoreConsumer,
+                         public PasskeyModel::Observer {
  public:
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -252,6 +254,12 @@ class PasskeyTabHelper : public web::WebStateObserver,
       password_manager::PasswordStoreInterface* store,
       password_manager::LoginsResultOrError results_or_error) override;
 
+  // PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
+
   // Gets a weak pointer to this object.
   base::WeakPtr<PasskeyTabHelper> AsWeakPtr();
 
@@ -274,11 +282,19 @@ class PasskeyTabHelper : public web::WebStateObserver,
   absl::flat_hash_map<std::string, RegistrationRequestParams>
       registration_requests_;
 
+  // Requests that are waiting for the passkey model to be ready.
+  std::vector<PendingRequest> requests_waiting_for_passkey_model_;
+
+  // Requests that are waiting for the web frame to be available.
   absl::flat_hash_map<std::string, std::vector<PendingRequest>>
-      pending_requests_by_frame_;
+      requests_waiting_for_web_frame_;
 
   // Map of request IDs to their ongoing remote validation loaders.
   absl::flat_hash_map<std::string, std::unique_ptr<RemoteValidation>> loaders_;
+
+  // Manages the observation of the passkey model.
+  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer>
+      passkey_model_observation_{this};
 
   // Flag to avoid duplicate queries to the password store.
   bool is_querying_password_store_ = false;
