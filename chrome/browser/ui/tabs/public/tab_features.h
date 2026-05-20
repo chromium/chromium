@@ -182,6 +182,7 @@ namespace tabs {
 class ContextHighlightTabFeature;
 class InactiveWindowMouseEventController;
 class TabAlertController;
+class TabAttachmentTracker;
 class TabCreationMetricsController;
 class TabDialogManager;
 class TabInterface;
@@ -230,7 +231,6 @@ class TabFeatures {
   commerce::CommerceUiTabHelper* commerce_ui_tab_helper() {
     return commerce_ui_tab_helper_.get();
   }
-
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();
@@ -587,6 +587,8 @@ class TabFeatures {
   std::unique_ptr<multistep_filter::FilterUiController> filter_ui_controller_;
   std::unique_ptr<multistep_filter::ChromeFilterNavigationObserver>
       filter_navigation_observer_;
+
+  std::unique_ptr<TabAttachmentTracker> tab_attachment_tracker_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -125,6 +125,7 @@
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -482,6 +483,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   tab_creation_metrics_controller_ =
       std::make_unique<TabCreationMetricsController>(&tab);
+
+  tab_attachment_tracker_ =
+      GetUserDataFactory().CreateInstance<TabAttachmentTracker>(tab, &tab);
 
   tab_ui_helper_ = GetUserDataFactory().CreateInstance<TabUIHelper>(tab, tab);
 
