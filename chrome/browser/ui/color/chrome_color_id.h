@@ -995,8 +995,6 @@
   E_CPONLY(kColorTabGroupTabStripFrameInactiveOrange) \
   E_CPONLY(kColorTabStrokeFrameActive) \
   E_CPONLY(kColorTabStrokeFrameInactive) \
-  E_CPONLY(kColorTabstripLoadingProgressBackground) \
-  E_CPONLY(kColorTabstripLoadingProgressForeground) \
   E_CPONLY(kColorTabstripScrollContainerShadow) \
   E_CPONLY(kColorTabThrobber) \
   E_CPONLY(kColorTabThrobberPreconnect) \
