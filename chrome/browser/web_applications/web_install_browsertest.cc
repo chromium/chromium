@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -161,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   const std::string manifest_id =
       GenerateManifestId("some_id", current_doc_url).spec();
 
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
@@ -251,8 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
 
   // Simulate the user declining the install dialog.
-  auto auto_decline_pwa_install_confirmation =
-      SetAutoDeclinePWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoDeclineInstallDialogs auto_decline;
   base::HistogramTester histograms;
 
   ASSERT_TRUE(TryInstallApp());
@@ -285,8 +284,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", current_doc_url).spec();
 
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
@@ -337,8 +335,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", current_doc_url).spec();
 
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
@@ -376,8 +373,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
 
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
@@ -1084,8 +1080,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
 
   const int kTotalInstallCalls = 15;
   const int kAddManifestAfterCalls = 5;
@@ -1135,8 +1130,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 // with and without manifests doesn't cause crashes or unexpected behavior.
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        SpamInstallWithNavigationBetweenPages) {
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
 
   const int kTotalInstallCalls = 15;
   const int kNavigateToNoManifestAfterCalls = 5;

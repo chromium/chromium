@@ -41,6 +41,7 @@ include_rules = [
   "+chrome/browser/ui/views/bruschetta",
   "+chrome/browser/ui/views/crostini",
   "+chrome/browser/ui/views/plugin_vm",
+  "+chrome/browser/ui/views/web_apps/web_app_testing_flags.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/crostini_installer",
   "+chrome/browser/web_applications/web_app_provider.h",

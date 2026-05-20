@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -53,9 +54,7 @@ using State = AppBannerManager::State;
 class AppBannerManagerDesktopBrowserTest
     : public AppBannerManagerBrowserTestBase {
  public:
-  AppBannerManagerDesktopBrowserTest()
-      : auto_accept_pwa_install_confirmation_(
-            web_app::SetAutoAcceptPWAInstallConfirmationForTesting()) {}
+  AppBannerManagerDesktopBrowserTest() = default;
 
   void SetUp() override {
     TestAppBannerManagerDesktop::SetUp();
@@ -72,7 +71,8 @@ class AppBannerManagerDesktopBrowserTest
       const AppBannerManagerDesktopBrowserTest&) = delete;
 
  private:
-  base::AutoReset<bool> auto_accept_pwa_install_confirmation_;
+  web_app::test::ScopedAutoAcceptWebAppDialogs
+      auto_accept_pwa_install_confirmation_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,

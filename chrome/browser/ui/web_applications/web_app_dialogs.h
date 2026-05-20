@@ -184,21 +184,9 @@ void ShowSubAppsInstallDialog(
     const webapps::AppId& parent_app_id,
     base::OnceCallback<void(bool)> callback);
 
-// Sets whether |ShowSimpleInstallDialogForWebApps| should accept immediately
-// without any user interaction.
-base::AutoReset<bool> SetAutoAcceptPWAInstallConfirmationForTesting();
-
-// Sets whether |ShowSimpleInstallDialogForWebApps| should decline immediately
-// without any user interaction.
-base::AutoReset<bool> SetAutoDeclinePWAInstallConfirmationForTesting();
-
 // Sets whether |ShowDiyInstallDialogForWebApps| should accept immediately
 // without any user interaction.
 void SetAutoAcceptDiyAppsInstallDialogForTesting(bool auto_accept);
-
-// Sets whether the bubble should close when it is not in an active window
-// during testing.
-base::AutoReset<bool> SetDontCloseOnDeactivateForTesting();
 
 // Shows the Isolated Web App manual install wizard.
 IsolatedWebAppInstallerCoordinator* LaunchIsolatedWebAppInstaller(

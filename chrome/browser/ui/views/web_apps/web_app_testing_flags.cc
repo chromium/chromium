@@ -7,6 +7,8 @@
 namespace web_app::test {
 
 bool g_auto_accept_all_install_dialogs_for_testing = false;
+bool g_auto_decline_install_dialogs_for_testing = false;
+bool g_dont_close_install_dialogs_on_deactivate_for_testing = false;
 bool g_auto_check_chromeos_open_in_window_for_testing = false;
 bool g_auto_accept_create_shortcut_dialog_for_testing = false;
 

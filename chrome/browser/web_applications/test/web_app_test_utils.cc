@@ -1391,8 +1391,7 @@ webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
   // Depending on the installability criteria, different dialogs can be used.
   web_app::test::ScopedAutoAcceptCreateShortcutDialog auto_accept;
   web_app::test::ScopedAutoCheckChromeOsOpenInWindow auto_check;
-  auto auto_accept_pwa_install_confirmation =
-      SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
   SetAutoAcceptDiyAppsInstallDialogForTesting(true);
   WebAppTestInstallWithOsHooksObserver observer(browser->profile());
   observer.BeginListening();

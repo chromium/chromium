@@ -4337,7 +4337,8 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
 AutotestPrivateInstallPWAForCurrentURLFunction::
     AutotestPrivateInstallPWAForCurrentURLFunction()
     : auto_accept_pwa_install_confirmation_(
-          web_app::SetAutoAcceptPWAInstallConfirmationForTesting()) {}
+          &web_app::test::g_auto_accept_all_install_dialogs_for_testing,
+          true) {}
 AutotestPrivateInstallPWAForCurrentURLFunction::
     ~AutotestPrivateInstallPWAForCurrentURLFunction() = default;
 

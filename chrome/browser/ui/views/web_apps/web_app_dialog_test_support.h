@@ -21,7 +21,37 @@ class ScopedAutoAcceptWebAppDialogs {
   ~ScopedAutoAcceptWebAppDialogs();
 
  private:
-  base::AutoReset<bool> auto_reset_;
+  base::AutoReset<bool> auto_accept_all_install_dialogs_;
+};
+
+// Scoped helper to enable auto-declining dialogs during its
+// lifetime.
+class ScopedAutoDeclineInstallDialogs {
+ public:
+  ScopedAutoDeclineInstallDialogs();
+  ScopedAutoDeclineInstallDialogs(const ScopedAutoDeclineInstallDialogs&) =
+      delete;
+  ScopedAutoDeclineInstallDialogs& operator=(
+      const ScopedAutoDeclineInstallDialogs&) = delete;
+  ~ScopedAutoDeclineInstallDialogs();
+
+ private:
+  base::AutoReset<bool> auto_decline_install_dialogs_;
+};
+
+// Scoped helper to prevent closing dialogs on deactivate during
+// its lifetime.
+class ScopedDontCloseInstallDialogsOnDeactivate {
+ public:
+  ScopedDontCloseInstallDialogsOnDeactivate();
+  ScopedDontCloseInstallDialogsOnDeactivate(
+      const ScopedDontCloseInstallDialogsOnDeactivate&) = delete;
+  ScopedDontCloseInstallDialogsOnDeactivate& operator=(
+      const ScopedDontCloseInstallDialogsOnDeactivate&) = delete;
+  ~ScopedDontCloseInstallDialogsOnDeactivate();
+
+ private:
+  base::AutoReset<bool> dont_close_install_dialogs_on_deactivate_;
 };
 
 // Scoped helper to auto-check the open in window checkbox specifically on
@@ -36,7 +66,7 @@ class ScopedAutoCheckChromeOsOpenInWindow {
   ~ScopedAutoCheckChromeOsOpenInWindow();
 
  private:
-  base::AutoReset<bool> auto_reset_;
+  base::AutoReset<bool> auto_check_chromeos_open_in_window_;
 };
 
 // Scoped helper to auto-accept the create shortcut dialog.
@@ -50,7 +80,7 @@ class ScopedAutoAcceptCreateShortcutDialog {
   ~ScopedAutoAcceptCreateShortcutDialog();
 
  private:
-  base::AutoReset<bool> auto_reset_;
+  base::AutoReset<bool> auto_accept_create_shortcut_dialog_;
 };
 
 }  // namespace web_app::test

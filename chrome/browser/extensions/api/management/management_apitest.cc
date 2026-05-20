@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_support.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -289,8 +290,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
              });
            });)";
 
-    auto auto_accept_pwa_install_confirmation =
-        web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
+    web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
@@ -406,8 +406,7 @@ IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppApiTest, CapturedNavigation) {
-  auto auto_accept_pwa_install_confirmation =
-      web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
 
   static constexpr char kAppBPath[] =
       "/management/install_replacement_web_app/acceptable_web_app_standalone/"

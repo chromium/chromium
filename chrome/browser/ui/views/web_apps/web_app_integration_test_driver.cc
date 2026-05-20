@@ -1442,8 +1442,8 @@ void WebAppIntegrationTestDriver::InstallMenuOption(Site site) {
   BrowserAddedWaiter browser_added_waiter;
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
-  auto dont_close_bubble_on_deactivate =
-      web_app::SetDontCloseOnDeactivateForTesting();
+  web_app::test::ScopedDontCloseInstallDialogsOnDeactivate
+      dont_close_bubble_on_deactivate;
 
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
@@ -1501,8 +1501,8 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
         run_loop.Quit();
       }));
 
-  auto dont_close_bubble_on_deactivate =
-      web_app::SetDontCloseOnDeactivateForTesting();
+  web_app::test::ScopedDontCloseInstallDialogsOnDeactivate
+      dont_close_bubble_on_deactivate;
 
   BrowserAddedWaiter browser_added_waiter;
   views::test::PropertyWaiter(

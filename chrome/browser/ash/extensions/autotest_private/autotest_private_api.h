@@ -12,6 +12,7 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/views/web_apps/web_app_testing_flags.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/process.mojom.h"

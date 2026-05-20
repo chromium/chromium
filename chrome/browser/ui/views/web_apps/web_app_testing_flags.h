@@ -10,6 +10,12 @@ namespace web_app::test {
 // Global flag to auto-accept all web app install dialogs in tests.
 extern bool g_auto_accept_all_install_dialogs_for_testing;
 
+// Global flag to auto-decline simple install dialogs in tests.
+extern bool g_auto_decline_install_dialogs_for_testing;
+
+// Global flag to prevent closing simple install dialogs on deactivate in tests.
+extern bool g_dont_close_install_dialogs_on_deactivate_for_testing;
+
 // Global flag to auto-check the open in window checkbox specifically on
 // ChromeOS in the create shortcut dialog.
 extern bool g_auto_check_chromeos_open_in_window_for_testing;

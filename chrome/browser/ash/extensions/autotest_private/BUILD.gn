@@ -52,6 +52,7 @@ static_library("autotest_private") {
     "//chrome/browser/banners",
     "//chrome/browser/component_updater",
     "//chrome/browser/signin",
+    "//chrome/browser/ui:web_app_testing_flags",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/bruschetta",

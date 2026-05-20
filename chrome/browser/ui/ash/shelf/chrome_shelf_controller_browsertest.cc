@@ -1304,8 +1304,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   registration_waiter.AwaitRegistration();
 
   // Install PWA.
-  auto auto_accept_pwa_install_confirmation =
-      web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   ui_test_utils::BrowserCreatedObserver browser_observer;
@@ -2543,8 +2542,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_LINK));
   registration_waiter.AwaitRegistration();
   // Install PWA.
-  auto auto_accept_pwa_install_confirmation =
-      web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
+  web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept_pwa;
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   ui_test_utils::BrowserCreatedObserver browser_observer;
