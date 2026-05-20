@@ -58,10 +58,19 @@ class GeolocationHeaderService : public KeyedService {
 
   // Returns the serialized X-Geo header if a valid, fresh location is
   // available and the url matches the DSE. Otherwise, returns std::nullopt.
-  std::optional<std::string> GetLocationHeader(const GURL& url);
+  // If `for_automatic_sending` is true, returns the header only if site
+  // level permissions are explicitly granted (ALLOW).
+  // If `for_automatic_sending` is false, returns the header only if site
+  // level permissions are not explicitly granted (ASK/DENY).
+  std::optional<std::string> GetLocationHeader(const GURL& url,
+                                               bool for_automatic_sending);
 
   void SetLocationAgeForTesting(base::TimeDelta age) {
     location_age_for_testing_ = age;
+  }
+
+  void SetLocationForTesting(device::mojom::GeopositionPtr position) {
+    last_position_ = std::move(position);
   }
 
   bool is_geolocation_bound_for_testing() const {

@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
@@ -30,7 +31,9 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -38,6 +41,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
@@ -50,6 +57,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -68,6 +76,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -77,6 +86,10 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "ui/base/device_form_factor.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/location/android/mock_location_settings.h"
+#endif
 
 using base::ASCIIToUTF16;
 using testing::_;
@@ -382,6 +395,7 @@ void BaseSearchProviderTest::CustomizableSetUp(
   data.SetShortName(u"t");
   data.SetURL(search_url);
   data.suggestions_url = suggestions_url;
+  data.send_x_geo_header = true;
   default_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
   turl_model->SetUserSelectedDefaultSearchProvider(default_t_url_);
   TemplateURLID default_provider_id = default_t_url_->id();
@@ -4445,4 +4459,415 @@ TEST_F(SearchProviderCommandLineOverrideTest, CommandLineOverrides) {
   };
 
   RunTest(kCases, false);
+}
+
+class SearchProviderInlineLocationSignalingConfigurableTest
+    : public BaseSearchProviderTest {
+ public:
+  SearchProviderInlineLocationSignalingConfigurableTest() = default;
+
+  void SetupFeaturesAndPriming(const std::string& display_order,
+                               const std::string& wording,
+                               bool site_permission_allowed = false) {
+#if BUILDFLAG(IS_ANDROID)
+    GeolocationHeaderServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto mock_location_settings =
+              std::make_unique<MockLocationSettings>();
+          MockLocationSettings::SetLocationStatus(true, true, true);
+          return std::make_unique<GeolocationHeaderService>(
+              HostContentSettingsMapFactory::GetForProfile(profile),
+              TemplateURLServiceFactory::GetForProfile(profile),
+              std::move(mock_location_settings));
+        }));
+#endif
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kInlineLocationSignaling,
+          {{"display_order", display_order}, {"wording", wording}}},
+         {omnibox::kPlatformAgnosticXGeo, {}}},
+        {});
+
+    CustomizableSetUp(
+        /* search_url */ "https://defaultturl/{searchTerms}",
+        /* suggestions_url */ "https://defaultturl2/{searchTerms}");
+
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(0.0, 0.0);
+
+    auto* geo_service =
+        GeolocationHeaderServiceFactory::GetForProfile(profile_.get());
+    ASSERT_NE(nullptr, geo_service);
+
+    if (site_permission_allowed) {
+      HostContentSettingsMap* settings_map =
+          HostContentSettingsMapFactory::GetForProfile(profile_.get());
+      ContentSettingsType type =
+          content_settings::GeolocationContentSettingsType();
+      const content_settings::PermissionSettingsInfo* info =
+          content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+              type);
+      PermissionSetting allow_setting =
+          info->delegate().ToPermissionSetting(CONTENT_SETTING_ALLOW);
+      settings_map->SetPermissionSettingDefaultScope(
+          GURL("https://defaultturl/"), GURL("https://defaultturl/"), type,
+          allow_setting);
+    }
+
+    auto result = device::mojom::GeopositionResult::NewPosition(
+        device::mojom::Geoposition::New());
+    result->get_position()->latitude = 37.3861;
+    result->get_position()->longitude = -122.0839;
+    result->get_position()->accuracy = 100.0;
+    result->get_position()->timestamp = base::Time::Now();
+    result->get_position()->is_precise = false;
+    geolocation_overrider_->UpdateLocation(std::move(result));
+
+    geo_service->PrimeLocation();
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return geo_service->HasCachedLocation(); }));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+};
+
+// Verifies that when `display_order` parameter is `kDisplayBelow` and wording
+// is `kUseApproximateLocation`, the location sending suggestion is appended
+// after the match.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       DisplayBelow_UseApproximateLocation) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use approximate location");
+  EXPECT_NE(matches[2].extra_headers.find("x-geo"),
+            matches[2].extra_headers.end());
+}
+
+// Checks that when `display_order` parameter is `kDisplayBelow` and wording is
+// `kUseLocation`, the suggestion row gets displayed with custom wording below
+// its parent.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       DisplayBelow_UseLocation) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use location");
+}
+
+// Verifies that when `display_order` is `kDisplayAbove`, the suggestion row is
+// placed preceding the original parent suggested entry.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       DisplayAbove_UseApproximateLocation) {
+  SetupFeaturesAndPriming("DisplayAbove", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use approximate location");
+}
+
+// Tests injecting suggestion when order is Above and wording is Location.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       DisplayAbove_UseLocation) {
+  SetupFeaturesAndPriming("DisplayAbove", "UseLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use location");
+}
+
+// Tests that a suggest result is ignored if suggest subtypes do not match.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       SubtypeMismatchDoesNotDuplicate) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[100]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 2u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+}
+
+// Tests correct placement logic when display order is set to Above.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       OrderPlacementAbove) {
+  SetupFeaturesAndPriming("DisplayAbove", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use approximate location");
+}
+
+// Tests correct placement logic when display order is set to Below.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       OrderPlacementBelow) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use approximate location");
+}
+
+// Tests that duplication is bypassed when location permission has already been
+// granted.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       SkippedWhenSitePermissionAllowed) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseLocation",
+                          /*site_permission_allowed=*/true);
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 2u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+}
+
+// Verifies that suggestions are not copied when transmitting over insecure HTTP
+// connections.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       SkippedOverHttpSchemaConnection) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{omnibox::kInlineLocationSignaling,
+        {{"display_order", "DisplayBelow"},
+         {"wording", "UseApproximateLocation"}}},
+       {omnibox::kPlatformAgnosticXGeo, {}}},
+      {});
+
+  CustomizableSetUp(
+      /* search_url */ "http://defaultturl/{searchTerms}",
+      /* suggestions_url */ "https://defaultturl2/{searchTerms}");
+
+  geolocation_overrider_ =
+      std::make_unique<device::ScopedGeolocationOverrider>(0.0, 0.0);
+
+  auto* geo_service =
+      GeolocationHeaderServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, geo_service);
+
+  auto result = device::mojom::GeopositionResult::NewPosition(
+      device::mojom::Geoposition::New());
+  result->get_position()->latitude = 37.3861;
+  result->get_position()->longitude = -122.0839;
+  result->get_position()->accuracy = 100.0;
+  result->get_position()->timestamp = base::Time::Now();
+  result->get_position()->is_precise = false;
+  geolocation_overrider_->UpdateLocation(std::move(result));
+
+  geo_service->PrimeLocation();
+  EXPECT_FALSE(geo_service->HasCachedLocation());
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 2u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+}
+
+// Tests that duplication logic applies exclusively to the first match when
+// multiple are supplied.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       OnlyFirstEligibleSubtypeIsDuplicated) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\", \"other-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457],[457]],"
+      "\"google:suggestrelevance\":[1300,1299]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 4u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use approximate location");
+  EXPECT_EQ(matches[3].contents, u"other-suggestion");
+}
+
+// Tests match placement below suggestions list.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       IntermediatePlacementBelow) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"other-suggestion\", \"location-relevant-suggestion\", "
+      "\"other-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[],[457],[]],"
+      "\"google:suggestrelevance\":[1300,1299,1298]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 4u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"other-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[3].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[3].description, u"Use approximate location");
+}
+
+// Tests match placement above suggestions list.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       IntermediatePlacementAbove) {
+  SetupFeaturesAndPriming("DisplayAbove", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"other-suggestion\", \"location-relevant-suggestion\", "
+      "\"other-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[],[457],[]],"
+      "\"google:suggestrelevance\":[1300,1299,1298]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 4u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"other-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[3].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[3].description, u"Use approximate location");
+}
+
+// Tests that match reordering keeps highest priority items visible.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       FirstPlacementAbove) {
+  SetupFeaturesAndPriming("DisplayAbove", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\", \"other-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457],[]],"
+      "\"google:suggestrelevance\":[1300,1299]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 4u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use approximate location");
+  EXPECT_EQ(matches[3].contents, u"other-suggestion");
+}
+
+// Verifies injected location sending suggestions never override verbatim
+// queries at index 0.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       SignalingMatchNeverTakesIndexZero) {
+  SetupFeaturesAndPriming("DisplayAbove", "UseApproximateLocation");
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"query", false,
+      "[\"query\",[\"query\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1400]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 2u);
+
+  EXPECT_EQ(matches[0].contents, u"query");
+  EXPECT_EQ(matches[0].description, u"");
+
+  EXPECT_EQ(matches[1].contents, u"query");
+  EXPECT_EQ(matches[1].description, u"Use approximate location");
 }

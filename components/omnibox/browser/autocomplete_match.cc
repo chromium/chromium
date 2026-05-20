@@ -1706,6 +1706,12 @@ bool AutocompleteMatch::HasCustomDescription() const {
       !suggest_template->secondary_text().text().empty()) {
     return true;
   }
+
+  if (base::FeatureList::IsEnabled(omnibox::kInlineLocationSignaling) &&
+      extra_headers.contains(kXGeoHeader)) {
+    return true;
+  }
+
   return type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
          type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE ||
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||

@@ -69,6 +69,7 @@ const char kACMatchPropertyContentsStartIndex[] = "match contents start index";
 // A match attribute when a default match's score has been boosted with a higher
 // scoring non-default match.
 const char kACMatchPropertyScoreBoostedFrom[] = "score_boosted_from";
+inline constexpr char kXGeoHeader[] = "x-geo";
 
 // Util structs/enums ----------------------------------------------------------
 
@@ -171,6 +172,9 @@ enum class AutocompleteMatchDedupeType {
             // matches with `udm=50` in their suggest template to not be deduped
             // with matches without it. But this does not apply to `udm=50` in
             // the actual match URL; nor to udm values other than 50.
+  // Search matches created as a duplicate of an existing match which
+  // additionally send location data when selected.
+  kInlineLocationSignaling,
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -694,6 +698,11 @@ struct AutocompleteMatch {
   int GetSortingOrder() const;
 
   // Whether this autocomplete match supports custom descriptions.
+  // Matches with custom descriptions (such as calculator results, entities, or
+  // inline location signaling suggestions) will retain their custom description
+  // text and will not have it cleared or overwritten by the search engine's
+  // keyword description during
+  // `AutocompleteController::UpdateKeywordDescriptions()`.
   bool HasCustomDescription() const;
 
   // Returns true if the match is eligible for ML scoring signal logging.

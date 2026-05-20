@@ -8,6 +8,12 @@
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
   </message>
+  <message name="IDS_OMNIBOX_ILLS_USE_APPROXIMATE_LOCATION" desc="Text shown next to an omnibox suggestions row, which informs the user that clicking the row will send location to search engine. Specifically mentions 'approximate' (as in the opposite of 'precise').">
+    Use approximate location
+  </message>
+  <message name="IDS_OMNIBOX_ILLS_USE_LOCATION" desc="Text shown next to an omnibox suggestions row, which informs the user that clicking the row will send location to search engine.">
+    Use location
+  </message>
   <message name="IDS_AUTOCOMPLETE_ASK_DESCRIPTION" desc="Description for matches from ask-keywords; e.g. gemini or ai mode.">
     Ask <ph name="ENGINE">$1<ex>AI Mode</ex></ph>
   </message>

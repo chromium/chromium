@@ -255,7 +255,8 @@ TEST_F(GeolocationHeaderServiceTest, PrimeAndGetLocation) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
-  std::optional<std::string> header = service->GetLocationHeader(url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   EXPECT_THAT(header, Optional(StartsWith(kLocationProtoPrefix)));
 }
 
@@ -280,7 +281,8 @@ TEST_F(GeolocationHeaderServiceTest, ApproximatePermission) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
-  std::optional<std::string> header = service->GetLocationHeader(url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   ASSERT_TRUE(header.has_value());
   // The expected string for COARSE location matching the Java tests.
   EXPECT_EQ(*header, "w CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRsgBAQ==");
@@ -315,7 +317,8 @@ TEST_F(GeolocationHeaderServiceTest, Serialization) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
-  std::optional<std::string> header = service->GetLocationHeader(url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   ASSERT_TRUE(header.has_value());
   // The expected string corresponds to the exact parameters above matching the
   // Java tests.
@@ -339,12 +342,14 @@ TEST_F(GeolocationHeaderServiceTest, OldLocation) {
   // Advance time by 23 hours. Location should still be valid.
   task_environment_.FastForwardBy(base::Hours(23));
   EXPECT_TRUE(service->HasCachedLocation());
-  EXPECT_TRUE(service->GetLocationHeader(url).has_value());
+  EXPECT_TRUE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                  .has_value());
 
   // Advance time by 2 more hours (25 total). Location should be expired.
   task_environment_.FastForwardBy(base::Hours(2));
   EXPECT_FALSE(service->HasCachedLocation());
-  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                   .has_value());
 }
 
 // Verifies that location headers are not appended to arbitrary non-Default
@@ -368,7 +373,8 @@ TEST_F(GeolocationHeaderServiceTest, NonDseUrl) {
   GURL non_dse_url("https://www.yahoo.com");
   SetSitePermissionWithOptions(
       non_dse_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
-  std::optional<std::string> header = service->GetLocationHeader(non_dse_url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(non_dse_url, /*for_automatic_sending=*/true);
   EXPECT_FALSE(header.has_value());
 }
 
@@ -399,8 +405,8 @@ TEST_F(GeolocationHeaderServiceTest, GoogleFallbackUrl) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
-  std::optional<std::string> header =
-      service->GetLocationHeader(google_fallback_url);
+  std::optional<std::string> header = service->GetLocationHeader(
+      google_fallback_url, /*for_automatic_sending=*/true);
   EXPECT_FALSE(header.has_value());
 }
 
@@ -421,7 +427,8 @@ TEST_F(GeolocationHeaderServiceTest, AppCoarseSitePrecisePermission) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
-  std::optional<std::string> header = service->GetLocationHeader(url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   EXPECT_THAT(header, Optional(StartsWith(kLocationProtoPrefix)));
 }
 
@@ -444,7 +451,8 @@ TEST_F(GeolocationHeaderServiceTest, PositionPreciseSiteCoarsePermission) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
-  std::optional<std::string> header = service->GetLocationHeader(url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   EXPECT_FALSE(header.has_value());
 }
 
@@ -469,7 +477,8 @@ TEST_F(GeolocationHeaderServiceTest, PreciseToCoarseDowngradeLeak) {
       url, {PermissionOption::kAllowed, PermissionOption::kDenied});
 
   // The cached location should be dropped and nullopt returned.
-  std::optional<std::string> header = service->GetLocationHeader(url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   EXPECT_FALSE(header.has_value());
 }
 
@@ -490,7 +499,8 @@ TEST_F(GeolocationHeaderServiceTest, ConsistentHeader) {
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 
   // X-Geo should be sent for Google search results page URLs.
-  std::optional<std::string> header = service->GetLocationHeader(dse_url);
+  std::optional<std::string> header =
+      service->GetLocationHeader(dse_url, /*for_automatic_sending=*/true);
   EXPECT_THAT(header, Optional(StartsWith(kLocationProtoPrefix)));
 
   // Legacy Google search URLs (e.g. /webhp) should also be supported via the
@@ -498,42 +508,57 @@ TEST_F(GeolocationHeaderServiceTest, ConsistentHeader) {
   GURL legacy_search_url("https://www.google.com/webhp?#q=dinosaurs");
   SetSitePermissionWithOptions(legacy_search_url, {PermissionOption::kAllowed,
                                                    PermissionOption::kAllowed});
-  std::optional<std::string> legacy_header =
-      service->GetLocationHeader(legacy_search_url);
+  std::optional<std::string> legacy_header = service->GetLocationHeader(
+      legacy_search_url, /*for_automatic_sending=*/true);
   EXPECT_THAT(legacy_header, Optional(StartsWith(kLocationProtoPrefix)));
 
   // But only the current CCTLD.
   GURL diff_cctld("https://www.google.co.jp/webhp?#q=dinosaurs");
   SetSitePermissionWithOptions(
       diff_cctld, {PermissionOption::kAllowed, PermissionOption::kAllowed});
-  EXPECT_FALSE(service->GetLocationHeader(diff_cctld).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(diff_cctld, /*for_automatic_sending=*/true)
+          .has_value());
 
   // X-Geo shouldn't be sent with URLs that aren't the Google search results
   // page.
   GURL invalid_url("invalid$url");
-  EXPECT_FALSE(service->GetLocationHeader(invalid_url).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(invalid_url, /*for_automatic_sending=*/true)
+          .has_value());
 
   GURL chrome_fr("https://www.chrome.fr/");
   SetSitePermissionWithOptions(
       chrome_fr, {PermissionOption::kAllowed, PermissionOption::kAllowed});
-  EXPECT_FALSE(service->GetLocationHeader(chrome_fr).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(chrome_fr, /*for_automatic_sending=*/true)
+          .has_value());
 
   GURL google_homepage("https://www.google.com/");
-  EXPECT_FALSE(service->GetLocationHeader(google_homepage).has_value());
+  EXPECT_FALSE(
+      service
+          ->GetLocationHeader(google_homepage, /*for_automatic_sending=*/true)
+          .has_value());
 
   GURL google_maps("https://www.google.com/maps");
-  EXPECT_FALSE(service->GetLocationHeader(google_maps).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(google_maps, /*for_automatic_sending=*/true)
+          .has_value());
 
   // X-Geo shouldn't be sent over HTTP.
   GURL http_search("http://www.google.com/search?q=potatoes");
   SetSitePermissionWithOptions(
       http_search, {PermissionOption::kAllowed, PermissionOption::kAllowed});
-  EXPECT_FALSE(service->GetLocationHeader(http_search).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(http_search, /*for_automatic_sending=*/true)
+          .has_value());
 
   GURL http_webhp("http://www.google.com/webhp?#q=dinosaurs");
   SetSitePermissionWithOptions(
       http_webhp, {PermissionOption::kAllowed, PermissionOption::kAllowed});
-  EXPECT_FALSE(service->GetLocationHeader(http_webhp).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(http_webhp, /*for_automatic_sending=*/true)
+          .has_value());
 }
 
 // Verifies that a fresh cached location prevents querying for a new one.
@@ -589,7 +614,8 @@ TEST_F(GeolocationHeaderServiceTest, HighAccuracyHint) {
       url, {PermissionOption::kAllowed, PermissionOption::kDenied});
 
   // GetLocationHeader should reset the connection.
-  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                   .has_value());
 
   // Prime again. This should create a new connection.
   geolocation_overrider_.Pause();
@@ -749,7 +775,8 @@ TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInOmitted) {
   auto service = CreateService();
   service->PrimeLocation();
   EXPECT_FALSE(service->HasCachedLocation());
-  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                   .has_value());
   EXPECT_FALSE(service->is_geolocation_bound_for_testing());
 }
 
@@ -773,7 +800,8 @@ TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInExplicitFalse) {
   auto service = CreateService();
   service->PrimeLocation();
   EXPECT_FALSE(service->HasCachedLocation());
-  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                   .has_value());
   EXPECT_FALSE(service->is_geolocation_bound_for_testing());
 }
 
@@ -798,7 +826,8 @@ TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInExplicitTrue) {
   service->PrimeLocation();
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
-  EXPECT_TRUE(service->GetLocationHeader(url).has_value());
+  EXPECT_TRUE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                  .has_value());
 }
 
 // Verifies that a change in DSE updates the opt-in value at runtime.
@@ -816,11 +845,13 @@ TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInRuntimeChange) {
   service->PrimeLocation();
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
-  EXPECT_TRUE(service->GetLocationHeader(url).has_value());
+  EXPECT_TRUE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                  .has_value());
 
   // 2. Change DSE to opted out at runtime.
   SetDefaultSearchProviderUrl(url.spec(), /*send_x_geo_header=*/false);
-  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->GetLocationHeader(url, /*for_automatic_sending=*/true)
+                   .has_value());
 }
 
 // Verifies that the header is NOT sent if the URL is not same-origin with DSE,
@@ -845,7 +876,9 @@ TEST_F(GeolocationHeaderServiceTest, NonDseOriginRedirect) {
   SetSitePermissionWithOptions(
       non_dse_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
 
-  EXPECT_FALSE(service->GetLocationHeader(non_dse_url).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(non_dse_url, /*for_automatic_sending=*/true)
+          .has_value());
 }
 
 // Verifies that the Google fallback path respects the opt-in flag.
@@ -868,5 +901,37 @@ TEST_F(GeolocationHeaderServiceTest, GoogleFallbackOptIn) {
   SetSitePermissionWithOptions(
       fallback_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
 
-  EXPECT_FALSE(service->GetLocationHeader(fallback_url).has_value());
+  EXPECT_FALSE(
+      service->GetLocationHeader(fallback_url, /*for_automatic_sending=*/true)
+          .has_value());
+}
+
+// Test location retrieval for omnibox inline location suggestions.
+TEST_F(GeolocationHeaderServiceInlineLocationTest,
+       GetLocationHeaderInlineLocationSuggestion) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/false);
+
+  std::unique_ptr<GeolocationHeaderService> service = CreateService();
+  GURL url(kGoogleUrl);
+
+  SetDefaultSearchProviderUrl(url.spec());
+  SetSitePermissionWithOptions(
+      url, {PermissionOption::kAsk, PermissionOption::kAsk});
+
+  EXPECT_FALSE(service->HasCachedLocation());
+
+  service->PrimeLocation();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+
+  std::optional<std::string> omnibox_suggestion_header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/false);
+  EXPECT_THAT(omnibox_suggestion_header,
+              Optional(StartsWith(kLocationProtoPrefix)));
+
+  std::optional<std::string> automatic_header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
+  EXPECT_FALSE(automatic_header.has_value());
 }

@@ -322,8 +322,8 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
     GeolocationHeaderService* geo_service =
         GeolocationHeaderServiceFactory::GetForProfile(profile);
     if (geo_service) {
-      std::optional<std::string> geo_header =
-          geo_service->GetLocationHeader(resource_request->url);
+      std::optional<std::string> geo_header = geo_service->GetLocationHeader(
+          resource_request->url, /*for_automatic_sending=*/true);
       if (geo_header) {
         resource_request->headers.SetHeader("X-Geo", geo_header.value());
       }

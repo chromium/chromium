@@ -507,6 +507,31 @@ BASE_FEATURE(kPlatformAgnosticXGeo, DISABLED);
 // and experimentation for the feature.
 BASE_FEATURE(kInlineLocationSignaling, DISABLED);
 
+constexpr base::FeatureParam<InlineLocationSignalingDisplayOrder>::Option
+    kInlineLocationSignalingDisplayOrderOptions[] = {
+        {InlineLocationSignalingDisplayOrder::kDisplayBelow, "DisplayBelow"},
+        {InlineLocationSignalingDisplayOrder::kDisplayAbove, "DisplayAbove"},
+};
+
+const base::FeatureParam<InlineLocationSignalingDisplayOrder>
+    kInlineLocationSignalingDisplayOrder{
+        &kInlineLocationSignaling, "display_order",
+        InlineLocationSignalingDisplayOrder::kDisplayBelow,
+        &kInlineLocationSignalingDisplayOrderOptions};
+
+constexpr base::FeatureParam<InlineLocationSignalingWording>::Option
+    kInlineLocationSignalingWordingOptions[] = {
+        {InlineLocationSignalingWording::kUseApproximateLocation,
+         "UseApproximateLocation"},
+        {InlineLocationSignalingWording::kUseLocation, "UseLocation"},
+};
+
+const base::FeatureParam<InlineLocationSignalingWording>
+    kInlineLocationSignalingWording{
+        &kInlineLocationSignaling, "wording",
+        InlineLocationSignalingWording::kUseApproximateLocation,
+        &kInlineLocationSignalingWordingOptions};
+
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

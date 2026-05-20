@@ -260,7 +260,9 @@ source_set("unit_tests") {
     ":autocomplete",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",
+    "//chrome/browser/omnibox",
     "//chrome/browser/profiles:test_support",
     "//chrome/browser/search_engines",
     "//chrome/common:constants",
@@ -301,6 +303,10 @@ source_set("unit_tests") {
       "//extensions/browser",
       "//extensions/common",
     ]
+  }
+
+  if (is_android) {
+    deps += [ "//components/location/android:test_support" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

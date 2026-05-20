@@ -78,8 +78,8 @@ GeolocationNavigationThrottle::ProcessNavigation() {
     return PROCEED;
   }
 
-  std::optional<std::string> geo_header =
-      service->GetLocationHeader(navigation_handle()->GetURL());
+  std::optional<std::string> geo_header = service->GetLocationHeader(
+      navigation_handle()->GetURL(), /*for_automatic_sending=*/true);
   if (geo_header) {
     navigation_handle()->SetRequestHeader(kXGeoHeaderName, *geo_header);
     content_settings::PageSpecificContentSettings::

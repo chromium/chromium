@@ -218,6 +218,22 @@ BASE_DECLARE_FEATURE(kPlatformAgnosticXGeo);
 // and experimentation for the feature.
 BASE_DECLARE_FEATURE(kInlineLocationSignaling);
 
+enum class InlineLocationSignalingDisplayOrder {
+  kDisplayBelow = 0,
+  kDisplayAbove = 1,
+};
+
+enum class InlineLocationSignalingWording {
+  kUseApproximateLocation = 0,
+  kUseLocation = 1,
+};
+
+extern const base::FeatureParam<InlineLocationSignalingDisplayOrder>
+    kInlineLocationSignalingDisplayOrder;
+
+extern const base::FeatureParam<InlineLocationSignalingWording>
+    kInlineLocationSignalingWording;
+
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

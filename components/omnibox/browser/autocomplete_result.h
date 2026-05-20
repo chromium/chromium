@@ -518,6 +518,9 @@ class AutocompleteResult {
   static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
 
+  // Positions inline location matches relative to their parents.
+  void ArrangeInlineLocationSignalingMatch();
+
   // This method reduces the number of navigation suggestions to that of
   // `max_url_matches_` but will allow more if there are no other types to
   // replace them.
