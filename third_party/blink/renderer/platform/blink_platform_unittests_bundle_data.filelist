@@ -848,6 +848,7 @@ testing/data/green.jpg
 testing/data/green.png
 testing/data/happy_dog.avif
 testing/data/icc-v2-gbr.jpg
+testing/data/open_type_math_support_fuzzer_timeout.ttf
 testing/data/original-cat-420-629x473.jpg
 testing/data/palatted-color-png-gamma-one-color-profile.png
 testing/data/png-zero-gamma-color-profile-ref.png

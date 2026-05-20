@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/ots/src/include/ots-memory-stream.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -61,12 +62,13 @@ class BlinkOTSContext final : public ots::OTSContext {
  public:
   void Message(int level, const char* format, ...) override;
   ots::TableAction GetTableAction(uint32_t tag) override;
-  const String& GetErrorString() { return accumulated_error_string_; }
+  String GetErrorString() { return accumulated_error_string_.ToString(); }
 
  private:
-  void AppendErrorMessage(const String&& new_error_string);
+  void AppendErrorMessage(const String& new_error_string);
 
-  String accumulated_error_string_;
+  StringBuilder accumulated_error_string_;
+  bool stopped_accepting_messages_ = false;
 };
 
 void BlinkOTSContext::Message(int level, const char* format, ...) {
@@ -97,16 +99,29 @@ void BlinkOTSContext::Message(int level, const char* format, ...) {
   }
 }
 
-void BlinkOTSContext::AppendErrorMessage(const String&& new_error_string) {
-  if (accumulated_error_string_.empty()) {
-    accumulated_error_string_ = new_error_string;
-  } else {
-    if (accumulated_error_string_.contains(new_error_string)) {
-      return;
-    }
-    accumulated_error_string_ =
-        StrCat({accumulated_error_string_, "\n", new_error_string});
+void BlinkOTSContext::AppendErrorMessage(const String& new_error_string) {
+  // OTS can emit a large number of warnings for malformed fonts. Keep enough
+  // text for diagnostics, but avoid unbounded string growth. Once a message
+  // would push the accumulated string past the budget, stop accepting further
+  // messages entirely rather than truncating individual ones.
+  static constexpr unsigned kMaxAccumulatedErrorStringLength = 4096;
+
+  if (stopped_accepting_messages_) {
+    return;
   }
+
+  const unsigned separator_length = accumulated_error_string_.empty() ? 0u : 1u;
+  if (accumulated_error_string_.length() + separator_length +
+          new_error_string.length() >
+      kMaxAccumulatedErrorStringLength) {
+    stopped_accepting_messages_ = true;
+    return;
+  }
+
+  if (separator_length) {
+    accumulated_error_string_.Append('\n');
+  }
+  accumulated_error_string_.Append(new_error_string);
 }
 
 #if !defined(HB_VERSION_ATLEAST)
