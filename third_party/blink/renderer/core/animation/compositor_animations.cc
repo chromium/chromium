@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
@@ -1187,8 +1188,17 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
     const SVGElement& svg_element) {
   FailureReasons reasons = kNoFailure;
   if (const auto* layout_object = svg_element.GetLayoutObject()) {
-    if (layout_object->IsSVGViewportContainer()) {
-      // Nested SVG doesn't support transforms for now.
+    if (layout_object->IsSVGViewportContainer() &&
+        To<LayoutSVGViewportContainer>(layout_object)->HasViewboxTransform()) {
+      // Composited animation would replace the element's
+      // CSS transform and drop the viewBox/x/y transform that
+      // LayoutSVGViewportContainer post-multiplies into
+      // LocalToSVGParentTransform().
+      // TODO(dmangal): Consider unifying with the
+      // `LayoutSVGTransformableContainer` branch below, both
+      // reject for the same underlying reason: an extra transform is
+      // post-multiplied into LocalToSVGParentTransform() that composited
+      // animation would drop.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
     } else if (layout_object->StyleRef().EffectiveZoom() != 1) {
       // TODO(crbug.com/1186312): Composited transform animation with non-1

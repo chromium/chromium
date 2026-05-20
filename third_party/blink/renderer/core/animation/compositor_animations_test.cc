@@ -2530,6 +2530,14 @@ TEST_P(AnimationCompositorAnimationsTest,
         <rect class="animate" vector-effect="non-scaling-stroke"/>
       </g>
       <svg id="nested-svg" class="animate"/>
+      <svg id="nested-svg-offset" class="animate" x="10"/>
+      <svg id="nested-svg-viewbox" class="animate" viewBox="0 0 50 50"/>
+      <svg id="nested-svg-identity-viewbox" class="animate"
+           viewBox="0 0 100 100"/>
+      <svg id="nested-svg-zoomed" class="animate" style="zoom: 1.5"/>
+      <svg id="nested-svg-vector-effect" class="animate">
+        <rect class="animate" vector-effect="non-scaling-stroke"/>
+      </svg>
       <foreignObject id="foreign" class="animate"/>
       <foreignObject id="foreign-zoomed" class="animate"
                      style="zoom: 1.5; will-change: opacity"/>
@@ -2552,7 +2560,12 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(CanStartAnimation("rect-smil"));
   EXPECT_FALSE(CanStartAnimation("rect-effect"));
   EXPECT_FALSE(CanStartAnimation("g-effect"));
-  EXPECT_FALSE(CanStartAnimation("nested-svg"));
+  EXPECT_TRUE(CanStartAnimation("nested-svg"));
+  EXPECT_FALSE(CanStartAnimation("nested-svg-offset"));
+  EXPECT_FALSE(CanStartAnimation("nested-svg-viewbox"));
+  EXPECT_TRUE(CanStartAnimation("nested-svg-identity-viewbox"));
+  EXPECT_FALSE(CanStartAnimation("nested-svg-zoomed"));
+  EXPECT_FALSE(CanStartAnimation("nested-svg-vector-effect"));
   EXPECT_TRUE(CanStartAnimation("foreign"));
   EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
   EXPECT_TRUE(CanStartAnimation("use"));

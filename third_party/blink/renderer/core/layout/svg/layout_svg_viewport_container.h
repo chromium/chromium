@@ -59,6 +59,13 @@ class LayoutSVGViewportContainer final
 
   AffineTransform ComputeViewboxTransform() const;
 
+  // Returns true if the viewBox/x/y transform that is post-multiplied into
+  // LocalToSVGParentTransform() is not the identity.
+  bool HasViewboxTransform() const {
+    NOT_DESTROYED();
+    return local_to_parent_transform_ != local_transform_;
+  }
+
  private:
   bool IsSVGViewportContainer() const final {
     NOT_DESTROYED();
