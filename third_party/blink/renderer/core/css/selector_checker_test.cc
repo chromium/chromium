@@ -1163,9 +1163,6 @@ TEST_F(EasySelectorCheckerTest, IsEasy) {
   EXPECT_TRUE(IsEasy(".a > .b"));
   EXPECT_TRUE(IsEasy(".a .b > .c"));
   EXPECT_FALSE(IsEasy(".a > .b .c"));
-  EXPECT_TRUE(IsEasy(".a + .b"));
-  EXPECT_TRUE(IsEasy(".a + .b > .c"));
-  EXPECT_FALSE(IsEasy(".a + .b > .c .d"));
   EXPECT_FALSE(IsEasy(".a ~ .b"));
   EXPECT_FALSE(IsEasy("&"));
   EXPECT_FALSE(IsEasy(":not(.a)"));

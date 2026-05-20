@@ -18,19 +18,17 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
     if (!selector->IsLastInComplexSelector() &&
         selector->Relation() != CSSSelector::kSubSelector &&
         selector->Relation() != CSSSelector::kDescendant &&
-        selector->Relation() != CSSSelector::kChild &&
-        selector->Relation() != CSSSelector::kDirectAdjacent) {
+        selector->Relation() != CSSSelector::kChild) {
       // We don't support anything that requires us to recurse.
       return false;
     }
     if (selector->Relation() == CSSSelector::kDescendant) {
       has_descendant_selector = true;
-    } else if ((selector->Relation() == CSSSelector::kChild ||
-                selector->Relation() == CSSSelector::kDirectAdjacent) &&
+    } else if (selector->Relation() == CSSSelector::kChild &&
                has_descendant_selector) {
-      // Having a child or (direct) adjacent selector after a descendant
-      // selector requires more complicated backtracking (we need to backtrack
-      // in both selector and element), which we don't support yet.
+      // Having a child selector after a descendant selector requires
+      // more complicated backtracking (we need to backtrack in both
+      // selector and element), which we don't support yet.
       return false;
     }
     if (selector->IsCoveredByBucketing()) {
@@ -109,9 +107,9 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
                                 PseudoId& dynamic_pseudo) {
   DCHECK(IsEasy(selector));
 
-  // Since we only support subselector, child, descendant and direct adjacent
-  // combinators (and not all combinations of the latter two), we can do with
-  // a nonrecursive algorithm. The idea is fairly simple: We can match
+  // Since we only support subselector, child and descendant combinators
+  // (and not all combinations of the latter two), we can do with a
+  // nonrecursive algorithm. The idea is fairly simple: We can match
   // greedily and never need to backtrack. E.g. if we have .a.b .c.d .e.f {}
   // and see an element matching .e.f and then later some parent matching .c.d,
   // we never need to look for .c.d again.
@@ -153,17 +151,6 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
         DCHECK(!rewind_on_failure);
 
         element = element->parentElement();
-        if (element == nullptr) {
-          return false;
-        }
-      } else if (selector->Relation() == CSSSelector::kDirectAdjacent) {
-        // Similar, but with going to the previous sibling instead.
-        // (We do not support the ~ combinator, but we could without
-        // too much trouble if we wanted to.)
-        DCHECK(!selector->IsLastInComplexSelector());
-        DCHECK(!rewind_on_failure);
-
-        element = element->previousElementSibling();
         if (element == nullptr) {
           return false;
         }
