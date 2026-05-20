@@ -1941,7 +1941,7 @@ public class CustomTabsConnection {
         // optimistically assume it is. Otherwise we would effectively disable CCT warmup
         // on these devices.
         if (!workaroundAvailable) return true;
-        return isBackgroundProcess(pid);
+        return !isBackgroundProcess(pid);
     }
 
     void cleanupAllForTesting() {
