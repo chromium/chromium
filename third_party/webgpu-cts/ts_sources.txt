@@ -919,6 +919,7 @@ src/webgpu/shader/validation/extension/clip_distances.spec.ts
 src/webgpu/shader/validation/extension/dual_source_blending.spec.ts
 src/webgpu/shader/validation/extension/pointer_composite_access.spec.ts
 src/webgpu/shader/validation/extension/readonly_and_readwrite_storage_textures.spec.ts
+src/webgpu/shader/validation/extension/subgroup_size_control.spec.ts
 src/webgpu/shader/validation/functions/alias_analysis.spec.ts
 src/webgpu/shader/validation/functions/restrictions.spec.ts
 src/webgpu/shader/validation/parse/attribute.spec.ts
