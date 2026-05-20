@@ -120,6 +120,7 @@ void CameraDeviceContext::SubmitCapturedImage(
   client->second->OnIncomingCapturedImage(
       std::move(shared_image), frame_format, GetCameraFrameRotation(),
       reference_time, timestamp, /*capture_begin_timestamp=*/std::nullopt,
+      frame_format.frame_size,
       /*metadata=*/std::nullopt);
 }
 

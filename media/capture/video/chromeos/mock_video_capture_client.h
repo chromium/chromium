@@ -59,6 +59,7 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
+      const gfx::Size& natural_size,
       const std::optional<media::VideoFrameMetadata>& metadata,
       int frame_feedback_id) override;
   void OnIncomingCapturedExternalBuffer(

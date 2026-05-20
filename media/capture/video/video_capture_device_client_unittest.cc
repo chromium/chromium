@@ -218,7 +218,8 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
   device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
       std::move(shared_image), kFrameFormatNV12, 0 /*clockwise rotation*/,
       base::TimeTicks(), base::TimeDelta(),
-      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
+      /*capture_begin_timestamp=*/std::nullopt, kFrameFormatNV12.frame_size,
+      /*metadata=*/std::nullopt);
 
   Cleanup();
 }
@@ -292,7 +293,8 @@ TEST_F(VideoCaptureDeviceClientTest,
     device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
         std::move(shared_image), kFrameFormatNV12, 0 /*clockwise rotation*/,
         base::TimeTicks(), base::TimeDelta(),
-        /*capture_begin_timestamp=*/std::nullopt, metadata);
+        /*capture_begin_timestamp=*/std::nullopt, kFrameFormatNV12.frame_size,
+        metadata);
     Mock::VerifyAndClearExpectations(receiver_);
   }
 
@@ -341,7 +343,7 @@ TEST_F(VideoCaptureDeviceClientTest,
   device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
       std::move(shared_image),
       VideoCaptureFormat(resolution, 30.0f, PIXEL_FORMAT_NV12), 0,
-      base::TimeTicks(), base::TimeDelta(), expected_timestamp,
+      base::TimeTicks(), base::TimeDelta(), expected_timestamp, resolution,
       /*metadata=*/std::nullopt);
 
   Cleanup();
@@ -540,7 +542,9 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
     device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
         std::move(shared_image), params.requested_format,
         size_and_rotation.rotation, base::TimeTicks(), base::TimeDelta(),
-        /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
+        /*capture_begin_timestamp=*/std::nullopt,
+        params.requested_format.frame_size,
+        /*metadata=*/std::nullopt);
 
     EXPECT_EQ(coded_size.width(), size_and_rotation.output_resolution.width());
     EXPECT_EQ(coded_size.height(),

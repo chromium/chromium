@@ -514,10 +514,10 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   VideoFrameMetadata metadata;
   metadata.ycbcr_info = ycbcr_info_;
 
-  client_->OnIncomingCapturedImage(std::move(shared_image), format, rotation,
-                                   current_time, capture_time,
-                                   /*capture_begin_timestamp=*/{}, metadata,
-                                   /*frame_feedback_id=*/0);
+  client_->OnIncomingCapturedImage(
+      std::move(shared_image), format, rotation, current_time, capture_time,
+      /*capture_begin_timestamp=*/{}, format.frame_size, metadata,
+      /*frame_feedback_id=*/0);
 }
 
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailable(

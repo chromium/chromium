@@ -234,6 +234,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
+        const gfx::Size& natural_size,
         const std::optional<VideoFrameMetadata>& metadata,
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
@@ -244,6 +245,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
+        const gfx::Size& natural_size,
         const std::optional<VideoFrameMetadata>& metadata);
 
     // Captured a new video frame. The data for this frame is in

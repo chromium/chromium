@@ -473,6 +473,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const gfx::Size& natural_size,
     const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
@@ -496,7 +497,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
     OnIncomingCapturedImageZeroCopy(std::move(shared_image), frame_format,
                                     clockwise_rotation, reference_time,
                                     timestamp, capture_begin_timestamp,
-                                    metadata, frame_feedback_id);
+                                    natural_size, metadata, frame_feedback_id);
     return;
   }
 #endif
@@ -575,9 +576,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImageZeroCopy(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const gfx::Size& natural_size,
     const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   gfx::ColorSpace color_space = shared_image->color_space();
+  gfx::Rect visible_rect(shared_image->size());
   CapturedExternalVideoBuffer buffer = CapturedExternalVideoBuffer(
       std::move(shared_image), frame_format, color_space);
 
@@ -599,11 +602,10 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImageZeroCopy(
   }
   new_metadata.transformation = media::VideoTransformation(video_rotation);
 
-  const gfx::Size buffer_size = buffer.client_shared_image->size();
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
           std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
-          gfx::Rect(buffer_size), buffer_size, new_metadata,
+          visible_rect, natural_size, new_metadata,
           &ready_frame) != ReserveResult::kSucceeded) {
     DVLOG(2) << __func__
              << " CreateReadyFrameFromExternalBuffer failed: reservation "

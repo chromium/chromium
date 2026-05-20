@@ -117,10 +117,11 @@ void VideoCaptureDevice::Client::OnIncomingCapturedImage(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const gfx::Size& natural_size,
     const std::optional<VideoFrameMetadata>& metadata) {
   OnIncomingCapturedImage(std::move(shared_image), frame_format,
                           clockwise_rotation, reference_time, timestamp,
-                          capture_begin_timestamp, metadata,
+                          capture_begin_timestamp, natural_size, metadata,
                           /*frame_feedback_id=*/0);
 }
 
