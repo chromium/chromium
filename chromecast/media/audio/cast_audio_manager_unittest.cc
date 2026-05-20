@@ -112,9 +112,7 @@ class CastAudioManagerTest : public testing::Test {
         base::BindRepeating(&CastAudioManagerTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(),
-        true /* force_use_cma_backend_for_output*/
-        ));
+        audio_thread_.task_runner()));
 #endif  // BUILDFLAG(IS_ANDROID)
     // A few AudioManager implementations post initialization tasks to
     // audio thread. Flush the thread to ensure that |audio_manager_| is

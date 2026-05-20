@@ -40,29 +40,12 @@ CastAudioManager::CastAudioManager(
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
-    : CastAudioManager(std::move(audio_thread),
-                       audio_log_factory,
-                       delegate,
-                       std::move(backend_factory_getter),
-                       std::move(browser_task_runner),
-                       std::move(media_task_runner),
-                       false) {}
-
-CastAudioManager::CastAudioManager(
-    std::unique_ptr<::media::AudioThread> audio_thread,
-    ::media::AudioLogFactory* audio_log_factory,
-    CastAudioManagerHelper::Delegate* delegate,
-    base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    bool force_use_cma_backend_for_output)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
       helper_(this,
               delegate,
               std::move(backend_factory_getter),
               std::move(media_task_runner)),
       browser_task_runner_(std::move(browser_task_runner)),
-      force_use_cma_backend_for_output_(force_use_cma_backend_for_output),
       weak_factory_(this) {
   DCHECK(browser_task_runner_->BelongsToCurrentThread());
   weak_this_ = weak_factory_.GetWeakPtr();

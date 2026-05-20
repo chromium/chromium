@@ -100,14 +100,7 @@ class CastAudioManager : public ::media::AudioManagerBase {
   friend class CastAudioManagerTest;
   friend class CastAudioOutputStreamTest;
 
-  CastAudioManager(
-      std::unique_ptr<::media::AudioThread> audio_thread,
-      ::media::AudioLogFactory* audio_log_factory,
-      CastAudioManagerHelper::Delegate* delegate,
-      base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      bool force_use_cma_backend_for_output);
+
 
 
 
@@ -116,13 +109,7 @@ class CastAudioManager : public ::media::AudioManagerBase {
   scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner_;
 
 
-  // Let unit test force the CastOutputStream to uses
-  // CmaBackend implementation.
-  // TODO(b/117980762): After refactoring CastOutputStream, so
-  // that the CastOutputStream has a unified output API, regardless
-  // of the platform condition, then the unit test would be able to test
-  // CastOutputStream properly.
-  bool force_use_cma_backend_for_output_;
+
 
   // Weak pointers must be dereferenced on the |browser_task_runner|.
   base::WeakPtr<CastAudioManager> weak_this_;
