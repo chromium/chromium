@@ -1974,6 +1974,7 @@ source_set("unit_tests") {
     "//components/sync_bookmarks",
     "//components/sync_preferences:test_support",
     "//components/themes:prefs",
+    "//components/ukm:test_support",
     "//components/user_manager",
     "//components/value_store:test_support",
     "//content/test:test_support",

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/web_cache/browser/web_cache_manager.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -35,6 +36,8 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/switches.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/origin.h"
 
 namespace extensions::declarative_net_request {
@@ -529,6 +532,19 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
           base::UmaHistogramEnumeration(
               "Extensions.DeclarativeNetRequest.RedirectAction",
               RedirectActionType::kMainFrameDSERedirects);
+          ukm::builders::Extensions_DeclarativeNetRequest_DSERedirect(
+              ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+                  base::PassKey<RulesetManager>(),
+                  Extension::GetBaseURLFromExtensionId(action->extension_id)))
+              .SetSeen(true)
+              .Record(ukm::UkmRecorder::Get());
+          ukm::builders::Extensions_SearchRedirect(
+              ukm::UkmRecorder::GetSourceIdForRedirectUrl(
+                  base::PassKey<RulesetManager>(),
+                  action->redirect_url.value()))
+              .SetApi(static_cast<int64_t>(
+                  ExtensionSearchRedirectedByApi::kDeclarativeNetRequest))
+              .Record(ukm::UkmRecorder::Get());
         } else {
           base::UmaHistogramEnumeration(
               "Extensions.DeclarativeNetRequest.RedirectAction",

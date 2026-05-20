@@ -17,9 +17,11 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/prefs_helper.h"
@@ -41,6 +43,7 @@
 #include "extensions/common/url_pattern.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -470,6 +473,7 @@ TEST_P(RulesetManagerTest, RedirectDSE) {
                             {"*://google.com/*", "*://abc.com/*"}));
   manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
   base::HistogramTester tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Redirect from DSE page to abc.com.
   const bool is_incognito_context = false;
@@ -488,6 +492,23 @@ TEST_P(RulesetManagerTest, RedirectDSE) {
                            2 /* kOtherMainFrameRedirects */, 0);
   tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
                            1 /* kMainFrameDSERedirects */, 1);
+
+  auto dse_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_DeclarativeNetRequest_DSERedirect::kEntryName);
+  EXPECT_EQ(1u, dse_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      dse_entries[0],
+      ukm::builders::Extensions_DeclarativeNetRequest_DSERedirect::kSeenName,
+      true);
+
+  auto search_redirect_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_SearchRedirect::kEntryName);
+  EXPECT_EQ(1u, search_redirect_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      search_redirect_entries[0],
+      ukm::builders::Extensions_SearchRedirect::kApiName,
+      static_cast<int64_t>(
+          ExtensionSearchRedirectedByApi::kDeclarativeNetRequest));
 
   // Redirect to google HTTPS
   manager()->RemoveRuleset(last_loaded_extension()->id());

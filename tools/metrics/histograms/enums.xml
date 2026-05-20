@@ -3682,6 +3682,15 @@ Called by update_net_error_codes.py.-->
   <int value="28" label="REPLACED_BY_SYSTEM_APP"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensionSearchRedirectedByApi) -->
+
+<enum name="ExtensionSearchRedirectedByApi">
+  <int value="0" label="DeclarativeNetRequest"/>
+  <int value="1" label="TabsUpdate"/>
+</enum>
+
+<!-- LINT.ThenChange(//extensions/browser/api/constants.h:ExtensionSearchRedirectedByApi) -->
+
 <!-- LINT.IfChange(FastPairPairFailure) -->
 
 <enum name="FastPairPairFailure">

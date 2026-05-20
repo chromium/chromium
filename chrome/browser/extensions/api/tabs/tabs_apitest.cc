@@ -23,6 +23,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
@@ -30,11 +31,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
@@ -807,6 +810,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
   SetupDSEPage();
 
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   static constexpr char kManifest[] =
       R"({
@@ -835,6 +839,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
 
   histogram_tester.ExpectBucketCount("Extensions.Tabs.UpdateAction",
                                      1 /* kDSERemovalsWithoutUserGesture */, 1);
+
+  auto dse_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_Tabs_UpdateDSE::kEntryName);
+  EXPECT_EQ(1u, dse_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      dse_entries[0], ukm::builders::Extensions_Tabs_UpdateDSE::kSeenName,
+      true);
+  EXPECT_EQ(ukm::GetSourceIdType(dse_entries[0]->source_id),
+            ukm::SourceIdType::EXTENSION_ID);
+
+  auto search_redirect_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Extensions_SearchRedirect::kEntryName);
+  EXPECT_EQ(1u, search_redirect_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      search_redirect_entries[0],
+      ukm::builders::Extensions_SearchRedirect::kApiName,
+      static_cast<int64_t>(
+          extensions::ExtensionSearchRedirectedByApi::kTabsUpdate));
+  EXPECT_EQ(ukm::GetSourceIdType(search_redirect_entries[0]->source_id),
+            ukm::SourceIdType::REDIRECT_ID);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,

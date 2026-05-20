@@ -50,6 +50,8 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
+#include "extensions/browser/api/constants.h"
 #include "extensions/browser/extension_user_activation_service.h"
 #include "extensions/browser/extension_zoom_request_client.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -59,6 +61,8 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
@@ -573,12 +577,17 @@ bool HasUserActivation(const ExtensionId& extension_id,
           tab_web_contents.GetPrimaryMainFrame()->HasTransientUserActivation());
 }
 
-void CheckDSERedirect(const ExtensionId& extension_id,
-                      content::BrowserContext& browser_context,
-                      content::RenderFrameHost* calling_render_frame_host,
-                      content::WebContents& tab_web_contents,
-                      const GURL& destination_url,
-                      bool extension_function_user_gesture) {
+// Returns true if a Tabs API update call is a default search engine (DSE)
+// redirect without a user gesture.
+// An update is considered a DSE redirect if the source URL is the DSE page and
+// the destination URL is not the DSE page, and the update is not a result of a
+// user gesture.
+bool IsDSERedirect(const ExtensionId& extension_id,
+                   content::BrowserContext& browser_context,
+                   content::RenderFrameHost* calling_render_frame_host,
+                   content::WebContents& tab_web_contents,
+                   const GURL& destination_url,
+                   bool extension_function_user_gesture) {
   auto is_dse_redirect = [&browser_context,
                           &destination_url](const GURL& source_url) {
     return ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
@@ -598,13 +607,13 @@ void CheckDSERedirect(const ExtensionId& extension_id,
           is_dse_redirect(entry->GetURL())
               ? UpdateActionType::kDSERedirectsAfterLandingOnSERP
               : UpdateActionType::kOtherUpdates);
-      return;
+      return false;
     }
   }
   if (!entry || !is_dse_redirect(entry->GetURL())) {
     base::UmaHistogramEnumeration("Extensions.Tabs.UpdateAction",
                                   UpdateActionType::kOtherUpdates);
-    return;
+    return false;
   }
   bool has_user_activation = HasUserActivation(
       extension_id, browser_context, calling_render_frame_host,
@@ -613,13 +622,18 @@ void CheckDSERedirect(const ExtensionId& extension_id,
       "Extensions.Tabs.UpdateAction",
       has_user_activation ? UpdateActionType::kDSERedirectsWithUserGesture
                           : UpdateActionType::kDSERedirectsWithoutUserGesture);
+  return !has_user_activation;
 }
 
-void CheckDSERemoval(const ExtensionId& extension_id,
-                     content::BrowserContext& browser_context,
-                     content::RenderFrameHost* calling_render_frame_host,
-                     content::WebContents& tab_web_contents,
-                     bool extension_function_user_gesture) {
+// Returns true if a Tabs API remove call is a default search engine (DSE)
+// removal without a user gesture.
+// A removal is considered a DSE removal if the source URL is the DSE page and
+// the removal is not a result of a user gesture.
+bool IsDSERemoval(const ExtensionId& extension_id,
+                  content::BrowserContext& browser_context,
+                  content::RenderFrameHost* calling_render_frame_host,
+                  content::WebContents& tab_web_contents,
+                  bool extension_function_user_gesture) {
   auto is_dse = [&browser_context](const GURL& source_url) {
     return ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
         &browser_context, source_url, GURL());
@@ -638,13 +652,13 @@ void CheckDSERemoval(const ExtensionId& extension_id,
           is_dse(entry->GetURL())
               ? RemoveActionType::kDSERemovalsAfterLandingOnSERP
               : RemoveActionType::kOtherRemovals);
-      return;
+      return false;
     }
   }
   if (!entry || !is_dse(entry->GetURL())) {
     base::UmaHistogramEnumeration("Extensions.Tabs.RemoveAction",
                                   RemoveActionType::kOtherRemovals);
-    return;
+    return false;
   }
   bool has_user_activation = HasUserActivation(
       extension_id, browser_context, calling_render_frame_host,
@@ -653,6 +667,7 @@ void CheckDSERemoval(const ExtensionId& extension_id,
       "Extensions.Tabs.RemoveAction",
       has_user_activation ? RemoveActionType::kDSERemovalsWithUserGesture
                           : RemoveActionType::kDSERemovalsWithoutUserGesture);
+  return !has_user_activation;
 }
 
 }  // namespace
@@ -2790,8 +2805,20 @@ bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
     return false;
   }
 
-  CheckDSERedirect(extension()->id(), *browser_context(), render_frame_host(),
-                   *web_contents, *url, user_gesture());
+  if (IsDSERedirect(extension()->id(), *browser_context(), render_frame_host(),
+                    *web_contents, *url, user_gesture())) {
+    ukm::builders::Extensions_Tabs_UpdateDSE(
+        ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+            base::PassKey<TabsUpdateFunction>(), extension()->url()))
+        .SetSeen(true)
+        .Record(ukm::UkmRecorder::Get());
+    ukm::builders::Extensions_SearchRedirect(
+        ukm::UkmRecorder::GetSourceIdForRedirectUrl(
+            base::PassKey<TabsUpdateFunction>(), *url))
+        .SetApi(
+            static_cast<int64_t>(ExtensionSearchRedirectedByApi::kTabsUpdate))
+        .Record(ukm::UkmRecorder::Get());
+  }
   content::NavigationController::LoadURLParams load_params(*url);
 
   // Treat extension-initiated navigations as renderer-initiated so that the URL
@@ -3124,8 +3151,14 @@ bool TabsRemoveFunction::RemoveTab(int tab_id, std::string* error) {
     return false;
   }
 
-  CheckDSERemoval(extension()->id(), *browser_context(), render_frame_host(),
-                  *contents, user_gesture());
+  if (IsDSERemoval(extension()->id(), *browser_context(), render_frame_host(),
+                   *contents, user_gesture())) {
+    ukm::builders::Extensions_Tabs_RemoveDSE(
+        ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+            base::PassKey<TabsRemoveFunction>(), extension()->url()))
+        .SetSeen(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   // Don't let the extension remove a tab if the user is dragging tabs around.
   if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
