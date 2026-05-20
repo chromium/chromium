@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
+
+#include "base/values.h"
 
 namespace signin {
 
@@ -28,7 +32,13 @@ struct AccountPreviewData {
   int history_count = 0;
 
   // Example preview data: urls for which the account has saved data.
-  std::vector<std::string> saved_domain_previews;
+  std::vector<std::string> password_domains;
+
+  static base::DictValue Serialize(const AccountPreviewData& data);
+  static std::optional<AccountPreviewData> Deserialize(
+      std::string_view response_body);
+  static std::optional<AccountPreviewData> Deserialize(
+      const base::Value& value);
 };
 
 }  // namespace signin

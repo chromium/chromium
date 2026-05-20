@@ -19,6 +19,13 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // tracked by this signin.
 const char kAccountInfo[] = "account_info";
 
+// Dictionary pref that contains the cached account preview data.
+const char kAccountPreviewDataDict[] = "signin.account_preview_data_dict";
+
+// Time pref that tracks the last time account preview data was refreshed.
+const char kAccountPreviewDataLastUpdatePref[] =
+    "signin.account_preview_data_last_update";
+
 // A hash of the GAIA accounts present in the content area. Order does not
 // affect the hash, but signed in/out status will. Stored as the Base64 string.
 const char kGaiaCookieHash[] = "gaia_cookie.hash";

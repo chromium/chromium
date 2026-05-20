@@ -19,6 +19,8 @@ static_library("browser") {
     "account_management_type_metrics_recorder.h",
     "account_preview_data.cc",
     "account_preview_data.h",
+    "account_preview_data_fetcher.cc",
+    "account_preview_data_fetcher.h",
     "account_preview_data_service.cc",
     "account_preview_data_service.h",
     "account_preview_data_service_impl.cc",
@@ -109,6 +111,8 @@ source_set("unit_tests") {
   sources = [
     "account_investigator_unittest.cc",
     "account_management_type_metrics_recorder_unittest.cc",
+    "account_preview_data_service_impl_unittest.cc",
+    "account_preview_data_unittest.cc",
     "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
     "active_primary_accounts_metrics_recorder_unittest.cc",

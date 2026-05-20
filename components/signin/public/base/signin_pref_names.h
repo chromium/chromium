@@ -18,6 +18,10 @@ extern const char kAccountIdMigrationState[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountInfo[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kAccountPreviewDataDict[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kAccountPreviewDataLastUpdatePref[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieHash[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieChangedTime[];
