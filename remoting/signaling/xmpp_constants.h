@@ -22,6 +22,8 @@ extern const jingle_xmpp::StaticQName kQNameType;
 extern const jingle_xmpp::StaticQName kQNameTo;
 extern const jingle_xmpp::StaticQName kQNameFrom;
 
+extern const size_t kMaxStanzaSize;
+
 }  // namespace remoting
 
 #endif  // REMOTING_SIGNALING_XMPP_CONSTANTS_H_

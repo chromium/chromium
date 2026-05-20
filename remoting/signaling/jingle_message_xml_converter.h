@@ -72,6 +72,9 @@ void SessionInfoToXml(const SessionInfo& session_info,
 bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
                         SessionInfo* session_info);
 
+// Returns true if the given XML string contains a DTD.
+bool XmlContainsDtd(const std::string& xml);
+
 // Converts between ContentDescription and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
     const ContentDescription& description);

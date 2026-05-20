@@ -9,6 +9,7 @@
 
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -378,6 +379,38 @@ TEST(JingleMessageStructConverterTest, FallbackToXmlParsing) {
   EXPECT_EQ(message.message_id, "xml_id");
   EXPECT_EQ(message.sid, "xml_sid");
   EXPECT_TRUE(std::holds_alternative<SessionInfo>(message.payload()));
+}
+
+TEST(JingleMessageStructConverterTest, RejectDtdInXmlFallback) {
+  internal::IqStanzaStruct stanza;
+  stanza.xml = "<!DOCTYPE iq><iq/>";
+  JingleMessage message;
+  std::string error;
+  EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
+  EXPECT_THAT(error, testing::HasSubstr("Rejecting XML with DTD"));
+}
+
+TEST(JingleMessageStructConverterTest, RejectLargeXmlFallback) {
+  internal::IqStanzaStruct stanza;
+  stanza.xml = std::string(kMaxStanzaSize + 1, ' ');
+  JingleMessage message;
+  std::string error;
+  EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
+  EXPECT_THAT(error, testing::HasSubstr("length exceeds limit"));
+}
+
+TEST(JingleMessageStructConverterTest, Reply_RejectDtdInXmlFallback) {
+  internal::IqStanzaStruct stanza;
+  stanza.xml = "<!DOCTYPE iq><iq/>";
+  JingleMessageReply reply;
+  EXPECT_FALSE(JingleMessageReplyFromStruct(stanza, &reply));
+}
+
+TEST(JingleMessageStructConverterTest, Reply_RejectLargeXmlFallback) {
+  internal::IqStanzaStruct stanza;
+  stanza.xml = std::string(kMaxStanzaSize + 1, ' ');
+  JingleMessageReply reply;
+  EXPECT_FALSE(JingleMessageReplyFromStruct(stanza, &reply));
 }
 
 }  // namespace

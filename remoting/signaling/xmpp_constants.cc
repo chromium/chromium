@@ -4,6 +4,8 @@
 
 #include "remoting/signaling/xmpp_constants.h"
 
+#include <cstddef>
+
 namespace remoting {
 
 const char kIqTypeSet[] = "set";
@@ -15,5 +17,7 @@ const jingle_xmpp::StaticQName kQNameId = {"", "id"};
 const jingle_xmpp::StaticQName kQNameType = {"", "type"};
 const jingle_xmpp::StaticQName kQNameTo = {"", "to"};
 const jingle_xmpp::StaticQName kQNameFrom = {"", "from"};
+
+const std::size_t kMaxStanzaSize = 64 * 1024;
 
 }  // namespace remoting

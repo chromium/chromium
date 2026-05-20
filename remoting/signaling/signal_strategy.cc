@@ -25,7 +25,12 @@ namespace remoting {
 // static
 std::optional<SignalStrategy::Message> SignalStrategy::ParseStanzaXml(
     const std::string& xml) {
-  if (xml.find("<!DOCTYPE") != std::string::npos) {
+  if (xml.length() > kMaxStanzaSize) {
+    LOG(ERROR) << "Rejecting XML stanza: length " << xml.length() << " exceeds "
+               << kMaxStanzaSize << " limit.";
+    return std::nullopt;
+  }
+  if (XmlContainsDtd(xml)) {
     LOG(ERROR) << "Rejecting XML with DTD.";
     return std::nullopt;
   }

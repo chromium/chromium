@@ -32,6 +32,7 @@
 #include "remoting/signaling/ftl_services_context.h"
 #include "remoting/signaling/registration_manager.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,6 +112,10 @@ class FtlMessagingClientTest : public testing::Test {
   void TearDown() override;
 
  protected:
+  void RunMessageCallbacks(const ftl::InboxMessage& message) {
+    messaging_client_->RunMessageCallbacks(message);
+  }
+
   ProtobufHttpTestResponder test_responder_;
   FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS,
                                      OAuthTokenInfo()};
@@ -350,6 +355,35 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
       HttpStatus(HttpStatus::Code::OK, ""));
 
   run_loop.Run();
+}
+
+TEST_F(FtlMessagingClientTest, RejectLargeMessage) {
+  base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
+  EXPECT_CALL(mock_on_incoming_msg, Run(_, _)).Times(0);
+
+  auto subscription =
+      messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
+
+  ftl::InboxMessage inbox_message;
+  inbox_message.mutable_sender_id()->set_id(kFakeSenderId);
+  inbox_message.set_sender_registration_id(kFakeSenderRegId);
+  inbox_message.set_message_type(
+      ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE);
+  inbox_message.set_message(std::string(kMaxStanzaSize + 1, ' '));
+
+  RunMessageCallbacks(inbox_message);
+}
+
+TEST_F(FtlMessagingClientTest, RejectDtdMessage) {
+  base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
+  EXPECT_CALL(mock_on_incoming_msg, Run(_, _)).Times(0);
+
+  auto subscription =
+      messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
+
+  ftl::InboxMessage inbox_message =
+      CreateInboxMessage(kMessage1Id, "<!DOCTYPE iq><iq/>");
+  RunMessageCallbacks(inbox_message);
 }
 
 }  // namespace remoting

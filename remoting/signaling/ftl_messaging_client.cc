@@ -19,9 +19,11 @@
 #include "remoting/base/protobuf_http_stream_request.h"
 #include "remoting/signaling/ftl_message_channel_strategy.h"
 #include "remoting/signaling/ftl_services_context.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/registration_manager.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
@@ -367,7 +369,19 @@ void FtlMessagingClient::RunMessageCallbacks(const ftl::InboxMessage& message) {
   }
 
   ftl::ChromotingMessage chromoting_message;
+  if (message.message().length() > kMaxStanzaSize) {
+    LOG(ERROR) << "Rejecting FTL message: length " << message.message().length()
+               << " exceeds " << kMaxStanzaSize << " limit.";
+    return;
+  }
   chromoting_message.ParseFromString(message.message());
+
+  if (chromoting_message.has_xmpp() &&
+      XmlContainsDtd(chromoting_message.xmpp().stanza())) {
+    LOG(ERROR) << "Rejecting XMPP message with DTD.";
+    return;
+  }
+
   auto sender_address =
       is_system ? SignalingAddress::CreateFtlSystemAddress(sender_id)
                 : SignalingAddress::CreateFtlSignalingAddress(

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
+#include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -324,6 +325,41 @@ TEST(JingleMessageXmlConverterTest, JingleTransportInfo_RoundTrip) {
             "1.2.3.4");
   EXPECT_EQ(parsed_transport.candidates.front().candidate.address().port(),
             1234);
+}
+
+TEST(JingleMessageXmlConverterTest, XmlContainsDtd_NoDtd) {
+  EXPECT_FALSE(XmlContainsDtd("<root><child/></root>"));
+}
+
+TEST(JingleMessageXmlConverterTest, XmlContainsDtd_StandardDtd) {
+  EXPECT_TRUE(XmlContainsDtd("<!DOCTYPE root SYSTEM \"test.dtd\"><root/>"));
+}
+
+TEST(JingleMessageXmlConverterTest, XmlContainsDtd_Utf16Le) {
+  // UTF-16LE encoded "<!DOCTYPE root>"
+  std::string xml(
+      "\xFF\xFE\x3C\x00\x21\x00\x44\x00\x4F\x00\x43\x00\x54\x00\x59\x00\x50\x00"
+      "\x45\x00",
+      20);
+  EXPECT_TRUE(XmlContainsDtd(xml));
+}
+
+TEST(JingleMessageXmlConverterTest, XmlContainsDtd_Utf16Be) {
+  // UTF-16BE encoded "<!DOCTYPE root>"
+  std::string xml(
+      "\xFE\xFF\x00\x3C\x00\x21\x00\x44\x00\x4F\x00\x43\x00\x54\x00\x59\x00\x50"
+      "\x00\x45\x00",
+      20);
+  EXPECT_TRUE(XmlContainsDtd(xml));
+}
+
+TEST(JingleMessageXmlConverterTest, XmlContainsDtd_MixedCase) {
+  EXPECT_TRUE(XmlContainsDtd("<!doctype root><root/>"));
+}
+
+TEST(JingleMessageXmlConverterTest, ParseStanzaXml_LargeXml) {
+  std::string large_xml(64 * 1024 + 1, ' ');
+  EXPECT_FALSE(SignalStrategy::ParseStanzaXml(large_xml).has_value());
 }
 
 }  // namespace remoting

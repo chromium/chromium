@@ -18,6 +18,7 @@
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -505,6 +506,14 @@ bool JingleMessageFromStruct(const IqStanzaStruct& stanza,
                    [](std::monostate) { NOTREACHED(); }},
                jingle_struct->action);
   } else {
+    if (stanza.xml.length() > kMaxStanzaSize) {
+      *error = "Rejecting XML stanza: length exceeds limit.";
+      return false;
+    }
+    if (XmlContainsDtd(stanza.xml)) {
+      *error = "Rejecting XML with DTD.";
+      return false;
+    }
     auto xml_stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
         jingle_xmpp::XmlElement::ForStr(stanza.xml));
     if (!xml_stanza ||
@@ -559,6 +568,12 @@ bool JingleMessageReplyFromStruct(const IqStanzaStruct& stanza,
     reply->error_type = FromErrorConditionStruct(error_struct->condition);
     reply->text = error_struct->text;
   } else {
+    if (stanza.xml.length() > kMaxStanzaSize) {
+      return false;
+    }
+    if (XmlContainsDtd(stanza.xml)) {
+      return false;
+    }
     auto xml_stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
         jingle_xmpp::XmlElement::ForStr(stanza.xml));
     if (!xml_stanza || !JingleMessageReplyFromXml(xml_stanza.get(), reply)) {

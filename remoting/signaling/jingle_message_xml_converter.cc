@@ -1112,6 +1112,27 @@ bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
   return true;
 }
 
+bool XmlContainsDtd(const std::string& xml) {
+  static constexpr std::string_view kDoctype = "<!DOCTYPE";
+  size_t doctype_index = 0;
+  for (char c : xml) {
+    if (c == '\0') {
+      continue;
+    }
+    if (base::ToUpperASCII(c) == kDoctype[doctype_index]) {
+      doctype_index++;
+      if (doctype_index == kDoctype.length()) {
+        return true;
+      }
+    } else if (base::ToUpperASCII(c) == kDoctype[0]) {
+      doctype_index = 1;
+    } else {
+      doctype_index = 0;
+    }
+  }
+  return false;
+}
+
 std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
     const ContentDescription& description) {
   auto root = std::make_unique<XmlElement>(kQNameDescription, true);

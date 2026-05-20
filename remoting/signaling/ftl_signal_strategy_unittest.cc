@@ -642,6 +642,28 @@ TEST_F(FtlSignalStrategyTest, ReceiveStanza_RejectStanzaWithDtd) {
   ASSERT_EQ(received_messages_.size(), 0u);
 }
 
+TEST_F(FtlSignalStrategyTest, ReceiveStanza_RejectUtf16StanzaWithDtd) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  ftl::ChromotingMessage message;
+  // UTF-16LE encoded "<!DOCTYPE iq>"
+  std::string xml(
+      "\xFF\xFE\x3C\x00\x21\x00\x44\x00\x4F\x00\x43\x00\x54\x00\x59\x00\x50\x00"
+      "\x45\x00\x20\x00\x69\x00\x71\x00\x3E\x00",
+      28);
+  message.mutable_xmpp()->set_stanza(xml);
+  ftl::Id remote_user_id;
+  remote_user_id.set_type(ftl::IdType_Type_EMAIL);
+  remote_user_id.set_id(kFakeRemoteUsername);
+  messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
+                               message);
+
+  ASSERT_EQ(received_messages_.size(), 0u);
+}
+
 TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
