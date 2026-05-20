@@ -28,6 +28,7 @@
 namespace {
 
 using Event = ax::mojom::Event;
+
 bool ShouldSerializeEvent(Event event_type) {
   // Events that are serialized and forwarded to BrowserAccessibilityManager.
   switch (event_type) {
@@ -55,6 +56,8 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kEnabledChanged:
     case Event::kExpandedChanged:
     case Event::kFocus:
+    case Event::kMenuPopupEnd:
+    case Event::kMenuPopupStart:
     case Event::kLiveRegionChanged:
     case Event::kSelection:
     case Event::kSelectedChildrenChanged:
@@ -90,8 +93,6 @@ bool ShouldSerializeEvent(Event event_type) {
   switch (event_type) {
     case Event::kFocusAfterMenuClose:
     case Event::kMenuEnd:
-    case Event::kMenuPopupEnd:
-    case Event::kMenuPopupStart:
     case Event::kMenuStart:
       return false;
     default:
@@ -141,7 +142,11 @@ void WidgetAXManager::Init() {
 
 void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
                               ax::mojom::Event event_type) {
-  if (!is_enabled_ || !ShouldSerializeEvent(event_type)) {
+  if (!is_enabled_) {
+    return;
+  }
+
+  if (!ShouldSerializeEvent(event_type)) {
     return;
   }
 
@@ -160,8 +165,12 @@ void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
   // serialization.  Flushing synchronously ensures platform events
   // (EVENT_OBJECT_SHOW / UIA_ToolTipOpenedEventId) fire before callers that
   // check for them (e.g. event recorders in tests) run their next step.
+  //
+  // kMenuPopupEnd fires just before the menu widget is hidden. Flush it while
+  // the widget can still emit generated MENU_POPUP_END platform events.
   if (event_type == ax::mojom::Event::kTooltipClosed ||
-      event_type == ax::mojom::Event::kTooltipOpened) {
+      event_type == ax::mojom::Event::kTooltipOpened ||
+      event_type == ax::mojom::Event::kMenuPopupEnd) {
     SendPendingUpdate();
   } else {
     SchedulePendingUpdate();
