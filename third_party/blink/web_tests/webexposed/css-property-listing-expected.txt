@@ -375,6 +375,7 @@ All changes to this list should go through Blink's feature review process: http:
     rx
     ry
     scale
+    scroll-axis-lock
     scroll-behavior
     scroll-initial-target
     scroll-margin-block-end

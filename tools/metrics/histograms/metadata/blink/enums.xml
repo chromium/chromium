@@ -8438,6 +8438,7 @@ Called by update_use_counter_css.py.-->
   <int value="942" label="flex-line-count"/>
   <int value="943" label="text-decoration-skip-spaces"/>
   <int value="944" label="corner"/>
+  <int value="945" label="scroll-axis-lock"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

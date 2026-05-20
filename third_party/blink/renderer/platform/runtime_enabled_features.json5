@@ -5088,6 +5088,11 @@
       status: "stable",
     },
     {
+      // https://crbug.com/479472367
+      name: "ScrollAxisLock",
+      status: "experimental",
+    },
+    {
       name: "ScrollbarColor",
       status: "stable",
     },

@@ -371,6 +371,7 @@ rule-overlap: row-over-column
 rx: auto
 ry: auto
 scale: none
+scroll-axis-lock: auto
 scroll-behavior: auto
 scroll-initial-target: none
 scroll-margin-block-end: 0px

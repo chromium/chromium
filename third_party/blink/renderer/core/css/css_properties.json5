@@ -5390,6 +5390,16 @@
       percentages_depend_on_used_value: true,
     },
     {
+      name: "scroll-axis-lock",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "none"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      runtime_flag: "ScrollAxisLock",
+    },
+    {
       name: "scroll-target-group",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",

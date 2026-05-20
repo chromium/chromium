@@ -729,6 +729,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollbarGutter() == b.ScrollbarGutter();
     case CSSPropertyID::kScrollbarWidth:
       return a.ScrollbarWidth() == b.ScrollbarWidth();
+    case CSSPropertyID::kScrollAxisLock:
+      return a.ScrollAxisLock() == b.ScrollAxisLock();
     case CSSPropertyID::kScrollBehavior:
       return a.GetScrollBehavior() == b.GetScrollBehavior();
     case CSSPropertyID::kScrollInitialTarget:

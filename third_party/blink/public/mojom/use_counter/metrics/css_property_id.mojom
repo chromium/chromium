@@ -1014,6 +1014,7 @@ enum CSSSampleId {
     kFlexLineCount = 942,
     kTextDecorationSkipSpaces = 943,
     kCorner = 944,
+    kScrollAxisLock = 945,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

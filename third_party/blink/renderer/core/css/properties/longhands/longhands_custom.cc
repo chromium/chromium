@@ -8829,6 +8829,14 @@ const CSSValue* ScrollbarWidth::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.UsedScrollbarWidth());
 }
 
+const CSSValue* ScrollAxisLock::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.ScrollAxisLock());
+}
+
 const CSSValue* ScrollBehavior::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
