@@ -14,6 +14,10 @@ namespace password_change::features {
 // password form.
 BASE_DECLARE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter);
 
+// Controls whether ChromePasswordChangeService::GetGeneralAvailability skips
+// the check for ShouldModelExecutionBeAllowedForUser.
+BASE_DECLARE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange);
+
 }  // namespace password_change::features
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_FEATURES_H_

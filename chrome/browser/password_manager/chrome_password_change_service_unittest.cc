@@ -35,6 +35,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/password_change/features.h"
+#endif
+
 namespace {
 
 struct TestCase {
@@ -162,6 +166,11 @@ class ChromePasswordChangeServiceTest : public testing::Test,
                                         public ChromePasswordChangeServiceBase {
  public:
   ChromePasswordChangeServiceTest() {
+#if !BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndDisableFeature(
+        password_change::features::
+            kSkipModelExecutionAllowedCheckForPasswordChange);
+#endif
     variations::TestVariationsService::RegisterPrefs(prefs()->registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         prefs(), &enabled_state_provider_, std::wstring(), base::FilePath());
@@ -179,6 +188,7 @@ class ChromePasswordChangeServiceTest : public testing::Test,
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/false,
                                                             /*enabled=*/false};
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -466,6 +476,11 @@ class ChromePasswordChangeServiceAvailabilityTest
       public ChromePasswordChangeServiceBase {
  public:
   ChromePasswordChangeServiceAvailabilityTest() {
+#if !BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndDisableFeature(
+        password_change::features::
+            kSkipModelExecutionAllowedCheckForPasswordChange);
+#endif
     if (GetParam().is_disabled_by_policy) {
       constexpr int kPolicyDisabled =
           std::to_underlying(optimization_guide::model_execution::prefs::
@@ -573,3 +588,43 @@ INSTANTIATE_TEST_SUITE_P(
       test_name += info.param.is_disabled_by_policy ? "DisabledByPolicy" : "";
       return test_name;
     });
+
+#if !BUILDFLAG(IS_ANDROID)
+class ChromePasswordChangeServiceFeatureEnabledTest
+    : public testing::Test,
+      public ChromePasswordChangeServiceBase {
+ public:
+  ChromePasswordChangeServiceFeatureEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        password_change::features::
+            kSkipModelExecutionAllowedCheckForPasswordChange);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromePasswordChangeServiceFeatureEnabledTest,
+       ShouldModelExecutionBeAllowedCheckIsBypassed) {
+  base::HistogramTester histogram_tester;
+  GURL url("https://test.com/");
+
+  // We do NOT mock ShouldModelExecutionBeAllowedForUser. A call to it on strict
+  // mock would trigger a failure.
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(true));
+
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeAvailability",
+      PasswordChangeAvailability::kAvailable, 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

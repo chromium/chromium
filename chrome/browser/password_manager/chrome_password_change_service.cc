@@ -31,13 +31,16 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 inline constexpr base::TimeDelta kThrottleDuration = base::Days(14);
+#endif
 
 // Shorten the name to spare line breaks. The code provides enough context
 // already.
@@ -152,6 +155,7 @@ void ChromePasswordChangeService::AddChangePasswordUrlOverride(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 bool ChromePasswordChangeService::HasChangePasswordUrlOverride() const {
   return !override_urls_.empty();
 }
@@ -176,6 +180,7 @@ GURL ChromePasswordChangeService::GetChangePasswordURLOverride(
   }
   return GURL();
 }
+#endif
 
 void ChromePasswordChangeService::OfferPasswordChangeUi(
     password_manager::PasswordForm credentials,
@@ -249,6 +254,7 @@ void ChromePasswordChangeService::Shutdown() {
   password_change_delegates_.clear();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
     const {
   auto [log_manager, logger] = CreateLoggerPair(log_router_);
@@ -269,8 +275,12 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
   }
 
   // User is not eligible.
+  const bool skip_check = base::FeatureList::IsEnabled(
+      password_change::features::
+          kSkipModelExecutionAllowedCheckForPasswordChange);
   if (!optimization_keyed_service_ ||
-      !optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser()) {
+      (!skip_check &&
+       !optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser())) {
     if (logger) {
       logger->LogMessage(
           Logger::STRING_PASSWORD_CHANGE_MODEL_EXECUTION_NOT_ALLOWED);
@@ -369,3 +379,4 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
 
   return PasswordChangeAvailability::kAvailable;
 }
+#endif

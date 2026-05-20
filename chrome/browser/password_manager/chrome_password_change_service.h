@@ -133,6 +133,7 @@ class ChromePasswordChangeService
   // KeyedService impl.
   void Shutdown() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   PasswordChangeAvailability GetGeneralAvailability() const;
 
   bool HasChangePasswordUrlOverride() const;
@@ -140,6 +141,7 @@ class ChromePasswordChangeService
   PasswordChangeAvailability GetPerSiteAvailability(
       const password_manager::PasswordForm& form,
       bool is_non_password_login_detected = false) const;
+#endif
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
