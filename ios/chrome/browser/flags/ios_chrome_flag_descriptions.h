@@ -1974,6 +1974,12 @@ inline constexpr char kYourSavedInfoSettingsPageIosName[] =
 inline constexpr char kYourSavedInfoSettingsPageIosDescription[] =
     "Enables the Autofill and passwords settings page redesign on iOS.";
 
+inline constexpr char kZeroStateSuggestionsCentralizationName[] =
+    "Zero-State Suggestions Centralization";
+inline constexpr char kZeroStateSuggestionsCentralizationDescription[] =
+    "Enables the creation of both static and model-led zero-state suggestions "
+    "on the Chrome side.";
+
 inline constexpr char kZeroStateSuggestionsName[] =
     "Enable Zero-State Suggestions";
 inline constexpr char kZeroStateSuggestionsDescription[] =

@@ -190,6 +190,12 @@ BASE_DECLARE_FEATURE(kZeroStateSuggestions);
 // Returns true if zero-state suggestions are enabled.
 bool IsZeroStateSuggestionsEnabled();
 
+// Feature flag to enable centralization of zero-state suggestions.
+BASE_DECLARE_FEATURE(kZeroStateSuggestionsCentralization);
+
+// Returns true if centralization of zero-state suggestions is enabled.
+bool IsZeroStateSuggestionsCentralizationEnabled();
+
 // Parameter names for the zero-state suggestions placement.
 extern const char kZeroStateSuggestionsPlacementAIHub[];
 extern const char kZeroStateSuggestionsPlacementAskGemini[];

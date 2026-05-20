@@ -366,6 +366,13 @@ bool IsZeroStateSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kZeroStateSuggestions);
 }
 
+BASE_FEATURE(kZeroStateSuggestionsCentralization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsZeroStateSuggestionsCentralizationEnabled() {
+  return base::FeatureList::IsEnabled(kZeroStateSuggestionsCentralization);
+}
+
 const char kZeroStateSuggestionsPlacementAIHub[] =
     "ZeroStateSuggestionsPlacementAIHub";
 const char kZeroStateSuggestionsPlacementAskGemini[] =
