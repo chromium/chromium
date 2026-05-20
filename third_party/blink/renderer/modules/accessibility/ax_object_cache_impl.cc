@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
@@ -471,7 +472,8 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     // Make an exception for file input, which needs to gather its name from
     // aria-hidden contents.
     if (const Element* element = DynamicTo<Element>(node)) {
-      if (element->FastGetAttribute(html_names::kAriaHiddenAttr) == "true") {
+      if (element->FastGetAttribute(html_names::kAriaHiddenAttr) ==
+          keywords::kTrue) {
         return false;
       }
 

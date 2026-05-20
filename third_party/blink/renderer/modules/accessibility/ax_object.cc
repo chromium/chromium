@@ -107,6 +107,7 @@
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -5698,7 +5699,6 @@ const AtomicString& AXObject::LiveRegionStatus() const {
                       ("assertive"));
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_polite,
                       ("polite"));
-  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_off, ("off"));
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_undefined,
                       ("undefined"));
 
@@ -5720,8 +5720,8 @@ const AtomicString& AXObject::LiveRegionStatus() const {
   if (implicit_value == live_region_status_polite) {
     return live_region_status_polite;
   }
-  if (implicit_value == live_region_status_off) {
-    return live_region_status_off;
+  if (implicit_value == keywords::kOff) {
+    return keywords::kOff;
   }
 
   return g_null_atom;
@@ -6186,7 +6186,7 @@ bool AXObject::LiveRegionAtomic() const {
   }
 
   const String& implicit_value = GetImplicitAriaAtomic(RoleValue());
-  return implicit_value == "true";
+  return implicit_value == keywords::kTrue;
 }
 
 const AtomicString& AXObject::ContainerLiveRegionStatus() const {

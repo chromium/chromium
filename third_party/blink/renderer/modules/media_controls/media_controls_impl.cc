@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -1101,8 +1102,9 @@ void MediaControlsImpl::UpdateContainerDisplay() {
   // it entirely to avoid creating layers that interfere with hit-test ordering.
   bool should_hide =
       !MediaElement().ShouldShowControls() && !overlay_cast_button_->IsWanted();
-  bool is_hidden = InlineStyle() && InlineStyle()->GetPropertyValue(
-                                        CSSPropertyID::kDisplay) == "none";
+  bool is_hidden = InlineStyle() &&
+                   InlineStyle()->GetPropertyValue(CSSPropertyID::kDisplay) ==
+                       keywords::kNone;
 
   if (should_hide == is_hidden) {
     return;
@@ -1563,9 +1565,10 @@ void MediaControlsImpl::UpdateOverflowMenuItemCSSClass() const {
     DOMTokenList& class_list = item->classList();
 
     // We don't care if the hidden element still have animated-* CSS class
-    if (inline_style &&
-        inline_style->GetPropertyValue(CSSPropertyID::kDisplay) == "none")
+    if (inline_style && inline_style->GetPropertyValue(
+                            CSSPropertyID::kDisplay) == keywords::kNone) {
       continue;
+    }
 
     AtomicString css_class =
         AtomicString(StrCat({"animated-", AtomicString::Number(id++)}));

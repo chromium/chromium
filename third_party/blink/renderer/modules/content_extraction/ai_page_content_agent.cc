@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -812,7 +813,7 @@ void AddClickabilityReasons(
       element.FastGetAttribute(html_names::kAutocompleteAttr);
   const auto& aria_autocomplete =
       element.FastGetAttribute(html_names::kAriaAutocompleteAttr);
-  if ((autocomplete && autocomplete != "off") ||
+  if ((autocomplete && autocomplete != keywords::kOff) ||
       (aria_autocomplete == "inline" || aria_autocomplete == "list" ||
        aria_autocomplete == "both")) {
     interaction_info.clickability_reasons.push_back(Reason::kAutocomplete);

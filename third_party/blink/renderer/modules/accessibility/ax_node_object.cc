@@ -139,6 +139,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
@@ -3646,9 +3647,9 @@ String AXNodeObject::AutoComplete() const {
         AriaTokenAttribute(html_names::kAriaAutocompleteAttr);
     // Illegal values must be passed through, according to CORE-AAM.
     if (aria_auto_complete) {
-      return aria_auto_complete == "none" ? String()
-                                          : aria_auto_complete.ToAsciiLower();
-      ;
+      return aria_auto_complete == keywords::kNone
+                 ? String()
+                 : aria_auto_complete.ToAsciiLower();
     }
   }
 

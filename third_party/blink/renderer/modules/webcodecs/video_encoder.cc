@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
@@ -292,7 +293,8 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
           : media::VideoEncoder::LatencyMode::Realtime;
 
   if (config->hasContentHint()) {
-    if (config->contentHint() == "detail" || config->contentHint() == "text") {
+    if (config->contentHint() == "detail" ||
+        config->contentHint() == keywords::kText) {
       result->options.content_hint = media::VideoEncoder::ContentHint::Screen;
     } else if (config->contentHint() == "motion") {
       result->options.content_hint = media::VideoEncoder::ContentHint::Camera;
@@ -358,7 +360,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
       result->options.scalability_mode = media::SVCScalabilityMode::kL1T2;
     } else if (config->scalabilityMode() == "L1T3") {
       result->options.scalability_mode = media::SVCScalabilityMode::kL1T3;
-    } else if (config->scalabilityMode() == "manual") {
+    } else if (config->scalabilityMode() == keywords::kManual) {
       result->options.manual_reference_buffer_control = true;
     } else {
       result->not_supported_error_message =

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_effective_connection_type.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/testing/internals.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -40,7 +41,7 @@ void InternalsNetInfo::setNetworkConnectionInfoOverride(
     webtype = kWebConnectionTypeWimax;
   } else if (type == "other") {
     webtype = kWebConnectionTypeOther;
-  } else if (type == "none") {
+  } else if (type == keywords::kNone) {
     webtype = kWebConnectionTypeNone;
   } else if (type == "unknown") {
     webtype = kWebConnectionTypeUnknown;

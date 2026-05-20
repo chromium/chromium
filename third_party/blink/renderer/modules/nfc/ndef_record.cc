@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
@@ -472,9 +473,9 @@ NDEFRecord* NDEFRecord::Create(const ScriptState* script_state,
     return MakeGarbageCollected<NDEFRecord>(
         device::mojom::blink::NDEFRecordTypeCategory::kStandardized,
         record_type, /*id=*/String(), Vector<uint8_t>());
-  } else if (record_type == "text") {
+  } else if (record_type == keywords::kText) {
     return CreateTextRecord(script_state, id, *record, exception_state);
-  } else if (record_type == "url" || record_type == "absolute-url") {
+  } else if (record_type == keywords::kUrl || record_type == "absolute-url") {
     return CreateUrlRecord(script_state, id, *record, exception_state);
   } else if (record_type == "mime") {
     return CreateMimeRecord(script_state, id, *record, exception_state);

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -21,7 +22,7 @@ MediaControlPictureInPictureButtonElement::
     MediaControlPictureInPictureButtonElement(MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls) {
   setType(input_type_names::kButton);
-  setAttribute(html_names::kRoleAttr, AtomicString("button"));
+  setAttribute(html_names::kRoleAttr, keywords::kButton);
 
   bool isInPictureInPicture =
       PictureInPictureController::IsElementInPictureInPicture(

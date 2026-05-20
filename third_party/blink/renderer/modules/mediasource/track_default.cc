@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -22,7 +23,7 @@ AtomicString TrackDefault::VideoKeyword() {
 }
 
 AtomicString TrackDefault::TextKeyword() {
-  return AtomicString("text");
+  return keywords::kText;
 }
 
 ScriptObject TrackDefault::kinds(ScriptState* script_state) const {

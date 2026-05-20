@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture_frame_grabber.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -529,14 +530,16 @@ MeteringMode ParseFaceFraming(bool blink_mode) {
 }
 
 MeteringMode ParseMeteringMode(const String& blink_mode) {
-  if (blink_mode == "manual")
+  if (blink_mode == keywords::kManual) {
     return MeteringMode::MANUAL;
+  }
   if (blink_mode == "single-shot")
     return MeteringMode::SINGLE_SHOT;
   if (blink_mode == "continuous")
     return MeteringMode::CONTINUOUS;
-  if (blink_mode == "none")
+  if (blink_mode == keywords::kNone) {
     return MeteringMode::NONE;
+  }
   NOTREACHED();
 }
 

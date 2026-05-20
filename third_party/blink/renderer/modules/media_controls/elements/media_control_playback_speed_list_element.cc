@@ -178,7 +178,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedHeaderItem() {
       Text::Create(GetDocument(),
                    GetLocale().QueryString(
                        IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_SUBMENU_TITLE)));
-  header_item->setAttribute(html_names::kRoleAttr, AtomicString("button"));
+  header_item->setAttribute(html_names::kRoleAttr, keywords::kButton);
   header_item->setAttribute(html_names::kAriaLabelAttr,
                             AtomicString(GetLocale().QueryString(
                                 IDS_AX_MEDIA_BACK_TO_OPTIONS_BUTTON)));

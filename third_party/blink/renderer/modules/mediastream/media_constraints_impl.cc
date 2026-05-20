@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -162,7 +163,7 @@ static bool Parse(const MediaTrackConstraints* constraints_in,
 }
 
 static bool ToBoolean(const String& as_string) {
-  return as_string == "true";
+  return as_string == keywords::kTrue;
   // TODO(hta): Check against "false" and return error if it's neither.
   // https://crbug.com/576582
 }

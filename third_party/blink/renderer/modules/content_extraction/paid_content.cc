@@ -11,9 +11,11 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 namespace {
@@ -45,7 +47,7 @@ bool ObjectValuePresentAndFalse(const JSONObject& object, const String& key) {
   if (type == JSONValue::kTypeString) {
     String str_val;
     json_value->AsString(&str_val);
-    if (str_val == "false" || str_val == "False") {
+    if (EqualIgnoringAsciiCase(str_val, keywords::kFalse)) {
       return true;
     }
     return false;
@@ -85,7 +87,7 @@ bool PaidContent::IsPaidElement(const Element* element) const {
       if (itemprop.GetString() != kIsAccessibleForFree) {
         continue;
       }
-      return meta_element.Content() == "false";
+      return meta_element.Content() == keywords::kFalse;
     }
   }
   for (const auto& paid_element : paid_elements_) {

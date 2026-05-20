@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_identityproviderfield_usvstring.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -432,7 +433,7 @@ TypeConverter<std::optional<UserVerificationRequirement>,
 std::optional<AttestationConveyancePreference>
 TypeConverter<std::optional<AttestationConveyancePreference>,
               blink::String>::Convert(const blink::String& preference) {
-  if (preference == "none") {
+  if (preference == blink::keywords::kNone) {
     return AttestationConveyancePreference::NONE;
   }
   if (preference == "indirect") {

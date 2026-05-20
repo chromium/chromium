@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_message_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_record_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_ndefmessageinit_string.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_record.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -135,7 +136,7 @@ NDEFMessage* NDEFMessage::CreateAsPayloadOfSmartPoster(
   bool has_action_record = false;
   for (const NDEFRecordInit* record_init : init->records()) {
     const String& record_type = record_init->recordType();
-    if (record_type == "url") {
+    if (record_type == keywords::kUrl) {
       // The single mandatory url record.
       if (has_url_record) {
         exception_state.ThrowTypeError(
