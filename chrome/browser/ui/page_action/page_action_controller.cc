@@ -384,6 +384,10 @@ void PageActionControllerImpl::ClearAnchoredMessageIcon(
                                                         std::nullopt);
 }
 
+void PageActionControllerImpl::SetAnchoredMessageExpandableContent(
+    actions::ActionId action_id,
+    std::optional<AnchoredMessageExpandableContent> expandable_content) {}
+
 void PageActionControllerImpl::SetAnchoredMessageAction(
     actions::ActionId action_id,
     AnchoredMessageActionIconType action_icon_type,

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
+#include "ui/base/models/image_model.h"
 
 namespace actions {
 class ActionItem;
@@ -36,7 +37,6 @@ class CallbackListSubscription;
 }
 
 namespace ui {
-class ImageModel;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -81,6 +81,22 @@ enum class AnchoredMessageActionIconType {
   kClose,
   // 3-dot menu icon (will be treated as kNone if no actions specified).
   kMenu,
+};
+
+// An item within the optional expanded section of an anchored message.
+struct AnchoredMessageExpandableItem {
+  std::optional<ui::ImageModel> icon;
+  std::u16string text;
+
+  bool operator==(const AnchoredMessageExpandableItem&) const = default;
+};
+
+// The content specific to the expanded section of an anchored message.
+struct AnchoredMessageExpandableContent {
+  std::optional<std::u16string> heading;
+  std::vector<AnchoredMessageExpandableItem> items;
+
+  bool operator==(const AnchoredMessageExpandableContent&) const = default;
 };
 
 // Configuration for a page action's suggestion chip.
@@ -244,6 +260,17 @@ class PageActionController {
                                       const ui::ImageModel& icon) = 0;
   virtual void ClearAnchoredMessageIcon(actions::ActionId action_id) = 0;
 
+  // Sets the expandable content to be displayed in the anchored message bubble.
+  // If supplied, the bubble provides a button to toggle showing the content.
+  // It is initially hidden. The content specification is intended to be
+  // reasonably generic, and may be augmented over time to support the use-cases
+  // of various clients.  Initially, it will contain a heading and a list of
+  // items containing an image and text.  Supplying `std::nullopt` clears
+  // previously-provided content.
+  virtual void SetAnchoredMessageExpandableContent(
+      actions::ActionId action_id,
+      std::optional<AnchoredMessageExpandableContent> expandable_content) = 0;
+
   // Adds a scope of activity for the given action. Returns a scoped object
   // that manages the activity counter. The action is considered active as
   // long as at least one ScopedPageActionActivity object exists for it.
@@ -340,6 +367,10 @@ class PageActionControllerImpl : public PageActionController,
   void SetAnchoredMessageIcon(actions::ActionId action_id,
                               const ui::ImageModel& icon) override;
   void ClearAnchoredMessageIcon(actions::ActionId action_id) override;
+  void SetAnchoredMessageExpandableContent(
+      actions::ActionId action_id,
+      std::optional<AnchoredMessageExpandableContent> expandable_content)
+      override;
   ScopedPageActionActivity AddActivity(actions::ActionId action_id) override;
   void AddObserver(
       actions::ActionId action_id,
