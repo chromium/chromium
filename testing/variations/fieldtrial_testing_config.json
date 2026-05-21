@@ -13657,12 +13657,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Throttled",
-                    "enable_features": [
-                        "AutofillThrottleOptionalSuggestionRefresh"
-                    ]
-                },
-                {
                     "name": "Suppressed",
                     "enable_features": [
                         "SuppressKeyboardWillShowSuggestionRefresh"
