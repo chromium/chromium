@@ -23950,6 +23950,25 @@
             ]
         }
     ],
+    "UniversalCart": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ApiGlicAccessFromGoogleWebpage",
+                        "ApiGlicPrivate"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2Desktop": [
         {
             "platforms": [
