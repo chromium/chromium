@@ -373,27 +373,6 @@ bool IsZeroStateSuggestionsCentralizationEnabled() {
   return base::FeatureList::IsEnabled(kZeroStateSuggestionsCentralization);
 }
 
-const char kZeroStateSuggestionsPlacementAIHub[] =
-    "ZeroStateSuggestionsPlacementAIHub";
-const char kZeroStateSuggestionsPlacementAskGemini[] =
-    "ZeroStateSuggestionsPlacementAskGemini";
-
-bool IsZeroStateSuggestionsAIHubEnabled() {
-  if (!IsZeroStateSuggestionsEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kZeroStateSuggestions, kZeroStateSuggestionsPlacementAIHub, false);
-}
-
-bool IsZeroStateSuggestionsAskGeminiEnabled() {
-  if (!IsZeroStateSuggestionsEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kZeroStateSuggestions, kZeroStateSuggestionsPlacementAskGemini, false);
-}
-
 BASE_FEATURE(kPageContextExtractorRefactored, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPageContextExtractorRefactoredEnabled() {

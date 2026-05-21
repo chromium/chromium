@@ -1175,12 +1175,6 @@ const FeatureEntry::FeatureVariation
         {" - 2", kTipsNotificationsAlternative2, nullptr},
         {" - 3", kTipsNotificationsAlternative3, nullptr}};
 
-const FeatureEntry::FeatureParam kZeroStateSuggestionsPlacementAIHubParam[] = {
-    {kZeroStateSuggestionsPlacementAIHub, "true"}};
-const FeatureEntry::FeatureParam
-    kZeroStateSuggestionsPlacementAskGeminiParam[] = {
-        {kZeroStateSuggestionsPlacementAskGemini, "true"}};
-
 const FeatureEntry::FeatureParam kGeminiImageRemixToolShowFRERowParam[] = {
     {kGeminiImageRemixToolShowFRERow, "true"}};
 const FeatureEntry::FeatureParam
@@ -1199,12 +1193,6 @@ const FeatureEntry::FeatureVariation kGeminiImageRemixToolVariations[] = {
     {"(Show Below Search Image)",
      kGeminiImageRemixToolShowBelowSearchImageParam, nullptr},
     {"(Disable Page Context)", kGeminiImageRemixToolRemovePageContextParam,
-     nullptr},
-};
-
-const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
-    {"AI Hub", kZeroStateSuggestionsPlacementAIHubParam, nullptr},
-    {"Ask Gemini Overlay", kZeroStateSuggestionsPlacementAskGeminiParam,
      nullptr},
 };
 
@@ -2390,9 +2378,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kVariationsRestrictDogfood)},
     {"zero-state-suggestions", flag_descriptions::kZeroStateSuggestionsName,
      flag_descriptions::kZeroStateSuggestionsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kZeroStateSuggestions,
-                                    kZeroStateSuggestionsVariations,
-                                    "ZeroStateSuggestions")},
+     FEATURE_VALUE_TYPE(kZeroStateSuggestions)},
     {"zero-state-suggestions-centralization",
      flag_descriptions::kZeroStateSuggestionsCentralizationName,
      flag_descriptions::kZeroStateSuggestionsCentralizationDescription,

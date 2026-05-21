@@ -670,7 +670,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
   }
 
   // Fetch zero-state suggestions while the floaty is being presented.
-  if (IsZeroStateSuggestionsAskGeminiEnabled()) {
+  if (IsZeroStateSuggestionsEnabled()) {
     gemini_tab_helper->ExecuteZeroStateSuggestions(base::DoNothing());
   }
 
