@@ -1415,6 +1415,17 @@ void ChromeClientImpl::JavaScriptChangedValue(HTMLFormControlElement& element,
   }
 }
 
+bool ChromeClientImpl::IsAutofillableElement(
+    const HTMLFormControlElement& element) {
+  Document& doc = element.GetDocument();
+  if (WebAutofillClient* fill_client =
+          AutofillClientFromFrame(doc.GetFrame())) {
+    return fill_client->IsAutofillableElement(
+        WebFormControlElement(const_cast<HTMLFormControlElement*>(&element)));
+  }
+  return false;
+}
+
 gfx::Transform ChromeClientImpl::GetDeviceEmulationTransform() const {
   DCHECK(web_view_);
   return web_view_->GetDeviceEmulationTransform();

@@ -357,6 +357,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element) override;
   void FormElementReset(const blink::WebFormElement& form) override;
   void PasswordFieldReset(const blink::WebInputElement& element) override;
+  bool IsAutofillableElement(
+      const blink::WebFormControlElement& element) const override;
   void OnDevToolsSessionConnectionChanged(bool attached) override;
   void EmitFormIssuesToDevtools() override;
 

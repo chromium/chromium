@@ -115,6 +115,11 @@ class WebAutofillClient {
   // or has been a password field.
   virtual void PasswordFieldReset(const WebInputElement& element) {}
 
+  // Returns true if the given element is autofillable.
+  virtual bool IsAutofillableElement(const WebFormControlElement&) const {
+    return false;
+  }
+
   // Callback type for refill completion. The bool indicates success (true) or
   // failure (false).
   using RefillCallback = base::OnceCallback<void(bool success)>;

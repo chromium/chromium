@@ -293,6 +293,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void JavaScriptChangedValue(HTMLFormControlElement&,
                               const String& old_value,
                               bool was_autofilled) override;
+  bool IsAutofillableElement(const HTMLFormControlElement&) override;
 
   void ShowVirtualKeyboardOnElementFocus(LocalFrame&) override;
 

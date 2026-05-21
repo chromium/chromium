@@ -550,6 +550,12 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                       const String& old_value,
                                       bool was_autofilled) {}
 
+  // Returns true if the given HTMLFormControlElement is eligible for Autofill
+  // by the embedder's Autofill client.
+  virtual bool IsAutofillableElement(const HTMLFormControlElement&) {
+    return false;
+  }
+
   // Input method editor related functions.
   virtual void ShowVirtualKeyboardOnElementFocus(LocalFrame&) {}
 

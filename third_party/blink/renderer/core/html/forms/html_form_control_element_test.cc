@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -253,6 +254,42 @@ TEST_F(HTMLFormControlElementTest, IsReadOnly) {
   EXPECT_TRUE(text->IsReadOnly());
   EXPECT_FALSE(checkbox->IsReadOnly());
   EXPECT_TRUE(textarea->IsReadOnly());
+}
+
+class AutofillTestChromeClient : public EmptyChromeClient {
+ public:
+  bool IsAutofillableElement(const HTMLFormControlElement& element) override {
+    return is_autofillable_;
+  }
+  void SetIsAutofillable(bool is_autofillable) {
+    is_autofillable_ = is_autofillable;
+  }
+
+ private:
+  bool is_autofillable_ = false;
+};
+
+class HTMLFormControlElementAutofillTest : public PageTestBase {
+ protected:
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<AutofillTestChromeClient>();
+    SetupPageWithClients(chrome_client_);
+    GetDocument().SetMimeType(AtomicString("text/html"));
+  }
+
+  Persistent<AutofillTestChromeClient> chrome_client_;
+};
+
+TEST_F(HTMLFormControlElementAutofillTest, IsAutofillable) {
+  SetHtmlInnerHTML("<body><input id=input></body>");
+  auto* input = To<HTMLFormControlElement>(GetElementById("input"));
+  ASSERT_NE(input, nullptr);
+
+  chrome_client_->SetIsAutofillable(false);
+  EXPECT_FALSE(input->IsAutofillable());
+
+  chrome_client_->SetIsAutofillable(true);
+  EXPECT_TRUE(input->IsAutofillable());
 }
 
 }  // namespace blink

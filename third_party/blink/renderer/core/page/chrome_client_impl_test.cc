@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
+#include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -520,6 +521,56 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
   EXPECT_EQ(select_element->GetAutofillState(), WebAutofillState::kAutofilled);
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("select", "autofilled_select"));
+}
+
+class MockWebAutofillClient : public WebAutofillClient {
+ public:
+  bool IsAutofillableElement(const WebFormControlElement&) const override {
+    return is_autofillable_;
+  }
+  void SetIsAutofillable(bool is_autofillable) {
+    is_autofillable_ = is_autofillable;
+  }
+
+ private:
+  bool is_autofillable_ = false;
+};
+
+class ChromeClientImplAutofillTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    web_view_ = helper_.Initialize();
+    main_frame_ = helper_.LocalMainFrame();
+    chrome_client_impl_ =
+        To<ChromeClientImpl>(&web_view_->GetPage()->GetChromeClient());
+  }
+
+  test::TaskEnvironment task_environment_;
+  frame_test_helpers::WebViewHelper helper_;
+  WebViewImpl* web_view_;
+  WebLocalFrame* main_frame_;
+  Persistent<ChromeClientImpl> chrome_client_impl_;
+};
+
+TEST_F(ChromeClientImplAutofillTest, IsAutofillableElement) {
+  frame_test_helpers::LoadHTMLString(
+      main_frame_, "<body><input id=input></body>", blink::WebURL());
+  auto* web_frame = To<WebLocalFrameImpl>(main_frame_);
+  MockWebAutofillClient mock_autofill_client;
+  web_frame->SetAutofillClient(&mock_autofill_client);
+
+  Document* document = web_frame->GetFrame()->GetDocument();
+  auto* input = To<HTMLFormControlElement>(
+      document->getElementById(AtomicString("input")));
+  ASSERT_NE(input, nullptr);
+
+  mock_autofill_client.SetIsAutofillable(false);
+  EXPECT_FALSE(chrome_client_impl_->IsAutofillableElement(*input));
+
+  mock_autofill_client.SetIsAutofillable(true);
+  EXPECT_TRUE(chrome_client_impl_->IsAutofillableElement(*input));
+
+  web_frame->SetAutofillClient(nullptr);
 }
 
 }  // namespace blink

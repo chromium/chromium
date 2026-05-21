@@ -51,6 +51,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -224,6 +226,13 @@ void HTMLFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   PseudoStateChanged(CSSSelector::kPseudoWebKitAutofill);
   PseudoStateChanged(CSSSelector::kPseudoAutofillSelected);
   PseudoStateChanged(CSSSelector::kPseudoAutofillPreviewed);
+}
+
+bool HTMLFormControlElement::IsAutofillable() const {
+  if (Page* page = GetDocument().GetPage()) {
+    return page->GetChromeClient().IsAutofillableElement(*this);
+  }
+  return false;
 }
 
 bool HTMLFormControlElement::MatchesToolSubmitActivePseudoClass() const {

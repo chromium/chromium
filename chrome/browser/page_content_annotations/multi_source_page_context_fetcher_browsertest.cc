@@ -1147,4 +1147,78 @@ IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
   EXPECT_EQ(iframe_info[0].bounding_box().height(), 204);
 }
 
+class OtpRedactionMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  OtpRedactionMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {optimization_guide::features::
+             kAnnotatedPageContentWithAutofillAnnotations,
+         {}},
+        {optimization_guide::features::
+             kAnnotatedPageContentAutofillOtpRedactions,
+         {}},
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "30s"},
+         }},
+        {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
+         {{"timeout", "30s"}}}};
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+
+  ~OtpRedactionMultiSourcePageContextFetcherBrowserTest() override = default;
+
+  void SetUp() override {
+    EnablePixelOutput();
+    MultiSourcePageContextFetcherBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(OtpRedactionMultiSourcePageContextFetcherBrowserTest,
+                       BasicRedaction) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL(kHostA, "/optimization_guide/otp_redaction.html")));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+
+  // The OTP input field is styled absolute at left: 40px, top: 40px, width:
+  // 220px, height: 48px. So (150, 64) is well inside the redaction region.
+  EXPECT_THAT(bitmap.getColor(150, 64),
+              IsColorWithinTolerance(SK_ColorRED, 0x20));
+
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                true, 1);
+}
+
 }  // namespace page_content_annotations

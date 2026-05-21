@@ -2083,6 +2083,11 @@ void AutofillAgent::PasswordFieldReset(const WebInputElement& element) {
   password_autofill_agent_->InformAboutFieldClearing(element);
 }
 
+bool AutofillAgent::IsAutofillableElement(
+    const blink::WebFormControlElement& element) const {
+  return form_util::IsAutofillableElement(element);
+}
+
 bool AutofillAgent::IsPrerendering() const {
   return unsafe_render_frame() &&
          unsafe_render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
