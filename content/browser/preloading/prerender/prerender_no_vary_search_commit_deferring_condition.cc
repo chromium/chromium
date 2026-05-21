@@ -84,6 +84,14 @@ WillCommitDecision GetWillCommitDecision(
   // of URL-A-with-NoVarySearch.
   if (prerender_host.GetInitialUrl() !=
       prerender_host.GetPrerenderedMainFrameHost()->GetLastCommittedURL()) {
+    TRACE_EVENT_INSTANT("navigation",
+                        "PrerenderNoVarySearchCommitDeferringCondition::"
+                        "AlreadyNavigated",
+                        "initial_url", prerender_host.GetInitialUrl().spec(),
+                        "last_committed_url",
+                        prerender_host.GetPrerenderedMainFrameHost()
+                            ->GetLastCommittedURL()
+                            .spec());
     return WillCommitDecision::kProceedAlreadyNavigated;
   }
   // If the prerender initial URL is the same as the navigation URL there is no
