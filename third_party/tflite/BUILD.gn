@@ -222,6 +222,7 @@ if (!use_litert_tflite) {
     ]
 
     defines = [
+      "EIGEN_ALLOW_UNALIGNED_SCALARS",
       "FARMHASH_NO_CXX_STRING",
       "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
       "TFL_STATIC_LIBRARY_BUILD",
