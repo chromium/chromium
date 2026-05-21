@@ -12,13 +12,17 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config_internal.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
-namespace private_verification_tokens::internal {
+namespace private_verification_tokens {
+
+namespace internal {
 
 bool IsRegistrableDomain(std::string_view domain) {
   if (domain.empty()) {
@@ -86,4 +90,96 @@ std::optional<int64_t> GetValidExpiration(const base::DictValue& dict) {
   return expiration;
 }
 
-}  // namespace private_verification_tokens::internal
+std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
+  const std::string* domain = dict.FindString(kDomainKey);
+  if (!domain || !internal::IsRegistrableDomain(*domain)) {
+    return std::nullopt;
+  }
+
+  std::optional<int> version = internal::GetValidVersion(dict);
+  if (!version) {
+    return std::nullopt;
+  }
+
+  std::optional<PrivateVerificationTokensParameters> params =
+      GetParametersForVersion(*version);
+  if (!params) {
+    return std::nullopt;
+  }
+
+  std::optional<std::vector<uint8_t>> decoded_public_key =
+      internal::GetDecodedPublicKey(dict);
+  if (!decoded_public_key) {
+    return std::nullopt;
+  }
+
+  std::optional<uint32_t> key_id = internal::GetValidKeyId(dict);
+  if (!key_id) {
+    return std::nullopt;
+  }
+
+  std::optional<int> batch_size = internal::GetValidBatchSize(dict, *params);
+  if (!batch_size) {
+    return std::nullopt;
+  }
+
+  std::optional<int64_t> expiration = internal::GetValidExpiration(dict);
+  if (!expiration) {
+    return std::nullopt;
+  }
+
+  PrivateVerificationTokensPublicKey pk(
+      *domain, std::move(*decoded_public_key), *key_id,
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*expiration)),
+      *version);
+  return IssuerConfig(*batch_size, std::move(pk));
+}
+
+}  // namespace internal
+
+IssuerConfig::IssuerConfig(int32_t batch_size,
+                           PrivateVerificationTokensPublicKey public_key)
+    : batch_size(batch_size), public_key(std::move(public_key)) {}
+
+IssuerConfig::IssuerConfig(const IssuerConfig&) = default;
+IssuerConfig& IssuerConfig::operator=(const IssuerConfig&) = default;
+IssuerConfig::IssuerConfig(IssuerConfig&&) = default;
+IssuerConfig& IssuerConfig::operator=(IssuerConfig&&) = default;
+IssuerConfig::~IssuerConfig() = default;
+
+// static
+std::unique_ptr<PrivateVerificationTokensIssuerConfig>
+PrivateVerificationTokensIssuerConfig::Create(base::DictValue config) {
+  const base::ListValue* issuers = config.FindList(kIssuersKey);
+  if (!issuers) {
+    return nullptr;
+  }
+  std::map<std::string, IssuerConfig> result;
+  for (const auto& entry : *issuers) {
+    if (!entry.is_dict()) {
+      continue;
+    }
+    std::optional<IssuerConfig> ic = internal::ParseEntry(entry.GetDict());
+    if (!ic.has_value()) {
+      continue;
+    }
+    std::string domain = ic->public_key.etld_plus_one();
+    result.try_emplace(std::move(domain), std::move(*ic));
+  }
+  return base::WrapUnique(
+      new PrivateVerificationTokensIssuerConfig(std::move(result)));
+}
+
+PrivateVerificationTokensIssuerConfig::PrivateVerificationTokensIssuerConfig(
+    std::map<std::string, IssuerConfig> config)
+    : config_(std::move(config)) {}
+
+PrivateVerificationTokensIssuerConfig::
+    ~PrivateVerificationTokensIssuerConfig() = default;
+
+const std::map<std::string, IssuerConfig>&
+PrivateVerificationTokensIssuerConfig::config() const {
+  return config_;
+}
+
+}  // namespace private_verification_tokens

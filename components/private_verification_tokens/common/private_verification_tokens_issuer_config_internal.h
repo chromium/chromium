@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 
 namespace private_verification_tokens::internal {
@@ -29,6 +30,8 @@ std::optional<int> GetValidBatchSize(
     const PrivateVerificationTokensParameters& params);
 
 std::optional<int64_t> GetValidExpiration(const base::DictValue& dict);
+
+std::optional<IssuerConfig> ParseEntry(const base::DictValue& entry);
 
 }  // namespace private_verification_tokens::internal
 
