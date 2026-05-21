@@ -32,13 +32,15 @@ public final class ContextMenuUtils {
 
     /** An immutable data carrier for the title and urls shown at the top of a context menu. */
     public static final class HeaderInfo {
-        private final CharSequence mTitle;
+        private final CharSequence mPageTitle;
+        private final CharSequence mAltText;
         private final GURL mUrl;
         private final GURL mSecondaryUrl;
         private final GURL mTertiaryUrl;
 
         private HeaderInfo(Builder builder) {
-            mTitle = (builder.mTitle != null) ? builder.mTitle : "";
+            mPageTitle = (builder.mPageTitle != null) ? builder.mPageTitle : "";
+            mAltText = (builder.mAltText != null) ? builder.mAltText : "";
             mUrl = (builder.mUrl != null) ? builder.mUrl : GURL.emptyGURL();
             mSecondaryUrl =
                     (builder.mSecondaryUrl != null) ? builder.mSecondaryUrl : GURL.emptyGURL();
@@ -46,10 +48,17 @@ public final class ContextMenuUtils {
         }
 
         /**
-         * @return The title. It returns "" if not set.
+         * @return The page title. It returns "" if not set.
          */
-        public CharSequence getTitle() {
-            return mTitle;
+        public CharSequence getPageTitle() {
+            return mPageTitle;
+        }
+
+        /**
+         * @return The alt text. It returns "" if not set.
+         */
+        public CharSequence getAltText() {
+            return mAltText;
         }
 
         /**
@@ -75,19 +84,31 @@ public final class ContextMenuUtils {
 
         /** Builder for creating {@link HeaderInfo} instances. */
         public static final class Builder {
-            private @Nullable CharSequence mTitle;
+            private @Nullable CharSequence mPageTitle;
+            private @Nullable CharSequence mAltText;
             private @Nullable GURL mUrl;
             private @Nullable GURL mSecondaryUrl;
             private @Nullable GURL mTertiaryUrl;
 
             /**
-             * Sets the title to be displayed.
+             * Sets the page title to be displayed.
              *
-             * @param title The title.
+             * @param pageTitle The title.
              * @return This Builder instance for chaining.
              */
-            public Builder setTitle(CharSequence title) {
-                mTitle = title;
+            public Builder setPageTitle(CharSequence pageTitle) {
+                mPageTitle = pageTitle;
+                return this;
+            }
+
+            /**
+             * Sets the alt text to be displayed.
+             *
+             * @param altText The alt text.
+             * @return This Builder instance for chaining.
+             */
+            public Builder setAltText(CharSequence altText) {
+                mAltText = altText;
                 return this;
             }
 
@@ -140,8 +161,10 @@ public final class ContextMenuUtils {
 
     /** Returns the header info to be displayed in the context menu. */
     public static HeaderInfo getHeaderInfo(
-            ContextMenuParams params, boolean isCustomContextMenuItemPresent) {
-        CharSequence title = getTitle(params);
+            ContextMenuParams params,
+            boolean isCustomContextMenuItemPresent,
+            CharSequence pageTitle) {
+        CharSequence altText = getAltText(params);
         GURL url = params.getLinkUrl();
         GURL secondaryUrl = GURL.emptyGURL();
         GURL tertiaryUrl = GURL.emptyGURL();
@@ -157,15 +180,16 @@ public final class ContextMenuUtils {
         }
 
         return new HeaderInfo.Builder()
-                .setTitle(title)
+                .setPageTitle(pageTitle)
+                .setAltText(altText)
                 .setUrl(url)
                 .setSecondaryUrl(secondaryUrl)
                 .setTertiaryUrl(tertiaryUrl)
                 .build();
     }
 
-    /** Returns the title for the given {@link ContextMenuParams}. */
-    public static String getTitle(ContextMenuParams params) {
+    /** Returns the alt text for the given {@link ContextMenuParams}. */
+    public static String getAltText(ContextMenuParams params) {
         if (!TextUtils.isEmpty(params.getTitleText())) {
             return params.getTitleText();
         }

@@ -26,6 +26,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils.HeaderInfo;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -40,14 +41,22 @@ class ContextMenuHeaderCoordinator {
             Activity activity,
             ContextMenuParams params,
             Profile profile,
+            WebContents webContents,
             ContextMenuNativeDelegate nativeDelegate) {
-        this(activity, params, profile, nativeDelegate, /* isCustomItemPresent= */ false);
+        this(
+                activity,
+                params,
+                profile,
+                webContents,
+                nativeDelegate,
+                /* isCustomItemPresent= */ false);
     }
 
     ContextMenuHeaderCoordinator(
             Activity activity,
             ContextMenuParams params,
             Profile profile,
+            WebContents webContents,
             ContextMenuNativeDelegate nativeDelegate,
             boolean isCustomItemPresent) {
         if (sDisableForTesting) {
@@ -58,8 +67,9 @@ class ContextMenuHeaderCoordinator {
         if (!ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
             isCustomItemPresent = false;
         }
-        HeaderInfo headerInfo = ContextMenuUtils.getHeaderInfo(params, isCustomItemPresent);
-        String title = headerInfo.getTitle().toString();
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(params, isCustomItemPresent, webContents.getTitle());
+        String title = headerInfo.getAltText().toString();
         CharSequence url = getUrl(headerInfo.getUrl(), activity, params, profile);
         boolean hasSecondary = !GURL.isEmptyOrInvalid(headerInfo.getSecondaryUrl());
         boolean hasTertiary = !GURL.isEmptyOrInvalid(headerInfo.getTertiaryUrl());

@@ -287,6 +287,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         mActivity,
                         params,
                         Profile.fromWebContents(mWebContents),
+                        mWebContents,
                         mNativeDelegate,
                         mIsCustomItemPresent);
         ContextMenuMediator mediator =
@@ -512,9 +513,11 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             Activity activity,
             ContextMenuParams params,
             Profile profile,
+            WebContents webContents,
             ContextMenuNativeDelegate nativeDelegate) {
         mHeaderCoordinator =
-                new ContextMenuHeaderCoordinator(activity, params, profile, nativeDelegate);
+                new ContextMenuHeaderCoordinator(
+                        activity, params, profile, webContents, nativeDelegate);
     }
 
     void simulateShoppyImageClassificationForTesting() {

@@ -1014,7 +1014,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             ShareParams linkShareParams =
                     new ShareParams.Builder(
                                     getWindow(),
-                                    ContextMenuUtils.getTitle(mParams),
+                                    ContextMenuUtils.getAltText(mParams),
                                     mParams.getPageUrl().getSpec())
                             .build();
             assumeNonNull(mShareDelegateSupplier.get())
@@ -1039,7 +1039,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             ShareParams linkShareParams =
                     new ShareParams.Builder(
                                     getWindow(),
-                                    ContextMenuUtils.getTitle(mParams),
+                                    ContextMenuUtils.getAltText(mParams),
                                     mParams.getUrl().getSpec())
                             .build();
             assumeNonNull(mShareDelegateSupplier.get())
@@ -1055,7 +1055,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             final ShareParams shareParams =
                     new ShareParams.Builder(
                                     getWindow(),
-                                    ContextMenuUtils.getTitle(mParams),
+                                    ContextMenuUtils.getAltText(mParams),
                                     mParams.getUrl().getSpec())
                             .build();
             assumeNonNull(mShareDelegateSupplier.get())
@@ -1323,7 +1323,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     ShareParams imageShareParams =
                             new ShareParams.Builder(
                                             getWindow(),
-                                            ContextMenuUtils.getTitle(mParams),
+                                            ContextMenuUtils.getAltText(mParams),
                                             /* url= */ "")
                                     .setSingleImageUri(imageUri)
                                     .setFileContentType(mimeType)

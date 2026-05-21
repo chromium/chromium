@@ -55,7 +55,8 @@ import org.chromium.url.GURL;
 public class ContextMenuUtilsUnitTest {
     Activity mActivity;
     @Mock WebContents mWebContentsMock;
-    private static final String sTitleText = "titleText";
+    private static final String PAGE_TITLE_TEXT = "pageTitleText";
+    private static final String ALT_TEXT = "altText";
     private static final String sLinkText = "linkText";
     private static final String sSrcUrl = "https://www.google.com/";
     private static final GURL sPageGUrl = new GURL("https://www.youtube.com/");
@@ -90,7 +91,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         sSrcGUrl,
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         true,
                         0,
@@ -103,11 +104,13 @@ public class ContextMenuUtilsUnitTest {
 
         HeaderInfo headerInfo =
                 ContextMenuUtils.getHeaderInfo(
-                        params,
-                        /** isCustomContextMenuItemPresent= */
-                        false);
+                        params, /* isCustomContextMenuItemPresent= */ false, PAGE_TITLE_TEXT);
 
-        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals(
+                "Page title should be the default page title.",
+                PAGE_TITLE_TEXT,
+                headerInfo.getPageTitle());
+        assertEquals("AltText should be the default altText.", ALT_TEXT, headerInfo.getAltText());
         assertEquals("URL should be the link URL.", sLinkGUrl, headerInfo.getUrl());
         assertEquals(
                 "Secondary URL should be empty.", GURL.emptyGURL(), headerInfo.getSecondaryUrl());
@@ -129,7 +132,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         sSrcGUrl,
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         true,
                         0,
@@ -142,11 +145,13 @@ public class ContextMenuUtilsUnitTest {
 
         HeaderInfo headerInfo =
                 ContextMenuUtils.getHeaderInfo(
-                        params,
-                        /** isCustomContextMenuItemPresent= */
-                        true);
+                        params, /* isCustomContextMenuItemPresent= */ true, PAGE_TITLE_TEXT);
 
-        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals(
+                "Page title should be the default page title.",
+                PAGE_TITLE_TEXT,
+                headerInfo.getPageTitle());
+        assertEquals("AltText should be the default altText.", ALT_TEXT, headerInfo.getAltText());
         assertEquals(
                 "URL should be the link URL as it's not an image.", sLinkGUrl, headerInfo.getUrl());
         assertEquals(
@@ -173,7 +178,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         sSrcGUrl,
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         true,
                         0,
@@ -186,11 +191,13 @@ public class ContextMenuUtilsUnitTest {
 
         HeaderInfo headerInfo =
                 ContextMenuUtils.getHeaderInfo(
-                        params,
-                        /** isCustomContextMenuItemPresent= */
-                        true);
+                        params, /* isCustomContextMenuItemPresent= */ true, PAGE_TITLE_TEXT);
 
-        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals(
+                "Page title should be the default page title.",
+                PAGE_TITLE_TEXT,
+                headerInfo.getPageTitle());
+        assertEquals("AltText should be the default altText.", ALT_TEXT, headerInfo.getAltText());
         assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
         assertEquals(
                 "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
@@ -212,7 +219,7 @@ public class ContextMenuUtilsUnitTest {
                         "",
                         GURL.emptyGURL(),
                         sSrcGUrl,
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         0,
@@ -225,11 +232,13 @@ public class ContextMenuUtilsUnitTest {
 
         HeaderInfo headerInfo =
                 ContextMenuUtils.getHeaderInfo(
-                        params,
-                        /** isCustomContextMenuItemPresent= */
-                        true);
+                        params, /* isCustomContextMenuItemPresent= */ true, PAGE_TITLE_TEXT);
 
-        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals(
+                "Page title should be the default page title.",
+                PAGE_TITLE_TEXT,
+                headerInfo.getPageTitle());
+        assertEquals("AltText should be the default altText.", ALT_TEXT, headerInfo.getAltText());
         assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
         assertEquals(
                 "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
@@ -239,7 +248,7 @@ public class ContextMenuUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void getTitle_hasTitleText() {
+    public void getAltText_hasAltTextText() {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -251,7 +260,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         new GURL(sSrcUrl),
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         0,
@@ -262,12 +271,12 @@ public class ContextMenuUtilsUnitTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        assertEquals(sTitleText, ContextMenuUtils.getTitle(params));
+        assertEquals(ALT_TEXT, ContextMenuUtils.getAltText(params));
     }
 
     @Test
     @SmallTest
-    public void getTitle_noTitleTextHasLinkText() {
+    public void getAltText_noAltTextTextHasLinkText() {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -290,12 +299,12 @@ public class ContextMenuUtilsUnitTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        assertEquals(sLinkText, ContextMenuUtils.getTitle(params));
+        assertEquals(sLinkText, ContextMenuUtils.getAltText(params));
     }
 
     @Test
     @SmallTest
-    public void getTitle_noTitleTextOrLinkText() {
+    public void getAltText_noAltTextTextOrLinkText() {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -318,12 +327,13 @@ public class ContextMenuUtilsUnitTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        assertEquals(URLUtil.guessFileName(sSrcUrl, null, null), ContextMenuUtils.getTitle(params));
+        assertEquals(
+                URLUtil.guessFileName(sSrcUrl, null, null), ContextMenuUtils.getAltText(params));
     }
 
     @Test
     @SmallTest
-    public void getTitle_noShareParams() {
+    public void getAltText_noShareParams() {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -346,7 +356,7 @@ public class ContextMenuUtilsUnitTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        assertEquals("", ContextMenuUtils.getTitle(params));
+        assertEquals("", ContextMenuUtils.getAltText(params));
     }
 
     @Test
@@ -445,7 +455,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         new GURL(sSrcUrl),
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         0,
@@ -475,7 +485,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         new GURL(sSrcUrl),
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         0,
@@ -505,7 +515,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         new GURL(sSrcUrl),
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         0,
@@ -577,7 +587,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         new GURL(sSrcUrl),
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         triggeringTouchXDp,
@@ -688,7 +698,7 @@ public class ContextMenuUtilsUnitTest {
                         sLinkText,
                         GURL.emptyGURL(),
                         new GURL(sSrcUrl),
-                        sTitleText,
+                        ALT_TEXT,
                         null,
                         false,
                         triggeringTouchXDp,
