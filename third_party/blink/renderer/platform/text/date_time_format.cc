@@ -242,7 +242,7 @@ bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
   NOTREACHED();
 }
 
-static bool IsASCIIAlphabetOrQuote(UChar ch) {
+static bool IsAsciiAlphabetOrQuote(UChar ch) {
   return IsAsciiAlpha(ch) || ch == '\'';
 }
 
@@ -251,7 +251,7 @@ void DateTimeFormat::QuoteAndAppend(const StringView& literal,
   if (literal.length() <= 0)
     return;
 
-  if (literal.Find(IsASCIIAlphabetOrQuote) == kNotFound) {
+  if (literal.Find(IsAsciiAlphabetOrQuote) == kNotFound) {
     buffer.Append(literal);
     return;
   }
