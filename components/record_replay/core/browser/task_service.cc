@@ -4,8 +4,10 @@
 
 #include "components/record_replay/core/browser/task_service.h"
 
+#include "base/functional/bind.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 #include "url/gurl.h"
 
 namespace record_replay {
@@ -16,6 +18,19 @@ TaskService::TaskService(RecordingDataManager* recording_data_manager)
 TaskService::~TaskService() = default;
 
 void TaskService::OnURLVisited(const GURL& visited_url) {
+  if (!recording_data_manager_) {
+    return;
+  }
+
+  recording_data_manager_->GetTaskDefinitionsByUrl(
+      visited_url.spec(),
+      base::BindOnce(&TaskService::OnTaskDefinitionsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), visited_url));
+}
+
+void TaskService::OnTaskDefinitionsRetrieved(
+    const GURL& visited_url,
+    std::vector<std::pair<int64_t, TaskDefinition>> task_definitions) {
   // TODO(crbug.com/514303197): Check whether or not to start observing a task,
   // and create a TaskObserver if necessary.
 }

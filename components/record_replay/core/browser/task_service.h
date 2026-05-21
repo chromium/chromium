@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -44,7 +46,13 @@ class TaskService : public KeyedService {
                            const TaskParameterValues& values);
 
  private:
+  void OnTaskDefinitionsRetrieved(
+      const GURL& visited_url,
+      std::vector<std::pair<int64_t, TaskDefinition>> task_definitions);
+
   raw_ptr<RecordingDataManager> recording_data_manager_;
+
+  base::WeakPtrFactory<TaskService> weak_ptr_factory_{this};
 };
 
 }  // namespace record_replay
