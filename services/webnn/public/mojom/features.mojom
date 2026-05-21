@@ -56,3 +56,12 @@ feature kWebNNLiteRT {
   const string name = "WebNNLiteRT";
   const bool default_state = false;
 };
+
+// Enables offloading graph construction/compilation to an out-of-process
+// WebNN Compiler process, isolated from the GPU process. When disabled,
+// graph construction runs in the GPU process as before.
+[EnableIf=is_win]
+feature kWebNNCompilerProcess {
+  const string name = "WebNNCompilerProcess";
+  const bool default_state = false;
+};

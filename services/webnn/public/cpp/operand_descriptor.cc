@@ -120,6 +120,9 @@ size_t OperandDescriptor::GetBitsPerElement(OperandDataType data_type) {
 
 OperandDescriptor::OperandDescriptor(mojo::DefaultConstruct::Tag) {}
 
+OperandDescriptor::OperandDescriptor()
+    : data_type_(OperandDataType::kFloat32) {}
+
 OperandDescriptor::OperandDescriptor(OperandDataType data_type,
                                      std::vector<uint32_t> shape)
     : data_type_(data_type), shape_(std::move(shape)) {}

@@ -1,0 +1,38 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/webnn/public/mojom/ep_package_info.mojom";
+import "services/webnn/public/mojom/features.mojom";
+import "services/webnn/public/mojom/webnn_compiler_context.mojom";
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
+import "services/webnn/public/mojom/webnn_context_provider.mojom";
+import "services/webnn/public/mojom/webnn_model_loader.mojom";
+
+// Sandbox type for the WebNN Compiler process.
+const sandbox.mojom.Sandbox kWebNNCompilerSandbox =
+    sandbox.mojom.Sandbox.kWebNNModelCompilation;
+
+// Process-level service interface for the single shared Compiler process.
+// Not origin-isolated: all origins share this process. Per-context isolation
+// is achieved by creating separate CompilerContext instances.
+[ServiceSandbox=kWebNNCompilerSandbox,
+ RuntimeFeature=webnn.mojom.features.kWebNNCompilerProcess]
+interface WebNNCompilerService {
+  // Browser calls this to create a per-context compiler state.
+  // |context_options| and |context_properties| configure device selection
+  // and graph validation limits.
+  // |ep_package_info| provides backend-specific package paths (e.g.,
+  // execution provider DLLs for ORT).
+  // |model_loader| is the channel to GPU for sending compiled models.
+  // |receiver| is the CompilerContext endpoint that Renderer will use.
+  CreateCompilerContext(
+      CreateContextOptions context_options,
+      ContextProperties context_properties,
+      map<string, EpPackageInfo> ep_package_info,
+      pending_remote<WebNNModelLoader> model_loader,
+      pending_receiver<WebNNCompilerContext> receiver);
+};

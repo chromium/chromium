@@ -1,0 +1,56 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_device.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
+import "services/webnn/public/mojom/webnn_graph.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// Combines the binding name and descriptor for a compiled graph operand.
+struct CompiledOperandDescriptor {
+  // The name used to bind this operand during inference (e.g., ONNX graph
+  // input/output name for ORT backend).
+  string binding_name;
+  // The operand descriptor for dispatch validation in GPU process.
+  OperandDescriptor descriptor;
+};
+
+// Compiled model bytes and operand metadata produced by the Compiler process.
+// Sent to the GPU process to load the model and validate dispatch calls.
+struct CompiledGraph {
+  // The compiled model bytes (e.g., ORT EP context binary for ORT backend).
+  // Self-contained — all weights are included.
+  mojo_base.mojom.BigBuffer compiled_model_data;
+
+  // Maps from WebNN operand name to binding name and descriptor.
+  map<string, CompiledOperandDescriptor> inputs;
+  map<string, CompiledOperandDescriptor> outputs;
+};
+
+// Graph handle and execution devices assigned by the GPU process after
+// loading a compiled graph.
+struct LoadedGraphInfo {
+  blink.mojom.WebNNGraphToken graph_token;
+  array<Device> devices;
+};
+
+// Implemented in the GPU process. After compilation, the Compiler calls
+// into this interface to send compiled models to GPU for loading.
+//
+// Security model: Model compilation would otherwise run in the GPU process,
+// but is moved to a sandboxed Compiler process to keep third-party ML runtime
+// code out of the GPU process. Only the compiled output crosses the process
+// boundary.
+interface WebNNModelLoader {
+  // Returns a graph handle and execution devices, or an error if the
+  // GPU process fails to load the model (e.g., the backend cannot create
+  // an inference session).
+  LoadCompiledGraph(
+      CompiledGraph compiled_graph,
+      pending_receiver<WebNNGraph> graph_receiver)
+    => result<LoadedGraphInfo, Error>;
+};

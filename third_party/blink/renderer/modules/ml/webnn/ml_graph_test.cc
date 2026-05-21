@@ -787,8 +787,10 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*where_condition=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*where_value=*/{webnn::SupportedDataTypes::All(), kMaxRank}});
     auto success = blink_mojom::CreateContextSuccess::New(
-        std::move(blink_remote), std::move(context_properties),
-        blink::WebNNContextToken(), mojo::ScopedDataPipeProducerHandle(),
+        std::move(blink_remote),
+        /*compiler_context_remote=*/mojo::NullRemote(),
+        std::move(context_properties), blink::WebNNContextToken(),
+        mojo::ScopedDataPipeProducerHandle(),
         mojo::ScopedDataPipeConsumerHandle(), /*command_buffer_id=*/0);
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));

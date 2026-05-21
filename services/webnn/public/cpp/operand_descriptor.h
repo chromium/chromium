@@ -124,6 +124,10 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
   // requires types to be default-constructible.
   explicit OperandDescriptor(mojo::DefaultConstruct::Tag);
 
+  // Creates an instance with default-initialized data_type_, needed for
+  // WTF::HashMap value type support in blink mojom bindings.
+  OperandDescriptor();
+
   // Copyable and movable.
   OperandDescriptor(const OperandDescriptor&);
   OperandDescriptor& operator=(const OperandDescriptor&);

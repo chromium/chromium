@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "services/webnn/public/mojom/webnn_graph_builder.mojom";
+
+// Per-context interface hosted in the Compiler process.
+// The Browser brokers the initial connection by sending the pending_receiver
+// to the Compiler process and the pending_remote to the Renderer. After
+// setup, the Renderer communicates directly with the Compiler process.
+// Used by backends that offload compilation to the Compiler process
+// (e.g., ORT). Not used by backends that compile in the GPU process.
+interface WebNNCompilerContext {
+  // Creates a graph builder in the Compiler process.
+  // Renderer gets a direct pipe to WebNNGraphBuilderImpl running in the
+  // Compiler process, where graph validation, constant management, and
+  // compilation all happen without involving the GPU process.
+  CreateGraphBuilder(pending_receiver<WebNNGraphBuilder> receiver);
+};

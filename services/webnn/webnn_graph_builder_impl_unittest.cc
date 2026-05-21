@@ -204,8 +204,9 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     auto success = mojom::CreateContextSuccess::New(
-        std::move(remote), std::move(context_properties),
-        context_impl->handle(), mojo::ScopedDataPipeProducerHandle(),
+        std::move(remote), /*compiler_context_remote=*/mojo::NullRemote(),
+        std::move(context_properties), context_impl->handle(),
+        mojo::ScopedDataPipeProducerHandle(),
         mojo::ScopedDataPipeConsumerHandle(), /*command_buffer_id=*/0);
     std::move(callback).Run(
         mojom::CreateContextResult::NewSuccess(std::move(success)));

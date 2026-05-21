@@ -78,8 +78,8 @@ void ContextProviderTflite::OnCreateWebNNContextImpl(
   // TODO(crbug.com/504319596): Support WebNN introspection for the in-process
   // TFLite backend.
   auto success = mojom::CreateContextSuccess::New(
-      std::move(remote), std::move(context_properties),
-      std::move(context_handle),
+      std::move(remote), /*compiler_context_remote=*/mojo::NullRemote(),
+      std::move(context_properties), std::move(context_handle),
       // Data pipes are not needed when TFLite runs in-process with the
       // renderer, since tensor data does not cross a process boundary.
       /*write_tensor_producer=*/mojo::ScopedDataPipeProducerHandle(),
