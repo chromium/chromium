@@ -1166,3 +1166,73 @@ TEST_F(
   EXPECT_EQ(0, segments.at(1).text_start);
   EXPECT_EQ(node2_text.size(), segments.at(1).text_end);
 }
+
+TEST_F(ReadAnythingReadAloudAppModelTest, ResetAndLogSingleSampleMetrics) {
+  const std::vector<std::string> metrics = {
+      "Accessibility.ReadAnything.ReadAloudPlaySessionCount",
+      "Accessibility.ReadAnything.ReadAloudPauseSessionCount",
+      "Accessibility.ReadAnything.ReadAloudNextButtonSessionCount",
+      "Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount",
+  };
+
+  const std::string& playCountName = metrics[0];
+  const std::string& pauseCountName = metrics[1];
+  const std::string& nextButtonCountName = metrics[2];
+  const std::string& previousButtonCountName = metrics[3];
+
+  // Play - pause - play
+  model().IncrementMetric(playCountName);
+  model().IncrementMetric(pauseCountName);
+  model().IncrementMetric(playCountName);
+
+  base::HistogramTester histogram_tester;
+  model().ResetAndLogSingleSampleMetrics();
+
+  // Each metric has been logged once.
+  for (const auto& metric : metrics) {
+    histogram_tester.ExpectTotalCount(metric, /*expected_count=*/1);
+  }
+
+  // ReadAloudPlaySessionCount has a single sample of 2.
+  // ReadAloudPauseSessionCount has a single sample of 1.
+  // ReadAloudNextButtonSessionCount and ReadAloudPreviousButtonSessionCount
+  // each have a single sample of 0.
+  histogram_tester.ExpectUniqueSample(playCountName, /*sample=*/2,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(pauseCountName, /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(nextButtonCountName, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(previousButtonCountName, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+
+  // Increment in the new session
+  model().IncrementMetric(playCountName);
+  model().ResetAndLogSingleSampleMetrics();
+
+  // Each metric has two total samples.
+  for (const auto& metric : metrics) {
+    histogram_tester.ExpectTotalCount(metric, /*expected_count=*/2);
+  }
+
+  // ReadAloudPlaySessionCount should now have one sample of 1 and one sample
+  // of 2.
+  histogram_tester.ExpectBucketCount(playCountName, /*sample=*/1,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(playCountName, /*sample=*/2,
+                                     /*expected_count=*/1);
+
+  // ReadAloudPauseSessionCount should now have one sample of 1 and one sample
+  // of 0.
+  histogram_tester.ExpectBucketCount(pauseCountName, /*sample=*/0,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(pauseCountName, /*sample=*/1,
+                                     /*expected_count=*/1);
+
+  // ReadAloudNextButtonSessionCount and ReadAloudPreviousButtonSessionCount
+  // each have two samples of 0.
+  histogram_tester.ExpectBucketCount(previousButtonCountName, /*sample=*/0,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(nextButtonCountName, /*sample=*/0,
+                                     /*expected_count=*/2);
+}

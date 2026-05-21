@@ -145,6 +145,7 @@ class ReadAloudAppModel {
   int GetCurrentTextEndIndex(const ui::AXNodeID& node_id);
 
   void ResetReadAloudState();
+  void ResetAndLogSingleSampleMetrics();
 
   // Returns a list of segments representing the next nodes and ranges
   // that should be spoken and highlighted with Read Aloud. The text ranges

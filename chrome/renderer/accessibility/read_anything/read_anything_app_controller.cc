@@ -2819,6 +2819,7 @@ void ReadAnythingAppController::RecordSessionMetricsIfShownOrRecentlyHidden(
   RecordNumSelections();
   RecordEstimatedWordsHeard();
   RecordEstimatedWordsSeen();
+  read_aloud_model_.ResetAndLogSingleSampleMetrics();
 }
 
 void ReadAnythingAppController::StartLineFocusSession() {

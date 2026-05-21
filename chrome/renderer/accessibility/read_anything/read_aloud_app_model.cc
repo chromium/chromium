@@ -43,14 +43,7 @@ std::vector<size_t> GetDependencyHeads(base::span<const std::string> input) {
 }  // namespace
 
 ReadAloudAppModel::ReadAloudAppModel() {
-  for (const auto& [metric, count] : metric_to_count_map_) {
-    metric_to_single_sample_[metric] =
-        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
-            metric, min_sample, max_sample, buckets);
-    // We want to know if the counts are never incremented, so set the minimum
-    // sample in case IncrementMetric is never called.
-    metric_to_single_sample_[metric]->SetSample(min_sample);
-  }
+  ResetAndLogSingleSampleMetrics();
 }
 
 ReadAloudAppModel::~ReadAloudAppModel() = default;
@@ -662,6 +655,17 @@ void ReadAloudAppModel::ResetReadAloudState() {
   speech_tree_initialized_ = false;
 }
 
+void ReadAloudAppModel::ResetAndLogSingleSampleMetrics() {
+  metric_to_single_sample_.clear();
+  for (auto& [metric, count] : metric_to_count_map_) {
+    count = 0;
+    metric_to_single_sample_[metric] =
+        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+            metric, min_sample, max_sample, buckets);
+    metric_to_single_sample_[metric]->SetSample(min_sample);
+  }
+}
+
 bool ReadAloudAppModel::IsValidAXPosition(
     const ui::AXNodePosition::AXPositionInstance& position,
     const a11y::ReadAloudCurrentGranularity& current_granularity,
@@ -762,6 +766,10 @@ void ReadAloudAppModel::SetAudioCurrentlyPlaying(bool is_playing) {
 }
 
 void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {
+  if (!metric_to_count_map_.contains(metric_name)) {
+    return;
+  }
+
   metric_to_count_map_[metric_name]++;
   // Update the count that will be logged on destruction.
   if (metric_to_single_sample_[metric_name]) {
