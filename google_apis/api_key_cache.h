@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   const std::string& api_key_non_stable() const { return api_key_non_stable_; }
   const std::string& api_key_remoting() const { return api_key_remoting_; }
   const std::string& api_key_soda() const { return api_key_soda_; }
+  const std::string& api_key_partial_translate() const {
+    return api_key_partial_translate_;
+  }
 #if !BUILDFLAG(IS_ANDROID)
   const std::string& api_key_hats() const { return api_key_hats_; }
 #endif
@@ -75,6 +78,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   std::string api_key_non_stable_;
   std::string api_key_remoting_;
   std::string api_key_soda_;
+  std::string api_key_partial_translate_;
 #if !BUILDFLAG(IS_ANDROID)
   std::string api_key_hats_;
 #endif

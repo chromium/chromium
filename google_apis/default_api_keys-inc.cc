@@ -73,6 +73,12 @@
 #define GOOGLE_API_KEY_SODA google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
+// API key for the Translate Private API.
+#if !defined(GOOGLE_API_KEY_PARTIAL_TRANSLATE)
+#define GOOGLE_API_KEY_PARTIAL_TRANSLATE \
+  google_apis::DefaultApiKeys::kUnsetApiToken
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 // API key for the HaTS API.
 #if !defined(GOOGLE_API_KEY_HATS)
@@ -150,6 +156,7 @@ constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
 #endif  // BUILDFLAG(IS_ANDROID)
       .google_api_key_remoting = GOOGLE_API_KEY_REMOTING,
       .google_api_key_soda = GOOGLE_API_KEY_SODA,
+      .google_api_key_partial_translate = GOOGLE_API_KEY_PARTIAL_TRANSLATE,
 #if BUILDFLAG(IS_CHROMEOS)
       .google_api_key_sharing = GOOGLE_API_KEY_SHARING,
       .google_api_key_read_aloud = GOOGLE_API_KEY_READ_ALOUD,

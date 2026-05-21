@@ -34,6 +34,7 @@ struct DefaultApiKeys {
 #endif  // BUILDFLAG(IS_ANDROID)
   const char* google_api_key_remoting;
   const char* google_api_key_soda;
+  const char* google_api_key_partial_translate;
 #if BUILDFLAG(IS_CHROMEOS)
   const char* google_api_key_sharing;
   const char* google_api_key_read_aloud;

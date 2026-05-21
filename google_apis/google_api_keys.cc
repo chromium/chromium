@@ -92,6 +92,10 @@ const std::string& GetSodaAPIKey() {
   return GetApiKeyCacheInstance().api_key_soda();
 }
 
+const std::string& GetPartialTranslateAPIKey() {
+  return GetApiKeyCacheInstance().api_key_partial_translate();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 const std::string& GetHatsAPIKey() {
   return GetApiKeyCacheInstance().api_key_hats();
