@@ -325,6 +325,9 @@ message ClientToServerMessage {
 }
 
 message CommitResponse {
+  // WARNING: Do not add new values to this enum. The response_type field was
+  // required until (including) M149 and old clients will reject unknown enum
+  // values. New values can only be added once M149 is fully retired.
   enum ResponseType {
     SUCCESS = 1;
     CONFLICT = 2;  // You're out of date; update and check your data
@@ -336,7 +339,9 @@ message CommitResponse {
     TRANSIENT_ERROR = 6;  // Something went wrong; try again in a bit
   }
   repeated group EntryResponse = 1 {
-    required ResponseType response_type = 2;
+    // This field was required until (including) M149. The server MUST always
+    // populate it.
+    optional ResponseType response_type = 2;
 
     // Sync servers may also return a new ID for an existing item, indicating
     // a new entry's been created to hold the data the client's sending up.
