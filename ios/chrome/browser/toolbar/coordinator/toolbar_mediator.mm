@@ -139,13 +139,15 @@
   return self;
 }
 
-- (void)updateConsumerWithWebState:(web::WebState*)webState {
+- (void)updateConsumerWithWebState:(web::WebState*)webState
+                          animated:(BOOL)animated {
   if (!webState) {
     return;
   }
   [self.consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
   [self.consumer
-      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
+      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)
+             animated:animated];
 
   const GURL visibleURL = webState->GetVisibleURL();
   [self.consumer setShareEnabled:!visibleURL.is_empty()];
@@ -193,7 +195,8 @@
   }
   _consumer = consumer;
   if (_webStateList) {
-    [self updateConsumerWithWebState:_webStateList->GetActiveWebState()];
+    [self updateConsumerWithWebState:_webStateList->GetActiveWebState()
+                            animated:NO];
   }
   [self updateToolbarPosition];
 }
@@ -304,29 +307,29 @@
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
-  [self updateConsumerWithWebState:webState];
+  [self updateConsumerWithWebState:webState animated:YES];
 }
 
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigation {
-  [self updateConsumerWithWebState:webState];
+  [self updateConsumerWithWebState:webState animated:YES];
 }
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
-  [self updateConsumerWithWebState:webState];
+  [self updateConsumerWithWebState:webState animated:YES];
 }
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {
-  [self updateConsumerWithWebState:webState];
+  [self updateConsumerWithWebState:webState animated:YES];
 }
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
-  [self updateConsumerWithWebState:webState];
+  [self updateConsumerWithWebState:webState animated:YES];
 }
 
 - (void)webStateDidChangeBackForwardState:(web::WebState*)webState {
-  [self updateConsumerWithWebState:webState];
+  [self updateConsumerWithWebState:webState animated:YES];
 }
 
 #pragma mark - WebStateListObserving
@@ -335,7 +338,7 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   if (status.active_web_state_change() && status.new_active_web_state) {
-    [self updateConsumerWithWebState:status.new_active_web_state];
+    [self updateConsumerWithWebState:status.new_active_web_state animated:NO];
   } else {
     [self updateConsumerTabCountAndGroupState];
   }

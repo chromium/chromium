@@ -802,7 +802,7 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
         break;
     }
 
-    [mediator updateConsumerWithWebState:webState];
+    [mediator updateConsumerWithWebState:webState animated:NO];
 
     UIView* toolbarView = toolbar.view;
     // The toolbar must be in the view hierarchy to be snapshotted.
@@ -813,7 +813,8 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
         toolbarView, toolbarView.window.screen.scale, kClientSideRendering);
 
     [mediator updateConsumerWithWebState:self.browser->GetWebStateList()
-                                             ->GetActiveWebState()];
+                                             ->GetActiveWebState()
+                                animated:NO];
 
     return toolbarSnapshot;
   }

@@ -79,7 +79,8 @@ class GeminiService;
 - (void)setUICurrentlySupportsPromo:(BOOL)supports;
 
 // Updates the consumer with the current state of the web state.
-- (void)updateConsumerWithWebState:(web::WebState*)webState;
+- (void)updateConsumerWithWebState:(web::WebState*)webState
+                          animated:(BOOL)animated;
 
 // Disconnects observations.
 - (void)disconnect;

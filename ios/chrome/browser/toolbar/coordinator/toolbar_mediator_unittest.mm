@@ -215,7 +215,7 @@ TEST_P(ToolbarMediatorTest, TestTabCountAndGroupUpdates) {
 // Tests that selecting a web state updates the consumer.
 TEST_P(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {
   OCMExpect([consumer_ setCanGoBack:YES]);
-  OCMExpect([consumer_ setCanGoForward:NO]);
+  OCMExpect([consumer_ setCanGoForward:NO animated:NO]);
   OCMExpect([consumer_ setShareEnabled:YES]);
   OCMExpect([consumer_ setIsLoading:NO]);
 
@@ -246,25 +246,25 @@ TEST_P(ToolbarMediatorTest, TestWebStateUpdates) {
   // Test back-forward state.
   web_navigation_util::GoBack(fake_web_state);
   OCMExpect([consumer_ setCanGoBack:YES]);
-  OCMExpect([consumer_ setCanGoForward:YES]);
+  OCMExpect([consumer_ setCanGoForward:YES animated:YES]);
   fake_web_state->OnBackForwardStateChanged();
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   web_navigation_util::GoBack(fake_web_state);
   OCMExpect([consumer_ setCanGoBack:NO]);
-  OCMExpect([consumer_ setCanGoForward:YES]);
+  OCMExpect([consumer_ setCanGoForward:YES animated:YES]);
   fake_web_state->OnBackForwardStateChanged();
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   web_navigation_util::GoForward(fake_web_state);
   OCMExpect([consumer_ setCanGoBack:YES]);
-  OCMExpect([consumer_ setCanGoForward:YES]);
+  OCMExpect([consumer_ setCanGoForward:YES animated:YES]);
   fake_web_state->OnBackForwardStateChanged();
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   web_navigation_util::GoForward(fake_web_state);
   OCMExpect([consumer_ setCanGoBack:YES]);
-  OCMExpect([consumer_ setCanGoForward:NO]);
+  OCMExpect([consumer_ setCanGoForward:NO animated:YES]);
   fake_web_state->OnBackForwardStateChanged();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

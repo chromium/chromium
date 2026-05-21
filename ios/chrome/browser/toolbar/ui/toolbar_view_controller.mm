@@ -401,7 +401,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   _backButton.enabled = canGoBack;
 }
 
-- (void)setCanGoForward:(BOOL)canGoForward {
+- (void)setCanGoForward:(BOOL)canGoForward animated:(BOOL)animated {
   if (_forwardButton.enabled == canGoForward) {
     return;
   }
@@ -410,8 +410,17 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
     _forwardButton.enabled = YES;
   }
 
-  // `_navigationButtonsContainer` is resized by sliding over its right edge to
-  // reveal or hide the `_forwardButton`.
+  // If no animation is requested, snap instantly.
+  if (!animated) {
+    _forwardButton.hidden = !canGoForward;
+    if (!canGoForward) {
+      _forwardButton.enabled = NO;
+    }
+    [self.view layoutIfNeeded];
+    return;
+  }
+
+  // Otherwise, do the smooth fade.
   __weak __typeof(self) weakSelf = self;
   ToolbarButton* forwardButton = _forwardButton;
   [UIView animateWithDuration:kAnimationDuration

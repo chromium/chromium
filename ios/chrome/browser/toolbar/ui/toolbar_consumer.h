@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 - (void)setCanGoBack:(BOOL)canGoBack;
 
 // Sets whether the forward button is enabled.
-- (void)setCanGoForward:(BOOL)canGoForward;
+- (void)setCanGoForward:(BOOL)canGoForward animated:(BOOL)animated;
 
 // Sets whether the page is loading.
 - (void)setIsLoading:(BOOL)isLoading;
