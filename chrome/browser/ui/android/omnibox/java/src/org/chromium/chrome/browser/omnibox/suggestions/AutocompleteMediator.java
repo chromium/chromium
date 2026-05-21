@@ -75,7 +75,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -129,8 +128,6 @@ class AutocompleteMediator
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
     // Delay recording ZPS suppression to allow subsequent suggestion updates to arrive.
     private static final long ZPS_SUPPRESSION_METRIC_DEBOUNCE_MS = 100;
-
-    @VisibleForTesting static final String TABS_STARTER_PACK_KEYWORD = "@tabs";
 
     @VisibleForTesting
     static final String KEYWORD_SPACE_TRIGGERING_ENABLED_PREF =
@@ -737,16 +734,11 @@ class AutocompleteMediator
     public void onSuggestionClicked(AutocompleteMatch suggestion, int matchIndex, GURL url) {
         if (!isInInputSession()) return;
 
-        // Android hub and @tabs starter pack should always switch to tab if one is available.
+        // Android hub should always switch to tab if one is available.
         // TODO(crbug.com/369438026): Remove this block once switch-to-tab is the default action.
         boolean isAndroidHub =
                 mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE;
-        @Nullable SiteSearchData siteSearchData = mAutocompleteInput.getSiteSearchData();
-        boolean isTabsStarterPack =
-                suggestion.getStarterPackId() == StarterPackId.TABS
-                        || (siteSearchData != null
-                                && TABS_STARTER_PACK_KEYWORD.equals(siteSearchData.keyword));
-        if ((isAndroidHub || isTabsStarterPack) && suggestion.hasTabMatch()) {
+        if (isAndroidHub && suggestion.hasTabMatch()) {
             // Consider switching to tab for all other suggestion types that are not tab groups.
             if (suggestion.getType() == OmniboxSuggestionType.TAB_GROUP) {
                 switchToTabGroup(suggestion);

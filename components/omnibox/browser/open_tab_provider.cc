@@ -205,7 +205,6 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
     match.keyword = template_url->keyword();
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
     match.fill_into_edit.insert(0, match.keyword + u" ");
-    match.starter_pack_id = static_cast<int>(template_url->starter_pack_id());
   }
 
   // For display in the suggestion UI, elide all optional parts. The user has
@@ -261,7 +260,6 @@ AutocompleteMatch OpenTabProvider::CreateNullResultMessageMatch(
   match.allowed_to_be_default_match = true;
   match.keyword = template_url->keyword();
   match.transition = ui::PAGE_TRANSITION_KEYWORD;
-  match.starter_pack_id = static_cast<int>(template_url->starter_pack_id());
 
   // Use this suggestion's contents field to display a message to the user that
   // there were no matching results found.

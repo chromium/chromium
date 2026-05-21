@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLay
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -98,7 +97,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -856,39 +854,6 @@ public class AutocompleteMediatorUnitTest {
         autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, false);
-    }
-
-    @Test
-    @SmallTest
-    public void onSuggestionClicked_TabsStarterPack() {
-        mMediator.onNativeInitialized();
-        mMediator.beginInput(createEmptySession());
-        mMediator
-                .getAutocompleteInputForTesting()
-                .setSiteSearchData(
-                        new SiteSearchData(AutocompleteMediator.TABS_STARTER_PACK_KEYWORD, "Tabs"));
-        doReturn(true).when(mOmniboxActionDelegate).switchToTab(anyInt(), any());
-        GURL url = new GURL("https://example.com");
-        AutocompleteMatch match =
-                new AutocompleteMatchBuilder()
-                        .setHasTabMatch(true)
-                        .setStarterPackId(StarterPackId.TABS)
-                        .setActions(
-                                List.of(
-                                        new OmniboxActionInSuggest(
-                                                /* nativeInstance= */ 0,
-                                                "hint",
-                                                "acc",
-                                                /* actionType= */ 1002,
-                                                "",
-                                                /* tabId= */ 123,
-                                                /* presentationMode= */ 1)))
-                        .build();
-
-        mMediator.onSuggestionClicked(match, 0, url);
-
-        verify(mOmniboxActionDelegate).switchToTab(eq(123), eq(url));
-        verify(mAutocompleteDelegate, never()).loadUrl(any());
     }
 
     @Test

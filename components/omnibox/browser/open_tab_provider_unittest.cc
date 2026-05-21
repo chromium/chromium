@@ -190,10 +190,6 @@ TEST_F(OpenTabProviderTest, KeywordMode) {
   // Ensure `fill_to_edit` includes the keyword.
   EXPECT_EQ(open_tab_provider().matches()[0].fill_into_edit,
             u"@tabs http://test.com/");
-
-  EXPECT_EQ(
-      open_tab_provider().matches()[0].starter_pack_id,
-      static_cast<int>(template_url_starter_pack_data::StarterPackId::kTabs));
 }
 
 TEST_F(OpenTabProviderTest, TestZPS_WeightedByRecency) {

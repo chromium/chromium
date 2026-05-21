@@ -1128,8 +1128,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
       if (!is_ios && match.has_tab_match.value()) {
         // The default action for suggestions from the open tab provider in
         // keyword mode is to switch to the open tab so no button is necessary.
-        // On Android, we always attach the action to allow switching to tab.
-        if (is_android || !match.from_keyword ||
+        if (!match.from_keyword ||
             match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
           if constexpr (is_android) {
             // On Android, attach the action as ActionInSuggest that will be
