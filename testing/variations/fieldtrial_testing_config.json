@@ -463,7 +463,7 @@
             ],
             "experiments": [
                 {
-                    "name": "MaxContentChangedEventsToFire_5",
+                    "name": "MaxContentChangedEventsToFire_005",
                     "params": {
                         "max_events": "5"
                     },
@@ -472,7 +472,7 @@
                     ]
                 },
                 {
-                    "name": "MaxContentChangedEventsToFire_0",
+                    "name": "MaxContentChangedEventsToFire_x",
                     "params": {
                         "max_events": "0"
                     },
@@ -481,7 +481,7 @@
                     ]
                 },
                 {
-                    "name": "MaxContentChangedEventsToFire_2",
+                    "name": "MaxContentChangedEventsToFire_002",
                     "params": {
                         "max_events": "2"
                     },
@@ -490,7 +490,7 @@
                     ]
                 },
                 {
-                    "name": "MaxContentChangedEventsToFire_10",
+                    "name": "MaxContentChangedEventsToFire_010",
                     "params": {
                         "max_events": "10"
                     },
@@ -499,7 +499,7 @@
                     ]
                 },
                 {
-                    "name": "MaxContentChangedEventsToFire_30",
+                    "name": "MaxContentChangedEventsToFire_030",
                     "params": {
                         "max_events": "30"
                     },
@@ -508,7 +508,7 @@
                     ]
                 },
                 {
-                    "name": "MaxContentChangedEventsToFire_50",
+                    "name": "MaxContentChangedEventsToFire_050",
                     "params": {
                         "max_events": "50"
                     },
