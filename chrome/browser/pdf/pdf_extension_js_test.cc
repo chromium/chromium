@@ -545,19 +545,24 @@ class PDFExtensionJSInk2Test : public PDFExtensionJSTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2) {
+  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
+  // GuestView PDF is fully deprecated.
+  if (!UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // One of the tests checks if the side panel is visible, so make the window
   // wide enough.
   GetActiveWebContents()->Resize({0, 0, 960, 100});
   RunTestsInJsModule("ink2_test.js", "test.pdf");
 }
 
-// Params: kPdfOopif, kPdfGetSaveDataInBlocks
-class PDFExtensionJSInk2SaveTest
-    : public PDFExtensionJSTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// Params: kPdfGetSaveDataInBlocks
+class PDFExtensionJSInk2SaveTest : public PDFExtensionJSTestBase,
+                                   public testing::WithParamInterface<bool> {
  protected:
-  bool UseOopif() const override { return get<0>(GetParam()); }
-  bool IsPdfGetSaveDataInBlocksEnabled() const { return get<1>(GetParam()); }
+  bool UseOopif() const override { return true; }
+  bool IsPdfGetSaveDataInBlocksEnabled() const { return GetParam(); }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
@@ -582,9 +587,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveTest, Ink2Save) {
   RunTestsInJsModule("ink2_save_test.js", "test.pdf");
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PDFExtensionJSInk2SaveTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, PDFExtensionJSInk2SaveTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Manager) {
   RunTestsInJsModule("ink2_manager_test.js", "test.pdf");

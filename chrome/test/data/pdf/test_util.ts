@@ -8,7 +8,7 @@
 import './test_bookmarks.js';
 
 import type {DocumentDimensions, LayoutOptions, PdfViewerElement, SaveMessage, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PostMessageDataType, resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, AnnotationBrushMessage, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
@@ -304,6 +304,7 @@ export class MockMetricsPrivate {
   // <if expr="enable_pdf_save_to_drive">
   enumerationCounter: Map<string, Map<number, number>> = new Map();
   metricsEnumSize = new Map<string, number>([
+    ['PDF.PostMessageDataType', PostMessageDataType.COUNT],
     ['PDF.SaveToDrive.BubbleAction', SaveToDriveBubbleAction.COUNT],
     ['PDF.SaveToDrive.BubbleState', SaveToDriveBubbleState.COUNT],
     ['PDF.SaveToDrive.RetrySaveType', SaveToDriveSaveType.COUNT],
