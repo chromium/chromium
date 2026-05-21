@@ -31,6 +31,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
@@ -862,6 +863,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   views::Widget* lock_widget =
       CreateTestWidget(display::Screen::Get()->GetPrimaryDisplay().bounds());
   views::Textfield* textfield = new views::Textfield;
+  textfield->GetViewAccessibility().SetName(u"Textfield");
   lock_widget->client_view()->AddChildViewRaw(textfield);
 
   Shell::GetContainer(Shell::GetPrimaryRootWindow(),
