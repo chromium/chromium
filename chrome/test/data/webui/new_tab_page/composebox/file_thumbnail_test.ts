@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxFileThumbnailElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {CrIconElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -82,9 +83,10 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals(title.textContent, fileThumbnailElement.file.name);
 
     // Assert pdf icon is shown.
-    const icon = fileThumbnailElement.shadowRoot.querySelector('.pdf-icon');
+    const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
+        '.pdf-icon');
     assertTrue(!!icon);
-    assertEquals((icon as any).icon, 'thumbnail:pdf');
+    assertEquals(icon.icon, 'thumbnail:pdf');
   });
 
   test('display document file (flag enabled) for non-pdf', async () => {
@@ -105,10 +107,10 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals(title.textContent, fileThumbnailElement.file.name);
 
     // Assert document icon is shown.
-    const icon =
-        fileThumbnailElement.shadowRoot.querySelector('.document-icon');
+    const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
+        '.document-icon');
     assertTrue(!!icon);
-    assertEquals((icon as any).icon, 'thumbnail:document');
+    assertEquals(icon.icon, 'thumbnail:document');
   });
 
   test('display pdf file (flag enabled)', async () => {
@@ -130,9 +132,10 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals(title.textContent, fileThumbnailElement.file.name);
 
     // Assert pdf icon is shown.
-    const icon = fileThumbnailElement.shadowRoot.querySelector('.pdf-icon');
+    const icon = fileThumbnailElement.shadowRoot.querySelector<CrIconElement>(
+        '.pdf-icon');
     assertTrue(!!icon);
-    assertEquals((icon as any).icon, 'thumbnail:pdf');
+    assertEquals(icon.icon, 'thumbnail:pdf');
   });
 
   test('display document file (flag enabled) for google doc', async () => {
@@ -282,13 +285,9 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     fileThumbnailElement = new ComposeboxFileThumbnailElement();
     document.body.appendChild(fileThumbnailElement);
 
-    let resolveAnimation: (value: any) => void;
+    const animation = new Animation();
     fileThumbnailElement.getAnimations = () => {
-      return [{
-        finished: new Promise(resolve => {
-          resolveAnimation = resolve;
-        }),
-      } as Animation];
+      return [animation];
     };
 
     fileThumbnailElement.file =
@@ -299,7 +298,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertTrue(fileThumbnailElement.classList.contains('entering'));
 
     // Simulate all animations finishing.
-    resolveAnimation!(undefined);
+    animation.finish();
     await microtasksFinished();
 
     assertFalse(fileThumbnailElement.classList.contains('entering'));
@@ -312,13 +311,9 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     // Ensure the entering is completed before setting up the exiting mock.
     await new Promise(resolve => requestAnimationFrame(resolve));
 
-    let resolveAnimation: (value: any) => void;
+    const animation = new Animation();
     fileThumbnailElement.getAnimations = () => {
-      return [{
-        finished: new Promise(resolve => {
-          resolveAnimation = resolve;
-        }),
-      } as Animation];
+      return [animation];
     };
 
     let eventFired = false;
@@ -332,7 +327,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertFalse(eventFired);
 
     // Simulate all animations finishing.
-    resolveAnimation!(undefined);
+    animation.finish();
     await microtasksFinished();
 
     assertTrue(eventFired);
@@ -346,13 +341,9 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     // Ensure the entering is completed before setting up the exiting mock.
     await new Promise(resolve => requestAnimationFrame(resolve));
 
-    let resolveAnimation: (value: any) => void;
+    const animation = new Animation();
     fileThumbnailElement.getAnimations = () => {
-      return [{
-        finished: new Promise(resolve => {
-          resolveAnimation = resolve;
-        }),
-      } as Animation];
+      return [animation];
     };
 
     let eventCount = 0;
@@ -368,7 +359,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     fileThumbnailElement.$.removeImgButton.click();
 
     // Complete the animation.
-    resolveAnimation!(undefined);
+    animation.finish();
     await microtasksFinished();
 
     // Only one delete-file event should have been fired.

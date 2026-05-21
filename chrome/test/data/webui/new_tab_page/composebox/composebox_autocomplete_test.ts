@@ -7,7 +7,6 @@ import {InputType} from 'chrome://resources/cr_components/composebox/composebox_
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -1058,7 +1057,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
       lastActive: {internalValue: BigInt(1)},
-    } as any as TabInfo;
+    };
 
     // Add autochip.
     testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
@@ -1109,7 +1108,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(1)},
-        } as any as TabInfo;
+        };
 
         // Add autochip.
         const autochipToken = generateZeroId();
@@ -1181,7 +1180,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
       lastActive: {internalValue: BigInt(1)},
-    } as any as TabInfo;
+    };
 
     // Add valid autochip.
     testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
@@ -1230,7 +1229,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(1)},
-        } as any as TabInfo;
+        };
 
         const tab1Updated = {
           tabId: 1,
@@ -1239,12 +1238,12 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(1)},
-        } as any as TabInfo;
+        };
 
-        let resolveAddTab: (value: any) => void;
+        let resolveAddTab: (value: {token: string}) => void;
         testProxy.searchboxHandler.setResultMapperFor(
             ADD_TAB_CONTEXT_FN, () => {
-              return new Promise(resolve => {
+              return new Promise<{token: string}>(resolve => {
                 resolveAddTab = resolve;
               });
             });

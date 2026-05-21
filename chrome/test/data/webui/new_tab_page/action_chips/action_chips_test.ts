@@ -415,8 +415,9 @@ suite('NewTabPageActionChipsTest', () => {
         'Handler is called on load and its completion fires an event',
         async () => {
           const events: ActionChipsRetrievalState[] = [];
-          const eventCollector = (e: any) => {
-            events.push(e.detail.state);
+          const eventCollector = (e: Event) => {
+            events.push((e as CustomEvent<{state: ActionChipsRetrievalState}>)
+                            .detail.state);
           };
           document.body.addEventListener(
               'action-chips-retrieval-state-changed', eventCollector);

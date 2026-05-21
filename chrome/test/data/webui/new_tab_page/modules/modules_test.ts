@@ -708,8 +708,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
     function setupAutoRemovalListener() {
       let event: CustomEvent<{message: string, undo: () => void}>|null = null;
-      document.body.addEventListener('modules-auto-removed', (e: any) => {
-        event = e;
+      document.body.addEventListener('modules-auto-removed', (e: Event) => {
+        event = e as CustomEvent<{message: string, undo: () => void}>;
       }, {once: true});
       return {
         get event() {

@@ -211,7 +211,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
 
       // Assert attachments are disabled.
       for (let i = 0; i < attachments.length; i++) {
-        const attachment = attachments[i] as any;
+        const attachment = attachments[i];
         assertTrue(!!attachment);
         assertTrue(attachment.hasAttribute('disabled'));
       }
@@ -229,7 +229,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       assertEquals(attachments.length, 3);
 
       for (let i = 0; i < attachments.length; i++) {
-        const attachment = attachments[i] as any;
+        const attachment = attachments[i];
         assertTrue(!!attachment);
         assertFalse(attachment.hasAttribute('disabled'));
       }

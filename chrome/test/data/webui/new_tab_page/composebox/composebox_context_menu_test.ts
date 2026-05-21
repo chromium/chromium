@@ -120,7 +120,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       assertTrue(!!contextMenuButton);
       const sampleTabTitle = 'Sample Tab';
       let contextAdded = false;
-      const callback = (_file: any) => {
+      const callback = (_file: unknown) => {
         contextAdded = true;
       };
 
@@ -193,12 +193,10 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       createComposeboxElement(testProxy);
 
       // Get the contextual action menu element.
-      const entrypointAndMenu =
-          testProxy.element.shadowRoot.querySelector(
+      const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
           'cr-composebox-contextual-entrypoint-and-menu');
       assertTrue(!!entrypointAndMenu);
-      const contextActionMenu =
-          entrypointAndMenu.shadowRoot.querySelector(
+      const contextActionMenu = entrypointAndMenu.shadowRoot.querySelector(
           'cr-composebox-contextual-action-menu');
       assertTrue(!!contextActionMenu);
 
@@ -215,7 +213,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       document.body.appendChild(fakeAnchor);
 
       // Open the menu at the fake anchor.
-      (contextActionMenu as any).showAt(fakeAnchor);
+      contextActionMenu.showAt(fakeAnchor);
       await microtasksFinished();
 
       try {
@@ -223,9 +221,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         const crActionMenu =
             contextActionMenu.shadowRoot.querySelector('#menu');
         assertTrue(!!crActionMenu);
-        const dialog =
-            crActionMenu.shadowRoot!.querySelector<HTMLDialogElement>(
-              'dialog');
+        const dialog = crActionMenu.shadowRoot!.querySelector('dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
@@ -236,7 +232,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         assertTrue(dialogRect.top >= anchorRect.bottom - 1);
       } finally {
         // Clean even if the assertions fail.
-        (contextActionMenu as any).close();
+        contextActionMenu.close();
         fakeAnchor.remove();
       }
     });
@@ -253,12 +249,10 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       await microtasksFinished();
 
       // Get the contextual action menu element.
-      const entrypointAndMenu =
-          testProxy.element.shadowRoot.querySelector(
+      const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
           'cr-composebox-contextual-entrypoint-and-menu');
       assertTrue(!!entrypointAndMenu);
-      const contextActionMenu =
-          entrypointAndMenu.shadowRoot.querySelector(
+      const contextActionMenu = entrypointAndMenu.shadowRoot.querySelector(
           'cr-composebox-contextual-action-menu');
       assertTrue(!!contextActionMenu);
 
@@ -274,7 +268,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       document.body.appendChild(fakeAnchor);
 
       // Open the menu anchored to the fake element.
-      (contextActionMenu as any).showAt(fakeAnchor);
+      contextActionMenu.showAt(fakeAnchor);
       await microtasksFinished();
 
       try {
@@ -282,9 +276,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         const crActionMenu =
             contextActionMenu.shadowRoot.querySelector('#menu');
         assertTrue(!!crActionMenu);
-        const dialog =
-            crActionMenu.shadowRoot!.querySelector<HTMLDialogElement>(
-              'dialog');
+        const dialog = crActionMenu.shadowRoot!.querySelector('dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
@@ -295,7 +287,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         assertTrue(dialogRect.top < anchorRect.top);
       } finally {
         // Clean even if the assertions fail.
-        (contextActionMenu as any).close();
+        contextActionMenu.close();
         fakeAnchor.remove();
       }
     });
@@ -324,14 +316,13 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           showInRecentTabChip: true,
           lastActive: {internalValue: BigInt(3)},
         },
-      ] as any;
+      ];
 
       testProxy.searchboxHandler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
 
       // Select tabId 2 by setting it in addedTabsIds.
-      testProxy.element.addedTabsIds =
-          new Map([[2, {low: 0n, high: 1n}] as any]);
+      testProxy.element.addedTabsIds = new Map([[2, '1']]);
 
       // Click entrypoint button to show the menu and load/sort suggestions.
       const entrypointAndMenu = testProxy.element.shadowRoot.querySelector(
@@ -350,11 +341,11 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       // Assert that tabSuggestions passed down to entrypointAndMenu has the
       // selected tab at the top.
-      const sortedSuggestions = (entrypointAndMenu as any).tabSuggestions;
+      const sortedSuggestions = entrypointAndMenu.tabSuggestions;
       assertEquals(sortedSuggestions.length, 3);
-      assertEquals(sortedSuggestions[0].tabId, 2);
-      assertEquals(sortedSuggestions[1].tabId, 1);
-      assertEquals(sortedSuggestions[2].tabId, 3);
+      assertEquals(sortedSuggestions[0]!.tabId, 2);
+      assertEquals(sortedSuggestions[1]!.tabId, 1);
+      assertEquals(sortedSuggestions[2]!.tabId, 3);
     });
 
     test('clicking sorted suggestions adds the correct tab', async () => {
@@ -374,7 +365,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           showInRecentTabChip: true,
           lastActive: {internalValue: BigInt(2)},
         },
-      ] as any;
+      ];
 
       testProxy.searchboxHandler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
@@ -400,28 +391,27 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       assertEquals(testProxy.element.tabSuggestions.length, 2);
 
-      testProxy.element.addedTabsIds =
-          new Map([[2, {low: 0n, high: 1n}] as any]);
+      testProxy.element.addedTabsIds = new Map([[2, '1']]);
       await testProxy.element.updateComplete;
-      await (entrypointAndMenu as any).updateComplete;
+      await entrypointAndMenu.updateComplete;
 
       const contextualActionMenu = entrypointAndMenu.shadowRoot.querySelector(
           'cr-composebox-contextual-action-menu');
       assertTrue(!!contextualActionMenu);
-      await (contextualActionMenu as any).updateComplete;
+      await contextualActionMenu.updateComplete;
       await microtasksFinished();
 
 
 
       const items =
-          contextualActionMenu.$.menu.querySelectorAll('.dropdown-item');
+          contextualActionMenu.$.menu.querySelectorAll<HTMLButtonElement>(
+              '.dropdown-item');
       assertEquals(items.length, 2);
 
       // Find the button for Tab 1 (which was index 0 originally, but now index
       // 1 after sorting).
       const tab1Button = Array.from(items).find(
-                             (item: any) => item.getAttribute('title') ===
-                                 'Tab 1') as HTMLButtonElement;
+          item => item.getAttribute('title') === 'Tab 1');
       assertTrue(!!tab1Button);
 
       // Reset mock and set promise resolver.

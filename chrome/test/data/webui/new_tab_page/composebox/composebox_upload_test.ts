@@ -9,7 +9,6 @@ import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_comp
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -1183,7 +1182,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(1)},
-        } as any as TabInfo;
+        };
 
         testProxy.searchboxHandler.resetResolver(
             testSupport.ADD_TAB_CONTEXT_FN);
@@ -1245,7 +1244,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(1)},
-        } as any as TabInfo;
+        };
 
         // Do not mock `addTabContext` return value so callback does not
         // update current held auto chip context properly.
@@ -1298,7 +1297,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(4)},
-        } as any as TabInfo;
+        };
 
         testProxy.searchboxHandler.resetResolver(
             testSupport.ADD_TAB_CONTEXT_FN);
@@ -1335,7 +1334,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
           lastActive: {internalValue: BigInt(1)},
-        } as any as TabInfo;
+        };
 
         testProxy.searchboxHandler.resetResolver(
             testSupport.ADD_TAB_CONTEXT_FN);

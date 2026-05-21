@@ -273,39 +273,48 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
         voiceSearchOverlay.shadowRoot.querySelector('#texts *[text=result]')));
   });
 
-  const testParams = [
-    {
-      functionName: 'onaudiostart',
-      arguments: [],
-    },
-    {
-      functionName: 'onspeechstart',
-      arguments: [],
-    },
-    {
-      functionName: 'onresult',
-      arguments: [createResults(1)],
-    },
-    {
-      functionName: 'onend',
-      arguments: [],
-    },
-    {
-      functionName: 'onerror',
-      arguments: [{error: 'audio-capture'}],
-    },
-    {
-      functionName: 'onnomatch',
-      arguments: [],
-    },
-  ];
+  type SpeechRecognitionCallbackKey =
+      'onaudiostart'|'onspeechstart'|'onresult'|'onend'|'onerror'|'onnomatch';
+
+  const testParams: Array<{
+    functionName: SpeechRecognitionCallbackKey,
+    arguments: unknown[],
+  }> =
+      [
+        {
+          functionName: 'onaudiostart',
+          arguments: [],
+        },
+        {
+          functionName: 'onspeechstart',
+          arguments: [],
+        },
+        {
+          functionName: 'onresult',
+          arguments: [createResults(1)],
+        },
+        {
+          functionName: 'onend',
+          arguments: [],
+        },
+        {
+          functionName: 'onerror',
+          arguments: [{error: 'audio-capture'}],
+        },
+        {
+          functionName: 'onnomatch',
+          arguments: [],
+        },
+      ];
 
   testParams.forEach(function(param) {
     test(`${param.functionName} received resets timer`, async () => {
       // Act.
       // Need to account for previously set timers.
       windowProxy.resetResolver('setTimeout');
-      (mockSpeechRecognition as any)[param.functionName](...param.arguments);
+      const fn = mockSpeechRecognition[param.functionName];
+      assertTrue(!!fn);
+      (fn as Function)(...param.arguments);
 
       // Assert.
       await windowProxy.whenCalled('setTimeout');
