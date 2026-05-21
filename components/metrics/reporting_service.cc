@@ -164,7 +164,9 @@ void ReportingService::OnAppEnterForeground() {
   // start succeeding -- this is handled in OnLogUploadComplete() below.
   if (upload_scheduler_ && upload_scheduler_->IsRunning() &&
       !upload_scheduler_->IsCallbackPending() &&
-      failures_started_from_background_.value_or(false)) {
+      failures_started_from_background_.value_or(false) &&
+      !base::FeatureList::IsEnabled(
+          features::kNoResetMetricsUploadBackoffOnForeground)) {
     upload_scheduler_->RestartWithUnsentLogsInterval();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -438,7 +440,9 @@ void ReportingService::OnLogUploadComplete(
     // logic in this case since there's probably nothing wrong with the server
     // (but only if the failures started happening from the background --
     // otherwise, something wrong is probably going on).
-    if (*failures_started_from_background_ && is_in_foreground_) {
+    if (*failures_started_from_background_ && is_in_foreground_ &&
+        !base::FeatureList::IsEnabled(
+            features::kNoResetMetricsUploadBackoffOnForeground)) {
       server_is_healthy = true;
     }
   } else {

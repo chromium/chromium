@@ -18,6 +18,9 @@ BASE_FEATURE(kReportingServiceAlwaysFlush, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMetricsLogTrimming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kNoResetMetricsUploadBackoffOnForeground,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMetricsLogJobSchedulerUpload, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
