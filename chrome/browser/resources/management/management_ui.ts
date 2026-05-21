@@ -10,11 +10,11 @@ import './icons.html.js';
 import './promotion_banner.js';
 import '/strings.m.js';
 
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-// <if expr="is_chromeos">
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -177,6 +177,13 @@ export class ManagementUiElement extends ManagementUiElementBase {
     this.updateManagedFields_();
     this.initReportingInfo_();
     this.getThreatProtectionInfo_();
+
+    const enableWebuiRefresh2026 =
+        loadTimeData.getString('webuiRefresh2026') !== '';
+    if (enableWebuiRefresh2026) {
+      this.addThemedColors_();
+      ColorChangeUpdater.forDocument().start();
+    }
 
     this.addWebUiListener(
         'browser-reporting-info-updated',
@@ -516,6 +523,14 @@ export class ManagementUiElement extends ManagementUiElementBase {
           data.browserManagementNotice, {attrs: ['aria-label']});
       // </if>
     });
+  }
+
+  private addThemedColors_() {
+    assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+    document.body.appendChild(link);
   }
 }
 

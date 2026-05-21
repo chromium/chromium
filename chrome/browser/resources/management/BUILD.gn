@@ -12,6 +12,7 @@ assert(!is_android || enable_extensions_core,
 build_webui("build") {
   grd_prefix = "management"
   static_files = [ "management.html" ]
+  ts_composite = true
   ts_files = [
     "management_browser_proxy.ts",
     "management_ui.html.ts",
@@ -26,6 +27,7 @@ build_webui("build") {
   icons_html_files = [ "icons.html" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

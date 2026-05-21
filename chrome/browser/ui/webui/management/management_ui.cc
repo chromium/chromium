@@ -84,6 +84,11 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
                         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  source->AddString("webuiRefresh2026",
+                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
+                        ? "webui-refresh-2026"
+                        : "");
+
   webui::SetupWebUIDataSource(source, kManagementResources,
                               IDR_MANAGEMENT_MANAGEMENT_HTML);
 
@@ -307,7 +312,8 @@ void ManagementUI::GetLocalizedStrings(
   }
 }
 
-ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+ManagementUI::ManagementUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   CreateAndAddManagementUIHtmlSource(profile);
 #if !BUILDFLAG(IS_ANDROID)
