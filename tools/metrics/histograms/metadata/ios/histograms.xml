@@ -2833,6 +2833,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.InvocationPageType"
+    enum="IOSGeminiInvocationPageType" expires_after="2027-02-03">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the type of page or WebState when Gemini is invoked. Recorded
+    whenever the user initiates a Gemini flow.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.LocationBarBadgeUpdateSuccess" enum="Boolean"
     expires_after="2027-04-30">
   <owner>joemerramos@google.com</owner>

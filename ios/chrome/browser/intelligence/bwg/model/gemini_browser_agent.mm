@@ -505,6 +505,7 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
   gemini::EntryPoint entry_point = startup_state.entryPoint;
   bool will_show_first_run = !HasCompletedFirstRun();
   RecordGeminiEntryPointClick(entry_point, will_show_first_run);
+  RecordInvocationPageType();
 
   // TODO(crbug.com/507509815): Link to Gemini sign in flow.
   if (IsAppStoreInAppEventsEnabled() &&
@@ -1339,4 +1340,15 @@ GeminiTabHelper* GeminiBrowserAgent::GetActiveTabHelper(
     }
   }
   return nullptr;
+}
+
+void GeminiBrowserAgent::RecordInvocationPageType() {
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  IOSGeminiInvocationPageType page_type =
+      IOSGeminiInvocationPageType::kNoWebState;
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(web_state);
+  if (tab_helper) {
+    page_type = tab_helper->GetCurrentPageType();
+  }
+  RecordGeminiInvocationPageType(page_type);
 }

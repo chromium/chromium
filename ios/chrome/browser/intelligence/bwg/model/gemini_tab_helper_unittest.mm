@@ -937,3 +937,49 @@ TEST_F(GeminiTabHelperTest,
   EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
+// Tests that `GetCurrentPageType` correctly categorizes NTP URLs.
+TEST_F(GeminiTabHelperTest, GetCurrentPageType_Ntp) {
+  web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
+  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+            IOSGeminiInvocationPageType::kNewTabPage);
+}
+
+// Tests that `GetCurrentPageType` correctly categorizes Chrome internal URLs.
+TEST_F(GeminiTabHelperTest, GetCurrentPageType_ChromeInternal) {
+  web_state_->SetCurrentURL(GURL("chrome://settings"));
+  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+            IOSGeminiInvocationPageType::kChromeInternalOther);
+}
+
+// Tests that `GetCurrentPageType` correctly categorizes PDF documents.
+TEST_F(GeminiTabHelperTest, GetCurrentPageType_Pdf) {
+  web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
+  web_state_->SetContentsMimeType("application/pdf");
+  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+            IOSGeminiInvocationPageType::kPdfDocument);
+}
+
+// Tests that `GetCurrentPageType` correctly categorizes extractable HTML pages.
+TEST_F(GeminiTabHelperTest, GetCurrentPageType_ExtractableWebPage_Html) {
+  web_state_->SetCurrentURL(GURL("https://www.example.com"));
+  web_state_->SetContentsMimeType("text/html");
+  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+            IOSGeminiInvocationPageType::kExtractableWebPage);
+}
+
+// Tests that `GetCurrentPageType` correctly categorizes extractable images.
+TEST_F(GeminiTabHelperTest, GetCurrentPageType_ExtractableWebPage_Image) {
+  web_state_->SetCurrentURL(GURL("https://www.example.com/image.png"));
+  web_state_->SetContentsMimeType("image/png");
+  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+            IOSGeminiInvocationPageType::kExtractableWebPage);
+}
+
+// Tests that `GetCurrentPageType` correctly categorizes other non-extractable
+// content.
+TEST_F(GeminiTabHelperTest, GetCurrentPageType_Other) {
+  web_state_->SetCurrentURL(GURL("https://www.example.com/file.bin"));
+  web_state_->SetContentsMimeType("application/octet-stream");
+  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+            IOSGeminiInvocationPageType::kOtherNonExtractable);
+}

@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/model/optimization_guide_service.h",
   "+ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h",
   "+ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h",
+  "+ios/chrome/browser/shared/model/url",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",

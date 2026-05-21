@@ -7,7 +7,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/time/time.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -96,6 +95,9 @@ const char kFREEntryPointHistogram[] = "IOS.Gemini.FRE.EntryPoint";
 const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
 
 const char kConsentActionHistogram[] = "IOS.Gemini.FRE.ConsentAction";
+
+const char kGeminiInvocationPageTypeHistogram[] =
+    "IOS.Gemini.InvocationPageType";
 
 const char kGeminiPageAvailabilityHistogram[] = "IOS.Gemini.PageAvailability";
 
@@ -235,6 +237,10 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
       break;
   }
   base::UmaHistogramEnumeration(kConsentActionHistogram, action);
+}
+
+void RecordGeminiInvocationPageType(IOSGeminiInvocationPageType page_type) {
+  base::UmaHistogramEnumeration(kGeminiInvocationPageTypeHistogram, page_type);
 }
 
 void RecordGeminiPageAvailability(IOSGeminiPageAvailability reason) {

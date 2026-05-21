@@ -9,6 +9,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -46,8 +47,10 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
@@ -60,11 +63,24 @@
 #import "mojo/public/cpp/bindings/remote.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+#import "url/url_constants.h"
 
 namespace {
 
 // The maximum time to wait for full page load before timing out extraction.
 const base::TimeDelta kFullPageContextTimeout = base::Seconds(3);
+
+// Returns true if `mime_type` represents an extractable web page (HTML or
+// Image).
+bool IsExtractableMimeType(const std::string& mime_type) {
+  const std::string image = "image";
+  const bool is_image = mime_type.compare(0, image.size(), image) == 0;
+  return is_image ||
+         base::EqualsCaseInsensitiveASCII(mime_type,
+                                          kHyperTextMarkupLanguageMimeType) ||
+         base::EqualsCaseInsensitiveASCII(mime_type, kXHTMLMimeType) ||
+         base::EqualsCaseInsensitiveASCII(mime_type, kXMLMimeType);
+}
 
 NSMutableArray<NSString*>* ZeroStateSuggestionsAsNSArray(
     std::vector<std::string> suggestions) {
@@ -407,6 +423,32 @@ bool GeminiTabHelper::IsGeminiAvailableForWebState() {
   // (unless `IsGeminiFloatyAllPagesEnabled` is enabled).
   return !is_ntp && (CanExtractPageContextForWebState(web_state_) ||
                      IsGeminiFloatyAllPagesEnabled());
+}
+
+IOSGeminiInvocationPageType GeminiTabHelper::GetCurrentPageType() {
+  if (!web_state_) {
+    return IOSGeminiInvocationPageType::kNoWebState;
+  }
+
+  const GURL& url = web_state_->GetVisibleURL();
+  if (IsUrlNtp(url) || url.spec() == kChromeUIAboutNewTabURL) {
+    return IOSGeminiInvocationPageType::kNewTabPage;
+  }
+  if (url.SchemeIs(kChromeUIScheme) || url.SchemeIs(url::kAboutScheme)) {
+    return IOSGeminiInvocationPageType::kChromeInternalOther;
+  }
+
+  const std::string mime_type = web_state_->GetContentsMimeType();
+  if (base::EqualsCaseInsensitiveASCII(mime_type,
+                                       kAdobePortableDocumentFormatMimeType)) {
+    return IOSGeminiInvocationPageType::kPdfDocument;
+  }
+
+  if (url.SchemeIsHTTPOrHTTPS() && IsExtractableMimeType(mime_type)) {
+    return IOSGeminiInvocationPageType::kExtractableWebPage;
+  }
+
+  return IOSGeminiInvocationPageType::kOtherNonExtractable;
 }
 
 #pragma mark - WebStateObserver

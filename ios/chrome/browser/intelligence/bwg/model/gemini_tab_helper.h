@@ -29,6 +29,7 @@
 @protocol HelpCommands;
 @protocol LocationBarBadgeCommands;
 @class GeminiPageContext;
+enum class IOSGeminiInvocationPageType;
 
 namespace gemini {
 enum class FloatyUpdateSource;
@@ -81,6 +82,9 @@ class GeminiTabHelper : public web::WebStateObserver,
 
   // Whether Gemini is available for the current web state.
   bool IsGeminiAvailableForWebState();
+
+  // Returns the current type of page or WebState.
+  IOSGeminiInvocationPageType GetCurrentPageType();
 
   // Gets the client and server IDs for the Gemini session for the associated
   // WebState. server ID is optional because it may not be found or is expired.

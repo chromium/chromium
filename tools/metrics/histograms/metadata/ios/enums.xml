@@ -975,6 +975,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:InputPlateAttachmentOption) -->
 
+<!-- LINT.IfChange(IOSGeminiInvocationPageType) -->
+
+<enum name="IOSGeminiInvocationPageType">
+  <summary>
+    Enum describing the page type from which Gemini was started.
+  </summary>
+  <int value="0" label="Extractable Web Page"/>
+  <int value="1" label="PDF Document"/>
+  <int value="2" label="New Tab Page"/>
+  <int value="3" label="Chrome Internal Other"/>
+  <int value="4" label="Other Non-Extractable"/>
+  <int value="5" label="No WebState"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiInvocationPageType) -->
+
 <!-- LINT.IfChange(IOSGeminiOSCameraAuthorizationInitialStatus) -->
 
 <enum name="IOSGeminiOSCameraAuthorizationInitialStatus">

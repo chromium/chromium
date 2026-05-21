@@ -111,6 +111,27 @@ void RecordFREPromoAction(IOSGeminiFREAction action);
 // Records the user action on the FRE Consent Screen.
 void RecordFREConsentAction(IOSGeminiFREAction action);
 
+// Represents the type of page or WebState when a Gemini session is invoked.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSGeminiInvocationPageType)
+enum class IOSGeminiInvocationPageType {
+  kExtractableWebPage = 0,
+  kPdfDocument = 1,
+  kNewTabPage = 2,
+  kChromeInternalOther = 3,
+  kOtherNonExtractable = 4,
+  kNoWebState = 5,
+  kMaxValue = kNoWebState,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiInvocationPageType)
+
+// UMA histogram key for IOS.Gemini.InvocationPageType.
+extern const char kGeminiInvocationPageTypeHistogram[];
+
+// Records the type of page when Gemini is invoked.
+void RecordGeminiInvocationPageType(IOSGeminiInvocationPageType page_type);
+
 // LINT.IfChange(IOSGeminiPageAvailability)
 enum class IOSGeminiPageAvailability {
   kUnavailable = 0,

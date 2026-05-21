@@ -174,6 +174,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // prefs.
   void ApplyUserPrefsToPageContext(GeminiPageContext* gemini_page_context);
 
+  // Records the page type when Gemini is invoked.
+  void RecordInvocationPageType();
+
   // Sets the UI command handlers on the session handler. This cannot be called
   // in the constructor because some objects fail the protocol conformance test
   // at that time.

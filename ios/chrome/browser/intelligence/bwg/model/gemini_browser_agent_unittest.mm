@@ -7,6 +7,7 @@
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -303,6 +305,8 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
 
+  base::HistogramTester histogram_tester;
+
   gemini_browser_agent_->StartGeminiFlow(
       base_view_controller, [[GeminiStartupState alloc]
                                 initWithEntryPoint:gemini::EntryPoint::Promo]);
@@ -312,6 +316,10 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
       base::test::RunUntil([delegate_called]() { return *delegate_called; }));
 
   [mock_delegate verify];
+
+  histogram_tester.ExpectUniqueSample(
+      kGeminiInvocationPageTypeHistogram,
+      IOSGeminiInvocationPageType::kExtractableWebPage, 1);
 }
 
 // Tests that switching active web states handles observations correctly.
@@ -718,4 +726,30 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiAvailabilityChanged) {
   EXPECT_FALSE(observer.available_);
 
   gemini_browser_agent_->RemoveObserver(&observer);
+}
+
+// Tests that kNoWebState is recorded when StartGeminiFlow is invoked with no
+// active WebState.
+TEST_F(GeminiBrowserAgentTest, TestStartGeminiFlowNoActiveWebState) {
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+
+  // Initialize browser agent on a browser with no active WebStates.
+  std::unique_ptr<TestBrowser> empty_browser =
+      std::make_unique<TestBrowser>(profile_);
+  id mock_bwg_handler = OCMProtocolMock(@protocol(BWGCommands));
+  [empty_browser->GetCommandDispatcher()
+      startDispatchingToTarget:mock_bwg_handler
+                   forProtocol:@protocol(BWGCommands)];
+  GeminiBrowserAgent::CreateForBrowser(empty_browser.get());
+  GeminiBrowserAgent* empty_agent =
+      GeminiBrowserAgent::FromBrowser(empty_browser.get());
+
+  base::HistogramTester histogram_tester;
+  empty_agent->StartGeminiFlow(
+      base_view_controller, [[GeminiStartupState alloc]
+                                initWithEntryPoint:gemini::EntryPoint::Promo]);
+
+  histogram_tester.ExpectUniqueSample(kGeminiInvocationPageTypeHistogram,
+                                      IOSGeminiInvocationPageType::kNoWebState,
+                                      1);
 }
