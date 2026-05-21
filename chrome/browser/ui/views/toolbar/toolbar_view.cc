@@ -1569,6 +1569,17 @@ void ToolbarView::InitLayout() {
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
+   if (avatar_ &&
+      base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
+    // Flex order for the profile avatar button is determined by the
+    // `toolbar_controller`.
+    avatar_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+            views::MaximumFlexSizeRule::kPreferred));
+  }
+
   if (app_menu_button_ &&
       base::FeatureList::IsEnabled(features::kToolbarAppMenuLabelResizing)) {
     app_menu_button_->SetProperty(

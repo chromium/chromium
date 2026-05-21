@@ -115,9 +115,10 @@ class AvatarToolbarButton : public ToolbarButton,
                          const ui::ColorProvider* color_provider);
   void UpdateAccessibilityLabel();
 
-  // LabelButton:
+  // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
