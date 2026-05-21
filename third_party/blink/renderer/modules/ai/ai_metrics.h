@@ -10,10 +10,11 @@
 
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
-class AIMetrics {
+class MODULES_EXPORT AIMetrics {
  public:
   // This class contains all the supported session types.
   // LINT.IfChange(AISessionType)
@@ -69,6 +70,13 @@ class AIMetrics {
       AISessionType session_type);
   static std::string GetAISessionResponseCallbackCountMetricName(
       AISessionType session_type);
+  static std::string GetAISessionFirstResponseTimeMetricName(
+      AISessionType session_type);
+  static std::string GetAISessionResponseCompleteTimeMetricName(
+      AISessionType session_type);
+  static std::string GetAISessionContextTokensMetricName(
+      AISessionType session_type);
+  static std::string GetAISessionCrashedMetricName(AISessionType session_type);
 
   // Enum mappings from mojo/V8 enums to metric enums. Returns nullopt if the
   // enum is not mapped.

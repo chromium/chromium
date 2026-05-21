@@ -8,7 +8,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -34,6 +36,32 @@
 namespace blink {
 
 namespace {
+
+void RecordCompletionMetrics(
+    AIMetrics::AISessionType session_type,
+    base::TimeTicks start_time,
+    int response_callback_count,
+    const mojom::blink::ModelExecutionContextInfoPtr& context_info) {
+  base::UmaHistogramBoolean(
+      AIMetrics::GetAISessionCrashedMetricName(session_type), false);
+
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramMediumTimes(
+      AIMetrics::GetAISessionResponseCompleteTimeMetricName(session_type),
+      duration);
+  if (response_callback_count == 1) {
+    base::UmaHistogramMediumTimes(
+        AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type),
+        duration);
+  }
+  // TODO(crbug.com/481347574): Add ResponseTokens metric and ensure
+  // ContextTokens is populated across all APIs.
+  if (context_info) {
+    base::UmaHistogramCounts1M(
+        AIMetrics::GetAISessionContextTokensMetricName(session_type),
+        base::saturated_cast<int>(context_info->current_tokens));
+  }
+}
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
 // handles the streaming output of the model execution, and returns the full
@@ -61,7 +89,8 @@ class Responder final : public GarbageCollected<Responder>,
         tool_call_callback_(std::move(tool_call_callback)),
         overflow_callback_(overflow_callback),
         error_callback_(std::move(error_callback)),
-        abort_callback_(std::move(abort_callback)) {
+        abort_callback_(std::move(abort_callback)),
+        start_time_(base::TimeTicks::Now()) {
     SetContextLifecycleNotifier(ExecutionContext::From(script_state));
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
@@ -95,6 +124,11 @@ class Responder final : public GarbageCollected<Responder>,
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     response_callback_count_++;
+    if (response_callback_count_ == 1) {
+      base::UmaHistogramMediumTimes(
+          AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type_),
+          base::TimeTicks::Now() - start_time_);
+    }
     // Update the response with the latest value.
     response_ = StrCat({response_, text});
   }
@@ -104,6 +138,9 @@ class Responder final : public GarbageCollected<Responder>,
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kComplete);
     response_callback_count_++;
+
+    RecordCompletionMetrics(session_type_, start_time_,
+                            response_callback_count_, context_info);
 
     if (complete_callback_) {
       std::move(complete_callback_).Run(response_, std::move(context_info));
@@ -133,6 +170,11 @@ class Responder final : public GarbageCollected<Responder>,
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     ++response_callback_count_;
+    if (response_callback_count_ == 1) {
+      base::UmaHistogramMediumTimes(
+          AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type_),
+          base::TimeTicks::Now() - start_time_);
+    }
     if (tool_call_callback_) {
       tool_call_callback_.Run(std::move(tool_calls));
     }
@@ -148,6 +190,8 @@ class Responder final : public GarbageCollected<Responder>,
   }
 
   void OnConnectionError() {
+    base::UmaHistogramBoolean(
+        AIMetrics::GetAISessionCrashedMetricName(session_type_), true);
     OnError(ModelStreamingResponseStatus::kErrorSessionDestroyed,
             /*quota_error_info=*/nullptr);
   }
@@ -161,7 +205,7 @@ class Responder final : public GarbageCollected<Responder>,
   void RecordResponseMetrics() {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionResponseSizeMetricName(session_type_),
-        int(response_.CharactersSizeInBytes()));
+        static_cast<int>(response_.CharactersSizeInBytes()));
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionResponseCallbackCountMetricName(session_type_),
         response_callback_count_);
@@ -198,6 +242,7 @@ class Responder final : public GarbageCollected<Responder>,
   base::OnceCallback<void(DOMException*)> error_callback_;
   // Callback invoked on AbortSignal abort.
   base::OnceCallback<void()> abort_callback_;
+  base::TimeTicks start_time_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -220,7 +265,8 @@ class StreamingResponder final
         abort_signal_(signal),
         session_type_(session_type),
         complete_callback_(std::move(complete_callback)),
-        overflow_callback_(overflow_callback) {
+        overflow_callback_(overflow_callback),
+        start_time_(base::TimeTicks::Now()) {
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
       abort_handle_ = abort_signal_->AddAlgorithm(
@@ -274,7 +320,12 @@ class StreamingResponder final
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     // Update the response info and enqueue the latest response.
     response_callback_count_++;
-    response_size_ = int(text.CharactersSizeInBytes());
+    if (response_callback_count_ == 1) {
+      base::UmaHistogramMediumTimes(
+          AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type_),
+          base::TimeTicks::Now() - start_time_);
+    }
+    response_size_ = static_cast<int>(text.CharactersSizeInBytes());
     v8::HandleScope handle_scope(script_state_->GetIsolate());
     Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
   }
@@ -284,6 +335,10 @@ class StreamingResponder final
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kComplete);
     response_callback_count_++;
+
+    RecordCompletionMetrics(session_type_, start_time_,
+                            response_callback_count_, context_info);
+
     Controller()->Close();
     if (context_info && complete_callback_) {
       std::move(complete_callback_).Run(std::move(context_info));
@@ -312,6 +367,11 @@ class StreamingResponder final
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     ++response_callback_count_;
+    if (response_callback_count_ == 1) {
+      base::UmaHistogramMediumTimes(
+          AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type_),
+          base::TimeTicks::Now() - start_time_);
+    }
 
     // For `Tool Use` Open-loop: Stream tool call messages as structured data.
     // Each tool call becomes a separate chunk in the stream.
@@ -349,6 +409,8 @@ class StreamingResponder final
   }
 
   void OnConnectionError() {
+    base::UmaHistogramBoolean(
+        AIMetrics::GetAISessionCrashedMetricName(session_type_), true);
     OnError(ModelStreamingResponseStatus::kErrorSessionDestroyed,
             /*quota_error_info=*/nullptr);
   }
@@ -391,6 +453,7 @@ class StreamingResponder final
   base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
       complete_callback_;
   base::RepeatingClosure overflow_callback_;
+  base::TimeTicks start_time_;
 };
 
 }  // namespace

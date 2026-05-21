@@ -76,6 +76,34 @@ std::string AIMetrics::GetAISessionResponseCallbackCountMetricName(
 }
 
 // static
+std::string AIMetrics::GetAISessionFirstResponseTimeMetricName(
+    AISessionType session_type) {
+  return base::StrCat({"AI.Session.", GetAISessionTypeName(session_type),
+                       ".FirstResponseTime"});
+}
+
+// static
+std::string AIMetrics::GetAISessionResponseCompleteTimeMetricName(
+    AISessionType session_type) {
+  return base::StrCat({"AI.Session.", GetAISessionTypeName(session_type),
+                       ".ResponseCompleteTime"});
+}
+
+// static
+std::string AIMetrics::GetAISessionContextTokensMetricName(
+    AISessionType session_type) {
+  return base::StrCat(
+      {"AI.Session.", GetAISessionTypeName(session_type), ".ContextTokens"});
+}
+
+// static
+std::string AIMetrics::GetAISessionCrashedMetricName(
+    AISessionType session_type) {
+  return base::StrCat(
+      {"AI.Session.", GetAISessionTypeName(session_type), ".Crashed"});
+}
+
+// static
 AIMetrics::LanguageModelInputType AIMetrics::ToLanguageModelInputType(
     mojom::blink::AILanguageModelPromptContent::Tag type) {
   using MojoEnum = mojom::blink::AILanguageModelPromptContent::Tag;
