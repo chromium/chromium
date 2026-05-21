@@ -154,7 +154,6 @@ export const ComposeboxEmbedderMixin =
           };
         }
 
-        automaticActiveTab: ComposeboxFile|null = null;
         accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
         accessor disableCaretColorAnimation: boolean = false;
         accessor disableVoiceSearchAnimation: boolean = false;
@@ -1231,8 +1230,51 @@ export const ComposeboxEmbedderMixin =
           assertNotReached();
         }
 
-        deleteFile(_uuidToDelete: UnguessableToken, _fromUserAction?: boolean) {
-          assertNotReached();
+        deleteFileContext(
+            uuidToDelete: UnguessableToken,
+            fromAutoSuggestedChip: boolean = false) {
+          this.files = new Map([...this.files.entries()].filter(
+              ([uuid, _]) => uuid !== uuidToDelete));
+          this.pendingUploads.delete(uuidToDelete);
+          this.fileUploadsComplete = this.pendingUploads.size === 0;
+          this.getSearchboxHandler().deleteContext(
+              uuidToDelete, fromAutoSuggestedChip);
+        }
+
+        deleteFile(
+            uuidToDelete: UnguessableToken, fromUserAction?: boolean,
+            fromAutoSuggestedChip: boolean = false) {
+          if (!uuidToDelete || !this.files.has(uuidToDelete)) {
+            return;
+          }
+
+          const file = this.files.get(uuidToDelete);
+          if (file?.tabId) {
+            this.addedTabsIds = new Map([...this.addedTabsIds.entries()].filter(
+                ([id, _]) => id !== file.tabId));
+          }
+
+          if (fromUserAction === true) {
+            const isTab = !!file?.tabId;
+            const deletionType = isTab ?
+                ContextualSearchInputStateDeletionType.TAB :
+                ContextualSearchInputStateDeletionType.FILE;
+            const metricName =
+                `ContextualSearch.UserAction.InputStateDeletion.${
+                    this.composeboxSource}`;
+            recordEnumerationValue(
+                metricName, deletionType,
+                ContextualSearchInputStateDeletionType.MAX_VALUE + 1);
+
+            const typeStr = isTab ? 'Tab' : 'File';
+            const userActionName =
+                `ContextualSearch.UserAction.InputStateDeletion.${typeStr}.${
+                    this.composeboxSource}`;
+            recordUserAction(userActionName);
+          }
+
+          this.deleteFileContext(uuidToDelete, fromAutoSuggestedChip);
+          this.focusInput();
         }
 
         focusInput() {
@@ -2099,7 +2141,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   addedTabsIds: Map<number, UnguessableToken>;
   restoredTabIds: number[];
   animationState: GlowAnimationState;
-  automaticActiveTab: ComposeboxFile|null;
   disableCaretColorAnimation: boolean;
   disableVoiceSearchAnimation: boolean;
   isDraggingFile: boolean;
@@ -2170,7 +2211,11 @@ export interface ComposeboxEmbedderMixinInterface extends
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
-  deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean): void;
+  deleteFile(
+      uuidToDelete: UnguessableToken, fromUserAction?: boolean,
+      fromAutoSuggestedChip?: boolean): void;
+  deleteFileContext(
+      uuidToDelete: UnguessableToken, fromAutoSuggestedChip?: boolean): void;
   closeMenu(): void;
   closeComposebox(): void;
   submitQuery(e?: KeyboardEvent|MouseEvent): void;
