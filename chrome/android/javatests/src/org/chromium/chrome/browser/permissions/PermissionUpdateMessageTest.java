@@ -343,14 +343,10 @@ public class PermissionUpdateMessageTest {
     // permissions.
     @Test
     @MediumTest
-    public void testInfobarShutsDownCleanlyForGeolocation()
+    public void testMessageShutsDownCleanlyForGeolocation()
             throws IllegalArgumentException, TimeoutException {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-
-        // Register for animation notifications
-        CriteriaHelper.pollInstrumentationThread(
-                () -> mActivityTestRule.getInfoBarContainer() != null);
 
         final var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
