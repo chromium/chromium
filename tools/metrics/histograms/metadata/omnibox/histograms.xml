@@ -95,6 +95,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType) -->
 
+<!-- LINT.IfChange(ComposeboxEntrypoint) -->
+
+<variants name="ComposeboxEntrypoint">
+  <variant name="" summary="Overall"/>
+  <variant name=".Cobrowse" summary="Cobrowse entrypoint"/>
+  <variant name=".NTPAIMButton" summary="NTP AIM button entrypoint"/>
+  <variant name=".NTPFakebox" summary="NTP fakebox entrypoint"/>
+  <variant name=".NTPPlusButton" summary="NTP plus button entrypoint"/>
+  <variant name=".Other" summary="Other entrypoint (Omnibox)"/>
+</variants>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/composebox/public/composebox_entrypoint.h:ComposeboxEntrypoint) -->
+
 <variants name="DsePreloadTriggerType">
   <variant name=".OnPress" summary="on-press trigger"/>
   <variant name=".OnSuggest" summary="on-suggest trigger"/>
@@ -1669,7 +1682,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.FocusResultedInNavigation{Usage}"
+<histogram name="Omnibox.FocusResultedInNavigation{Entrypoint}{Usage}"
     enum="FocusResultedInNavigationTypes" expires_after="2026-08-30">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1693,6 +1706,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Recorded every time the Omnibox focus is cleared.
   </summary>
+  <token key="Entrypoint" variants="ComposeboxEntrypoint"/>
   <token key="Usage">
     <variant name="" summary="Overall"/>
     <variant name=".AIMode" summary="AI Mode"/>
@@ -2507,7 +2521,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
-    name="Omnibox.MobileFusebox.AttachmentButtonUsedInSession{FuseboxAttachmentButtonType}"
+    name="Omnibox.MobileFusebox.AttachmentButtonUsedInSession{FuseboxAttachmentButtonType}{Entrypoint}"
     enum="Boolean" expires_after="2026-11-11">
   <owner>pnoland@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
@@ -2518,6 +2532,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
   <token key="FuseboxAttachmentButtonType"
       variants="FuseboxAttachmentButtonType"/>
+  <token key="Entrypoint" variants="ComposeboxEntrypoint"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.AttachmentCountAtSubmission.{Type}"

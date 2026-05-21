@@ -12,6 +12,7 @@ source_set("metrics") {
     "//base:i18n",
     "//components/contextual_search:public",
     "//ios/chrome/browser/composebox/public:composebox_mode",
+    "//ios/chrome/browser/composebox/public:entrypoint",
     "//ios/chrome/browser/composebox/public:model_options",
     "//skia",
   ]
@@ -24,6 +25,7 @@ source_set("unit_tests") {
     ":metrics",
     "//base/test:test_support",
     "//components/contextual_search:public",
+    "//ios/chrome/browser/composebox/public:entrypoint",
     "//skia",
     "//testing/gtest",
     "//ui/base",

@@ -118,7 +118,8 @@ CGFloat const kSheetTopPadding = 40.0f;
         contextual_search::ContextualSearchSource::kNewTabPage,
         lens::LensOverlayInvocationSource::kNtpContextualQuery);
 
-    _metricsRecorder = [[ComposeboxMetricsRecorder alloc] init];
+    _metricsRecorder =
+        [[ComposeboxMetricsRecorder alloc] initWithEntrypoint:_entrypoint];
     if (_sessionHandle) {
       _metricsRecorder.contextualSearchMetricsRecorder =
           _sessionHandle->GetMetricsRecorder();

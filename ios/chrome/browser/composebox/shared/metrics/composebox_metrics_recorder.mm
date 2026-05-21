@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 
 namespace {
 
@@ -140,11 +141,37 @@ omnibox::ModelMode ModelModeFromComposeboxModelOption(
   }
 }
 
+/// Returns the string suffix associated with the entrypoint.
+std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
+  switch (entrypoint) {
+    case ComposeboxEntrypoint::kNTPAIMButton:
+      return ".NTPAIMButton";
+    case ComposeboxEntrypoint::kNTPFakebox:
+      return ".NTPFakebox";
+    case ComposeboxEntrypoint::kNTPPlusButton:
+      return ".NTPPlusButton";
+    case ComposeboxEntrypoint::kCobrowse:
+      return ".Cobrowse";
+    case ComposeboxEntrypoint::kOther:
+      return ".Other";
+  }
+}
+
 }  // namespace
 
 @implementation ComposeboxMetricsRecorder {
   // Set of attachment button types used in the current session.
   std::set<int> _usedAttachmentButtonTypes;
+  // The entrypoint associated with this metrics recorder.
+  ComposeboxEntrypoint _entrypoint;
+}
+
+- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint {
+  self = [super init];
+  if (self) {
+    _entrypoint = entrypoint;
+  }
+  return self;
 }
 
 - (void)recordAiModeActivationSource:(AiModeActivationSource)source {
@@ -288,6 +315,17 @@ omnibox::ModelMode ModelModeFromComposeboxModelOption(
     base::UmaHistogramEnumeration("Omnibox.FocusResultedInNavigation" + suffix,
                                   type);
   }
+
+  std::string entrypoint_suffix = GetStringForEntrypoint(_entrypoint);
+  if (!entrypoint_suffix.empty()) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.FocusResultedInNavigation" + entrypoint_suffix, type);
+    if (!suffix.empty()) {
+      base::UmaHistogramEnumeration(
+          "Omnibox.FocusResultedInNavigation" + entrypoint_suffix + suffix,
+          type);
+    }
+  }
 }
 
 - (void)recordVoiceSearchButtonUsed {
@@ -351,10 +389,20 @@ omnibox::ModelMode ModelModeFromComposeboxModelOption(
 - (void)recordAttachmentButtonUsedInSession:
             (FuseboxAttachmentButtonType)buttonType
                                        used:(BOOL)used {
-  std::string histogram_name =
-      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.";
-  histogram_name += GetStringForAttachmentType(buttonType);
-  base::UmaHistogramBoolean(histogram_name, used);
+  std::string attachment_str = GetStringForAttachmentType(buttonType);
+  if (attachment_str.empty()) {
+    return;
+  }
+
+  std::string base_histogram =
+      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession." + attachment_str;
+  base::UmaHistogramBoolean(base_histogram, used);
+
+  std::string entrypoint_str = GetStringForEntrypoint(_entrypoint);
+  if (!entrypoint_str.empty()) {
+    std::string sliced_histogram = base_histogram + entrypoint_str;
+    base::UmaHistogramBoolean(sliced_histogram, used);
+  }
 }
 
 @end

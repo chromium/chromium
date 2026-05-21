@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_ENTRYPOINT_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_ENTRYPOINT_H_
 
+// LINT.IfChange(ComposeboxEntrypoint)
 /// Enum defining invocation points for the composebox.
 enum class ComposeboxEntrypoint {
   /// The AIM button on NTP.
@@ -18,5 +19,6 @@ enum class ComposeboxEntrypoint {
   /// Other, commands from OmniboxCommand.
   kOther,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:ComposeboxEntrypoint)
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_ENTRYPOINT_H_

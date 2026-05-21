@@ -165,8 +165,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     _theme = theme;
     // If there a shared metrics recorder, reuse it to maintain the same
     // recording session.
-    _metricsRecorder =
-        focusParams.metricsRecorder ?: [[ComposeboxMetricsRecorder alloc] init];
+    _metricsRecorder = focusParams.metricsRecorder
+                           ?: [[ComposeboxMetricsRecorder alloc]
+                                  initWithEntrypoint:_entrypoint];
     _modeHolder = modeHolder;
     _focusParams = focusParams;
   }

@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -13,7 +14,8 @@
 class ComposeboxMetricsRecorderTest : public PlatformTest {
  protected:
   ComposeboxMetricsRecorderTest() {
-    recorder_ = [[ComposeboxMetricsRecorder alloc] init];
+    recorder_ = [[ComposeboxMetricsRecorder alloc]
+        initWithEntrypoint:ComposeboxEntrypoint::kOther];
     cxx_recorder_ =
         std::make_unique<contextual_search::ContextualSearchMetricsRecorder>(
             contextual_search::ContextualSearchSource::kUnknown);
@@ -69,11 +71,20 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentButtonsUsageInSession) {
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Camera", true, 1);
   histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Camera.Other", true,
+      1);
+  histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Files", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Files.Other", true,
+      1);
 
   // We expect to have the Gallery button recorded as not used.
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Gallery", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Gallery.Other",
+      false, 1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AttachmentsMenuShown) {
@@ -128,6 +139,16 @@ TEST_F(ComposeboxMetricsRecorderTest, FocusResultedInNavigation) {
       static_cast<int>(
           FocusResultedInNavigationType::kNoNavigationNoAttachments),
       1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other",
+      static_cast<int>(
+          FocusResultedInNavigationType::kNoNavigationNoAttachments),
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other.Search",
+      static_cast<int>(
+          FocusResultedInNavigationType::kNoNavigationNoAttachments),
+      1);
 
   [recorder_ recordComposeboxFocusResultedInNavigation:YES
                                        withAttachments:NO
@@ -139,6 +160,14 @@ TEST_F(ComposeboxMetricsRecorderTest, FocusResultedInNavigation) {
       1);
   histogram_tester_.ExpectBucketCount(
       "Omnibox.FocusResultedInNavigation.AIMode",
+      static_cast<int>(FocusResultedInNavigationType::kNavigationNoAttachments),
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other",
+      static_cast<int>(FocusResultedInNavigationType::kNavigationNoAttachments),
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other.AIMode",
       static_cast<int>(FocusResultedInNavigationType::kNavigationNoAttachments),
       1);
 
@@ -156,6 +185,16 @@ TEST_F(ComposeboxMetricsRecorderTest, FocusResultedInNavigation) {
       static_cast<int>(
           FocusResultedInNavigationType::kNoNavigationWithAttachments),
       1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other",
+      static_cast<int>(
+          FocusResultedInNavigationType::kNoNavigationWithAttachments),
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other.ImageGeneration",
+      static_cast<int>(
+          FocusResultedInNavigationType::kNoNavigationWithAttachments),
+      1);
 
   [recorder_ recordComposeboxFocusResultedInNavigation:YES
                                        withAttachments:YES
@@ -166,8 +205,20 @@ TEST_F(ComposeboxMetricsRecorderTest, FocusResultedInNavigation) {
       static_cast<int>(
           FocusResultedInNavigationType::kNavigationWithAttachments),
       1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other",
+      static_cast<int>(
+          FocusResultedInNavigationType::kNavigationWithAttachments),
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.FocusResultedInNavigation.Other.Search",
+      static_cast<int>(
+          FocusResultedInNavigationType::kNavigationWithAttachments),
+      1);
 
   histogram_tester_.ExpectTotalCount("Omnibox.FocusResultedInNavigation", 4);
+  histogram_tester_.ExpectTotalCount("Omnibox.FocusResultedInNavigation.Other",
+                                     4);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AttachmentsMenuOpenedWithVisibleButtons) {

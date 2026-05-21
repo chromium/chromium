@@ -9,6 +9,7 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
@@ -81,8 +82,15 @@ namespace contextual_search {
 class ContextualSearchMetricsRecorder;
 }
 
+enum class ComposeboxEntrypoint;
+
 // A metrics recorder object for the composebox.
 @interface ComposeboxMetricsRecorder : NSObject
+
+// Initializes the recorder with the associated entrypoint.
+- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // The C++ metrics recorder to delegate to.
 @property(nonatomic, assign) contextual_search::ContextualSearchMetricsRecorder*
