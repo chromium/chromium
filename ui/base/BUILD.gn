@@ -1116,6 +1116,7 @@ test("ui_base_unittests") {
       "cocoa/base_view_unittest.mm",
       "cocoa/bubble_closer_unittest.mm",
       "cocoa/cocoa_base_utils_unittest.mm",
+      "cocoa/command_dispatcher_unittest.mm",
       "cocoa/constrained_window/constrained_window_animation_unittest.mm",
       "cocoa/defaults_utils_unittest.mm",
       "cocoa/nsmenu_additions_unittest.mm",

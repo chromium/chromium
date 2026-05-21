@@ -197,6 +197,12 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   CHECK(eventType == NSEventTypeKeyDown || eventType == NSEventTypeKeyUp ||
         eventType == NSEventTypeFlagsChanged);
 
+  // If the event's window is no longer the key window, don't attempt to
+  // redispatch it (https://crbug.com/514063409).
+  if (event.window && !event.window.keyWindow) {
+    return NO;
+  }
+
   // Sometimes, an event will be redispatched from a child window to a parent
   // window to allow the parent window a chance to handle it. In that case, fix
   // up the native event to reference the correct window. Failure to do this can
