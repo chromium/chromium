@@ -81,9 +81,13 @@ void AudioBlockFifo::IncreaseCapacity(int blocks) {
   std::rotate(audio_blocks_.begin() + read_block_,
               audio_blocks_.begin() + original_size, audio_blocks_.end());
 
-  // Update the write pointer if it is on top of the new inserted blocks.
-  if (write_block_ >= read_block_)
+  // Update `write_block_` if the block it pointed to was shifted.
+  // If the FIFO was full, keep `write_block_` pointing to the new empty blocks.
+  const bool write_block_moved = write_block_ >= read_block_;
+  const bool fifo_was_full = available_blocks_ == original_size;
+  if (write_block_moved && !fifo_was_full) {
     write_block_ += blocks;
+  }
 
   // Update the read pointers correspondingly.
   read_block_ += blocks;

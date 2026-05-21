@@ -46,12 +46,13 @@ class AudioBlockFifoTest : public testing::Test {
   void Push(AudioBlockFifo* fifo,
             int frames_to_push,
             int channels,
-            SampleFormat format = kSampleFormatS16) {
+            SampleFormat format = kSampleFormatS16,
+            uint8_t fill_value = 1) {
     DCHECK_LE(frames_to_push, fifo->GetUnfilledFrames());
     const size_t data_byte_size =
         SampleFormatToBytesPerChannel(format) * channels * frames_to_push;
     auto data = base::HeapArray<uint8_t>::Uninit(data_byte_size);
-    std::ranges::fill(data, 1);
+    std::ranges::fill(data, fill_value);
     fifo->Push(data, frames_to_push, format);
   }
 
@@ -273,6 +274,48 @@ TEST_F(AudioBlockFifoTest, DynamicallyIncreaseCapacity) {
   const int available_frames = max_frames - expected_unfilled_frames;
   Push(&fifo, frames - available_frames, kChannels);
   ConsumeAndVerify(&fifo, max_frames, 0);
+}
+
+TEST_F(AudioBlockFifoTest, IncreaseCapacityWhenFull) {
+  constexpr int kFrames = 4;
+  constexpr int kOriginalBlocks = 2;
+  AudioBlockFifo fifo(kChannels, kFrames, kOriginalBlocks);
+
+  // Using U8 format allows exact float representations:
+  // - U8 value 64 maps to -0.5f.
+  // - U8 value 96 maps to -0.25f.
+  constexpr float kOriginalValue = -0.5f;
+  constexpr float kAdditionalValue = -0.25f;
+
+  // Fill the FIFO.
+  Push(&fifo, kFrames, kChannels, kSampleFormatU8, 64);
+  Push(&fifo, kFrames, kChannels, kSampleFormatU8, 64);
+  EXPECT_EQ(0, fifo.GetUnfilledFrames());
+  EXPECT_EQ(kOriginalBlocks, fifo.available_blocks());
+
+  // Increase capacity.
+  fifo.IncreaseCapacity(1);
+  EXPECT_EQ(kFrames, fifo.GetUnfilledFrames());
+  EXPECT_EQ(kOriginalBlocks, fifo.available_blocks());
+
+  // Push another block.
+  Push(&fifo, kFrames, kChannels, kSampleFormatU8, 96);
+
+  EXPECT_EQ(0, fifo.GetUnfilledFrames());
+  EXPECT_EQ(kOriginalBlocks + 1, fifo.available_blocks());
+
+  auto verify_bus = [](const AudioBus* bus, float expected_value) {
+    for (auto channel : bus->AllChannels()) {
+      for (float sample : channel) {
+        EXPECT_NEAR(sample, expected_value, 0.0001);
+      }
+    }
+  };
+
+  // Consume and verify.
+  verify_bus(fifo.Consume(), kOriginalValue);
+  verify_bus(fifo.Consume(), kOriginalValue);
+  verify_bus(fifo.Consume(), kAdditionalValue);
 }
 
 }  // namespace media
