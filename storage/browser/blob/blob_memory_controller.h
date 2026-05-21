@@ -22,11 +22,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/time/time.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 
@@ -242,7 +242,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
       uint64_t min_page_file_size);
 
   // Schedule paging until our memory usage is below our memory limit.
-  void MaybeScheduleEvictionUntilSystemHealthy(base::MemoryPressureLevel level);
+  void MaybeScheduleEvictionUntilSystemHealthy(int memory_limit_percent);
 
   // Called when we've completed evicting a list of items to disk. This is where
   // we swap the bytes items for file items, and update our bookkeeping.
@@ -276,6 +276,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   // Store that we set manual limits so we don't accidentally override them with
   // our configuration task.
   bool manual_limits_set_ = false;
+  BlobStorageLimits base_limits_;
   BlobStorageLimits limits_;
   bool did_schedule_limit_calculation_ = false;
   bool did_calculate_storage_limits_ = false;
