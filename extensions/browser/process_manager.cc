@@ -1135,6 +1135,17 @@ std::vector<WorkerId> ProcessManager::GetAllWorkersIdsForTesting() {
   return all_running_extension_workers_.GetAllForTesting();  // IN-TEST
 }
 
+void ProcessManager::ReleaseLazyKeepaliveCountForFrameForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  ReleaseLazyKeepaliveCountForFrame(render_frame_host);
+}
+
+void ProcessManager::CloseLazyBackgroundPageNowForTesting(
+    const ExtensionId& extension_id) {
+  CloseLazyBackgroundPageNow(
+      extension_id, background_page_data_[extension_id].close_sequence_id);
+}
+
 void ProcessManager::ClearBackgroundPageData(const ExtensionId& extension_id) {
   background_page_data_.erase(extension_id);
 

@@ -275,6 +275,9 @@ class ProcessManager : public KeyedService,
   }
 
   std::vector<WorkerId> GetAllWorkersIdsForTesting();
+  void ReleaseLazyKeepaliveCountForFrameForTesting(
+      content::RenderFrameHost* render_frame_host);
+  void CloseLazyBackgroundPageNowForTesting(const ExtensionId& extension_id);
 
  protected:
   // Not owned. Also used by IncognitoProcessManager.

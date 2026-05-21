@@ -39,6 +39,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
+#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_entry.h"
@@ -56,10 +57,12 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_background_page_waiter.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1863,6 +1866,98 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(
       process_manager->GetServiceWorkerKeepaliveDataForRecords(extension->id())
           .empty());
+}
+
+// Tests that closing a lazy background page with open views that trigger
+// synchronous WebContents destruction (e.g., due to an active JavaScript
+// dialog) does not cause a use-after-free when unregistering remaining frames.
+// Regression test for crbug.com/513156160.
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, SynchronousClosureUAF) {
+  // Prevent premature background closure.
+  ProcessManager::SetEventPageIdleTimeForTesting(10000);
+  ProcessManager::SetEventPageSuspendingTimeForTesting(10000);
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Lazy Extension",
+    "manifest_version": 2,
+    "version": "0.1",
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    }
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     "chrome.test.sendMessage('ready');");
+  test_dir.WriteFile(FILE_PATH_LITERAL("frame.html"),
+                     "<html><body>Subframe</body></html>");
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("main.html"),
+      "<html><body><iframe src='frame.html'></iframe></body></html>");
+
+  ExtensionTestMessageListener listener("ready");
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  ProcessManager* pm = ProcessManager::Get(profile());
+  EXPECT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension.get()));
+
+  // Open a new tab to main.html.
+  GURL main_url = extension->GetResourceURL("main.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(main_url, tab->GetLastCommittedURL());
+
+  // Verify that ProcessManager registered frames for main.html.
+  ProcessManager::FrameSet frames =
+      pm->GetRenderFrameHostsForExtension(extension->id());
+  // We expect 3 frames: background page, main.html, and frame.html (iframe).
+  // The iframe is critical: it creates a second frame under the same
+  // WebContents. Without the fix, `ClosePage()` on the main frame synchronously
+  // destroys the WebContents (when a dialog is showing), and the subsequent
+  // iteration over the now-dangling iframe frame is a UAF.
+  EXPECT_EQ(3u, frames.size());
+
+  // Show a JavaScript dialog on the tab to ensure `ClosePage()` executes
+  // synchronously when the background page initiates closure.
+  javascript_dialogs::TabModalDialogManager* js_helper =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(tab);
+  base::RunLoop run_loop;
+  js_helper->SetDialogShownCallbackForTesting(run_loop.QuitClosure());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"alert('sync close')", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
+  run_loop.Run();
+
+  // To trigger the shutdown of the lazy background page while the tab is
+  // still open, manually release the keepalive counts for the non-background
+  // frames and initiate closure.
+  ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(host);
+  for (content::RenderFrameHost* rfh : frames) {
+    if (host->main_frame_host() != rfh) {
+      pm->ReleaseLazyKeepaliveCountForFrameForTesting(rfh);
+    }
+  }
+
+  ExtensionHostTestHelper host_helper(profile(), extension->id());
+  host_helper.RestrictToHost(host);
+
+  // Initiate lazy background page closure. Without the fix, this call triggers
+  // the UAF crash: when `ClosePage()` synchronously destroys the tab (due to
+  // the modal dialog), ProcessManager's frame iteration loop dereferences the
+  // now-freed iframe RenderFrameHost.
+  pm->CloseLazyBackgroundPageNowForTesting(extension->id());
+  host_helper.WaitForHostDestroyed();
+
+  // Verify all extension frames were properly unregistered.
+  EXPECT_TRUE(pm->GetRenderFrameHostsForExtension(extension->id()).empty());
 }
 
 }  // namespace extensions
