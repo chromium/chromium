@@ -235,6 +235,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="V8.ESMImportGraphDepth" units="depth" expires_after="M150">
+  <owner>olivf@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Records the maximum depth of an ES module import graph. Recorded upon
+    successful module graph instantiation in V8.
+  </summary>
+</histogram>
+
+<histogram name="V8.ESMModulesPerPage" units="modules" expires_after="M150">
+  <owner>olivf@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Records the total number of ES modules instantiated in a top-level module
+    import graph. Recorded upon successful module graph instantiation in V8.
+  </summary>
+</histogram>
+
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
     expires_after="2028-07-01">
   <owner>cbruni@chromium.org</owner>
