@@ -34,7 +34,7 @@ class SaveRecordingBubbleView : public LocationBarBubbleDelegateView,
 
  public:
   // Creates and shows the bubble.
-  // |anchor_view| is the view to anchor the bubble to (e.g. page action icon).
+  // |anchor| is the anchor for the bubble (e.g. page action icon).
   // |controller| handles the logic. The view takes ownership of the controller.
   static views::Widget* Show(
       views::BubbleAnchor anchor,

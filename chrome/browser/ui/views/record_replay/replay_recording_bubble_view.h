@@ -34,7 +34,7 @@ class ReplayRecordingBubbleView : public LocationBarBubbleDelegateView {
 
  public:
   // Creates and shows the bubble.
-  // `anchor` is the view to anchor the bubble to (e.g. page action icon).
+  // `anchor` is the anchor for the bubble (e.g. page action icon).
   // `recordings` is the list of recordings to show. `manager` is the record
   // replay manager.
   static std::unique_ptr<views::Widget> Show(

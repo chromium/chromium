@@ -40,10 +40,6 @@ views::Widget* SaveRecordingBubbleView::Show(
   CHECK(controller);
   auto* bubble =
       new SaveRecordingBubbleView(anchor, web_contents, std::move(controller));
-  bubble->SetMainImage(
-      ui::ImageModel::FromImage(gfx::Image(gfx::CreateVectorIcon(
-          vector_icons::kPhotoOldIcon, 100,
-          web_contents->GetColorProvider().GetColor(ui::kColorIcon)))));
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
   return widget;
@@ -71,6 +67,9 @@ SaveRecordingBubbleView::SaveRecordingBubbleView(
 SaveRecordingBubbleView::~SaveRecordingBubbleView() = default;
 
 void SaveRecordingBubbleView::Init() {
+  SetMainImage(ui::ImageModel::FromVectorIcon(vector_icons::kPhotoOldIcon,
+                                              ui::kColorIcon, 100));
+
   const auto* layout_provider = views::LayoutProvider::Get();
 
   // Vertical Layout for content

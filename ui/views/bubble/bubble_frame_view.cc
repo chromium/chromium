@@ -505,16 +505,16 @@ void BubbleFrameView::UpdateMainImage() {
 
     const int border_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
         Emphasis::kHigh, gfx::Size());
+    const ui::ColorProvider* color_provider = GetColorProvider();
     main_image_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
             gfx::Size(main_image_dimension, main_image_dimension),
             border_radius - 2 * kMainImageBorderStrokeThickness,
-            model.GetImage().AsImageSkia())));
+            model.Rasterize(color_provider))));
     main_image_->SetBorder(views::CreateRoundedRectBorder(
         kMainImageBorderStrokeThickness, border_radius, image_insets,
-        GetColorProvider()
-            ? GetColorProvider()->GetColor(ui::kColorBubbleBorder)
-            : gfx::kPlaceholderColor));
+        color_provider ? color_provider->GetColor(ui::kColorBubbleBorder)
+                       : gfx::kPlaceholderColor));
 
     main_image_->SetVisible(true);
   }

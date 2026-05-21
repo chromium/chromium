@@ -8,15 +8,18 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -1559,6 +1562,43 @@ TEST_F(BubbleFrameViewTest, GetNonDecoratedClientAreaBoundsInScreenNoBorder) {
 
   EXPECT_EQ(expected_bounds,
             frame()->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
+TEST_F(BubbleFrameViewTest, MainImageUpdatesOnThemeChanged) {
+  int generation_count = 0;
+  auto generator =
+      base::BindLambdaForTesting([&generation_count](const ui::ColorProvider*) {
+        generation_count++;
+        SkBitmap bitmap;
+        bitmap.allocN32Pixels(1, 1);
+        return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+      });
+
+  auto delegate_unique =
+      std::make_unique<FrameViewTestBubbleDialogDelegateView>();
+  delegate_unique->SetMainImage(ui::ImageModel::FromImageGenerator(
+      std::move(generator), gfx::Size(1, 1)));
+  // Use the fixture's widget as a parent to satisfy parent DCHECKs.
+  delegate_unique->set_parent_window(frame()->GetWidget()->GetNativeView());
+
+  Widget* widget =
+      BubbleDialogDelegateView::CreateBubble(delegate_unique.release());
+  auto* bubble_frame =
+      static_cast<BubbleFrameView*>(widget->non_client_view()->frame_view());
+
+  // Capture the count after widget initialization.
+  const int base_count = generation_count;
+
+  // Explicit update.
+  bubble_frame->UpdateMainImage();
+  EXPECT_GT(generation_count, base_count);
+
+  // Theme change should trigger another update.
+  const int count_before_theme_change = generation_count;
+  bubble_frame->OnThemeChanged();
+  EXPECT_GT(generation_count, count_before_theme_change);
+
+  widget->CloseNow();
 }
 
 }  // namespace views

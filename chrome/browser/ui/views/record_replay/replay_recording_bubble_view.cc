@@ -72,6 +72,9 @@ ReplayRecordingBubbleView::ReplayRecordingBubbleView(
 ReplayRecordingBubbleView::~ReplayRecordingBubbleView() = default;
 
 void ReplayRecordingBubbleView::Init() {
+  SetMainImage(ui::ImageModel::FromVectorIcon(vector_icons::kPlayArrowOldIcon,
+                                              ui::kColorIcon, 100));
+
   const auto* layout_provider = views::LayoutProvider::Get();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(

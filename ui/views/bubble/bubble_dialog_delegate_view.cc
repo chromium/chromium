@@ -733,8 +733,6 @@ void BubbleDialogDelegate::SetMainImage(ui::ImageModel main_image) {
   if (main_image_.IsEmpty()) {
     DCHECK(!GetBubbleFrameView());
   }
-  // BubbleFrameView::UpdateMainImage() only supports images.
-  CHECK(main_image.IsEmpty() || main_image.IsImage());
   main_image_ = std::move(main_image);
   if (GetBubbleFrameView()) {
     GetBubbleFrameView()->UpdateMainImage();
