@@ -571,27 +571,31 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [self.browserLayoutViewController removeFromParentViewController];
       self.browserLayoutViewController = viewController;
 
-      if (!IsChromeNextIaEnabled()) {
-        viewController.view.frame = frame;
-      }
-      viewController.view.alpha = 1.0;
-      [_viewController addChildViewController:viewController];
+      UIViewController* parentViewController =
+          (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled())
+              ? _viewController.parentViewController
+              : _viewController;
+      [parentViewController addChildViewController:viewController];
       if (IsChromeNextIaEnabled()) {
         UIView* appContentGuide = [LayoutGuideCenterForScene(sceneState)
             referencedViewUnderName:kAppContentGuide];
+        [appContentGuide addSubview:viewController.view];
         if (IsFullscreenRefactoringEnabled()) {
-          [_viewController.view addSubview:viewController.view];
-          AddSameConstraints(appContentGuide, viewController.view);
+          AddSameConstraints(viewController.view, appContentGuide);
         } else {
-          [appContentGuide addSubview:viewController.view];
           viewController.view.frame = frame;
         }
       } else {
         [_viewController.view addSubview:viewController.view];
+        if (IsFullscreenRefactoringEnabled()) {
+          AddSameConstraints(viewController.view, _viewController.view);
+        } else {
+          viewController.view.frame = frame;
+        }
       }
 
-      [viewController.view layoutIfNeeded];
-      [viewController didMoveToParentViewController:_viewController];
+      [parentViewController.view layoutIfNeeded];
+      [viewController didMoveToParentViewController:parentViewController];
     }
     _viewController.childViewControllerForStatusBarStyle = viewController;
     [_viewController setNeedsStatusBarAppearanceUpdate];
@@ -742,7 +746,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           : nil;
 
   UIViewController* parentViewController = _viewController;
-  if (IsChromeNextIaEnabled()) {
+  if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
     parentViewController = _viewController.parentViewController;
   }
 
