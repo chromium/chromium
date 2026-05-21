@@ -100,10 +100,27 @@ TEST_F(SearchEngineUtilTest, IsAimZeroStateURL) {
       GURL("https://www.google.com/amp/s/attacker.com?udm=50")));
   EXPECT_FALSE(IsAimZeroStateURL(GURL("https://www.google.com/phish?udm=50")));
 
-  // Search URL should be rejected (handled by IsAimURL).
+  // Search URL with a query should be rejected (handled by IsAimURL).
   EXPECT_FALSE(
       IsAimZeroStateURL(GURL("https://www.google.com/search?udm=50&q=test")));
 
+  // Search URL without query should be caught as AimZeroStateURL.
+  EXPECT_TRUE(IsAimZeroStateURL(GURL("https://www.google.com/search?udm=50")));
+
   // Missing udm=50 should be rejected.
   EXPECT_FALSE(IsAimZeroStateURL(GURL("https://www.google.com/")));
+}
+
+TEST_F(SearchEngineUtilTest, IsAimURL) {
+  EXPECT_TRUE(IsAimURL(GURL("https://www.google.com/search?udm=50&q=test")));
+  EXPECT_TRUE(IsAimURL(GURL("https://google.com/search?udm=50&q=test")));
+
+  // Subdomain should be rejected.
+  EXPECT_FALSE(IsAimURL(GURL("https://amp.google.com/search?udm=50&q=test")));
+
+  // No query parameter q should be rejected (it's a zero state URL).
+  EXPECT_FALSE(IsAimURL(GURL("https://www.google.com/search?udm=50")));
+
+  // Missing udm=50 should be rejected.
+  EXPECT_FALSE(IsAimURL(GURL("https://www.google.com/search?q=test")));
 }
