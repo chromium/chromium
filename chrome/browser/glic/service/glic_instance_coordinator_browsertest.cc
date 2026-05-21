@@ -387,8 +387,16 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(GetInstanceForTab(tab1), instance1);
 }
 
+// TODO(crbug.com/514816170): Re-enable when no longer flaky
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UnboundWhenClosedBySidePanelCoordinator \
+  DISABLED_UnboundWhenClosedBySidePanelCoordinator
+#else
+#define MAYBE_UnboundWhenClosedBySidePanelCoordinator \
+  UnboundWhenClosedBySidePanelCoordinator
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
-                       UnboundWhenClosedBySidePanelCoordinator) {
+                       MAYBE_UnboundWhenClosedBySidePanelCoordinator) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
 
