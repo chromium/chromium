@@ -52,4 +52,11 @@
   }
 }
 
+- (void)geminiLiveUserDidTapLiveButton {
+  if (!_target) {
+    return;
+  }
+  _target->OnLiveButtonTapped();
+}
+
 @end

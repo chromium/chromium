@@ -136,6 +136,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void CollapseFloatyIfInvoked() override;
   void SetLastShownViewState(
       ios::provider::GeminiViewState view_state) override;
+  void OnLiveButtonTapped() override;
 
   // Called when the scene activation level changes.
   void OnSceneActivationLevelChanged(SceneActivationLevel level);

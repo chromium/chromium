@@ -366,7 +366,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 }
 
 - (void)geminiLiveUserDidTapLiveButton {
-  // TODO(crbug.com/513196020): Implement Live button tap logic.
+  [self.geminiViewStateDelegate geminiLiveUserDidTapLiveButton];
 }
 
 #pragma mark - Private

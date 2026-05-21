@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -769,6 +770,14 @@ void GeminiBrowserAgent::SetLastShownViewState(
     elapsed_minimized_floaty_time_ = base::TimeTicks::Now();
   }
   last_shown_view_state_ = view_state;
+}
+
+void GeminiBrowserAgent::OnLiveButtonTapped() {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
+  if (tracker) {
+    tracker->NotifyEvent(feature_engagement::events::kIOSGeminiLiveUsed);
+  }
 }
 
 void GeminiBrowserAgent::DismissGeminiFromOtherWindows(

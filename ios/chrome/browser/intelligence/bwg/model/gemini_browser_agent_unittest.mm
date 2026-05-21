@@ -13,11 +13,14 @@
 #import "base/test/task_environment.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
@@ -56,6 +59,13 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+namespace {
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    ProfileIOS* profile) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+}  // namespace
+
 // Test fixture for GeminiBrowserAgent.
 class GeminiBrowserAgentTest : public PlatformTest {
  protected:
@@ -73,8 +83,13 @@ class GeminiBrowserAgentTest : public PlatformTest {
     profile_builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(profile_builder));
+    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForProfile(profile_));
     web::JavaScriptFeatureManager::FromBrowserState(profile_)
         ->ConfigureFeatures(
             {web::FindInPageJavaScriptFeature::GetInstance(),
@@ -222,6 +237,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
   id mock_settings_handler_;
   id mock_bwg_handler_;
   FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
 
 // A test observer for GeminiBrowserAgent.
@@ -752,4 +768,13 @@ TEST_F(GeminiBrowserAgentTest, TestStartGeminiFlowNoActiveWebState) {
   histogram_tester.ExpectUniqueSample(kGeminiInvocationPageTypeHistogram,
                                       IOSGeminiInvocationPageType::kNoWebState,
                                       1);
+}
+
+// Tests that OnLiveButtonTapped triggers the feature engagement event.
+TEST_F(GeminiBrowserAgentTest, TestOnLiveButtonTappedTriggersEvent) {
+  EXPECT_CALL(
+      *mock_tracker_,
+      NotifyEvent(testing::Eq(feature_engagement::events::kIOSGeminiLiveUsed)));
+
+  gemini_browser_agent_->OnLiveButtonTapped();
 }
