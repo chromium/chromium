@@ -69,7 +69,8 @@ class ContextMenuHeaderCoordinator {
         }
         HeaderInfo headerInfo =
                 ContextMenuUtils.getHeaderInfo(params, isCustomItemPresent, webContents.getTitle());
-        String title = headerInfo.getAltText().toString();
+        String pageTitle = headerInfo.getPageTitle().toString();
+        String altText = headerInfo.getAltText().toString();
         CharSequence url = getUrl(headerInfo.getUrl(), activity, params, profile);
         boolean hasSecondary = !GURL.isEmptyOrInvalid(headerInfo.getSecondaryUrl());
         boolean hasTertiary = !GURL.isEmptyOrInvalid(headerInfo.getTertiaryUrl());
@@ -83,7 +84,7 @@ class ContextMenuHeaderCoordinator {
                         ? getUrl(headerInfo.getTertiaryUrl(), activity, params, profile)
                         : "";
 
-        mModel = buildModel(activity, title, url, secondaryUrl, tertiaryUrl);
+        mModel = buildModel(activity, pageTitle, altText, url, secondaryUrl, tertiaryUrl);
         new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
     }
 
@@ -93,14 +94,21 @@ class ContextMenuHeaderCoordinator {
     }
 
     @VisibleForTesting
-    static PropertyModel buildModel(Context context, String title, CharSequence url) {
-        return buildModel(context, title, url, /* secondaryUrl= */ "", /* tertiaryUrl= */ "");
+    static PropertyModel buildModel(Context context, String altText, CharSequence url) {
+        return buildModel(
+                context,
+                /* pageTitle= */ "",
+                altText,
+                url,
+                /* secondaryUrl= */ "",
+                /* tertiaryUrl= */ "");
     }
 
     @VisibleForTesting
     static PropertyModel buildModel(
             Context context,
-            String title,
+            String pageTitle,
+            String altText,
             CharSequence url,
             CharSequence secondaryUrl,
             CharSequence tertiaryUrl) {
@@ -113,14 +121,14 @@ class ContextMenuHeaderCoordinator {
 
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, title)
+                        .with(ListMenuItemProperties.TITLE, altText)
                         .with(
                                 ContextMenuHeaderProperties.TITLE_MAX_LINES,
                                 TextUtils.isEmpty(url) ? 2 : 1)
                         .with(ContextMenuHeaderProperties.URL, url)
                         .with(
                                 ContextMenuHeaderProperties.URL_MAX_LINES,
-                                TextUtils.isEmpty(title) ? 2 : 1)
+                                TextUtils.isEmpty(altText) ? 2 : 1)
                         .with(ContextMenuHeaderProperties.IMAGE, null)
                         .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
                         .with(
@@ -133,7 +141,7 @@ class ContextMenuHeaderCoordinator {
                 && !TextUtils.isEmpty(secondaryUrl)) {
             // The secondary URL is guaranteed to be visible in this flow.
             int visibleProperties = 1;
-            if (!TextUtils.isEmpty(title)) visibleProperties++;
+            if (!TextUtils.isEmpty(altText)) visibleProperties++;
             if (!TextUtils.isEmpty(url)) visibleProperties++;
 
             boolean isTertiaryUrlPresent = !TextUtils.isEmpty(tertiaryUrl);
@@ -146,17 +154,18 @@ class ContextMenuHeaderCoordinator {
 
             // If there are few enough items, they can expand to take up more space.
             if (visibleProperties == 1) {
-                // Should only happen if title, url, and tertiaryUrl are all empty.
+                // Should only happen if altText, url, and tertiaryUrl are all empty.
                 maxSecondaryUrlLines = 3;
             } else if (visibleProperties == 2) {
-                // Two items are visible (e.g., secondary + tertiary, or secondary + title).
+                // Two items are visible (e.g., secondary + tertiary, or secondary + altText).
                 // We give the secondary URL priority with more lines.
                 maxSecondaryUrlLines = 2;
-                // The other item (tertiary, title, or url) implicitly gets 1 line.
+                // The other item (tertiary, altText, or url) implicitly gets 1 line.
             }
             // If visibleProperties is 3 or more, all items get 1 line each (the default).
 
             modelBuilder
+                    .with(ContextMenuHeaderProperties.PAGE_TITLE, pageTitle)
                     .with(ContextMenuHeaderProperties.SECONDARY_URL, secondaryUrl)
                     .with(
                             ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,

@@ -40,7 +40,7 @@ public class ContextMenuHeaderTextView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mTitle = findViewById(R.id.menu_header_title);
+        mTitle = findViewById(R.id.menu_header_alt_text);
         mUrl = findViewById(R.id.menu_header_url);
         mSecondaryUrl = findViewById(R.id.menu_header_secondary_url);
         mTertiaryUrl = findViewById(R.id.menu_header_tertiary_url);

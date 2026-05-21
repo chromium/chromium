@@ -90,7 +90,7 @@ public class ContextMenuHeaderViewTest {
                 () -> {
                     sActivity.setContentView(R.layout.context_menu_header);
                     mHeaderView = sActivity.findViewById(android.R.id.content);
-                    mTitle = mHeaderView.findViewById(R.id.menu_header_title);
+                    mTitle = mHeaderView.findViewById(R.id.menu_header_alt_text);
                     mUrl = mHeaderView.findViewById(R.id.menu_header_url);
                     mSecondaryUrl = mHeaderView.findViewById(R.id.menu_header_secondary_url);
                     mTertiaryUrl = mHeaderView.findViewById(R.id.menu_header_tertiary_url);
@@ -100,6 +100,7 @@ public class ContextMenuHeaderViewTest {
                     mImageContainer = mHeaderView.findViewById(R.id.menu_header_image_container);
                     mModel =
                             new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                                    .with(ContextMenuHeaderProperties.PAGE_TITLE, "")
                                     .with(ListMenuItemProperties.TITLE, "")
                                     .with(ContextMenuHeaderProperties.URL, "")
                                     .with(ContextMenuHeaderProperties.SECONDARY_URL, "")

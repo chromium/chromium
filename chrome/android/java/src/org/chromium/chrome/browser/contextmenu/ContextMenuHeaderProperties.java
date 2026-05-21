@@ -20,6 +20,8 @@ class ContextMenuHeaderProperties {
     /** Invalid value for OVERRIDE_*_PIXEL resources */
     static final int INVALID_OVERRIDE = -1;
 
+    public static final WritableObjectPropertyKey<CharSequence> PAGE_TITLE =
+            new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> URL =
             new WritableObjectPropertyKey<>();
@@ -67,6 +69,7 @@ class ContextMenuHeaderProperties {
             new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
+        PAGE_TITLE,
         TITLE,
         TITLE_MAX_LINES,
         URL,

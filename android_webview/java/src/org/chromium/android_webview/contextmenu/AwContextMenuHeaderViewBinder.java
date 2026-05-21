@@ -20,7 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class AwContextMenuHeaderViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        TextView headerUrl = view.findViewById(R.id.menu_header_title);
+        TextView headerUrl = view.findViewById(R.id.menu_header_alt_text);
         ImageView headerIcon = view.findViewById(R.id.menu_header_icon);
 
         if (propertyKey == TITLE) {

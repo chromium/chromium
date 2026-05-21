@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/menu_header_title"
+        android:id="@+id/menu_header_alt_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"

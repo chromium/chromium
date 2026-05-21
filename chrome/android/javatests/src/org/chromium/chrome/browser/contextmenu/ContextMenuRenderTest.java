@@ -309,8 +309,8 @@ public class ContextMenuRenderTest {
     }
 
     private PropertyModel getHeaderModel(
-            String title, CharSequence url, boolean hasImageThumbnail) {
-        PropertyModel model = ContextMenuHeaderCoordinator.buildModel(sActivity, title, url);
+            String altText, CharSequence url, boolean hasImageThumbnail) {
+        PropertyModel model = ContextMenuHeaderCoordinator.buildModel(sActivity, altText, url);
         Bitmap image;
         if (hasImageThumbnail) {
             image =
@@ -331,13 +331,13 @@ public class ContextMenuRenderTest {
         return model;
     }
 
-    private PropertyModel getItemModel(String title) {
+    private PropertyModel getItemModel(String altText) {
         return new PropertyModel.Builder(ListMenuItemProperties.MENU_ITEM_ID, TITLE, ENABLED)
-                .with(TITLE, title)
+                .with(TITLE, altText)
                 .build();
     }
 
-    private PropertyModel getShareItemModel(String title) {
+    private PropertyModel getShareItemModel(String altText) {
         final BitmapDrawable drawable =
                 new BitmapDrawable(
                         sActivity.getResources(),
@@ -345,7 +345,7 @@ public class ContextMenuRenderTest {
                                 UrlUtils.getIsolatedTestFilePath(
                                         "chrome/test/data/android/UiCapture/dots.png")));
         return new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                .with(TITLE, title)
+                .with(TITLE, altText)
                 .with(ENABLED, true)
                 .with(ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE, drawable)
                 .build();
