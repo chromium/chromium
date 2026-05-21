@@ -340,15 +340,21 @@ TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleRangedSegments) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(HlsDataSourceProviderImplUnittest, TestCrossoriginRangeRequest) {
+TEST_F(HlsDataSourceProviderImplUnittest, TestCrossOriginRangeRequest) {
   HlsDataSourceProvider::SegmentQueue segments;
   // Read 10 bytes from offset 0.
   segments.emplace(GURL("http://example.com"),
                    hls::types::ByteRange::Validate(10, 0));
 
   auto* mock_data_source = factory_->PregenerateNextMock();
+
+  // It's not cross origin at first until it has been initialized. After that
+  // the second `WouldTaintOrigin` call should return true.
   EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
-      .WillRepeatedly(Return(true));
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_data_source, Initialize)
+      .WillOnce(base::test::RunOnceCallback<0>(true));
 
   bool has_error = false;
   impl_->ReadFromCombinedUrlQueue(
@@ -465,6 +471,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestRangeThenCrossorigin) {
     EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
         .WillRepeatedly(Return(true));
     // It should fail before Initialize/Read/Stop.
+    EXPECT_CALL(*mock_data_source, Initialize).Times(0);
   }
 
   bool has_error = false;

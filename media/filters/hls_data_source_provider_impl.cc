@@ -187,6 +187,7 @@ void HlsDataSourceProviderImpl::OnDataSourceCreated(
     std::move(callback).Run(
         {ReadStatus::Codes::kError,
          "Range requests are not allowed for cross-origin content"});
+    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
     return;
   }
 
@@ -213,6 +214,23 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
     CHECK(it != data_source_map_.end());
     data_source_map_.erase(it);
     std::move(callback).Run(ReadStatus::Codes::kStopped);
+    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+    return;
+  }
+
+  auto it = data_source_map_.find(stream->stream_id());
+  if (it != data_source_map_.end()) {
+    would_taint_origin_ |= it->second->WouldTaintOrigin();
+    if (would_taint_origin_) {
+      stream->set_would_taint_origin();
+    }
+  }
+
+  if (stream->HasIncompatibleRangeAndOrigin()) {
+    std::move(callback).Run(
+        {ReadStatus::Codes::kError,
+         "Range requests are not allowed for cross-origin content"});
+    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
     return;
   }
 
