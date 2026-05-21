@@ -11,6 +11,7 @@ import './pinned_toolbar_actions.js';
 import './avatar_button.js';
 import './icon_table.js';
 import './icon_from_table.js';
+import './icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';

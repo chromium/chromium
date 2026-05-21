@@ -3212,6 +3212,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
 
   toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia;
+  const bool rounded_icons = features::IsRoundedIconsEnabled();
 
   const auto kRouteMediaIcons = std::to_array<Test>({
       {base::raw_ref(vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
@@ -3222,10 +3223,9 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
        std::string_view("pinned-toolbar-action:RouteMediaPaused")},
       {base::raw_ref(vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
        std::string_view("pinned-toolbar-action:RouteMediaActive")},
-      {base::raw_ref(features::IsRoundedIconsEnabled()
-                         ? kCastIcon
-                         : kCastChromeRefreshOldIcon),
-       std::string_view("pinned-toolbar-action:RouteMedia")},
+      {base::raw_ref(rounded_icons ? kCastIcon : kCastChromeRefreshOldIcon),
+       rounded_icons ? std::string_view("webui-toolbar:cast")
+                     : std::string_view("pinned-toolbar-action:RouteMedia")},
   });
 
   for (const auto& test : kRouteMediaIcons) {

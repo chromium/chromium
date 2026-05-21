@@ -99,6 +99,7 @@ build_webui("build") {
     "icon_from_table.ts",
     "icon_from_table.html.ts",
     "icon_table.ts",
+    "icons.html.ts",
     "location_bar.ts",
     "location_bar.html.ts",
     "location_icon.ts",
