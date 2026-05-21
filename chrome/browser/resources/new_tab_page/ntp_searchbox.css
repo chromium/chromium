@@ -20,7 +20,6 @@
   --cr-searchbox-voice-search-button-width: 0px;
   --cr-compose-button-width: 104px;
   --cr-searchbox-icon-spacing: 11px;
-  border: var(--cr-searchbox-border, none);
   border-radius: var(--cr-searchbox-border-radius);
   font-size: var(--cr-searchbox-font-size, 16px);
   height: var(--cr-searchbox-height);
@@ -76,6 +75,7 @@
 
 #inputWrapper {
   background-color: var(--color-searchbox-background);
+  border: var(--cr-searchbox-border, none);
   border-radius: var(--cr-searchbox-border-radius);
   box-shadow: var(--cr-searchbox-shadow);
   display: flex;
