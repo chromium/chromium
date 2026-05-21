@@ -73,6 +73,26 @@ RequestPriority WebSocketPriorityHintToRequestPriority(
   }
 }
 
+void RecordWebSocketErrorCodes(const URLRequest& request,
+                               int net_error,
+                               bool is_http2,
+                               bool is_http3) {
+  base::UmaHistogramSparse("Net.WebSocket.ErrorCodes", -net_error);
+
+  if (is_http2) {
+    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes.Http2", -net_error);
+  } else if (is_http3) {
+    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes.Http3", -net_error);
+  }
+
+  if (net::IsLocalhost(request.url())) {
+    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes_Localhost", -net_error);
+  } else {
+    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes_NotLocalhost",
+                             -net_error);
+  }
+}
+
 class WebSocketStreamRequestImpl;
 
 class Delegate : public URLRequest::Delegate {
@@ -424,19 +444,7 @@ void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
       HttpConnectionInfoToCoarse(request->response_info().connection_info);
   const bool is_http2 = connection_info == HttpConnectionInfoCoarse::kHTTP2;
   const bool is_http3 = connection_info == HttpConnectionInfoCoarse::kQUIC;
-
-  // All error codes, including OK and ABORTED, as with
-  // Net.ErrorCodesForMainFrame4
-  base::UmaHistogramSparse("Net.WebSocket.ErrorCodes", -net_error);
-  if (is_http2) {
-    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes.Http2", -net_error);
-  }
-  if (net::IsLocalhost(request->url())) {
-    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes_Localhost", -net_error);
-  } else {
-    base::UmaHistogramSparse("Net.WebSocket.ErrorCodes_NotLocalhost",
-                             -net_error);
-  }
+  RecordWebSocketErrorCodes(*request, net_error, is_http2, is_http3);
 
   if (net_error != OK) {
     DVLOG(3) << "OnResponseStarted (request failed)";

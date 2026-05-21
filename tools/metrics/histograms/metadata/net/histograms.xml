@@ -9442,6 +9442,7 @@ chromium-metrics-reviews@google.com.
   <token key="ProtocolOrType">
     <variant name="" summary="All protocols"/>
     <variant name=".Http2" summary="HTTP/2"/>
+    <variant name=".Http3" summary="HTTP/3"/>
     <variant name="_Localhost"/>
     <variant name="_NotLocalhost"/>
   </token>
