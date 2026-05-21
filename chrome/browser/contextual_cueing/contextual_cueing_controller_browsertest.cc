@@ -809,6 +809,50 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       CueHidesWhenSidePanelOpened) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Contextual cueing anchored message not implemented for Android";
+#endif
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  page_actions::PageActionController* page_action_controller =
+      GetPageActionController();
+  CHECK(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  base::HistogramTester histogram_tester;
+
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // Initially, the contextual cue anchored message is shown on the screen.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Open the side panel (we use Bookmarks here as a standard global entry).
+  auto* side_panel_ui = SidePanelUIProvider::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Show(SidePanelEntryId::kBookmarks);
+
+  // Verify that our observer successfully intercepted the open event
+  // and hid the contextual cue dynamically.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !observer.GetCurrentPageActionState().showing; }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        CueNotShowingBecauseInfobarVisible) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.activetab.com/abc"),

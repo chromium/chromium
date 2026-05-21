@@ -575,6 +575,8 @@ void ContextualCueingController::ShowCue(
     return;
   }
 
+  ObserveSidePanel();
+
   page_action_controller->Show(kActionAnchoredContextualCue);
   page_action_controller->SetAnchoredMessageIcon(
       kActionAnchoredContextualCue, target.GetAnchoredMessageIcon());
@@ -615,6 +617,10 @@ void ContextualCueingController::ShowCue(
 
 void ContextualCueingController::OnCueHidden() {
   current_cuj_.clear();
+}
+
+void ContextualCueingController::OnSidePanelShown() {
+  HideCue();
 }
 
 void ContextualCueingController::OnCueClicked(
@@ -669,6 +675,18 @@ void ContextualCueingController::HideCue() {
   }
   page_action_controller->Hide(kActionAnchoredContextualCue);
 #endif
+}
+
+void ContextualCueingController::ObserveSidePanel() {
+  if (side_panel_shown_subscription_) {
+    return;
+  }
+  if (auto* side_panel_ui =
+          SidePanelUIProvider::From(browser_window_interface_)) {
+    side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
+        base::BindRepeating(&ContextualCueingController::OnSidePanelShown,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 CueTarget* ContextualCueingController::GetTarget(CueTargetType type) {
