@@ -3599,6 +3599,10 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
+      name: "LayoutOOFCollectInlinesFix",
+      status: "stable",
+    },
+    {
       name: "LayoutTableCellAlignmentSafe",
       status: "stable",
     },
