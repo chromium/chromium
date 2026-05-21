@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityFinishingOrDestroyed;
 
@@ -151,6 +152,14 @@ public class TabBottomSheetWebUi {
                         mContext.getResources().getConfiguration().orientation
                                 == Configuration.ORIENTATION_LANDSCAPE);
             }
+
+            // Only request focus once the web contents have been attached to the activity's layout
+            // tree.
+            View currentFocus = assertNonNull(mWindowAndroid.getActivity().get()).getCurrentFocus();
+            if (currentFocus != null) {
+                currentFocus.clearFocus();
+            }
+            contentView.requestFocus();
         } else {
             resetThinWebView();
         }
