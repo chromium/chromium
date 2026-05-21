@@ -976,9 +976,8 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
       pickle.WriteString(tab.saved_group_id.value().AsLowercaseString());
     }
 
-    std::unique_ptr<SessionCommand> command(
-        new SessionCommand(kCommandSetTabGroupData, pickle));
-    command_storage_manager_->ScheduleCommand(std::move(command));
+    command_storage_manager_->ScheduleCommand(
+        std::make_unique<SessionCommand>(kCommandSetTabGroupData, pickle));
   }
 
   if (tab.split_id.has_value()) {
@@ -1052,9 +1051,7 @@ TabRestoreServiceImpl::PersistenceDelegate::CreateWindowCommand(
   }
   pickle.WriteInt(type);
 
-  std::unique_ptr<SessionCommand> command(
-      new SessionCommand(kCommandWindow, pickle));
-  return command;
+  return std::make_unique<SessionCommand>(kCommandWindow, pickle);
 }
 
 // static
