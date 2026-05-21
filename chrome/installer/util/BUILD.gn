@@ -104,7 +104,11 @@ if (is_win) {
 static_library("with_no_strings") {
   public_deps = [ ":constants" ]
 
-  sources = [ "google_update_settings.h" ]
+  sources = [
+    "client_id_backup_file_manager.cc",
+    "client_id_backup_file_manager.h",
+    "google_update_settings.h",
+  ]
 
   deps = [
     "//base",
@@ -334,6 +338,7 @@ if (is_win) {
       "auto_launch_util_unittest.cc",
       "beacons_unittest.cc",
       "callback_work_item_unittest.cc",
+      "client_id_backup_file_manager_unittest.cc",
       "conditional_work_item_unittest.cc",
       "copy_tree_work_item_unittest.cc",
       "create_dir_work_item_unittest.cc",
@@ -397,4 +402,20 @@ if (is_win) {
       "//chrome/test/data/installer/",
     ]
   }
-}  # is_win
+}
+
+if (!is_win) {
+  test("installer_util_unittests") {
+    sources = [ "client_id_backup_file_manager_unittest.cc" ]
+
+    deps = [
+      ":with_no_strings",
+      "//base",
+      "//base/test:run_all_unittests",
+      "//base/test:test_support",
+      "//chrome/common:constants",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

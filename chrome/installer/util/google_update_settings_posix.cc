@@ -1,18 +1,12 @@
-// Copyright 2011 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/installer/util/google_update_settings.h"
 
-#include "base/files/file_util.h"
-#include "base/no_destructor.h"
-#include "base/path_service.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/lock.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_paths.h"
+#include "chrome/installer/util/client_id_backup_file_manager.h"
 #include "components/crash/core/app/crashpad.h"
 
 namespace {
@@ -22,48 +16,6 @@ base::LazyThreadPoolSequencedTaskRunner g_collect_stats_consent_task_runner =
         base::TaskTraits(base::MayBlock(),
                          base::TaskPriority::USER_VISIBLE,
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
-
-std::string& GetPosixClientId() {
-  static base::NoDestructor<std::string> posix_client_id;
-  return *posix_client_id;
-}
-
-base::Lock& GetPosixClientIdLock() {
-  static base::NoDestructor<base::Lock> posix_client_id_lock;
-  return *posix_client_id_lock;
-}
-
-// File name used in the user data dir to indicate consent.
-const char kConsentToSendStats[] = "Consent To Send Stats";
-
-void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // The consent file needs to be world readable. See http://crbug.com/40079723
-  int permissions;
-  if (base::GetPosixFilePermissions(consent_file, &permissions) &&
-      (permissions & base::FILE_PERMISSION_READ_BY_OTHERS) == 0) {
-    permissions |= base::FILE_PERMISSION_READ_BY_OTHERS;
-    base::SetPosixFilePermissions(consent_file, permissions);
-  }
-#endif
-}
-
-bool GetCollectStatsConsentFromDir(const base::FilePath& consent_dir) {
-  if (!base::DirectoryExists(consent_dir)) {
-    return false;
-  }
-  base::FilePath consent_file = consent_dir.Append(kConsentToSendStats);
-
-  std::string tmp_guid;
-  bool consented = base::ReadFileToString(consent_file, &tmp_guid);
-  if (consented) {
-    SetConsentFilePermissionIfNeeded(consent_file);
-
-    base::AutoLock lock(GetPosixClientIdLock());
-    GetPosixClientId().assign(tmp_guid);
-  }
-  return consented;
-}
 
 }  // namespace
 
@@ -77,9 +29,9 @@ GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
 
 // static
 bool GoogleUpdateSettings::GetCollectStatsConsent() {
-  base::FilePath consent_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &consent_dir);
-  return GetCollectStatsConsentFromDir(consent_dir);
+  auto& backup_client_id_file_manager =
+      ClientIdBackupFileManager::GetInstance();
+  return backup_client_id_file_manager.ClientIdFromCacheOrDisk().has_value();
 }
 
 // static
@@ -88,31 +40,24 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
   crash_reporter::SetUploadConsent(consented);
 #endif
 
-  base::FilePath consent_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &consent_dir);
-  if (!base::DirectoryExists(consent_dir)) {
-    return false;
-  }
+  auto& backup_client_id_file_manager =
+      ClientIdBackupFileManager::GetInstance();
+  bool has_client_id_in_backup =
+      backup_client_id_file_manager.ClientIdFromCacheOrDisk().has_value();
 
-  base::AutoLock lock(GetPosixClientIdLock());
-
-  base::FilePath consent_file = consent_dir.AppendASCII(kConsentToSendStats);
-  if (!consented) {
-    GetPosixClientId().clear();
-    return base::DeleteFile(consent_file);
-  }
-
-  const std::string& client_id = GetPosixClientId();
-  if (base::PathExists(consent_file) && client_id.empty()) {
+  if (consented == has_client_id_in_backup) {
     return true;
   }
 
-  if (!base::WriteFile(consent_file, client_id)) {
-    return false;
+  if (!consented) {
+    return backup_client_id_file_manager.ClearClientId(
+        base::PassKey<GoogleUpdateSettings>());
   }
 
-  SetConsentFilePermissionIfNeeded(consent_file);
-  return true;
+  // An empty client ID means that `consented` is true, but the ID itself is not
+  // yet known.
+  return backup_client_id_file_manager.SetClientId(
+      base::PassKey<GoogleUpdateSettings>(), {});
 }
 
 // static
@@ -129,39 +74,37 @@ bool GoogleUpdateSettings::SetMetricsReportingLevel(
   return false;
 }
 
-// static
-// TODO(gab): Implement storing/loading for all ClientInfo fields on POSIX.
 std::unique_ptr<metrics::ClientInfo>
 GoogleUpdateSettings::LoadMetricsClientInfo() {
-  auto client_info = std::make_unique<metrics::ClientInfo>();
+  auto& backup_client_id_file_manager =
+      ClientIdBackupFileManager::GetInstance();
 
-  base::AutoLock lock(GetPosixClientIdLock());
-  if (GetPosixClientId().empty()) {
+  std::optional<std::string> client_id =
+      backup_client_id_file_manager.ClientIdFromCache();
+  if (!client_id.has_value() || client_id->empty()) {
     return nullptr;
   }
-  client_info->client_id = GetPosixClientId();
 
+  auto client_info = std::make_unique<metrics::ClientInfo>();
+  client_info->client_id = *std::move(client_id);
   return client_info;
 }
 
-// static
-// TODO(gab): Implement storing/loading for all ClientInfo fields on POSIX.
 void GoogleUpdateSettings::StoreMetricsClientInfo(
     const metrics::ClientInfo& client_info) {
-  // Make sure that user has consented to send crashes.
-  if (!GoogleUpdateSettings::GetCollectStatsConsent()) {
+  auto& backup_client_id_file_manager =
+      ClientIdBackupFileManager::GetInstance();
+
+  // Make sure that the user has chosen to send metrics.
+  if (!backup_client_id_file_manager.ClientIdFromCacheOrDisk()) {
     return;
   }
 
-  {
-    // Since user has consented, write the metrics id to the file.
-    base::AutoLock lock(GetPosixClientIdLock());
-    GetPosixClientId() = client_info.client_id;
-  }
-  GoogleUpdateSettings::SetCollectStatsConsent(true);
+  backup_client_id_file_manager.SetClientId(
+      base::PassKey<GoogleUpdateSettings>(), client_info.client_id);
 }
 
-// GetLastRunTime and SetLastRunTime are not implemented for posix. Their
+// GetLastRunTime() and SetLastRunTime() are not implemented for posix. Their
 // current return values signal failure which the caller is designed to
 // handle.
 
