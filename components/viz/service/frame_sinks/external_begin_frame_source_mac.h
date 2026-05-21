@@ -20,6 +20,7 @@
 
 namespace viz {
 class OutputSurface;
+class ExternalBeginFrameSourceMacTest;
 
 // An external begin frame source for use on macOS. This listens to a
 // DisplayLinkMac in order to tick.
@@ -72,6 +73,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
       MultipleHWRefreshRatesCallback callback);
 
  private:
+  friend class ExternalBeginFrameSourceMacTest;
+
   void CreateDelayBasedTimeSourceIfNeeded();
 
   void StartBeginFrame();

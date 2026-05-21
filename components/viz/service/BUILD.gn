@@ -740,6 +740,7 @@ viz_source_set("unit_tests") {
     sources += [
       "display/overlay_ca_unittest.cc",
       "display_embedder/software_output_device_mac_unittest.mm",
+      "frame_sinks/external_begin_frame_source_mac_unittest.cc",
     ]
     frameworks = [ "IOSurface.framework" ]
   }

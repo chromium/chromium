@@ -16,6 +16,10 @@ namespace gpu {
 class ImageTransportSurfaceOverlayMacTest;
 }
 
+namespace viz {
+class ExternalBeginFrameSourceMacTest;
+}
+
 namespace ui {
 
 // VSync parameters parsed from CVDisplayLinkOutputCallback's parameters.
@@ -52,6 +56,7 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   friend struct ObjCState;
 
   friend class gpu::ImageTransportSurfaceOverlayMacTest;
+  friend class viz::ExternalBeginFrameSourceMacTest;
 
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
 
