@@ -99,37 +99,56 @@ void ActorContainerConfig::Assign(
 
   rules_.emplace();
   for (const auto& rule_proto : config->location_rules()) {
-    base::expected<ActorContainerConfig::LocationType, std::string_view>
-        destination_result = ConvertLocation(rule_proto.location());
+    base::expected<Location, std::string_view> destination_result =
+        Location::Create(rule_proto.location());
     if (!destination_result.has_value()) {
       DLOG(ERROR) << destination_result.error();
       continue;
     }
-    base::expected<ActorContainerConfig::Rule, std::string_view> rule =
-        ActorContainerConfig::Rule::Create(rule_proto);
+    base::expected<Rule, std::string_view> rule = Rule::Create(rule_proto);
     if (!rule.has_value()) {
       DLOG(ERROR) << rule.error();
       continue;
     }
-    const ActorContainerConfig::LocationType& destination =
-        destination_result.value();
+    const Location& destination = destination_result.value();
     if (auto it = rules_->find(destination); it != rules_->end()) {
-      DLOG(ERROR) << "Duplicate rule for " << LocationTypeToString(destination);
+      DLOG(ERROR) << "Duplicate rule for " << destination.ToDebugString();
     }
     rules_->insert_or_assign(destination, rule.value());
   }
 }
 
-base::expected<ActorContainerConfig::LocationType, std::string_view>
-ActorContainerConfig::ConvertLocation(
+ActorContainerConfig::Location::Location(Wildcard) : data_(Wildcard()) {}
+
+ActorContainerConfig::Location::Location(net::SchemefulSite site)
+    : data_(std::move(site)) {}
+
+ActorContainerConfig::Location::Location(url::Origin origin)
+    : data_(std::move(origin)) {}
+
+ActorContainerConfig::Location::Location(const Location&) = default;
+ActorContainerConfig::Location::Location(Location&&) = default;
+ActorContainerConfig::Location& ActorContainerConfig::Location::operator=(
+    const Location&) = default;
+ActorContainerConfig::Location& ActorContainerConfig::Location::operator=(
+    Location&&) = default;
+
+ActorContainerConfig::Location::~Location() = default;
+
+base::expected<ActorContainerConfig::Location, std::string_view>
+ActorContainerConfig::Location::Create(
     const optimization_guide::proto::Location& location) {
   switch (location.identifier_oneof_case()) {
     case optimization_guide::proto::Location::kWildcard:
-      return Wildcard();
-    case optimization_guide::proto::Location::kSite:
-      return ConvertSite(location.site());
-    case optimization_guide::proto::Location::kOrigin:
-      return ConvertOrigin(location.origin());
+      return Location(Wildcard());
+    case optimization_guide::proto::Location::kSite: {
+      ASSIGN_OR_RETURN(net::SchemefulSite site, ConvertSite(location.site()));
+      return Location(std::move(site));
+    }
+    case optimization_guide::proto::Location::kOrigin: {
+      ASSIGN_OR_RETURN(url::Origin origin, ConvertOrigin(location.origin()));
+      return Location(std::move(origin));
+    }
     case optimization_guide::proto::Location::IDENTIFIER_ONEOF_NOT_SET:
       return base::unexpected("Location missing value");
     default:
@@ -137,50 +156,44 @@ ActorContainerConfig::ConvertLocation(
   }
 }
 
-bool ActorContainerConfig::MatchesLocationType(
-    const ActorContainerConfig::LocationType& location,
-    const url::Origin& origin) {
-  return std::visit(
-      absl::Overload([](const Wildcard& unused_wildcard) { return true; },
-                     [&](const net::SchemefulSite& site) {
-                       return site.IsSameSiteWith(origin);
-                     },
-                     [&](const url::Origin& loc_origin) {
-                       return loc_origin.IsSameOriginWith(origin);
-                     }),
-      location);
+bool ActorContainerConfig::Location::Matches(const url::Origin& origin) const {
+  return std::visit(absl::Overload([](const Wildcard&) { return true; },
+                                   [&](const net::SchemefulSite& site) {
+                                     return site.IsSameSiteWith(origin);
+                                   },
+                                   [&](const url::Origin& loc_origin) {
+                                     return loc_origin.IsSameOriginWith(origin);
+                                   }),
+                    data_);
 }
 
-std::string ActorContainerConfig::LocationTypeToString(
-    const ActorContainerConfig::LocationType& location) {
+std::string ActorContainerConfig::Location::ToDebugString() const {
   return std::visit(
       absl::Overload(
-          [](const Wildcard& unused_wildcard) -> std::string {
-            return "Wildcard";
-          },
+          [](const Wildcard&) -> std::string { return "Wildcard"; },
           [](const net::SchemefulSite& site) {
             return base::StrCat({"Site(", site.GetDebugString(), ")"});
           },
           [](const url::Origin& origin) {
             return base::StrCat({"Origin(", origin.GetDebugString(), ")"});
           }),
-      location);
+      data_);
 }
 
 ActorContainerConfig::Rule::Rule() = default;
 
-ActorContainerConfig::Rule::Rule(const ActorContainerConfig::Rule&) = default;
+ActorContainerConfig::Rule::Rule(const Rule&) = default;
 
-ActorContainerConfig::Rule::Rule(ActorContainerConfig::Rule&&) = default;
+ActorContainerConfig::Rule::Rule(Rule&&) = default;
 
-ActorContainerConfig::Rule& ActorContainerConfig::Rule::operator=(
-    const ActorContainerConfig::Rule&) = default;
+ActorContainerConfig::Rule& ActorContainerConfig::Rule::operator=(const Rule&) =
+    default;
 
-ActorContainerConfig::Rule& ActorContainerConfig::Rule::operator=(
-    ActorContainerConfig::Rule&&) = default;
+ActorContainerConfig::Rule& ActorContainerConfig::Rule::operator=(Rule&&) =
+    default;
 
 ActorContainerConfig::Rule::Rule(
-    std::vector<ActorContainerConfig::LocationType> navigation_sources,
+    std::vector<Location> navigation_sources,
     optimization_guide::proto::RuleMetadata metadata)
     : navigation_sources_(std::move(navigation_sources)),
       metadata_(std::move(metadata)) {}
@@ -190,23 +203,22 @@ ActorContainerConfig::Rule::~Rule() = default;
 base::expected<ActorContainerConfig::Rule, std::string_view>
 ActorContainerConfig::Rule::Create(
     const optimization_guide::proto::LocationRule& location_rule) {
-  std::vector<LocationType> navigation_sources;
+  std::vector<Location> navigation_sources;
   for (const auto& nav_source : location_rule.navigation_sources()) {
     if (!nav_source.has_source()) {
       return base::unexpected("NavigationSource has no source location set");
     }
-    ASSIGN_OR_RETURN(LocationType source, ConvertLocation(nav_source.source()));
+    ASSIGN_OR_RETURN(Location source, Location::Create(nav_source.source()));
     navigation_sources.emplace_back(source);
   }
-  return ActorContainerConfig::Rule(navigation_sources,
-                                    location_rule.metadata());
+  return Rule(navigation_sources, location_rule.metadata());
 }
 
 bool ActorContainerConfig::Rule::MatchesNavigationSource(
     const url::Origin& source_origin) const {
   return navigation_sources_.empty() ||
          std::ranges::any_of(navigation_sources_, [&](const auto& source) {
-           return MatchesLocationType(source, source_origin);
+           return source.Matches(source_origin);
          });
 }
 
@@ -224,17 +236,16 @@ bool ActorContainerConfig::IsNavigationAllowed(
     const url::Origin& destination) const {
   CHECK(IsActive());
   if (const auto* rule =
-          base::FindOrNull(rules_.value(), LocationType(destination));
+          base::FindOrNull(rules_.value(), Location(destination));
       rule && rule->MatchesNavigationSource(source)) {
     return rule->CanNavigate();
   }
   if (const auto* rule = base::FindOrNull(
-          rules_.value(), LocationType(net::SchemefulSite(destination)));
+          rules_.value(), Location(net::SchemefulSite(destination)));
       rule && rule->MatchesNavigationSource(source)) {
     return rule->CanNavigate();
   }
-  if (const auto* rule =
-          base::FindOrNull(rules_.value(), LocationType(Wildcard()));
+  if (const auto* rule = base::FindOrNull(rules_.value(), Location(Wildcard()));
       rule && rule->MatchesNavigationSource(source)) {
     return rule->CanNavigate();
   }
@@ -245,15 +256,15 @@ bool ActorContainerConfig::IsActuationAllowed(
     const url::Origin& location_origin) const {
   CHECK(IsActive());
   if (const auto* rule =
-          base::FindOrNull(rules_.value(), LocationType(location_origin))) {
+          base::FindOrNull(rules_.value(), Location(location_origin))) {
     return rule->CanNavigate();
   }
   if (const auto* rule = base::FindOrNull(
-          rules_.value(), LocationType(net::SchemefulSite(location_origin)))) {
+          rules_.value(), Location(net::SchemefulSite(location_origin)))) {
     return rule->CanNavigate();
   }
   if (const auto* rule =
-          base::FindOrNull(rules_.value(), LocationType(Wildcard()))) {
+          base::FindOrNull(rules_.value(), Location(Wildcard()))) {
     return rule->CanNavigate();
   }
   return false;
