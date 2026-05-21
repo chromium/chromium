@@ -59,6 +59,13 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                          public AutocompleteController::Observer,
                          public EmbeddedPermissionPromptObserver::Observer {
  public:
+  class Delegate {
+   public:
+    virtual void OnEmbeddedPermissionDialogChanged(
+        bool is_showing,
+        const gfx::Size& prompt_size) = 0;
+  };
+
   SearchboxHandler(const SearchboxHandler&) = delete;
   SearchboxHandler& operator=(const SearchboxHandler&) = delete;
 
@@ -171,6 +178,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void OnDriveDisclaimerAccepted() override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void GetPageClassification(GetPageClassificationCallback callback) override;
+  void set_delegate(Delegate* delegate) { omnibox_delegate_ = delegate; }
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
@@ -201,6 +209,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<OmniboxController> controller_;
+  raw_ptr<Delegate> omnibox_delegate_;
+
   // Children classes should use `omnibox_controller()` or `controller_`.
   std::unique_ptr<OmniboxController> owned_controller_;
 
