@@ -71,7 +71,9 @@ TEST(PopupCellUtilsTest,
      GetExpandableMenuIcon_NonComposeSuggestions_ReturnSubMenuArrowIcon) {
   EXPECT_EQ(GetExpandableMenuIconNameFromSuggestionType(
                 SuggestionType::kAddressEntry),
-            vector_icons::kSubmenuArrowChromeRefreshOldIcon.name);
+            ::features::IsRoundedIconsEnabled()
+                ? vector_icons::kKeyboardArrowRightIcon.name
+                : vector_icons::kSubmenuArrowChromeRefreshOldIcon.name);
 }
 
 const VoiceOverTestParam kVoiceOverTestCases[] = {

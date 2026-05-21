@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
@@ -226,7 +227,9 @@ TEST(ImageModelTest, ShouldRasterizeEmptyModel) {
 TEST(ImageModelTest, ShouldRasterizeVectorIcon) {
   ui::ColorProvider color_provider;
   gfx::ImageSkia image_skia =
-      ui::ImageModel::FromVectorIcon(vector_icons::kSyncOldIcon)
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSyncIcon
+                                         : vector_icons::kSyncOldIcon)
           .Rasterize(&color_provider);
   EXPECT_FALSE(image_skia.isNull());
 }

@@ -44,13 +44,19 @@ base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
       return std::nullopt;
     case AddressUIComponentIconType::kName:
       return ::features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
-                                                 : kAccountCircleOldIcon;
+             : ::features::IsRoundedIconsEnabled()
+                 ? vector_icons::kAccountCircleIcon
+                 : kAccountCircleOldIcon;
     case AddressUIComponentIconType::kAddress:
-      return vector_icons::kLocationOnOldIcon;
+      return ::features::IsRoundedIconsEnabled()
+                 ? vector_icons::kLocationOnIcon
+                 : vector_icons::kLocationOnOldIcon;
     case AddressUIComponentIconType::kEmail:
-      return vector_icons::kEmailOldIcon;
+      return ::features::IsRoundedIconsEnabled() ? vector_icons::kMailFilledIcon
+                                                 : vector_icons::kEmailOldIcon;
     case AddressUIComponentIconType::kPhone:
-      return vector_icons::kCallOldIcon;
+      return ::features::IsRoundedIconsEnabled() ? vector_icons::kCallFilledIcon
+                                                 : vector_icons::kCallOldIcon;
   }
 }
 

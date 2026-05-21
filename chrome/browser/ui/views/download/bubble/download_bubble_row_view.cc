@@ -81,8 +81,10 @@ namespace {
 
 ui::ImageModel GetDefaultIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kInsertDriveFileOutlineOldIcon, ui::kColorIcon,
-      GetLayoutConstant(LayoutConstant::kDownloadIconSize));
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kDraftIcon
+          : vector_icons::kInsertDriveFileOutlineOldIcon,
+      ui::kColorIcon, GetLayoutConstant(LayoutConstant::kDownloadIconSize));
 }
 
 gfx::Image GetDefaultIconImage(const ui::ColorProvider* color_provider) {
@@ -460,7 +462,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   subpage_icon_ =
       subpage_icon_holder_->AddChildView(std::make_unique<views::ImageView>());
   subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowOldIcon, ui::kColorIcon));
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+                                        : vector_icons::kSubmenuArrowOldIcon,
+      ui::kColorIcon));
   subpage_icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets(kDownloadSubpageIconMargin) + kRowInterElementPadding);

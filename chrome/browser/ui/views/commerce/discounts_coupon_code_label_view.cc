@@ -16,6 +16,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -64,7 +65,9 @@ DiscountsCouponCodeLabelView::DiscountsCouponCodeLabelView(
       l10n_util::GetStringUTF16(IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT)));
   copy_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kContentCopyIcon
+                                         : vector_icons::kContentCopyOldIcon,
                                      ui::kColorIcon, kContentCopyIconSizePx));
   copy_button_->SetStyle(ui::ButtonStyle::kTonal);
   UpdateCopyButtonTooltipsAndAccessibleNames(

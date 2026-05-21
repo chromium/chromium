@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 namespace web_app {
 
@@ -89,7 +90,8 @@ WebAppBlockedMigrationInfoBarDelegate::GetIdentifier() const {
 
 const gfx::VectorIcon& WebAppBlockedMigrationInfoBarDelegate::GetVectorIcon()
     const {
-  return vector_icons::kSettingsOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
+                                           : vector_icons::kSettingsOldIcon;
 }
 
 std::u16string WebAppBlockedMigrationInfoBarDelegate::GetMessageText() const {

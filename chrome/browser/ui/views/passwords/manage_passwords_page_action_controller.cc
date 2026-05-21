@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -29,9 +30,13 @@ const gfx::VectorIcon& GetVectorIconForState(password_manager::ui::State state,
                                              bool is_blocklisted) {
   if (is_blocklisted &&
       base::FeatureList::IsEnabled(features::kSavePasswordsContextualUi)) {
-    return vector_icons::kPasswordManagerOffOldIcon;
+    return features::IsRoundedIconsEnabled()
+               ? vector_icons::kPasswordManagerOffIcon
+               : vector_icons::kPasswordManagerOffOldIcon;
   }
-  return vector_icons::kPasswordManagerOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kPasswordManagerIcon
+             : vector_icons::kPasswordManagerOldIcon;
 }
 
 }  // namespace

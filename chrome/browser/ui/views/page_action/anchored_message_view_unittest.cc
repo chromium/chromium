@@ -17,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -75,11 +76,13 @@ class AnchoredMessageBubbleViewTest
   NiceMock<MockPageActionModel> model_;
   NiceMock<MockAnchoredMessageDelegate> delegate_;
   std::optional<ui::ImageModel> no_icon_ = std::nullopt;
-  std::optional<ui::ImageModel> test_icon_opt_ =
-      ui::ImageModel::FromVectorIcon(vector_icons::kInstallDesktopOldIcon);
+  std::optional<ui::ImageModel> test_icon_opt_ = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kInstallDesktopIcon
+                                        : vector_icons::kInstallDesktopOldIcon);
   ui::ImageModel empty_image_;
-  ui::ImageModel test_image_ =
-      ui::ImageModel::FromVectorIcon(vector_icons::kInstallDesktopOldIcon);
+  ui::ImageModel test_image_ = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kInstallDesktopIcon
+                                        : vector_icons::kInstallDesktopOldIcon);
   std::u16string empty_text_ = u"";
   std::u16string test_text_ = u"Test text";
 

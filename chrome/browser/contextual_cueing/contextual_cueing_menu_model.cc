@@ -17,6 +17,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 
 namespace contextual_cueing {
@@ -46,7 +47,9 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
   // Add menu items.
   AddItemWithStringIdAndIcon(
       kContextualCueingDismissCommand, IDS_CONTEXTUAL_CUEING_MENU_DISMISS,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kCloseIcon
+                                         : vector_icons::kCloseOldIcon,
                                      ui::kColorMenuIcon, 16));
   AddItemWithStringIdAndIcon(
       kContextualCueingEditPromptCommand,
@@ -57,7 +60,9 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
   AddItemWithStringIdAndIcon(
       kContextualCueingOpenSettingsCommand,
       IDS_CONTEXTUAL_CUEING_MENU_SUGGESTION_SETTINGS,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSettingsFilledIcon
+                                         : vector_icons::kSettingsOldIcon,
                                      ui::kColorMenuIcon, 16));
 }
 

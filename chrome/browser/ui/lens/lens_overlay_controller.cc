@@ -113,6 +113,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
@@ -1515,7 +1516,9 @@ LensOverlayController::GetPreselectionBubbleConfig() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
 #else
-      .icon = &vector_icons::kSearchChromeRefreshOldIcon
+      .icon = &(features::IsRoundedIconsEnabled()
+                    ? vector_icons::kSearchIcon
+                    : vector_icons::kSearchChromeRefreshOldIcon)
 #endif
   };
 }

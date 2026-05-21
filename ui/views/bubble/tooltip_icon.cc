@@ -10,6 +10,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -126,7 +127,8 @@ void TooltipIcon::RemoveObserver(Observer* observer) {
 
 void TooltipIcon::SetDrawAsHovered(bool hovered) {
   SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kInfoOutlineOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kInfoIcon
+                                        : vector_icons::kInfoOutlineOldIcon,
       GetColorProvider()->GetColor(hovered ? ui::kColorHelpIconActive
                                            : ui::kColorHelpIconInactive),
       tooltip_icon_size_));

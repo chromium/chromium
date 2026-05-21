@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -199,8 +200,12 @@ void TabAppSelectionHost::RemoveItem(std::string_view identifier) {
 void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
   views::Widget::OnNativeWidgetVisibilityChanged(visible);
   views::AsViewClass<IconButton>(owner_->addon_view())
-      ->SetVectorIcon(visible ? vector_icons::kCaretDownOldIcon
-                              : vector_icons::kCaretUpOldIcon);
+      ->SetVectorIcon(visible ? ::features::IsRoundedIconsEnabled()
+                                    ? vector_icons::kKeyboardArrowDownIcon
+                                    : vector_icons::kCaretDownOldIcon
+                      : ::features::IsRoundedIconsEnabled()
+                          ? vector_icons::kKeyboardArrowUpIcon
+                          : vector_icons::kCaretUpOldIcon);
   owner_->OnSelectionWidgetVisibilityChanged();
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
       visible ? GetNativeWindow() : nullptr);

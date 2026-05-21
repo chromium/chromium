@@ -524,7 +524,9 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
           base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
                               base::Unretained(owner_)),
           features::IsRoundedIconsEnabled() ? kArrowBackIcon
-                                            : vector_icons::kArrowBackOldIcon));
+          : features::IsRoundedIconsEnabled()
+              ? vector_icons::kArrowBackIcon
+              : vector_icons::kArrowBackOldIcon));
   views::InstallCircleHighlightPathGenerator(back_button_.get());
   back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button_->SetVisible(false);

@@ -32,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -226,11 +227,15 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconEnterprise) {
   std::unique_ptr<TestingProfile> profile_supervised =
       builder_supervised.Build();
 
-  EXPECT_EQ(vector_icons::kBusinessChromeRefreshOldIcon.name,
+  EXPECT_EQ(features::IsRoundedIconsEnabled()
+                ? vector_icons::kDomainIcon.name
+                : vector_icons::kBusinessChromeRefreshOldIcon.name,
             GetManagedUiIcon(profile.get()).name);
   // Enterprise management takes precedence over supervision in the management
   // UI.
-  EXPECT_EQ(vector_icons::kBusinessChromeRefreshOldIcon.name,
+  EXPECT_EQ(features::IsRoundedIconsEnabled()
+                ? vector_icons::kDomainIcon.name
+                : vector_icons::kBusinessChromeRefreshOldIcon.name,
             GetManagedUiIcon(profile_supervised.get()).name);
 }
 
@@ -240,7 +245,9 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconSupervised) {
   builder.SetIsSupervisedProfile();
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
-  EXPECT_EQ(vector_icons::kFamilyLinkOldIcon.name,
+  EXPECT_EQ(features::IsRoundedIconsEnabled()
+                ? vector_icons::kFamilyLinkFilledIcon.name
+                : vector_icons::kFamilyLinkOldIcon.name,
             GetManagedUiIcon(profile.get()).name);
 }
 

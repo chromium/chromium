@@ -12,6 +12,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
@@ -134,7 +135,9 @@ TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
   // Set up base nudge data, set a long text, a title and a leading image.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodOldIcon, cros_tokens::kCrosSysOnSurface,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kPetsIcon
+                                          : vector_icons::kDogfoodOldIcon,
+      cros_tokens::kCrosSysOnSurface,
       /*icon_size=*/60);
   nudge_data.title_text = title_text;
   nudge_data.body_text = long_body_text;
@@ -152,7 +155,9 @@ TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
   // Set up base nudge data, set a long text, title, leading image and buttons.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodOldIcon, cros_tokens::kCrosSysOnSurface,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kPetsIcon
+                                          : vector_icons::kDogfoodOldIcon,
+      cros_tokens::kCrosSysOnSurface,
       /*icon_size=*/60);
   nudge_data.title_text = title_text;
   nudge_data.body_text = long_body_text;

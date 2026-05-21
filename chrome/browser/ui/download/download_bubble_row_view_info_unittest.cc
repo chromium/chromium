@@ -308,24 +308,36 @@ TEST_F(DownloadBubbleRowViewInfoTest, InterruptedInfo) {
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,
-       &vector_icons::kFileDownloadOffChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled()
+             ? vector_icons::kFileDownloadOffIcon
+             : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
        false,
-       &vector_icons::kFileDownloadOffChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled()
+             ? vector_icons::kFileDownloadOffIcon
+             : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
        false,
-       &vector_icons::kFileDownloadOffChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled()
+             ? vector_icons::kFileDownloadOffIcon
+             : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
        std::optional<DownloadCommands::Command>()},
       {no_retry_interrupt_reasons, false,
-       &vector_icons::kFileDownloadOffChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled()
+             ? vector_icons::kFileDownloadOffIcon
+             : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
        std::optional<DownloadCommands::Command>()},
       {retry_interrupt_reasons, false,
-       &vector_icons::kFileDownloadOffChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled()
+             ? vector_icons::kFileDownloadOffIcon
+             : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
        DownloadCommands::Command::RETRY},
       {retry_interrupt_reasons, true,
-       &vector_icons::kFileDownloadOffChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled()
+             ? vector_icons::kFileDownloadOffIcon
+             : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
        DownloadCommands::Command::RESUME},
   };
 

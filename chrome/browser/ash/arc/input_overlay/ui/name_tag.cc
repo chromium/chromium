@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -93,8 +94,10 @@ void NameTag::Init() {
       ash::TypographyToken::kCrosButton2, u"", cros_tokens::kCrosSysOnSurface);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorOutlineOldIcon, cros_tokens::kCrosSysError,
-          kErrorIconSize));
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kErrorIcon
+              : vector_icons::kErrorOutlineOldIcon,
+          cros_tokens::kCrosSysError, kErrorIconSize));
 
   if (for_editing_list_) {
     error_icon_ = AddChildView(std::move(error_icon));

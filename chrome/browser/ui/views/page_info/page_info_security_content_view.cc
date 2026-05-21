@@ -64,12 +64,15 @@ void PageInfoSecurityContentView::SetIdentityInfo(
         identity_info.safe_browsing_status ==
             PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE) {
       security_view_->SetIcon(ui::ImageModel::FromVectorIcon(
-          vector_icons::kDangerousOldIcon, ui::kColorAlertHighSeverity,
-          icon_size));
+          features::IsRoundedIconsEnabled() ? vector_icons::kDangerousFilledIcon
+                                            : vector_icons::kDangerousOldIcon,
+          ui::kColorAlertHighSeverity, icon_size));
     } else {
       security_view_->SetIcon(ui::ImageModel::FromVectorIcon(
-          vector_icons::kNotSecureWarningOldIcon, ui::kColorAlertHighSeverity,
-          icon_size));
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kWarningFilledIcon
+              : vector_icons::kNotSecureWarningOldIcon,
+          ui::kColorAlertHighSeverity, icon_size));
     }
     security_view_->SetSummary(security_description->summary, STYLE_RED);
   } else if (security_description->summary_style ==
@@ -78,8 +81,9 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                   PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN ||
               identity_info.safe_browsing_status ==
                   PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK)) {
-    security_view_->SetIcon(
-        PageInfoViewFactory::GetImageModel(vector_icons::kBusinessOldIcon));
+    security_view_->SetIcon(PageInfoViewFactory::GetImageModel(
+        features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon));
     security_view_->SetSummary(security_description->summary,
                                views::style::STYLE_BODY_3_MEDIUM);
   } else {
@@ -123,11 +127,18 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     const ui::ImageModel icon =
         base::FeatureList::IsEnabled(net::features::kVerifyQWACs)
             ? PageInfoViewFactory::GetImageModel(
-                  vector_icons::kStickyNote2OldIcon)
-            : (valid_identity ? PageInfoViewFactory::GetImageModel(
-                                    vector_icons::kCertificateOldIcon)
-                              : PageInfoViewFactory::GetImageModel(
-                                    vector_icons::kCertificateOffOldIcon));
+                  features::IsRoundedIconsEnabled()
+                      ? vector_icons::kStickyNote2Icon
+                      : vector_icons::kStickyNote2OldIcon)
+            : (valid_identity
+                   ? PageInfoViewFactory::GetImageModel(
+                         features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainVerificationIcon
+                             : vector_icons::kCertificateOldIcon)
+                   : PageInfoViewFactory::GetImageModel(
+                         features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainVerificationOffIcon
+                             : vector_icons::kCertificateOffOldIcon));
     const int title_id = (valid_identity && !base::FeatureList::IsEnabled(
                                                 net::features::kVerifyQWACs))
                              ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID

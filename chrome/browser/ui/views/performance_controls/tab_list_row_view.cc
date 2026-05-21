@@ -27,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -203,7 +204,9 @@ TabListRowView::TabListRowView(
   std::unique_ptr<views::ImageButton> close_button =
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindOnce(std::move(close_button_callback), this),
-          vector_icons::kCloseChromeRefreshOldIcon);
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kCloseIcon
+              : vector_icons::kCloseChromeRefreshOldIcon);
 
   // The close button should not be visible by default and should show up when
   // the user's mouse is over TabListRowView.

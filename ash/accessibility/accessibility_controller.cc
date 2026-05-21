@@ -99,6 +99,7 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -190,8 +191,8 @@ const FeatureData kFeatures[] = {
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGH_CONTRAST_MODE},
     {FeatureType::kLargeCursor, prefs::kAccessibilityLargeCursorEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_LARGE_CURSOR},
-    {FeatureType::kLiveCaption, ::prefs::kLiveCaptionEnabled,
-     &vector_icons::kLiveCaptionOnOldIcon, IDS_ASH_STATUS_TRAY_LIVE_CAPTION},
+    {FeatureType::kLiveCaption, ::prefs::kLiveCaptionEnabled, nullptr,
+     IDS_ASH_STATUS_TRAY_LIVE_CAPTION},
     {FeatureType::kMonoAudio, prefs::kAccessibilityMonoAudioEnabled, nullptr,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO},
     {FeatureType::kMouseKeys, prefs::kAccessibilityMouseKeysEnabled, nullptr, 0,
@@ -936,6 +937,11 @@ bool AccessibilityController::Feature::IsEnterpriseIconVisible() const {
 }
 
 const gfx::VectorIcon& AccessibilityController::Feature::icon() const {
+  if (type_ == FeatureType::kLiveCaption) {
+    return ::features::IsRoundedIconsEnabled()
+               ? vector_icons::kSubtitlesIcon
+               : vector_icons::kLiveCaptionOnOldIcon;
+  }
   DCHECK(icon_);
   if (icon_) {
     return *icon_;

@@ -25,6 +25,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -52,7 +53,9 @@ MerchantTrustChipButtonController::MerchantTrustChipButtonController(
       location_icon_view_(location_icon_view),
       service_(service) {
   // TODO(crbug.com/378854462): Revisit icons, strings and theme.
-  chip_button_->SetIcon(vector_icons::kStorefrontOldIcon);
+  chip_button_->SetIcon(features::IsRoundedIconsEnabled()
+                            ? vector_icons::kStorefrontIcon
+                            : vector_icons::kStorefrontOldIcon);
   chip_button_->SetText(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER));
   chip_button_->SetTheme(OmniboxChipTheme::kLowVisibility);

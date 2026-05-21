@@ -92,7 +92,9 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
   const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   favicon_view->SetImageSize({icon_size, icon_size});
   favicon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kGlobeOldIcon, ui::kColorIcon, gfx::kFaviconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
+                                        : vector_icons::kGlobeOldIcon,
+      ui::kColorIcon, gfx::kFaviconSize));
   controller->RequestFavicon(base::BindOnce(
       [](views::ImageView* favicon_view, const gfx::Image& favicon) {
         if (!favicon.IsEmpty()) {
@@ -167,15 +169,18 @@ std::unique_ptr<views::View> CreateManagePasswordsView(
   auto manage_passwords_button = std::make_unique<RichHoverButton>(
       std::move(open_password_manager_closure),
       /*main_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSettingsFilledIcon
+                                         : vector_icons::kSettingsOldIcon,
                                      ui::kColorIcon),
       /*title_text=*/
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
-                                            : vector_icons::kLaunchOldIcon,
+          features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+                                              : vector_icons::kLaunchOldIcon,
           ui::kColorIconSecondary,
           GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_passwords_button->SetID(

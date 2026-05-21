@@ -122,8 +122,9 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
         return features::IsRoundedIconsEnabled() ? views::kTabIcon
                                                  : views::kNewTabOldIcon;
       // The LAUNCH_NEW command is for an ARC app.
-      return features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
-                                               : views::kLaunchOldIcon;
+      return features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
+             : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+                                                 : views::kLaunchOldIcon;
     case ash::TOGGLE_PIN:
       return string_id == IDS_APP_LIST_CONTEXT_MENU_PIN
                  ? features::IsRoundedIconsEnabled() ? views::kKeepIcon
@@ -150,7 +151,9 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       // Deprecated.
       return gfx::VectorIcon::EmptyIcon();
     case ash::SETTINGS:
-      return vector_icons::kSettingsOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kSettingsFilledIcon
+                 : vector_icons::kSettingsOldIcon;
     case ash::USE_LAUNCH_TYPE_REGULAR:
     case ash::USE_LAUNCH_TYPE_WINDOW:
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:

@@ -89,6 +89,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -365,9 +366,9 @@ void ShowDisabledNotification(CaptureAllowance allowance) {
       GetDisabledNotificationMessageId(allowance, /*for_title=*/false),
       /*optional_fields=*/{}, /*delegate=*/nullptr,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
-      allowance == CaptureAllowance::kDisallowedByHdcp
-          ? kCaptureModeIcon
-          : vector_icons::kBusinessOldIcon);
+      allowance == CaptureAllowance::kDisallowedByHdcp ? kCaptureModeIcon
+      : ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                            : vector_icons::kBusinessOldIcon);
 }
 
 // Shows a notification informing the user that video recording was stopped due
@@ -2180,7 +2181,9 @@ void CaptureModeController::AddCopyTextButton(std::string_view detected_text) {
                      weak_ptr_factory_.GetWeakPtr(),
                      base::UTF8ToUTF16(detected_text)),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL),
-      &vector_icons::kContentCopyOldIcon,
+      &(::features::IsRoundedIconsEnabled()
+            ? vector_icons::kContentCopyIcon
+            : vector_icons::kContentCopyOldIcon),
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
 }

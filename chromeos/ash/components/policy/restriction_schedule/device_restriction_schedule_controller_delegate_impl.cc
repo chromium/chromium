@@ -16,6 +16,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -65,7 +66,8 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
           kUpcomingLogoutNotificationId, title, body,
           std::u16string() /* display_source */, GURL() /* origin_url */,
           notifier_id, data, nullptr /* delegate */,
-          vector_icons::kBusinessOldIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                            : vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING));
 }
 
@@ -95,7 +97,8 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
           message_center::NOTIFICATION_TYPE_SIMPLE, kPostLogoutNotificationId,
           title, body, std::u16string() /* display_source */,
           GURL() /* origin_url */, notifier_id, data, nullptr /* delegate */,
-          vector_icons::kBusinessOldIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                            : vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING));
 }
 

@@ -28,6 +28,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 using State = record_replay::RecordReplayManager::State;
@@ -151,29 +152,39 @@ void RecordReplayPageActionController::OnRetrieveRecordingsComplete(
   }
 
   std::u16string tooltip_text;
-  const gfx::VectorIcon* icon = &vector_icons::kScreenRecordOldIcon;
+  const gfx::VectorIcon* icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kScreenRecordIcon
+                                          : vector_icons::kScreenRecordOldIcon);
   SkColor color = {};
 
   switch (client->GetManager().state()) {
     case State::kIdle:
       if (!recent_recordings_.empty()) {
         tooltip_text = u"Replay (UT)";
-        icon = &vector_icons::kPlayArrowOldIcon;
+        icon = &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kPlayArrowFilledIcon
+                     : vector_icons::kPlayArrowOldIcon);
         color = gfx::kGoogleGreen600;
       } else {
         tooltip_text = u"Record (UT)";
-        icon = &vector_icons::kScreenRecordOldIcon;
+        icon = &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kScreenRecordIcon
+                     : vector_icons::kScreenRecordOldIcon);
         color = gfx::kGoogleRed600;
       }
       break;
     case State::kRecording:
       tooltip_text = u"Stop recording (UT)";
-      icon = &vector_icons::kStopCircleOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kStopCircleIcon
+                   : vector_icons::kStopCircleOldIcon);
       color = gfx::kGoogleRed600;
       break;
     case State::kReplaying:
       tooltip_text = u"Stop replay (UT)";
-      icon = &vector_icons::kStopCircleOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kStopCircleIcon
+                   : vector_icons::kStopCircleOldIcon);
       color = gfx::kGoogleGreen600;
       break;
   }

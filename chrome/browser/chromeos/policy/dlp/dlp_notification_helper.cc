@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -63,7 +64,9 @@ void ShowDlpNotification(const std::string& id,
           base::BindRepeating(&OnNotificationClicked, id)));
   // Set critical warning color.
   notification.set_accent_color_id(ui::kColorSysError);
-  notification.set_vector_small_image(vector_icons::kBusinessOldIcon);
+  notification.set_vector_small_image(features::IsRoundedIconsEnabled()
+                                          ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon);
   notification.set_renotify(true);
   NotificationDisplayServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())

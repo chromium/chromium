@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
@@ -65,7 +66,10 @@ class DismissButton : public views::ImageButton {
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_CLOSE));
     views::SetImageFromVectorIconWithColor(
-        this, vector_icons::kCloseRoundedOldIcon,
+        this,
+        ::features::IsRoundedIconsEnabled()
+            ? vector_icons::kCloseSmallIcon
+            : vector_icons::kCloseRoundedOldIcon,
         {foreground_color_id, foreground_disabled_color_id},
         kDismissButtonIconSize);
   }

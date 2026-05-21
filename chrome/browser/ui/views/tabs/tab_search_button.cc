@@ -31,7 +31,9 @@ TabSearchButton::TabSearchButton(
     Edge animated_flat_edge)
     : TabStripControlButton(browser_window_interface,
                             PressedCallback(),
-                            vector_icons::kExpandMoreOldIcon,
+                            features::IsRoundedIconsEnabled()
+                                ? vector_icons::kKeyboardArrowDownIcon
+                                : vector_icons::kExpandMoreOldIcon,
                             fixed_flat_edge,
                             animated_flat_edge) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);

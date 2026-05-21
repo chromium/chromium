@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_context.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace policy::local_user_files {
@@ -59,7 +60,8 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
       message_center::NotifierId(), optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           callback),
-      vector_icons::kBusinessOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -39,7 +40,9 @@ class MockFeaturePodController : public FeaturePodControllerBase {
         /*togglable=*/true,
         compact ? FeatureTile::TileType::kCompact
                 : FeatureTile::TileType::kPrimary);
-    tile->SetVectorIcon(vector_icons::kDogfoodOldIcon);
+    tile->SetVectorIcon(::features::IsRoundedIconsEnabled()
+                            ? vector_icons::kPetsIcon
+                            : vector_icons::kDogfoodOldIcon);
     return tile;
   }
 

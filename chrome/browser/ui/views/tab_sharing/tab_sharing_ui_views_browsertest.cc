@@ -48,6 +48,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_tracker.h"
@@ -345,11 +346,13 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
               GetCscIndicatorButtonLabel(browser, i),
               l10n_util::GetStringUTF16(
                   IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON));
-          EXPECT_EQ(
-              GetCscIndicatorButtonImage(browser, i),
-              ui::ImageModel::FromVectorIcon(
-                  vector_icons::kTouchpadMouseOldIcon, ui::kColorSysPrimary,
-                  /*icon_size=*/16));
+          EXPECT_EQ(GetCscIndicatorButtonImage(browser, i),
+                    ui::ImageModel::FromVectorIcon(
+                        features::IsRoundedIconsEnabled()
+                            ? vector_icons::kTouchpadMouseIcon
+                            : vector_icons::kTouchpadMouseOldIcon,
+                        ui::kColorSysPrimary,
+                        /*icon_size=*/16));
         }
       } else if (i == captured_tab) {
         // Captured-tab's infobar.

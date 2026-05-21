@@ -12,6 +12,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -77,8 +78,9 @@ void PolicyDialogBase::SetupUpperPanel() {
   views::ImageView* managed_icon =
       upper_panel_->AddChildView(std::make_unique<views::ImageView>());
   managed_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessOldIcon, cros_tokens::kIconColorPrimary,
-      kManagedIconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      cros_tokens::kIconColorPrimary, kManagedIconSize));
 }
 
 views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {

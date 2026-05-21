@@ -489,8 +489,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
   const int avatar_icon_size =
       GetLayoutConstant(LayoutConstant::kAppMenuProfileRowAvatarIconSize);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kAccountCircleIcon
-                                        : kAccountCircleChromeRefreshOldIcon,
+      features::IsRoundedIconsEnabled()   ? kAccountCircleIcon
+      : features::IsRoundedIconsEnabled() ? vector_icons::kAccountCircleIcon
+                                          : kAccountCircleChromeRefreshOldIcon,
       ui::kColorMenuIcon, avatar_icon_size);
   if (profile->IsIncognitoProfile()) {
     avatar_image_model_ = ui::ImageModel::FromVectorIcon(
@@ -661,11 +662,15 @@ bool ProfileSubMenuModel::BuildSyncSection() {
           if (identity_manager->HasPrimaryAccount(
                   signin::ConsentLevel::kSync)) {
             button_string_id = IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE;
-            icon = &vector_icons::kSyncOffChromeRefreshOldIcon;
+            icon = &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSyncDisabledIcon
+                         : vector_icons::kSyncOffChromeRefreshOldIcon);
           } else {
             // Merge this case with the others below once ConsentLevel::kSync is
             // gone.
-            icon = &vector_icons::kAccountCircleOffChromeRefreshOldIcon;
+            icon = &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kAccountCircleOffIcon
+                         : vector_icons::kAccountCircleOffChromeRefreshOldIcon);
           }
           break;
         case syncer::SyncService::UserActionableError::
@@ -677,22 +682,30 @@ bool ProfileSubMenuModel::BuildSyncSection() {
         case syncer::SyncService::UserActionableError::
             kNeedsTrustedVaultKeyForEverything:
           command_id = IDC_SHOW_SIGNIN_WHEN_PAUSED;
-          icon = &vector_icons::kAccountCircleOffChromeRefreshOldIcon;
+          icon = &(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kAccountCircleOffIcon
+                       : vector_icons::kAccountCircleOffChromeRefreshOldIcon);
           break;
         case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
           command_id = IDC_UPGRADE_DIALOG;
-          icon = &vector_icons::kErrorOutlineOldIcon;
+          icon = &(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kErrorIcon
+                       : vector_icons::kErrorOutlineOldIcon);
           break;
         case syncer::SyncService::UserActionableError::kNeedsPassphrase:
           command_id = IDC_SHOW_SYNC_PASSPHRASE_DIALOG;
-          icon = &vector_icons::kErrorOutlineOldIcon;
+          icon = &(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kErrorIcon
+                       : vector_icons::kErrorOutlineOldIcon);
           break;
         case syncer::SyncService::UserActionableError::
             kNeedsSettingsConfirmation:
         case syncer::SyncService::UserActionableError::kUnrecoverableError:
           // Only shown for "Sync-the-feature".
           command_id = IDC_SHOW_SYNC_SETTINGS;
-          icon = &vector_icons::kErrorOutlineOldIcon;
+          icon = &(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kErrorIcon
+                       : vector_icons::kErrorOutlineOldIcon);
           break;
         case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
           // For this specific error (as opposed to all others), there is no
@@ -709,22 +722,26 @@ bool ProfileSubMenuModel::BuildSyncSection() {
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_SYNC_SETTINGS, IDS_PROFILE_ROW_SYNC_IS_ON,
-        features::IsRoundedIconsEnabled()
-            ? kSyncIcon
+        features::IsRoundedIconsEnabled() ? kSyncIcon
+        : features::IsRoundedIconsEnabled()
+            ? vector_icons::kSyncIcon
             : vector_icons::kSyncChromeRefreshOldIcon);
   } else {
     if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         AddItemWithStringIdAndVectorIcon(
             this, IDC_SHOW_SIGNIN, IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON,
-            features::IsRoundedIconsEnabled()
-                ? kAccountCircleFilledIcon
+            features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+            : features::IsRoundedIconsEnabled()
+                ? vector_icons::kAccountCircleIcon
                 : vector_icons::kAccountCircleOldIcon);
       }
     } else {
       AddItemWithStringIdAndVectorIcon(
           this, IDC_TURN_ON_SYNC, IDS_PROFILE_ROW_TURN_ON_SYNC,
-          vector_icons::kSyncOffChromeRefreshOldIcon);
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kSyncDisabledIcon
+              : vector_icons::kSyncOffChromeRefreshOldIcon);
     }
   }
   return true;
@@ -742,8 +759,9 @@ void ProfileSubMenuModel::BuildCustomizeProfileRow(Profile* profile) {
   if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_CUSTOMIZE_CHROME, IDS_CUSTOMIZE_CHROME,
-        features::IsRoundedIconsEnabled()
-            ? kEditIcon
+        features::IsRoundedIconsEnabled() ? kEditIcon
+        : features::IsRoundedIconsEnabled()
+            ? vector_icons::kEditIcon
             : vector_icons::kEditChromeRefreshOldIcon);
   }
 }
@@ -754,7 +772,7 @@ void ProfileSubMenuModel::BuildCloseProfileRow(Profile* profile) {
                                                    CountBrowsersFor(profile)),
                   ui::ImageModel::FromVectorIcon(
                       features::IsRoundedIconsEnabled()
-                          ? kCloseIcon
+                          ? vector_icons::kCloseIcon
                           : vector_icons::kCloseChromeRefreshOldIcon,
                       ui::kColorMenuIcon, kDefaultIconSize));
 }
@@ -792,7 +810,9 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_PASSWORD_MANAGER,
                                    IDS_VIEW_PASSWORDS,
-                                   vector_icons::kPasswordManagerOldIcon);
+                                   features::IsRoundedIconsEnabled()
+                                       ? vector_icons::kPasswordManagerIcon
+                                       : vector_icons::kPasswordManagerOldIcon);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
                          AppMenuModel::kPasswordManagerMenuItem);
 
@@ -809,22 +829,28 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
           autofill::features::kYourSavedInfoSettingsPage)) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-        vector_icons::kLocationOnChromeRefreshOldIcon);
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kLocationOnIcon
+            : vector_icons::kLocationOnChromeRefreshOldIcon);
   } else {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_CONTACT_INFO,
         IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
-        vector_icons::kLocationOnChromeRefreshOldIcon);
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kLocationOnIcon
+            : vector_icons::kLocationOnChromeRefreshOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO).value(),
                            AppMenuModel::kContactInfoMenuItem);
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_IDENTITY_DOCS,
-                                     IDS_IDENTITY_DOCS_SUBMENU_OPTION,
-                                     vector_icons::kIdCardOldIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_SHOW_IDENTITY_DOCS, IDS_IDENTITY_DOCS_SUBMENU_OPTION,
+        features::IsRoundedIconsEnabled() ? vector_icons::kIdCardIcon
+                                          : vector_icons::kIdCardOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS).value(),
                            AppMenuModel::kIdentityDocsMenuItem);
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRAVEL,
-                                     IDS_TRAVEL_SUBMENU_OPTION,
-                                     vector_icons::kTripOldIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_SHOW_TRAVEL, IDS_TRAVEL_SUBMENU_OPTION,
+        features::IsRoundedIconsEnabled() ? vector_icons::kTripIcon
+                                          : vector_icons::kTripOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_TRAVEL).value(),
                            AppMenuModel::kTravelMenuItem);
   }
@@ -976,7 +1002,9 @@ void HelpMenuModel::Build(Browser* browser) {
     int help_string_id = IDS_HELP_PAGE;
 #endif
     AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
-                                     vector_icons::kInfoRefreshOldIcon);
+                                     features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kInfoIcon
+                                         : vector_icons::kInfoRefreshOldIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (whats_new::IsEnabled()) {
       AddItemWithStringIdAndVectorIcon(
@@ -1003,9 +1031,10 @@ void HelpMenuModel::Build(Browser* browser) {
           features::IsRoundedIconsEnabled() ? kFeedbackIcon : kReportOldIcon);
 
       if (feedback::ReportUnsafeSiteDialog::IsEnabled(*browser->profile())) {
-        AddItemWithStringIdAndVectorIcon(this, IDC_REPORT_UNSAFE_SITE,
-                                         IDS_REPORT_UNSAFE_SITE,
-                                         vector_icons::kWarningOldIcon);
+        AddItemWithStringIdAndVectorIcon(
+            this, IDC_REPORT_UNSAFE_SITE, IDS_REPORT_UNSAFE_SITE,
+            features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
+                                              : vector_icons::kWarningOldIcon);
         SetElementIdentifierAt(
             GetIndexOfCommandId(IDC_REPORT_UNSAFE_SITE).value(),
             HelpMenuModel::kReportUnsafeSiteMenuItem);
@@ -1091,11 +1120,12 @@ void ToolsMenuModel::Build(Browser* browser) {
   if (CustomizeChromePageHandler::IsSupported(
           NtpCustomBackgroundServiceFactory::GetForProfile(browser->profile()),
           browser->profile())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
-                                     IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
-                                     features::IsRoundedIconsEnabled()
-                                         ? kEditIcon
-                                         : kEditChromeRefreshOldIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+        IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+        features::IsRoundedIconsEnabled()   ? kEditIcon
+        : features::IsRoundedIconsEnabled() ? vector_icons::kEditIcon
+                                            : kEditChromeRefreshOldIcon);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1146,7 +1176,9 @@ void ToolsMenuModel::Build(Browser* browser) {
         AddSeparator(ui::NORMAL_SEPARATOR);
         AddItemWithStringIdAndVectorIcon(
             this, IDC_SHOW_CHROME_LABS, IDS_CHROMELABS,
-            features::IsRoundedIconsEnabled() ? kScienceIcon : kScienceOldIcon);
+            features::IsRoundedIconsEnabled()   ? kScienceIcon
+            : features::IsRoundedIconsEnabled() ? vector_icons::kScienceIcon
+                                                : kScienceOldIcon);
         SetElementIdentifierAt(
             GetIndexOfCommandId(IDC_SHOW_CHROME_LABS).value(),
             kChromeLabsMenuItem);
@@ -1175,7 +1207,9 @@ void ExtensionsMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndVectorIcon(
       this, IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
       IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM,
-      vector_icons::kExtensionChromeRefreshOldIcon);
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kChromeExtensionIcon
+          : vector_icons::kExtensionChromeRefreshOldIcon);
   SetElementIdentifierAt(
       GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
       kManageExtensionsMenuItem);
@@ -2066,7 +2100,10 @@ void AppMenuModel::Build() {
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
     AddSubMenuWithStringIdAndVectorIcon(
         this, IDC_PASSWORDS_AND_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
-        sub_menus_.back().get(), vector_icons::kPasswordManagerOldIcon);
+        sub_menus_.back().get(),
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kPasswordManagerIcon
+            : vector_icons::kPasswordManagerOldIcon);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value(),
         kPasswordAndAutofillMenuItem);
@@ -2080,7 +2117,9 @@ void AppMenuModel::Build() {
     sub_menus_.push_back(std::move(recent_tabs_sub_menu));
     AddSubMenuWithStringIdAndVectorIcon(
         this, IDC_RECENT_TABS_MENU, IDS_HISTORY_MENU, sub_menus_.back().get(),
-        features::IsRoundedIconsEnabled() ? kHistoryIcon : kHistoryOldIcon);
+        features::IsRoundedIconsEnabled()   ? kHistoryIcon
+        : features::IsRoundedIconsEnabled() ? vector_icons::kHistoryIcon
+                                            : kHistoryOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_RECENT_TABS_MENU).value(),
                            kHistoryMenuItem);
   }
@@ -2121,14 +2160,19 @@ void AppMenuModel::Build() {
       !extensions::ui_util::HasManageableExtensions(browser_->profile())) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_FIND_EXTENSIONS, IDS_FIND_EXTENSIONS,
-        vector_icons::kExtensionChromeRefreshOldIcon);
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kChromeExtensionIcon
+            : vector_icons::kExtensionChromeRefreshOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_FIND_EXTENSIONS).value(),
                            ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
   } else {
     sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
     AddSubMenuWithStringIdAndVectorIcon(
         this, IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
-        sub_menus_.back().get(), vector_icons::kExtensionChromeRefreshOldIcon);
+        sub_menus_.back().get(),
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kChromeExtensionIcon
+            : vector_icons::kExtensionChromeRefreshOldIcon);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
                            kExtensionsMenuItem);
   }
@@ -2165,7 +2209,9 @@ void AppMenuModel::Build() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-        vector_icons::kSearchChromeRefreshOldIcon;
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kSearchIcon
+            : vector_icons::kSearchChromeRefreshOldIcon;
 #endif
     AddItemWithStringIdAndVectorIcon(
         this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
@@ -2235,7 +2281,9 @@ void AppMenuModel::Build() {
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #else
   AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
-                                   vector_icons::kInfoRefreshOldIcon);
+                                   features::IsRoundedIconsEnabled()
+                                       ? vector_icons::kInfoIcon
+                                       : vector_icons::kInfoRefreshOldIcon);
 #endif
 #endif
 

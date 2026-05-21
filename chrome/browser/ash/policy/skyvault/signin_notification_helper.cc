@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -116,7 +117,9 @@ void ShowSignInNotification(
       rich_notification_data.should_make_spoken_feedback_for_popup_updates =
           false;
       rich_notification_data.vector_small_image =
-          &vector_icons::kNotificationDownloadOldIcon;
+          &(features::IsRoundedIconsEnabled()
+                ? vector_icons::kDownload2FilledIcon
+                : vector_icons::kNotificationDownloadOldIcon);
       // TODO(b/356326503): Fix the strings.
       auto notification_id = base::StrCat(
           {kDownloadSignInNotificationPrefix, base::NumberToString(id)});
@@ -252,7 +255,8 @@ void ShowSignInNotification(
           base::MakeRefCounted<SignInNotificationDelegate>(
               profile, kMigrationSignInNotification,
               std::move(signin_callback)),
-          vector_icons::kBusinessOldIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                            : vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
       notification->set_fullscreen_visibility(

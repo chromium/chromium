@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
@@ -65,7 +66,8 @@ const gfx::VectorIcon& GetIconForThreadType(
       NOTREACHED();
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kChatSparkOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kChatSparkIcon
+                                           : vector_icons::kChatSparkOldIcon;
 }
 
 bool IsFirstFocusableViewInPanel(views::View* view) {

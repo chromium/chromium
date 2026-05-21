@@ -19,6 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
@@ -70,7 +71,10 @@ TEST_F(ToastControllerUnitTest, ShowToast) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
@@ -90,7 +94,10 @@ TEST_F(ToastControllerUnitTest, ShowToastWithBodyStringOverride) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon).Build());
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon)
+          .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -113,7 +120,10 @@ TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
@@ -138,7 +148,10 @@ TEST_F(ToastControllerUnitTest, ToastAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -156,7 +169,10 @@ TEST_F(ToastControllerUnitTest, ToastCloseCallbackTriggered) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -181,7 +197,10 @@ TEST_F(ToastControllerUnitTest, ToastWithActionButtonAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -199,11 +218,17 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
   registry->RegisterToast(
       ToastId::kImageCopied,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon, kTestStringResId)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
           .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);

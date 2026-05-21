@@ -253,8 +253,10 @@ std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
 // the picker choices may have been restricted.
 std::unique_ptr<views::View> CreatePolicyRestrictedView() {
   auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
-                                                ui::kColorIcon, 18));
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      ui::kColorIcon, 18));
 
   auto policy_label = std::make_unique<views::Label>();
   policy_label->SetMultiLine(true);

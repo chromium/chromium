@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -164,7 +165,9 @@ void CastDialogNoSinksView::SetHelpIcon() {
       AddChildViewAt(std::make_unique<HoverButtonHandCursor>(
                          base::BindRepeating(navigate, profile_),
                          ui::ImageModel::FromVectorIcon(
-                             vector_icons::kHelpOutlineOldIcon,
+                             features::IsRoundedIconsEnabled()
+                                 ? vector_icons::kHelpIcon
+                                 : vector_icons::kHelpOutlineOldIcon,
                              kColorCastDialogHelpIcon, kPrimaryIconSize)),
                      0);
   icon->SetInstallFocusRingOnFocus(true);

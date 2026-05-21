@@ -14,6 +14,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace gfx {
@@ -79,14 +80,19 @@ ui::ImageModel GetIconForDescriptor(const ItemDescriptor& descriptor) {
   switch (descriptor.display_format) {
     case DisplayFormat::kText:
       // TODO(http://b/275629173): Consider a new display format for URLs.
-      icon = IsUrl(descriptor.display_text) ? &vector_icons::kLinkOldIcon
-                                            : &kTextIcon;
+      icon = IsUrl(descriptor.display_text)
+                 ? &(::features::IsRoundedIconsEnabled()
+                         ? vector_icons::kLinkIcon
+                         : vector_icons::kLinkOldIcon)
+                 : &kTextIcon;
       break;
     case DisplayFormat::kPng:
       icon = &kFiletypeImageIcon;
       break;
     case DisplayFormat::kHtml:
-      icon = &vector_icons::kCodeOldIcon;
+      icon =
+          &(::features::IsRoundedIconsEnabled() ? vector_icons::kCodeIcon
+                                                : vector_icons::kCodeOldIcon);
       break;
     case DisplayFormat::kFile: {
       // If `display_text` is the name of a single file, use the icon
@@ -95,7 +101,9 @@ ui::ImageModel GetIconForDescriptor(const ItemDescriptor& descriptor) {
       icon = descriptor.file_count == 1
                  ? &chromeos::GetIconForPath(base::FilePath(
                        base::UTF16ToUTF8(descriptor.display_text)))
-                 : &vector_icons::kContentCopyOldIcon;
+                 : &(::features::IsRoundedIconsEnabled()
+                         ? vector_icons::kContentCopyIcon
+                         : vector_icons::kContentCopyOldIcon);
       break;
     }
     case DisplayFormat::kUnknown:

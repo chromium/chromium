@@ -30,6 +30,7 @@ component("cpp") {
     "//build:branding_buildflags",
     "//chromeos/ui/vector_icons",
     "//components/vector_icons",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx/range",
   ]

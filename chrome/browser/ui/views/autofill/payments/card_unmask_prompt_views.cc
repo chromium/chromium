@@ -391,8 +391,12 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   temporary_error->SetVisible(false);
   temporary_error->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorOldIcon, ui::kColorAlertHighSeverity,
-          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorOldIcon))));
+          ::features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon,
+          ui::kColorAlertHighSeverity,
+          gfx::GetDefaultSizeOfVectorIcon(::features::IsRoundedIconsEnabled()
+                                              ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon))));
 
   auto error_label = std::make_unique<views::Label>(
       std::u16string(), ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,

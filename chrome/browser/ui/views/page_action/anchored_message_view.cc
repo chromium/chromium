@@ -215,7 +215,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled()
-              ? kCloseIcon
+              ? vector_icons::kCloseIcon
               : vector_icons::kCloseChromeRefreshOldIcon,
           ui::kColorIcon, kAnchoredMessageIconSize));
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
@@ -316,7 +316,7 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
             features::IsRoundedIconsEnabled()
-                ? kCloseIcon
+                ? vector_icons::kCloseIcon
                 : vector_icons::kCloseChromeRefreshOldIcon,
             color_provider->GetColor(ui::kColorSysOnSurfaceVariant),
             kAnchoredMessageIconSize));

@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/menus/simple_menu_model.h"
@@ -192,7 +193,9 @@ void InsertFooterContentV2(
           .AddChildren(
               views::Builder<views::ImageView>().SetImage(
                   ui::ImageModel::FromVectorIcon(
-                      vector_icons::kHelpOutlineOldIcon,
+                      ::features::IsRoundedIconsEnabled()
+                          ? vector_icons::kHelpIcon
+                          : vector_icons::kHelpOutlineOldIcon,
                       cros_tokens::kCrosSysOnSurfaceVariant,
                       ClipboardHistoryViews::kFooterContentV2IconSize)),
               views::Builder<views::StyledLabel>()

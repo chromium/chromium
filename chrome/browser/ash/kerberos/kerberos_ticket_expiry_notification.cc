@@ -16,6 +16,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -80,7 +81,9 @@ void Show(Profile* profile,
   const std::u16string kEmptyDisplaySource;
 
   // Office building.
-  const gfx::VectorIcon& kIcon = vector_icons::kBusinessOldIcon;
+  const gfx::VectorIcon& kIcon = ::features::IsRoundedIconsEnabled()
+                                     ? vector_icons::kDomainIcon
+                                     : vector_icons::kBusinessOldIcon;
 
   // Show button with proper text.
   RichNotificationData notification_data;

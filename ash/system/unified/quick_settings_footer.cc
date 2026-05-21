@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
@@ -352,7 +353,10 @@ QuickSettingsFooter::QuickSettingsFooter(
               controller->HandleSettingsAction();
             },
             base::Unretained(controller)),
-        IconButton::Type::kMedium, &vector_icons::kSettingsOutlineOldIcon,
+        IconButton::Type::kMedium,
+        &(::features::IsRoundedIconsEnabled()
+              ? vector_icons::kSettingsIcon
+              : vector_icons::kSettingsOutlineOldIcon),
         IDS_ASH_STATUS_TRAY_SETTINGS));
     settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
     settings_button_->SetProperty(views::kElementIdentifierKey,

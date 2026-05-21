@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -22,7 +23,9 @@ const gfx::VectorIcon& GetIconForPresetQueryCategory(
     PresetQueryCategory category) {
   switch (category) {
     case PresetQueryCategory::kUnknown:
-      return vector_icons::kKeyboardOldIcon;
+      return ::features::IsRoundedIconsEnabled()
+                 ? vector_icons::kKeyboardIcon
+                 : vector_icons::kKeyboardOldIcon;
     case PresetQueryCategory::kProofread:
       return kEditorMenuProofreadIcon;
     case PresetQueryCategory::kShorten:
@@ -39,7 +42,9 @@ const gfx::VectorIcon& GetIconForPresetQueryCategory(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return kLobsterIcon;
 #else
-      return vector_icons::kKeyboardOldIcon;
+      return ::features::IsRoundedIconsEnabled()
+                 ? vector_icons::kKeyboardIcon
+                 : vector_icons::kKeyboardOldIcon;
 #endif
   }
 }

@@ -43,6 +43,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
@@ -274,7 +275,9 @@ class SettingsOverriddenDialogInteractiveUiTest
     // These icons are arbitrary. The goal is to ensure icons are fetched, vs.
     // falling back to generated placeholder icons.
     constexpr int kFaviconSize = 32;
-    gfx::Image icon(gfx::CreateVectorIcon(vector_icons::kBusinessOldIcon,
+    gfx::Image icon(gfx::CreateVectorIcon(features::IsRoundedIconsEnabled()
+                                              ? vector_icons::kDomainIcon
+                                              : vector_icons::kBusinessOldIcon,
                                           kFaviconSize, SK_ColorRED));
     gfx::Image google_icon(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
                                                  kFaviconSize, SK_ColorBLUE));

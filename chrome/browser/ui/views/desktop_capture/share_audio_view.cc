@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -26,7 +27,8 @@ ShareAudioView::ShareAudioView(
   views::ImageView* audio_icon_view =
       AddChildView(std::make_unique<views::ImageView>());
   audio_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kVolumeUpOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
+                                        : vector_icons::kVolumeUpOldIcon,
       audio_offered ? ui::kColorIcon : ui::kColorIconDisabled,
       GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
 

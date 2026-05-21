@@ -20,6 +20,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -300,7 +301,8 @@ void UsbPeripheralNotificationController::OnUsbDeviceOrEndpointLimit() {
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               message_center::HandleNotificationClickDelegate::
                   ButtonClickCallback(base::DoNothing())),
-          vector_icons::kUsbOldIcon,
+          ::features::IsRoundedIconsEnabled() ? vector_icons::kUsbIcon
+                                              : vector_icons::kUsbOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center_->AddNotification(std::move(notification));

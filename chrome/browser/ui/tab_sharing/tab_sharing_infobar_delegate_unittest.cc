@@ -18,12 +18,15 @@
 #include "media/capture/capture_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
 
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 using ::content::GlobalRenderFrameHostId;
+using ::vector_icons::kScreenShareFilledIcon;
+using ::vector_icons::kScreenShareIcon;
 using ::vector_icons::kScreenShareOldIcon;
 using ::vector_icons::kScreenShareOldOldIcon;
 
@@ -145,7 +148,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
                       .can_share_instead = false,
                       .tab_index = 1});
 
-  EXPECT_STREQ(delegate->GetVectorIcon().name, kScreenShareOldIcon.name);
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               features::IsRoundedIconsEnabled()
+                   ? vector_icons::kScreenShareIcon.name
+                   : kScreenShareOldIcon.name);
 
   const int expected_buttons =
       TabSharingInfoBarDelegate::kStop |
@@ -179,7 +185,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
                       .can_share_instead = false,
                       .tab_index = 0});
 
-  EXPECT_STREQ(delegate->GetVectorIcon().name, kScreenShareOldIcon.name);
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               features::IsRoundedIconsEnabled()
+                   ? vector_icons::kScreenShareIcon.name
+                   : kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
@@ -195,7 +204,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
                       .capturer_name = kAppName,
                       .role = TabRole::kOtherTab,
                       .can_share_instead = true});
-  EXPECT_STREQ(delegate->GetVectorIcon().name, kScreenShareOldIcon.name);
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               features::IsRoundedIconsEnabled()
+                   ? vector_icons::kScreenShareIcon.name
+                   : kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::kStop |
                 TabSharingInfoBarDelegate::kShareThisTabInstead);
@@ -250,7 +262,10 @@ TEST_P(TabSharingInfoBarDelegateTest,
                       .can_share_instead = true,
                       .tab_index = 0});
 
-  EXPECT_STREQ(delegate->GetVectorIcon().name, kScreenShareOldIcon.name);
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               features::IsRoundedIconsEnabled()
+                   ? vector_icons::kScreenShareIcon.name
+                   : kScreenShareOldIcon.name);
 
   // Correct number of buttons.
   EXPECT_EQ(delegate->GetButtons(),
@@ -315,7 +330,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotCastTab) {
       .can_share_instead = true,
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
   TabSharingInfoBarDelegate* const delegate = CreateDelegate(preferences);
-  EXPECT_STREQ(delegate->GetVectorIcon().name, kScreenShareOldIcon.name);
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               features::IsRoundedIconsEnabled()
+                   ? vector_icons::kScreenShareIcon.name
+                   : kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::kStop |
                 TabSharingInfoBarDelegate::kShareThisTabInstead);
@@ -338,7 +356,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCastTab) {
       .can_share_instead = false,
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
   TabSharingInfoBarDelegate* const delegate = CreateDelegate(preferences);
-  EXPECT_STREQ(delegate->GetVectorIcon().name, kScreenShareOldIcon.name);
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               features::IsRoundedIconsEnabled()
+                   ? vector_icons::kScreenShareIcon.name
+                   : kScreenShareOldIcon.name);
   EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));

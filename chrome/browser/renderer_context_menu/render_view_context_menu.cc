@@ -432,7 +432,9 @@ ui::ImageModel GetLensContextMenuIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       vector_icons::kGoogleLensMonochromeLogoIcon
 #else
-      vector_icons::kSearchChromeRefreshOldIcon
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kSearchIcon
+          : vector_icons::kSearchChromeRefreshOldIcon
 #endif
   );
 }
@@ -3452,7 +3454,10 @@ ui::ImageModel RenderViewContextMenu::GetIconForCommandId(
       base::FeatureList::IsEnabled(media::kContextMenu2026)) {
     return ui::ImageModel::FromVectorIcon(
         IsCommandIdChecked(IDC_CONTENT_CONTEXT_PICTUREINPICTURE)
-            ? vector_icons::kPipExitOldIcon
+            ? features::IsRoundedIconsEnabled() ? vector_icons::kPipExitIcon
+                                                : vector_icons::kPipExitOldIcon
+        : features::IsRoundedIconsEnabled()
+            ? vector_icons::kPictureInPictureIcon
             : vector_icons::kPictureInPictureOldIcon,
         ui::kColorMenuIcon, kTabMenuIconSize);
   }
@@ -4410,9 +4415,10 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
     menu_model_.AddSubMenuWithStringIdAndIcon(
         IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
         send_tab_to_self_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kDevicesIcon
-                                           : kDevicesOldIcon));
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled()   ? kDevicesIcon
+            : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                                : kDevicesOldIcon));
 #endif
     return;
   }
@@ -4425,7 +4431,9 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : kDevicesOldIcon));
 #endif
 }
 

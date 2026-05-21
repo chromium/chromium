@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -219,8 +220,12 @@ ConversationNotificationView::CreateRightControlsContainer() {
       std::make_unique<message_center::NotificationControlButtonsView>(this);
   view->SetID(ViewId::kControlButtonsView);
   view->SetBetweenButtonSpacing(kNotificationControlButtonsHorizontalSpacing);
-  view->SetCloseButtonIcon(vector_icons::kCloseChromeRefreshOldIcon);
-  view->SetSettingsButtonIcon(vector_icons::kSettingsOutlineOldIcon);
+  view->SetCloseButtonIcon(::features::IsRoundedIconsEnabled()
+                               ? vector_icons::kCloseIcon
+                               : vector_icons::kCloseChromeRefreshOldIcon);
+  view->SetSettingsButtonIcon(::features::IsRoundedIconsEnabled()
+                                  ? vector_icons::kSettingsIcon
+                                  : vector_icons::kSettingsOutlineOldIcon);
   view->SetButtonIconColors(cros_tokens::kIconColorPrimary);
   view->SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());

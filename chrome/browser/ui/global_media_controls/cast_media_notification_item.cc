@@ -31,6 +31,7 @@
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
@@ -181,7 +182,9 @@ void CastMediaNotificationItem::SetView(
     media_message_center::MediaNotificationView* view) {
   view_ = view;
   if (view_) {
-    view_->UpdateWithVectorIcon(&vector_icons::kMediaRouterIdleOldIcon);
+    view_->UpdateWithVectorIcon(&(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kCastIcon
+                                      : vector_icons::kMediaRouterIdleOldIcon));
   }
 
   UpdateView();

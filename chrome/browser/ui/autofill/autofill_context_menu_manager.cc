@@ -55,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -82,10 +83,14 @@ constexpr char kFeedbackPlaceholder[] =
 constexpr int kContextMenuIconSize = 16;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const gfx::VectorIcon& kPlusAddressLogoIcon =
-    plus_addresses::kPlusAddressLogoSmallIcon;
+const gfx::VectorIcon& GetPlusAddressLogoIcon() {
+  return plus_addresses::kPlusAddressLogoSmallIcon;
+}
 #else
-const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kEmailOldIcon;
+const gfx::VectorIcon& GetPlusAddressLogoIcon() {
+  return ::features::IsRoundedIconsEnabled() ? vector_icons::kMailFilledIcon
+                                             : vector_icons::kEmailOldIcon;
+}
 #endif
 
 bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
@@ -308,7 +313,9 @@ void AutofillContextMenuManager::MaybeAddAutofillFeedbackItem() {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
-        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodOldIcon));
+        ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kPetsIcon
+                                           : vector_icons::kDogfoodOldIcon));
 
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -344,7 +351,9 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
   menu_model_->AddItemWithStringIdAndIcon(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSearchOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSearchIcon
+                                         : vector_icons::kSearchOldIcon,
                                      ui::kColorIcon, kContextMenuIconSize));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 }
@@ -404,7 +413,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
         IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU,
-        ui::ImageModel::FromVectorIcon(kPlusAddressLogoIcon, ui::kColorIcon,
+        ui::ImageModel::FromVectorIcon(GetPlusAddressLogoIcon(), ui::kColorIcon,
                                        kContextMenuIconSize));
     MaybeMarkLastItemAsNewFeature(
         plus_addresses::features::kPlusAddressFallbackFromContextMenu);
@@ -474,8 +483,10 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
       menu_model_->SetIconForCommandId(
           IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kPasswordManagerOldIcon, ui::kColorMenuIcon,
-              ui::SimpleMenuModel::kDefaultIconSize));
+              ::features::IsRoundedIconsEnabled()
+                  ? vector_icons::kPasswordManagerIcon
+                  : vector_icons::kPasswordManagerOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     }
   }
   if (add_password_generation_option) {

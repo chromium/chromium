@@ -103,7 +103,9 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   }
 
   // Use the search icon for most keywords.
-  auto* vector_icon = &vector_icons::kSearchOldIcon;
+  auto* vector_icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kSearchIcon
+                                          : vector_icons::kSearchOldIcon);
 
   const TemplateURL* template_url =
       TemplateURLServiceFactory::GetForProfile(profile_)

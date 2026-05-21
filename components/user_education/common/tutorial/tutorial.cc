@@ -22,6 +22,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 namespace user_education {
 
@@ -225,7 +226,9 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
             base::Unretained(tutorial_service));
 
         if (is_last_step) {
-          params.body_icon = &vector_icons::kCelebrationOldIcon;
+          params.body_icon = &(features::IsRoundedIconsEnabled()
+                                   ? vector_icons::kCelebrationIcon
+                                   : vector_icons::kCelebrationOldIcon);
           params.body_icon_alt_text =
               tutorial_service->GetBodyIconAltText(true);
           params.dismiss_callback = base::BindOnce(

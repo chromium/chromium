@@ -19,6 +19,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FooterContextMenu,
                                       kHideFooterIdForTesting);
@@ -40,7 +41,9 @@ FooterContextMenu::FooterContextMenu(BrowserWindowInterface* browser)
   // Add item: close footer.
   AddItemWithIcon(
       COMMAND_CLOSE_FOOTER, l10n_util::GetStringUTF16(IDS_HIDE_NEW_TAB_FOOTER),
-      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kVisibilityOffIcon
+                                         : vector_icons::kVisibilityOffOldIcon,
                                      ui::kColorIcon, icon_size));
   SetElementIdentifierAt(GetIndexOfCommandId(COMMAND_CLOSE_FOOTER).value(),
                          kHideFooterIdForTesting);
@@ -48,10 +51,13 @@ FooterContextMenu::FooterContextMenu(BrowserWindowInterface* browser)
   AddSeparator(ui::NORMAL_SEPARATOR);
 
   // Add item: customize chrome.
-  AddItemWithStringIdAndIcon(
-      COMMAND_SHOW_CUSTOMIZE_CHROME, IDS_NTP_CUSTOMIZE_BUTTON_LABEL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshOldIcon,
-                                     ui::kColorIcon, icon_size));
+  AddItemWithStringIdAndIcon(COMMAND_SHOW_CUSTOMIZE_CHROME,
+                             IDS_NTP_CUSTOMIZE_BUTTON_LABEL,
+                             ui::ImageModel::FromVectorIcon(
+                                 features::IsRoundedIconsEnabled()
+                                     ? vector_icons::kEditIcon
+                                     : vector_icons::kEditChromeRefreshOldIcon,
+                                 ui::kColorIcon, icon_size));
   SetElementIdentifierAt(
       GetIndexOfCommandId(COMMAND_SHOW_CUSTOMIZE_CHROME).value(),
       kShowCustomizeChromeIdForTesting);

@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -81,7 +82,9 @@ class SettingsButton : public views::ImageButton {
       : views::ImageButton(std::move(callback)) {
     SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
+        ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kSettingsFilledIcon
+                                           : vector_icons::kSettingsOldIcon,
                                        kHUDDefaultColor, kHUDSettingsIconSize));
     SetBorder(views::CreateEmptyBorder(kHUDSettingsIconBorder));
     SetProperty(kHUDClickHandler, HTCLIENT);

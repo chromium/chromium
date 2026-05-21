@@ -13,6 +13,7 @@
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/keyframe/test/animation_utils.h"
 
 namespace vr {
@@ -70,7 +71,9 @@ TEST(VectorIcon, NilIcon) {
 TEST(VectorIcon, SmokeTest) {
   UiScene scene;
   auto icon = std::make_unique<TestVectorIcon>(kMaximumWidth);
-  icon->SetIcon(vector_icons::kCloseRoundedOldIcon);
+  icon->SetIcon(features::IsRoundedIconsEnabled()
+                    ? vector_icons::kCloseSmallIcon
+                    : vector_icons::kCloseRoundedOldIcon);
   UiTexture* texture = icon->GetTexture();
   scene.AddUiElement(kRoot, std::move(icon));
   base::TimeTicks start_time = gfx::MsToTicks(1);

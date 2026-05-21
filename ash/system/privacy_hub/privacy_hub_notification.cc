@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "privacy_hub_notification_controller.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -146,7 +147,9 @@ PrivacyHubNotification::PrivacyHubNotification(
 
   builder_.SetId(id)
       .SetCatalogName(catalog_name)
-      .SetSmallImage(vector_icons::kSettingsOldIcon)
+      .SetSmallImage(::features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSettingsFilledIcon
+                         : vector_icons::kSettingsOldIcon)
       .SetWarningLevel(message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Sets up the observation / throttling logic

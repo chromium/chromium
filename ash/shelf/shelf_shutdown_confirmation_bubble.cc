@@ -20,6 +20,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -91,8 +92,11 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
 
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningOutlineOldIcon, cros_tokens::kColorPrimary));
+  icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kWarningIcon
+                                         : vector_icons::kWarningOutlineOldIcon,
+                                     cros_tokens::kColorPrimary));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0,

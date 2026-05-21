@@ -34,6 +34,7 @@
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -144,7 +145,9 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                               eol_date, icu::TimeZone::getGMT())})
         .SetMessageWithArgs(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
                             {ui::GetChromeOSDeviceName()})
-        .SetSmallImage(vector_icons::kBusinessOldIcon);
+        .SetSmallImage(::features::IsRoundedIconsEnabled()
+                           ? vector_icons::kDomainIcon
+                           : vector_icons::kBusinessOldIcon);
     catalog_name = NotificationCatalogName::kPendingEOL;
   } else {
     DCHECK_EQ(BUTTON_DISMISS, data.buttons.size());

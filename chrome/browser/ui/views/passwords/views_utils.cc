@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -307,7 +308,10 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
   const int close_button_width =
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
-      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kCloseRoundedOldIcon) +
+      gfx::GetDefaultSizeOfVectorIcon(
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kCloseSmallIcon
+              : vector_icons::kCloseRoundedOldIcon) +
       layout_provider->GetDistanceMetric(views::DISTANCE_CLOSE_BUTTON_MARGIN);
   const int title_width =
       layout_provider->GetDistanceMetric(

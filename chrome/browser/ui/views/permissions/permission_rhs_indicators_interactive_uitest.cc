@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_switches.h"
@@ -231,7 +232,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kVideocamChromeRefreshOldIcon));
+                        &(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kVideocamIcon
+                              : vector_icons::kVideocamChromeRefreshOldIcon)));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
@@ -250,7 +253,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kMicChromeRefreshOldIcon));
+                        &(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kMicIcon
+                              : vector_icons::kMicChromeRefreshOldIcon)));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
@@ -271,5 +276,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       // at once, we show a single indicator with a camera icon.
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kVideocamChromeRefreshOldIcon));
+                        &(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kVideocamIcon
+                              : vector_icons::kVideocamChromeRefreshOldIcon)));
 }

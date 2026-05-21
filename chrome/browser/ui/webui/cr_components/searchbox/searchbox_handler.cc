@@ -711,9 +711,15 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
                   ? omnibox::kTrendingUpIcon.name
                   : omnibox::kTrendingUpChromeRefreshOldIcon.name)) {
     return kTrendingUpIconResourceName;
-  } else if (icon.name == vector_icons::kHistoryChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? vector_icons::kHistoryIcon.name
+                  : vector_icons::kHistoryChromeRefreshOldIcon.name)) {
     return kHistoryIconResourceName;
-  } else if (icon.name == vector_icons::kSearchChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? vector_icons::kSearchIcon.name
+                  : vector_icons::kSearchChromeRefreshOldIcon.name)) {
     return kSearchIconResourceName;
   }
 

@@ -551,15 +551,19 @@ HoldingSpaceTray::CreateContextMenuModel() {
         static_cast<int>(HoldingSpaceCommandId::kHidePreviews),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffOldIcon,
-                                       ui::kColorAshSystemUIMenuIcon,
-                                       kHoldingSpaceIconSize));
+        ui::ImageModel::FromVectorIcon(
+            ::features::IsRoundedIconsEnabled()
+                ? vector_icons::kVisibilityOffIcon
+                : vector_icons::kVisibilityOffOldIcon,
+            ui::kColorAshSystemUIMenuIcon, kHoldingSpaceIconSize));
   } else {
     context_menu_model->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kShowPreviews),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
-        ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOldIcon,
+        ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kVisibilityIcon
+                                           : vector_icons::kVisibilityOldIcon,
                                        ui::kColorAshSystemUIMenuIcon,
                                        kHoldingSpaceIconSize));
   }

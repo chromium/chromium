@@ -34,6 +34,7 @@
 #include "components/feedback/feedback_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -150,7 +151,10 @@ void DisplaySuccessfulImageDownloadNotification(
                     }
                   },
                   image_bytes)),
-          /*small_image=*/vector_icons::kFileDownloadOldIcon,
+          /*small_image=*/
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kDownload2FilledIcon
+              : vector_icons::kFileDownloadOldIcon,
           /*warning_level=*/
           message_center::SystemNotificationWarningLevel::NORMAL);
 
@@ -176,7 +180,10 @@ void DisplayFailedImageDownloadNotification(const base::FilePath& image_path) {
               NotificationCatalogName::kDownloadImageFromLobster),
           message_center::RichNotificationData(),
           /*delegate=*/nullptr,
-          /*small_image=*/vector_icons::kFileDownloadOldIcon,
+          /*small_image=*/
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kDownload2FilledIcon
+              : vector_icons::kFileDownloadOldIcon,
           /*warning_level=*/
           message_center::SystemNotificationWarningLevel::NORMAL);
 

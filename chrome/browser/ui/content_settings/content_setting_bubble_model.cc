@@ -89,6 +89,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
@@ -1321,24 +1322,32 @@ void ContentSettingMediaStreamBubbleModel::
            system_permission_settings::SystemPermission::kDenied)) {
     title_id = IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kVideocamOldIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kVideocamFilledIcon
+                                            : vector_icons::kVideocamOldIcon),
+        l10n_util::GetStringUTF16(IDS_CAMERA),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kMicOldIcon, l10n_util::GetStringUTF16(IDS_MIC),
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                            : vector_icons::kMicOldIcon),
+        l10n_util::GetStringUTF16(IDS_MIC),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 1));
   } else if (CameraAccessed() &&
              system_permission_settings::CheckSystemVideoCapturePermission() ==
                  system_permission_settings::SystemPermission::kDenied) {
     title_id = IDS_CAMERA_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kVideocamOldIcon, l10n_util::GetStringUTF16(IDS_CAMERA),
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kVideocamFilledIcon
+                                            : vector_icons::kVideocamOldIcon),
+        l10n_util::GetStringUTF16(IDS_CAMERA),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   } else if (MicrophoneAccessed() &&
              system_permission_settings::CheckSystemAudioCapturePermission() ==
                  system_permission_settings::SystemPermission::kDenied) {
     title_id = IDS_MIC_TURNED_OFF_IN_MACOS;
     AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kMicOldIcon, l10n_util::GetStringUTF16(IDS_MIC),
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                            : vector_icons::kMicOldIcon),
+        l10n_util::GetStringUTF16(IDS_MIC),
         l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 1));
   }
 
@@ -1448,7 +1457,8 @@ void ContentSettingGeolocationBubbleModel::
 
   clear_message();
   AddListItem(ContentSettingBubbleModel::ListItem(
-      &vector_icons::kLocationOnOldIcon,
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kLocationOnIcon
+                                          : vector_icons::kLocationOnOldIcon),
       l10n_util::GetStringUTF16(IDS_GEOLOCATION),
       l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
@@ -1481,7 +1491,9 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
                                       ContentSettingsType::NOTIFICATIONS) {
   set_title(l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
   AddListItem(ContentSettingBubbleModel::ListItem(
-      &vector_icons::kNotificationsOffChromeRefreshOldIcon,
+      &(features::IsRoundedIconsEnabled()
+            ? vector_icons::kNotificationsOffIcon
+            : vector_icons::kNotificationsOffChromeRefreshOldIcon),
       l10n_util::GetStringUTF16(IDS_NOTIFICATIONS),
       l10n_util::GetStringUTF16(IDS_TURNED_OFF), /*has_link=*/false,
       /*has_blocked_badge=*/false, 0));

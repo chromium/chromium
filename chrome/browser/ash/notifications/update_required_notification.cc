@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 
 using NotificationType = policy::MinimumVersionPolicyHandler::NotificationType;
@@ -164,7 +165,9 @@ void UpdateRequiredNotification::DisplayNotification(
       data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()),
-      vector_icons::kBusinessOldIcon, color_type);
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
+      color_type);
   notification->set_priority(priority);
 
   message_center::MessageCenter::Get()->AddNotification(

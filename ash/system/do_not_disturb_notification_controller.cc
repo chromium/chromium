@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -80,7 +81,9 @@ std::unique_ptr<message_center::Notification> CreateNotification() {
             DCHECK_EQ(button_index.value(), 0);
             MessageCenter::Get()->SetQuietMode(false);
           })),
-      vector_icons::kSettingsOutlineOldIcon,
+      ::features::IsRoundedIconsEnabled()
+          ? vector_icons::kSettingsIcon
+          : vector_icons::kSettingsOutlineOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 

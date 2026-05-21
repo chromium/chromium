@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event_handler.h"
@@ -143,7 +144,9 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
                   .SetImageModel(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kSettingsOutlineOldIcon,
+                          features::IsRoundedIconsEnabled()
+                              ? vector_icons::kSettingsIcon
+                              : vector_icons::kSettingsOutlineOldIcon,
                           ui::kColorSysSecondary, kSettingsButtonSizeDip))
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets(kSettingsButtonBorderDip)))

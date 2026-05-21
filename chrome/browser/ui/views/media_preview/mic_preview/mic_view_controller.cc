@@ -15,6 +15,7 @@
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -22,7 +23,9 @@ namespace {
 
 const ui::ImageModel GetMicImageModel() {
   const int icon_size = 20;
-  const auto& icon = vector_icons::kMicChromeRefreshOldIcon;
+  const auto& icon = features::IsRoundedIconsEnabled()
+                         ? vector_icons::kMicIcon
+                         : vector_icons::kMicChromeRefreshOldIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size);
 }
 

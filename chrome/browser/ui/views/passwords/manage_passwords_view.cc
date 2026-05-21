@@ -278,7 +278,9 @@ ManagePasswordsView::CreateMovePasswordFooterView() {
 
   views::ImageView* icon_view = footer->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSaveCloudOldIcon, ui::kColorIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kCloudUploadIcon
+                                            : vector_icons::kSaveCloudOldIcon,
+          ui::kColorIcon,
           layout_provider->GetDistanceMetric(
               views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   icon_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -367,12 +369,13 @@ void ManagePasswordsView::OnFaviconReady(const gfx::Image& favicon) {
 
 ui::ImageModel ManagePasswordsView::GetFaviconImageModel() const {
   // Use a globe fallback icon until the actual favicon is loaded.
-  return favicon_.IsEmpty()
-             ? ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                                  ? kGlobeIcon
-                                                  : kGlobeOldIcon,
-                                              ui::kColorIcon, gfx::kFaviconSize)
-             : ui::ImageModel::FromImage(favicon_);
+  return favicon_.IsEmpty() ? ui::ImageModel::FromVectorIcon(
+                                  features::IsRoundedIconsEnabled() ? kGlobeIcon
+                                  : features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kGlobeIcon
+                                      : kGlobeOldIcon,
+                                  ui::kColorIcon, gfx::kFaviconSize)
+                            : ui::ImageModel::FromImage(favicon_);
 }
 
 void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(

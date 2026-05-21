@@ -47,6 +47,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
@@ -212,7 +213,10 @@ class PaymentHandlerCloseButton : public views::ImageButton {
 
     // This view does not set its color using the browser theme color, as this
     // may differ from the header color, which is based on the web view theme.
-    views::SetImageFromVectorIconWithColor(this, vector_icons::kCloseOldIcon,
+    views::SetImageFromVectorIconWithColor(this,
+                                           ::features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kCloseIcon
+                                               : vector_icons::kCloseOldIcon,
                                            {enabled_color, disabled_color});
   }
 

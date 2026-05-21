@@ -21,6 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -124,7 +125,8 @@ void RebootNotificationController::ShowNotification(
   message_center::Notification notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
       std::u16string(), GURL(), message_center::NotifierId(), data, delegate,
-      vector_icons::kBusinessOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   NotificationDisplayService* notification_display_service =

@@ -36,6 +36,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
@@ -99,9 +100,10 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     // Use any arbitrary vector icon.
-    auto image =
-        ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowOldIcon,
-                                       ui::kColorSysPrimary, kDefaultIconSize);
+    auto image = ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                          : vector_icons::kBackArrowOldIcon,
+        ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
         actions::ActionItem::Builder()
             .SetActionId(kTestPageActionId)
@@ -222,10 +224,11 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   // Mock model and associated placeholder data.
   testing::NiceMock<MockPageActionModel> mock_model_;
-  const ui::ImageModel mock_image_ =
-      ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowOldIcon,
-                                     ui::kColorSysPrimary,
-                                     kDefaultIconSize);
+  const ui::ImageModel mock_image_ = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                        : vector_icons::kBackArrowOldIcon,
+      ui::kColorSysPrimary,
+      kDefaultIconSize);
   std::u16string mock_string_ = kTestText;
 
   const int view_icon_size_ = kDefaultIconSize;
@@ -419,7 +422,9 @@ TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.
   const int kOriginalIconSize = view_icon_size() + 1;
   auto icon_image = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary, kOriginalIconSize);
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                        : vector_icons::kBackArrowOldIcon,
+      ui::kColorSysPrimary, kOriginalIconSize);
   EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
@@ -472,7 +477,9 @@ TEST_F(PageActionViewTest, ChipCornerRadiiConsistentForVectorAndBitmapIcons) {
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
 
   const ui::ImageModel vector_image = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary, kDefaultIconSize);
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                        : vector_icons::kBackArrowOldIcon,
+      ui::kColorSysPrimary, kDefaultIconSize);
 
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));

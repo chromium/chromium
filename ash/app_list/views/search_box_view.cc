@@ -774,9 +774,10 @@ void SearchBoxView::OnThemeChanged() {
   if (filter_button()) {
     filter_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kFilterOldIcon,
-                                       button_icon_color,
-                                       GetSearchBoxIconSize()));
+        ui::ImageModel::FromVectorIcon(
+            ::features::IsRoundedIconsEnabled() ? vector_icons::kTuneIcon
+                                                : vector_icons::kFilterOldIcon,
+            button_icon_color, GetSearchBoxIconSize()));
   }
 
   if (focus_ring_layer_) {

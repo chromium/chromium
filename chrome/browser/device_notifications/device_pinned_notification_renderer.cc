@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"
@@ -96,7 +97,9 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
   // The new pinned notification view uses a settings icon button.
   if (ash::features::AreOngoingProcessesEnabled()) {
     data.buttons.emplace_back(message_center::ButtonInfo(
-        /*vector_icon=*/&vector_icons::kSettingsOldIcon,
+        /*vector_icon=*/&(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kSettingsFilledIcon
+                              : vector_icons::kSettingsOldIcon),
         /*accessible_name=*/device_system_tray_icon_
             ->GetContentSettingsLabel()));
   } else {

@@ -437,6 +437,8 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
         context_ == Context::kVerticalTabStrip
             ? features::IsRoundedIconsEnabled() ? kManageSearchIcon
                                                 : kTabSearchTabStripOldIcon
+        : features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowDownIcon
             : vector_icons::kExpandMoreOldIcon));
   }
 }

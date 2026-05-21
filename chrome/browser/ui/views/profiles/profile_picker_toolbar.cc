@@ -47,7 +47,9 @@ class SimpleBackButton : public ToolbarButton {
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
-    SetVectorIcons(vector_icons::kBackArrowOldIcon,
+    SetVectorIcons(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kArrowBackIcon
+                       : vector_icons::kBackArrowOldIcon,
                    features::IsRoundedIconsEnabled() ? kArrowBackIcon
                                                      : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(

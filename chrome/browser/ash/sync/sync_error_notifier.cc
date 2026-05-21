@@ -34,6 +34,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -191,7 +192,9 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           parameters.click_action),
-      vector_icons::kNotificationWarningOldIcon,
+      ::features::IsRoundedIconsEnabled()
+          ? vector_icons::kInfoFilledIcon
+          : vector_icons::kNotificationWarningOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
   display_service->Display(NotificationHandler::Type::TRANSIENT, notification,

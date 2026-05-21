@@ -112,7 +112,9 @@ void LensPreselectionBubble::Init() {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   const gfx::VectorIcon* icon;
   if (offline_) {
-    icon = &vector_icons::kErrorOutlineOldIcon;
+    icon = &(::features::IsRoundedIconsEnabled()
+                 ? vector_icons::kErrorIcon
+                 : vector_icons::kErrorOutlineOldIcon);
   } else {
     icon = icon_;
   }

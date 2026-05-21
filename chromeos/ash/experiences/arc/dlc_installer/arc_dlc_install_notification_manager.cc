@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -64,7 +65,8 @@ void Show(NotificationType notification_type) {
           l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE),
           GetMessage(notification_type), std::u16string(), GURL(), notifier_id,
           message_center::RichNotificationData(), std::move(click_delegate),
-          vector_icons::kSettingsOldIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
+                                            : vector_icons::kSettingsOldIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter::Get()->AddNotification(

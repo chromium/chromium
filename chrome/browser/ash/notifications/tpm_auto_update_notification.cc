@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -56,7 +57,8 @@ void ShowAutoUpdateNotification(
                                  notification_id, catalog_name),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::NotificationDelegate>(),
-      vector_icons::kBusinessOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
   notification->set_pinned(pinned);

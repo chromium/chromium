@@ -65,6 +65,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/color_palette.h"
@@ -231,7 +232,9 @@ DownloadItemNotification::DownloadItemNotification(
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
   rich_notification_data.vector_small_image =
-      &vector_icons::kNotificationDownloadOldIcon;
+      &(features::IsRoundedIconsEnabled()
+            ? vector_icons::kDownload2FilledIcon
+            : vector_icons::kNotificationDownloadOldIcon);
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, GetNotificationId(),

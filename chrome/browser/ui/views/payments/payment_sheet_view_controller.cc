@@ -44,6 +44,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -263,9 +264,14 @@ class PaymentSheetRowBuilder {
       std::unique_ptr<views::View> extra_content_view) {
     auto chevron =
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kSubmenuArrowOldIcon, ui::kColorIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kArrowRightIcon
+                : vector_icons::kSubmenuArrowOldIcon,
+            ui::kColorIcon,
             gfx::GetDefaultSizeOfVectorIcon(
-                vector_icons::kSubmenuArrowOldIcon)));
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kArrowRightIcon
+                    : vector_icons::kSubmenuArrowOldIcon)));
     chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
         GetPressedCallback(), section_name_, accessible_content_,

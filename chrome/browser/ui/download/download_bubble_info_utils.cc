@@ -26,7 +26,9 @@ using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 namespace {
 
 IconAndColor IconAndColorForDangerousUiPattern() {
-  return IconAndColor{&vector_icons::kDangerousChromeRefreshOldIcon,
+  return IconAndColor{&(features::IsRoundedIconsEnabled()
+                            ? vector_icons::kDangerousFilledIcon
+                            : vector_icons::kDangerousChromeRefreshOldIcon),
                       kColorDownloadItemIconDangerous};
 }
 
@@ -38,8 +40,11 @@ IconAndColor IconAndColorForSuspiciousUiPattern() {
 }
 
 IconAndColor IconAndColorForDownloadOff() {
-  return IconAndColor{&vector_icons::kFileDownloadOffChromeRefreshOldIcon,
-                      ui::kColorSecondaryForeground};
+  return IconAndColor{
+      &(features::IsRoundedIconsEnabled()
+            ? vector_icons::kFileDownloadOffIcon
+            : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
+      ui::kColorSecondaryForeground};
 }
 
 IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
@@ -102,8 +107,11 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
         kColorDownloadItemIconDangerous};
   }
 
-  return IconAndColor{&vector_icons::kFileDownloadOffChromeRefreshOldIcon,
-                      kColorDownloadItemIconDangerous};
+  return IconAndColor{
+      &(features::IsRoundedIconsEnabled()
+            ? vector_icons::kFileDownloadOffIcon
+            : vector_icons::kFileDownloadOffChromeRefreshOldIcon),
+      kColorDownloadItemIconDangerous};
 }
 
 IconAndColor IconAndColorForTailoredWarning(const DownloadUIModel& model) {
@@ -138,8 +146,11 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
           model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-        return IconAndColor{&vector_icons::kDangerousChromeRefreshOldIcon,
-                            kColorDownloadItemIconDangerous};
+        return IconAndColor{
+            &(features::IsRoundedIconsEnabled()
+                  ? vector_icons::kDangerousFilledIcon
+                  : vector_icons::kDangerousChromeRefreshOldIcon),
+            kColorDownloadItemIconDangerous};
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
         return IconAndColor{
             &(features::IsRoundedIconsEnabled() ? kWarningFilledIcon
@@ -331,28 +342,38 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
       actions.emplace_back(
           DownloadCommands::Command::RESUME,
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
-          &vector_icons::kPlayArrowChromeRefreshOldIcon);
+          &(features::IsRoundedIconsEnabled()
+                ? vector_icons::kPlayArrowIcon
+                : vector_icons::kPlayArrowChromeRefreshOldIcon));
     } else {
       actions.emplace_back(
           DownloadCommands::Command::PAUSE,
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
-          &vector_icons::kPauseChromeRefreshOldIcon);
+          &(features::IsRoundedIconsEnabled()
+                ? vector_icons::kPauseIcon
+                : vector_icons::kPauseChromeRefreshOldIcon));
     }
 
     actions.emplace_back(
         DownloadCommands::Command::CANCEL,
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-        &vector_icons::kCancelChromeRefreshOldIcon);
+        &(features::IsRoundedIconsEnabled()
+              ? vector_icons::kCancelIcon
+              : vector_icons::kCancelChromeRefreshOldIcon));
 
   } else {
     actions.emplace_back(DownloadCommands::Command::SHOW_IN_FOLDER,
                          l10n_util::GetStringUTF16(
                              IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
-                         &vector_icons::kFolderChromeRefreshOldIcon);
+                         &(features::IsRoundedIconsEnabled()
+                               ? vector_icons::kFolderIcon
+                               : vector_icons::kFolderChromeRefreshOldIcon));
     actions.emplace_back(
         DownloadCommands::Command::OPEN_WHEN_COMPLETE,
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
-        &vector_icons::kLaunchChromeRefreshOldIcon);
+        &(features::IsRoundedIconsEnabled()
+              ? vector_icons::kOpenInNewIcon
+              : vector_icons::kLaunchChromeRefreshOldIcon));
   }
 
   return actions;

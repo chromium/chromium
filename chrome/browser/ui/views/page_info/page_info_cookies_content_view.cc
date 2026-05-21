@@ -421,11 +421,16 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
           base::BindRepeating(
               &PageInfoCookiesContentView::RwsSettingsButtonClicked,
               base::Unretained(this)),
-          PageInfoViewFactory::GetImageModel(vector_icons::kTenancyOldIcon),
+          PageInfoViewFactory::GetImageModel(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kTenancyFilledIcon
+                  : vector_icons::kTenancyOldIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
           is_managed ? PageInfoViewFactory::GetImageModel(
-                           vector_icons::kBusinessOldIcon)
+                           features::IsRoundedIconsEnabled()
+                               ? vector_icons::kDomainIcon
+                               : vector_icons::kBusinessOldIcon)
                      : ui::ImageModel()));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
@@ -528,8 +533,9 @@ void PageInfoCookiesContentView::MaybeAddSyncDisclaimer() {
       std::make_unique<NonAccessibleImageView>());
   const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   cookies_sync_icon_->SetImageSize({icon_size, icon_size});
-  cookies_sync_icon_->SetImage(
-      PageInfoViewFactory::GetImageModel(vector_icons::kBusinessOldIcon));
+  cookies_sync_icon_->SetImage(PageInfoViewFactory::GetImageModel(
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon));
 
   // Add the description.
   cookies_sync_description_ = cookies_sync_container_->AddChildView(

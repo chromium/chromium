@@ -18,6 +18,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -46,7 +47,10 @@ const NotificationHandler::Type kNotificationHandlerType =
     NotificationHandler::Type::TRANSIENT;
 
 // The icon to use for this notification - looks like an office building.
-const gfx::VectorIcon& kIcon = vector_icons::kBusinessOldIcon;
+const gfx::VectorIcon& GetIcon() {
+  return ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                             : vector_icons::kBusinessOldIcon;
+}
 
 // Warning level of WARNING makes the title orange.
 constexpr SystemNotificationWarningLevel kWarningLevel =
@@ -83,8 +87,8 @@ void PasswordChangeSuccessNotification::Show(Profile* profile) {
 
   Notification notification = CreateSystemNotification(
       kNotificationType, kNotificationId, title, body, *kEmptyDisplaySource,
-      *kEmptyOriginUrl, *kNotifierId, rich_notification_data, delegate, kIcon,
-      kWarningLevel);
+      *kEmptyOriginUrl, *kNotifierId, rich_notification_data, delegate,
+      GetIcon(), kWarningLevel);
 
   NotificationDisplayService* nds =
       NotificationDisplayServiceFactory::GetForProfile(profile);

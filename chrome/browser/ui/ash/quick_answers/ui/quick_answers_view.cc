@@ -417,7 +417,9 @@ QuickAnswersView::QuickAnswersView(
                   .SetImageModel(
                       views::Button::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kDogfoodOldIcon,
+                          features::IsRoundedIconsEnabled()
+                              ? vector_icons::kPetsIcon
+                              : vector_icons::kDogfoodOldIcon,
                           design_ == Design::kCurrent ? ui::kColorIconSecondary
                                                       : ui::kColorSysSecondary,
                           kDogfoodButtonSizeDip)))
@@ -432,7 +434,9 @@ QuickAnswersView::QuickAnswersView(
                   .SetImageModel(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kSettingsOutlineOldIcon,
+                          features::IsRoundedIconsEnabled()
+                              ? vector_icons::kSettingsIcon
+                              : vector_icons::kSettingsOutlineOldIcon,
                           design_ == Design::kCurrent ? ui::kColorIconSecondary
                                                       : ui::kColorSysSecondary,
                           kSettingsButtonSizeDip))

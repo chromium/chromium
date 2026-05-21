@@ -31,6 +31,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -59,9 +60,10 @@ class DeprecatedAppsDialogView::DeprecatedAppsTableModel
           extensions::ExtensionRegistry::Get(browser_context)
               ->GetInstalledExtension(app_id);
       DCHECK(extension);
-      const gfx::ImageSkia default_icon =
-          gfx::CreateVectorIcon(vector_icons::kExtensionOldIcon,
-                                gfx::kFaviconSize, gfx::kGoogleGrey700);
+      const gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
+          features::IsRoundedIconsEnabled() ? vector_icons::kExtensionFilledIcon
+                                            : vector_icons::kExtensionOldIcon,
+          gfx::kFaviconSize, gfx::kGoogleGrey700);
 
       auto app_icon = std::make_unique<extensions::IconImage>(
           browser_context, extension,

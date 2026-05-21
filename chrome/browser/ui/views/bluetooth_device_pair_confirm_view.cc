@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -105,7 +106,9 @@ void BluetoothDevicePairConfirmView::InitControls(
   constexpr int kIconSize = 30;  // width and height.
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBluetoothOldIcon, ui::kColorIcon, kIconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kBluetoothIcon
+                                        : vector_icons::kBluetoothOldIcon,
+      ui::kColorIcon, kIconSize));
   icon_view_ = AddChildView(std::move(icon_view));
 
   auto contents_wrapper = std::make_unique<views::View>();

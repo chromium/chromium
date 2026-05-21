@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace page_actions {
@@ -74,7 +75,10 @@ TEST_F(PageActionContainerViewTest, GetPageActionView) {
   actions::ActionItem* action_item = actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
           .SetImage(ui::ImageModel::FromVectorIcon(
-              vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary,
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kArrowBackIcon
+                  : vector_icons::kBackArrowOldIcon,
+              ui::kColorSysPrimary,
               /*icon_size=*/16))
           .SetActionId(kTestPageActionId)
           .Build());

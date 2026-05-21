@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -183,12 +184,14 @@ void ExtensionsMenuView::Populate() {
   footer->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       footer->GetInsets().top(), dialog_insets.left() + icon_spacing)));
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() + icon_spacing);
-  footer->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          vector_icons::kSettingsChromeRefreshOldIcon, ui::kColorIcon,
-          provider->GetDistanceMetric(
-              DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
+  footer->SetImageModel(views::Button::STATE_NORMAL,
+                        ui::ImageModel::FromVectorIcon(
+                            features::IsRoundedIconsEnabled()
+                                ? vector_icons::kSettingsIcon
+                                : vector_icons::kSettingsChromeRefreshOldIcon,
+                            ui::kColorIcon,
+                            provider->GetDistanceMetric(
+                                DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
 
   manage_extensions_button_ = footer.get();
   AddChildView(std::move(footer));

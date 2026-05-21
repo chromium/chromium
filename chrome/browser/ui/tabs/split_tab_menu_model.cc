@@ -126,7 +126,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
         GetCommandIdInt(CommandId::kCloseSpecifiedTab), IDS_SPLIT_TAB_CLOSE,
         ui::ImageModel::FromVectorIcon(
             features::IsRoundedIconsEnabled()
-                ? kCloseIcon
+                ? vector_icons::kCloseIcon
                 : vector_icons::kCloseChromeRefreshOldIcon,
             ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     SetElementIdentifierAt(

@@ -57,6 +57,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -159,7 +160,10 @@ TEST_F(BrowserViewTest, BrowserView) {
             l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
   EXPECT_EQ(customize_chrome_action->GetImage(),
             ui::ImageModel::FromVectorIcon(
-                vector_icons::kEditChromeRefreshOldIcon, ui::kColorIcon));
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kEditIcon
+                    : vector_icons::kEditChromeRefreshOldIcon,
+                ui::kColorIcon));
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
 }
 

@@ -9,6 +9,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -27,7 +28,10 @@ std::unique_ptr<views::ImageButton> CreateEditButton(
     views::Button::PressedCallback callback) {
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          std::move(callback), vector_icons::kEditOldIcon, kIconSize);
+          std::move(callback),
+          ::features::IsRoundedIconsEnabled() ? vector_icons::kEditFilledIcon
+                                              : vector_icons::kEditOldIcon,
+          kIconSize);
   button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
   button->SetTooltipText(l10n_util::GetStringUTF16(

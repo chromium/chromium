@@ -26,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -285,7 +286,9 @@ TEST_F(QuickInsertSectionViewTest,
           .GetVectorIcon()
           .vector_icon();
   ASSERT_NE(vector_icon, nullptr);
-  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kLinkOldIcon.name));
+  EXPECT_THAT(vector_icon->name, StrEq(::features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kLinkIcon.name
+                                           : vector_icons::kLinkOldIcon.name));
 }
 
 TEST_F(QuickInsertSectionViewTest,
@@ -351,7 +354,10 @@ TEST_F(QuickInsertSectionViewTest,
           .GetVectorIcon()
           .vector_icon();
   ASSERT_NE(vector_icon, nullptr);
-  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kContentCopyOldIcon.name));
+  EXPECT_THAT(vector_icon->name,
+              StrEq(::features::IsRoundedIconsEnabled()
+                        ? vector_icons::kContentCopyIcon.name
+                        : vector_icons::kContentCopyOldIcon.name));
 }
 
 TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {

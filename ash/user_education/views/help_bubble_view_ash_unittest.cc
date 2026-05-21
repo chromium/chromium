@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
@@ -121,13 +122,23 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*body_icon_from_params=*/::testing::Values(
             std::make_optional(std::cref(gfx::VectorIcon::EmptyIcon())),
-            std::make_optional(std::cref(vector_icons::kCelebrationOldIcon)),
-            std::make_optional(std::cref(vector_icons::kHelpOldIcon)),
+            std::make_optional(
+                std::cref(::features::IsRoundedIconsEnabled()
+                              ? vector_icons::kCelebrationIcon
+                              : vector_icons::kCelebrationOldIcon)),
+            std::make_optional(std::cref(::features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kHelpFilledIcon
+                                             : vector_icons::kHelpOldIcon)),
             std::nullopt),
         /*body_icon_from_extended_properties=*/::testing::Values(
             std::make_optional(std::cref(gfx::VectorIcon::EmptyIcon())),
-            std::make_optional(std::cref(vector_icons::kCelebrationOldIcon)),
-            std::make_optional(std::cref(vector_icons::kHelpOldIcon)),
+            std::make_optional(
+                std::cref(::features::IsRoundedIconsEnabled()
+                              ? vector_icons::kCelebrationIcon
+                              : vector_icons::kCelebrationOldIcon)),
+            std::make_optional(std::cref(::features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kHelpFilledIcon
+                                             : vector_icons::kHelpOldIcon)),
             std::nullopt)));
 
 // Tests -----------------------------------------------------------------------

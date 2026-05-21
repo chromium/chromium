@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -77,7 +78,9 @@ NotificationActionsView::NotificationActionsView() {
       inline_reply_container_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&NotificationActionsView::SendButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kSmallFloating, &vector_icons::kSendOldIcon,
+          IconButton::Type::kSmallFloating,
+          &(::features::IsRoundedIconsEnabled() ? vector_icons::kSendIcon
+                                                : vector_icons::kSendOldIcon),
           /*is_togglable=*/false,
           /*has_border*/ true));
   send_button_->SetEnabled(false);

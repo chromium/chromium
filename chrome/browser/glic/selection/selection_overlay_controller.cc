@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/insets.h"
@@ -425,7 +426,9 @@ SelectionOverlayController::GetPreselectionBubbleConfig() {
   return {
       .message_string_id = IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT,
       .bubble_background_color = kColorGlicSelectionOverlayToast,
-      .icon = &vector_icons::kCropFreeOldIcon,
+      .icon =
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kCropFreeIcon
+                                              : vector_icons::kCropFreeOldIcon),
       .cancel_button_config = CancelButtonConfig{
           .color = kColorGlicSelectionOverlayToastCancelButton,
           .padding = gfx::Insets::VH(8, 16),

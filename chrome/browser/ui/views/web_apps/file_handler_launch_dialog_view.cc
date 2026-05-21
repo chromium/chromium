@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/image_view.h"
@@ -115,7 +116,9 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
   constexpr int kIconSize = 16;
   auto* icon = files_view->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kDescriptionOldIcon, ui::kColorIcon, kIconSize)));
+          features::IsRoundedIconsEnabled() ? vector_icons::kDescriptionIcon
+                                            : vector_icons::kDescriptionOldIcon,
+          ui::kColorIcon, kIconSize)));
   const int icon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   icon->SetProperty(views::kMarginsKey,

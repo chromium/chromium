@@ -8,6 +8,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/test/views_test_base.h"
@@ -31,8 +32,10 @@ constexpr ui::ColorId kIconColorId = ui::kColorSysSurface;
 std::unique_ptr<MediaActionButton> CreateMediaActionButton(int button_id) {
   return std::make_unique<MediaActionButton>(
       views::Button::PressedCallback(), button_id, kTooltipTextId, kIconSize,
-      vector_icons::kPauseOldIcon, /*button_size=*/gfx::Size(20, 20),
-      kIconColorId, ui::kColorSysSurface1, ui::kColorSysSurface2);
+      features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
+                                        : vector_icons::kPauseOldIcon,
+      /*button_size=*/gfx::Size(20, 20), kIconColorId, ui::kColorSysSurface1,
+      ui::kColorSysSurface2);
 }
 
 }  // namespace
@@ -61,8 +64,10 @@ TEST_F(MediaActionButtonTest, UpdateButton) {
             l10n_util::GetStringUTF16(kTooltipTextId));
 
   button->Update(static_cast<int>(MediaSessionAction::kPlay),
-                 vector_icons::kPlayArrowOldIcon, kUpdatedTooltipTextId,
-                 kIconColorId);
+                 features::IsRoundedIconsEnabled()
+                     ? vector_icons::kPlayArrowFilledIcon
+                     : vector_icons::kPlayArrowOldIcon,
+                 kUpdatedTooltipTextId, kIconColorId);
   EXPECT_EQ(button->GetID(), static_cast<int>(MediaSessionAction::kPlay));
   EXPECT_EQ(button->GetTooltipText(),
             l10n_util::GetStringUTF16(kUpdatedTooltipTextId));
@@ -82,10 +87,14 @@ TEST_F(MediaActionButtonTest, UpdateButtonIcon) {
       CreateMediaActionButton(static_cast<int>(MediaSessionAction::kPause)));
   widget->Show();
 
-  button->UpdateIcon(vector_icons::kCastOldIcon);
+  button->UpdateIcon(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCastIcon
+                         : vector_icons::kCastOldIcon);
   SkBitmap expected =
-      *gfx::CreateVectorIcon(vector_icons::kCastOldIcon, kIconSize,
-                             widget->GetColorProvider()->GetColor(kIconColorId))
+      *gfx::CreateVectorIcon(
+           features::IsRoundedIconsEnabled() ? vector_icons::kCastIcon
+                                             : vector_icons::kCastOldIcon,
+           kIconSize, widget->GetColorProvider()->GetColor(kIconColorId))
            .bitmap();
   SkBitmap actual = *button->GetImage(views::Button::STATE_NORMAL).bitmap();
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(expected, actual));

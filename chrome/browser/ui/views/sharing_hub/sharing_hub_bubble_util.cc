@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -42,7 +43,10 @@ TitleWithBackButtonView::TitleWithBackButtonView(
       .AddChildren(
           views::Builder<views::ImageButton>(
               views::CreateVectorImageButtonWithNativeTheme(
-                  std::move(back_callback), vector_icons::kBackArrowOldIcon))
+                  std::move(back_callback),
+                  features::IsRoundedIconsEnabled()
+                      ? vector_icons::kArrowBackIcon
+                      : vector_icons::kBackArrowOldIcon))
               .SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
               .CustomConfigure(base::BindOnce([](views::ImageButton* view) {

@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/menus/simple_menu_model.h"
@@ -60,8 +61,10 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
               base::BindRepeating(&TestDelegate::DummyAction,
                                   base::Unretained(this)))
               .SetActionId(id)
-              .SetImage(
-                  ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodOldIcon))
+              .SetImage(ui::ImageModel::FromVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? vector_icons::kPetsIcon
+                      : vector_icons::kDogfoodOldIcon))
               .SetProperty(kActionItemUnderlineIndicatorKey, true)
               .SetText(
                   base::StrCat({u"DummyAction", base::NumberToString16(id)}))
@@ -127,8 +130,10 @@ class TestDelegateFromModel : public ToolbarController::PinnedActionsDelegate {
             base::BindRepeating(&TestDelegateFromModel::DummyAction,
                                 base::Unretained(this)))
             .SetActionId(id)
-            .SetImage(
-                ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodOldIcon))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kPetsIcon
+                    : vector_icons::kDogfoodOldIcon))
             .SetProperty(kActionItemUnderlineIndicatorKey, true)
             .SetText(base::StrCat({u"DummyAction", base::NumberToString16(id)}))
             .Build());
@@ -235,7 +240,10 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
       std::vector<ToolbarController::ResponsiveElementInfo>{
           ToolbarController::ResponsiveElementInfo(
               ToolbarController::ElementIdInfo(
-                  kDummyButton, 0, &vector_icons::kErrorOldIcon,
+                  kDummyButton, 0,
+                  &(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kErrorFilledIcon
+                        : vector_icons::kErrorOldIcon),
                   kDummyActivateView, kDummyObservedView),
               false)},
       std::vector<ui::ElementIdentifier>({kDummyButton}), 1, container_view(),
@@ -336,17 +344,26 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
         std::vector<ToolbarController::ResponsiveElementInfo>{
             {ToolbarController::ResponsiveElementInfo(
                  ToolbarController::ElementIdInfo(
-                     kDummyButton1, 0, &vector_icons::kErrorOldIcon,
+                     kDummyButton1, 0,
+                     &(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kErrorFilledIcon
+                           : vector_icons::kErrorOldIcon),
                      kDummyActivateView, kDummyObservedView),
                  false),
              ToolbarController::ResponsiveElementInfo(
                  ToolbarController::ElementIdInfo(
-                     kDummyButton2, 0, &vector_icons::kErrorOldIcon,
+                     kDummyButton2, 0,
+                     &(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kErrorFilledIcon
+                           : vector_icons::kErrorOldIcon),
                      kDummyActivateView, kDummyObservedView),
                  true),
              ToolbarController::ResponsiveElementInfo(
                  ToolbarController::ElementIdInfo(
-                     kDummyButton3, 0, &vector_icons::kErrorOldIcon,
+                     kDummyButton3, 0,
+                     &(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kErrorFilledIcon
+                           : vector_icons::kErrorOldIcon),
                      kDummyActivateView, kDummyObservedView),
                  true)}},
         std::vector<ui::ElementIdentifier>(
@@ -545,17 +562,26 @@ TEST_F(ToolbarControllerUnitTest, InValidFirstSectionAddsNoLeadingSeparator) {
           std::vector<ToolbarController::ResponsiveElementInfo>(
               {ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton1, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton1, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton2, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton2, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton3, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton3, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true)}),
           std::vector<ui::ElementIdentifier>(
@@ -597,17 +623,26 @@ TEST_F(ToolbarControllerUnitTest, InValidSectionInMiddleAddsNoExtraSeparator) {
           std::vector<ToolbarController::ResponsiveElementInfo>(
               {ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton1, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton1, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton2, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton2, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton3, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton3, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true)}),
           std::vector<ui::ElementIdentifier>(
@@ -649,17 +684,26 @@ TEST_F(ToolbarControllerUnitTest, InValidLastSectionAddsNoTrailingSeparator) {
           std::vector<ToolbarController::ResponsiveElementInfo>(
               {ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton1, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton1, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton2, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton2, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton3, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton3, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    true)}),
           std::vector<ui::ElementIdentifier>(
@@ -792,17 +836,26 @@ TEST_F(ToolbarControllerUnitTest, ButtonsOverflowLeftToRightInContainer) {
           std::vector<ToolbarController::ResponsiveElementInfo>(
               {ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton1, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton1, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    false),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton2, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton2, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    false),
                ToolbarController::ResponsiveElementInfo(
                    ToolbarController::ElementIdInfo{
-                       kDummyButton3, 0, &vector_icons::kErrorOldIcon,
+                       kDummyButton3, 0,
+                       &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kErrorFilledIcon
+                             : vector_icons::kErrorOldIcon),
                        kDummyActivateView},
                    false)}),
           std::vector<ui::ElementIdentifier>(
@@ -885,8 +938,11 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreOrdered) {
   using ActionId = actions::ActionId;
 
   ResponsiveElementInfo element0(
-      ElementIdInfo{kDummyButton1, 0, &vector_icons::kErrorOldIcon,
-                    kDummyActivateView},
+      ElementIdInfo{
+          kDummyButton1, 0,
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon),
+          kDummyActivateView},
       false);
   ResponsiveElementInfo action0(test_delegate->get_action_ids()[0]);
   ResponsiveElementInfo action1(test_delegate->get_action_ids()[1]);
@@ -966,12 +1022,18 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreNotOrdered) {
   using ActionId = actions::ActionId;
 
   ResponsiveElementInfo element0(
-      ElementIdInfo{kDummyButton1, 0, &vector_icons::kErrorOldIcon,
-                    kDummyActivateView},
+      ElementIdInfo{
+          kDummyButton1, 0,
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon),
+          kDummyActivateView},
       false);
   ResponsiveElementInfo element1(
-      ElementIdInfo{kDummyButton2, 0, &vector_icons::kErrorOldIcon,
-                    kDummyActivateView},
+      ElementIdInfo{
+          kDummyButton2, 0,
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon),
+          kDummyActivateView},
       false);
   ResponsiveElementInfo action0(test_delegate->get_action_ids()[0]);
   ResponsiveElementInfo action1(test_delegate->get_action_ids()[1]);

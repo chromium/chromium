@@ -26,6 +26,7 @@
 #include "components/onc/onc_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -294,7 +295,9 @@ gfx::ImageSkia GetIcon(const ui::ColorProvider* color_provider,
     // The system tray uses a smaller icon.
     return gfx::CreateVectorIcon(
         IsTrayIcon(icon_type) ? kNetworkEthernetIcon
-                              : vector_icons::kEthernetOldIcon,
+        : ::features::IsRoundedIconsEnabled()
+            ? vector_icons::kSettingsEthernetIcon
+            : vector_icons::kEthernetOldIcon,
         GetDefaultColorForIconType(color_provider, icon_type));
   }
   if (network->type == NetworkType::kVPN) {

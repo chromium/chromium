@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -93,8 +94,10 @@ class ErrorBubble : public views::FlexLayoutView {
             views::Builder<views::ImageView>()
                 .SetID(mahi_constants::ViewId::kQuestionAnswerErrorImage)
                 .SetImage(ui::ImageModel::FromVectorIcon(
-                    vector_icons::kErrorOldIcon, cros_tokens::kCrosSysSecondary,
-                    kErrorIconSize)),
+                    ::features::IsRoundedIconsEnabled()
+                        ? vector_icons::kErrorFilledIcon
+                        : vector_icons::kErrorOldIcon,
+                    cros_tokens::kCrosSysSecondary, kErrorIconSize)),
             views::Builder<views::Label>()
                 .SetBorder(views::CreateEmptyBorder(kErrorLabelInteriorMargin))
                 .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

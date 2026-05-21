@@ -44,6 +44,7 @@
 #include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -340,9 +341,11 @@ std::unique_ptr<TriView> AudioDetailedView::CreateNbsWarningView() {
   std::unique_ptr<views::ImageView> image_view =
       base::WrapUnique(TrayPopupUtils::CreateMainImageView(
           /*use_wide_layout=*/true));
-  image_view->SetImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kNotificationWarningOldIcon,
-                                     kColorAshIconColorWarning, kMenuIconSize));
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
+      ::features::IsRoundedIconsEnabled()
+          ? vector_icons::kInfoFilledIcon
+          : vector_icons::kNotificationWarningOldIcon,
+      kColorAshIconColorWarning, kMenuIconSize));
   nbs_warning_view->AddView(TriView::Container::START, std::move(image_view));
 
   std::unique_ptr<views::Label> label =

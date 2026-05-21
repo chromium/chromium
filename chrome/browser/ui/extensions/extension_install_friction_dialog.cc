@@ -16,6 +16,7 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -113,7 +114,10 @@ void ShowExtensionInstallFrictionDialog(
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_EXTENSION_PROMPT_INSTALL_FRICTION_TITLE))
           .SetIcon(ui::ImageModel::FromVectorIcon(
-              vector_icons::kGppMaybeOldIcon, ui::kColorAlertMediumSeverityIcon,
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kGppMaybeIcon
+                  : vector_icons::kGppMaybeOldIcon,
+              ui::kColorAlertMediumSeverityIcon,
               extension_misc::EXTENSION_ICON_SMALLISH))
           .AddOkButton(
               base::BindOnce(

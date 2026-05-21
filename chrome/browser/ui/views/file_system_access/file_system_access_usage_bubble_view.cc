@@ -44,6 +44,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -188,10 +189,14 @@ class CollapsibleListView : public views::View {
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
     views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretDownOldIcon,
+        expand_collapse_button_,
+        features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowDownIcon
+                                          : vector_icons::kCaretDownOldIcon,
         ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
     views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretUpOldIcon,
+        expand_collapse_button_,
+        features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowUpIcon
+                                          : vector_icons::kCaretUpOldIcon,
         ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
 
     if (model->RowCount() < 3) {
@@ -278,8 +283,11 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
     size_t row) {
   return ui::ImageModel::FromVectorIcon(
-      row < files_.size() ? vector_icons::kInsertDriveFileOutlineOldIcon
-                          : vector_icons::kFolderOpenOldIcon,
+      row < files_.size()                 ? features::IsRoundedIconsEnabled()
+                                                ? vector_icons::kDraftIcon
+                                                : vector_icons::kInsertDriveFileOutlineOldIcon
+      : features::IsRoundedIconsEnabled() ? vector_icons::kFolderOpenIcon
+                                          : vector_icons::kFolderOpenOldIcon,
       ui::kColorIcon, kIconSize);
 }
 

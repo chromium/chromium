@@ -54,6 +54,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -259,7 +260,9 @@ ui::ImageModel CreateFallbackSearchIcon(const std::string& extension_name) {
   }
 
   // This icon doesn't pertain to an extension. Fall back to a fixed icon.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeOldIcon,
+  return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                            ? vector_icons::kGlobeIcon
+                                            : vector_icons::kGlobeOldIcon,
                                         ui::kColorIcon, kDialogIconSize);
 }
 

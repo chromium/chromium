@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
@@ -281,7 +282,9 @@ ProtocolHandlerPickerSelectionRowView::ProtocolHandlerPickerSelectionRowView(
     builder.AddChild(
         views::Builder<views::ImageView>()
             .SetImage(ui::ImageModel::FromVectorIcon(
-                vector_icons::kCheckCircleOldIcon,
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kCheckCircleFilledIcon
+                    : vector_icons::kCheckCircleOldIcon,
                 cros_tokens::kCrosSysOnPrimaryContainer, kCheckIconSize))
             .SetVisible(false)
             .SetProperty(views::kMarginsKey, left_gap)

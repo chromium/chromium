@@ -312,13 +312,15 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
     // Create the replay 10 button.
     CreateMediaActionButton(
         button_container_, static_cast<int>(MediaSessionAction::kSeekBackward),
-        vector_icons::kReplay10OldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kReplay10Icon
+                                          : vector_icons::kReplay10OldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_REPLAY_10);
 
     // Create the forward 10 button.
     CreateMediaActionButton(
         button_container_, static_cast<int>(MediaSessionAction::kSeekForward),
-        vector_icons::kForward10OldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kForward10Icon
+                                          : vector_icons::kForward10OldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_FORWARD_10);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -343,15 +345,19 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
     // label is TBD.
     chapter_list_button_ = CreateMediaActionButton(
         button_container_, kEmptyMediaActionButtonId,
-        vector_icons::kVideoLibraryOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kVideoLibraryIcon
+                                          : vector_icons::kVideoLibraryOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
     chapter_list_button_->SetCallback(
         base::BindRepeating(&MediaItemUIDetailedView::ToggleChapterListView,
                             base::Unretained(this)));
     chapter_list_button_->SetVisible(false);
 
-    // Show the `kDevicesOldIcon` as the device selector button's icon.
-    devices_icon = &vector_icons::kDevicesOldIcon;
+    // Show the `features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+    // : kDevicesOldIcon` as the device selector button's icon.
+    devices_icon =
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                            : vector_icons::kDevicesOldIcon);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

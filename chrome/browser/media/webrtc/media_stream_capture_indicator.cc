@@ -32,6 +32,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -840,13 +841,18 @@ void MediaStreamCaptureIndicator::GetStatusTrayIconInfo(
   const gfx::VectorIcon* icon = nullptr;
   if (audio && video) {
     message_id = IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_AUDIO_AND_VIDEO;
-    icon = &vector_icons::kVideocamOldIcon;
+    icon =
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kVideocamFilledIcon
+                                            : vector_icons::kVideocamOldIcon);
   } else if (audio && !video) {
     message_id = IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_AUDIO_ONLY;
-    icon = &vector_icons::kMicOldIcon;
+    icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                               : vector_icons::kMicOldIcon);
   } else if (!audio && video) {
     message_id = IDS_MEDIA_STREAM_STATUS_TRAY_TEXT_VIDEO_ONLY;
-    icon = &vector_icons::kVideocamOldIcon;
+    icon =
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kVideocamFilledIcon
+                                            : vector_icons::kVideocamOldIcon);
   }
 
   *tool_tip = l10n_util::GetStringUTF16(message_id);

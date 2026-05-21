@@ -20,6 +20,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -109,7 +110,10 @@ TreeView::TreeView()
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   folder_icon_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kFolderChromeRefreshOldIcon, ui::kColorIcon);
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kFolderIcon
+          : vector_icons::kFolderChromeRefreshOldIcon,
+      ui::kColorIcon);
 
   text_offset_ = folder_icon_.Size().width() + kImagePadding + kImagePadding +
                  kArrowRegionSize;
@@ -1248,7 +1252,8 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
                                   const gfx::Rect& node_bounds,
                                   bool expanded) {
   gfx::ImageSkia arrow = gfx::CreateVectorIcon(
-      vector_icons::kSubmenuArrowOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+                                        : vector_icons::kSubmenuArrowOldIcon,
       color_utils::DeriveDefaultIconColor(
           drawing_provider()->GetTextColorForNode(this, nullptr)));
   if (expanded) {

@@ -110,7 +110,9 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kVideocamChromeRefreshOldIcon),
+                        &(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kVideocamIcon
+                              : vector_icons::kVideocamChromeRefreshOldIcon)),
       // Permission is granted, there is no badge.
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_badge_for_testing,
@@ -134,7 +136,9 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kMicChromeRefreshOldIcon),
+                        &(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kMicIcon
+                              : vector_icons::kMicChromeRefreshOldIcon)),
       // Permission is granted, there is no badge.
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_badge_for_testing,
@@ -145,7 +149,9 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
       WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_for_testing,
-                        &vector_icons::kVideocamChromeRefreshOldIcon),
+                        &(features::IsRoundedIconsEnabled()
+                              ? vector_icons::kVideocamIcon
+                              : vector_icons::kVideocamChromeRefreshOldIcon)),
       // Permission is granted, there is no badge.
       CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
                         &ContentSettingImageView::get_icon_badge_for_testing,

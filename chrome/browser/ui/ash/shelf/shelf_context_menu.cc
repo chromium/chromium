@@ -218,8 +218,9 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       return features::IsRoundedIconsEnabled() ? views::kArrowOutwardIcon
                                                : views::kOpenOldIcon;
     case ash::MENU_CLOSE:
-      return features::IsRoundedIconsEnabled() ? views::kCancelIcon
-                                               : views::kCloseOldIcon;
+      return features::IsRoundedIconsEnabled()   ? views::kCancelIcon
+             : features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
+                                                 : views::kCloseOldIcon;
     case ash::SHOW_APP_INFO:
       return features::IsRoundedIconsEnabled() ? views::kInfoIcon
                                                : views::kInfoOldIcon;
@@ -227,7 +228,9 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       return features::IsRoundedIconsEnabled() ? views::kDeleteIcon
                                                : views::kUninstallOldIcon;
     case ash::SETTINGS:
-      return vector_icons::kSettingsOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kSettingsFilledIcon
+                 : vector_icons::kSettingsOldIcon;
     case ash::TOGGLE_PIN:
       return controller_->IsPinned(item_.id) ? features::IsRoundedIconsEnabled()
                                                    ? views::kKeepFilledIcon

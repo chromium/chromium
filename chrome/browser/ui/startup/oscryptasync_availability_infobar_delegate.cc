@@ -17,6 +17,7 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 // static
 void OSCryptAsyncAvailabilityInfoBarDelegate::MaybeCreate(
@@ -69,7 +70,8 @@ OSCryptAsyncAvailabilityInfoBarDelegate::GetPriority() const {
 
 const gfx::VectorIcon& OSCryptAsyncAvailabilityInfoBarDelegate::GetVectorIcon()
     const {
-  return vector_icons::kErrorOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                           : vector_icons::kErrorOldIcon;
 }
 
 std::u16string OSCryptAsyncAvailabilityInfoBarDelegate::GetMessageText() const {

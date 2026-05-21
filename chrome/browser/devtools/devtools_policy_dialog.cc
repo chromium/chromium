@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -91,8 +92,10 @@ void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
                     icon->SetBorder(views::CreateEmptyBorder(
                         gfx::Insets::TLBR(kIconPadding, 0, 0, 0)));
                     icon->SetImage(ui::ImageModel::FromVectorIcon(
-                        vector_icons::kBusinessOldIcon, ui::kColorIcon,
-                        extension_misc::EXTENSION_ICON_BITTY));
+                        features::IsRoundedIconsEnabled()
+                            ? vector_icons::kDomainIcon
+                            : vector_icons::kBusinessOldIcon,
+                        ui::kColorIcon, extension_misc::EXTENSION_ICON_BITTY));
 
                     auto label = std::make_unique<views::Label>(
                         l10n_util::GetStringUTF16(

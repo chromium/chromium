@@ -43,6 +43,7 @@
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -308,7 +309,9 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     const gfx::VectorIcon* source_icon = nullptr;
     int message_id;
     if (type[static_cast<size_t>(DeviceType::kCamera)]) {
-      source_icon = &::vector_icons::kVideocamOldIcon;
+      source_icon = ::features::IsRoundedIconsEnabled()
+                        ? &vector_icons::kVideocamFilledIcon
+                        : &vector_icons::kVideocamOldIcon;
       if (type[static_cast<size_t>(DeviceType::kMic)]) {
         message_id = IDS_APP_USING_CAMERA_MIC_NOTIFICATION_MESSAGE;
       } else {
@@ -316,7 +319,9 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
       }
     } else {
       DCHECK_EQ(type, kMicNotification);
-      source_icon = &::vector_icons::kMicOldIcon;
+      source_icon = ::features::IsRoundedIconsEnabled()
+                        ? &vector_icons::kMicFilledIcon
+                        : &vector_icons::kMicOldIcon;
       message_id = IDS_APP_USING_MIC_NOTIFICATION_MESSAGE;
     }
 

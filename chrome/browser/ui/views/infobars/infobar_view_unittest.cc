@@ -17,6 +17,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -38,7 +39,8 @@ class TestInfoBarDelegateWithIcon : public infobars::InfoBarDelegate {
   }
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kWarningOldIcon;
+    return features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
+                                             : vector_icons::kWarningOldIcon;
   }
 };
 

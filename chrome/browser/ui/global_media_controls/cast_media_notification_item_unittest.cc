@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 using media_router::mojom::MediaStatus;
@@ -105,7 +106,9 @@ class CastMediaNotificationItemTest : public testing::Test {
   void SetView() {
     EXPECT_CALL(view_, UpdateWithVectorIcon(_))
         .WillOnce([](const gfx::VectorIcon* vector_icon) {
-          EXPECT_EQ(vector_icons::kMediaRouterIdleOldIcon.reps.data(),
+          EXPECT_EQ(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kCastIcon.reps.data()
+                        : vector_icons::kMediaRouterIdleOldIcon.reps.data(),
                     vector_icon->reps.data());
         });
     EXPECT_CALL(view_, UpdateWithMediaSessionInfo(_))

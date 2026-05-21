@@ -27,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -112,8 +113,10 @@ int GetSiteAccessButtonIndex(PermissionsManager::UserSiteAccess site_access) {
 // Returns the icon for the setting button.
 std::unique_ptr<views::ImageView> GetSettingsButtonIcon(int icon_size) {
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowChromeRefreshOldIcon, ui::kColorIconSecondary,
-      icon_size));
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kKeyboardArrowRightIcon
+          : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
+      ui::kColorIconSecondary, icon_size));
 }
 
 }  // namespace
@@ -234,7 +237,10 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::OpenMainPage,
                               base::Unretained(menu_handler)),
-                          vector_icons::kArrowBackOldIcon, icon_size))
+                          features::IsRoundedIconsEnabled()
+                              ? vector_icons::kArrowBackIcon
+                              : vector_icons::kArrowBackOldIcon,
+                          icon_size))
                       .SetTooltipText(
                           l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
                       .SetAccessibleName(

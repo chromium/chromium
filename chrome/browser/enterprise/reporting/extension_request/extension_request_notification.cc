@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -71,9 +72,10 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   const std::u16string body = l10n_util::GetPluralStringFUTF16(
       kNotificationBodies[notify_type_], extension_ids_.size());
   GURL original_url("https://chrome.google.com/webstore");
-  auto icon = ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
-                                             ui::kColorIcon,
-                                             message_center::kSmallImageSize);
+  auto icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      ui::kColorIcon, message_center::kSmallImageSize);
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationIds[notify_type_],

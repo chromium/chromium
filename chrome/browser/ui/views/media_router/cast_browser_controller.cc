@@ -19,6 +19,7 @@
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 
 namespace media_router {
 
@@ -99,13 +100,21 @@ void CastBrowserController::UpdateIcon() {
 
   if ((!issue_severity_ || issue_severity_ == Severity::NOTIFICATION) &&
       !has_local_route_) {
-    new_icon = &vector_icons::kMediaRouterIdleChromeRefreshOldIcon;
+    new_icon = &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kCastIcon
+                     : vector_icons::kMediaRouterIdleChromeRefreshOldIcon);
   } else if (issue_severity_ == Severity::WARNING) {
-    new_icon = &vector_icons::kMediaRouterWarningChromeRefreshOldIcon;
+    new_icon = &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kCastWarningIcon
+                     : vector_icons::kMediaRouterWarningChromeRefreshOldIcon);
   } else if (is_frozen) {
-    new_icon = &vector_icons::kMediaRouterPausedOldIcon;
+    new_icon = &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kCastPauseIcon
+                     : vector_icons::kMediaRouterPausedOldIcon);
   } else {
-    new_icon = &vector_icons::kMediaRouterActiveChromeRefreshOldIcon;
+    new_icon = &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kCastConnectedIcon
+                     : vector_icons::kMediaRouterActiveChromeRefreshOldIcon);
     active = true;
   }
 
@@ -173,7 +182,9 @@ void CastBrowserController::ToggleDialog() {
 }
 
 void CastBrowserController::LogIconChange(const gfx::VectorIcon* icon) {
-  if (icon == &vector_icons::kMediaRouterIdleChromeRefreshOldIcon) {
+  if (icon == &(features::IsRoundedIconsEnabled()
+                    ? vector_icons::kCastIcon
+                    : vector_icons::kMediaRouterIdleChromeRefreshOldIcon)) {
     logger_->LogInfo(
         mojom::LogCategory::kUi, kLoggerComponent,
         "Cast toolbar icon indicates no active session nor issues.", "", "",
@@ -181,16 +192,24 @@ void CastBrowserController::LogIconChange(const gfx::VectorIcon* icon) {
   } else if (icon == &vector_icons::kMediaRouterErrorIcon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a fatal issue.", "", "", "");
-  } else if (icon == &vector_icons::kMediaRouterWarningChromeRefreshOldIcon) {
+  } else if (icon ==
+             &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kCastWarningIcon
+                   : vector_icons::kMediaRouterWarningChromeRefreshOldIcon)) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a warning issue.", "", "", "");
-  } else if (icon == &vector_icons::kMediaRouterPausedOldIcon) {
+  } else if (icon == &(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kCastPauseIcon
+                           : vector_icons::kMediaRouterPausedOldIcon)) {
     logger_->LogInfo(
         mojom::LogCategory::kUi, kLoggerComponent,
         "Cast toolbar icon indicated there is a paused mirroring session.", "",
         "", "");
   } else {
-    CHECK_EQ(icon, &vector_icons::kMediaRouterActiveChromeRefreshOldIcon);
+    CHECK_EQ(icon,
+             &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kCastConnectedIcon
+                   : vector_icons::kMediaRouterActiveChromeRefreshOldIcon));
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon is blue, indicating an active session.",
                      "", "", "");

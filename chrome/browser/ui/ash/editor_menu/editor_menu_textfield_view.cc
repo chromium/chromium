@@ -16,6 +16,7 @@
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -106,7 +107,8 @@ void EditorMenuTextfieldView::InitLayout() {
       base::BindRepeating(
           &EditorMenuTextfieldView::OnTextfieldArrowButtonPressed,
           weak_factory_.GetWeakPtr()),
-      vector_icons::kForwardArrowOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kArrowForwardIcon
+                                          : vector_icons::kForwardArrowOldIcon,
       GetEditorMenuFreeformTextfieldArrowButtonTooltip()));
   arrow_button_->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);

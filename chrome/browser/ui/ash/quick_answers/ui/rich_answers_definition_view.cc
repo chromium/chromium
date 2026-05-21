@@ -14,6 +14,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
@@ -136,9 +137,10 @@ void RichAnswersDefinitionView::AddPhoneticsAudioButtonTo(
       &RichAnswersDefinitionView::OnPhoneticsAudioButtonPressed,
       weak_factory_.GetWeakPtr());
   ui::ImageModel phonetics_audio_button_closure_image_model =
-      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpOldIcon,
-                                     ui::kColorSysOnSurface,
-                                     kRichAnswersIconSizeDip);
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
+                                            : vector_icons::kVolumeUpOldIcon,
+          ui::kColorSysOnSurface, kRichAnswersIconSizeDip);
   views::ImageButton* button_view =
       container_view->AddChildView(CreateImageButtonView(
           phonetics_audio_button_closure,

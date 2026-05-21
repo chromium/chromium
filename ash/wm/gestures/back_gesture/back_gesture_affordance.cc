@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
@@ -163,16 +164,24 @@ class AffordanceView : public views::View {
     if (is_activated) {
       canvas->DrawImageInt(
           gfx::CreateVectorIcon(
-              is_rtl ? vector_icons::kForwardArrowOldIcon
-                     : vector_icons::kBackArrowOldIcon,
+              is_rtl ? ::features::IsRoundedIconsEnabled()
+                           ? vector_icons::kArrowForwardIcon
+                           : vector_icons::kForwardArrowOldIcon
+              : ::features::IsRoundedIconsEnabled()
+                  ? vector_icons::kArrowBackIcon
+                  : vector_icons::kBackArrowOldIcon,
               kArrowSize,
               color_provider->GetColor(kColorAshButtonIconColorPrimary)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     } else {
       canvas->DrawImageInt(
           gfx::CreateVectorIcon(
-              is_rtl ? vector_icons::kForwardArrowOldIcon
-                     : vector_icons::kBackArrowOldIcon,
+              is_rtl ? ::features::IsRoundedIconsEnabled()
+                           ? vector_icons::kArrowForwardIcon
+                           : vector_icons::kForwardArrowOldIcon
+              : ::features::IsRoundedIconsEnabled()
+                  ? vector_icons::kArrowBackIcon
+                  : vector_icons::kBackArrowOldIcon,
               kArrowSize, color_provider->GetColor(kColorAshButtonIconColor)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     }

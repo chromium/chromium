@@ -22,6 +22,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -186,9 +187,10 @@ void RequestSystemProxyCredentialsView::Init() {
   auto* error_icon =
       error_container->AddChildView(std::make_unique<views::ImageView>());
   constexpr int kIconSize = 18;
-  error_icon->SetImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineOldIcon,
-                                     ui::kColorAlertHighSeverity, kIconSize));
+  error_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kInfoIcon
+                                          : vector_icons::kInfoOutlineOldIcon,
+      ui::kColorAlertHighSeverity, kIconSize));
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
 

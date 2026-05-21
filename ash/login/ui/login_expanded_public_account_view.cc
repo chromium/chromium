@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -308,7 +309,9 @@ class MonitoringWarningView : public NonAccessibleView {
                 .CopyAddressTo(&image_)
                 .SetVisible(false)
                 .SetImage(ui::ImageModel::FromVectorIcon(
-                    vector_icons::kWarningOldIcon,
+                    ::features::IsRoundedIconsEnabled()
+                        ? vector_icons::kWarningFilledIcon
+                        : vector_icons::kWarningOldIcon,
                     static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
                     kMonitoringWarningIconSizeDp)),
             views::Builder<views::View>()

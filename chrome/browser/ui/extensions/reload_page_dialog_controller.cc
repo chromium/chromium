@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -182,10 +183,12 @@ void ReloadPageDialogController::Show() {
     } else {
       // For multiple extensions, set the icon to the extensions puzzle icon.
       message_->SetIcon(
-          gfx::Image(
-              ui::ImageModel::FromVectorIcon(vector_icons::kExtensionOldIcon,
-                                             ui::kColorIcon, kIconSize)
-                  .Rasterize(&web_contents_->GetColorProvider()))
+          gfx::Image(ui::ImageModel::FromVectorIcon(
+                         features::IsRoundedIconsEnabled()
+                             ? vector_icons::kExtensionFilledIcon
+                             : vector_icons::kExtensionOldIcon,
+                         ui::kColorIcon, kIconSize)
+                         .Rasterize(&web_contents_->GetColorProvider()))
               .AsBitmap());
     }
     message_->DisableIconTint();

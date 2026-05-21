@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -93,9 +94,13 @@ TEST_F(ThemeTrackingImageViewTest, CreateWithImageSkia) {
 
 TEST_F(ThemeTrackingImageViewTest, CreateWithImageModel) {
   ui::ImageModel light_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kSyncOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
+                                        : vector_icons::kSyncOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kCallOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kCallFilledIcon
+                                        : vector_icons::kCallOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_model, dark_model,
@@ -113,11 +118,17 @@ TEST_F(ThemeTrackingImageViewTest, CreateWithImageModel) {
 
 TEST_F(ThemeTrackingImageViewTest, SetLightImage) {
   ui::ImageModel light_model1{ui::ImageModel::FromVectorIcon(
-      vector_icons::kSyncOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
+                                        : vector_icons::kSyncOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel light_model2{ui::ImageModel::FromVectorIcon(
-      vector_icons::kUsbOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kUsbIcon
+                                        : vector_icons::kUsbOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kCallOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kCallFilledIcon
+                                        : vector_icons::kCallOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_model1, dark_model,
@@ -144,11 +155,17 @@ TEST_F(ThemeTrackingImageViewTest, SetLightImage) {
 
 TEST_F(ThemeTrackingImageViewTest, SetDarkImage) {
   ui::ImageModel light_model{ui::ImageModel::FromVectorIcon(
-      vector_icons::kSyncOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
+                                        : vector_icons::kSyncOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model1{ui::ImageModel::FromVectorIcon(
-      vector_icons::kUsbOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kUsbIcon
+                                        : vector_icons::kUsbOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
   ui::ImageModel dark_model2{ui::ImageModel::FromVectorIcon(
-      vector_icons::kCallOldIcon, ui::kColorMenuIcon, kImageSize)};
+      features::IsRoundedIconsEnabled() ? vector_icons::kCallFilledIcon
+                                        : vector_icons::kCallOldIcon,
+      ui::kColorMenuIcon, kImageSize)};
 
   SetView(std::make_unique<ThemeTrackingImageView>(
       light_model, dark_model1,

@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 ToggleMicrophoneButton::ToggleMicrophoneButton(PressedCallback callback)
@@ -36,8 +37,12 @@ void ToggleMicrophoneButton::UpdateImageAndTooltipText() {
     return;
   }
 
-  const auto& icon = is_muted_ ? vector_icons::kMicOffChromeRefreshOldIcon
-                               : vector_icons::kMicChromeRefreshOldIcon;
+  const auto& icon = is_muted_ ? features::IsRoundedIconsEnabled()
+                                     ? vector_icons::kMicOffIcon
+                                     : vector_icons::kMicOffChromeRefreshOldIcon
+                     : features::IsRoundedIconsEnabled()
+                         ? vector_icons::kMicIcon
+                         : vector_icons::kMicChromeRefreshOldIcon;
 
   auto text = is_muted_ ? IDS_PICTURE_IN_PICTURE_UNMUTE_MICROPHONE_TEXT
                         : IDS_PICTURE_IN_PICTURE_MUTE_MICROPHONE_TEXT;

@@ -15,6 +15,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -140,7 +141,9 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
   close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PasswordChangeToast::OnCloseButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kCloseChromeRefreshOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kCloseIcon
+          : vector_icons::kCloseChromeRefreshOldIcon,
       layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
       ui::kColorToastForeground));
   // Override the image button's border with the appropriate icon border size.

@@ -10,6 +10,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -35,10 +36,14 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_HIDE_PIN))
           .Build();
   SetImageFromVectorIconWithColor(
-      button.get(), vector_icons::kVisibilityOldIcon,
+      button.get(),
+      features::IsRoundedIconsEnabled() ? vector_icons::kVisibilityIcon
+                                        : vector_icons::kVisibilityOldIcon,
       {ui::kColorIcon, ui::kColorIconDisabled}, kEyeIconSize);
   SetToggledImageFromVectorIconWithColor(
-      button.get(), vector_icons::kVisibilityOffOldIcon,
+      button.get(),
+      features::IsRoundedIconsEnabled() ? vector_icons::kVisibilityOffIcon
+                                        : vector_icons::kVisibilityOffOldIcon,
       {ui::kColorIcon, ui::kColorIconDisabled}, kEyeIconSize);
   views::InkDrop::Get(button.get())
       ->SetMode(views::InkDropHost::InkDropMode::ON);

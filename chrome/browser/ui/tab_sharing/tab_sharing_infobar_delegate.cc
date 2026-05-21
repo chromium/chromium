@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
@@ -160,8 +161,9 @@ class TabSharingInfoBarDelegate::CscIndicatorButton
 
   ui::ImageModel GetImage() const override {
     return ui::ImageModel::FromVectorIcon(
-        vector_icons::kTouchpadMouseOldIcon, ui::kColorSysPrimary,
-        kCapturedSurfaceControlIndicatorButtonIconHeight);
+        features::IsRoundedIconsEnabled() ? vector_icons::kTouchpadMouseIcon
+                                          : vector_icons::kTouchpadMouseOldIcon,
+        ui::kColorSysPrimary, kCapturedSurfaceControlIndicatorButtonIconHeight);
   }
 
  private:
@@ -313,7 +315,8 @@ bool TabSharingInfoBarDelegate::IsCloseable() const {
 }
 
 const gfx::VectorIcon& TabSharingInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kScreenShareOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kScreenShareIcon
+                                           : vector_icons::kScreenShareOldIcon;
 }
 
 const TabSharingInfoBarDelegateButton& TabSharingInfoBarDelegate::GetButton(

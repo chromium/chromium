@@ -171,7 +171,8 @@ std::u16string ClickToCallUiController::GetContentType() const {
 }
 
 const gfx::VectorIcon& ClickToCallUiController::GetVectorIcon() const {
-  return vector_icons::kCallRefreshOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kCallIcon
+                                           : vector_icons::kCallRefreshOldIcon;
 }
 
 std::u16string ClickToCallUiController::GetTextForTooltipAndAccessibleName()

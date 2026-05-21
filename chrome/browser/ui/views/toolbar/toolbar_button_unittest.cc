@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -281,7 +282,9 @@ TEST_F(ToolbarButtonActionViewInterfaceTest, TestActionChanged) {
       actions::ActionItem::Builder()
           .SetActionId(0)
           .SetEnabled(false)
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kErrorOldIcon))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                                : vector_icons::kErrorOldIcon))
           .Build();
   toolbar_button->GetActionViewInterface()->ActionItemChangedImpl(
       action_item.get());

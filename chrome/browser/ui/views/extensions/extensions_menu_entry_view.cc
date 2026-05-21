@@ -56,13 +56,17 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
     button_builder.SetHorizontalAlignment(gfx::ALIGN_LEFT)
         .SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                        ui::ImageModel::FromVectorIcon(
-                           vector_icons::kBusinessChromeRefreshOldIcon,
+                           features::IsRoundedIconsEnabled()
+                               ? vector_icons::kDomainIcon
+                               : vector_icons::kBusinessChromeRefreshOldIcon,
                            kColorExtensionMenuIcon, small_icon_size));
   } else {
     // Add right-aligned arrow icon for non-enterprise extensions when the
     // button is not disabled.
     auto arrow_icon = ui::ImageModel::FromVectorIcon(
-        vector_icons::kSubmenuArrowChromeRefreshOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowRightIcon
+            : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
         kColorExtensionMenuIcon, small_icon_size);
 
     button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)

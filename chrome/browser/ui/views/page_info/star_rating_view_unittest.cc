@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -29,7 +30,10 @@ class StarRatingViewTest : public views::ViewsTestBase {
   bool IsFullStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
-    return model.vector_icon()->name == vector_icons::kStarOldIcon.name &&
+    return model.vector_icon()->name ==
+               (features::IsRoundedIconsEnabled()
+                    ? vector_icons::kStarFilledIcon.name
+                    : vector_icons::kStarOldIcon.name) &&
            model.color() == kColorStarRatingFullIcon;
   }
 
@@ -43,7 +47,10 @@ class StarRatingViewTest : public views::ViewsTestBase {
   bool IsEmptyStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
-    return model.vector_icon()->name == vector_icons::kStarOldIcon.name &&
+    return model.vector_icon()->name ==
+               (features::IsRoundedIconsEnabled()
+                    ? vector_icons::kStarFilledIcon.name
+                    : vector_icons::kStarOldIcon.name) &&
            model.color() == kColorStarRatingEmptyIcon;
   }
 

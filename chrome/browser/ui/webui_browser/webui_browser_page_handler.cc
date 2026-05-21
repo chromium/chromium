@@ -130,20 +130,31 @@ class WebUIBrowserGuestHandler
                              : omnibox::kSecurePageInfoChromeRefreshOldIcon)) {
       icon_type =
           webui_browser::mojom::SecurityIcon::SecurePageInfoChromeRefresh;
-    } else if (icon == &vector_icons::kNoEncryptionOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kNoEncryptionIcon
+                             : vector_icons::kNoEncryptionOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::NoEncryption;
-    } else if (icon == &vector_icons::kNotSecureWarningChromeRefreshOldIcon) {
+    } else if (icon ==
+               &(features::IsRoundedIconsEnabled()
+                     ? vector_icons::kWarningIcon
+                     : vector_icons::kNotSecureWarningChromeRefreshOldIcon)) {
       icon_type =
           webui_browser::mojom::SecurityIcon::NotSecureWarningChromeRefresh;
-    } else if (icon == &vector_icons::kBusinessChromeRefreshOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDomainIcon
+                             : vector_icons::kBusinessChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::BusinessChromeRefresh;
-    } else if (icon == &vector_icons::kDangerousChromeRefreshOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kDangerousFilledIcon
+                             : vector_icons::kDangerousChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::DangerousChromeRefresh;
     } else if (icon == &(features::IsRoundedIconsEnabled()
                              ? omnibox::kChromeProductIcon
                              : omnibox::kProductChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::ProductChromeRefresh;
-    } else if (icon == &vector_icons::kExtensionChromeRefreshOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kChromeExtensionIcon
+                             : vector_icons::kExtensionChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::ExtensionChromeRefresh;
     } else if (icon == &(features::IsRoundedIconsEnabled()
                              ? omnibox::kOfflinePinFilledIcon

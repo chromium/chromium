@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -185,11 +186,12 @@ void ResultView::SetDesign(Design design) {
 
   phonetics_audio_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpOldIcon,
-                                     design == Design::kCurrent
-                                         ? ui::kColorButtonBackgroundProminent
-                                         : ui::kColorSysOnSurface,
-                                     kPhoneticsAudioButtonSizeDip));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
+                                            : vector_icons::kVolumeUpOldIcon,
+          design == Design::kCurrent ? ui::kColorButtonBackgroundProminent
+                                     : ui::kColorSysOnSurface,
+          kPhoneticsAudioButtonSizeDip));
   phonetics_audio_button_->SetBorder(
       design == Design::kCurrent
           ? views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip)

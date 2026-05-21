@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
@@ -94,7 +95,9 @@ void DrawPasskeyIcon(SkCanvas* canvas,
   constexpr int kSizePx = 100;
   constexpr int kBorderPx = 0;  // Unlike the dino, the icon is already padded.
   auto icon = gfx::CreateVectorIcon(gfx::IconDescription(
-      vector_icons::kPasskeyOldIcon, kSizePx, paint_foreground.getColor()));
+      features::IsRoundedIconsEnabled() ? vector_icons::kPasskeyIcon
+                                        : vector_icons::kPasskeyOldIcon,
+      kSizePx, paint_foreground.getColor()));
   PaintCenterImage(canvas, canvas_bounds, kSizePx, kSizePx, kBorderPx,
                    paint_background, icon.GetRepresentation(1.0f).GetBitmap());
 }

@@ -86,7 +86,9 @@ const gfx::VectorIcon& ContextualSearchFulfillmentAction::GetVectorIcon()
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-  return vector_icons::kSearchChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kSearchIcon
+             : vector_icons::kSearchChromeRefreshOldIcon;
 #endif
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -133,7 +135,9 @@ const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
              ? vector_icons::kGoogleLensLogoIcon
              : vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-  return vector_icons::kSearchChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kSearchIcon
+             : vector_icons::kSearchChromeRefreshOldIcon;
 #endif
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -200,7 +204,9 @@ void StarterPackHistoryAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackHistoryAction::GetVectorIcon() const {
-  return vector_icons::kHistoryChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kHistoryIcon
+             : vector_icons::kHistoryChromeRefreshOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 

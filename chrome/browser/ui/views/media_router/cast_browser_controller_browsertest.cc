@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -79,16 +80,24 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
     idle_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kCastIcon
+            : vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
     warning_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kCastWarningIcon
+            : vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
     active_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kCastConnectedIcon
+            : vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
         color_provider->GetColor(kColorMediaRouterIconActive)));
     paused_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterPausedOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kCastPauseIcon
+            : vector_icons::kMediaRouterPausedOldIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
   }
 

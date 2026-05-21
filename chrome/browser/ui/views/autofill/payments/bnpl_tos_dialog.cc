@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -74,18 +75,22 @@ BnplTosDialog::BnplTosDialog(
 
   content_view_->AddChildView(CreateTextWithIconView(
       controller_->GetReviewText(), /*text_link_info=*/std::nullopt,
-      vector_icons::kChecklistOldIcon));
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kChecklistIcon
+                                          : vector_icons::kChecklistOldIcon));
 
   content_view_->AddChildView(CreateTextWithIconView(
       controller_->GetApproveText(), /*text_link_info=*/std::nullopt,
-      vector_icons::kReceiptLongOldIcon));
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kReceiptLongIcon
+                                          : vector_icons::kReceiptLongOldIcon));
 
   payments::TextWithLink link_text = controller_->GetLinkText();
   TextLinkInfo link_info;
   link_info.offset = link_text.offset;
   link_info.callback = base::BindRepeating(link_opener_, link_text.url);
   content_view_->AddChildView(CreateTextWithIconView(
-      link_text.text, std::move(link_info), vector_icons::kAddLinkOldIcon));
+      link_text.text, std::move(link_info),
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kAddLinkIcon
+                                          : vector_icons::kAddLinkOldIcon));
 
   content_view_->AddChildView(std::make_unique<views::Separator>())
       ->SetProperty(

@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 ToggleCameraButton::ToggleCameraButton(PressedCallback callback)
@@ -37,7 +38,11 @@ void ToggleCameraButton::UpdateImageAndTooltipText() {
   }
 
   const auto& icon = is_turned_on_
-                         ? vector_icons::kVideocamChromeRefreshOldIcon
+                         ? features::IsRoundedIconsEnabled()
+                               ? vector_icons::kVideocamIcon
+                               : vector_icons::kVideocamChromeRefreshOldIcon
+                     : features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVideocamOffIcon
                          : vector_icons::kVideocamOffChromeRefreshOldIcon;
 
   auto text = is_turned_on_ ? IDS_PICTURE_IN_PICTURE_TURN_OFF_CAMERA_TEXT

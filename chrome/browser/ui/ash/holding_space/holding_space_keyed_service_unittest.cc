@@ -85,6 +85,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -2436,7 +2437,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
                   gfx::ImageSkiaOperations::CreateSuperimposedImage(
                       image_util::CreateEmptyImage(kImageSize),
                       gfx::CreateVectorIcon(
-                          vector_icons::kErrorOutlineOldIcon,
+                          ::features::IsRoundedIconsEnabled()
+                              ? vector_icons::kErrorIcon
+                              : vector_icons::kErrorOutlineOldIcon,
                           kHoldingSpaceIconSize,
                           cros_styles::ResolveColor(
                               cros_styles::ColorName::kIconColorAlert,
@@ -2475,7 +2478,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
                   gfx::ImageSkiaOperations::CreateSuperimposedImage(
                       image_util::CreateEmptyImage(kImageSize),
                       gfx::CreateVectorIcon(
-                          vector_icons::kErrorOutlineOldIcon,
+                          ::features::IsRoundedIconsEnabled()
+                              ? vector_icons::kErrorIcon
+                              : vector_icons::kErrorOutlineOldIcon,
                           kHoldingSpaceIconSize,
                           cros_styles::ResolveColor(
                               cros_styles::ColorName::kIconColorWarning,

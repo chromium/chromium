@@ -30,6 +30,7 @@
 #include "content/public/browser/download_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -54,7 +55,10 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
   return gfx::ImageSkiaOperations::CreateSuperimposedImage(
       image_util::CreateEmptyImage(size),
       gfx::CreateVectorIcon(
-          vector_icons::kErrorOutlineOldIcon, kHoldingSpaceIconSize,
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kErrorIcon
+              : vector_icons::kErrorOutlineOldIcon,
+          kHoldingSpaceIconSize,
           cros_styles::ResolveColor(
               color_name,
               /*is_dark_mode=*/

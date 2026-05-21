@@ -95,13 +95,15 @@ std::u16string RelaunchRequiredDialogView::GetWindowTitle() const {
 
 ui::ImageModel RelaunchRequiredDialogView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(
-      ap_style_ ?
+      ap_style_
+          ?
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                vector_icons::kGshieldIcon
+          vector_icons::kGshieldIcon
 #else
           features::IsRoundedIconsEnabled() ? kSecurityIcon : kSecurityOldIcon
 #endif
-                : vector_icons::kBusinessOldIcon,
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                              : vector_icons::kBusinessOldIcon,
       ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));

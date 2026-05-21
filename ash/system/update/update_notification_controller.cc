@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
@@ -252,7 +253,8 @@ const gfx::VectorIcon& UpdateNotificationController::GetIcon() const {
   if (model_->relaunch_notification_state().requirement_type ==
       RelaunchNotificationState::kNone)
     return kSystemMenuUpdateIcon;
-  return vector_icons::kBusinessOldIcon;
+  return ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                             : vector_icons::kBusinessOldIcon;
 }
 
 message_center::SystemNotificationWarningLevel

@@ -25,6 +25,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -95,8 +96,9 @@ void AiOverlayDialogController::ShowOverlay() {
           kActionShowAiOverlayDialog,
           browser_->GetActions()->root_action_item())) {
     action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kPauseOldIcon, ui::kColorIcon,
-        ui::SimpleMenuModel::kDefaultIconSize));
+        features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
+                                          : vector_icons::kPauseOldIcon,
+        ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
     action_item->SetProperty(kActionAiOverlayActiveKey, true);
   }
 
@@ -118,8 +120,9 @@ void AiOverlayDialogController::HideOverlay() {
           kActionShowAiOverlayDialog,
           browser_->GetActions()->root_action_item())) {
     action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kMicOldIcon, ui::kColorIcon,
-        ui::SimpleMenuModel::kDefaultIconSize));
+        features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                          : vector_icons::kMicOldIcon,
+        ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
     action_item->SetProperty(kActionAiOverlayActiveKey, false);
   }
 

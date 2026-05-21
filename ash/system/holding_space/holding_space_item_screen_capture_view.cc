@@ -19,6 +19,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -45,7 +46,9 @@ std::optional<const gfx::VectorIcon*> GetOverlayIcon(
   DCHECK(HoldingSpaceItem::IsScreenCaptureType(item->type()));
   switch (item->type()) {
     case HoldingSpaceItem::Type::kScreenRecording:
-      return &vector_icons::kPlayArrowOldIcon;
+      return &(::features::IsRoundedIconsEnabled()
+                   ? vector_icons::kPlayArrowFilledIcon
+                   : vector_icons::kPlayArrowOldIcon);
     case HoldingSpaceItem::Type::kScreenRecordingGif:
       return &kGifIcon;
     case HoldingSpaceItem::Type::kArcDownload:

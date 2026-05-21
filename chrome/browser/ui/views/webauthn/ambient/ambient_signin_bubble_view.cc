@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -52,7 +53,9 @@ std::unique_ptr<views::ImageView> GetSecondaryIconForRow(
              ? nullptr
              : std::make_unique<views::ImageView>(
                    ui::ImageModel::FromVectorIcon(
-                       vector_icons::kSubmenuArrowChromeRefreshOldIcon,
+                       features::IsRoundedIconsEnabled()
+                           ? vector_icons::kKeyboardArrowRightIcon
+                           : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
                        ui::kColorIcon, kIconSize));
 }
 

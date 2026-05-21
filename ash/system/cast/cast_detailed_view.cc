@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
@@ -217,14 +218,18 @@ void CastDetailedView::RemoveAllViews() {
 
 void CastDetailedView::AddAccessCodeCastButton(
     views::View* receiver_list_view) {
-  add_access_code_device_ =
-      AddScrollListItem(receiver_list_view, vector_icons::kKeyboardOldIcon,
-                        l10n_util::GetStringUTF16(
-                            IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
+  add_access_code_device_ = AddScrollListItem(
+      receiver_list_view,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardIcon
+                                          : vector_icons::kKeyboardOldIcon,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
   // `views::ImageView` does not support changing the color, so set the
   // image with an updated `ui::ImageModel`.
   add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kKeyboardOldIcon, cros_tokens::kCrosSysPrimary));
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardIcon
+                                          : vector_icons::kKeyboardOldIcon,
+      cros_tokens::kCrosSysPrimary));
   add_access_code_device_->text_label()->SetEnabledColor(
       cros_tokens::kCrosSysPrimary);
 }

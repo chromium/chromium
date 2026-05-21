@@ -243,7 +243,9 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                               &PageInfoNavigationHandler::OpenMainPage,
                               base::Unretained(navigation_handler_),
                               base::DoNothing()),
-                          vector_icons::kArrowBackChromeRefreshOldIcon,
+                          features::IsRoundedIconsEnabled()
+                              ? vector_icons::kArrowBackIcon
+                              : vector_icons::kArrowBackChromeRefreshOldIcon,
                           GetIconSize()))
                       .SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON)
                       .SetProperty(views::kElementIdentifierKey,
@@ -309,104 +311,197 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   const gfx::VectorIcon* icon = nullptr;
   switch (permission.type) {
     case ContentSettingsType::COOKIES:
-      icon = show_blocked_badge ? &vector_icons::kDatabaseOffOldIcon
-                                : &vector_icons::kDatabaseOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kDatabaseOffIcon
+                                        : vector_icons::kDatabaseOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kDatabaseIcon
+                                        : vector_icons::kDatabaseOldIcon);
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       icon = show_blocked_badge
-                 ? &vector_icons::kAccountCircleOffChromeRefreshOldIcon
-                 : &(features::IsRoundedIconsEnabled()
-                         ? kAccountCircleIcon
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kAccountCircleOffIcon
+                         : vector_icons::kAccountCircleOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled() ? kAccountCircleIcon
+                     : features::IsRoundedIconsEnabled()
+                         ? vector_icons::kAccountCircleIcon
                          : vector_icons::kAccountCircleChromeRefreshOldIcon);
       break;
     case ContentSettingsType::IMAGES:
-      icon = show_blocked_badge ? &vector_icons::kPhotoOffChromeRefreshOldIcon
-                                : &vector_icons::kPhotoChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kHideImageIcon
+                         : vector_icons::kPhotoOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kPhotoIcon
+                         : vector_icons::kPhotoChromeRefreshOldIcon);
       break;
     case ContentSettingsType::JAVASCRIPT:
-      icon = show_blocked_badge ? &vector_icons::kCodeOffChromeRefreshOldIcon
-                                : &vector_icons::kCodeChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCodeOffIcon
+                         : vector_icons::kCodeOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCodeIcon
+                         : vector_icons::kCodeChromeRefreshOldIcon);
       break;
     case ContentSettingsType::POPUPS:
-      icon = show_blocked_badge ? &vector_icons::kLaunchOffChromeRefreshOldIcon
-                                : &vector_icons::kLaunchChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kOpenInNewOffIcon
+                         : vector_icons::kLaunchOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kOpenInNewIcon
+                         : vector_icons::kLaunchChromeRefreshOldIcon);
       break;
     case ContentSettingsType::GEOLOCATION:
       icon = show_blocked_badge
-                 ? &vector_icons::kLocationOffChromeRefreshOldIcon
-                 : &vector_icons::kLocationOnChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kLocationOffIcon
+                         : vector_icons::kLocationOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kLocationOnIcon
+                         : vector_icons::kLocationOnChromeRefreshOldIcon);
       break;
     case ContentSettingsType::NOTIFICATIONS:
       icon = show_blocked_badge
-                 ? &vector_icons::kNotificationsOffChromeRefreshOldIcon
-                 : &vector_icons::kNotificationsChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kNotificationsOffIcon
+                         : vector_icons::kNotificationsOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kNotificationsIcon
+                         : vector_icons::kNotificationsChromeRefreshOldIcon);
       break;
     case ContentSettingsType::MEDIASTREAM_MIC:
-      icon = show_blocked_badge ? &vector_icons::kMicOffChromeRefreshOldIcon
-                                : &vector_icons::kMicChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kMicOffIcon
+                         : vector_icons::kMicOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kMicIcon
+                         : vector_icons::kMicChromeRefreshOldIcon);
       break;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       icon = show_blocked_badge
-                 ? &vector_icons::kVideocamOffChromeRefreshOldIcon
-                 : &vector_icons::kVideocamChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVideocamOffIcon
+                         : vector_icons::kVideocamOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVideocamIcon
+                         : vector_icons::kVideocamChromeRefreshOldIcon);
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       icon = show_blocked_badge
-                 ? &vector_icons::kFileDownloadOffChromeRefreshOldIcon
-                 : &vector_icons::kFileDownloadChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kFileDownloadOffIcon
+                         : vector_icons::kFileDownloadOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDownloadIcon
+                         : vector_icons::kFileDownloadChromeRefreshOldIcon);
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      icon = show_blocked_badge ? &vector_icons::kSyncSavedLocallyOffOldIcon
-                                : &vector_icons::kSyncSavedLocallyOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSyncSavedLocallyOffIcon
+                         : vector_icons::kSyncSavedLocallyOffOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSyncSavedLocallyIcon
+                         : vector_icons::kSyncSavedLocallyOldIcon);
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
-      icon = show_blocked_badge ? &vector_icons::kMidiOffChromeRefreshOldIcon
-                                : &vector_icons::kMidiChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kPianoOffIcon
+                         : vector_icons::kMidiOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kPianoIcon
+                         : vector_icons::kMidiChromeRefreshOldIcon);
       break;
     case ContentSettingsType::BACKGROUND_SYNC:
       icon = show_blocked_badge
-                 ? &vector_icons::kSyncOffChromeRefreshOldIcon
-                 : &(features::IsRoundedIconsEnabled()
-                         ? kSyncIcon
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSyncDisabledIcon
+                         : vector_icons::kSyncOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled() ? kSyncIcon
+                     : features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSyncIcon
                          : vector_icons::kSyncChromeRefreshOldIcon);
       break;
     case ContentSettingsType::ADS:
-      icon = show_blocked_badge ? &vector_icons::kAdsOffChromeRefreshOldIcon
-                                : &vector_icons::kAdsChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kAdOffIcon
+                         : vector_icons::kAdsOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kAdIcon
+                         : vector_icons::kAdsChromeRefreshOldIcon);
       break;
     case ContentSettingsType::SOUND:
-      icon = show_blocked_badge ? &vector_icons::kVolumeOffChromeRefreshOldIcon
-                                : &vector_icons::kVolumeUpChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVolumeOffIcon
+                         : vector_icons::kVolumeOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVolumeUpIcon
+                         : vector_icons::kVolumeUpChromeRefreshOldIcon);
       break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      icon = show_blocked_badge ? &vector_icons::kContentPasteOffOldIcon
-                                : &vector_icons::kContentPasteOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kContentPasteOffIcon
+                                        : vector_icons::kContentPasteOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kContentPasteIcon
+                                        : vector_icons::kContentPasteOldIcon);
       break;
     case ContentSettingsType::SENSORS:
-      icon = show_blocked_badge ? &vector_icons::kSensorsOffChromeRefreshOldIcon
-                                : &vector_icons::kSensorsChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSensorsOffIcon
+                         : vector_icons::kSensorsOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSensorsIcon
+                         : vector_icons::kSensorsChromeRefreshOldIcon);
       break;
     case ContentSettingsType::USB_GUARD:
-      icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshOldIcon
-                                : &vector_icons::kUsbChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kUsbOffIcon
+                         : vector_icons::kUsbOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kUsbIcon
+                         : vector_icons::kUsbChromeRefreshOldIcon);
       break;
     case ContentSettingsType::SERIAL_GUARD:
       icon = show_blocked_badge
-                 ? &vector_icons::kSerialPortOffChromeRefreshOldIcon
-                 : &vector_icons::kSerialPortChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDeveloperBoardOffIcon
+                         : vector_icons::kSerialPortOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDeveloperBoardIcon
+                         : vector_icons::kSerialPortChromeRefreshOldIcon);
       break;
     case ContentSettingsType::BLUETOOTH_GUARD:
       icon = show_blocked_badge
-                 ? &vector_icons::kBluetoothOffChromeRefreshOldIcon
-                 : &vector_icons::kBluetoothChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kBluetoothDisabledIcon
+                         : vector_icons::kBluetoothOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kBluetoothIcon
+                         : vector_icons::kBluetoothChromeRefreshOldIcon);
       break;
     case ContentSettingsType::BLUETOOTH_SCANNING:
-      icon = show_blocked_badge
-                 ? &vector_icons::kBluetoothOffChromeRefreshOldIcon
-                 : &vector_icons::kBluetoothScanningChromeRefreshOldIcon;
+      icon =
+          show_blocked_badge
+              ? &(features::IsRoundedIconsEnabled()
+                      ? vector_icons::kBluetoothDisabledIcon
+                      : vector_icons::kBluetoothOffChromeRefreshOldIcon)
+              : &(features::IsRoundedIconsEnabled()
+                      ? vector_icons::kBluetoothSearchingIcon
+                      : vector_icons::kBluetoothScanningChromeRefreshOldIcon);
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
@@ -418,66 +513,123 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::VR:
       icon = show_blocked_badge
-                 ? &vector_icons::kVrHeadsetOffChromeRefreshOldIcon
-                 : &vector_icons::kVrHeadsetChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCardboardOffIcon
+                         : vector_icons::kVrHeadsetOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCardboardIcon
+                         : vector_icons::kVrHeadsetChromeRefreshOldIcon);
       break;
     case ContentSettingsType::HAND_TRACKING:
-      icon = show_blocked_badge ? &vector_icons::kHandGestureOffOldIcon
-                                : &vector_icons::kHandGestureOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kHandGestureOffIcon
+                                        : vector_icons::kHandGestureOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kHandGestureIcon
+                                        : vector_icons::kHandGestureOldIcon);
       break;
     case ContentSettingsType::AR:
       icon = show_blocked_badge
-                 ? &vector_icons::kViewInArOffChromeRefreshOldIcon
-                 : &vector_icons::kViewInArChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kViewInArOffIcon
+                         : vector_icons::kViewInArOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kViewInArIcon
+                         : vector_icons::kViewInArChromeRefreshOldIcon);
       break;
     case ContentSettingsType::WINDOW_MANAGEMENT:
       icon = show_blocked_badge
-                 ? &vector_icons::kSelectWindowOffChromeRefreshOldIcon
-                 : &vector_icons::kSelectWindowChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSelectWindowOffIcon
+                         : vector_icons::kSelectWindowOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSelectWindowIcon
+                         : vector_icons::kSelectWindowChromeRefreshOldIcon);
       break;
     case ContentSettingsType::LOCAL_FONTS:
       icon = show_blocked_badge
-                 ? &vector_icons::kFontDownloadOffChromeRefreshOldIcon
-                 : &vector_icons::kFontDownloadChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kFontDownloadOffIcon
+                         : vector_icons::kFontDownloadOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kFontDownloadIcon
+                         : vector_icons::kFontDownloadChromeRefreshOldIcon);
       break;
     case ContentSettingsType::HID_GUARD:
       icon = show_blocked_badge
-                 ? &vector_icons::kVideogameAssetOffChromeRefreshOldIcon
-                 : &vector_icons::kVideogameAssetChromeRefreshOldIcon;
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVideogameAssetOffIcon
+                         : vector_icons::kVideogameAssetOffChromeRefreshOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVideogameAssetIcon
+                         : vector_icons::kVideogameAssetChromeRefreshOldIcon);
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = show_blocked_badge ? &vector_icons::kDevicesOffOldIcon
-                                : &(features::IsRoundedIconsEnabled()
-                                        ? kDevicesIcon
-                                        : vector_icons::kDevicesOldIcon);
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDevicesOffIcon
+                         : vector_icons::kDevicesOffOldIcon)
+                 : &(features::IsRoundedIconsEnabled() ? kDevicesIcon
+                     : features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDevicesIcon
+                         : vector_icons::kDevicesOldIcon);
       break;
     case ContentSettingsType::STORAGE_ACCESS:
-      icon = show_blocked_badge ? &vector_icons::kStorageAccessOffOldIcon
-                                : &vector_icons::kStorageAccessOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVr180Create2dOffIcon
+                         : vector_icons::kStorageAccessOffOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVr180Create2dIcon
+                         : vector_icons::kStorageAccessOldIcon);
       break;
     case ContentSettingsType::KEYBOARD_LOCK:
-      icon = show_blocked_badge ? &vector_icons::kKeyboardLockOffOldIcon
-                                : &vector_icons::kKeyboardLockOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kKeyboardLockOffIcon
+                                        : vector_icons::kKeyboardLockOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kKeyboardLockIcon
+                                        : vector_icons::kKeyboardLockOldIcon);
       break;
     case ContentSettingsType::POINTER_LOCK:
-      icon = show_blocked_badge ? &vector_icons::kPointerLockOffOldIcon
-                                : &vector_icons::kPointerLockOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kMouseLockOffIcon
+                                        : vector_icons::kPointerLockOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kMouseLockIcon
+                                        : vector_icons::kPointerLockOldIcon);
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
-      icon = show_blocked_badge ? &vector_icons::kTouchpadMouseOffOldIcon
-                                : &vector_icons::kTouchpadMouseOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kTouchpadMouseOffIcon
+                         : vector_icons::kTouchpadMouseOffOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kTouchpadMouseIcon
+                         : vector_icons::kTouchpadMouseOldIcon);
       break;
     case ContentSettingsType::WEB_APP_INSTALLATION:
       icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffIcon
-                                : &vector_icons::kInstallDesktopOldIcon;
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kInstallDesktopIcon
+                                        : vector_icons::kInstallDesktopOldIcon);
       break;
     case ContentSettingsType::LOCAL_NETWORK:
-      icon = show_blocked_badge ? &vector_icons::kRouterOffOldIcon
-                                : &vector_icons::kRouterOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kRouterOffIcon
+                                        : vector_icons::kRouterOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kRouterIcon
+                                        : vector_icons::kRouterOldIcon);
       break;
     case ContentSettingsType::LOOPBACK_NETWORK:
-      icon = show_blocked_badge ? &vector_icons::kDesktopAccessDisabledOldIcon
-                                : &vector_icons::kDesktopWindowsOldIcon;
+      icon = show_blocked_badge
+                 ? &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDesktopAccessDisabledIcon
+                         : vector_icons::kDesktopAccessDisabledOldIcon)
+                 : &(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kDesktopWindowsIcon
+                         : vector_icons::kDesktopWindowsOldIcon);
       break;
     default:
       break;
@@ -502,39 +654,55 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   icon = &gfx::VectorIcon::EmptyIcon();
   switch (permission.type) {
     case ContentSettingsType::COOKIES:
-      icon = &vector_icons::kDatabaseOldIcon;
+      icon =
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kDatabaseIcon
+                                              : vector_icons::kDatabaseOldIcon);
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
-      icon = &(features::IsRoundedIconsEnabled()
-                   ? kAccountCircleFilledIcon
+      icon = &(features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+               : features::IsRoundedIconsEnabled()
+                   ? vector_icons::kAccountCircleIcon
                    : vector_icons::kAccountCircleOldIcon);
       break;
     case ContentSettingsType::IMAGES:
-      icon = &vector_icons::kPhotoOldIcon;
+      icon =
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kPhotoFilledIcon
+                                              : vector_icons::kPhotoOldIcon);
       break;
     case ContentSettingsType::JAVASCRIPT:
-      icon = &vector_icons::kCodeOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kCodeIcon
+                                                 : vector_icons::kCodeOldIcon);
       break;
     case ContentSettingsType::POPUPS:
       icon =
-          &(features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
-                                              : vector_icons::kLaunchOldIcon);
+          &(features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
+            : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+                                                : vector_icons::kLaunchOldIcon);
       break;
     case ContentSettingsType::GEOLOCATION:
-      icon = &vector_icons::kLocationOnOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kLocationOnIcon
+                   : vector_icons::kLocationOnOldIcon);
       break;
     case ContentSettingsType::NOTIFICATIONS:
-      icon = &vector_icons::kNotificationsOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kNotificationsFilledIcon
+                   : vector_icons::kNotificationsOldIcon);
       break;
     case ContentSettingsType::MEDIASTREAM_MIC:
-      icon = &vector_icons::kMicOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                                 : vector_icons::kMicOldIcon);
       break;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      icon = &vector_icons::kVideocamOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kVideocamFilledIcon
+                   : vector_icons::kVideocamOldIcon);
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
-      icon = &vector_icons::kFileDownloadOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kDownload2FilledIcon
+                   : vector_icons::kFileDownloadOldIcon);
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
@@ -542,34 +710,50 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
-      icon = &vector_icons::kMidiOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kPianoIcon
+                                                 : vector_icons::kMidiOldIcon);
       break;
     case ContentSettingsType::BACKGROUND_SYNC:
-      icon = &vector_icons::kSyncOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
+                                                 : vector_icons::kSyncOldIcon);
       break;
     case ContentSettingsType::ADS:
-      icon = &vector_icons::kAdsOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kAdIcon
+                                                 : vector_icons::kAdsOldIcon);
       break;
     case ContentSettingsType::SOUND:
-      icon = &vector_icons::kVolumeUpOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kVolumeUpFilledIcon
+                   : vector_icons::kVolumeUpOldIcon);
       break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      icon = &vector_icons::kPageInfoContentPasteOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kContentPasteIcon
+                   : vector_icons::kPageInfoContentPasteOldIcon);
       break;
     case ContentSettingsType::SENSORS:
-      icon = &vector_icons::kSensorsOldIcon;
+      icon =
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kSensorsIcon
+                                              : vector_icons::kSensorsOldIcon);
       break;
     case ContentSettingsType::USB_GUARD:
-      icon = &vector_icons::kUsbOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kUsbIcon
+                                                 : vector_icons::kUsbOldIcon);
       break;
     case ContentSettingsType::SERIAL_GUARD:
-      icon = &vector_icons::kSerialPortOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kDeveloperBoardIcon
+                   : vector_icons::kSerialPortOldIcon);
       break;
     case ContentSettingsType::BLUETOOTH_GUARD:
-      icon = &vector_icons::kBluetoothOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kBluetoothIcon
+                   : vector_icons::kBluetoothOldIcon);
       break;
     case ContentSettingsType::BLUETOOTH_SCANNING:
-      icon = &vector_icons::kBluetoothScanningOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kBluetoothSearchingIcon
+                   : vector_icons::kBluetoothScanningOldIcon);
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       icon = &(features::IsRoundedIconsEnabled() ? kFileSaveIcon
@@ -577,46 +761,69 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::VR:
     case ContentSettingsType::AR:
-      icon = &vector_icons::kVrHeadsetOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kCardboardFilledIcon
+                   : vector_icons::kVrHeadsetOldIcon);
       break;
     case ContentSettingsType::HAND_TRACKING:
-      icon = &vector_icons::kHandGestureOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kHandGestureIcon
+                   : vector_icons::kHandGestureOldIcon);
       break;
     case ContentSettingsType::WINDOW_MANAGEMENT:
-      icon = &vector_icons::kSelectWindowOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kSelectWindowIcon
+                   : vector_icons::kSelectWindowOldIcon);
       break;
     case ContentSettingsType::LOCAL_FONTS:
-      icon = &vector_icons::kFontDownloadOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kFontDownloadIcon
+                   : vector_icons::kFontDownloadOldIcon);
       break;
     case ContentSettingsType::HID_GUARD:
-      icon = &vector_icons::kVideogameAssetOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kVideogameAssetFilledIcon
+                   : vector_icons::kVideogameAssetOldIcon);
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon =
-          &(features::IsRoundedIconsEnabled() ? kDevicesIcon
-                                              : vector_icons::kDevicesOldIcon);
+      icon = &(features::IsRoundedIconsEnabled() ? kDevicesIcon
+               : features::IsRoundedIconsEnabled()
+                   ? vector_icons::kDevicesIcon
+                   : vector_icons::kDevicesOldIcon);
       break;
     case ContentSettingsType::STORAGE_ACCESS:
-      icon = &vector_icons::kStorageAccessOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kVr180Create2dIcon
+                   : vector_icons::kStorageAccessOldIcon);
       break;
     case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
-      icon = &vector_icons::kPictureInPictureOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kPictureInPictureIcon
+                   : vector_icons::kPictureInPictureOldIcon);
       break;
     case ContentSettingsType::AUTOMATIC_FULLSCREEN:
       icon = &(features::IsRoundedIconsEnabled() ? kFullscreenIcon
                                                  : kFullscreenOldIcon);
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
-      icon = &vector_icons::kTouchpadMouseOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kTouchpadMouseIcon
+                   : vector_icons::kTouchpadMouseOldIcon);
       break;
     case ContentSettingsType::KEYBOARD_LOCK:
-      icon = &vector_icons::kKeyboardLockOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kKeyboardLockIcon
+                   : vector_icons::kKeyboardLockOldIcon);
       break;
     case ContentSettingsType::POINTER_LOCK:
-      icon = &vector_icons::kPointerLockOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kMouseLockIcon
+                   : vector_icons::kPointerLockOldIcon);
       break;
     case ContentSettingsType::WEB_PRINTING:
-      icon = &vector_icons::kPrinterOldIcon;
+      icon =
+          &(features::IsRoundedIconsEnabled() ? vector_icons::kPrintIcon
+                                              : vector_icons::kPrinterOldIcon);
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
@@ -640,19 +847,28 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
   const gfx::VectorIcon* icon = &gfx::VectorIcon::EmptyIcon();
   switch (object.ui_info->content_settings_type) {
     case ContentSettingsType::USB_CHOOSER_DATA:
-      icon = &vector_icons::kUsbOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kUsbIcon
+                                                 : vector_icons::kUsbOldIcon);
       break;
     case ContentSettingsType::SERIAL_CHOOSER_DATA:
-      icon = &vector_icons::kSerialPortOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kDeveloperBoardIcon
+                   : vector_icons::kSerialPortOldIcon);
       break;
     case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-      icon = &vector_icons::kBluetoothOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kBluetoothIcon
+                   : vector_icons::kBluetoothOldIcon);
       break;
     case ContentSettingsType::HID_CHOOSER_DATA:
-      icon = &vector_icons::kVideogameAssetOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kVideogameAssetFilledIcon
+                   : vector_icons::kVideogameAssetOldIcon);
       break;
     case ContentSettingsType::SMART_CARD_DATA:
-      icon = &vector_icons::kSmartCardReaderOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kSmartCardReaderIcon
+                   : vector_icons::kSmartCardReaderOldIcon);
       break;
     default:
       // All other content settings types do not represent chosen object
@@ -667,28 +883,38 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
-  return GetImageModel(vector_icons::kSettingsChromeRefreshOldIcon);
+  return GetImageModel(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kSettingsIcon
+                           : vector_icons::kSettingsChromeRefreshOldIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchChromeRefreshOldIcon, ui::kColorIcon, GetIconSize());
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kOpenInNewIcon
+          : vector_icons::kLaunchChromeRefreshOldIcon,
+      ui::kColorIcon, GetIconSize());
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
-  return GetImageModel(vector_icons::kHttpsValidOldIcon);
+  return GetImageModel(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kLockIcon
+                           : vector_icons::kHttpsValidOldIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
   // GetIconSize() does not work for subpage icons because the default size of
+  // features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon :
   // kSubmenuArrowOldIcon is 8 rather than 16.
   constexpr int kIconSize = 20;
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowChromeRefreshOldIcon, ui::kColorIcon,
-      kIconSize);
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kKeyboardArrowRightIcon
+          : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
+      ui::kColorIcon, kIconSize);
 }
 
 // static

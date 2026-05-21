@@ -12,6 +12,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/tween.h"
@@ -91,7 +92,10 @@ void Throbber::OnPaint(gfx::Canvas* canvas) {
       const int kCheckmarkDipSize = diameter_ + 2;
       canvas->Translate(gfx::Vector2d((width() - kCheckmarkDipSize) / 2,
                                       (height() - kCheckmarkDipSize) / 2));
-      gfx::PaintVectorIcon(canvas, vector_icons::kCheckCircleOldIcon,
+      gfx::PaintVectorIcon(canvas,
+                           features::IsRoundedIconsEnabled()
+                               ? vector_icons::kCheckCircleFilledIcon
+                               : vector_icons::kCheckCircleOldIcon,
                            kCheckmarkDipSize, color);
     }
     return;

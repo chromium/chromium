@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/ui_base_features.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -130,7 +131,9 @@ void ShowControlledHomeDialog(
 
   if (dialog_controller->IsPolicyIndicationNeeded()) {
     dialog_builder.AddMenuItem(
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kDomainIcon
+                                           : vector_icons::kBusinessOldIcon,
                                        ui::kColorIcon, 16),
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_INSTALLED_BY_ADMIN),
         base::DoNothing(),

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/notification_center/views/notification_swipe_control_view.h"
+
 #include <memory>
 
 #include "ash/style/icon_button.h"
@@ -15,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/message_center/views/message_view.h"
@@ -39,7 +41,10 @@ NotificationSwipeControlView::NotificationSwipeControlView(
   settings_button = std::make_unique<IconButton>(
       base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kMedium, &vector_icons::kSettingsOutlineOldIcon,
+      IconButton::Type::kMedium,
+      &(::features::IsRoundedIconsEnabled()
+            ? vector_icons::kSettingsIcon
+            : vector_icons::kSettingsOutlineOldIcon),
       IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME);
 
   settings_button->SetImageHorizontalAlignment(

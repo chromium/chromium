@@ -54,6 +54,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -330,7 +331,9 @@ void HandleShowSystemNudge() {
 
   if (has_image) {
     nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-        vector_icons::kDogfoodOldIcon, kColorAshIconColorPrimary,
+        ::features::IsRoundedIconsEnabled() ? vector_icons::kPetsIcon
+                                            : vector_icons::kDogfoodOldIcon,
+        kColorAshIconColorPrimary,
         /*icon_size=*/60);
   }
 

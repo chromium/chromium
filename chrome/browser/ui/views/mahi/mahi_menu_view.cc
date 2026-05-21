@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -254,7 +255,9 @@ MahiMenuView::MahiMenuView(
           base::BindRepeating(&MahiMenuView::OnButtonPressed,
                               weak_ptr_factory_.GetWeakPtr(),
                               ButtonType::kSettings),
-          vector_icons::kSettingsOutlineOldIcon,
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kSettingsIcon
+              : vector_icons::kSettingsOutlineOldIcon,
           l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
   settings_button_->SetID(ViewID::kSettingsButton);
 
@@ -508,10 +511,14 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
                                           weak_ptr_factory_.GetWeakPtr()))
                   .SetImageModel(views::Button::STATE_NORMAL,
                                  ui::ImageModel::FromVectorIcon(
-                                     vector_icons::kSendOldIcon))
+                                     ::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSendIcon
+                                         : vector_icons::kSendOldIcon))
                   .SetImageModel(views::Button::STATE_DISABLED,
                                  ui::ImageModel::FromVectorIcon(
-                                     vector_icons::kSendOldIcon,
+                                     ::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSendIcon
+                                         : vector_icons::kSendOldIcon,
                                      ui::kColorSysStateDisabled))
                   .SetAccessibleName(l10n_util::GetStringUTF16(
                       IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME))

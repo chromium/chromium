@@ -65,6 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -783,7 +784,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
         page_access_submenu_->AddSeparator(ui::NORMAL_SEPARATOR);
         page_access_submenu_->AddItemWithStringIdAndIcon(
             POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
-            ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
+            ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kDomainIcon
+                                               : vector_icons::kBusinessOldIcon,
                                            ui::kColorIcon, 16));
         policy_entry_in_subpage = true;
       }
@@ -823,7 +826,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
     // TODO (kylixrd): Investigate the usage of the hard-coded color.
     AddItemWithStringIdAndIcon(
         POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kDomainIcon
+                                           : vector_icons::kBusinessOldIcon,
                                        ui::kColorIcon, 16));
   }
 
@@ -838,7 +843,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
     if (IsExtensionForcePinned(*extension, profile_)) {
       AddItemWithStringIdAndIcon(
           TOGGLE_VISIBILITY, IDS_EXTENSIONS_PINNED_BY_ADMIN,
-          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kDomainIcon
+                                             : vector_icons::kBusinessOldIcon,
                                          ui::kColorIcon, 16));
     } else {
       int message_id = is_pinned_
@@ -880,7 +887,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
     } else {
       AddItemWithStringIdAndIcon(
           INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP,
-          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kDomainIcon
+                                             : vector_icons::kBusinessOldIcon,
                                          ui::kColorIcon, 16));
     }
   }
@@ -927,7 +936,9 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
       // TODO (kylixrd): Investigate the usage of the hard-coded color.
       AddItemWithStringIdAndIcon(
           POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
-          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kDomainIcon
+                                             : vector_icons::kBusinessOldIcon,
                                          ui::kColorIcon, 16));
 
     } else {
@@ -944,9 +955,11 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     if (IsExtensionForcePinned(*extension, profile_)) {
       size_t toggle_visibility_index =
           GetIndexOfCommandId(TOGGLE_VISIBILITY).value();
-      SetIcon(toggle_visibility_index,
-              ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
-                                             ui::kColorIcon, 16));
+      SetIcon(toggle_visibility_index, ui::ImageModel::FromVectorIcon(
+                                           features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kDomainIcon
+                                               : vector_icons::kBusinessOldIcon,
+                                           ui::kColorIcon, 16));
     }
   }
 

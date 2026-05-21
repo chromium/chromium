@@ -30,6 +30,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace apps {
@@ -190,7 +191,8 @@ std::u16string EnableLinkCapturingInfoBarDelegate::GetButtonLabel(
 
 const gfx::VectorIcon& EnableLinkCapturingInfoBarDelegate::GetVectorIcon()
     const {
-  return vector_icons::kSettingsOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
+                                           : vector_icons::kSettingsOldIcon;
 }
 
 bool EnableLinkCapturingInfoBarDelegate::IsCloseable() const {

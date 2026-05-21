@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/controls/button/image_button.h"
@@ -66,7 +67,9 @@ ChosenObjectView::ChosenObjectView(
 
   UpdateIconImage(/*is_deleted=*/false);
   views::SetImageFromVectorIconWithColor(
-      delete_button_, vector_icons::kCloseRoundedOldIcon,
+      delete_button_,
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+                                        : vector_icons::kCloseRoundedOldIcon,
       {kColorPageInfoChosenObjectDeleteButtonIcon,
        kColorPageInfoChosenObjectDeleteButtonIconDisabled});
 

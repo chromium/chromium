@@ -15,6 +15,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -34,8 +35,9 @@ DesktopDataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
 std::unique_ptr<views::View> CreateEnterpriseIcon() {
   auto enterprise_icon = std::make_unique<views::ImageView>();
   enterprise_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessOldIcon, ui::kColorSysOnSurfaceSubtle,
-      kBusinessIconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      ui::kColorSysOnSurfaceSubtle, kBusinessIconSize));
   return enterprise_icon;
 }
 

@@ -31,6 +31,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/types/event_type.h"
@@ -260,17 +261,19 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
       text = l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_LABEL);
       a11y_text =
           l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_A11Y_LABEL);
-      icon = ImageModel::FromVectorIcon(vector_icons::kPauseOldIcon,
-                                        ::ui::kColorLabelForeground,
-                                        kHandoffButtonIconSize);
+      icon = ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
+                                            : vector_icons::kPauseOldIcon,
+          ::ui::kColorLabelForeground, kHandoffButtonIconSize);
       break;
     case kClient:
       text = l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_LABEL);
       a11y_text =
           l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL);
-      icon = ImageModel::FromVectorIcon(vector_icons::kPlayArrowOldIcon,
-                                        ::ui::kColorLabelForeground,
-                                        kHandoffButtonIconSize);
+      icon = ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
+                                            : vector_icons::kPlayArrowOldIcon,
+          ::ui::kColorLabelForeground, kHandoffButtonIconSize);
       break;
   }
 

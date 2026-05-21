@@ -426,8 +426,11 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   views::SetImageFromVectorIconWithColor(
       thumbs_up_button_,
       match_.feedback_type == FeedbackType::kThumbsUp
-          ? vector_icons::kThumbUpFilledOldIcon
-          : vector_icons::kThumbUpOldIcon,
+          ? features::IsRoundedIconsEnabled()
+                ? vector_icons::kThumbUpFilledIcon
+                : vector_icons::kThumbUpFilledOldIcon
+      : features::IsRoundedIconsEnabled() ? vector_icons::kThumbUpIcon
+                                          : vector_icons::kThumbUpOldIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,
        /* omnibox buttons are never disabled */
@@ -439,8 +442,11 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   views::SetImageFromVectorIconWithColor(
       thumbs_down_button_,
       match_.feedback_type == FeedbackType::kThumbsDown
-          ? vector_icons::kThumbDownFilledOldIcon
-          : vector_icons::kThumbDownOldIcon,
+          ? features::IsRoundedIconsEnabled()
+                ? vector_icons::kThumbDownFilledIcon
+                : vector_icons::kThumbDownFilledOldIcon
+      : features::IsRoundedIconsEnabled() ? vector_icons::kThumbDownIcon
+                                          : vector_icons::kThumbDownOldIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,
        /* omnibox buttons are never disabled */
@@ -450,7 +456,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   }
 
   views::SetImageFromVectorIconWithColor(
-      remove_suggestion_button_, vector_icons::kCloseRoundedOldIcon,
+      remove_suggestion_button_,
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+                                        : vector_icons::kCloseRoundedOldIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,
        /* omnibox buttons are never disabled */

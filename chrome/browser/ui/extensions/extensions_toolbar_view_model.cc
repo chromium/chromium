@@ -18,6 +18,7 @@
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/origin.h"
 
@@ -175,11 +176,17 @@ const gfx::VectorIcon& ExtensionsToolbarViewModel::GetToolbarButtonIcon(
     ExtensionsToolbarButtonState state) {
   switch (state) {
     case ExtensionsToolbarButtonState::kDefault:
-      return vector_icons::kExtensionChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kChromeExtensionIcon
+                 : vector_icons::kExtensionChromeRefreshOldIcon;
     case ExtensionsToolbarButtonState::kAllExtensionsBlocked:
-      return vector_icons::kExtensionOffOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kChromeExtensionOffIcon
+                 : vector_icons::kExtensionOffOldIcon;
     case ExtensionsToolbarButtonState::kAnyExtensionHasAccess:
-      return vector_icons::kExtensionOnOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kChromeExtensionCheckIcon
+                 : vector_icons::kExtensionOnOldIcon;
   }
 }
 

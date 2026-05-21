@@ -154,8 +154,10 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
   redirect_icon_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&ActorTaskListBubbleRowButton::OnRedirectIconPressed,
                           base::Unretained(this)),
-      vector_icons::kLaunchOldIcon, kRedirectIconSize, ui::kColorMenuIcon,
-      ui::kColorMenuIcon, ui::kColorMenuIcon));
+      features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+                                        : vector_icons::kLaunchOldIcon,
+      kRedirectIconSize, ui::kColorMenuIcon, ui::kColorMenuIcon,
+      ui::kColorMenuIcon));
 
   // Set the preferred size on the button directly to accommodate the circle
   // highlight

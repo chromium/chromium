@@ -32,6 +32,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_utils.h"
@@ -1089,7 +1090,9 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
       Do([this]() {
         ShowTestAnchoredMessage(
             u"", AnchoredMessageActionIconType::kNone,
-            ui::ImageModel::FromVectorIcon(vector_icons::kEditOldIcon),
+            ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kEditFilledIcon
+                                               : vector_icons::kEditOldIcon),
             nullptr);
       }),
       WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),

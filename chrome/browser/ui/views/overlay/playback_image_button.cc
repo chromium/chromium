@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -35,14 +36,17 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
 
   play_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPlayArrowOldIcon, ui::kColorSysOnSecondaryContainer,
-      kPlaybackButtonIconSize);
-  pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseOldIcon,
-                                                kColorPipWindowForeground,
-                                                kPlaybackButtonIconSize);
-  replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayOldIcon,
-                                                 kColorPipWindowForeground,
-                                                 kPlaybackButtonIconSize);
+      features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
+                                        : vector_icons::kPlayArrowOldIcon,
+      ui::kColorSysOnSecondaryContainer, kPlaybackButtonIconSize);
+  pause_image_ = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
+                                        : vector_icons::kPauseOldIcon,
+      kColorPipWindowForeground, kPlaybackButtonIconSize);
+  replay_image_ = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kReplayIcon
+                                        : vector_icons::kReplayOldIcon,
+      kColorPipWindowForeground, kPlaybackButtonIconSize);
 
   UpdateImageAndText();
 

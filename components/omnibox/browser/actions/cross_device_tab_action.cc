@@ -7,6 +7,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -35,6 +36,7 @@ OmniboxActionId CrossDeviceTabAction::ActionId() const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& CrossDeviceTabAction::GetVectorIcon() const {
-  return vector_icons::kDevicesOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                           : vector_icons::kDevicesOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)

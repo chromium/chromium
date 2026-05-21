@@ -952,14 +952,17 @@ void ProfileMenuView::MaybeBuildBatchUploadButton() {
       base::BindRepeating(&ProfileMenuView::OnBatchUploadButtonClicked,
                           base::Unretained(this),
                           ActionableItem::kBatchUploadButton),
-      vector_icons::kSaveCloudOldIcon);
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloudUploadIcon
+                                        : vector_icons::kSaveCloudOldIcon);
 }
 
 void ProfileMenuView::BuildAutofillSettingsButton() {
   CHECK(!profile().IsGuestSession());
 
   int message_id = IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
-  const gfx::VectorIcon& icon = vector_icons::kPasswordManagerOldIcon;
+  const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
+                                    ? vector_icons::kPasswordManagerIcon
+                                    : vector_icons::kPasswordManagerOldIcon;
   auto action = base::FeatureList::IsEnabled(
                     autofill::features::kYourSavedInfoSettingsPage)
                     ? &ProfileMenuView::OnYourSavedInfoSettingsButtonClicked
@@ -975,8 +978,9 @@ void ProfileMenuView::BuildCustomizeProfileButton() {
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
                           base::Unretained(this)),
-      features::IsRoundedIconsEnabled()
-          ? kEditIcon
+      features::IsRoundedIconsEnabled() ? kEditIcon
+      : features::IsRoundedIconsEnabled()
+          ? vector_icons::kEditIcon
           : vector_icons::kEditChromeRefreshOldIcon);
 }
 
@@ -1006,7 +1010,9 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ACCOUNT_SETTINGS_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnAccountSettingsButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kSettingsChromeRefreshOldIcon);
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kSettingsIcon
+          : vector_icons::kSettingsChromeRefreshOldIcon);
 }
 
 void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
@@ -1030,13 +1036,17 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
   }
 
   int message_id = IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS;
-  const gfx::VectorIcon* icon = &vector_icons::kSettingsChromeRefreshOldIcon;
+  const gfx::VectorIcon* icon =
+      &(features::IsRoundedIconsEnabled()
+            ? vector_icons::kSettingsIcon
+            : vector_icons::kSettingsChromeRefreshOldIcon);
   if (signin_util::GetSignedInState(identity_manager) ==
       signin_util::SignedInState::kSyncing) {
     // Indicates clearly that Sync is ON.
     message_id = IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON;
-    icon = &(features::IsRoundedIconsEnabled() ? kSyncIcon
-                                               : kSyncChromeRefreshOldIcon);
+    icon = &(features::IsRoundedIconsEnabled()   ? kSyncIcon
+             : features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
+                                                 : kSyncChromeRefreshOldIcon);
   }
 
   AddFeatureButton(
@@ -1065,7 +1075,9 @@ void ProfileMenuView::MaybeBuildGoogleServicesSettingsButton() {
       base::BindRepeating(
           &ProfileMenuView::OnGoogleServicesSettingsButtonClicked,
           base::Unretained(this)),
-      vector_icons::kSettingsChromeRefreshOldIcon);
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kSettingsIcon
+          : vector_icons::kSettingsChromeRefreshOldIcon);
 }
 
 void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
@@ -1103,7 +1115,8 @@ void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
       l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
       base::BindRepeating(&ProfileMenuView::OnManageGoogleAccountButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kFilterOldIcon);
+      features::IsRoundedIconsEnabled() ? vector_icons::kTuneIcon
+                                        : vector_icons::kFilterOldIcon);
 #endif
 }
 
@@ -1142,7 +1155,7 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
       l10n_util::GetPluralStringFUTF16(button_title_id, window_count),
       std::move(callback),
       features::IsRoundedIconsEnabled()
-          ? kCloseIcon
+          ? vector_icons::kCloseIcon
           : vector_icons::kCloseChromeRefreshOldIcon);
 }
 

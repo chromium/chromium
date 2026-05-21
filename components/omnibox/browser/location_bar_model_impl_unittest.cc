@@ -216,9 +216,11 @@ TEST_F(LocationBarModelImplTest, MAYBE_PreventElisionWorks) {
 TEST_F(LocationBarModelImplTest, GetVectorIcon) {
   delegate()->SetSecurityLevel(security_state::SecurityLevel::WARNING);
 
-  gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(vector_icons::kNotSecureWarningChromeRefreshOldIcon,
-                            gfx::kFaviconSize, gfx::kPlaceholderColor);
+  gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kWarningIcon
+          : vector_icons::kNotSecureWarningChromeRefreshOldIcon,
+      gfx::kFaviconSize, gfx::kPlaceholderColor);
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
       model()->GetVectorIcon(), gfx::kFaviconSize, gfx::kPlaceholderColor);

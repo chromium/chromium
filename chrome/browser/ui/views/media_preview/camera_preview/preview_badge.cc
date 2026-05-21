@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -44,7 +45,9 @@ std::unique_ptr<views::View> CreatePreviewBadge() {
       ui::kColorSysTertiaryContainer, kRoundedRadius));
 
   const int kIconSize = 12;
-  const auto& icon = vector_icons::kVideocamChromeRefreshOldIcon;
+  const auto& icon = features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVideocamIcon
+                         : vector_icons::kVideocamChromeRefreshOldIcon;
   const auto image_model = ui::ImageModel::FromVectorIcon(
       icon, ui::kColorSysOnTertiaryContainer, kIconSize);
   badge_view->AddChildView(

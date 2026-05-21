@@ -16,6 +16,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 FileSystemAccessPageActionController::FileSystemAccessPageActionController(
     tabs::TabInterface& tab_interface)
@@ -44,7 +45,9 @@ void FileSystemAccessPageActionController::UpdateVisibility() {
       page_action_controller->OverrideImage(
           kActionShowFileSystemAccess,
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kInsertDriveFileOutlineOldIcon));
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kDraftIcon
+                  : vector_icons::kInsertDriveFileOutlineOldIcon));
       page_action_controller->OverrideText(
           kActionShowFileSystemAccess,
           l10n_util::GetStringUTF16(

@@ -32,6 +32,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -319,7 +320,9 @@ void CustomTabBarView::OnThemeChanged() {
   const SkColor foreground_disabled_color =
       color_provider->GetColor(kColorPwaToolbarButtonIconDisabled);
   SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedOldIcon,
+      close_button_,
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+                                        : vector_icons::kCloseRoundedOldIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {foreground_color, foreground_disabled_color});
 

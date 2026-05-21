@@ -29,6 +29,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -368,7 +369,9 @@ void EditorMenuView::AddTitleContainer() {
       title_container_->AddChildView(views::ImageButton::CreateIconButton(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
                               weak_factory_.GetWeakPtr()),
-          vector_icons::kSettingsOutlineOldIcon,
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kSettingsIcon
+              : vector_icons::kSettingsOutlineOldIcon,
           GetEditorMenuSettingsTooltip()));
   settings_button_->SetProperty(views::kMarginsKey, kSettingsButtonPadding);
 

@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -50,7 +51,9 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kErrorOutlineOldIcon, kColorAshButtonIconColor, kIconSize));
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kErrorIcon
+                                          : vector_icons::kErrorOutlineOldIcon,
+      kColorAshButtonIconColor, kIconSize));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,

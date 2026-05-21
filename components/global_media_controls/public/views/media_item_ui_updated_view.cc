@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -152,14 +153,18 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
 
   // Create the start casting button.
   start_casting_button_ = CreateMediaActionButton(
-      source_row, kEmptyMediaActionButtonId, vector_icons::kCastOldIcon,
+      source_row, kEmptyMediaActionButtonId,
+      features::IsRoundedIconsEnabled() ? vector_icons::kCastIcon
+                                        : vector_icons::kCastOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
   start_casting_button_->SetVisible(false);
 
   // Create the picture-in-picture button.
   picture_in_picture_button_ = CreateMediaActionButton(
       source_row, static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-      vector_icons::kPictureInPictureAltOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kPictureInPictureAltIcon
+          : vector_icons::kPictureInPictureAltOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
 
   // Create the casting indicator view which is visible when footer view is
@@ -168,7 +173,8 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       source_row->AddChildView(std::make_unique<views::ImageView>());
   casting_indicator_view_->SetPreferredSize(kMediaActionButtonSize);
   casting_indicator_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kCastOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kCastIcon
+                                        : vector_icons::kCastOldIcon,
       media_color_theme_.device_selector_foreground_color_id,
       kMediaActionButtonIconSize));
 
@@ -210,7 +216,8 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       metadata_row->AddChildView(std::make_unique<views::BoxLayoutView>());
   play_pause_button_ = CreateMediaActionButton(
       play_pause_button_container, static_cast<int>(MediaSessionAction::kPlay),
-      vector_icons::kPlayArrowOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
+                                        : vector_icons::kPlayArrowOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.play_button_container_color_id,
@@ -231,13 +238,15 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // Create the previous track button.
   CreateMediaActionButton(
       progress_row, static_cast<int>(MediaSessionAction::kPreviousTrack),
-      vector_icons::kSkipPreviousOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kSkipPreviousIcon
+                                        : vector_icons::kSkipPreviousOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
 
   // Create the replay 10 button.
   CreateMediaActionButton(
       progress_row, static_cast<int>(MediaSessionAction::kSeekBackward),
-      vector_icons::kReplay10OldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kReplay10Icon
+                                        : vector_icons::kReplay10OldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_REPLAY_10);
 
   // Create the progress view.
@@ -274,13 +283,15 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // Create the forward 10 button.
   CreateMediaActionButton(
       progress_row, static_cast<int>(MediaSessionAction::kSeekForward),
-      vector_icons::kForward10OldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kForward10Icon
+                                        : vector_icons::kForward10OldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_FORWARD_10);
 
   // Create the next track button.
   CreateMediaActionButton(
       progress_row, static_cast<int>(MediaSessionAction::kNextTrack),
-      vector_icons::kSkipNextOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kSkipNextIcon
+                                        : vector_icons::kSkipNextOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
   // Create the duration timestamp label after the progress view.
@@ -394,7 +405,8 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
   if (playing) {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPause),
-        vector_icons::kPauseOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
+                                          : vector_icons::kPauseOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         media_color_theme_.pause_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -403,7 +415,8 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
   } else {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPlay),
-        vector_icons::kPlayArrowOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
+                                          : vector_icons::kPlayArrowOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         media_color_theme_.play_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -418,13 +431,16 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
   if (in_picture_in_picture_) {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
-        vector_icons::kPipExitOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kPipExitIcon
+                                          : vector_icons::kPipExitOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP,
         media_color_theme_.secondary_foreground_color_id);
   } else {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-        vector_icons::kPictureInPictureAltOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kPictureInPictureAltIcon
+            : vector_icons::kPictureInPictureAltOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP,
         media_color_theme_.secondary_foreground_color_id);
   }
@@ -482,7 +498,8 @@ void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
 void MediaItemUIUpdatedView::UpdateWithFavicon(const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
     favicon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kGlobeOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
+                                          : vector_icons::kGlobeOldIcon,
         media_color_theme_.primary_foreground_color_id, kFaviconSize.width()));
   } else {
     favicon_view_->SetImageSize(
@@ -544,9 +561,12 @@ void MediaItemUIUpdatedView::UpdateFooterView(
 }
 
 void MediaItemUIUpdatedView::UpdateDeviceSelectorIssue(bool has_issue) {
-  start_casting_button_->UpdateIcon(has_issue
-                                        ? vector_icons::kCastWarningOldIcon
-                                        : vector_icons::kCastOldIcon);
+  start_casting_button_->UpdateIcon(
+      has_issue                           ? features::IsRoundedIconsEnabled()
+                                                ? vector_icons::kCastWarningIcon
+                                                : vector_icons::kCastWarningOldIcon
+      : features::IsRoundedIconsEnabled() ? vector_icons::kCastIcon
+                                          : vector_icons::kCastOldIcon);
 }
 
 MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(

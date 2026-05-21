@@ -51,6 +51,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -122,7 +123,9 @@ CreateDeviceAccountErrorNotification(
           GURL(device_account_notification_id), notifier_id, data,
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(&HandleDeviceAccountReauthNotificationClick)),
-          vector_icons::kNotificationWarningOldIcon,
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kInfoFilledIcon
+              : vector_icons::kNotificationWarningOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
   notification->SetSystemPriority();
 
@@ -369,7 +372,8 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
       new message_center::HandleNotificationClickDelegate(base::BindRepeating(
           &SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick,
           weak_factory_.GetWeakPtr())),
-      vector_icons::kSettingsOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
+                                          : vector_icons::kSettingsOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification.SetSystemPriority();
 

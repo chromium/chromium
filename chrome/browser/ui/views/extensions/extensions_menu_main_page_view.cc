@@ -29,6 +29,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -602,7 +603,9 @@ ExtensionsMenuMainPageView::CreateManageButtonBuilder() {
                      },
                      browser_),
                  ui::ImageModel::FromVectorIcon(
-                     vector_icons::kSettingsChromeRefreshOldIcon),
+                     features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSettingsIcon
+                         : vector_icons::kSettingsChromeRefreshOldIcon),
                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
       .SetProperty(views::kElementIdentifierKey,
                    kExtensionsMenuManageExtensionsElementId);

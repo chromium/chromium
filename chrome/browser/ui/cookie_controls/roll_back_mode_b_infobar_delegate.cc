@@ -12,6 +12,7 @@
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/text_constants.h"
 
 // static
@@ -35,7 +36,9 @@ RollBackModeBInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& RollBackModeBInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kCookieChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kCookieIcon
+             : vector_icons::kCookieChromeRefreshOldIcon;
 }
 
 std::u16string RollBackModeBInfoBarDelegate::GetMessageText() const {

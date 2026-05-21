@@ -23,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -97,7 +98,8 @@ void DeviceCommandQueryGeolocationJob::
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
       notification_data,
       base::MakeRefCounted<LocationSavedNotificationDelegate>(),
-      vector_icons::kBusinessOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   SystemNotificationHelper::GetInstance()->Display(notification);

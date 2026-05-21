@@ -10,6 +10,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
@@ -65,7 +66,9 @@ views::Button* DetailedViewDelegate::CreateSettingsButton(
     views::Button::PressedCallback callback,
     int setting_accessible_name_id) {
   auto* button = new IconButton(std::move(callback), IconButton::Type::kMedium,
-                                &vector_icons::kSettingsOutlineOldIcon,
+                                &(::features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kSettingsIcon
+                                      : vector_icons::kSettingsOutlineOldIcon),
                                 setting_accessible_name_id);
   if (!TrayPopupUtils::CanOpenWebUISettings()) {
     button->SetEnabled(false);
@@ -76,7 +79,9 @@ views::Button* DetailedViewDelegate::CreateSettingsButton(
 views::Button* DetailedViewDelegate::CreateHelpButton(
     views::Button::PressedCallback callback) {
   auto* button = new IconButton(std::move(callback), IconButton::Type::kMedium,
-                                &vector_icons::kHelpOutlineOldIcon,
+                                &(::features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kHelpIcon
+                                      : vector_icons::kHelpOutlineOldIcon),
                                 IDS_ASH_STATUS_TRAY_HELP);
   // Help opens a web page, so treat it like Web UI settings.
   if (!TrayPopupUtils::CanOpenWebUISettings()) {

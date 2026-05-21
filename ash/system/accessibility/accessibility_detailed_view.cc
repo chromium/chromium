@@ -40,6 +40,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -573,7 +574,9 @@ HoverHighlightView* AccessibilityDetailedView::AddLiveCaptionView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->live_caption().enabled();
   return AddScrollListFeatureItem(
-      container, vector_icons::kLiveCaptionOnOldIcon,
+      container,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kSubtitlesIcon
+                                          : vector_icons::kLiveCaptionOnOldIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION), checked,
       controller->IsEnterpriseIconVisibleForLiveCaption());
 }

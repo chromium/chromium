@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -465,7 +466,10 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
       } else {
         warning_summary_ = l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING);
-        warning_secondary_icon_ = &vector_icons::kDocumentScannerOldIcon;
+        warning_secondary_icon_ =
+            &(features::IsRoundedIconsEnabled()
+                  ? vector_icons::kDocumentScannerIcon
+                  : vector_icons::kDocumentScannerOldIcon);
         warning_secondary_text_ =
             download::DoesDownloadConnectorBlock(model.profile(),
                                                  model.GetURL())

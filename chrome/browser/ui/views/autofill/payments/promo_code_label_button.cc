@@ -9,6 +9,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/background.h"
@@ -33,16 +34,22 @@ PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
                kColorPaymentsPromoCodeForegroundPressed);
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
-                    vector_icons::kContentCopyOldIcon,
+                    ::features::IsRoundedIconsEnabled()
+                        ? vector_icons::kContentCopyIcon
+                        : vector_icons::kContentCopyOldIcon,
                     kColorPaymentsPromoCodeForeground, kContentCopyIconSizePx));
   SetImageModel(
       ButtonState::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kContentCopyIcon
+                                         : vector_icons::kContentCopyOldIcon,
                                      kColorPaymentsPromoCodeForegroundHovered,
                                      kContentCopyIconSizePx));
   SetImageModel(
       ButtonState::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kContentCopyIcon
+                                         : vector_icons::kContentCopyOldIcon,
                                      kColorPaymentsPromoCodeForegroundPressed,
                                      kContentCopyIconSizePx));
   SetBackground(views::CreateRoundedRectBackground(

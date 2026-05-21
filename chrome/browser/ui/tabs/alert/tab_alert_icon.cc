@@ -12,6 +12,7 @@
 #include "components/tabs/public/tab_alert.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 
 namespace tabs {
 
@@ -67,30 +68,51 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
 const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
   switch (alert_state) {
     case TabAlert::kAudioPlaying:
-      return vector_icons::kVolumeUpChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kVolumeUpIcon
+                 : vector_icons::kVolumeUpChromeRefreshOldIcon;
     case TabAlert::kAudioMuting:
-      return vector_icons::kVolumeOffChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kVolumeOffIcon
+                 : vector_icons::kVolumeOffChromeRefreshOldIcon;
     case TabAlert::kMediaRecording:
     case TabAlert::kAudioRecording:
     case TabAlert::kVideoRecording:
     case TabAlert::kDesktopCapturing:
-      return vector_icons::kRadioButtonCheckedOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kRadioButtonCheckedIcon
+                 : vector_icons::kRadioButtonCheckedOldIcon;
     case TabAlert::kTabCapturing:
-      return vector_icons::kCaptureOldIcon;
+      return features::IsRoundedIconsEnabled() ? vector_icons::kCaptureIcon
+                                               : vector_icons::kCaptureOldIcon;
     case TabAlert::kBluetoothConnected:
-      return vector_icons::kBluetoothConnectedOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kBluetoothConnectedIcon
+                 : vector_icons::kBluetoothConnectedOldIcon;
     case TabAlert::kBluetoothScanActive:
-      return vector_icons::kBluetoothScanningChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kBluetoothSearchingIcon
+                 : vector_icons::kBluetoothScanningChromeRefreshOldIcon;
     case TabAlert::kUsbConnected:
-      return vector_icons::kUsbChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kUsbIcon
+                 : vector_icons::kUsbChromeRefreshOldIcon;
     case TabAlert::kHidConnected:
-      return vector_icons::kVideogameAssetChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kVideogameAssetIcon
+                 : vector_icons::kVideogameAssetChromeRefreshOldIcon;
     case TabAlert::kSerialConnected:
-      return vector_icons::kSerialPortChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kDeveloperBoardIcon
+                 : vector_icons::kSerialPortChromeRefreshOldIcon;
     case TabAlert::kPipPlaying:
-      return vector_icons::kPictureInPictureAltOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kPictureInPictureAltIcon
+                 : vector_icons::kPictureInPictureAltOldIcon;
     case TabAlert::kVrPresentingInHeadset:
-      return vector_icons::kCardboardOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? vector_icons::kCardboardIcon
+                 : vector_icons::kCardboardOldIcon;
     case TabAlert::kActorWaitingOnUser:
     case TabAlert::kActorAccessing:
       return glic::GlicVectorIconManager::GetVectorIcon(

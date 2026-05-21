@@ -159,7 +159,9 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
       TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
       send_tab_to_self_submenu_.get(),
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : kDevicesOldIcon,
           ui::kColorMenuIcon, kTabMenuIconSize));
 #endif
 }
@@ -173,7 +175,9 @@ void TabMenuModel::BuildLegacySendTabToSelfItem() {
       TabStripModel::CommandSendTabToSelf,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : kDevicesOldIcon));
 #endif
 }
 
@@ -415,8 +419,12 @@ void TabMenuModel::Build(int index) {
     SetIconForCommandId(
         TabStripModel::CommandToggleSiteMuted,
         ui::ImageModel::FromVectorIcon(
-            will_mute ? vector_icons::kVolumeOffChromeRefreshOldIcon
-                      : vector_icons::kVolumeUpChromeRefreshOldIcon,
+            will_mute ? features::IsRoundedIconsEnabled()
+                            ? vector_icons::kVolumeOffIcon
+                            : vector_icons::kVolumeOffChromeRefreshOldIcon
+            : features::IsRoundedIconsEnabled()
+                ? vector_icons::kVolumeUpIcon
+                : vector_icons::kVolumeUpChromeRefreshOldIcon,
             ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
   }
 

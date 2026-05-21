@@ -14,8 +14,9 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/border.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -49,7 +50,10 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
   auto search_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSearchChromeRefreshOldIcon, ui::kColorIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kSearchIcon
+              : vector_icons::kSearchChromeRefreshOldIcon,
+          ui::kColorIcon,
           layout_provider->GetDistanceMetric(
               DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE)));
   search_icon->SetProperty(views::kMarginsKey, margins);
@@ -74,7 +78,9 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
           views::CreateVectorImageButtonWithNativeTheme(
               base::BindRepeating(&TaskManagerSearchBarView::OnClearPressed,
                                   base::Unretained(this)),
-              vector_icons::kCloseChromeRefreshOldIcon))
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kCloseIcon
+                  : vector_icons::kCloseChromeRefreshOldIcon))
           // Reset the border set by
           // `CreateVectorImageButtonWithNativeTheme()` as it sets
           // an unnecessary padding to the highlighting circle.

@@ -31,6 +31,7 @@
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -639,7 +640,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
             const ui::ImageModel& model = image_view->GetImageModel();
             if (model.IsVectorIcon()) {
               return model.GetVectorIcon().vector_icon() ==
-                     &vector_icons::kCropFreeOldIcon;
+                     &(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kCropFreeIcon
+                           : vector_icons::kCropFreeOldIcon);
             }
           }
         }

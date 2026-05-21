@@ -46,6 +46,7 @@
 #include "services/media_session/public/cpp/media_position.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
@@ -1049,8 +1050,10 @@ TEST_F(VideoOverlayWindowViewsTest, DisplaysFavicon) {
   {
     ui::ImageModel image_model = favicon_view->GetImageModel();
     EXPECT_TRUE(image_model.IsVectorIcon());
-    EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
-              &vector_icons::kGlobeOldIcon);
+    EXPECT_EQ(
+        image_model.GetVectorIcon().vector_icon(),
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
+                                            : vector_icons::kGlobeOldIcon));
   }
 
   // Setting the favicon should use that instead.
@@ -1078,8 +1081,10 @@ TEST_F(VideoOverlayWindowViewsTest, DisplaysFavicon) {
     overlay_window().SetFaviconImages({});
     ui::ImageModel image_model = favicon_view->GetImageModel();
     EXPECT_TRUE(image_model.IsVectorIcon());
-    EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
-              &vector_icons::kGlobeOldIcon);
+    EXPECT_EQ(
+        image_model.GetVectorIcon().vector_icon(),
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
+                                            : vector_icons::kGlobeOldIcon));
   }
 }
 

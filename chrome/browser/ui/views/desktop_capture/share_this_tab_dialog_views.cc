@@ -310,8 +310,9 @@ void ShareThisTabDialogView::SetupAudioToggle() {
   views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
       std::make_unique<views::ImageView>());
   audio_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kVolumeUpOldIcon, ui::kColorIcon,
-      GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
+      features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
+                                        : vector_icons::kVolumeUpOldIcon,
+      ui::kColorIcon, GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
 
   views::Label* audio_toggle_label =
       audio_toggle_container->AddChildView(std::make_unique<views::Label>());

@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -77,7 +78,9 @@ std::unique_ptr<views::View> CreateIconView(
 }
 
 std::unique_ptr<views::ImageView> GetAudioDeviceIcon() {
-  return CreateIconView(vector_icons::kHeadsetOldIcon);
+  return CreateIconView(features::IsRoundedIconsEnabled()
+                            ? vector_icons::kHeadphonesIcon
+                            : vector_icons::kHeadsetOldIcon);
 }
 
 }  // namespace
@@ -96,7 +99,11 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
                                            SkColor background_color,
                                            const std::string& raw_device_id,
                                            const std::string& device_name)
-    : DeviceEntryUI(raw_device_id, device_name, vector_icons::kHeadsetOldIcon),
+    : DeviceEntryUI(raw_device_id,
+                    device_name,
+                    features::IsRoundedIconsEnabled()
+                        ? vector_icons::kHeadphonesIcon
+                        : vector_icons::kHeadsetOldIcon),
       HoverButton(std::move(callback),
                   GetAudioDeviceIcon(),
                   base::UTF8ToUTF16(device_name)) {

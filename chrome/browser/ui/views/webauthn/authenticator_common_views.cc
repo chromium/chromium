@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -41,7 +42,9 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
   container->SetBetweenChildSpacing(kHorizontalSpacing);
   container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasskeyOldIcon, ui::kColorIcon, kMediumIconSize)));
+          features::IsRoundedIconsEnabled() ? vector_icons::kPasskeyIcon
+                                            : vector_icons::kPasskeyOldIcon,
+          ui::kColorIcon, kMediumIconSize)));
 
   auto username_column = std::make_unique<views::BoxLayoutView>();
   username_column->SetOrientation(views::BoxLayout::Orientation::kVertical);

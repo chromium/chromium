@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -187,8 +188,10 @@ ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
 
   if (chooser_controller_->IsConnected(row)) {
     return ui::ImageModel::FromVectorIcon(
-        vector_icons::kBluetoothConnectedOldIcon, ui::kColorIcon,
-        TableModel::kIconSize);
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kBluetoothConnectedIcon
+            : vector_icons::kBluetoothConnectedOldIcon,
+        ui::kColorIcon, TableModel::kIconSize);
   }
 
   int level = chooser_controller_->GetSignalStrengthLevel(row);
@@ -295,7 +298,8 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
     help_button = views::ImageButton::CreateIconButton(
         base::BindRepeating(&permissions::ChooserController::OpenHelpCenterUrl,
                             base::Unretained(chooser_controller_.get())),
-        vector_icons::kHelpOutlineOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kHelpIcon
+                                          : vector_icons::kHelpOutlineOldIcon,
         l10n_util::GetStringUTF16(IDS_LEARN_MORE),
         views::ImageButton::MaterialIconStyle::kLarge,
         views::LayoutProvider::Get()->GetInsetsMetric(

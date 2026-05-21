@@ -31,6 +31,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
@@ -69,14 +70,18 @@ std::u16string GetCancelButtonText(
 
 ui::ImageModel GetSiteSettingsIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSettingsChromeRefreshOldIcon, ui::kColorIcon,
-      GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kSettingsIcon
+          : vector_icons::kSettingsChromeRefreshOldIcon,
+      ui::kColorIcon, GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }
 
 ui::ImageModel GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchChromeRefreshOldIcon, ui::kColorIcon,
-      GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kOpenInNewIcon
+          : vector_icons::kLaunchChromeRefreshOldIcon,
+      ui::kColorIcon, GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }
 
 bool ShouldShowManageButton(
@@ -549,7 +554,8 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
               bubble->content_setting_bubble_model_->OnLearnMoreClicked();
             },
             base::Unretained(this)),
-        vector_icons::kHelpOutlineOldIcon);
+        features::IsRoundedIconsEnabled() ? vector_icons::kHelpIcon
+                                          : vector_icons::kHelpOutlineOldIcon);
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     extra_views.push_back(std::move(learn_more_button));

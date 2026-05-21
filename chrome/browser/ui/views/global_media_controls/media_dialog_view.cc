@@ -53,6 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -512,7 +513,9 @@ void MediaDialogView::InitializeLiveCaptionSection() {
 
   auto live_caption_image = std::make_unique<views::ImageView>();
   live_caption_image->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kLiveCaptionOnOldIcon, ui::kColorIcon, kImageWidthDip));
+      features::IsRoundedIconsEnabled() ? vector_icons::kSubtitlesIcon
+                                        : vector_icons::kLiveCaptionOnOldIcon,
+      ui::kColorIcon, kImageWidthDip));
   live_caption_container->AddChildView(std::move(live_caption_image));
 
   auto live_caption_title =
@@ -528,8 +531,9 @@ void MediaDialogView::InitializeLiveCaptionSection() {
   if (is_managed) {
     auto* enterprise_icon = live_caption_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessOldIcon, ui::kColorIconSecondary,
-            kImageWidthDip)));
+            features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                              : vector_icons::kBusinessOldIcon,
+            ui::kColorIconSecondary, kImageWidthDip)));
     enterprise_icon->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
   }
@@ -587,8 +591,9 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   if (is_managed) {
     auto* enterprise_icon = live_translate_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessOldIcon, ui::kColorIconSecondary,
-            kImageWidthDip)));
+            features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                              : vector_icons::kBusinessOldIcon,
+            ui::kColorIconSecondary, kImageWidthDip)));
     enterprise_icon->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
   }
@@ -653,11 +658,15 @@ void MediaDialogView::InitializeCaptionSettingsSection() {
       base::BindRepeating(&MediaDialogView::OnSettingsButtonPressed,
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kSettingsChromeRefreshOldIcon, ui::kColorIcon,
-          kImageWidthDip),
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kSettingsIcon
+              : vector_icons::kSettingsChromeRefreshOldIcon,
+          ui::kColorIcon, kImageWidthDip),
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS),
       std::u16string(),
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kOpenInNewIcon
+                                         : vector_icons::kLaunchOldIcon,
                                      ui::kColorIcon, kImageWidthDip));
   caption_settings_button_ = caption_settings_container->AddChildView(
       std::move(caption_settings_button));

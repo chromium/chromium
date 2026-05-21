@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -75,7 +76,9 @@ ContentAnalysisSideIconImageView::ContentAnalysisSideIconImageView(
     Delegate* delegate)
     : ContentAnalysisBaseView(delegate) {
   SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessOldIcon, gfx::kPlaceholderColor, kSideImageSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      gfx::kPlaceholderColor, kSideImageSize));
   SetBorder(views::CreateEmptyBorder(kSideImageInsets));
 }
 
@@ -83,9 +86,10 @@ void ContentAnalysisSideIconImageView::Update() {
   if (!GetWidget()) {
     return;
   }
-  SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
-                                          delegate()->GetSideImageLogoColor(),
-                                          kSideImageSize));
+  SetImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      delegate()->GetSideImageLogoColor(), kSideImageSize));
   if (delegate()->is_result()) {
     SetBackground(std::make_unique<CircleBackground>(
         delegate()->GetSideImageBackgroundColor()));

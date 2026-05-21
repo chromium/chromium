@@ -69,6 +69,7 @@
 
 // TODO(http://b/361693496): Remove this after the original issue fixed.
 #include "components/crash/core/common/crash_key.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ash {
 
@@ -731,7 +732,10 @@ void CalendarView::CreateCalendarTitleRow() {
           model->ShowSetTimeDialog();
         }
       }),
-      IconButton::Type::kMedium, &vector_icons::kSettingsOutlineOldIcon,
+      IconButton::Type::kMedium,
+      &(::features::IsRoundedIconsEnabled()
+            ? vector_icons::kSettingsIcon
+            : vector_icons::kSettingsOutlineOldIcon),
       IDS_ASH_CALENDAR_SETTINGS);
   if (!TrayPopupUtils::CanOpenWebUISettings()) {
     settings_button_->SetEnabled(false);
@@ -779,13 +783,18 @@ views::View* CalendarView::CreateButtonContainer() {
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/true),
-      IconButton::Type::kMediumFloating, &vector_icons::kCaretUpOldIcon,
+      IconButton::Type::kMediumFloating,
+      &(::features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowUpIcon
+                                            : vector_icons::kCaretUpOldIcon),
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/false),
-      IconButton::Type::kMediumFloating, &vector_icons::kCaretDownOldIcon,
+      IconButton::Type::kMediumFloating,
+      &(::features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowDownIcon
+            : vector_icons::kCaretDownOldIcon),
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   return button_container;

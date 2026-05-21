@@ -45,6 +45,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -93,7 +94,8 @@ void ShowNotification(Profile* profile,
       title, message, /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), notifier_id, optional_fields,
       base::MakeRefCounted<LocalAuthFactorsNotificationDelegate>(profile),
-      vector_icons::kBusinessOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
   notification.SetSystemPriority();
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(

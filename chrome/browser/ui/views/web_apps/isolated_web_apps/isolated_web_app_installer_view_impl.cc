@@ -498,7 +498,9 @@ class DisabledView : public InstallerDialogView {
  public:
   explicit DisabledView(IsolatedWebAppInstallerView::Delegate* delegate)
       : InstallerDialogView(
-            CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
+            CreateImageModelFromVector(features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kErrorIcon
+                                           : vector_icons::kErrorOutlineOldIcon,
                                        ui::kColorAlertMediumSeverityIcon),
             IDS_IWA_INSTALLER_DISABLED_TITLE,
             IDS_IWA_INSTALLER_DISABLED_SUBTITLE,
@@ -519,6 +521,8 @@ class GetMetadataView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
+                                       : features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
@@ -549,6 +553,8 @@ class ShowMetadataView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
+                                       : features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             // The title will be updated to the app name when available.
@@ -608,6 +614,8 @@ class InstallView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
+                                       : features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             // The title will be updated to the app name when available.
@@ -638,6 +646,8 @@ class InstallSuccessView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
+                                       : features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             // The title will be updated to the app name when available.
@@ -831,8 +841,11 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
-                                           ui::kColorAlertMediumSeverityIcon),
+                CreateImageModelFromVector(
+                    features::IsRoundedIconsEnabled()
+                        ? vector_icons::kErrorIcon
+                        : vector_icons::kErrorOutlineOldIcon,
+                    ui::kColorAlertMediumSeverityIcon),
                 /*ok_label=*/std::nullopt);
           },
           [this](
@@ -852,11 +865,13 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                     ui::DialogModelLabel::CreatePlainText(
                         base::UTF8ToUTF16(installed_version)),
                 });
-            return ShowChildDialog(
-                title, subtitle,
-                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
-                                           ui::kColorAlertMediumSeverityIcon),
-                /*ok_label=*/std::nullopt);
+            return ShowChildDialog(title, subtitle,
+                                   CreateImageModelFromVector(
+                                       features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kErrorIcon
+                                           : vector_icons::kErrorOutlineOldIcon,
+                                       ui::kColorAlertMediumSeverityIcon),
+                                   /*ok_label=*/std::nullopt);
           },
           [this](const IsolatedWebAppInstallerModel::ConfirmInstallationDialog&
                      confirm_installation_dialog) {
@@ -877,8 +892,11 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
             return ShowChildDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
                 ui::DialogModelLabel(IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
-                                           ui::kColorAlertMediumSeverityIcon),
+                CreateImageModelFromVector(
+                    features::IsRoundedIconsEnabled()
+                        ? vector_icons::kErrorIcon
+                        : vector_icons::kErrorOutlineOldIcon,
+                    ui::kColorAlertMediumSeverityIcon),
                 IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY);
           },
           [this](const IsolatedWebAppInstallerModel::
@@ -887,8 +905,11 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_NOT_ON_USER_INSTALL_ALLOWLIST_MESSAGE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
-                                           ui::kColorAlertMediumSeverityIcon),
+                CreateImageModelFromVector(
+                    features::IsRoundedIconsEnabled()
+                        ? vector_icons::kErrorIcon
+                        : vector_icons::kErrorOutlineOldIcon,
+                    ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
           },
           [this](const IsolatedWebAppInstallerModel::
@@ -897,8 +918,11 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKLISTED_MESSAGE),
-                CreateImageModelFromVector(vector_icons::kErrorOutlineOldIcon,
-                                           ui::kColorAlertMediumSeverityIcon),
+                CreateImageModelFromVector(
+                    features::IsRoundedIconsEnabled()
+                        ? vector_icons::kErrorIcon
+                        : vector_icons::kErrorOutlineOldIcon,
+                    ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
           }},
       dialog);

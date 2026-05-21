@@ -25,6 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -164,8 +165,11 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       AfterShow(ContentSettingImageModel::kMidiSysexIconElementId,
                 base::BindOnce([](ui::TrackedElement* element) {
                   auto* element_view = AsView<ContentSettingImageView>(element);
-                  EXPECT_EQ(element_view->get_icon_for_testing(),
-                            &vector_icons::kMidiOffChromeRefreshOldIcon);
+                  EXPECT_EQ(
+                      element_view->get_icon_for_testing(),
+                      &(features::IsRoundedIconsEnabled()
+                            ? vector_icons::kPianoOffIcon
+                            : vector_icons::kMidiOffChromeRefreshOldIcon));
                   EXPECT_EQ(element_view->get_icon_badge_for_testing(),
                             &gfx::VectorIcon::EmptyIcon());
                   EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
@@ -185,7 +189,9 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                 base::BindOnce([](ui::TrackedElement* element) {
                   auto* element_view = AsView<ContentSettingImageView>(element);
                   EXPECT_EQ(element_view->get_icon_for_testing(),
-                            &vector_icons::kMidiChromeRefreshOldIcon);
+                            &(features::IsRoundedIconsEnabled()
+                                  ? vector_icons::kPianoIcon
+                                  : vector_icons::kMidiChromeRefreshOldIcon));
                   EXPECT_EQ(element_view->get_icon_badge_for_testing(),
                             &gfx::VectorIcon::EmptyIcon());
                   EXPECT_EQ(element_view->get_tooltip_text_for_testing(),

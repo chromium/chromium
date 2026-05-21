@@ -41,6 +41,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
@@ -354,8 +355,10 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                           update.HasTitleChange())))
                   .AddChild(views::Builder<views::ImageView>().SetImage(
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kForwardArrowOldIcon, ui::kColorIcon,
-                          kArrowIconSizeDp)))
+                          features::IsRoundedIconsEnabled()
+                              ? vector_icons::kArrowForwardIcon
+                              : vector_icons::kForwardArrowOldIcon,
+                          ui::kColorIcon, kArrowIconSizeDp)))
                   .AddChild(views::Builder<WebAppUpdateIdentityView>(
                       std::make_unique<WebAppUpdateIdentityView>(
                           update.MakeNewIdentity(), url_migration_only,

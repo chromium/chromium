@@ -21,6 +21,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -139,8 +140,11 @@ void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
     auto* controller = AiOverlayDialogController::From(browser_);
     const gfx::VectorIcon* base_icon =
         (controller && controller->IsOverlayShowing())
-            ? &vector_icons::kPauseOldIcon
-            : &vector_icons::kMicOldIcon;
+            ? &(features::IsRoundedIconsEnabled()
+                    ? vector_icons::kPauseFilledIcon
+                    : vector_icons::kPauseOldIcon)
+            : &(features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                                  : vector_icons::kMicOldIcon);
 
     overlay_action_item_->SetImage(ui::ImageModel::FromImageGenerator(
         base::BindRepeating(

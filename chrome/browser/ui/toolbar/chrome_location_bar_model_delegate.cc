@@ -202,7 +202,9 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   }
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return &vector_icons::kExtensionChromeRefreshOldIcon;
+    return &(features::IsRoundedIconsEnabled()
+                 ? vector_icons::kChromeExtensionIcon
+                 : vector_icons::kExtensionChromeRefreshOldIcon);
   }
 #endif
 

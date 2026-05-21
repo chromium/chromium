@@ -24,6 +24,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -70,7 +71,8 @@ void ShowArcMigrationGuideNotification(Profile* profile) {
       l10n_util::GetStringUTF16(IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_TITLE),
       message, std::u16string(), GURL(), notifier_id,
       message_center::RichNotificationData(), std::move(delegate),
-      vector_icons::kSettingsOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
+                                        : vector_icons::kSettingsOldIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   notification.set_renotify(true);
 

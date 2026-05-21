@@ -17,6 +17,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -51,7 +52,9 @@ LockScreenNotificationController::CreateNotification() {
                                  kLockScreenNotifierId,
                                  NotificationCatalogName::kLockScreen),
       optional_fields,
-      /*delegate=*/nullptr, vector_icons::kLockOldIcon,
+      /*delegate=*/nullptr,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kLockFilledIcon
+                                          : vector_icons::kLockOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 

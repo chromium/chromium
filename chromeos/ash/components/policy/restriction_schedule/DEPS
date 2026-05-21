@@ -4,6 +4,7 @@ include_rules = [
   "+components/user_manager",
   "+components/vector_icons",
   "+ui/base/l10n",
+  "+ui/base/ui_base_features.h",
   "+ui/chromeos",
   "+ui/message_center",
 

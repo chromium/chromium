@@ -190,7 +190,9 @@ void WebAppMenuModel::Build() {
       !is_isolated_web_app) {
     AddItemWithStringIdAndVectorIcon(
         this, kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS,
-        vector_icons::kExtensionChromeRefreshOldIcon);
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kChromeExtensionIcon
+            : vector_icons::kExtensionChromeRefreshOldIcon);
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 

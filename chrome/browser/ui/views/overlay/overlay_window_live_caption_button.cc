@@ -8,6 +8,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 
@@ -15,7 +16,9 @@ OverlayWindowLiveCaptionButton::OverlayWindowLiveCaptionButton(
     PressedCallback callback)
     : SimpleOverlayWindowImageButton(
           std::move(callback),
-          vector_icons::kLiveCaptionOnOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kSubtitlesIcon
+              : vector_icons::kLiveCaptionOnOldIcon,
           l10n_util::GetStringUTF16(
               IDS_PICTURE_IN_PICTURE_LIVE_CAPTION_CONTROL_TEXT)) {}
 

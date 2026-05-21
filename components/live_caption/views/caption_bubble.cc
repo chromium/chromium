@@ -41,6 +41,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -1316,7 +1317,9 @@ void CaptionBubble::SetTextColor() {
   generic_error_text_->SetEnabledColor(primary_color);
 
   generic_error_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kErrorOutlineOldIcon, primary_color));
+      features::IsRoundedIconsEnabled() ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOutlineOldIcon,
+      primary_color));
 
   translation_view_wrapper_->SetTextColor(
       language_label_color, language_label_border_color, header_color);
@@ -1349,7 +1352,9 @@ void CaptionBubble::SetTextColor() {
   media_foundation_renderer_error_text_->AddStyleRange(
       gfx::Range(offset + link.length(), text.length()), error_message_style);
   media_foundation_renderer_error_icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kErrorIcon
+                                         : vector_icons::kErrorOutlineOldIcon,
                                      primary_color));
   media_foundation_renderer_error_checkbox_->SetEnabledTextColors(
       primary_color);
@@ -1359,17 +1364,26 @@ void CaptionBubble::SetTextColor() {
       color_provider->GetColor(ui::kColorLiveCaptionBubbleCheckbox));
 #endif
   views::SetImageFromVectorIconWithColor(
-      back_to_tab_button_, vector_icons::kBackToTabChromeRefreshOldIcon,
+      back_to_tab_button_,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kBackToTabIcon
+          : vector_icons::kBackToTabChromeRefreshOldIcon,
       kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedOldIcon, kButtonDip,
-      {header_color, icon_disabled_color});
+      close_button_,
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+                                        : vector_icons::kCloseRoundedOldIcon,
+      kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      expand_button_, vector_icons::kCaretDownOldIcon, kButtonDip,
-      {header_color, icon_disabled_color});
+      expand_button_,
+      features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowDownIcon
+                                        : vector_icons::kCaretDownOldIcon,
+      kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
-      collapse_button_, vector_icons::kCaretUpOldIcon, kButtonDip,
-      {header_color, icon_disabled_color});
+      collapse_button_,
+      features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowUpIcon
+                                        : vector_icons::kCaretUpOldIcon,
+      kButtonDip, {header_color, icon_disabled_color});
 }
 
 void CaptionBubble::SetBackgroundColor() {

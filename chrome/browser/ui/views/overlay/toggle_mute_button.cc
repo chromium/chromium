@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 ToggleMuteButton::ToggleMuteButton(PressedCallback callback)
@@ -36,8 +37,13 @@ void ToggleMuteButton::UpdateImageAndTooltipText() {
     return;
   }
 
-  const auto& icon = is_muted_ ? vector_icons::kVolumeOffChromeRefreshOldIcon
-                               : vector_icons::kVolumeUpChromeRefreshOldIcon;
+  const auto& icon = is_muted_
+                         ? features::IsRoundedIconsEnabled()
+                               ? vector_icons::kVolumeOffIcon
+                               : vector_icons::kVolumeOffChromeRefreshOldIcon
+                     : features::IsRoundedIconsEnabled()
+                         ? vector_icons::kVolumeUpIcon
+                         : vector_icons::kVolumeUpChromeRefreshOldIcon;
 
   auto text = is_muted_ ? IDS_PICTURE_IN_PICTURE_UNMUTE_TEXT
                         : IDS_PICTURE_IN_PICTURE_MUTE_TEXT;

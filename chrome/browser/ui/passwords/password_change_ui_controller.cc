@@ -374,7 +374,9 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
     case PasswordChangeDelegate::State::kCanceled:
       return ToastOptions(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
-          vector_icons::kPasswordManagerOffOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kPasswordManagerOffIcon
+              : vector_icons::kPasswordManagerOffOldIcon,
           std::move(cancel_toast_callback),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_ACCEPT_BUTTON),

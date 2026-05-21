@@ -31,6 +31,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -195,7 +196,9 @@ MultiCaptureUsageIndicatorService::CreateFutureCaptureNotification(
   // popup).
   optional_fields.priority = message_center::LOW_PRIORITY;
   optional_fields.pinned = true;
-  optional_fields.vector_small_image = &vector_icons::kScreenRecordOldIcon;
+  optional_fields.vector_small_image =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kScreenRecordIcon
+                                          : vector_icons::kScreenRecordOldIcon);
 
   optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT));
@@ -260,7 +263,9 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
     optional_fields.priority = message_center::LOW_PRIORITY;
   }
 
-  optional_fields.vector_small_image = &vector_icons::kScreenRecordOldIcon;
+  optional_fields.vector_small_image =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kScreenRecordIcon
+                                          : vector_icons::kScreenRecordOldIcon);
   optional_fields.pinned = true;
 
   message_center::Notification notification(

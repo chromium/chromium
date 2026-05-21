@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -136,8 +137,9 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   managed_icon_->SetBounds(kBubblePadding, kBubblePadding, kManagedIconSize,
                            kManagedIconSize);
   managed_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessOldIcon, cros_tokens::kIconColorPrimary,
-      kManagedIconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      cros_tokens::kIconColorPrimary, kManagedIconSize));
 
   // Add the bubble text.
   label_ = AddChildView(std::make_unique<views::StyledLabel>());

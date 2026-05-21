@@ -41,6 +41,7 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -168,14 +169,19 @@ const gfx::VectorIcon& GetIconForClipboardData(
     const QuickInsertClipboardResult& data) {
   switch (data.display_format) {
     case QuickInsertClipboardResult::DisplayFormat::kText:
-      return GURL(data.display_text).is_valid() ? vector_icons::kLinkOldIcon
-                                                : chromeos::kTextIcon;
+      return GURL(data.display_text).is_valid()
+                 ? ::features::IsRoundedIconsEnabled()
+                       ? vector_icons::kLinkIcon
+                       : vector_icons::kLinkOldIcon
+                 : chromeos::kTextIcon;
     case QuickInsertClipboardResult::DisplayFormat::kImage:
       return chromeos::kFiletypeImageIcon;
     case QuickInsertClipboardResult::DisplayFormat::kFile:
       return data.file_count == 1 ? chromeos::GetIconForPath(base::FilePath(
                                         base::UTF16ToUTF8(data.display_text)))
-                                  : vector_icons::kContentCopyOldIcon;
+             : ::features::IsRoundedIconsEnabled()
+                 ? vector_icons::kContentCopyIcon
+                 : vector_icons::kContentCopyOldIcon;
     case QuickInsertClipboardResult::DisplayFormat::kHtml:
       NOTREACHED();
   }

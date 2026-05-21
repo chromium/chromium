@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
@@ -116,7 +117,10 @@ void DictationToastView::Init() {
 
   views::ImageButton* close_button =
       AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-          close_callback_, vector_icons::kCloseChromeRefreshOldIcon,
+          close_callback_,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kCloseIcon
+              : vector_icons::kCloseChromeRefreshOldIcon,
           lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
           ui::kColorToastForeground, ui::kColorIconDisabled,
           ui::kColorToastForeground));

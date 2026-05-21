@@ -40,7 +40,9 @@ BackForwardButton::BackForwardButton(Direction direction,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   if (direction == Direction::kBack) {
-    SetVectorIcons(vector_icons::kBackArrowChromeRefreshOldIcon,
+    SetVectorIcons(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kArrowBackIcon
+                       : vector_icons::kBackArrowChromeRefreshOldIcon,
                    features::IsRoundedIconsEnabled() ? kArrowBackIcon
                                                      : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
@@ -51,7 +53,9 @@ BackForwardButton::BackForwardButton(Direction direction,
     SetProperty(views::kElementIdentifierKey, kToolbarBackButtonElementId);
     set_menu_identifier(kToolbarBackButtonMenuElementId);
   } else {
-    SetVectorIcons(vector_icons::kForwardArrowChromeRefreshOldIcon,
+    SetVectorIcons(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kArrowForwardIcon
+                       : vector_icons::kForwardArrowChromeRefreshOldIcon,
                    features::IsRoundedIconsEnabled()
                        ? kArrowForwardIcon
                        : kForwardArrowTouchOldIcon);

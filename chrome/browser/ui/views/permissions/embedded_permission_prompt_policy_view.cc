@@ -9,6 +9,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 EmbeddedPermissionPromptPolicyView::EmbeddedPermissionPromptPolicyView(
@@ -62,7 +63,8 @@ std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitle() const {
 }
 
 const gfx::VectorIcon& EmbeddedPermissionPromptPolicyView::GetIcon() const {
-  return vector_icons::kBusinessOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                           : vector_icons::kBusinessOldIcon;
 }
 
 void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {

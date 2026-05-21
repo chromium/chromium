@@ -32,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
@@ -609,7 +610,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
       ExtensionsToolbarViewModel::GetToolbarButtonIcon(
           ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault)
           .name,
-      vector_icons::kExtensionChromeRefreshOldIcon.name);
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kChromeExtensionIcon.name
+          : vector_icons::kExtensionChromeRefreshOldIcon.name);
   EXPECT_EQ(
       ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
           ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault),
@@ -624,7 +627,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAllExtensionsBlocked)
                 .name,
-            vector_icons::kExtensionOffOldIcon.name);
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kChromeExtensionOffIcon.name
+                : vector_icons::kExtensionOffOldIcon.name);
   EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAllExtensionsBlocked),
@@ -641,7 +646,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAnyExtensionHasAccess)
                 .name,
-            vector_icons::kExtensionOnOldIcon.name);
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kChromeExtensionCheckIcon.name
+                : vector_icons::kExtensionOnOldIcon.name);
   EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
                 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
                     kAnyExtensionHasAccess),

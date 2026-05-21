@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -162,7 +163,9 @@ MultiCaptureNotificationDetailsView::MultiCaptureNotificationDetailsView(
 
   auto* admin_icon = AddChildView(std::make_unique<views::ImageView>());
   admin_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessOldIcon, ui::kColorIcon, 24));
+      features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                        : vector_icons::kBusinessOldIcon,
+      ui::kColorIcon, 24));
   admin_icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   const int vertical_margin =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);

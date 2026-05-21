@@ -45,6 +45,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -925,7 +926,10 @@ class ClipboardHistoryRefreshDisplayFormatTest
         WriteTextToClipboardAndConfirm(u"A");
         WriteTextToClipboardAndConfirm(u"B");
         WriteTextToClipboardAndConfirm(u"https://google.com/");
-        return {{u"https://google.com/", get_icon(vector_icons::kLinkOldIcon)},
+        return {{u"https://google.com/",
+                 get_icon(::features::IsRoundedIconsEnabled()
+                              ? vector_icons::kLinkIcon
+                              : vector_icons::kLinkOldIcon)},
                 {u"B", get_icon(chromeos::kTextIcon)},
                 {u"A", get_icon(chromeos::kTextIcon)},
                 {show_clipboard_menu_label, gfx::Image()}};
@@ -940,8 +944,12 @@ class ClipboardHistoryRefreshDisplayFormatTest
       case chromeos::clipboard_history::DisplayFormat::kHtml:
         WriteHtmlAndConfirm("<table>A</table>");
         WriteHtmlAndConfirm("<table>B></table>");
-        return {{u"HTML Content", get_icon(vector_icons::kCodeOldIcon)},
-                {u"HTML Content", get_icon(vector_icons::kCodeOldIcon)},
+        return {{u"HTML Content", get_icon(::features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kCodeIcon
+                                               : vector_icons::kCodeOldIcon)},
+                {u"HTML Content", get_icon(::features::IsRoundedIconsEnabled()
+                                               ? vector_icons::kCodeIcon
+                                               : vector_icons::kCodeOldIcon)},
                 {show_clipboard_menu_label, gfx::Image()}};
       case chromeos::clipboard_history::DisplayFormat::kFile:
         // Use dummy file paths. The corresponding files do not have to exist
@@ -953,7 +961,9 @@ class ClipboardHistoryRefreshDisplayFormatTest
         // Copy multiple files at the same time.
         WriteFilePathsAndConfirm({u"dummy_child1.jpg", u"dummy_child2.png"});
 
-        return {{u"2 files", get_icon(vector_icons::kContentCopyOldIcon)},
+        return {{u"2 files", get_icon(::features::IsRoundedIconsEnabled()
+                                          ? vector_icons::kContentCopyIcon
+                                          : vector_icons::kContentCopyOldIcon)},
                 {u"dummy_file.webm", get_icon(chromeos::kFiletypeVideoIcon)},
                 {show_clipboard_menu_label, gfx::Image()}};
       case chromeos::clipboard_history::DisplayFormat::kUnknown:

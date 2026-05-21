@@ -17,6 +17,7 @@
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -447,9 +448,10 @@ void DownloadUiContextMenu::AddAutoOpenToMenu(ui::SimpleMenuModel* menu) {
     menu->AddItemWithIcon(
         DownloadCommands::ALWAYS_OPEN_TYPE,
         GetLabelForCommandId(DownloadCommands::ALWAYS_OPEN_TYPE),
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessOldIcon,
-                                       ui::kColorIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize));
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                              : vector_icons::kBusinessOldIcon,
+            ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
   } else {
     menu->AddCheckItem(
         DownloadCommands::ALWAYS_OPEN_TYPE,

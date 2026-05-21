@@ -51,21 +51,21 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
        &CapturingStateModel::location_access_enabled},
 
       {kAudioCaptureIndicator, kWebVrAudioCaptureIndicator,
-       vector_icons::kMicOldIcon,
+       features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon : vector_icons::kMicOldIcon,
        IDS_VR_SHELL_SITE_IS_USING_MICROPHONE,
        IDS_VR_SHELL_BG_IS_USING_MICROPHONE,
        IDS_VR_SHELL_SITE_CAN_USE_MICROPHONE,
        &CapturingStateModel::audio_capture_enabled},
 
       {kVideoCaptureIndicator, kWebVrVideoCaptureIndicator,
-       vector_icons::kVideocamOldIcon,
+       features::IsRoundedIconsEnabled() ? vector_icons::kVideocamFilledIcon : vector_icons::kVideocamOldIcon,
        IDS_VR_SHELL_SITE_IS_USING_CAMERA,
        IDS_VR_SHELL_BG_IS_USING_CAMERA,
        IDS_VR_SHELL_SITE_CAN_USE_CAMERA,
        &CapturingStateModel::video_capture_enabled},
 
       {kBluetoothConnectedIndicator, kWebVrBluetoothConnectedIndicator,
-       vector_icons::kBluetoothConnectedOldIcon,
+       features::IsRoundedIconsEnabled() ? vector_icons::kBluetoothConnectedIcon : vector_icons::kBluetoothConnectedOldIcon,
        IDS_VR_SHELL_SITE_IS_USING_BLUETOOTH,
 #if BUILDFLAG(IS_ANDROID)
        IDS_VR_SHELL_BG_IS_USING_BLUETOOTH,
@@ -76,8 +76,8 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
        &CapturingStateModel::bluetooth_connected},
 
       {kScreenCaptureIndicator, kWebVrScreenCaptureIndicator,
-       // TODO(crbug.com/413285138): Update to kScreenShareOldIcon
-       vector_icons::kScreenShareOldOldIcon,
+       // TODO(crbug.com/413285138): Update to features::IsRoundedIconsEnabled() ? vector_icons::kScreenShareIcon : kScreenShareOldIcon
+       features::IsRoundedIconsEnabled() ? vector_icons::kScreenShareFilledIcon : vector_icons::kScreenShareOldOldIcon,
        IDS_VR_SHELL_SITE_IS_SHARING_SCREEN,
        IDS_VR_SHELL_BG_IS_SHARING_SCREEN,
        IDS_VR_SHELL_SITE_CAN_SHARE_SCREEN,
@@ -85,14 +85,14 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
 
 #if !BUILDFLAG(IS_ANDROID)
       {kUsbConnectedIndicator, kWebXrUsbConnectedIndicator,
-       vector_icons::kUsbOldIcon,
+       features::IsRoundedIconsEnabled() ? vector_icons::kUsbIcon : vector_icons::kUsbOldIcon,
        IDS_VR_SHELL_SITE_IS_USING_USB,
        0,
        0,
        &CapturingStateModel::usb_connected},
 
        {kMidiConnectedIndicator, kWebXrMidiConnectedIndicator,
-       vector_icons::kMidiOldIcon,
+       features::IsRoundedIconsEnabled() ? vector_icons::kPianoIcon : vector_icons::kMidiOldIcon,
        IDS_VR_SHELL_SITE_IS_USING_MIDI,
        0,
        IDS_VR_SHELL_SITE_CAN_USE_MIDI,

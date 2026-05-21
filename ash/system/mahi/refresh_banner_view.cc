@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -212,7 +213,9 @@ std::unique_ptr<IconButton> RefreshBannerView::CreateRefreshButton() {
               // Using `base::Unretained()` is safe here since
               // `ui_controller` outlives this `RefreshBannerView`.
               base::Unretained(ui_controller_)))
-          .SetVectorIcon(&vector_icons::kReloadChromeRefreshOldIcon)
+          .SetVectorIcon(&(::features::IsRoundedIconsEnabled()
+                               ? vector_icons::kRefreshIcon
+                               : vector_icons::kReloadChromeRefreshOldIcon))
           .SetType(IconButton::Type::kSmallProminentFloating)
           .SetAccessibleName(l10n_util::GetStringUTF16(
               IDS_ASH_MAHI_REFRESH_BANNER_BUTTON_ACCESSIBLE_NAME))

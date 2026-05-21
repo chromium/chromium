@@ -15,6 +15,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
@@ -144,7 +145,9 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
       weak_factory_.GetWeakPtr(), translation_result_.translated_text,
       translation_result_.target_locale);
   ui::ImageModel read_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kVolumeUpOldIcon, ui::kColorSysOnSurface,
+      features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
+                                        : vector_icons::kVolumeUpOldIcon,
+      ui::kColorSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
       read_closure, read_image_model, ui::kColorSysStateHoverOnSubtle,
@@ -156,7 +159,9 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
       &RichAnswersTranslationView::OnCopyButtonPressed,
       weak_factory_.GetWeakPtr(), translation_result_.translated_text);
   ui::ImageModel copy_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kContentCopyOldIcon, ui::kColorSysOnSurface,
+      features::IsRoundedIconsEnabled() ? vector_icons::kContentCopyIcon
+                                        : vector_icons::kContentCopyOldIcon,
+      ui::kColorSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
       copy_closure, copy_image_model, ui::kColorSysStateHoverOnSubtle,

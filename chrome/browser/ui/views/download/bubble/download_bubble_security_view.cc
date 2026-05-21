@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -209,7 +210,9 @@ void DownloadBubbleSecurityView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
                               base::Unretained(this)),
-          vector_icons::kArrowBackChromeRefreshOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kArrowBackIcon
+              : vector_icons::kArrowBackChromeRefreshOldIcon,
           GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(
@@ -236,7 +239,9 @@ void DownloadBubbleSecurityView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::CloseBubble,
                               base::Unretained(this)),
-          vector_icons::kCloseChromeRefreshOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kCloseIcon
+              : vector_icons::kCloseChromeRefreshOldIcon,
           GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   InstallCircleHighlightPathGenerator(close_button);

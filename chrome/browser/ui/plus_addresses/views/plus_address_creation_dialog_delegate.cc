@@ -36,6 +36,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/events/base_event_utils.h"
@@ -416,8 +417,9 @@ void PlusAddressCreationDialogDelegate::PlusAddressContainerView::ShowIcon(
       return;
     case Icon::kError:
       icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorOldIcon, ui::kColorSysError,
-          kPlusAddressIconWidth));
+          ::features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                              : vector_icons::kErrorOldIcon,
+          ui::kColorSysError, kPlusAddressIconWidth));
       return;
   }
   NOTREACHED();
@@ -603,7 +605,9 @@ PlusAddressCreationDialogDelegate::CreateRefreshButton() {
   auto button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PlusAddressCreationDialogDelegate::OnRefreshClicked,
                           base::Unretained(this)),
-      vector_icons::kReloadOldIcon, kRefreshButtonIconWidth);
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kRefreshIcon
+                                          : vector_icons::kReloadOldIcon,
+      kRefreshButtonIconWidth);
   views::InstallCircleHighlightPathGenerator(button.get());
   button->SetProperty(views::kElementIdentifierKey,
                       kPlusAddressRefreshButtonElementId);

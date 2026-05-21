@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 
 ManagePasswordsAutoSigninToastDelegate::ManagePasswordsAutoSigninToastDelegate(
@@ -64,7 +65,9 @@ void ManagePasswordsAutoSigninToastDelegate::OnAutoSignInToast(
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model->AddItemWithStringIdAndIcon(
       kAutoSignInOpenPasswordManagerSettingsCommand, IDS_MANAGE,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kSettingsFilledIcon
+                                         : vector_icons::kSettingsOldIcon,
                                      ui::kColorMenuIcon, 16));
   params.menu_model = std::move(menu_model);
   toast_controller->MaybeShowToast(std::move(params));

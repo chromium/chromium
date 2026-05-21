@@ -28,6 +28,7 @@
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -168,7 +169,9 @@ AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
   std::unique_ptr<views::ImageView> arrow_image_view =
       std::make_unique<views::ImageView>();
   arrow_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowOldIcon, ui::kColorIcon, kArrowIconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+                                        : vector_icons::kSubmenuArrowOldIcon,
+      ui::kColorIcon, kArrowIconSize));
   arrow_image_view_ = AddChildView(std::move(arrow_image_view));
 }
 
@@ -189,8 +192,9 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
   }
 
   arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowOldIcon, ui::kColorLabelForegroundDisabled,
-      kArrowIconSize));
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+                                        : vector_icons::kSubmenuArrowOldIcon,
+      ui::kColorLabelForegroundDisabled, kArrowIconSize));
 }
 
 BrandIconImageView::BrandIconImageView(int image_size)

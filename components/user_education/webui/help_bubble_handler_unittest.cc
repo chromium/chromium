@@ -24,6 +24,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
@@ -277,7 +278,9 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   HelpBubbleParams params;
   params.body_text = u"Help bubble body.";
   params.close_button_alt_text = u"Close button alt text.";
-  params.body_icon = &vector_icons::kCelebrationOldIcon;
+  params.body_icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kCelebrationIcon
+                                          : vector_icons::kCelebrationOldIcon);
   params.body_icon_alt_text = u"Celebration";
   params.arrow = HelpBubbleArrow::kTopCenter;
 
@@ -325,7 +328,9 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleTwice) {
     HelpBubbleParams params;
     params.body_text = u"Help bubble body.";
     params.close_button_alt_text = u"Close button alt text.";
-    params.body_icon = &vector_icons::kCelebrationOldIcon;
+    params.body_icon = &(features::IsRoundedIconsEnabled()
+                             ? vector_icons::kCelebrationIcon
+                             : vector_icons::kCelebrationOldIcon);
     params.body_icon_alt_text = u"Celebration";
     params.arrow = HelpBubbleArrow::kTopCenter;
     return params;
@@ -355,7 +360,9 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   HelpBubbleParams params;
   params.body_text = u"Help bubble body.";
   params.close_button_alt_text = u"Close button alt text.";
-  params.body_icon = &vector_icons::kLightbulbOutlineOldIcon;
+  params.body_icon = &(features::IsRoundedIconsEnabled()
+                           ? vector_icons::kLightbulb2Icon
+                           : vector_icons::kLightbulbOutlineOldIcon);
   params.body_icon_alt_text = u"Body icon alt text.";
   params.arrow = HelpBubbleArrow::kTopCenter;
   params.progress = std::make_pair(1, 3);

@@ -16,6 +16,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
 
@@ -96,7 +97,8 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           base::BindRepeating(
               &AdbSideloadingPolicyChangeNotification::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
-      vector_icons::kBusinessOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
+                                          : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
   notification->set_pinned(pinned);

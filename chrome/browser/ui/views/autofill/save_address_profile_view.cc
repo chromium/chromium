@@ -31,6 +31,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -193,8 +194,9 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   std::u16string address = controller_->GetAddressSummary();
   if (!address.empty()) {
-    std::unique_ptr<views::ImageView> icon =
-        CreateAddressSectionIcon(vector_icons::kLocationOnOldIcon);
+    std::unique_ptr<views::ImageView> icon = CreateAddressSectionIcon(
+        ::features::IsRoundedIconsEnabled() ? vector_icons::kLocationOnIcon
+                                            : vector_icons::kLocationOnOldIcon);
     address_section_icons_.push_back(icon.get());
     AddAddressSection(/*parent_view=*/address_components_view_, std::move(icon),
                       CreateStreetAddressView(address));
@@ -202,8 +204,9 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   std::u16string phone = controller_->GetProfilePhone();
   if (!phone.empty()) {
-    std::unique_ptr<views::ImageView> icon =
-        CreateAddressSectionIcon(vector_icons::kCallOldIcon);
+    std::unique_ptr<views::ImageView> icon = CreateAddressSectionIcon(
+        ::features::IsRoundedIconsEnabled() ? vector_icons::kCallFilledIcon
+                                            : vector_icons::kCallOldIcon);
     address_section_icons_.push_back(icon.get());
     AddAddressSection(
         /*parent_view=*/address_components_view_, std::move(icon), phone,
@@ -212,8 +215,9 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   std::u16string email = controller_->GetProfileEmail();
   if (!email.empty()) {
-    std::unique_ptr<views::ImageView> icon =
-        CreateAddressSectionIcon(vector_icons::kEmailOldIcon);
+    std::unique_ptr<views::ImageView> icon = CreateAddressSectionIcon(
+        ::features::IsRoundedIconsEnabled() ? vector_icons::kMailFilledIcon
+                                            : vector_icons::kEmailOldIcon);
     address_section_icons_.push_back(icon.get());
     AddAddressSection(
         /*parent_view=*/address_components_view_, std::move(icon), email,

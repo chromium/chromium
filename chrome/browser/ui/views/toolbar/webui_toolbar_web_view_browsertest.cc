@@ -3172,13 +3172,23 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
   const bool rounded_icons = features::IsRoundedIconsEnabled();
 
   const auto kRouteMediaIcons = std::to_array<Test>({
-      {base::raw_ref(vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
+      {base::raw_ref(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCastIcon
+                         : vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
        std::string_view("pinned-toolbar-action:RouteMediaIdle")},
-      {base::raw_ref(vector_icons::kMediaRouterWarningChromeRefreshOldIcon),
+      {base::raw_ref(
+           features::IsRoundedIconsEnabled()
+               ? vector_icons::kCastWarningIcon
+               : vector_icons::kMediaRouterWarningChromeRefreshOldIcon),
        std::string_view("pinned-toolbar-action:RouteMediaWarning")},
-      {base::raw_ref(vector_icons::kMediaRouterPausedOldIcon),
+      {base::raw_ref(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kCastPauseIcon
+                         : vector_icons::kMediaRouterPausedOldIcon),
        std::string_view("pinned-toolbar-action:RouteMediaPaused")},
-      {base::raw_ref(vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
+      {base::raw_ref(
+           features::IsRoundedIconsEnabled()
+               ? vector_icons::kCastConnectedIcon
+               : vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
        std::string_view("pinned-toolbar-action:RouteMediaActive")},
       {base::raw_ref(rounded_icons ? kCastIcon : kCastChromeRefreshOldIcon),
        rounded_icons ? std::string_view("webui-toolbar:cast")
@@ -3209,8 +3219,10 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   auto* action_item = static_cast<actions::StatefulImageActionItem*>(
       actions::ActionManager::Get().FindAction(
           kActionRouteMedia, browser()->GetActions()->root_action_item()));
-  action_item->SetStatefulImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon));
+  action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kPasswordManagerIcon
+          : vector_icons::kPasswordManagerOldIcon));
   PinAction(
       kActionShowPasswordsBubbleOrPage,
       toolbar_ui_api::mojom::PinnedToolbarAction::kShowPasswordsBubbleOrPage);

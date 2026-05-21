@@ -111,7 +111,9 @@ void SharingHubModel::PopulateFirstPartyActions() {
 
   first_party_action_list_.emplace_back(
       IDC_SEND_TAB_TO_SELF, l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF),
-      &(features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon),
+      &(features::IsRoundedIconsEnabled()   ? kDevicesIcon
+        : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                            : kDevicesOldIcon),
       "SharingHubDesktop.SendTabToSelfSelected", 0);
 
   first_party_action_list_.emplace_back(
@@ -123,7 +125,9 @@ void SharingHubModel::PopulateFirstPartyActions() {
     first_party_action_list_.emplace_back(
         IDC_ROUTE_MEDIA,
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
-        &vector_icons::kMediaRouterIdleOldIcon,
+        &(features::IsRoundedIconsEnabled()
+              ? vector_icons::kCastIcon
+              : vector_icons::kMediaRouterIdleOldIcon),
         "SharingHubDesktop.CastSelected", 0);
   }
 

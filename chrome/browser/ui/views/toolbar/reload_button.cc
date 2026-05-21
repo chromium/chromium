@@ -65,7 +65,9 @@ ReloadButton::ReloadButton(
                     nullptr),
       metrics_recorder_(std::make_unique<WaapUIMetricsRecorder>(profile)),
       command_updater_(command_updater),
-      reload_icon_(vector_icons::kReloadChromeRefreshOldIcon),
+      reload_icon_(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kRefreshIcon
+                       : vector_icons::kReloadChromeRefreshOldIcon),
       reload_touch_icon_(features::IsRoundedIconsEnabled()
                              ? kRefreshIcon
                              : kReloadTouchOldIcon),

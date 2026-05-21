@@ -13,11 +13,14 @@
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 // static
 const gfx::VectorIcon& HidSystemTrayIcon::GetIcon() {
-  return vector_icons::kVideogameAssetOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kVideogameAssetFilledIcon
+             : vector_icons::kVideogameAssetOldIcon;
 }
 
 // static

@@ -60,6 +60,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
@@ -1251,7 +1252,9 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
   menu_model->AddItemWithIcon(
       COMMAND_LEARN_MORE,
       l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
-      ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kInfoIcon
+                                         : vector_icons::kInfoOutlineOldIcon,
                                      ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
 
@@ -1259,7 +1262,9 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
     menu_model->AddItemWithIcon(
         COMMAND_SEND_FEEDBACK,
         l10n_util::GetStringUTF16(IDS_LENS_SEND_FEEDBACK),
-        ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackOldIcon,
+        ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kFeedbackIcon
+                                           : vector_icons::kFeedbackOldIcon,
                                        ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
   }

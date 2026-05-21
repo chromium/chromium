@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -60,7 +61,9 @@ class ToastViewTest : public DialogBrowserTest {
     }
     std::unique_ptr<toasts::ToastView> toast =
         std::make_unique<toasts::ToastView>(
-            anchor_view_, toast_text, vector_icons::kLinkOldIcon,
+            anchor_view_, toast_text,
+            features::IsRoundedIconsEnabled() ? vector_icons::kLinkIcon
+                                              : vector_icons::kLinkOldIcon,
             std::move(image_override), false, base::DoNothing());
     if (options_.add_close_button) {
       toast->AddCloseButton(base::DoNothing());

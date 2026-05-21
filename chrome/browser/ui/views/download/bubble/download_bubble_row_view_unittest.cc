@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/test_event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -142,9 +143,12 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanShowInFolder()).WillByDefault(Return(true));
   info_->SetQuickActionsForTesting(
-      {{DownloadCommands::PAUSE, u"label", &vector_icons::kPauseOldIcon},
+      {{DownloadCommands::PAUSE, u"label",
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
+                                            : vector_icons::kPauseOldIcon)},
        {DownloadCommands::SHOW_IN_FOLDER, u"label",
-        &vector_icons::kFolderOldIcon}});
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kFolderFilledIcon
+                                            : vector_icons::kFolderOldIcon)}});
   download_item()->NotifyObserversDownloadUpdated();
   ASSERT_EQ(row_view()->info().quick_actions().size(), 2u);
 
@@ -181,8 +185,10 @@ TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
   ON_CALL(*download_item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanOpenDownload()).WillByDefault(Return(true));
-  info_->SetQuickActionsForTesting({{DownloadCommands::OPEN_WHEN_COMPLETE,
-                                     u"label", &vector_icons::kFolderOldIcon}});
+  info_->SetQuickActionsForTesting(
+      {{DownloadCommands::OPEN_WHEN_COMPLETE, u"label",
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kFolderFilledIcon
+                                            : vector_icons::kFolderOldIcon)}});
   download_item()->NotifyObserversDownloadUpdated();
   ASSERT_TRUE(row_view()->IsQuickActionButtonVisibleForTesting(
       DownloadCommands::OPEN_WHEN_COMPLETE));

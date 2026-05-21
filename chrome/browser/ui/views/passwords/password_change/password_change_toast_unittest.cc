@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
@@ -76,7 +77,9 @@ TEST_F(PasswordChangeToastTest, ConfigurationUpdated) {
   EXPECT_TRUE(toast_view->close_button()->GetVisible());
 
   PasswordChangeToast::ToastOptions new_options(
-      u"Password changed", vector_icons::kPasswordManagerOldIcon,
+      u"Password changed",
+      features::IsRoundedIconsEnabled() ? vector_icons::kPasswordManagerIcon
+                                        : vector_icons::kPasswordManagerOldIcon,
       base::DoNothing(), u"Details", base::DoNothing());
   toast_view->UpdateLayout(std::move(new_options));
   EXPECT_FALSE(toast_view->throbber()->GetVisible());

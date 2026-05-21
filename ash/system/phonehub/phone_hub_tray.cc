@@ -54,6 +54,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/display/manager/display_manager.h"
@@ -485,7 +486,9 @@ std::unique_ptr<ui::SimpleMenuModel> PhoneHubTray::CreateContextMenuModel() {
   context_menu_model->AddItemWithIcon(
       kHidePhoneHubIconCommandId,
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ICON_DISMISS_TEXT),
-      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kVisibilityOffIcon
+                                         : vector_icons::kVisibilityOffOldIcon,
                                      ui::kColorAshSystemUIMenuIcon,
                                      kHidePhoneHubContexMenuIconSize));
 

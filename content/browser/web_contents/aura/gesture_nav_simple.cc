@@ -17,6 +17,7 @@
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/browser/preloading.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/paint_recorder.h"
@@ -223,11 +224,17 @@ Affordance::Affordance(GestureNavSimple* owner,
   DCHECK(mode_ == OVERSCROLL_EAST || mode_ == OVERSCROLL_WEST ||
          mode_ == OVERSCROLL_SOUTH);
   if (mode_ == OVERSCROLL_EAST) {
-    arrow_icon_ = &vector_icons::kBackArrowOldIcon;
+    arrow_icon_ =
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                            : vector_icons::kBackArrowOldIcon);
   } else if (mode_ == OVERSCROLL_WEST) {
-    arrow_icon_ = &vector_icons::kForwardArrowOldIcon;
+    arrow_icon_ = &(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kArrowForwardIcon
+                        : vector_icons::kForwardArrowOldIcon);
   } else if (mode_ == OVERSCROLL_SOUTH) {
-    arrow_icon_ = &vector_icons::kReloadOldIcon;
+    arrow_icon_ =
+        &(features::IsRoundedIconsEnabled() ? vector_icons::kRefreshIcon
+                                            : vector_icons::kReloadOldIcon);
   }
 
   DCHECK(arrow_icon_);

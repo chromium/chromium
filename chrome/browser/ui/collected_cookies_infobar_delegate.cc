@@ -14,6 +14,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 // static
 void CollectedCookiesInfoBarDelegate::Create(
@@ -33,7 +34,9 @@ CollectedCookiesInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& CollectedCookiesInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kSettingsChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kSettingsIcon
+             : vector_icons::kSettingsChromeRefreshOldIcon;
 }
 
 std::u16string CollectedCookiesInfoBarDelegate::GetMessageText() const {

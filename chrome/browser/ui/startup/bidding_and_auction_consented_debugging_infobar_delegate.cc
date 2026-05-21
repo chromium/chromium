@@ -11,6 +11,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -35,7 +36,8 @@ void BiddingAndAuctionConsentedDebuggingDelegate::Create(
 
 const gfx::VectorIcon&
 BiddingAndAuctionConsentedDebuggingDelegate::GetVectorIcon() const {
-  return vector_icons::kErrorOutlineOldIcon;
+  return features::IsRoundedIconsEnabled() ? vector_icons::kErrorIcon
+                                           : vector_icons::kErrorOutlineOldIcon;
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

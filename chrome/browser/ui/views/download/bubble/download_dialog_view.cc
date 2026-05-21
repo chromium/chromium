@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -63,7 +64,9 @@ class ShowAllDownloadsButton : public RichHoverButton {
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL),
             /*subtitle_text=*/std::u16string(),
             ui::ImageModel::FromVectorIcon(
-                vector_icons::kLaunchChromeRefreshOldIcon,
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kOpenInNewIcon
+                    : vector_icons::kLaunchChromeRefreshOldIcon,
                 kColorDownloadBubbleShowAllDownloadsIcon,
                 GetLayoutConstant(LayoutConstant::kDownloadIconSize))) {
     // Override the table layout from RichHoverButton, in order to control the
@@ -149,7 +152,9 @@ void DownloadDialogView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadDialogView::CloseBubble,
                               base::Unretained(this)),
-          vector_icons::kCloseChromeRefreshOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kCloseIcon
+              : vector_icons::kCloseChromeRefreshOldIcon,
           GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   InstallCircleHighlightPathGenerator(close_button_);
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));

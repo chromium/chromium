@@ -17,6 +17,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -124,7 +125,8 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
                                  kNotifierLocale,
                                  NotificationCatalogName::kLocaleUpdate),
       optional, new LocaleNotificationDelegate(std::move(callback)),
-      vector_icons::kSettingsOldIcon,
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
+                                          : vector_icons::kSettingsOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

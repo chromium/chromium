@@ -23,6 +23,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/label.h"
@@ -113,7 +114,9 @@ void CoralChipButton::Init(BirchItem* item) {
       &CoralChipButton::OnCoralAddonClicked, weak_factory_.GetWeakPtr());
 
   auto button = birch_bar_util::CreateCoralAddonButton(
-      std::move(callback), vector_icons::kCaretUpOldIcon);
+      std::move(callback), ::features::IsRoundedIconsEnabled()
+                               ? vector_icons::kKeyboardArrowUpIcon
+                               : vector_icons::kCaretUpOldIcon);
   button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN, item_->title()));
   chevron_button_ = button.get();

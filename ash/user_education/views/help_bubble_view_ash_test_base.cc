@@ -18,6 +18,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view_info.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
@@ -66,7 +67,9 @@ HelpBubbleViewAshTestBase::CreateHelpBubbleView(HelpBubbleArrow arrow,
   }
 
   if (with_body_icon) {
-    params.body_icon = &vector_icons::kCelebrationOldIcon;
+    params.body_icon = &(::features::IsRoundedIconsEnabled()
+                             ? vector_icons::kCelebrationIcon
+                             : vector_icons::kCelebrationOldIcon);
   }
 
   if (with_buttons) {

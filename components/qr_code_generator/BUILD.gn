@@ -28,6 +28,7 @@ source_set("bitmap_generator") {
     "//base",
     "//components/vector_icons",
     "//skia",
+    "//ui/base:features",
     "//ui/gfx",
   ]
 }

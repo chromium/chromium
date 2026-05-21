@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -41,7 +42,9 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&EchoDialogListener::OnMoreInfoLinkClicked,
                               base::Unretained(listener)),
-          vector_icons::kHelpOutlineOldIcon));
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kHelpIcon
+              : vector_icons::kHelpOutlineOldIcon));
   learn_more_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
 

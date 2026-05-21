@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/menus/simple_menu_model.h"
@@ -226,8 +227,9 @@ void TranslationViewWrapperBase::SetTextColor(
       vector_icons::kGTranslateIcon, header_color,
       kLiveTranslateImageWidthDip));
   translate_arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kArrowRightAltOldIcon, header_color,
-      kLiveTranslateImageWidthDip));
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightAltIcon
+                                        : vector_icons::kArrowRightAltOldIcon,
+      header_color, kLiveTranslateImageWidthDip));
 }
 
 void TranslationViewWrapperBase::UpdateLanguageLabel() {

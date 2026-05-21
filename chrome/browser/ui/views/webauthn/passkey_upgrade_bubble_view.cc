@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
@@ -187,14 +188,18 @@ PasskeyUpgradeBubbleView::PasskeyUpgradeBubbleView(
               },
               base::Unretained(this)),
           /*main_image_icon=*/
-          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOldIcon,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kSettingsFilledIcon
+                                             : vector_icons::kSettingsOldIcon,
                                          ui::kColorIcon),
           /*title_text=*/
           l10n_util::GetStringUTF16(IDS_PASSKEY_UPGRADE_BUBBLE_MANAGE_BUTTON),
           /*subtitle_text=*/std::u16string(),
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kLaunchOldIcon, ui::kColorIconSecondary,
+              features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+                                                : vector_icons::kLaunchOldIcon,
+              ui::kColorIconSecondary,
               GetLayoutConstant(LayoutConstant::kPageInfoIconSize))));
 
   // The base class sets a fixed dialog width, but that might not fit the

@@ -155,7 +155,8 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             plus_addresses::kPlusAddressLogoSmallIcon,
 #else
-            vector_icons::kEmailOldIcon,
+            features::IsRoundedIconsEnabled() ? vector_icons::kMailFilledIcon
+                                              : vector_icons::kEmailOldIcon,
 #endif
             IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE)
             .AddMenu()
@@ -223,6 +224,8 @@ void ToastService::RegisterToasts(
         ToastId::kTabGroupSyncTabRemoved,
         ToastSpecification::Builder(features::IsRoundedIconsEnabled()
                                         ? kAccountCircleIcon
+                                    : features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kAccountCircleIcon
                                         : kAccountCircleChromeRefreshOldIcon,
                                     IDS_DATA_SHARING_TOAST_TAB_REMOVED)
             .AddCloseButton()
@@ -248,6 +251,8 @@ void ToastService::RegisterToasts(
         ToastId::kTabGroupSyncUserJoined,
         ToastSpecification::Builder(features::IsRoundedIconsEnabled()
                                         ? kAccountCircleIcon
+                                    : features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kAccountCircleIcon
                                         : kAccountCircleChromeRefreshOldIcon,
                                     IDS_DATA_SHARING_TOAST_NEW_MEMBER)
             .AddCloseButton()
@@ -310,7 +315,9 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kDiceUserMigrated,
-      ToastSpecification::Builder(vector_icons::kCelebrationOldIcon,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kCelebrationIcon
+                                      : vector_icons::kCelebrationOldIcon,
                                   IDS_DICE_MIGRATION_CONFIRMATION_TOAST_MESSAGE)
           .AddCloseButton()
           .AddActionButton(IDS_DICE_MIGRATION_CONFIRMATION_TOAST_BUTTON,
@@ -326,14 +333,18 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kEmailVerified,
-      ToastSpecification::Builder(vector_icons::kEmailOldIcon,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
                                   IDS_EMAIL_VERIFIED)
           .AddCloseButton()
           .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kGlicShareImageFailed,
-      ToastSpecification::Builder(vector_icons::kInfoRefreshOldIcon,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kInfoIcon
+                                      : vector_icons::kInfoRefreshOldIcon,
                                   IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY)
           .AddCloseButton()
           .Build());
@@ -412,7 +423,9 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kAutoSignIn,
-      ToastSpecification::Builder(vector_icons::kPasswordManagerOldIcon,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kPasswordManagerIcon
+                                      : vector_icons::kPasswordManagerOldIcon,
                                   IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TOAST_BODY)
           .AddMenu()
           .Build());
@@ -422,7 +435,9 @@ void ToastService::RegisterToasts(
     toast_registry_->RegisterToast(
         ToastId::kAutofillAiFetchFromWalletErrorMessage,
         ToastSpecification::Builder(
-            vector_icons::kPersonTextOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kPersonTextIcon
+                : vector_icons::kPersonTextOldIcon,
             IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION)
             .AddGlobalScoped()
             .Build());
@@ -432,7 +447,9 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             vector_icons::kGoogleWalletMonochromeIcon,
 #else
-            vector_icons::kPersonTextOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kPersonTextIcon
+                : vector_icons::kPersonTextOldIcon,
 #endif
             IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION)
             .AddGlobalScoped()
@@ -471,7 +488,9 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             vector_icons::kPlayCircleSparkIcon,
 #else
-            vector_icons::kPlayArrowChromeRefreshOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kPlayArrowIcon
+                : vector_icons::kPlayArrowChromeRefreshOldIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
             IDS_MULTISTEP_FILTER_SUGGESTION_TITLE)
             .AddActionButton(
@@ -496,7 +515,9 @@ void ToastService::RegisterToasts(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             vector_icons::kPlayCircleSparkIcon,
 #else
-            vector_icons::kPlayArrowChromeRefreshOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kPlayArrowIcon
+                : vector_icons::kPlayArrowChromeRefreshOldIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
             IDS_MULTISTEP_FILTER_SUGGESTION_RECENT_TITLE)
             .AddActionButton(
@@ -521,8 +542,9 @@ void ToastService::RegisterToasts(
       ToastId::kSendTabToSelfTabOpened,
       // TODO(crbug.com/488072250): Update the strings.
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon
-                                            : vector_icons::kDevicesOldIcon,
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : vector_icons::kDevicesOldIcon,
           IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME)
           .AddGlobalScoped()
           .Build());
@@ -531,8 +553,9 @@ void ToastService::RegisterToasts(
       ToastId::kSendTabToSelfTabsOpenedInBackground,
       // TODO(crbug.com/488072250): Update the strings.
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon
-                                            : vector_icons::kDevicesOldIcon,
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : vector_icons::kDevicesOldIcon,
           IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME)
           .AddCloseButton()
           .AddActionButton(
@@ -554,18 +577,20 @@ void ToastService::RegisterToasts(
   // TODO(crbug.com/492072882): Update design and strings, they are temporary.
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfSuccess,
-      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? kDevicesIcon
-                                      : vector_icons::kDevicesOldIcon,
-                                  IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST)
+      ToastSpecification::Builder(
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : vector_icons::kDevicesOldIcon,
+          IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST)
           .AddCloseButton()
           .Build());
 
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfSuccessThrottled,
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon
-                                            : vector_icons::kDevicesOldIcon,
+          features::IsRoundedIconsEnabled()   ? kDevicesIcon
+          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                              : vector_icons::kDevicesOldIcon,
           IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST)
           .AddCloseButton()
           .Build());
@@ -574,7 +599,8 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfFailure,
       ToastSpecification::Builder(
-          vector_icons::kWarningOldIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
+                                            : vector_icons::kWarningOldIcon,
           IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE)
           .AddCloseButton()
           .Build());

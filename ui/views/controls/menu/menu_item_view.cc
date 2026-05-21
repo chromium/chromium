@@ -1625,7 +1625,10 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   const Colors colors = CalculateColors(paint_as_selected);
   if (submenu_arrow_image_view_) {
     submenu_arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kSubmenuArrowChromeRefreshOldIcon, colors.icon_color));
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowRightIcon
+            : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
+        colors.icon_color));
   }
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&
