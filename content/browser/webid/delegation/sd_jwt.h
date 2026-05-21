@@ -126,6 +126,7 @@ using Base64String = base::StrongAlias<class Base64StringTag, std::string>;
 struct CONTENT_EXPORT Header {
   std::string typ;
   std::string alg;
+  std::string kid;
   // The public key that corresponds to the key used to digitally
   // sign the JWS.
   // https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.3
@@ -187,6 +188,7 @@ struct CONTENT_EXPORT Payload {
 
   // Profile-specific parameters.
   std::string email;
+  bool email_verified = false;
 
   Payload();
   ~Payload();
