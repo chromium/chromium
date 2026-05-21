@@ -22,6 +22,7 @@
 #include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/aura/window_delegate.h"
@@ -697,6 +698,36 @@ TEST_F(WaylandRemoteShellTest, DeviceScaleFactorChange) {
   EXPECT_EQ(window->GetBoundsInRootWindow(), bounds_in_dp);
   EXPECT_EQ(window->delegate()->GetMinimumSize(), min_size_in_dp);
   EXPECT_EQ(window->delegate()->GetMaximumSize(), max_size_in_dp);
+}
+
+TEST_F(WaylandRemoteShellTest, ActivateRespectsSecurityDelegate) {
+  wl_resource* v1_remote_surface =
+      wl_resource_create(wl_client(), &zcr_remote_surface_v1_interface, 1, 0);
+
+  test::MockSecurityDelegate mock_security_delegate;
+
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({256, 256})
+          .SetDelegate(shell()->CreateShellSurfaceDelegate(v1_remote_surface))
+          .SetSecurityDelegate(&mock_security_delegate)
+          .BuildClientControlledShellSurface();
+
+  wl_resource_set_user_data(v1_remote_surface, shell_surface.get());
+
+  // Expect CanSelfActivate to be called once and return false.
+  EXPECT_CALL(mock_security_delegate, CanSelfActivate(testing::_))
+      .WillOnce(testing::Return(false));
+
+  shell_surface->GetWidget()->Deactivate();
+  EXPECT_FALSE(shell_surface->GetWidget()->IsActive());
+
+  zcr_remote_shell::remote_surface_activate(wl_client(), v1_remote_surface, 0);
+
+  // Verify that the window is NOT active.
+  EXPECT_FALSE(shell_surface->GetWidget()->IsActive());
+
+  shell_surface.reset();
+  wl_resource_destroy(v1_remote_surface);
 }
 
 }  // namespace wayland
