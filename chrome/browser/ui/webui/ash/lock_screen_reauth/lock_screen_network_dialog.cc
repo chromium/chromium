@@ -9,10 +9,10 @@
 #include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -35,7 +35,7 @@ void LockScreenNetworkDialog::OnDialogClosed(const std::string& json_retval) {
 
 void LockScreenNetworkDialog::Show(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ProfileHelper::IsLockScreenProfile(profile));
+  DCHECK(IsLockScreenBrowserContext(profile));
   ShowSystemDialogForBrowserContext(profile);
 }
 
