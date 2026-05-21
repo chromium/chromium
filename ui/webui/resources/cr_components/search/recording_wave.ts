@@ -75,8 +75,8 @@ class Wiggle {
   }
 }
 
-const globalEnergyWiggle = new Wiggle(/*amplitude=*/ 1.1,
-                                      /*frequency=*/ 1.5);
+const globalEnergyWiggle = new Wiggle(/*amplitude=*/ 2,
+                                      /*frequency=*/ 0.5);
 
 export interface Bar {
   level: number;
@@ -96,10 +96,9 @@ export interface RecordingWaveElement {
   };
 }
 
-
 // ======Physics and visual parameters======
 // The time (in milliseconds) between rendering new volume bars.
-const BAR_INTERVAL_MS = 140;
+const BAR_INTERVAL_MS = 120;
 
 // Total number of bars allowed to move across the screen (both on and off
 // screen) for the sliding left recording wave effect.
@@ -109,13 +108,15 @@ const MAX_BARS = 100;
 // an active volume bar. This creates the visual right-side padding delay.
 const ACTIVATION_DELAY_INDEX = 6;
 
-// Width of bar, in px.
+// Max width of bar, in px. Minimum width is set in `bar-pill.is-unspawned`
+// CSS rule.
 const BAR_WIDTH = 12;
 
 // Space between each bar, in px.
-export const BAR_GAP = 7;
+export const BAR_GAP = 3;
 
-// Maximum height of each bar, in px.
+// Maximum height of each bar, in px. Minimum height is set in
+// `bar-pill.is-unspawned` CSS rule.
 const MAX_BAR_HEIGHT = 36;
 
 // Spring constants to match Android spring behavior.
@@ -132,7 +133,7 @@ const SPRING_DAMPING_WIDTH = 0.7;
 const SPRING_SETTLE_TIME_SECONDS = 0.65;
 
 // Value to simply increase the raw volume level in the animation (output).
-const VOLUME_MULTIPLIER = 2.2;
+const VOLUME_MULTIPLIER = 1;
 
 // Minimum volume level scaling (0-1):
 const MINIMUM_VOLUME_LEVEL = 0.1;
@@ -176,6 +177,7 @@ interface ColorStop {
   b: number;
 }
 
+// Note: Initial colors are set in `bar-pill.is-unspawned` CSS rule.
 // Points to change color at:
 const LIGHT_STOPS: ColorStop[] = [
   {ratio: 0.0, r: 201, g: 210, b: 255},  // #C9D2FF
@@ -195,7 +197,6 @@ const DARK_STOPS: ColorStop[] = [
   {ratio: 0.9, r: 76, g: 86, b: 143},    // #4C568F
   {ratio: 1.0, r: 55, g: 70, b: 109},    // #37466D
 ];
-
 
 // Computes the color at a given ratio along a multi-stop (point) gradient.
 // A ratio is essentially the current progress the pill has made when traversing
