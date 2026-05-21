@@ -12,6 +12,5 @@ export {OmniboxAimAppElement} from './aim_app.js';
 export {BrowserProxy} from './aim_browser_proxy.js';
 export {OmniboxPopupAppElement} from './app.js';
 export {OmniboxComposeboxElement} from './omnibox_composebox.js';
-export {PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
+export {browserProxyFactory as omniboxPopupBrowserProxyFactory, PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
 export {PageCallbackRouter, PageHandlerRemote, PageRemote} from './omnibox_popup_aim.mojom-webui.js';
-export {OmniboxPopupBrowserProxy} from './omnibox_popup_browser_proxy.js';

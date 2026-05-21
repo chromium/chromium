@@ -23,7 +23,7 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, OmniboxPopupSelection, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
@@ -31,8 +31,8 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerInterface as OmniboxPopupPageHandlerInterface} from './omnibox_popup.mojom-webui.js';
-import {OmniboxPopupBrowserProxy} from './omnibox_popup_browser_proxy.js';
+import type {BrowserProxy} from './omnibox_popup.mojom-webui.js';
+import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
 
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
@@ -173,7 +173,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
 
-  private callbackRouter_: SearchboxPageCallbackRouter;
+  private searchboxBrowserProxy_: SearchboxBrowserProxy;
   private eventTracker_ = new EventTracker();
   private hideContextButton_: boolean =
       loadTimeData.getBoolean('hideClassicContextButton');
@@ -182,20 +182,16 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor showContextButtonSuggestionLabel_: boolean =
       loadTimeData.getBoolean('omniboxShowContextButtonSuggestionLabel');
   private listenerIds_: number[] = [];
-  private pageHandler_: SearchboxPageHandlerInterface;
-  private popupCallbackRouter_: OmniboxPopupPageCallbackRouter;
+
+  private browserProxy_: BrowserProxy;
   private popupListenerIds_: number[] = [];
-  private popupPageHandler_: OmniboxPopupPageHandlerInterface;
   private selection_: OmniboxPopupSelection = kDefaultSelection;
 
   constructor() {
     super();
-    this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
-    this.popupCallbackRouter_ =
-        OmniboxPopupBrowserProxy.getInstance().callbackRouter;
+    this.searchboxBrowserProxy_ = SearchboxBrowserProxy.getInstance();
+    this.browserProxy_ = browserProxyFactory.getInstance();
     this.isDebug = new URLSearchParams(window.location.search).has('debug');
-    this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
-    this.popupPageHandler_ = OmniboxPopupBrowserProxy.getInstance().handler;
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -204,50 +200,52 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     // TODO(b/468113419): The handlers and their definitions are not ordered the
     // same as the mojom file.
     this.popupListenerIds_ = [
-      this.popupCallbackRouter_.onShow.addListener(this.onShow_.bind(this)),
+      this.browserProxy_.callbackRouter.onShow.addListener(
+          this.onShow_.bind(this)),
     ];
 
     this.listenerIds_ = [
-      this.callbackRouter_.autocompleteResultChanged.addListener(
-          this.onAutocompleteResultChanged_.bind(this)),
-      this.callbackRouter_.updateSelection.addListener(
+      this.searchboxBrowserProxy_.callbackRouter.autocompleteResultChanged
+          .addListener(this.onAutocompleteResultChanged_.bind(this)),
+      this.searchboxBrowserProxy_.callbackRouter.updateSelection.addListener(
           this.onUpdateSelection_.bind(this)),
-      this.callbackRouter_.setKeywordSelected.addListener(
+      this.searchboxBrowserProxy_.callbackRouter.setKeywordSelected.addListener(
           (isKeywordSelected: boolean) => {
             this.isInKeywordMode_ = isKeywordSelected;
           }),
-      this.callbackRouter_.updateLensSearchEligibility.addListener(
-          (eligible: boolean) => {
+      this.searchboxBrowserProxy_.callbackRouter.updateLensSearchEligibility
+          .addListener((eligible: boolean) => {
             this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
           }),
-      this.callbackRouter_.updateContentSharingPolicy.addListener(
-          (enabled: boolean) => {
+      this.searchboxBrowserProxy_.callbackRouter.updateContentSharingPolicy
+          .addListener((enabled: boolean) => {
             this.isContentSharingEnabled_ = enabled;
           }),
-      this.callbackRouter_.onInputStateChanged.addListener(
-          (inputState: InputState) => {
+      this.searchboxBrowserProxy_.callbackRouter.onInputStateChanged
+          .addListener((inputState: InputState) => {
             this.inputState_ = inputState;
           }),
     ];
     if (!this.hideContextButton_) {
       this.listenerIds_.push(
-          this.callbackRouter_.updateAimPopupEligibility.addListener(
-              (eligible: boolean) => {
+          this.searchboxBrowserProxy_.callbackRouter.updateAimPopupEligibility
+              .addListener((eligible: boolean) => {
                 this.isAimPopupEligible_ = eligible;
               }));
     }
     if (this.webuiOmniboxPopupSelectionControlEnabled_) {
       this.listenerIds_.push(
-          this.callbackRouter_.stepSelection.addListener(
+          this.searchboxBrowserProxy_.callbackRouter.stepSelection.addListener(
               this.stepSelection_.bind(this)),
-          this.callbackRouter_.openCurrentSelection.addListener(
-              this.openCurrentSelection_.bind(this)),
-          this.callbackRouter_.setAimButtonVisible.addListener(
-              (visible: boolean) => {
+          this.searchboxBrowserProxy_.callbackRouter.openCurrentSelection
+              .addListener(this.openCurrentSelection_.bind(this)),
+          this.searchboxBrowserProxy_.callbackRouter.setAimButtonVisible
+              .addListener((visible: boolean) => {
                 this.isAimButtonVisible_ = visible;
               }));
     }
-    this.inputState_ = (await this.pageHandler_.getInputState()).state;
+    this.inputState_ =
+        (await this.searchboxBrowserProxy_.handler.getInputState()).state;
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
 
@@ -263,12 +261,12 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
     for (const listenerId of this.listenerIds_) {
-      this.callbackRouter_.removeListener(listenerId);
+      this.searchboxBrowserProxy_.callbackRouter.removeListener(listenerId);
     }
     this.listenerIds_ = [];
 
     for (const listenerId of this.popupListenerIds_) {
-      this.popupCallbackRouter_.removeListener(listenerId);
+      this.browserProxy_.callbackRouter.removeListener(listenerId);
     }
     this.popupListenerIds_ = [];
 
@@ -413,7 +411,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.selection_ = selection;
     this.getDropdown().updateSelection(oldSelection, this.selection_);
     if (notify) {
-      this.pageHandler_.setPopupSelection(
+      this.searchboxBrowserProxy_.handler.setPopupSelection(
           selectionIsNativelySupported(this.selection_) ? this.selection_ :
                                                           kDefaultSelection);
     }
@@ -565,9 +563,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   private openCurrentSelection_(disposition: WindowOpenDisposition) {
     if (this.selection_.state ===
         SelectionLineState.kFocusedButtonContextEntrypoint) {
-      this.popupPageHandler_.showContextMenu({x: 0, y: 0});
+      this.browserProxy_.handler.showContextMenu({x: 0, y: 0});
     } else if (selectionIsNativelySupported(this.selection_)) {
-      this.pageHandler_.openPopupSelection(
+      this.searchboxBrowserProxy_.handler.openPopupSelection(
           this.result_?.sequenceId || 0, this.selection_, disposition);
     } else {
       assertNotReached(
@@ -587,11 +585,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       x: e.detail.x,
       y: e.detail.y,
     };
-    this.popupPageHandler_.showContextMenu(point);
+    this.browserProxy_.handler.showContextMenu(point);
   }
 
   protected async refreshRecentTabForChip_() {
-    const {tabs} = await this.pageHandler_.getRecentTabs();
+    const {tabs} = await this.searchboxBrowserProxy_.handler.getRecentTabs();
     this.recentTabForChip_ = tabs.find(tab => tab.showInCurrentTabChip) || null;
     if (!this.recentTabForChip_) {
       this.recentTabForChip_ =
@@ -600,7 +598,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   }
 
   protected onLensSearchClick_() {
-    this.pageHandler_.openLensSearch();
+    this.searchboxBrowserProxy_.handler.openLensSearch();
   }
 
   protected onAddTabContext_(e: CustomEvent<{
@@ -609,7 +607,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     url: Url,
     delayUpload: boolean,
   }>) {
-    this.pageHandler_.addTabContext(e.detail.id, e.detail.delayUpload);
+    this.searchboxBrowserProxy_.handler.addTabContext(
+        e.detail.id, e.detail.delayUpload);
   }
 
   protected computeShowRecentTabChip_() {

@@ -26,7 +26,6 @@ build_webui("build") {
     "omnibox_composebox.html.ts",
     "omnibox_composebox.ts",
     "omnibox_popup.ts",
-    "omnibox_popup_browser_proxy.ts",
     "omnibox_popup_searchbox.html.ts",
     "omnibox_popup_searchbox.ts",
   ]
