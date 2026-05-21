@@ -1885,10 +1885,7 @@ WebContents* Browser::OpenURLFromTab(
       for (tabs::TabInterface* tab :
            tab_strip_model()->GetSplitData(split_id)->ListTabs()) {
         if (tab != source_tab) {
-          content::NavigationController::LoadURLParams load_params(params.url);
-          load_params.transition_type = params.transition;
-          load_params.referrer =
-              content::Referrer(params.referrer.url, params.referrer.policy);
+          content::NavigationController::LoadURLParams load_params(params);
           tab->GetContents()->GetController().LoadURLWithParams(load_params);
           return source;
         }

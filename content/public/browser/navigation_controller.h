@@ -140,6 +140,8 @@ class NavigationController {
 
   // Extra optional parameters for LoadURLWithParams.
   struct CONTENT_EXPORT LoadURLParams {
+    // Prefer using the constructor that takes in `OpenURLParams`, if available,
+    // to ensure important fields are copied over.
     explicit LoadURLParams(const GURL& url);
 
     // Copies |open_url_params| into LoadURLParams, attempting to copy all
