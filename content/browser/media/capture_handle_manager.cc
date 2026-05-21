@@ -104,7 +104,7 @@ std::optional<GlobalRenderFrameHostId> GetCapturedFrameHostId(
     return std::nullopt;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   gfx::NativeWindow target_window =
       content::DesktopMediaID::GetNativeWindowById(desktop_id);
 
@@ -121,7 +121,8 @@ std::optional<GlobalRenderFrameHostId> GetCapturedFrameHostId(
 
   return web_contents->GetPrimaryMainFrame()->GetGlobalId();
 #else
-  DVLOG(1) << "Window capture handle parsing is not supported on Android.";
+  DVLOG(1)
+      << "Window capture handle parsing is only supported on this platform.";
   return std::nullopt;
 #endif
 }
