@@ -389,7 +389,8 @@ public class PkpTest {
         applyCronetEngineBuilderConfigurationPatch(
                 mTestRule.getTestFramework(), DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
         final String label63 = "123456789-123456789-123456789-123456789-123456789-123456789-123";
-        final String host255 = label63 + "." + label63 + "." + label63 + "." + label63;
+        final String host253 =
+                (label63 + "." + label63 + "." + label63 + "." + label63).substring(0, 253);
         // Valid host names.
         assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), "domain.com");
         assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), "my-domain.com");
@@ -404,8 +405,8 @@ public class PkpTest {
         assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), "最新消息.中国");
         // Checks max size of the host label (63 characters)
         assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), label63 + ".com");
-        // Checks max size of the host name (255 characters)
-        assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), host255);
+        // Checks max size of the host name (253 characters)
+        assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), host253);
         assertNoExceptionWhenHostNameIsValid(mTestRule.getTestFramework(), "127.0.0.z");
 
         // Invalid host names.
@@ -423,9 +424,12 @@ public class PkpTest {
                 mTestRule.getTestFramework(), "http.sctp._www.example.com");
         // Checks a host that exceeds max allowed length of the host label (63 characters)
         assertExceptionWhenHostNameIsInvalid(mTestRule.getTestFramework(), label63 + "4.com");
-        // Checks a host that exceeds max allowed length of hostname (255 characters)
+        // Checks a host that exceeds max allowed length of hostname. Currently the max length is
+        // 253 characters, but when running against AOSP_PLATFORM we could end up running the test
+        // against an older version of Cronet before https://crrev.com/c/7868808 where the limit was
+        // actually 255, so use that instead.
         assertExceptionWhenHostNameIsInvalid(
-                mTestRule.getTestFramework(), host255.substring(3) + ".com");
+                mTestRule.getTestFramework(), host253.substring(1) + ".com");
         assertExceptionWhenHostNameIsInvalid(
                 mTestRule.getTestFramework(), "FE80:0000:0000:0000:0202:B3FF:FE1E:8329");
         assertExceptionWhenHostNameIsInvalid(mTestRule.getTestFramework(), "[2001:db8:0:1]:80");
