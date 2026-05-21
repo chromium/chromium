@@ -11,14 +11,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
-
-namespace ui {
-class TrackedElement;
-}  // namespace ui
-
-namespace views {
-class Button;
-}
+#include "ui/views/bubble/bubble_anchor.h"
 
 class Browser;
 
@@ -27,7 +20,7 @@ class Browser;
 class IncognitoMenuView : public ProfileMenuViewBase {
  public:
   // `browser` must not be nullptr.
-  IncognitoMenuView(ui::TrackedElement* anchor_element, Browser* browser);
+  IncognitoMenuView(views::BubbleAnchor anchor_element, Browser* browser);
 
   IncognitoMenuView(const IncognitoMenuView&) = delete;
   IncognitoMenuView& operator=(const IncognitoMenuView&) = delete;
