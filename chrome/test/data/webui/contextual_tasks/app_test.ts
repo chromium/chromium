@@ -12,7 +12,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {createContextualTasksAppElement, fixtureUrl} from './test_utils.js';
+import {createContextualTasksAppElement, fixtureUrl, simulateLoadCommit} from './test_utils.js';
 
 // Remove the element to prevent background loadabort events from triggering
 // a race condition with our manual event simulation.
@@ -617,6 +617,93 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', composebox.style.height);
   });
 
+  test('zero state nullifies and ignores forcedComposeboxBounds', async () => {
+    const {appElement, proxy} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    // Simulate loadcommit to set up the target origin in PostMessageHandler.
+    const webview = appElement.shadowRoot.querySelector<HTMLElement>('webview');
+    assertTrue(!!webview);
+    simulateLoadCommit(webview);
+
+    const rect = {
+      top: 10,
+      left: 20,
+      width: 100,
+      height: 200,
+      right: 120,
+      bottom: 210,
+    };
+
+    // 1. Set initial bounds.
+    appElement.setForcedComposeboxBoundsForTesting(rect);
+    assertDeepEquals(rect, appElement.getForcedComposeboxBoundsForTesting());
+
+    // 2. Transition to zero state. Bounds should be nullified.
+    proxy.callbackRouterRemote.onZeroStateChange(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(null, appElement.getForcedComposeboxBoundsForTesting());
+
+    // 3. Try to update bounds while in zero state. They should remain null.
+    const message = {
+      type: 'input-plate-bounds-update',
+      'bounds-rect': rect,
+    };
+    window.dispatchEvent(new MessageEvent('message', {
+      data: message,
+      origin: new URL(fixtureUrl).origin,
+    }));
+    await microtasksFinished();
+
+    assertEquals(null, appElement.getForcedComposeboxBoundsForTesting());
+
+    // 4. Transition out of zero state.
+    proxy.callbackRouterRemote.onZeroStateChange(false);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // 5. Bounds should now be updatable.
+    window.dispatchEvent(new MessageEvent('message', {
+      data: message,
+      origin: new URL(fixtureUrl).origin,
+    }));
+    await microtasksFinished();
+
+    assertDeepEquals(
+        rect.bottom - appElement.$.composebox.offsetHeight,
+        appElement.getForcedComposeboxBoundsForTesting()!.top);
+
+    // 6. Transition to NLM mode while in zero state.
+    appElement.setInNlmForTesting(true);
+    // Explicitly set bounds.
+    appElement.setForcedComposeboxBoundsForTesting(rect);
+    // Transition to zero state again (to trigger the listener).
+    proxy.callbackRouterRemote.onZeroStateChange(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Bounds should NOT be nullified in NLM mode.
+    assertDeepEquals(rect, appElement.getForcedComposeboxBoundsForTesting());
+
+    // 7. Bound updates should be accepted in NLM mode even in zero state.
+    const newRect = {...rect, top: 100};
+    const newMessage = {
+      type: 'input-plate-bounds-update',
+      'bounds-rect': newRect,
+    };
+    window.dispatchEvent(new MessageEvent('message', {
+      data: newMessage,
+      origin: new URL(fixtureUrl).origin,
+    }));
+    await microtasksFinished();
+
+    assertDeepEquals(
+        newRect.bottom - appElement.$.composebox.offsetHeight,
+        appElement.getForcedComposeboxBoundsForTesting()!.top);
+  });
+
   test('composebox hidden in nlm when no forced bounds', async () => {
     const {appElement} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
@@ -853,7 +940,8 @@ suite('ContextualTasksAppTest', function() {
   });
 
   test(
-      'hides composebox if load abort contains an error document', async () => {
+      'sets isLoadError true if load abort contains an error document',
+      async () => {
         const {appElement} = await createContextualTasksAppElement(
             /*url=*/ fixtureUrl,
             /*setupProxy=*/ (p) => {
@@ -933,7 +1021,7 @@ suite('ContextualTasksAppTest', function() {
       });
 
   test(
-      'does not hide composebox if load abort does not contain error document',
+      'leaves isLoadError false if load abort does not contain error document',
       async () => {
         const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
         // Override isEmbeddedPageErrorDocument to return false

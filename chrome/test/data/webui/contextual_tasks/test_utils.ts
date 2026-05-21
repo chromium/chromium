@@ -62,6 +62,16 @@ export function simulateUserInput(
       new Event('input', {bubbles: true, composed: true}));
 }
 
+/**
+ * Simulates a 'loadcommit' event on a webview element.
+ */
+export function simulateLoadCommit(
+    webview: HTMLElement, url: string = fixtureUrl) {
+  const loadCommitEvent = new Event('loadcommit');
+  Object.assign(loadCommitEvent, {isTopLevel: true, url: url});
+  webview.dispatchEvent(loadCommitEvent);
+}
+
 export async function setupAutocompleteResults(
     searchboxCallbackRouterRemote: SearchboxPageRemote, testQuery: string,
     mockTimer: MockTimer) {

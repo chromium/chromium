@@ -499,8 +499,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         if (isZeroState) {
           this.composebox_?.clearInputAndFocus();
           // Reset the forced composebox bounds since the zero state position
-          // is controlled natively.
-          this.forcedComposeboxBounds_ = null;
+          if (!this.shouldSetForceComposeboxBounds_()) {
+            this.forcedComposeboxBounds_ = null;
+          }
         }
       }),
       callbackRouter.setInNlm.addListener((inNlm: boolean) => {
@@ -1054,11 +1055,15 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       // Since the height is controlled client side and the composebox grows
       // updwards, set the top of the rect to match the current height to avoid
       // miscalculations in the clip path.
-      this.forcedComposeboxBounds_ = {
-        ...inputRect,
-        height: currentHeight,
-        top: inputRect.bottom - currentHeight,
-      };
+      if (this.shouldSetForceComposeboxBounds_()) {
+        this.forcedComposeboxBounds_ = {
+          ...inputRect,
+          height: currentHeight,
+          top: inputRect.bottom - currentHeight,
+        };
+      } else {
+        this.forcedComposeboxBounds_ = null;
+      }
     }
     if (occluders !== undefined) {
       this.occluders_ = occluders;
@@ -1133,6 +1138,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       return false;
     }
     return url.searchParams.has(this.nlmUrlParam_);
+  }
+
+  private shouldSetForceComposeboxBounds_(): boolean {
+    return !this.isZeroState_ || this.inNlm_;
   }
 
   getComposeboxBoundsStyles() {
