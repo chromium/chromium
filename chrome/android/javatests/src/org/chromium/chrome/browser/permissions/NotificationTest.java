@@ -50,8 +50,7 @@ public class NotificationTest {
                 /* url= */ TEST_FILE,
                 /* javascript= */ "requestPermission()",
                 /* nUpdates= */ 0,
-                /* withGesture= */ false,
-                /* isDialog= */ true);
+                /* withGesture= */ false);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 }

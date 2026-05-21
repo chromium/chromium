@@ -83,18 +83,18 @@ public class AutomaticEmbargoTest {
                         : DialogDismissalCause.NAVIGATE_BACK);
           });
       InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        }
+
+        mPermissionRule.runNoPromptTest(
+                updateWaiter, testFile, javascript, /* nUpdates= */ 0, withGesture);
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
-    mPermissionRule.runNoPromptTest(
-        updateWaiter, testFile, javascript, /* nUpdates= */ 0, withGesture, /* isDialog= */ true);
-    ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
-  }
-
-  @Test
-  @LargeTest
-  @Feature({"Location"})
-  @DisabledTest(message = "Flaky test crbug.com/325324593")
-  public void testGeolocationEmbargo() throws Exception {
+    @Test
+    @LargeTest
+    @Feature({"Location"})
+    @DisabledTest(message = "Flaky test crbug.com/325324593")
+    public void testGeolocationEmbargo() throws Exception {
     LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
     LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 

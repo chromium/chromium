@@ -43,7 +43,7 @@ public class MIDITest {
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("pass", mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
-        mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, "", 0, false, true);
+        mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, "", 0, false);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 }

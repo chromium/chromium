@@ -518,8 +518,7 @@ public class SiteSettingsTest {
                 "/chrome/test/data/geolocation/geolocation_on_load.html",
                 "",
                 0,
-                false,
-                true);
+                false);
     }
 
     /** Sets Allow Location Enabled to be false and make sure it is set correctly. */
@@ -550,8 +549,7 @@ public class SiteSettingsTest {
                 "/chrome/test/data/geolocation/geolocation_on_load.html",
                 "",
                 0,
-                false,
-                true);
+                false);
     }
 
     private void setCookiesEnabled(final SettingsActivity settingsActivity, final boolean enabled) {
@@ -2137,8 +2135,7 @@ public class SiteSettingsTest {
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
                 0,
-                /* withGesture= */ true,
-                /* isDialog= */ true);
+                /* withGesture= */ true);
     }
 
     /** Sets Allow Camera Enabled to be true and make sure it is set correctly. */
@@ -2163,8 +2160,7 @@ public class SiteSettingsTest {
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
                 0,
-                /* withGesture= */ true,
-                /* isDialog= */ true);
+                /* withGesture= */ true);
     }
 
     /** Sets Allow Mic Enabled to be false and make sure it is set correctly. */
@@ -2188,7 +2184,6 @@ public class SiteSettingsTest {
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
                 0,
-                true,
                 true);
     }
 
@@ -2214,7 +2209,6 @@ public class SiteSettingsTest {
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
                 0,
-                true,
                 true);
     }
 
@@ -3337,7 +3331,6 @@ public class SiteSettingsTest {
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
                 0,
-                true,
                 true);
     }
 
@@ -3354,7 +3347,6 @@ public class SiteSettingsTest {
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
                 0,
-                true,
                 true);
     }
 
@@ -3371,7 +3363,6 @@ public class SiteSettingsTest {
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
                 0,
-                true,
                 true);
     }
 
@@ -3388,7 +3379,6 @@ public class SiteSettingsTest {
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
                 0,
-                true,
                 true);
     }
 
@@ -3404,7 +3394,6 @@ public class SiteSettingsTest {
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
                 0,
-                true,
                 true);
 
         setGlobalTriStateToggleForCategory(
@@ -3416,7 +3405,6 @@ public class SiteSettingsTest {
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
                 0,
-                true,
                 true);
     }
 

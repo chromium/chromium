@@ -36,14 +36,11 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
-import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -126,8 +123,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
 
     /** Text ID for the "Don't Allow" button. */
     public static final int CLAPPER_LOUD_DONT_ALLOW_BUTTON_TEXT_ID = R.string.permission_dont_allow;
-
-    private InfoBarTestAnimationListener mListener;
 
     /**
      * Enumeration of the possible decisions that can be made by the user on a permission prompt.
@@ -239,9 +234,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     /** Starts an activity and listens for info-bars appearing/disappearing. */
     public void setUpActivity() throws InterruptedException {
         startMainActivityOnBlankPage();
-        mListener = new InfoBarTestAnimationListener();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> getInfoBarContainer().addAnimationListener(mListener));
     }
 
     /**
@@ -549,8 +541,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             final String url,
             String javascript,
             int nUpdates,
-            boolean withGesture,
-            boolean isDialog)
+            boolean withGesture)
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
@@ -558,7 +549,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
-        replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.ALLOW, nUpdates, isDialog);
+        replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.ALLOW, nUpdates);
     }
 
     /**
@@ -578,8 +569,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             final String url,
             String javascript,
             int nUpdates,
-            boolean withGesture,
-            boolean isDialog)
+            boolean withGesture)
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
@@ -587,7 +577,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
-        replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.DENY, nUpdates, isDialog);
+        replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.DENY, nUpdates);
     }
 
     /**
@@ -607,8 +597,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             final String url,
             String javascript,
             int nUpdates,
-            boolean withGesture,
-            boolean isDialog)
+            boolean withGesture)
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
@@ -616,65 +605,29 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
-        waitForUpdatesAndAssertNoPrompt(updateWaiter, nUpdates, isDialog);
+        waitForUpdatesAndAssertNoPrompt(updateWaiter, nUpdates);
     }
 
     private void replyToPromptAndWaitForUpdates(
-            PermissionUpdateWaiter updateWaiter,
-            @PromptDecision int decision,
-            int nUpdates,
-            boolean isDialog)
+            PermissionUpdateWaiter updateWaiter, @PromptDecision int decision, int nUpdates)
             throws Exception {
-        if (isDialog) {
-            waitForDialogShownState(true);
-            replyToDialogAndWaitForUpdates(updateWaiter, nUpdates, decision);
-        } else {
-            replyToInfoBarAndWaitForUpdates(updateWaiter, nUpdates, decision);
-        }
+        waitForDialogShownState(true);
+        replyToDialogAndWaitForUpdates(updateWaiter, nUpdates, decision);
     }
 
-    private void waitForUpdatesAndAssertNoPrompt(
-            PermissionUpdateWaiter updateWaiter, int nUpdates, boolean isDialog) throws Exception {
+    private void waitForUpdatesAndAssertNoPrompt(PermissionUpdateWaiter updateWaiter, int nUpdates)
+            throws Exception {
         updateWaiter.waitForNumUpdates(nUpdates);
 
-        if (isDialog) {
-            Assert.assertFalse(
-                    "Modal permission prompt shown when none expected",
-                    PermissionDialogController.getInstance().isDialogShownForTest());
-        } else {
-            Assert.assertEquals(
-                    "Permission infobar shown when none expected", 0, getInfoBars().size());
-        }
+        Assert.assertFalse(
+                "Modal permission prompt shown when none expected",
+                PermissionDialogController.getInstance().isDialogShownForTest());
     }
 
     public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
             throws TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
         TouchCommon.singleClickView(getActivityTab().getView());
-    }
-
-    /**
-     * Replies to an infobar permission prompt and waits for a provided number of updates to the
-     * page title in response.
-     */
-    private void replyToInfoBarAndWaitForUpdates(
-            PermissionUpdateWaiter updateWaiter, int nUpdates, @PromptDecision int decison)
-            throws Exception {
-        mListener.addInfoBarAnimationFinished("InfoBar not added.");
-        InfoBar infobar = getInfoBars().get(0);
-        Assert.assertNotNull(infobar);
-
-        switch (decison) {
-            case PromptDecision.ALLOW ->
-                    Assert.assertTrue(
-                            "Allow button wasn't found", InfoBarUtil.clickPrimaryButton(infobar));
-            case PromptDecision.ALLOW_ONCE ->
-                    throw new AssertionError("Allowing once is not supported on infobars.");
-            case PromptDecision.DENY ->
-                    Assert.assertTrue(
-                            "Block button wasn't found", InfoBarUtil.clickSecondaryButton(infobar));
-        }
-        updateWaiter.waitForNumUpdates(nUpdates);
     }
 
     /**

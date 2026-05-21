@@ -39,14 +39,12 @@ public class MediaTest {
     }
 
     private void testMediaPermissionsPlumbing(
-            String prefix, String script, int numUpdates, boolean withGesture, boolean isDialog)
-            throws Exception {
+            String prefix, String script, int numUpdates, boolean withGesture) throws Exception {
         Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(prefix, mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
-        mPermissionRule.runAllowTest(
-                updateWaiter, TEST_FILE, script, numUpdates, withGesture, isDialog);
+        mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, script, numUpdates, withGesture);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
@@ -58,7 +56,7 @@ public class MediaTest {
     @DisableIf.Device(
             DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136, https://crbug.com/383407975
     public void testMicrophoneMediaPermissionsPlumbingDialog() throws Exception {
-        testMediaPermissionsPlumbing("Mic count:", "initiate_getMicrophone()", 1, true, true);
+        testMediaPermissionsPlumbing("Mic count:", "initiate_getMicrophone()", 1, true);
     }
 
     /**
@@ -70,7 +68,7 @@ public class MediaTest {
     @Feature({"MediaPermissions", "Main"})
     @CommandLineFlags.Add({FAKE_DEVICE})
     public void testCameraPermissionsPlumbingDialog() throws Exception {
-        testMediaPermissionsPlumbing("Camera count:", "initiate_getCamera()", 1, false, true);
+        testMediaPermissionsPlumbing("Camera count:", "initiate_getCamera()", 1, false);
     }
 
     /**
@@ -83,6 +81,6 @@ public class MediaTest {
     @CommandLineFlags.Add({FAKE_DEVICE})
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/41486136
     public void testCombinedPermissionsPlumbingDialog() throws Exception {
-        testMediaPermissionsPlumbing("Combined count:", "initiate_getCombined()", 1, true, true);
+        testMediaPermissionsPlumbing("Combined count:", "initiate_getCombined()", 1, true);
     }
 }

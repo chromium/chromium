@@ -174,8 +174,7 @@ public class NotificationPlatformBridgeTest {
                 NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)",
                 1,
-                false,
-                true);
+                false);
 
         // This should have caused notifications permission to become denied.
         Assert.assertEquals("\"denied\"", runJavaScript("Notification.permission"));
@@ -219,8 +218,7 @@ public class NotificationPlatformBridgeTest {
                 NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)",
                 1,
-                false,
-                true);
+                false);
 
         // Reload page to ensure the grant is persisted.
         mNotificationTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));

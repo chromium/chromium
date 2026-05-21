@@ -48,14 +48,12 @@ public class GeolocationTest {
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
     }
 
-    private void runTest(String javascript, int nUpdates, boolean withGesture, boolean isDialog)
-            throws Exception {
+    private void runTest(String javascript, int nUpdates, boolean withGesture) throws Exception {
         Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("Count:", mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
-        mPermissionRule.runAllowTest(
-                updateWaiter, TEST_FILE, javascript, nUpdates, withGesture, isDialog);
+        mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, javascript, nUpdates, withGesture);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
@@ -65,7 +63,7 @@ public class GeolocationTest {
     @Feature({"Location", "Main"})
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
     public void testGeolocationPlumbingAllowedDialog() throws Exception {
-        runTest("initiate_getCurrentPosition()", 1, true, true);
+        runTest("initiate_getCurrentPosition()", 1, true);
     }
 
     /**
@@ -76,7 +74,7 @@ public class GeolocationTest {
     @MediumTest
     @Feature({"Location", "Main"})
     public void testGeolocationPlumbingAllowedDialogNoGesture() throws Exception {
-        runTest("initiate_getCurrentPosition()", 1, false, true);
+        runTest("initiate_getCurrentPosition()", 1, false);
     }
 
     /** Verify Geolocation creates a dialog and receives multiple locations. */
@@ -85,6 +83,6 @@ public class GeolocationTest {
     @Feature({"Location"})
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/362792693")
     public void testGeolocationWatchDialog() throws Exception {
-        runTest("initiate_watchPosition()", 2, true, true);
+        runTest("initiate_watchPosition()", 2, true);
     }
 }
