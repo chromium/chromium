@@ -415,6 +415,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using context menus.
 - (void)testShareGroupAndManageGroupUsingContextMenus {
+  // TODO(crbug.com/514660819): Remove once the issue is resolved.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPhone.");
+  }
+
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
