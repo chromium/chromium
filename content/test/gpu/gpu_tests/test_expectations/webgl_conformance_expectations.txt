@@ -307,6 +307,9 @@ crbug.com/1372155 [ android android-sm-a137f arm ] WebglExtension_WEBGL_draw_buf
 # Extensions not available on Corsola devices with Android Desktop.
 [ android android-corsola arm ] WebglExtension_EXT_float_blend [ Skip ]
 
+# Test too slow on ChromeOS - often hitting 300s timeouts.
+crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -373,7 +376,6 @@ crbug.com/507502286 [ android android-pixel-10 ] conformance/extensions/webgl-bl
 
 [ linux debug ] conformance/rendering/multisample-corruption.html [ Slow ]
 [ linux angle-opengl debug nvidia-0x2184 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
-crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
 
 # Fuchsia devices are less performant, these tests are running very close to the
 # edge of the 60s timeout.
