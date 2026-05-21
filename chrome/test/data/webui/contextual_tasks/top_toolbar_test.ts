@@ -657,4 +657,17 @@ suite('TopToolbarTest', () => {
       assertFalse(!!reopenTabs);
     });
   });
+
+  test('hides new thread button when isAimEligible is false', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({isAimEligible: false});
+
+    topToolbar = document.createElement('top-toolbar');
+    document.body.appendChild(topToolbar);
+    await microtasksFinished();
+
+    const newThreadButton = topToolbar.$.newThreadButton;
+    assertTrue(!!newThreadButton);
+    assertTrue(newThreadButton.hidden);
+  });
 });

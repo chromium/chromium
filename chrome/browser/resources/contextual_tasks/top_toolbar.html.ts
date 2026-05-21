@@ -39,7 +39,8 @@ export function getHtml(this: TopToolbarElement) {
         @click="${this.onNewThreadClick_}"
         iron-icon="contextual_tasks:edit_square"
         class="no-overlap" title="$i18n{newThreadTooltip}"
-        aria-label="$i18n{newThreadTooltip}">
+        aria-label="$i18n{newThreadTooltip}"
+        ?hidden="${!this.isAimEligible}">
     </cr-icon-button>
     <cr-icon-button id="threadHistoryButton"
         @click="${this.onThreadHistoryClick_}"

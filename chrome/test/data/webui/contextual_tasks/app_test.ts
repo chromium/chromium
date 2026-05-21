@@ -1001,4 +1001,16 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('1', url.searchParams.get('cs'));
     assertEquals('another', url.searchParams.get('hl'));
   });
+
+  test('composebox hidden when isAimEligible is false', async () => {
+    loadTimeData.overrideValues({
+      isAimEligible: false,
+      isZeroState: true,
+    });
+
+    const {appElement} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    assertTrue(appElement.$.composebox.hidden);
+  });
 });

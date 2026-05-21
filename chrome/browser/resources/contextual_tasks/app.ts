@@ -271,6 +271,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         type: Boolean,
         reflect: true,
       },
+      isAimEligible_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -300,6 +304,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // though top-level navigation could fail for numerous reasons.
   protected accessor isLoadError_: boolean = !window.navigator.onLine;
   protected accessor isAiPage_: boolean = loadTimeData.getBoolean('isAiPage');
+  protected accessor isAimEligible_: boolean =
+      loadTimeData.getBoolean('isAimEligible');
   protected accessor isLensOverlayShowing_: boolean = false;
   protected accessor isOverlayOpenForAimVisualSearch_: boolean = false;
   // Indicates if in tab mode. Most start in a tab.
@@ -1078,6 +1084,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
 
   protected isComposeboxHidden_(): boolean {
+    if (!this.isAimEligible_) {
+      return true;
+    }
+
     // Stay hidden until the first isZeroState_ value is determined to prevent
     // the composebox from flickering in.
     if (this.isZeroState_ === undefined) {

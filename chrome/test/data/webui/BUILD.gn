@@ -249,6 +249,7 @@ source_set("browser_tests") {
     deps += [
       "//build/config/coverage:buildflags",
       "//chrome/app:command_ids",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/commerce",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",

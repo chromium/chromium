@@ -73,6 +73,10 @@ export class TopToolbarElement extends CrLitElement {
       isPinButtonEnabled: {type: Boolean},
       isPinned: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
+      isAimEligible: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -80,6 +84,7 @@ export class TopToolbarElement extends CrLitElement {
   accessor contextInfos: ContextInfo[] = [];
   accessor darkMode: boolean = false;
   accessor isAiPage: boolean = loadTimeData.getBoolean('isAiPage');
+  accessor isAimEligible: boolean = loadTimeData.getBoolean('isAimEligible');
   accessor enableOpenInNewTabButton: boolean = false;
   accessor showReopenTabs_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
