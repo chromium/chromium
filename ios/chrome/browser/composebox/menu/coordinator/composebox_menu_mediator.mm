@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_consumer.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -21,22 +22,35 @@
   raw_ptr<WebStateList> _webStateList;
   // Preselected/attached tab and image context.
   ComposeboxAttachmentSelection* _preselection;
+  // Metrics recorder.
+  ComposeboxMetricsRecorder* _metricsRecorder;
 }
 
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
                         inputState:(ComposeboxUIInputState*)inputState
                       webStateList:(WebStateList*)webStateList
             preselectedAttachments:
-                (ComposeboxAttachmentSelection*)preselectedAttachments {
+                (ComposeboxAttachmentSelection*)preselectedAttachments
+                   metricsRecorder:(ComposeboxMetricsRecorder*)metricsRecorder {
   self = [super init];
   if (self) {
     _entrypoint = entrypoint;
     _inputState = inputState;
     _webStateList = webStateList;
     _preselection = preselectedAttachments;
+    _metricsRecorder = metricsRecorder;
   }
 
   return self;
+}
+
+- (void)disconnect {
+  _metricsRecorder = nil;
+  _webStateList = nullptr;
+  _preselection = nil;
+  _inputState = nil;
+  self.consumer = nil;
+  self.delegate = nil;
 }
 
 #pragma mark - Public
@@ -209,6 +223,9 @@
   if (!activeWebState) {
     return;
   }
+
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
 
   web::WebStateID activeWebStateID = activeWebState->GetUniqueIdentifier();
 

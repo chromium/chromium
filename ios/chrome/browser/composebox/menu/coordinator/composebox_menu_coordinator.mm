@@ -158,7 +158,8 @@ CGFloat const kSheetTopPadding = 40.0f;
           initWithEntrypoint:_entrypoint
                   inputState:_inputState
                 webStateList:self.browser->GetWebStateList()
-      preselectedAttachments:_preselection];
+      preselectedAttachments:_preselection
+             metricsRecorder:_metricsRecorder];
   _mediator.delegate = self;
 
   _viewController.sheetPresentationController.prefersGrabberVisible = YES;
@@ -211,6 +212,7 @@ CGFloat const kSheetTopPadding = 40.0f;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
   _pickerPresenter = nil;
   [_stateManager disconnect];

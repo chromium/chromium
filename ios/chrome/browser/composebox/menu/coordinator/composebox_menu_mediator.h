@@ -20,6 +20,7 @@ class WebStateList;
 @class ComposeboxMenuMediator;
 @class ComposeboxUIInputState;
 @class ComposeboxPickerImageResult;
+@class ComposeboxMetricsRecorder;
 @protocol ComposeboxMenuConsumer;
 
 // Delegate for the menu mediator.
@@ -65,12 +66,16 @@ class WebStateList;
 @property(nonatomic, weak) id<ComposeboxMenuConsumer> consumer;
 
 // Creates a new instance with an entrypoint, the initial UI state, the web
-// state list, and any preselected attachments.
+// state list, any preselected attachments, and a metrics recorder.
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
                         inputState:(ComposeboxUIInputState*)inputState
                       webStateList:(WebStateList*)webStateList
             preselectedAttachments:
-                (ComposeboxAttachmentSelection*)preselectedAttachments;
+                (ComposeboxAttachmentSelection*)preselectedAttachments
+                   metricsRecorder:(ComposeboxMetricsRecorder*)metricsRecorder;
+
+/// Disconnects the mediator, clearing references.
+- (void)disconnect;
 
 /// Processes the given `imageItems`.
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems;
