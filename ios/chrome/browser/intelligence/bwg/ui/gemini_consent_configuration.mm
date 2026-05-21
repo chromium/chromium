@@ -345,7 +345,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
   NSMutableAttributedString* attributedTitle =
       [[NSMutableAttributedString alloc]
-          initWithString:@"Go Live with Gemini"
+          initWithString:l10n_util::GetNSString(
+                             IDS_IOS_GEMINI_LIVE_CONSENT_TITLE)
               attributes:@{
                 NSFontAttributeName : PreferredFontForTextStyle(
                     UIFontTextStyleTitle2, UIFontWeightRegular),
@@ -366,10 +367,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 + (GeminiConsentRow*)liveFirstRow {
   UIImage* icon = DefaultSymbolWithConfiguration(
       kMicrophoneSymbol, [self defaultSymbolConfiguration]);
-  // TODO(crbug.com/498291812): Replace strings placeholders.
   NSString* bodyText =
-      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do "
-      @"eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_FIRST_BOX_BODY);
   NSAttributedString* body =
       [[NSAttributedString alloc] initWithString:bodyText
                                       attributes:[self defaultTextAttributes]];
@@ -380,18 +379,16 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 + (GeminiConsentRow*)liveSecondRow {
   UIImage* icon = DefaultSymbolWithConfiguration(
       kInfoCircleSymbol, [self defaultSymbolConfiguration]);
-  // TODO(crbug.com/498291812): Replace strings placeholders.
-  NSString* fullText =
-      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-      @"eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-      @"Gemini Apps Privacy Notice, Learn more.";
+  NSString* link1 = l10n_util::GetNSString(
+      IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY_LINK_1);
+  NSString* link2 = l10n_util::GetNSString(
+      IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY_LINK_2);
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY);
 
   NSAttributedString* body =
-      [self bodyAttributedTextForText:fullText
-                                links:@[
-                                  @"Gemini Apps Privacy Notice",
-                                  @"Learn more",
-                                ]
+      [self bodyAttributedTextForText:text
+                                links:@[ link1, link2 ]
                               actions:@[
                                 kGeminiLivePrivacyNoticeLinkAction,
                                 kGeminiLiveLearnMoreLinkAction
@@ -403,14 +400,14 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 + (GeminiConsentRow*)liveThirdRow {
   UIImage* icon = DefaultSymbolWithConfiguration(
       kWarningShieldSymbol, [self defaultSymbolConfiguration]);
-  // TODO(crbug.com/498291812): Replace strings placeholders.
-  NSString* fullText =
-      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-      @"Respect other's privacy ipsum dolor sit amet.";
+  NSString* linkText =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY_LINK);
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY);
 
   NSAttributedString* body =
-      [self bodyAttributedTextForText:fullText
-                                links:@[ @"Respect other's privacy" ]
+      [self bodyAttributedTextForText:text
+                                links:@[ linkText ]
                               actions:@[ kGeminiLivePrivacyPolicyLinkAction ]];
   return [[GeminiConsentRow alloc] initWithIcon:icon title:nil body:body];
 }

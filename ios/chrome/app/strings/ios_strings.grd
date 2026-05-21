@@ -3306,6 +3306,28 @@
       <message name="IDS_IOS_GEMINI_IMAGE_REMIX_TOOL_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can upload an image to remix with Nano Banana.">
         Upload an image to remix with Nano Banana
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_FIRST_BOX_BODY" desc="Body text for the first box of the Gemini Live Consent page.">
+        Live will use your microphone. Tapping the Live button turns on the mic. To turn off the mic, tap the stop button or close Gemini.
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY" desc="Body text for the second box of the Gemini Live Consent page.">
+        Recordings of your interactions with Live and content you share with it are saved and processed per the <ph name="PRIVACY_NOTICE">$1<ex>Gemini Apps Privacy Notice</ex></ph>. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY_LINK_1" desc="First link text within the second box body of the Gemini Live Consent page.">
+        Gemini Apps Privacy Notice
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY_LINK_2" desc="Second link text within the second box body of the Gemini Live Consent page.">
+        Learn more
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY" desc="Body text for the third box of the Gemini Live Consent page.">
+        <ph name="RESPECT_PRIVACY">$1<ex>Respect other’s privacy</ex></ph> and ask permission before recording or including them in a Live chat.
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY_LINK" desc="Link text within the third box body of the Gemini Live Consent page.">
+        Respect other’s privacy
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_TITLE" desc="Main title text for the Gemini Live Consent page.">
+        Go Live with Gemini
+      </message>
+
       <message name="IDS_IOS_GEMINI_LIVE_SHARING_LABEL" desc="Label describing the current page context shown in Gemini Live mode, indicating that the current page is being shared. [iOS only]">
         Sharing <ph name="PAGE_TITLE">$1<ex>Example Page</ex></ph>
       </message>
