@@ -30,6 +30,10 @@ declare_args() {
   # compatible build configurations (see comment for the
   # `enable_webui_generate_code_cache` update below).
   enable_webui_generate_code_cache = true
+
+  # Enable the native TypeScript compiler (tsgo) instead of the JS-based one.
+  # TODO(crbug.com/423789047): Enable this by default once ready.
+  use_typescript_go = false
 }
 
 if (enable_cast_receiver || is_cast_android || is_castos) {
@@ -39,7 +43,7 @@ if (enable_cast_receiver || is_cast_android || is_castos) {
   declare_args() {
     # Enable the WebUI version of the New Tab Page.
     enable_webui_ntp = target_os == "win" || target_os == "mac" ||
-        target_os == "linux" || target_os == "chromeos"
+                       target_os == "linux" || target_os == "chromeos"
   }
   declare_args() {
     # Enable WebUI Contextual Tasks Composebox.
