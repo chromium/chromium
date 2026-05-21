@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/osauth/auth_factor_migrator.h"
 #include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -18,12 +19,12 @@
 
 namespace ash {
 
-AuthFactorUpdater::AuthFactorUpdater(AuthPolicyConnector* connector,
-                                     UserDataAuthClient* user_data_auth,
-                                     PrefService* local_state)
-    : connector_(connector),
-      user_data_auth_(user_data_auth),
-      local_state_(local_state) {}
+AuthFactorUpdater::AuthFactorUpdater(PrefService* local_state,
+                                     AuthPolicyConnector* connector,
+                                     UserDataAuthClient* user_data_auth)
+    : local_state_(CHECK_DEREF(local_state)),
+      connector_(connector),
+      user_data_auth_(user_data_auth) {}
 
 AuthFactorUpdater::~AuthFactorUpdater() = default;
 
@@ -33,7 +34,8 @@ void AuthFactorUpdater::Run(std::unique_ptr<UserContext> context,
   CHECK(context->GetAuthorizedIntents().Has(ash::AuthSessionIntent::kDecrypt));
 
   auth_factor_migrator_ = std::make_unique<AuthFactorMigrator>(
-      AuthFactorMigrator::GetMigrationsList(user_data_auth_));
+      AuthFactorMigrator::GetMigrationsList(&local_state_.get(),
+                                            user_data_auth_));
   AuthEventsRecorder::Get()->OnFactorUpdateStarted();
   auth_factor_migrator_->Run(
       std::move(context),
@@ -51,7 +53,7 @@ void AuthFactorUpdater::OnMigratorRun(
   }
   AuthEventsRecorder::Get()->OnMigrationsCompleted();
   auth_policy_enforcer_ = std::make_unique<AuthPolicyEnforcer>(
-      connector_, user_data_auth_, local_state_);
+      connector_, user_data_auth_, &local_state_.get());
   auth_policy_enforcer_->CheckAndEnforcePolicies(std::move(context),
                                                  std::move(callback));
 }

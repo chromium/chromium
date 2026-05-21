@@ -71,14 +71,15 @@ AuthFactorMigrator::~AuthFactorMigrator() = default;
 
 // static
 std::vector<std::unique_ptr<AuthFactorMigration>>
-AuthFactorMigrator::GetMigrationsList(UserDataAuthClient* user_data_auth) {
+AuthFactorMigrator::GetMigrationsList(PrefService* local_state,
+                                      UserDataAuthClient* user_data_auth) {
   auto result = std::vector<std::unique_ptr<AuthFactorMigration>>();
   result.emplace_back(
       std::make_unique<RecoveryIdMigration>(user_data_auth));
   result.emplace_back(
       std::make_unique<RecoveryFactorHsmPubkeyMigration>(user_data_auth));
-  result.emplace_back(
-      std::make_unique<KnowledgeFactorHashInfoMigration>(user_data_auth));
+  result.emplace_back(std::make_unique<KnowledgeFactorHashInfoMigration>(
+      local_state, user_data_auth));
   return result;
 }
 

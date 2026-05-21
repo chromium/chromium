@@ -7,19 +7,21 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
-#include "chrome/browser/browser_process.h"
+#include "base/check_deref.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 
 namespace ash {
 namespace quick_unlock {
 
-PinSaltStorageImpl::PinSaltStorageImpl() = default;
+PinSaltStorageImpl::PinSaltStorageImpl(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
+
 PinSaltStorageImpl::~PinSaltStorageImpl() = default;
 
 // Read the salt from local state.
 std::string PinSaltStorageImpl::GetSalt(const AccountId& account_id) const {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   if (const std::string* salt =
           known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
     return *salt;
@@ -30,7 +32,7 @@ std::string PinSaltStorageImpl::GetSalt(const AccountId& account_id) const {
 // Write the salt to local state.
 void PinSaltStorageImpl::WriteSalt(const AccountId& account_id,
                                    const std::string& salt) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetStringPref(account_id, prefs::kQuickUnlockPinSalt, salt);
 }
 

@@ -156,8 +156,8 @@ std::optional<Key> PinStorageCryptohome::TransformPinKey(
   return result;
 }
 
-PinStorageCryptohome::PinStorageCryptohome()
-    : PinStorageCryptohome(std::make_unique<PinSaltStorageImpl>()) {}
+PinStorageCryptohome::PinStorageCryptohome(PrefService* local_state)
+    : PinStorageCryptohome(std::make_unique<PinSaltStorageImpl>(local_state)) {}
 
 PinStorageCryptohome::PinStorageCryptohome(
     std::unique_ptr<PinSaltStorage> pin_salt_storage)
