@@ -469,8 +469,9 @@
   } else {
     CGPoint center = [sender.superview convertPoint:sender.center toView:nil];
     OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithIncognito:_incognitoState.incognitoContentVisible
-                 originPoint:center];
+        commandWithURLFromChrome:GURL(kChromeUINewTabURL)
+                     inIncognito:_incognitoState.incognitoContentVisible];
+    command.originPoint = center;
     [self.sceneHandler openURLInNewTab:command];
 
     [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
@@ -739,6 +740,7 @@
   CHECK(_URLLoader);
 
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+  params.from_chrome = YES;
   params.in_incognito = incognito;
   params.append_to = OpenPosition::kLastTab;
   params.switch_mode_if_needed = true;
@@ -788,6 +790,7 @@
 
   GURL URL(kChromeUINewTabURL);
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.from_chrome = YES;
   params.in_incognito = incognito;
   params.load_in_group = true;
   params.tab_group = group->GetWeakPtr();
