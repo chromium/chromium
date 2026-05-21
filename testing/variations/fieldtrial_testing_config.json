@@ -15596,6 +15596,21 @@
             ]
         }
     ],
+    "LongScreenshotsLenientMemoryCheck": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LongScreenshotsLenientMemoryCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacAccessibilityAPIMigration": [
         {
             "platforms": [
