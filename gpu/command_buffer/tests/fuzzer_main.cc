@@ -304,8 +304,6 @@ class CommandBufferSetup {
       : at_exit_manager_(),
 #if BUILDFLAG(IS_MAC)
         task_executor_(base::MessagePumpType::NS_RUNLOOP),
-#else
-        task_executor_(base::MessagePumpType::DEFAULT),
 #endif
         gpu_preferences_(GetGpuPreferences()),
         share_group_(new gl::GLShareGroup),
@@ -630,7 +628,12 @@ class CommandBufferSetup {
   }
 
   base::AtExitManager at_exit_manager_;
+
+#if BUILDFLAG(IS_MAC)
+  // b/513273428, b/514834448 - For Mac only. |task_executor_| with
+  // base::MessagePumpType::DEFAULT causes a ASAN crash on ChromeOS.
   base::SingleThreadTaskExecutor task_executor_;
+#endif
 
   GpuPreferences gpu_preferences_;
 
