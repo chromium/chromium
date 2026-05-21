@@ -229,7 +229,6 @@ bool ExtractIssuerAndSubjectFromDERCert(
   if (!parser.ReadRawTLV(&issuer)) {
     return false;
   }
-  *issuer_out = issuer;
   // skip validity
   if (!parser.SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
@@ -238,6 +237,7 @@ bool ExtractIssuerAndSubjectFromDERCert(
   if (!parser.ReadRawTLV(&subject)) {
     return false;
   }
+  *issuer_out = issuer;
   *subject_out = subject;
   return true;
 }
