@@ -28,14 +28,21 @@
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "components/favicon/content/content_favicon_driver.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/button_drag_utils.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/grit/theme_resources.h"
@@ -631,6 +638,41 @@ void WebUILocationBar::OnLhsChipCollapseAnimationEnded(
     permission_dashboard_->indicator_chip()->OnCollapseAnimationEnded();
   }
 }
+
+void WebUILocationBar::OnLhsChipDrag(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    ui::mojom::DragEventSource source) {
+  if (identifier != toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
+    return;
+  }
+
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents || !web_contents->GetVisibleURL().is_valid() ||
+      IsEditingOrEmpty()) {
+    return;
+  }
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+  favicon::FaviconDriver* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(web_contents);
+  gfx::ImageSkia favicon = favicon_driver->GetFavicon().AsImageSkia();
+
+  button_drag_utils::SetURLAndDragImage(web_contents->GetVisibleURL(),
+                                        web_contents->GetTitle(), favicon,
+                                        /*press_pt=*/nullptr, data.get());
+
+  int allowed_operations =
+      ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK;
+
+  gfx::Point widget_point = display::Screen::Get()->GetCursorScreenPoint();
+  views::View::ConvertPointFromScreen(GetLocationBarWidget()->GetRootView(),
+                                      &widget_point);
+
+  GetLocationBarWidget()->RunDragDropLoop(toolbar_delegate_->GetView(),
+                                          std::move(data), widget_point,
+                                          allowed_operations, source);
+}
+
 bool WebUILocationBar::ShouldHideContentSettingImage() {
   if (omnibox_controller_->edit_model()->user_input_in_progress()) {
     return true;

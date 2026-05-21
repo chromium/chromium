@@ -181,6 +181,14 @@ void ToolbarUIService::OnLhsChipCollapseAnimationEnded(
   }
 }
 
+void ToolbarUIService::OnLhsChipDrag(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    ui::mojom::DragEventSource source) {
+  if (delegate_) {
+    delegate_->OnLhsChipDrag(identifier, source);
+  }
+}
+
 void ToolbarUIService::OnHomeButtonDropUrl(const GURL& url) {
   if (delegate_) {
     delegate_->OnHomeButtonDropUrl(url);

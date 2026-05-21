@@ -46,6 +46,8 @@ import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import type {IconFromTableElement} from './icon_from_table.js';
 import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
+import {PointerProxyImpl} from './pointer_proxy.js';
+import type {PointerProxy} from './pointer_proxy.js';
 import {PermissionChipElement} from './permission_chip.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import {getClickSourceType, getContextMenuSourceType} from './toolbar_button.js';
@@ -67,6 +69,7 @@ export {
   PermissionChipElement,
   PermissionChipTheme,
   PermissionPromptStyle,
+  PointerProxyImpl,
   ReadonlyOmniboxElement,
   TrackedElementManager,
 };
@@ -75,6 +78,7 @@ export type {
   LocationBarState,
   OmniboxAction,
   PermissionChipState,
+  PointerProxy,
 };
 // clang-format on
 

@@ -52,6 +52,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
     virtual void OnLhsChipCollapseAnimationEnded(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+    virtual void OnLhsChipDrag(
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+        ui::mojom::DragEventSource source) = 0;
     virtual void OnHomeButtonDropUrl(const GURL& url) = 0;
     virtual void OnHomeButtonDropFile(const gfx::PointF& drop_position) = 0;
     virtual void OnToolbarDropFile(const gfx::PointF& drop_position) = 0;
@@ -101,6 +104,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipDrag(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+                     ui::mojom::DragEventSource source) override;
   void OnHomeButtonDropUrl(const GURL& url) override;
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;

@@ -99,6 +99,11 @@ class MockToolbarUIServiceDelegate
               OnLhsChipCollapseAnimationEnded,
               (toolbar_ui_api::mojom::LhsChipIdentifier),
               (override));
+  MOCK_METHOD(void,
+              OnLhsChipDrag,
+              (toolbar_ui_api::mojom::LhsChipIdentifier,
+               ui::mojom::DragEventSource),
+              (override));
   MOCK_METHOD(void, OnHomeButtonDropUrl, (const GURL&), (override));
   MOCK_METHOD(void, OnHomeButtonDropFile, (const gfx::PointF&), (override));
   MOCK_METHOD(void, OnToolbarDropFile, (const gfx::PointF&), (override));

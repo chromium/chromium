@@ -4,6 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import type {DragEventSource} from 'chrome://resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -23,6 +24,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
       'onLhsChipExpandAnimationEnded',
       'onLhsChipPointerEntered',
       'onLhsChipPointerExited',
+      'onLhsChipDrag',
     ]);
   }
 
@@ -65,6 +67,10 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
 
   onLhsChipPointerExited(id: LhsChipIdentifier) {
     this.methodCalled('onLhsChipPointerExited', id);
+  }
+
+  onLhsChipDrag(id: LhsChipIdentifier, source: DragEventSource) {
+    this.methodCalled('onLhsChipDrag', [id, source]);
   }
 }
 

@@ -10,12 +10,14 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -47,9 +50,14 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -1189,3 +1197,159 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarGlassFrameInteractiveUiTest, ReloadButton) {
   EXPECT_EQ(observer.num_committed_navigations(), 2u);
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if defined(USE_AURA)
+class TestDragDropClient : public aura::client::DragDropClient {
+ public:
+  explicit TestDragDropClient(aura::Window* root_window)
+      : root_window_(root_window) {
+    client_ = aura::client::GetDragDropClient(root_window_);
+    aura::client::SetDragDropClient(root_window_, this);
+  }
+  ~TestDragDropClient() override {
+    for (auto& observer : observers_) {
+      observer.OnDragDropClientDestroying();
+    }
+    aura::client::SetDragDropClient(root_window_, client_);
+  }
+
+  // aura::client::DragDropClient:
+  ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& screen_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) override {
+    drag_triggered_ = true;
+    auto urls =
+        data->GetURLs(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    if (!urls.empty()) {
+      dragged_url_ = urls[0].url;
+    }
+    for (auto& observer : observers_) {
+      observer.OnDragStarted();
+    }
+    return ui::mojom::DragOperation::kCopy;
+  }
+  void DragCancel() override {}
+  bool IsDragDropInProgress() override { return false; }
+  void AddObserver(aura::client::DragDropClientObserver* observer) override {
+    observers_.AddObserver(observer);
+    if (drag_triggered_) {
+      observer->OnDragStarted();
+    }
+  }
+  void RemoveObserver(aura::client::DragDropClientObserver* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+#if BUILDFLAG(IS_LINUX)
+  void UpdateDragImage(const gfx::ImageSkia& image,
+                       const gfx::Vector2d& offset) override {}
+#endif  // BUILDFLAG(IS_LINUX)
+
+  bool drag_triggered() const { return drag_triggered_; }
+  const GURL& dragged_url() const { return dragged_url_; }
+
+ private:
+  bool drag_triggered_ = false;
+  GURL dragged_url_;
+  raw_ptr<aura::Window> root_window_;
+  raw_ptr<aura::client::DragDropClient> client_;
+  base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
+      observers_;
+};
+#endif  // defined(USE_AURA)
+
+class WebUIToolbarViewsLocationBarInteractiveUiTest
+    : public InteractiveBrowserTest {
+ public:
+  WebUIToolbarViewsLocationBarInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIBackForwardButton,
+         features::kWebUIReloadButton, features::kWebUIHomeButton,
+         features::kWebUISplitTabsButton, features::kWebUILocationBar},
+        {});
+  }
+
+  ~WebUIToolbarViewsLocationBarInteractiveUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Wait for the toolbar to load.
+    ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
+      InitialWebUIManager* manager = InitialWebUIManager::From(browser);
+      return !manager || !manager->IsShowPending();
+    }));
+  }
+
+  views::WebView* GetToolbarWebView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetWebUIToolbarViewForTesting()
+        ->GetWebViewForTesting();
+  }
+
+  MultiStep WaitForToolbarLoaded() {
+    return Steps(InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+                 WaitForWebContentsReady(kWebUIToolbarId));
+  }
+
+ protected:
+  const WebContentsInteractionTestUtil::DeepQuery kLocationIconDeepQuery = {
+      "toolbar-app", "#location-bar", "location-icon"};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DragLocationIcon DragLocationIcon
+#else
+#define MAYBE_DragLocationIcon DISABLED_DragLocationIcon
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_DragLocationIcon) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+
+  std::unique_ptr<TestDragDropClient> drag_drop_client;
+
+  RunTestSequence(
+      // Setup and navigate to a page.
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, initial_url),
+      WaitForToolbarLoaded(),
+
+      // Wait until the icon is actually clickable.
+      WaitForJsResultAt(kWebUIToolbarId, kLocationIconDeepQuery,
+                        "el => el.clickable"),
+
+      // Setup interception and trigger drag.
+      Do(base::BindLambdaForTesting([&]() {
+        auto* root_window = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->GetWidget()
+                                ->GetNativeWindow()
+                                ->GetRootWindow();
+        drag_drop_client = std::make_unique<TestDragDropClient>(root_window);
+      })),
+
+      // Move to icon and perform drag gesture.
+      MoveMouseTo(kWebUIToolbarId, kLocationIconDeepQuery),
+      DragMouseTo(base::BindOnce([]() -> gfx::Point {
+        return display::Screen::Get()->GetCursorScreenPoint() +
+               gfx::Vector2d(0, 20);
+      })),
+
+      // Verify that drag was triggered with correct data.
+      PollUntil(base::BindLambdaForTesting([&]() {
+                  return drag_drop_client->drag_triggered() &&
+                         drag_drop_client->dragged_url() == initial_url;
+                }),
+                "Drag was triggered with correct URL"),
+
+      // Cleanup.
+      Do(base::BindLambdaForTesting([&]() { drag_drop_client.reset(); })));
+#endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+}

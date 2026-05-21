@@ -9,4 +9,6 @@ mojom_component("mojom") {
   macro_prefix = "UI_BASE_DRAGDROP_MOJOM"
   generate_java = true
   sources = [ "drag_drop_types.mojom" ]
+  webui_module_path = "chrome://resources/mojo/ui/base/dragdrop/mojom"
+  generate_legacy_js_bindings = true
 }

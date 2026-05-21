@@ -6,6 +6,7 @@ module toolbar_ui_api.mojom;
 
 import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
+import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/empty.mojom";
@@ -86,6 +87,9 @@ interface ToolbarUIService {
 
   // Called when a collapse animation finishes.
   OnLhsChipCollapseAnimationEnded(LhsChipIdentifier identifier);
+
+  // Called when a drag gesture is detected on an LHS chip.
+  OnLhsChipDrag(LhsChipIdentifier identifier, ui.mojom.DragEventSource source);
 
   // Sets the home page to the currently dragged url, if any, and displays the
   // home page undo bubble.

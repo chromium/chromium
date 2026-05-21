@@ -98,6 +98,8 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+  void OnLhsChipDrag(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+                     ui::mojom::DragEventSource source);
 
   WebUIContentSettingImageControl& content_setting_image_control() {
     return content_setting_image_control_;

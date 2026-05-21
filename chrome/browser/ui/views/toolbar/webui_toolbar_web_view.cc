@@ -890,6 +890,14 @@ void WebUIToolbarWebView::OnLhsChipCollapseAnimationEnded(
   }
 }
 
+void WebUIToolbarWebView::OnLhsChipDrag(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    ui::mojom::DragEventSource source) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipDrag(identifier, source);
+  }
+}
+
 void WebUIToolbarWebView::OnPinnedToolbarActionsStateChanged(
     std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state) {
   if (!mojo::Equals(state, last_queued_state_.pinned_toolbar_actions_state)) {

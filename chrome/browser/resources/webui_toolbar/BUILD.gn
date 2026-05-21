@@ -114,6 +114,7 @@ build_webui("build") {
     "pinned_toolbar_action_icons.html.ts",
     "pinned_toolbar_actions.html.ts",
     "pinned_toolbar_actions.ts",
+    "pointer_proxy.ts",
     "readonly_omnibox.ts",
     "readonly_omnibox.html.ts",
     "reload_button.html.ts",
@@ -193,6 +194,7 @@ build_webui("build") {
     "//components/browser_apis/ui_controllers/toolbar:mojom_data_model_ts__generator",
     "//components/browser_apis/ui_controllers/toolbar:mojom_ts__generator",
     "//components/content_settings/core/common:content_settings_types_ts__generator",
+    "//ui/base/dragdrop/mojom:mojom_ts__generator",
   ]
 
   mojo_files = [
@@ -201,5 +203,6 @@ build_webui("build") {
     "$root_gen_dir/components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom-webui.ts",
     "$root_gen_dir/components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
+    "$root_gen_dir/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.ts",
   ]
 }
