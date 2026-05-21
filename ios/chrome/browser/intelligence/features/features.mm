@@ -194,7 +194,7 @@ BASE_FEATURE_PARAM(int,
                    kExplainGeminiEditMenuFeatureParam,
                    &kExplainGeminiEditMenu,
                    kExplainGeminiEditMenuParams,
-                   0);
+                   2);
 
 PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
   if (!IsPageActionMenuEnabled()) {
@@ -214,7 +214,7 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
   return PositionForExplainGeminiEditMenu::kDisabled;
 }
 
-BASE_FEATURE(kExplainGeminiEditMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExplainGeminiEditMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeminiPreciseLocation, base::FEATURE_DISABLED_BY_DEFAULT);
 

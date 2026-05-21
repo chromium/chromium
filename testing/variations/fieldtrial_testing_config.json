@@ -12825,24 +12825,6 @@
             ]
         }
     ],
-    "HeliosExplainEditMenu": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "PositionForExplainGeminiEditMenu": "1"
-                    },
-                    "enable_features": [
-                        "ExplainGeminiEditMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosFloatyAllPages": [
         {
             "platforms": [
