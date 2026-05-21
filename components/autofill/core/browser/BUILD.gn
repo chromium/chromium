@@ -132,6 +132,8 @@ static_library("browser") {
     "at_memory/at_memory_funnel_metrics.h",
     "at_memory/at_memory_manager.cc",
     "at_memory/at_memory_manager.h",
+    "at_memory/at_memory_utils.cc",
+    "at_memory/at_memory_utils.h",
     "at_memory/autofill_data_provider_impl.cc",
     "at_memory/autofill_data_provider_impl.h",
     "autofill_ai_form_rationalization.cc",

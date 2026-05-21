@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -359,7 +360,6 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
                       IsMetadata(EntryType::kVehicleModel, u"Series 2"),
                       IsMetadata(EntryType::kVehicleYear, u"2025"),
                       IsMetadata(EntryType::kVehicleOwner, u"Knecht Ruprecht"),
-                      IsMetadata(EntryType::kVehiclePlateNumber, u"123456"),
                       IsMetadata(EntryType::kVehiclePlateState, u"California"),
                       IsMetadata(EntryType::kVehicleVin, u"12312345")))));
 }
@@ -381,12 +381,17 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_PassportData) {
       });
   ASSERT_NE(it, results.end());
 
-  EXPECT_EQ(it->value, u"XYZ123");
+  std::u16string expected_obfuscated_value =
+      GetObfuscatedValue(u"XYZ123", /*visible_suffix_length=*/4);
+  EXPECT_EQ(it->value, expected_obfuscated_value);
+  EXPECT_TRUE(it->is_obfuscated);
+  ASSERT_TRUE(std::holds_alternative<std::string>(it->identifier));
+  EXPECT_EQ(std::get<std::string>(it->identifier), passport.guid().value());
   ASSERT_FALSE(it->metadata_list.empty());
-  EXPECT_THAT(
-      it->metadata_list,
-      Contains(IsMetadata(accessibility_annotator::EntryType::kPassportNumber,
-                          u"XYZ123")));
+  EXPECT_THAT(it->metadata_list,
+              testing::Not(Contains(IsMetadata(
+                  accessibility_annotator::EntryType::kPassportNumber,
+                  expected_obfuscated_value))));
 }
 
 // Tests that RetrieveAll correctly fetches data for a specific attribute.
@@ -423,8 +428,7 @@ TEST_F(AutofillDataProviderImplTest,
       results,
       ElementsAre(IsMemorySearchResult(
           u"BMW", u"Vehicle",
-          ElementsAre(IsMetadata(EntryType::kVehicleMake, u"BMW"),
-                      IsMetadata(EntryType::kVehicleModel, u"Series 2"),
+          ElementsAre(IsMetadata(EntryType::kVehicleModel, u"Series 2"),
                       IsMetadata(EntryType::kVehiclePlateState, u"California"),
                       IsMetadata(EntryType::kVehicleVin, u"12312345")))));
 }
