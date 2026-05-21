@@ -373,6 +373,7 @@
 
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
   CHECK_EQ(presenter, self.presenter, base::NotFatalUntil::M150);
+  [_viewController disableCurrentButtonTemporarily];
 }
 
 - (void)containedPresenterDidDismiss:(id<ContainedPresenter>)presenter {

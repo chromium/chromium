@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/timer.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/download/ui/download_manager_view_controller+Testing.h"
@@ -169,6 +170,9 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   BOOL _needsTransitioningToButton;
   BOOL _needsTransitioningToProgress;
   BOOL _canOpenFile;
+
+  // Timer to disable buttons after presentation (to prevent tapjacking).
+  base::OneShotTimer _tapjackingProtectionTimer;
 }
 
 @property(nonatomic, strong) UIImageView* leadingIcon;
@@ -473,6 +477,15 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     [self
         updateForFullscreenProgress:_fullscreenBrowserAgent->bottom_progress()];
   }
+}
+
+- (void)disableCurrentButtonTemporarily {
+  __weak __typeof(self.currentButton) weakButton = self.currentButton;
+  weakButton.enabled = NO;
+  _tapjackingProtectionTimer.Start(FROM_HERE, base::Milliseconds(500),
+                                   base::BindOnce(^{
+                                     weakButton.enabled = YES;
+                                   }));
 }
 
 #pragma mark - UI elements
@@ -794,6 +807,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   if (currentButton != _currentButton) {
     [_currentButton removeFromSuperview];
     _currentButton = currentButton;
+    [self disableCurrentButtonTemporarily];
     [self updateActionButtonLayout];
     // Reset possibly animated properties in case an animation was interrupted.
     _currentButton.hidden = NO;

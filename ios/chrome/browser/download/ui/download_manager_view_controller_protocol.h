@@ -33,6 +33,10 @@ class FullscreenController;
 - (void)setFullscreenBrowserAgent:
     (FullscreenBrowserAgent*)fullscreenBrowserAgent;
 
+// Disables the current action button temporarily to prevent tapjacking.
+// Must be called after presenting the view controller.
+- (void)disableCurrentButtonTemporarily;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_MANAGER_VIEW_CONTROLLER_PROTOCOL_H_

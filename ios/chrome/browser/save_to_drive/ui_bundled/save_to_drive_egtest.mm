@@ -44,14 +44,17 @@ namespace {
 // instead of the "DOWNLOAD" button when multiple destinations are available for
 // downloads.
 id<GREYMatcher> SaveEllipsisButton() {
-  return grey_accessibilityID(
-      kDownloadManagerSaveEllipsisAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerSaveEllipsisAccessibilityIdentifier),
+      grey_enabled(), nil);
 }
 
 // Matcher for "DOWNLOAD" button when one destination is available for
 // downloads.
 id<GREYMatcher> DownloadButton() {
-  return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier),
+      grey_enabled(), nil);
 }
 
 // Matcher for "Files" destination button in File destination picker UI.
@@ -81,14 +84,14 @@ id<GREYMatcher> FileDestinationDriveButton() {
 id<GREYMatcher> DownloadManagerGetTheAppButton() {
   return grey_allOf(
       grey_accessibilityID(kDownloadManagerInstallAppAccessibilityIdentifier),
-      grey_interactable(), nil);
+      grey_enabled(), grey_interactable(), nil);
 }
 
 // Matcher for "TRY AGAIN" button on Download Manager UI.
 id<GREYMatcher> DownloadManagerTryAgainButton() {
   return grey_allOf(
       grey_accessibilityID(kDownloadManagerTryAgainAccessibilityIdentifier),
-      grey_interactable(), nil);
+      grey_enabled(), grey_interactable(), nil);
 }
 
 // Matcher for the account picker.

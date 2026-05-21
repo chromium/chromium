@@ -13,7 +13,9 @@
 namespace download {
 
 id<GREYMatcher> DownloadButton() {
-  return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier),
+      grey_enabled(), nil);
 }
 
 std::unique_ptr<net::test_server::HttpResponse> GetResponse(
