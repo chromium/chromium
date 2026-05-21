@@ -44,7 +44,6 @@ class ActionTrackerForMetrics;
 class ActorKeyedService;
 class EnterprisePolicyChecker;
 class ExecutionEngine;
-class TabObservationStrategy;
 
 namespace ui {
 class UiEventDispatcher;
@@ -67,8 +66,7 @@ struct ActionResultWithLatencyInfo;
 class ActorTask : public base::SupportsUserData {
  public:
   using ActCallback =
-      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>,
-                              TabObservationStrategy)>;
+      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>)>;
 
   // Created only via ActorKeyedService::CreateTask or the CreateForTesting
   // method in this class.
@@ -327,8 +325,7 @@ class ActorTask : public base::SupportsUserData {
                              content::WebContents* old_contents,
                              content::WebContents* new_contents);
 
-  void OnFinishedAct(std::vector<ActionResultWithLatencyInfo> action_results,
-                     TabObservationStrategy observation_strategy);
+  void OnFinishedAct(std::vector<ActionResultWithLatencyInfo> action_results);
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);

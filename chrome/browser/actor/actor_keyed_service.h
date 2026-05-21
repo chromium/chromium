@@ -46,7 +46,6 @@ class ActorUiStateManagerInterface;
 class EnterprisePolicyChecker;
 class ActorTaskMetadata;
 class ToolRequest;
-class TabObservationStrategy;
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
@@ -100,8 +99,7 @@ class ActorKeyedService : public KeyedService,
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
   using PerformActionsCallback = base::OnceCallback<void(
-      std::vector<ActionResultWithLatencyInfo> /* action_results */,
-      TabObservationStrategy /* observation_strategy */)>;
+      std::vector<ActionResultWithLatencyInfo> /* action_results */)>;
   void PerformActions(TaskId task_id,
                       std::vector<std::unique_ptr<ToolRequest>>&& actions,
                       ActorTaskMetadata task_metadata,
@@ -194,8 +192,7 @@ class ActorKeyedService : public KeyedService,
   // The callback used for ExecutorEngine::Act.
   void OnActionsFinished(
       PerformActionsCallback callback,
-      std::vector<ActionResultWithLatencyInfo> action_results,
-      TabObservationStrategy observation_strategy);
+      std::vector<ActionResultWithLatencyInfo> action_results);
 
   // The jounrnal should be last in destruction order since other things like
   // ActorTask might be using a SafeRef to this object.

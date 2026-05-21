@@ -1502,18 +1502,6 @@ inline constexpr char kGlicActorSkipScreenshotName[] =
 inline constexpr char kGlicActorSkipScreenshotDescription[] =
     "If enabled, Glic actor will skip capturing and uploading screenshots when "
     "an actor turn is completed.";
-
-inline constexpr char kActorObserveScreenshotDefaultName[] =
-    "Actor observe screenshot default";
-inline constexpr char kActorObserveScreenshotDefaultDescription[] =
-    "If enabled, the actor framework will capture screenshots by default when "
-    "requested.";
-
-inline constexpr char kActorObservePageContentDefaultName[] =
-    "Actor observe page content default";
-inline constexpr char kActorObservePageContentDefaultDescription[] =
-    "If enabled, the actor framework will capture page content by default when "
-    "requested.";
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";

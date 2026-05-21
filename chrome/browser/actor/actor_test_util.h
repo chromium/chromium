@@ -53,7 +53,6 @@ class TabInterface;
 
 namespace actor {
 
-class TabObservationStrategy;
 struct TaskSourceInfo;
 
 template <typename T>
@@ -66,21 +65,8 @@ auto UiEventDispatcherCallback(
   };
 }
 
-class ActResultFuture
-    : public base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
-                                    TabObservationStrategy> {
- public:
-  const std::vector<ActionResultWithLatencyInfo>& Get() {
-    return std::get<0>(
-        base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
-                               TabObservationStrategy>::Get());
-  }
-  std::vector<ActionResultWithLatencyInfo> Take() {
-    return std::get<0>(
-        base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
-                               TabObservationStrategy>::Take());
-  }
-};
+using ActResultFuture =
+    base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>>;
 using PerformActionsFuture = ActResultFuture;
 
 /////////////////////////
