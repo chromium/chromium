@@ -32,10 +32,6 @@ const char kOptimizationGuideLanguageOverrideHeaderKey[] =
 const base::FilePath::CharType kOptimizationGuideHintStore[] =
     FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
 
-const base::FilePath::CharType
-    kOldOptimizationGuidePredictionModelMetadataStore[] =
-        FILE_PATH_LITERAL("optimization_guide_model_metadata_store");
-
 const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
     FILE_PATH_LITERAL("optimization_guide_model_store");
 
