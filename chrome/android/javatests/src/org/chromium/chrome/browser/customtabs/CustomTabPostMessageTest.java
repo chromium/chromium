@@ -188,6 +188,7 @@ public class CustomTabPostMessageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/515467836")
     public void testPostMessageWebContentsDestroyed() throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();
