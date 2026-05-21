@@ -15,6 +15,32 @@ buildflag_header("buildflags") {
   flags = [ "USE_NSS_CERTS=$use_nss_certs" ]
 }
 
+import("//build/rust/rust_static_library.gni")
+import("//build/rust/rust_unit_test.gni")
+
+rust_static_library("tpm") {
+  crate_root = "tpm.rs"
+  sources = [ "tpm.rs" ]
+  cxx_bindings = [ "tpm.rs" ]
+  visibility = [ ":*" ]
+
+  # Required for cxx bridge generated code.
+  allow_unsafe = true
+
+  deps = [ "//base" ]
+}
+
+rust_static_library("tpm_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "tpm_unittest.rs"
+  sources = [ "tpm_unittest.rs" ]
+  deps = [
+    ":tpm",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
 component("crypto") {
   output_name = "crcrypto"  # Avoid colliding with OpenSSL's libcrypto.
   sources = [
@@ -83,7 +109,10 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = [ "//components/cbor" ]
+  deps = [
+    ":tpm",
+    "//components/cbor",
+  ]
 
   public_deps = [
     ":buildflags",
@@ -226,6 +255,7 @@ test("crypto_unittests") {
   deps = [
     ":crypto",
     ":test_support",
+    ":tpm_unittests",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
