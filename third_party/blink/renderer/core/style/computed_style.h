@@ -2453,9 +2453,13 @@ class ComputedStyle final : public ComputedStyleBase {
       const Longhand& color_property,
       bool* is_current_color = nullptr) const;
 
+  CORE_EXPORT blink::Color VisitedDependentColor(
+      const blink::Color& unvisited_color,
+      const Longhand& color_property,
+      bool* is_current_color = nullptr) const;
+
   // Used to resolve gap decoration colors for painting.
   CORE_EXPORT blink::Color VisitedDependentGapColor(const StyleColor& gap_color,
-                                                    const ComputedStyle& style,
                                                     bool is_column_rule) const;
 
   // Used to resolve 'context-fill' and 'context-stroke' paints

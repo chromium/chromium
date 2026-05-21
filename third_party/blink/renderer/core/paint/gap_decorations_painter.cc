@@ -273,7 +273,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     }
     const StyleColor rule_color = color_iterator.Next();
     const Color resolved_rule_color =
-        style.VisitedDependentGapColor(rule_color, style, is_column_gap);
+        style.VisitedDependentGapColor(rule_color, is_column_gap);
     const EBorderStyle rule_style =
         ComputedStyle::CollapsedBorderStyle(style_iterator.Next());
     const LayoutUnit rule_thickness = LayoutUnit(width_iterator.Next());
