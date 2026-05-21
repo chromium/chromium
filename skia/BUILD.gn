@@ -237,9 +237,7 @@ source_set("skia_core_public_headers") {
 }
 
 component("skia") {
-  # Core Skia doesn't require `partition_alloc` as a dependency, but we need it
-  # for "ext/SkMemory_new_handler.cpp" injecting into Skia.
-  deps = [ "//base/allocator/partition_allocator/src/partition_alloc" ]
+  deps = []
   public = [
     "ext/benchmarking_canvas.h",
     "ext/cicp.h",
