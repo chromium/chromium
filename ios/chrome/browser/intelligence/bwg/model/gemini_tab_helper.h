@@ -240,6 +240,9 @@ class GeminiTabHelper : public web::WebStateObserver,
       base::OnceCallback<void(NSArray<NSString*>*)> callback,
       ai::mojom::ZeroStateSuggestionsResponseResultPtr result);
 
+  // Whether Gemini can extract the current web state's page context.
+  bool CanExtractPageContextForGemini();
+
   // Fetches the cached favicon or generates a default fallback.
   UIImage* GetFavicon();
 

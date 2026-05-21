@@ -3922,7 +3922,7 @@ const char kChromeAppStoreUrl[] =
   // isn't visible.
   // TODO(crbug.com/476145805): Move WebState related checks to tab helper.
   bool isWebStateVisible = self.activeWebState->IsVisible();
-  if (!isWebStateVisible) {
+  if (!isWebStateVisible && !IsChromeNextIaEnabled()) {
     geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
     geminiBrowserAgent->HideFloatyIfInvoked(
         animated, gemini::FloatyUpdateSource::IneligibleSite);

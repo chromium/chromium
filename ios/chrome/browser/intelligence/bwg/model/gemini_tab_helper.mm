@@ -159,7 +159,7 @@ void GeminiTabHelper::GeneratePageContext(
   page_context_consumer_callback_ = std::move(callback);
 
   // Call back immediately if the page context cannot be extracted.
-  if (!CanExtractPageContextForWebState(web_state_)) {
+  if (!CanExtractPageContextForGemini()) {
     if (page_context_consumer_callback_) {
       page_context_consumer_callback_.Run(GetPartialPageContext());
     }
@@ -284,7 +284,7 @@ GeminiPageContext* GeminiTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
   gemini_page_context.favicon = GetFavicon();
 
-  if (!CanExtractPageContextForWebState(web_state_)) {
+  if (!CanExtractPageContextForGemini()) {
     gemini_page_context.geminiPageContextComputationState =
         IsGeminiFloatyAllPagesEnabled()
             ? ios::provider::GeminiPageContextComputationState::kBlocked
@@ -454,26 +454,24 @@ IOSGeminiInvocationPageType GeminiTabHelper::GetCurrentPageType() {
 #pragma mark - WebStateObserver
 
 void GeminiTabHelper::WasShown(web::WebState* web_state) {
-  if (!IsGeminiCopresenceEnabled()) {
-    return;
+  if (IsChromeNextIaEnabled()) {
+    NotifyPageContextUpdated(web_state);
+  } else if (IsGeminiCopresenceEnabled()) {
+    [gemini_commands_handler_
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     WebNavigation];
   }
-
-  [gemini_commands_handler_
-      updateFloatyVisibilityIfEligibleAnimated:NO
-                                    fromSource:gemini::FloatyUpdateSource::
-                                                   WebNavigation];
 }
 
 void GeminiTabHelper::WasHidden(web::WebState* web_state) {
-  if (!IsGeminiCopresenceEnabled()) {
-    return;
+  if (IsChromeNextIaEnabled()) {
+    NotifyPageContextUpdated(web_state);
+  } else if (IsGeminiCopresenceEnabled()) {
+    [gemini_commands_handler_
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::WebNavigation];
   }
-
-  CancelPageContextGeneration();
-
-  [gemini_commands_handler_
-      hideFloatyIfInvokedAnimated:NO
-                       fromSource:gemini::FloatyUpdateSource::WebNavigation];
 }
 
 void GeminiTabHelper::DidStartNavigation(
@@ -703,6 +701,8 @@ void GeminiTabHelper::ClearZeroStateSuggestions() {
 }
 
 void GeminiTabHelper::NotifyPageContextUpdated(web::WebState* web_state) {
+  // Cancel any ongoing page context generation which is now obsolete.
+  CancelPageContextGeneration();
   for (auto& observer : observers_) {
     observer.OnPageContextUpdated(web_state);
   }
@@ -907,4 +907,9 @@ void GeminiTabHelper::ParseSuggestionsResponse(
 
   std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
       zero_state_suggestions_->suggestions.value()));
+}
+
+bool GeminiTabHelper::CanExtractPageContextForGemini() {
+  return CanExtractPageContextForWebState(web_state_) &&
+         (!IsChromeNextIaEnabled() || web_state_->IsVisible());
 }
