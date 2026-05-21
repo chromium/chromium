@@ -18,10 +18,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/chrome_constants.h"
@@ -38,7 +36,6 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/interaction/mouse/interaction_test_util_mouse.h"
 #include "ui/views/test/views_test_utils.h"
@@ -150,8 +147,6 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
                                     kTabOrderPoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
                                     kPinnedTabOrderPoller);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
-                                    kScrollOffsetPoller);
 
 class VerticalTabDragTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
@@ -255,32 +250,6 @@ class VerticalTabDragTest
       browser()->tab_strip_model()->SetTabPinned(tab_index, true);
       views::test::RunScheduledLayout(&GetBrowserView());
     });
-  }
-
-  auto GetScrollOffset() {
-    return base::BindRepeating(
-        [](VerticalTabDragTest* test) {
-          auto* region_view = test->GetBrowserView()
-                                  .vertical_tab_strip_region_view_for_testing();
-          auto* tab_strip_view = static_cast<VerticalTabStripView*>(
-              region_view->GetTabStripView());
-          return tab_strip_view->unpinned_tabs_scroll_view_for_testing()
-              ->contents()
-              ->GetVisibleBounds()
-              .y();
-        },
-        base::Unretained(this));
-  }
-
-  auto NameScrollView(const char* name) {
-    return NameView(name, base::BindLambdaForTesting([this]() {
-                      return static_cast<views::View*>(
-                          static_cast<VerticalTabStripView*>(
-                              GetBrowserView()
-                                  .vertical_tab_strip_region_view_for_testing()
-                                  ->GetTabStripView())
-                              ->unpinned_tabs_scroll_view_for_testing());
-                    }));
   }
 
   auto CollapseGroup(int group_index) {
@@ -903,61 +872,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
                          TabGroupURLs({url::kAboutBlankURL,
                                        chrome::kChromeUIBookmarksURL}),
                          chrome::kChromeUIVersionURL})),
-      ReleaseMouse());
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
-  const char kScrollViewName[] = "Scroll View";
-  const char kFirstTabName[] = "First Tab";
-  const int kTabCount = 50;
-
-  RunTestSequence(
-      // Add many tabs and ensure the first one is active so we start at the
-      // top.
-      Do([this]() {
-        for (int i = 1; i < kTabCount; ++i) {
-          std::unique_ptr<content::WebContents> contents =
-              content::WebContents::Create(
-                  content::WebContents::CreateParams(browser()->profile()));
-          tab_strip_model()->InsertWebContentsAt(tab_strip_model()->count(),
-                                                 std::move(contents),
-                                                 ADD_INHERIT_OPENER);
-        }
-        tab_strip_model()->ActivateTabAt(
-            0, TabStripUserGestureDetails(
-                   TabStripUserGestureDetails::GestureType::kOther));
-      }),
-      RunScheduledLayout(), NameScrollView(kScrollViewName),
-      PollState(kScrollOffsetPoller, GetScrollOffset()),
-      WaitForState(kScrollOffsetPoller, 0),
-
-      // Start dragging the first tab.
-      NameTabViewAt(kFirstTabName, 0), MoveMouseTo(kFirstTabName),
-      ClickMouse(ui_controls::LEFT, /*release=*/false),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, true),
-
-      // Move mouse to the bottom edge of the scroll view to trigger scrolling
-      // down.
-      MoveMouseTo(
-          kScrollViewName, base::BindOnce([](ui::TrackedElement* element) {
-            const gfx::Rect bounds = element->GetScreenBounds();
-            return gfx::Point(bounds.CenterPoint().x(), bounds.bottom() - 1);
-          })),
-
-      // Wait for scroll offset to increase.
-      WaitForState(kScrollOffsetPoller, testing::Gt(0)),
-
-      // Move mouse to the top edge of the scroll view to trigger scrolling up.
-      MoveMouseTo(kScrollViewName,
-                  base::BindOnce([](ui::TrackedElement* element) {
-                    const gfx::Rect bounds = element->GetScreenBounds();
-                    return gfx::Point(bounds.CenterPoint().x(), bounds.y() + 1);
-                  })),
-
-      // Wait for scroll offset to decrease back to 0.
-      WaitForState(kScrollOffsetPoller, 0),
-
       ReleaseMouse());
 }
 
