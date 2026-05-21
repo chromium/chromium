@@ -46,7 +46,7 @@ message ContextualCueingRequest {
 
   // The history of contextual cueing shown to the user sorted in
   // reverse-chronological order.
-  repeated ContextualCueingHistory contextual_cueing_history = 4;
+  repeated ContextualCueingHistory contextual_cueing_history = 4 [deprecated = true];
 }
 
 message ContextualCueingHistory {
@@ -54,8 +54,49 @@ message ContextualCueingHistory {
   string cuj = 1 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 4
+// Next ID: 5
 message ContextualCueingResponse {
+  oneof treatment {
+    AnchoredMessageCue anchored_message_cue = 2 [deprecated = true];
+  }
+
+  oneof fulfillment_surface {
+    GeminiInChromeSurface gemini_in_chrome_surface = 3 [deprecated = true];
+  }
+
+  // The suggested user journey to show the cue for.
+  string suggested_cuj = 1 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
+
+  // The contextual cues that are applicable to the request.
+  //
+  // This list should contain at most one per supported surface and will be
+  // in ranked order for what cue is most applicable based on the request.
+  repeated ContextualCue contextual_cues = 4;
+}
+
+message AnchoredMessageCue {
+  // The button text to show to the user.
+  string action_text = 1 [features = { field_presence: EXPLICIT }];
+
+  // The message to show to the user.
+  string anchored_message_text = 2 [features = { field_presence: EXPLICIT }];
+
+  // The tabs that should be shown to the user in the anchored message.
+  repeated Tab tabs_to_show = 3;
+}
+
+message GeminiInChromeSurface {
+  // The prompt to use for the Gemini in Chrome surface.
+  string prompt = 1 [features = { field_presence: EXPLICIT }];
+
+  // The tabs that should be shared with Gemini in Chrome on click.
+  repeated Tab tabs_to_share = 2;
+}
+
+message ContextualCue {
   oneof treatment {
     AnchoredMessageCue anchored_message_cue = 2;
   }
@@ -66,22 +107,6 @@ message ContextualCueingResponse {
 
   // The suggested user journey to show the cue for.
   string suggested_cuj = 1 [features = { field_presence: EXPLICIT }];
-}
-
-message AnchoredMessageCue {
-  // The button text to show to the user.
-  string action_text = 1 [features = { field_presence: EXPLICIT }];
-
-  // The message to show to the user.
-  string anchored_message_text = 2 [features = { field_presence: EXPLICIT }];
-}
-
-message GeminiInChromeSurface {
-  // The prompt to use for the Gemini in Chrome surface.
-  string prompt = 1 [features = { field_presence: EXPLICIT }];
-
-  // The tabs that should be shared with Gemini in Chrome on click.
-  repeated Tab tabs_to_share = 2;
 }
 
 enum ContextualCueingSurface {
