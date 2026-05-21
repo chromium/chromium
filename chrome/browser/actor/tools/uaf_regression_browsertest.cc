@@ -23,7 +23,6 @@ using content::ChildFrameAt;
 using content::ExecJs;
 using content::GetDOMNodeId;
 using content::RenderFrameHost;
-using ActResultFuture = TestFuture<std::vector<ActionResultWithLatencyInfo>>;
 
 class ActorUafRegressionBrowserTest : public ActorToolsTest {
  public:

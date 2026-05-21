@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -320,15 +321,17 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                   JournalDetailsBuilder().AddError("Task is paused").Build());
     MaybeRunLater(
         base::BindOnce(std::move(callback),
-                       MakeResultVector(mojom::ActionResultCode::kTaskPaused)));
+                       MakeResultVector(mojom::ActionResultCode::kTaskPaused),
+                       TabObservationStrategy()));
     return;
   }
   if (IsCompleted()) {
     journal_->Log(GURL(), id(), "ActorTask::Act",
                   JournalDetailsBuilder().AddError("Task is Stopped").Build());
-    MaybeRunLater(base::BindOnce(
-        std::move(callback),
-        MakeResultVector(mojom::ActionResultCode::kTaskWentAway)));
+    MaybeRunLater(
+        base::BindOnce(std::move(callback),
+                       MakeResultVector(mojom::ActionResultCode::kTaskWentAway),
+                       TabObservationStrategy()));
     return;
   }
 
@@ -338,7 +341,8 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
         JournalDetailsBuilder().AddError("Task is Waiting for User").Build());
     MaybeRunLater(base::BindOnce(
         std::move(callback),
-        MakeResultVector(mojom::ActionResultCode::kInvalidTaskStateForAct)));
+        MakeResultVector(mojom::ActionResultCode::kInvalidTaskStateForAct),
+        TabObservationStrategy()));
     return;
   }
 
@@ -380,7 +384,8 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 }
 
 void ActorTask::OnFinishedAct(
-    std::vector<ActionResultWithLatencyInfo> action_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results,
+    TabObservationStrategy observation_strategy) {
   mojom::ActionResultPtr result = MakeOkResult();
   for (const auto& action_result : action_results) {
     if (!IsOk(action_result.result->code)) {
@@ -422,7 +427,8 @@ void ActorTask::OnFinishedAct(
     if (result) {
       action_tracker_for_metrics_->OnFinishedAct(*result);
     }
-    std::move(callback_for_act_).Run(std::move(action_results));
+    std::move(callback_for_act_)
+        .Run(std::move(action_results), std::move(observation_strategy));
   }
 
   if (state_ == State::kActing ||
@@ -443,7 +449,8 @@ void ActorTask::Stop(StoppedReason stop_reason) {
     DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser);
     mojom::ActionResultPtr result = MakeResult(result_code);
     action_tracker_for_metrics_->OnFinishedAct(*result);
-    std::move(callback_for_act_).Run(MakeResultVector(std::move(result)));
+    std::move(callback_for_act_)
+        .Run(MakeResultVector(std::move(result)), TabObservationStrategy());
   }
 
   CancelOngoingActions(result_code);
@@ -482,7 +489,8 @@ void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {
     mojom::ActionResultPtr result =
         MakeResult(mojom::ActionResultCode::kTaskPaused);
     action_tracker_for_metrics_->OnFinishedAct(*result);
-    std::move(callback_for_act_).Run(MakeResultVector(std::move(result)));
+    std::move(callback_for_act_)
+        .Run(MakeResultVector(std::move(result)), TabObservationStrategy());
   }
 
   if (cancel_existing_action) {
@@ -748,7 +756,8 @@ void ActorTask::DidEarlyAddTabs(
   // with failure.
   for (mojom::ActionResultPtr& result : add_tab_results) {
     if (!IsOk(*result)) {
-      OnFinishedAct(MakeResultVector(std::move(result)));
+      OnFinishedAct(MakeResultVector(std::move(result)),
+                    TabObservationStrategy());
       return;
     }
   }

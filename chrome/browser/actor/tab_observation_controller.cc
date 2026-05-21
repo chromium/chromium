@@ -76,6 +76,17 @@ ToTabObservationResult(page_content_annotations::FetchPageContextError error) {
   }
 }
 
+bool HasScriptToolResults(
+    const std::vector<actor::ActionResultWithLatencyInfo>& action_results) {
+  for (const auto& res : action_results) {
+    if (res.result && res.result->script_tool_response &&
+        res.result->script_tool_response->result) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 ObservationResult::ObservationResult() = default;
@@ -87,13 +98,17 @@ TabObservationController::TabObservationController(
     base::TimeTicks start_time,
     bool skip_async_observation_information,
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    TabObservationStrategy observation_strategy,
     DoneCallback done_callback)
     : profile_(profile),
       task_id_(task_id),
       start_time_(start_time),
       skip_async_observation_information_(skip_async_observation_information),
       action_results_(std::move(action_results)),
-      done_callback_(std::move(done_callback)) {}
+      observation_strategy_(std::move(observation_strategy)),
+      done_callback_(std::move(done_callback)) {
+  observation_strategy_.Lock();
+}
 
 TabObservationController::~TabObservationController() = default;
 
@@ -198,9 +213,20 @@ void TabObservationController::PerformObservation() {
       tab_observation.set_result(optimization_guide::proto::TabObservation::
                                      TAB_OBSERVATION_PAGE_CRASHED);
     } else {
-      if (skip_async_observation_information_) {
+      bool take_screenshot = ShouldTakeScreenshot(handle);
+      bool extract_apc = ShouldExtractPageContent(handle);
+
+      if (skip_async_observation_information_ ||
+          (!take_screenshot && !extract_apc)) {
         tab_observation.set_result(
             optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+        if (!skip_async_observation_information_ &&
+            HasScriptToolResults(action_results_)) {
+          actor::CopyScriptToolResults(
+              *tab_observation.mutable_annotated_page_content()
+                   ->mutable_main_frame_data(),
+              action_results_);
+        }
       } else {
         tabs_to_fetch.push_back(tab);
       }
@@ -277,32 +303,36 @@ void TabObservationController::OnTabObservationFetched(
   } else if (!result.has_value()) {
     observation->set_result(ToTabObservationResult(result.error().error_code));
   } else {
+    bool take_screenshot = ShouldTakeScreenshot(tab_handle);
+    bool extract_apc = ShouldExtractPageContent(tab_handle);
+
     page_content_annotations::FetchPageContextResult& fetch_result = **result;
     bool has_apc = fetch_result.annotated_page_content_result.has_value();
     observation->set_annotated_page_content_result(
-        has_apc ? optimization_guide::proto::TabObservation::
-                      ANNOTATED_PAGE_CONTENT_OK
-                : optimization_guide::proto::TabObservation::
-                      ANNOTATED_PAGE_CONTENT_ERROR);
+        has_apc || !extract_apc ? optimization_guide::proto::TabObservation::
+                                      ANNOTATED_PAGE_CONTENT_OK
+                                : optimization_guide::proto::TabObservation::
+                                      ANNOTATED_PAGE_CONTENT_ERROR);
 
     bool has_screenshot = fetch_result.screenshot_result.has_value();
     bool screenshot_required =
-        !base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot);
+        !base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot) &&
+        take_screenshot;
     observation->set_screenshot_result(
         has_screenshot || !screenshot_required
             ? optimization_guide::proto::TabObservation::SCREENSHOT_OK
             : optimization_guide::proto::TabObservation::SCREENSHOT_ERROR);
 
-    if (!has_apc || (screenshot_required && !has_screenshot)) {
+    if ((!has_apc && extract_apc) || (screenshot_required && !has_screenshot)) {
       observation->set_result(optimization_guide::proto::TabObservation::
                                   TAB_OBSERVATION_FETCH_ERROR);
+    } else {
+      observation->set_result(
+          optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
     }
 
-    observation->set_result(
-        optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
-
     // Populate latency steps.
-    {
+    if (has_apc) {
       optimization_guide::proto::ActionsResult_LatencyInformation_LatencyStep
           latency_step;
       latency_step.mutable_annotated_page_content()->set_id(observation->id());
@@ -328,7 +358,7 @@ void TabObservationController::OnTabObservationFetched(
           (fetch_result.screenshot_result.value().end_time - start_time_)
               .InMilliseconds());
       result_->latency_steps.push_back(std::move(latency_step));
-      actor::RecordPageContextScreenshotDuration(
+      RecordPageContextScreenshotDuration(
           fetch_result.screenshot_result.value().end_time - fetch_start_time);
     }
 
@@ -337,15 +367,31 @@ void TabObservationController::OnTabObservationFetched(
           observation, **result);
     }
 
-    // Copy script tool results if any.
-    //
-    // TODO(b/489841640): Remove this once migration to
-    // ActionsResult.script_tool_results is done.
-    actor::CopyScriptToolResults(*fetch_result.annotated_page_content_result
-                                      ->proto.mutable_main_frame_data(),
-                                 action_results_);
+    if (has_apc) {
+      // Copy script tool results if any.
+      //
+      // TODO(b/489841640): Remove this once migration to
+      // ActionsResult.script_tool_results is done.
+      CopyScriptToolResults(*fetch_result.annotated_page_content_result->proto
+                                 .mutable_main_frame_data(),
+                            action_results_);
+    }
 
-    actor::FillInTabObservation(fetch_result, *observation);
+    FillInTabObservation(fetch_result, *observation);
+
+    if (!take_screenshot) {
+      observation->clear_screenshot();
+      observation->clear_screenshot_mime_type();
+    }
+    if (!extract_apc) {
+      observation->clear_annotated_page_content();
+      if (HasScriptToolResults(action_results_)) {
+        actor::CopyScriptToolResults(
+            *observation->mutable_annotated_page_content()
+                 ->mutable_main_frame_data(),
+            action_results_);
+      }
+    }
   }
 }
 
@@ -425,6 +471,32 @@ void TabObservationController::ScheduleRetry() {
 ActorTask* TabObservationController::GetActorTask() const {
   auto* actor_service = actor::ActorKeyedService::Get(profile_);
   return actor_service ? actor_service->GetTask(task_id_) : nullptr;
+}
+
+bool TabObservationController::ShouldTakeScreenshot(
+    tabs::TabHandle tab_handle) const {
+  switch (observation_strategy_.GetScreenshotPolicy(tab_handle)) {
+    case ScreenshotPolicy::kSkipped:
+      return false;
+    case ScreenshotPolicy::kRequested:
+      return base::FeatureList::IsEnabled(
+          actor::kActorObserveScreenshotDefault);
+    case ScreenshotPolicy::kRequired:
+      return true;
+  }
+}
+
+bool TabObservationController::ShouldExtractPageContent(
+    tabs::TabHandle tab_handle) const {
+  switch (observation_strategy_.GetPageContentExtractionPolicy(tab_handle)) {
+    case PageContentExtractionPolicy::kSkipped:
+      return false;
+    case PageContentExtractionPolicy::kRequested:
+      return base::FeatureList::IsEnabled(
+          actor::kActorObservePageContentDefault);
+    case PageContentExtractionPolicy::kRequired:
+      return true;
+  }
 }
 
 }  // namespace actor

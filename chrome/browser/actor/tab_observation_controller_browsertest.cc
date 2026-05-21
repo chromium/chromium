@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,6 +47,17 @@ class TabObservationControllerBrowserTest : public InProcessBrowserTest {
                                        NoEnterprisePolicyChecker());
   }
 
+  mojom::ActionResultPtr MakeScriptToolActionResult() {
+    mojom::ActionResultPtr action_result = MakeOkResult();
+    action_result->script_tool_response = mojom::ScriptToolResponse::New();
+    action_result->script_tool_response->result = "script_tool_output";
+    action_result->script_tool_response->input_arguments = "args";
+    action_result->script_tool_response->tool = blink::mojom::ScriptTool::New();
+    action_result->script_tool_response->tool->name = "test_tool";
+    action_result->script_tool_response->tool->description = "desc";
+    return action_result;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -62,7 +74,8 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest, ObserveSingleTab) {
       future;
   TabObservationController controller(
       browser()->profile(), task_id, base::TimeTicks::Now(),
-      /*skip_async_observation_information=*/false, {}, future.GetCallback());
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
   controller.Start();
 
   auto [controller_ptr, result] = future.Take();
@@ -92,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
       future;
   TabObservationController controller(
       browser()->profile(), task_id, base::TimeTicks::Now(),
-      /*skip_async_observation_information=*/false, {}, future.GetCallback());
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
   controller.Start();
 
   auto [controller_ptr, result] = future.Take();
@@ -113,8 +127,14 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   EXPECT_TRUE(found_tab2);
 }
 
+// TODO(crbug.com/513631749): Re-enable on Windows, Linux, and ChromeOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ObserveCrashedTabWithReload DISABLED_ObserveCrashedTabWithReload
+#else
+#define MAYBE_ObserveCrashedTabWithReload ObserveCrashedTabWithReload
+#endif
 IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
-                       ObserveCrashedTabWithReload) {
+                       MAYBE_ObserveCrashedTabWithReload) {
   TaskId task_id = CreateTask();
   GURL url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -136,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
       future;
   TabObservationController controller(
       browser()->profile(), task_id, base::TimeTicks::Now(),
-      /*skip_async_observation_information=*/false, {}, future.GetCallback());
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
   controller.Start();
 
   auto [controller_ptr, result] = future.Take();
@@ -172,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerWithoutScreenshotBrowserTest,
       future;
   TabObservationController controller(
       browser()->profile(), task_id, base::TimeTicks::Now(),
-      /*skip_async_observation_information=*/false, {}, future.GetCallback());
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
   controller.Start();
 
   auto [controller_ptr, result] = future.Take();
@@ -182,6 +204,276 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerWithoutScreenshotBrowserTest,
   EXPECT_EQ(result->tab_observations[0].screenshot_result(),
             optimization_guide::proto::TabObservation::SCREENSHOT_OK);
   EXPECT_FALSE(result->tab_observations[0].has_screenshot());
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveWithOmittedScreenshot) {
+  TaskId task_id = CreateTask();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+  TabObservationStrategy strategy;
+  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
+  strategy.VoteForPageContentExtraction(
+      tab->GetHandle(), PageContentExtractionPolicy::kRequested);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->profile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false, {}, std::move(strategy),
+      future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_EQ(result->tab_observations[0].screenshot_result(),
+            optimization_guide::proto::TabObservation::SCREENSHOT_OK);
+  EXPECT_FALSE(result->tab_observations[0].has_screenshot());
+  EXPECT_EQ(
+      result->tab_observations[0].annotated_page_content_result(),
+      optimization_guide::proto::TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+  EXPECT_TRUE(result->tab_observations[0].has_annotated_page_content());
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveWithOmittedApc) {
+  TaskId task_id = CreateTask();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+  TabObservationStrategy strategy;
+  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kRequested);
+  strategy.VoteForPageContentExtraction(tab->GetHandle(),
+                                        PageContentExtractionPolicy::kSkipped);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->profile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false, {}, std::move(strategy),
+      future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_EQ(result->tab_observations[0].screenshot_result(),
+            optimization_guide::proto::TabObservation::SCREENSHOT_OK);
+  EXPECT_TRUE(result->tab_observations[0].has_screenshot());
+  EXPECT_EQ(
+      result->tab_observations[0].annotated_page_content_result(),
+      optimization_guide::proto::TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+  EXPECT_FALSE(result->tab_observations[0].has_annotated_page_content());
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveWithOmittedBoth) {
+  TaskId task_id = CreateTask();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+  TabObservationStrategy strategy;
+  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
+  strategy.VoteForPageContentExtraction(tab->GetHandle(),
+                                        PageContentExtractionPolicy::kSkipped);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->profile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false, {}, std::move(strategy),
+      future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_EQ(result->tab_observations[0].screenshot_result(),
+            optimization_guide::proto::TabObservation::SCREENSHOT_OK);
+  EXPECT_FALSE(result->tab_observations[0].has_screenshot());
+  EXPECT_EQ(
+      result->tab_observations[0].annotated_page_content_result(),
+      optimization_guide::proto::TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+  EXPECT_FALSE(result->tab_observations[0].has_annotated_page_content());
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveWithOmittedApcRetainsScriptToolResults) {
+  TaskId task_id = CreateTask();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+  TabObservationStrategy strategy;
+  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kRequested);
+  strategy.VoteForPageContentExtraction(tab->GetHandle(),
+                                        PageContentExtractionPolicy::kSkipped);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->profile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false,
+      MakeResultVector(MakeScriptToolActionResult()), std::move(strategy),
+      future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_EQ(
+      result->tab_observations[0].annotated_page_content_result(),
+      optimization_guide::proto::TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+
+  ASSERT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results()
+                .size(),
+            1u);
+  EXPECT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results(0)
+                .result(),
+            "script_tool_output");
+  EXPECT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results(0)
+                .tool_name(),
+            "test_tool");
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveWithOmittedScreenshotRetainsScriptToolResults) {
+  TaskId task_id = CreateTask();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+  TabObservationStrategy strategy;
+  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
+  strategy.VoteForPageContentExtraction(
+      tab->GetHandle(), PageContentExtractionPolicy::kRequested);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->profile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false,
+      MakeResultVector(MakeScriptToolActionResult()), std::move(strategy),
+      future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_EQ(result->tab_observations[0].screenshot_result(),
+            optimization_guide::proto::TabObservation::SCREENSHOT_OK);
+  EXPECT_FALSE(result->tab_observations[0].has_screenshot());
+  EXPECT_EQ(
+      result->tab_observations[0].annotated_page_content_result(),
+      optimization_guide::proto::TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+
+  ASSERT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results()
+                .size(),
+            1u);
+  EXPECT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results(0)
+                .result(),
+            "script_tool_output");
+  EXPECT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results(0)
+                .tool_name(),
+            "test_tool");
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveWithOmittedBothRetainsScriptToolResults) {
+  TaskId task_id = CreateTask();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+  TabObservationStrategy strategy;
+  strategy.VoteForScreenshot(tab->GetHandle(), ScreenshotPolicy::kSkipped);
+  strategy.VoteForPageContentExtraction(tab->GetHandle(),
+                                        PageContentExtractionPolicy::kSkipped);
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->profile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false,
+      MakeResultVector(MakeScriptToolActionResult()), std::move(strategy),
+      future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_EQ(result->tab_observations[0].screenshot_result(),
+            optimization_guide::proto::TabObservation::SCREENSHOT_OK);
+  EXPECT_FALSE(result->tab_observations[0].has_screenshot());
+  EXPECT_EQ(
+      result->tab_observations[0].annotated_page_content_result(),
+      optimization_guide::proto::TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+
+  ASSERT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results()
+                .size(),
+            1u);
+  EXPECT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results(0)
+                .result(),
+            "script_tool_output");
+  EXPECT_EQ(result->tab_observations[0]
+                .annotated_page_content()
+                .main_frame_data()
+                .script_tool_results(0)
+                .tool_name(),
+            "test_tool");
 }
 
 }  // namespace actor

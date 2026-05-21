@@ -103,10 +103,11 @@ RenderFrameHost* GetPrimaryMainFrame(
 
 void PostTaskForActCallback(
     ActorTask::ActCallback callback,
-    std::vector<ActionResultWithLatencyInfo> action_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results,
+    TabObservationStrategy observation_strategy) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(action_results)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(action_results),
+                                std::move(observation_strategy)));
 }
 
 // When operating on an opaque site, we choose to use the precursor's origin
@@ -777,12 +778,14 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     PostTaskForActCallback(
         std::move(callback),
         MakeResultVector(
-            mojom::ActionResultCode::kExecutionEngineExistingAction));
+            mojom::ActionResultCode::kExecutionEngineExistingAction),
+        TabObservationStrategy());
     return;
   }
 
   act_callback_ = std::move(callback);
   next_action_index_ = 0;
+  observation_strategy_ = TabObservationStrategy();
 
   absl::flat_hash_set<int32_t> acting_tab_handles;
 
@@ -1088,6 +1091,14 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
                                  std::move(result));
   }
 
+  if (GetInProgressAction().GetTabHandle() != tabs::TabHandle::Null()) {
+    observation_strategy_.VoteForScreenshot(
+        GetInProgressAction().GetTabHandle(), ScreenshotPolicy::kRequested);
+    observation_strategy_.VoteForPageContentExtraction(
+        GetInProgressAction().GetTabHandle(),
+        PageContentExtractionPolicy::kRequested);
+  }
+
   SetState(State::kUiPostInvoke);
   ui_event_dispatcher_->OnPostTool(
       GetInProgressAction(),
@@ -1160,7 +1171,9 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
   }
 
   RecordActionResultCode(result->code);
-  PostTaskForActCallback(std::move(act_callback_), std::move(action_results_));
+  observation_strategy_.Lock();
+  PostTaskForActCallback(std::move(act_callback_), std::move(action_results_),
+                         std::move(observation_strategy_));
 
   action_sequence_.clear();
   next_action_index_ = 0;
