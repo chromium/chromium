@@ -605,7 +605,8 @@ def main(argv,
       '-parameters',
       # Jacoco does not currently support a higher value.
       '--release',
-      '17',
+      # Keep consistent with javac_cmd in //build/android/gyp/turbine.py.
+      '21',
       # Chromium only allows UTF8 source files.  Being explicit avoids
       # javac pulling a default encoding from the user's environment.
       '-encoding',
