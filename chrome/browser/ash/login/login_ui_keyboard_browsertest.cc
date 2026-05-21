@@ -422,6 +422,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
 class LoginUIDevicePolicyUserAdding : public LoginUIKeyboardPolicy {
  public:
   LoginUIDevicePolicyUserAdding() {
+    set_exit_when_last_browser_closes(false);
     // Need at least two to run user adding screen.
     login_manager_.AppendRegularUsers(2);
   }

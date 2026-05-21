@@ -492,7 +492,10 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, UserOfflineLoginBlocked) {
 
 class UserAddingScreenTrayTest : public LoginManagerTest {
  public:
-  UserAddingScreenTrayTest() { login_mixin_.AppendRegularUsers(3); }
+  UserAddingScreenTrayTest() {
+    set_exit_when_last_browser_closes(false);
+    login_mixin_.AppendRegularUsers(3);
+  }
 
  protected:
   LoginManagerMixin login_mixin_{&mixin_host_};

@@ -58,6 +58,10 @@ Profile* GetOriginalSigninProfile() {
 class LoginScreenExtensionsGoodContentScriptTest
     : public MixinBasedInProcessBrowserTest {
  protected:
+  LoginScreenExtensionsGoodContentScriptTest() {
+    set_exit_when_last_browser_closes(false);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Skip showing post-login screens, as advancing through them isn't faked in
     // the test.
@@ -138,6 +142,11 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsGoodContentScriptTest,
 // URL.
 class LoginScreenExtensionsBadContentScriptTest
     : public LoginScreenExtensionsGoodContentScriptTest {
+ public:
+  LoginScreenExtensionsBadContentScriptTest() {
+    set_exit_when_last_browser_closes(false);
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LoginScreenExtensionsGoodContentScriptTest::SetUpCommandLine(command_line);

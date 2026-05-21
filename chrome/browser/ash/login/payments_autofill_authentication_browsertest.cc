@@ -69,7 +69,9 @@ class PaymentsAutofillNoAuthFactorsBrowserTest
       : user_(AccountId::FromUserEmailGaiaId("test-user@example.com",
                                              GaiaId("1234567890")),
               test::UserAuthConfig::Create({})),
-        login_manager_(&mixin_host_, {user_}, nullptr, &cryptohome_) {}
+        login_manager_(&mixin_host_, {user_}, nullptr, &cryptohome_) {
+    set_exit_when_last_browser_closes(false);
+  }
 
   ~PaymentsAutofillNoAuthFactorsBrowserTest() override = default;
 
