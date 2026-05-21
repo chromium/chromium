@@ -1629,6 +1629,42 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
                       std::make_tuple(0, 10),
                       MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
   builder.ExpectOk();
+
+  // Test backslash bypass (should be classified as UnsafeOrigin because it
+  // resolves to cross-origin)
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"/\\\\victim.com/key\","
+      "KEYFORMAT=\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data09.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data09.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 11);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(
+          GURL("http://victim.com/key"), XKeyTagMethod::kSampleAESCTR,
+          XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 11),
+          MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin));
+  builder.ExpectOk();
+
+  // Test leading whitespace bypass (should be classified as UnsafeOrigin
+  // because it resolves to cross-origin)
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"  //victim.com/key\","
+      "KEYFORMAT=\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data10.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data10.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 12);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(
+          GURL("http://victim.com/key"), XKeyTagMethod::kSampleAESCTR,
+          XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 12),
+          MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin));
+  builder.ExpectOk();
 }
 
 }  // namespace media::hls
