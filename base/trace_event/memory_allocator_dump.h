@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -102,6 +103,9 @@ class BASE_EXPORT MemoryAllocatorDump {
   // - Other informational column:
   //    AddString("kitten", "name", "shadow");
   void AddScalar(const char* name, const char* units, uint64_t value);
+  void AddScalar(const char* name, ByteSize value) {
+    AddScalar(name, kUnitsBytes, value.InBytes());
+  }
   void AddString(const char* name, const char* units, const std::string& value);
 
   // Absolute name, unique within the scope of an entire ProcessMemoryDump.
