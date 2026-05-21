@@ -239,7 +239,7 @@ build_webui("build") {
     "os_apps_page/app_parental_controls/app_setup_pin_keyboard.ts",
     "os_apps_page/app_parental_controls/app_verify_pin_dialog.ts",
     "os_apps_page/app_parental_controls/block_app_item.ts",
-    "os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.ts",
+
     "os_apps_page/os_apps_page.ts",
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog.ts",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage.ts",

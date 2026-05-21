@@ -7,7 +7,7 @@ import 'chrome://os-settings/os_settings.js';
 
 import type {SettingsAndroidAppsSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {ParentalControlsDialogAction} from 'chrome://os-settings/lazy_load.js';
-import type {CrDialogElement, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes} from 'chrome://os-settings/os_settings.js';
+import type {CrDialogElement, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {AndroidAppsBrowserProxyImpl, createRouterForTesting, Router, routes, routesMojom, setAppNotificationProviderForTesting, setAppParentalControlsProviderForTesting, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -59,6 +59,24 @@ function getFakePrefs() {
         key: 'on_device_app_controls.setup_completed',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
+      },
+    },
+    ash: {
+      isolated_web_apps_enabled: {
+        key: 'ash.isolated_web_apps_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    },
+    profile: {
+      isolated_web_app: {
+        install: {
+          user_install_enabled: {
+            key: 'profile.isolated_web_app.install.user_install_enabled',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          },
+        },
       },
     },
   };
@@ -268,6 +286,7 @@ suite('AppsPageTests', () => {
       isPlayStoreAvailable: true,
       androidAppsVisible: true,
       showManageIsolatedWebAppsRow: true,
+      isolatedWebAppsLearnMoreUrl: 'https://developer.chrome.com/docs/iwa',
     });
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
@@ -347,10 +366,124 @@ suite('AppsPageTests', () => {
               rowLink.subLabel);
         });
 
-    test('Manage isolated web apps row', () => {
-      const rowLink =
-          appsPage.shadowRoot!.querySelector('#manageIsoalatedWebAppsRow');
-      assertTrue(isVisible(rowLink));
+    test('Enable Isolated Web Apps toggle is visible', () => {
+      const enableIsolatedWebAppsToggle = appsPage.shadowRoot!.querySelector(
+          '#enableIsolatedWebAppsToggleButton');
+      assertTrue(!!enableIsolatedWebAppsToggle);
+    });
+
+    test('Clicking the toggle updates the User pref value', async () => {
+      appsPage.set('prefs.ash.isolated_web_apps_enabled.value', true);
+      await waitAfterNextRender(appsPage);
+
+      const enableIsolatedWebAppsToggle =
+          appsPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#enableIsolatedWebAppsToggleButton');
+      assertTrue(!!enableIsolatedWebAppsToggle);
+      assertTrue(enableIsolatedWebAppsToggle.checked);
+      assertTrue(
+          appsPage.getPref<boolean>('ash.isolated_web_apps_enabled').value);
+
+      enableIsolatedWebAppsToggle.click();
+      await waitAfterNextRender(appsPage);
+      assertFalse(enableIsolatedWebAppsToggle.checked);
+      assertFalse(
+          appsPage.getPref<boolean>('ash.isolated_web_apps_enabled').value);
+
+      enableIsolatedWebAppsToggle.click();
+      await waitAfterNextRender(appsPage);
+      assertTrue(enableIsolatedWebAppsToggle.checked);
+      assertTrue(
+          appsPage.getPref<boolean>('ash.isolated_web_apps_enabled').value);
+    });
+
+    test(
+        'Toggle is disabled when IWA user install admin policy set to false',
+        async () => {
+          appsPage.set('prefs.ash.isolated_web_apps_enabled.value', true);
+          assertTrue(
+              appsPage.getPref<boolean>('ash.isolated_web_apps_enabled').value);
+
+          const prefUpdate = {
+            key: 'profile.isolated_web_app.install.user_install_enabled',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+            controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+          };
+          appsPage.set(
+              'prefs.profile.isolated_web_app.install.user_install_enabled',
+              prefUpdate);
+          flush();
+          await waitAfterNextRender(appsPage);
+
+          const enableIsolatedWebAppsToggle =
+              appsPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#enableIsolatedWebAppsToggleButton');
+          assertTrue(!!enableIsolatedWebAppsToggle);
+
+          assertTrue(enableIsolatedWebAppsToggle.disabled);
+          assertFalse(enableIsolatedWebAppsToggle.checked);
+          assertTrue(!!enableIsolatedWebAppsToggle.shadowRoot!.querySelector(
+              'cr-policy-pref-indicator'));
+        });
+
+    test(
+        'Toggle is enabled / toggable when policy allows user installs',
+        async () => {
+          appsPage.set('prefs.ash.isolated_web_apps_enabled.value', false);
+          const prefUpdate = {
+            key: 'profile.isolated_web_app.install.user_install_enabled',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+            controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+          };
+          appsPage.set(
+              'prefs.profile.isolated_web_app.install.user_install_enabled',
+              prefUpdate);
+          flush();
+          await waitAfterNextRender(appsPage);
+
+          const enableIsolatedWebAppsToggle =
+              appsPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#enableIsolatedWebAppsToggleButton');
+          assertTrue(!!enableIsolatedWebAppsToggle);
+          assertFalse(enableIsolatedWebAppsToggle.disabled);
+          assertFalse(enableIsolatedWebAppsToggle.checked);
+
+          const icon = enableIsolatedWebAppsToggle.shadowRoot!.querySelector(
+              'cr-policy-pref-indicator');
+          assertFalse(isVisible(icon));
+
+          enableIsolatedWebAppsToggle.click();
+          await waitAfterNextRender(appsPage);
+          assertTrue(enableIsolatedWebAppsToggle.checked);
+          assertTrue(
+              appsPage.getPref<boolean>('ash.isolated_web_apps_enabled').value);
+        });
+
+    test('Clicking the sub-label link opens the IWA explainer URL', () => {
+      const enableIsolatedWebAppsToggle =
+          appsPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#enableIsolatedWebAppsToggleButton');
+      assertTrue(!!enableIsolatedWebAppsToggle);
+
+      const windowOpenSpy = window.open;
+      let openedUrl = '';
+      window.open = (url?: string|URL) => {
+        openedUrl = url?.toString() || '';
+        return null;
+      };
+
+      // Simulate sub-label-link-clicked event
+      enableIsolatedWebAppsToggle.dispatchEvent(
+          new CustomEvent('sub-label-link-clicked'));
+
+      assertEquals('https://developer.chrome.com/docs/iwa', openedUrl);
+
+      // Restore window.open
+      window.open = windowOpenSpy;
     });
 
     if (isAppParentalControlsAvailable) {

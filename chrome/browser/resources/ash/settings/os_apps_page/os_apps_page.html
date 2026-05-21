@@ -149,12 +149,18 @@
         </template>
       </template>
       <template is="dom-if" if="[[showManageIsolatedWebAppsRow_]]">
-        <cr-link-row id="manageIsoalatedWebAppsRow" class="settings-box"
-            start-icon="os-settings:apps-manage-isolated-web-apps"
-            label="$i18n{manageIsolatedWebAppsLinkText}"
-            on-click="onClickManageIsolatedWebApps_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
+        <settings-toggle-button
+            id="enableIsolatedWebAppsToggleButton"
+            icon="os-settings:apps-manage-isolated-web-apps"
+            label="$i18n{enableIsolatedWebAppsToggleLabel}"
+            sub-label-with-link="[[isolatedWebAppsDescription_]]"
+            pref="[[syntheticIwaPref_]]"
+            disabled="[[isIwaPolicyDisabled_]]"
+            on-settings-boolean-control-change="onIwaToggleChange_"
+            on-sub-label-link-clicked="onIwaLearnMoreClick_"
+            deep-link-focus-id$="[[Setting.kEnableIsolatedWebAppsOnOff]]"
+            no-set-pref>
+        </settings-toggle-button>
       </template>
     </settings-card>
   </div>
@@ -246,15 +252,7 @@
     </template>
   </template>
 
-  <!-- Manage Isolated Web Apps -->
-  <template is="dom-if" if="[[showManageIsolatedWebAppsRow_]]">
-    <template is="dom-if" route-path="/manage-isolated-web-apps">
-      <os-settings-subpage page-title="$i18n{manageIsolatedWebAppsTitle}">
-        <settings-manage-isolated-web-apps-subpage prefs="{{prefs}}">
-        </settings-manage-isolated-web-apps-subpage>
-      </os-settings-subpage>
-    </template>
-  </template>
+
 
   <!-- On-device Apps Parental Controls -->
   <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">

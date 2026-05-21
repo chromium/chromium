@@ -615,7 +615,8 @@ void IsolatedWebAppInstallerViewController::OnUpdateChannelSelected(
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
 #if BUILDFLAG(IS_CHROMEOS)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
+      profile_, /*sub_page=*/"",
+      chromeos::settings::mojom::Setting::kEnableIsolatedWebAppsOnOff);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

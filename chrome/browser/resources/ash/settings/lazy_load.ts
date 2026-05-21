@@ -270,7 +270,7 @@ export {AppSetupPinKeyboardElement} from './os_apps_page/app_parental_controls/a
 export {AppVerifyPinDialogElement} from './os_apps_page/app_parental_controls/app_verify_pin_dialog.js';
 export {BlockAppItemElement} from './os_apps_page/app_parental_controls/block_app_item.js';
 export {ParentalControlsDialogAction, ParentalControlsPinDialogError} from './os_apps_page/app_parental_controls/metrics_utils.js';
-export {ManageIsolatedWebAppsSubpageElement} from './os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.js';
+
 export {SettingsBluetoothChangeDeviceNameDialogElement} from './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
 export {SettingsBluetoothDeviceDetailSubpageElement} from './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';
 export {SettingsBluetoothDevicesSubpageElement} from './os_bluetooth_page/os_bluetooth_devices_subpage.js';

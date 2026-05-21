@@ -191,7 +191,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   LOCK_SCREEN: Route;
   MANAGE_ACCESSIBILITY: Route;
   MANAGE_FACEGAZE_SETTINGS: Route;
-  MANAGE_ISOLATED_WEB_APPS: Route;
+
   MANAGE_MOUSE_KEYS_SETTINGS: Route;
   MANAGE_SWITCH_ACCESS_SETTINGS: Route;
   MANAGE_TTS_SETTINGS: Route;
@@ -427,9 +427,7 @@ export function createRoutes(): OsSettingsRoutes {
         r.APP_MANAGEMENT, routesMojom.PLUGIN_VM_USB_PREFERENCES_SUBPAGE_PATH,
         Subpage.kPluginVmUsbPreferences);
   }
-  r.MANAGE_ISOLATED_WEB_APPS = createSubpage(
-      r.APPS, routesMojom.MANAGE_ISOLATED_WEB_APPS_SUBPAGE_PATH,
-      Subpage.kManageIsolatedWebApps);
+
   if (isAppParentalControlsFeatureAvailable()) {
     r.APP_PARENTAL_CONTROLS = createSubpage(
         r.APPS, routesMojom.APP_PARENTAL_CONTROLS_SUBPAGE_PATH,

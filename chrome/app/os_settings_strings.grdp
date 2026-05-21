@@ -6628,7 +6628,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Isolated web apps (beta)
   </message>
   <message name="IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION" desc="A short description for Isolated Web Apps and a link for additional information.">
-    Packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+    Access packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_APP_NOTIFICATIONS_LINK_DESCRIPTION" desc="The description for the settings row button in the App section of OS Settings which links to the App Notifications page.">
     Manage app notifications, Do Not Disturb, and app badging

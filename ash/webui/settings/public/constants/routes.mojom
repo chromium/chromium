@@ -117,7 +117,7 @@ enum Subpage {
   // Note: Value 705 was for deprecated kOnStartup. Do not reuse.
   kAppNotifications = 706,
   kArcVmUsbPreferences = 707,
-  kManageIsolatedWebApps = 708,
+  // Note: Value 708 was for deprecated kManageIsolatedWebApps. Do not reuse.
   kAppNotificationsManager = 709,
   kAppParentalControls = 710,
 
@@ -271,7 +271,7 @@ const string kPluginVmUsbPreferencesSubpagePath =
     "app-management/pluginVm/sharedUsbDevices";
 const string kArcVmUsbPreferencesSubpagePath =
      "androidAppsDetails/sharedUsbDevices";
-const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
+
 const string kAppParentalControlsSubpagePath = "app-parental-controls";
 
 // Crostini section.

@@ -148,7 +148,7 @@ inline constexpr char kHelpMeReadWriteLearnMoreURL[] =
 // The URL for "Learn more" page for Isolated Web Apps.
 // TODO(crbug.com/40281470): Update this URL with proper user-facing explainer.
 inline constexpr char16_t kIsolatedWebAppsLearnMoreUrl[] =
-    u"https://developer.chrome.com/docs/iwa/introduction";
+    u"https://developer.chrome.com/docs/iwa";
 
 // The URL for the "learn more" link for Instant Tethering.
 inline constexpr char kInstantTetheringLearnMoreURL[] =
