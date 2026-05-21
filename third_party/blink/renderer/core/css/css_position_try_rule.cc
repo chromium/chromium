@@ -66,6 +66,10 @@ CSSStyleDeclaration* CSSPositionTryRule::style() const {
 void CSSPositionTryRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
   position_try_rule_ = To<StyleRulePositionTry>(rule);
+  if (properties_cssom_wrapper_) {
+    properties_cssom_wrapper_->Reattach(
+        position_try_rule_->MutableProperties());
+  }
 }
 
 void CSSPositionTryRule::Trace(Visitor* visitor) const {

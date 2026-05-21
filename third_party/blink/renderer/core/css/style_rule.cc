@@ -795,9 +795,12 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kNamespace:
       return MakeGarbageCollected<StyleRuleNamespace>(
           To<StyleRuleNamespace>(*this));
-    case kCounterStyle:
+    case kCounterStyle: {
+      auto* counter_style = To<StyleRuleCounterStyle>(this);
       return MakeGarbageCollected<StyleRuleCounterStyle>(
-          To<StyleRuleCounterStyle>(*this));
+          counter_style->GetName(),
+          counter_style->Properties().ImmutableCopyIfNeeded());
+    }
     case kKeyframe:
       return MakeGarbageCollected<StyleRuleKeyframe>(
           To<StyleRuleKeyframe>(*this));
@@ -807,9 +810,12 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kViewTransition:
       return MakeGarbageCollected<StyleRuleViewTransition>(
           To<StyleRuleViewTransition>(*this));
-    case kPositionTry:
+    case kPositionTry: {
+      auto* position_try = To<StyleRulePositionTry>(this);
       return MakeGarbageCollected<StyleRulePositionTry>(
-          To<StyleRulePositionTry>(*this));
+          position_try->Name(),
+          position_try->Properties().ImmutableCopyIfNeeded());
+    }
     case kCustomMedia:
       return MakeGarbageCollected<StyleRuleCustomMedia>(
           To<StyleRuleCustomMedia>(*this));

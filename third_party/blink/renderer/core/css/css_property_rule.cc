@@ -55,6 +55,9 @@ String CSSPropertyRule::cssText() const {
 void CSSPropertyRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
   property_rule_ = To<StyleRuleProperty>(rule);
+  if (properties_cssom_wrapper_) {
+    properties_cssom_wrapper_->Reattach(property_rule_->MutableProperties());
+  }
 }
 
 StyleRuleProperty* CSSPropertyRule::Property() const {

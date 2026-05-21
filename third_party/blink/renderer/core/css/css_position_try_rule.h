@@ -15,12 +15,8 @@ class StyleRuleCSSStyleDeclaration;
 class StyleRulePositionTry final : public StyleRuleBase {
  public:
   StyleRulePositionTry(const AtomicString& name, CSSPropertyValueSet*);
-  StyleRulePositionTry(const StyleRulePositionTry&) = default;
+  StyleRulePositionTry(const StyleRulePositionTry&) = delete;
   ~StyleRulePositionTry();
-
-  StyleRulePositionTry* Copy() const {
-    return MakeGarbageCollected<StyleRulePositionTry>(*this);
-  }
 
   const AtomicString& Name() const { return name_; }
   const CSSPropertyValueSet& Properties() const { return *properties_; }

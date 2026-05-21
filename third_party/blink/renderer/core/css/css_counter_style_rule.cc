@@ -110,6 +110,9 @@ String CSSCounterStyleRule::cssText() const {
 void CSSCounterStyleRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
   counter_style_rule_ = To<StyleRuleCounterStyle>(rule);
+  if (counter_style_cssom_wrapper_) {
+    counter_style_cssom_wrapper_->Reattach(counter_style_rule_->Properties());
+  }
 }
 
 String CSSCounterStyleRule::name() const {
