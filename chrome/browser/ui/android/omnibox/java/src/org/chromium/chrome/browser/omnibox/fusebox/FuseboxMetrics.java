@@ -11,13 +11,16 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.ToolModeUtils;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.ElementType;
@@ -31,6 +34,11 @@ public class FuseboxMetrics {
     private static final String ABANDONED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentAbandoned";
     private static final String FAILED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentFailed";
     private static final String SUCCEEDED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentSucceeded";
+
+    @VisibleForTesting
+    /* package */ static final String FILE_ATTACHMENT_SIZE_HISTOGRAM =
+            "Omnibox.MobileFusebox.FileAttachmentSize";
+
     private static final String TOKEN_SEPARATOR = ".";
 
     @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 11;
@@ -219,6 +227,17 @@ public class FuseboxMetrics {
         notifyAttachmentTime(startTime, type, SUCCEEDED_HISTOGRAM);
     }
 
+    static void notifyFileAttachmentSize(long sizeInBytes, @MimeTypeUtils.Type int fileType) {
+        int sizeInKiB = (int) ConversionUtils.bytesToKilobytes(sizeInBytes);
+        recordAttachmentSizeHistogram(FILE_ATTACHMENT_SIZE_HISTOGRAM, sizeInKiB);
+        recordAttachmentSizeHistogram(getFileAttachmentSizeHistogram(fileType), sizeInKiB);
+    }
+
+    private static void recordAttachmentSizeHistogram(String histogramName, int sizeInKiB) {
+        UmaRecorderHolder.get()
+                .recordExponentialHistogram(histogramName, sizeInKiB, 100, 100000, 100);
+    }
+
     @SuppressLint("SwitchIntDef") // COUNT entry missing
     private static String getStringForAttachmentType(
             @FuseboxAttachmentButtonType int attachmentType) {
@@ -268,5 +287,27 @@ public class FuseboxMetrics {
     private static String typeScopedHistogram(
             String baseHistogram, @FuseboxAttachmentButtonType int type) {
         return baseHistogram + TOKEN_SEPARATOR + getStringForAttachmentType(type);
+    }
+
+    // LINT.IfChange(getHistogramExtensionForMimeType)
+
+    private static String getHistogramExtensionForMimeType(@MimeTypeUtils.Type int fileType) {
+        return switch (fileType) {
+            case MimeTypeUtils.Type.TEXT -> "Text";
+            case MimeTypeUtils.Type.IMAGE -> "Image";
+            case MimeTypeUtils.Type.AUDIO -> "Audio";
+            case MimeTypeUtils.Type.VIDEO -> "Video";
+            case MimeTypeUtils.Type.PDF -> "Pdf";
+            default -> "Unknown";
+        };
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:FuseboxAttachmentFileType)
+
+    @VisibleForTesting
+    /* package */ static String getFileAttachmentSizeHistogram(@MimeTypeUtils.Type int fileType) {
+        return FILE_ATTACHMENT_SIZE_HISTOGRAM
+                + TOKEN_SEPARATOR
+                + getHistogramExtensionForMimeType(fileType);
     }
 }

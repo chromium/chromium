@@ -27,6 +27,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -431,6 +432,60 @@ public class FuseboxMetricsTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 false, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyFileAttachmentSize() {
+        var baseHistogram = FuseboxMetrics.FILE_ATTACHMENT_SIZE_HISTOGRAM;
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(baseHistogram, 10)
+                        .expectIntRecord(
+                                FuseboxMetrics.getFileAttachmentSizeHistogram(
+                                        MimeTypeUtils.Type.IMAGE),
+                                10)
+                        .expectIntRecord(baseHistogram, 20)
+                        .expectIntRecord(
+                                FuseboxMetrics.getFileAttachmentSizeHistogram(
+                                        MimeTypeUtils.Type.PDF),
+                                20)
+                        .expectIntRecord(baseHistogram, 30)
+                        .expectIntRecord(
+                                FuseboxMetrics.getFileAttachmentSizeHistogram(
+                                        MimeTypeUtils.Type.TEXT),
+                                30)
+                        .expectIntRecord(baseHistogram, 40)
+                        .expectIntRecord(
+                                FuseboxMetrics.getFileAttachmentSizeHistogram(
+                                        MimeTypeUtils.Type.AUDIO),
+                                40)
+                        .expectIntRecord(baseHistogram, 50)
+                        .expectIntRecord(
+                                FuseboxMetrics.getFileAttachmentSizeHistogram(
+                                        MimeTypeUtils.Type.VIDEO),
+                                50)
+                        .expectIntRecord(baseHistogram, 60)
+                        .expectIntRecord(
+                                FuseboxMetrics.getFileAttachmentSizeHistogram(
+                                        MimeTypeUtils.Type.UNKNOWN),
+                                60)
+                        .build();
+
+        FuseboxMetrics.notifyFileAttachmentSize(
+                /* sizeInBytes= */ 10 * 1024, MimeTypeUtils.Type.IMAGE);
+        FuseboxMetrics.notifyFileAttachmentSize(
+                /* sizeInBytes= */ 20 * 1024, MimeTypeUtils.Type.PDF);
+        FuseboxMetrics.notifyFileAttachmentSize(
+                /* sizeInBytes= */ 30 * 1024, MimeTypeUtils.Type.TEXT);
+        FuseboxMetrics.notifyFileAttachmentSize(
+                /* sizeInBytes= */ 40 * 1024, MimeTypeUtils.Type.AUDIO);
+        FuseboxMetrics.notifyFileAttachmentSize(
+                /* sizeInBytes= */ 50 * 1024, MimeTypeUtils.Type.VIDEO);
+        FuseboxMetrics.notifyFileAttachmentSize(
+                /* sizeInBytes= */ 60 * 1024, MimeTypeUtils.Type.UNKNOWN);
 
         histogramWatcher.assertExpected();
     }

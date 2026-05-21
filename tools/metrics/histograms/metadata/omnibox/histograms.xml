@@ -123,6 +123,20 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabPicker" summary="Tab picker"/>
 </variants>
 
+<!-- LINT.IfChange(FuseboxAttachmentFileType) -->
+
+<variants name="FuseboxAttachmentFileType">
+  <variant name="" summary="All files"/>
+  <variant name=".Audio" summary="Audio file"/>
+  <variant name=".Image" summary="Image file"/>
+  <variant name=".Pdf" summary="PDF file"/>
+  <variant name=".Text" summary="Text file"/>
+  <variant name=".Unknown" summary="Unknown file type"/>
+  <variant name=".Video" summary="Video file"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:getHistogramExtensionForMimeType) -->
+
 <variants name="KeywordType">
   <variant name="" summary="aggregated across all keyword types"/>
   <variant name=".DefaultSearchEngineSetByPolicy"
@@ -2650,6 +2664,37 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Composebox. {ComposeboxDragAndDropType}
   </summary>
   <token key="ComposeboxDragAndDropType" variants="ComposeboxDragAndDropType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.FileAttachmentSize{FuseboxAttachmentFileType}"
+    units="KiB" expires_after="2027-05-01">
+  <owner>jkoblinsky@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the size of the Fusebox file attachment.
+
+    There is a unique histogram for each file type (Audio, Image, PDF, ...), and
+    a general agregate total histogram for all file types. A value is emitted to
+    both the general histogram and a specific file type histogram when the user
+    selects a file from the file picker, or when they confirm their selection of
+    multiple files from the file picker. In the case of multiple files, a value
+    will be independently emmited for each selected file. Attaching the same
+    file twice will result in duplicate emissions.
+
+    An emmision to both histograms will certainly occur if file is ultimately
+    attached, and thus appears as an attachment chip. An emmission will still
+    occur even if the file is ultimately not attached on the client side (e.g.,
+    because it's title cannot be resolved), given that the size and mime type
+    can be resolved. If either the size or mime type cannot be resolved, then no
+    emmission will occur. An emmission will still occur if the file exceeds the
+    size limit (an error message is shown). An emmission will still occur if the
+    user dismisses the omnibox before the file is uploaded to the server, that
+    is, the omnibox is dismissed while the loading spinner is shown. An
+    emmission will not occur if the user dismisses the file picker without
+    selecting any files.
+  </summary>
+  <token key="FuseboxAttachmentFileType" variants="FuseboxAttachmentFileType"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.FilesAttached" units="count"

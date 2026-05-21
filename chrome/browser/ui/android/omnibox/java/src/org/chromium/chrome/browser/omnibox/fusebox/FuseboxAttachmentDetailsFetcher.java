@@ -115,6 +115,11 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
         String mimeType = mContentResolver.getType(mUri);
 
+        if (size != null && mimeType != null) {
+            FuseboxMetrics.notifyFileAttachmentSize(
+                    size, MimeTypeUtils.getTypeFromMimeType(mimeType));
+        }
+
         // Bail: don't add the item if we miss metadata.
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(mimeType);
