@@ -96,7 +96,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Transparency) {
   RunTest("new_tab_page/transparency_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, Composebox) {
+// TODO(https://crbug.com/483519387): flaky on linux-chromeos-dbg.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Composebox DISABLED_Composebox
+#else
+#define MAYBE_Composebox Composebox
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_Composebox) {
   RunTest("new_tab_page/composebox/composebox_test.js", "mocha.run()");
 }
 
