@@ -14,22 +14,31 @@ source_set("browser_tests") {
 
   sources = [
     "generic_mime_handler_browsertest.cc",
+    "mime_handler_cookies_browsertest.cc",
     "mime_handler_storage_partitioning_browsertest.cc",
   ]
   deps = [
     "//base",
     "//base/test:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
     "//chrome/browser/plugins",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/version_info:channel",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser/mime_handler:mime_handler_registry",
     "//extensions/common",
+    "//mojo/public/cpp/bindings",
     "//net:test_support",
+    "//services/network/public/mojom",
+    "//testing/gmock",
   ]
 
   if (enable_pdf) {

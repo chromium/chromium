@@ -140,6 +140,21 @@ class URLLoaderFactoryParamsHelper {
   static CONTENT_EXPORT bool IsMainFrameOriginRecentlyAccessed(
       const net::IsolationInfo& isolation_info);
 
+  // Returns whether the network service should prefer the factory's
+  // `isolation_info.site_for_cookies()` over the renderer-provided
+  // `ResourceRequest::site_for_cookies` for this factory. Set the
+  // corresponding `URLLoaderFactoryParams` flag when this returns true.
+  //
+  // Scoped to frames whose effective top frame for storage partitioning
+  // differs from the actual top frame. In that arrangement the renderer
+  // sees a cross-site top-level and computes a null `site_for_cookies`,
+  // while `RenderFrameHostImpl::ComputeIsolationInfoInternal()` has
+  // already overridden the browser-side SFC. Outside that subtree the
+  // renderer's value is already correct and the flag is redundant.
+  static CONTENT_EXPORT bool ShouldPreferFactorySiteForCookies(
+      bool has_effective_top_frame_for_storage_partitioning,
+      const net::IsolationInfo& isolation_info);
+
  private:
   // Only static methods.
   URLLoaderFactoryParamsHelper() = delete;

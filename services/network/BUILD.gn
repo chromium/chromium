@@ -545,6 +545,7 @@ source_set("tests") {
     "udp_socket_unittest.cc",
     "upload_progress_tracker_unittest.cc",
     "url_loader_unittest.cc",
+    "url_loader_util_unittest.cc",
     "web_bundle/web_bundle_chunked_buffer_unittest.cc",
     "web_bundle/web_bundle_manager_unittest.cc",
     "web_bundle/web_bundle_url_loader_factory_unittest.cc",

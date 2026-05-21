@@ -957,6 +957,14 @@ struct URLLoaderFactoryParams {
   // `NetworkContext::network_restrictions_ids_`.
   // If no value is present, network restrictions will not be checked.
   mojo_base.mojom.UnguessableToken? network_restrictions_id;
+
+  // When true, the network service uses the factory's
+  // isolation_info.site_for_cookies() (when non-null) instead of the
+  // request's site_for_cookies. Set when the browser holds an
+  // authoritative `site_for_cookies` that the renderer cannot compute
+  // (e.g., a subframe whose effective top frame for storage
+  // partitioning differs from the actual top frame).
+  bool prefer_factory_site_for_cookies = false;
 };
 
 struct IdAndAllowlistedPatterns {

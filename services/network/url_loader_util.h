@@ -99,6 +99,7 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
 // Configures the given `url_request` based on the properties specified in
 // `request` and context/factory parameters (`factory_params`,
 // `origin_access_list`).
+COMPONENT_EXPORT(NETWORK_SERVICE)
 void ConfigureUrlRequest(const ResourceRequest& request,
                          const mojom::URLLoaderFactoryParams& factory_params,
                          const cors::OriginAccessList& origin_access_list,
@@ -150,6 +151,7 @@ mojom::URLResponseHeadPtr BuildResponseHead(
 // be sent. This checks if the request initiator is granted access to the
 // target URL by the CORS origin access list, typically allowing extensions
 // to send cookies to cross-origin targets.
+COMPONENT_EXPORT(NETWORK_SERVICE)
 bool ShouldForceIgnoreSiteForCookies(
     const GURL& url,
     const std::optional<url::Origin>& request_initiator,
