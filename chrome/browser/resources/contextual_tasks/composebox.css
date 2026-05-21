@@ -661,7 +661,7 @@
   --color-searchbox-results-icon-focused-outline: rgba(153, 200, 255, 1);
 
   align-items: flex-start;
-  background-color: var(--search-background-color);
+  background-color: transparent;
   justify-content: flex-start;
   margin-top: 16px;
   padding-inline-end: 8px;
@@ -688,6 +688,14 @@
 :host([is-zero-state][energy-effect-animation-enabled_]) #contextualTasksSuggestionsContainer {
   animation: zero-state-recommendations-enter 600ms
     var(--emphasized-decelerate-curve) forwards;
+}
+
+:host([is-zero-state][energy-effect-animation-enabled_]) #contextualTasksSuggestionsContainer::part(match-wrapper) {
+  animation: zero-state-recommendations-enter 600ms
+    var(--emphasized-decelerate-curve) both;
+  animation-delay: calc(var(--match-wrapper-index, 0) * 50ms);
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 @keyframes zero-state-recommendations-enter {
