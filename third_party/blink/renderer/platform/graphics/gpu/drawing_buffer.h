@@ -39,6 +39,7 @@
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -294,6 +295,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
   base::ByteSize EstimatedSizeInBytes() const;
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    const std::string& dump_base_name,
+                    const base::trace_event::MemoryDumpArgs& args) const;
   int SampleCount() const { return sample_count_; }
   bool ExplicitResolveOfMultisampleData() const {
     return anti_aliasing_mode_ == kAntialiasingModeMSAAExplicitResolve;

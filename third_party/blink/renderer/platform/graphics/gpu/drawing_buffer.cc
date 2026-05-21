@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <utility>
 
@@ -41,6 +42,9 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/ostream_operators.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -50,6 +54,7 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -66,6 +71,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
@@ -357,10 +363,13 @@ DrawingBuffer::ContextProviderWeakPtr() {
 }
 
 void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
+  TRACE_EVENT("gpu", __PRETTY_FUNCTION__);
   if (is_hidden_ == hidden)
     return;
   is_hidden_ = hidden;
   if (is_hidden_) {
+    TRACE_EVENT("gpu", "ReleaseBuffers", "size",
+                recycled_color_buffer_queue_.size());
     recycled_color_buffer_queue_.clear();
     recycled_software_resources_.clear();
   }
@@ -1242,6 +1251,85 @@ base::ByteSize DrawingBuffer::EstimatedSizeInBytes() const {
                                                           size_.height()));
   }
   return result;
+}
+
+void DrawingBuffer::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd,
+    const std::string& dump_base_name,
+    const base::trace_event::MemoryDumpArgs& args) const {
+  auto* drawing_buffer_dump = pmd->CreateAllocatorDump(dump_base_name);
+  drawing_buffer_dump->AddScalar("width", "pixels", size_.width());
+  drawing_buffer_dump->AddScalar("height", "pixels", size_.height());
+
+  auto dump_color_buffer = [&](const ColorBuffer& buffer,
+                               const std::string& dump_name) {
+    auto* dump = pmd->CreateAllocatorDump(dump_name);
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    buffer.EstimatedSizeInBytes().InBytes());
+    dump->AddScalar("width", "pixels", size_.width());
+    dump->AddScalar("height", "pixels", size_.height());
+    if (buffer.shared_image) {
+      buffer.shared_image->OnMemoryDump(
+          pmd, dump->guid(),
+          static_cast<int>(gpu::TracingImportance::kClientOwner));
+    }
+  };
+
+  if (back_color_buffer_) {
+    dump_color_buffer(*back_color_buffer_,
+                      dump_base_name + "/back_color_buffer");
+  }
+
+  int i = 0;
+  for (const auto& buffer : recycled_color_buffer_queue_) {
+    dump_color_buffer(*buffer,
+                      base::StringPrintf("%s/recycled_color_buffers/buffer_%d",
+                                         dump_base_name.c_str(), i++));
+  }
+
+  i = 0;
+  for (const auto& buffer : exported_color_buffers_) {
+    dump_color_buffer(*buffer,
+                      base::StringPrintf("%s/exported_color_buffers/buffer_%d",
+                                         dump_base_name.c_str(), i++));
+  }
+
+  // Only report these if the drawing buffer is retained. Otherwise they are
+  // likely to be resourceless, in particular on tile-based architectures.
+  if (preserve_drawing_buffer_ == kPreserve) {
+    if (staging_texture_needed_ || SampleCount() > 0) {
+      uint64_t multisample_size =
+          (base::ByteSize(color_buffer_format_.EstimatedSizeInBytes(size_)) *
+           (SampleCount() + staging_texture_needed_))
+              .InBytes();
+      auto* dump = pmd->CreateAllocatorDump(dump_base_name +
+                                            "/multisample_and_staging_buffers");
+      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                      multisample_size);
+      dump->AddScalar("width", "pixels", size_.width());
+      dump->AddScalar("height", "pixels", size_.height());
+    }
+
+    if (HasDepthBuffer() || HasStencilBuffer()) {
+      uint64_t depth_stencil_size =
+          (std::max(SampleCount(), 1) *
+           base::ByteSize(base::checked_cast<uint64_t>(4 * size_.width() *
+                                                       size_.height())))
+              .InBytes();
+      auto* dump =
+          pmd->CreateAllocatorDump(dump_base_name + "/depth_stencil_buffer");
+      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                      depth_stencil_size);
+      dump->AddScalar("width", "pixels", size_.width());
+      dump->AddScalar("height", "pixels", size_.height());
+      if (HasStencilBuffer()) {
+        dump->AddScalar("stencil_bits", "bits", 8);
+      }
+    }
+  }
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {

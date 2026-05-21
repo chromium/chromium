@@ -169,6 +169,7 @@ _CONFIG = [
             'base::Span(OrSize|Reader|Writer)',
             'base::subtle::reinterpret_span',
             'base::StringPiece',
+            'base::StringPrintf',
             'base::StrongAlias',
             'base::SubstringSetMatcher',
             'base::SysInfo',

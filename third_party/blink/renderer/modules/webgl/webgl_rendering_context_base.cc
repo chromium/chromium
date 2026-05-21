@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
+#include <inttypes.h>
+
 #include <memory>
 #include <utility>
 
@@ -37,8 +39,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -1403,6 +1407,9 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   ADD_VALUES_TO_SET(supported_tex_image_source_formats_, kSupportedFormatsES2);
   ADD_VALUES_TO_SET(supported_types_, kSupportedTypesES2);
   ADD_VALUES_TO_SET(supported_tex_image_source_types_, kSupportedTypesES2);
+
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "WebGL", task_runner);
 }
 
 scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
@@ -1751,6 +1758,9 @@ bool WebGLRenderingContextBase::PushFrame() {
 }
 
 void WebGLRenderingContextBase::Dispose() {
+  TRACE_EVENT("gpu", __PRETTY_FUNCTION__);
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
   resource_provider_.reset();
   cached_snapshot_.reset();
   CanvasRenderingContext::Dispose();
@@ -1909,7 +1919,57 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
     GetDrawingBuffer()->SetBufferClearNeeded(true);
 }
 
+bool WebGLRenderingContextBase::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  // This is used for local data gathering for now. Allow it in background once
+  // it's confirmed that it's cheap enough (which also requires updating the
+  // background allowlist, this is just an extra check).
+  if (args.level_of_detail !=
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
+    return true;
+  }
+
+  std::string context_name = base::StringPrintf(
+      "webgl/context_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
+
+  for (auto& buffer : buffers_) {
+    if (buffer && buffer->HasObject()) {
+      uint64_t buffer_size = buffer->GetSize();
+
+      std::string buffer_name = base::StringPrintf(
+          "%s/buffers/buffer_%u", context_name.c_str(), buffer->Object());
+      auto* dump = pmd->CreateAllocatorDump(buffer_name);
+      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                      buffer_size);
+    }
+  }
+
+  if (GetDrawingBuffer()) {
+    GetDrawingBuffer()->OnMemoryDump(pmd, context_name + "/drawing_buffer",
+                                     args);
+  }
+
+  if (resource_provider_) {
+    uint64_t size = resource_provider_->EstimatedSizeInBytes().InBytes();
+    auto* dump = pmd->CreateAllocatorDump(context_name + "/resource_provider");
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
+  }
+
+  if (cached_snapshot_) {
+    uint64_t size = cached_snapshot_->EstimatedSizeInBytes().InBytes();
+    auto* dump = pmd->CreateAllocatorDump(context_name + "/cached_snapshot");
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
+  }
+
+  return true;
+}
+
 void WebGLRenderingContextBase::PageVisibilityChanged() {
+  TRACE_EVENT("gpu", __PRETTY_FUNCTION__);
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
 }
@@ -3056,7 +3116,9 @@ void WebGLRenderingContextBase::copyTexSubImage2D(GLenum target,
 }
 
 WebGLBuffer* WebGLRenderingContextBase::createBuffer() {
-  return MakeGarbageCollected<WebGLBuffer>(this);
+  auto* buffer = MakeGarbageCollected<WebGLBuffer>(this);
+  buffers_.insert(buffer);
+  return buffer;
 }
 
 WebGLFramebuffer* WebGLRenderingContextBase::createFramebuffer() {
@@ -3122,6 +3184,7 @@ void WebGLRenderingContextBase::deleteBuffer(WebGLBuffer* buffer) {
   if (!DeleteObject(buffer))
     return;
   RemoveBoundBuffer(buffer);
+  buffers_.erase(buffer);
 }
 
 void WebGLRenderingContextBase::deleteFramebuffer(
@@ -9230,6 +9293,7 @@ void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   visitor->Trace(renderbuffer_binding_);
   visitor->Trace(texture_units_);
   visitor->Trace(extensions_);
+  visitor->Trace(buffers_);
   visitor->Trace(make_xr_compatible_resolver_);
   visitor->Trace(program_completion_query_list_);
   visitor->Trace(program_completion_query_map_);

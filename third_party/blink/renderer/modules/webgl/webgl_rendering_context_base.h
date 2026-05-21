@@ -35,6 +35,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -134,7 +136,8 @@ class ScopedRGBEmulationColorMask {
 class MODULES_EXPORT WebGLRenderingContextBase
     : public WebGLContextObjectSupport,
       public CanvasRenderingContext,
-      public DrawingBuffer::Client {
+      public DrawingBuffer::Client,
+      public base::trace_event::MemoryDumpProvider {
  public:
   WebGLRenderingContextBase(const WebGLRenderingContextBase&) = delete;
   WebGLRenderingContextBase& operator=(const WebGLRenderingContextBase&) =
@@ -633,6 +636,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   void MarkLayerComposited() override;
 
+  // base::trace_event::MemoryDumpProvider implementation.
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs&,
+                    base::trace_event::ProcessMemoryDump*) override;
+
   scoped_refptr<StaticBitmapImage> GetRGBAUnacceleratedStaticBitmapImage(
       SourceDrawingBuffer source_buffer) override;
 
@@ -1088,6 +1095,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   std::array<bool, kWebGLExtensionNameCount> extension_enabled_;
   HeapVector<Member<ExtensionTracker>> extensions_;
+  HeapHashSet<WeakMember<WebGLBuffer>> buffers_;
   HashSet<String> disabled_extensions_;
 
   template <typename T>

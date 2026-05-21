@@ -144,6 +144,7 @@ chromium-metrics-reviews@google.com.
   <variant name="V8Isolate"/>
   <variant name="V8SharedMemory"/>
   <variant name="vulkan"/>
+  <variant name="WebGL"/>
   <variant name="WebMediaPlayer_MainThread"/>
   <variant name="WebMediaPlayer_MediaThread"/>
   <variant name="WebNN"/>
