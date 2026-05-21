@@ -97,7 +97,7 @@ public class ActionUtils {
         registerAction(
                 registry,
                 ActionId.APP_MENU,
-                AppMenuActionProperties.ALL_KEYS,
+                ActionProperties.BASE_KEYS,
                 org.chromium.components.browser_ui.widget.R.drawable.ic_more_vert_24dp,
                 R.string.accessibility_toolbar_btn_menu,
                 R.string.accessibility_toolbar_btn_menu);

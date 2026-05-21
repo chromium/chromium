@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
-import org.chromium.chrome.browser.ui.actions.AppMenuActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
@@ -146,7 +145,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                     new ActionConfig(
                             ActionId.APP_MENU,
                             menuContainer,
-                            AppMenuActionButtonBinder::bind,
+                            ActionButtonBinder::bind,
                             BottomBarProperties.IS_APP_MENU_BUTTON_VISIBLE));
         }
 

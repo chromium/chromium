@@ -17,7 +17,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
-import org.chromium.chrome.browser.ui.actions.AppMenuActionProperties;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -148,13 +147,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                 view -> {
                     showAppMenuInternal(view, false);
                 });
-        AppMenuButtonHelper helper = mAppMenuHandler.createAppMenuButtonHelper();
-        model.set(
-                AppMenuActionProperties.APP_MENU_SETUP_CALLBACK,
-                view -> {
-                    view.setOnTouchListener(helper);
-                    view.setAccessibilityDelegate(helper.getAccessibilityDelegate());
-                });
+        // TODO(crbug.com/508649103): Add support for long press in bottom-aligned app menu from
+        // action registry.
     }
 
     // Testing methods
