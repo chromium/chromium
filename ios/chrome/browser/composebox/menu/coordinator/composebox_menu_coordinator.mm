@@ -212,8 +212,11 @@ CGFloat const kSheetTopPadding = 40.0f;
     _metricsRecorder.contextualSearchMetricsRecorder = nullptr;
   }
   _metricsRecorder = nil;
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  if (!_viewController.isBeingDismissed) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
   _viewController = nil;
   [_mediator disconnect];
   _mediator = nil;
@@ -471,8 +474,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuViewControllerDidRequestClose:
     (ComposeboxMenuViewController*)composeboxMenuViewController {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  // Calls stop to dismiss the view controller.
+  [self.delegate composeboxMenuCoordinatorDidDismissMenu:self];
 }
 
 @end
