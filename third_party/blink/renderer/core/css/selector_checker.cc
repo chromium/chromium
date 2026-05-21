@@ -3433,6 +3433,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
           case CSSSelector::kPseudoBefore:
           case CSSSelector::kPseudoAfter:
           case CSSSelector::kPseudoMarker:
+          case CSSSelector::kPseudoBackdrop:
             return element.GetPseudoIdForStyling() == pseudo_id;
           default:
             return false;
@@ -3715,6 +3716,7 @@ bool SelectorChecker::CheckVirtualPseudo(const SelectorCheckingContext& context,
         case CSSSelector::kPseudoBefore:
         case CSSSelector::kPseudoAfter:
         case CSSSelector::kPseudoMarker:
+        case CSSSelector::kPseudoBackdrop:
           return context.pseudo_id ==
                  selector.GetPseudoId(selector.GetPseudoType());
         default:

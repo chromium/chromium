@@ -61,11 +61,12 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
   if (node_->IsScrollMarkerPseudoElement()) {
     return nullptr;
   }
-  // Overscroll areas are the only child within their
+  // Overscroll areas are the last child within their
   // ::-internal-overscroll-area-parent.
   if (style_->IsInternalOverscrollPositionAuto()) {
     return nullptr;
   }
+
   if (style_->IsRenderedInTopLayer(*node_)) {
     if (LayoutObject* next_in_top_layer =
             LayoutTreeBuilderTraversal::NextInTopLayer(*node_)) {

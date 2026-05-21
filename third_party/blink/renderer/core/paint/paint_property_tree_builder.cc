@@ -252,6 +252,7 @@ class FragmentPaintPropertyTreeBuilder {
 
  private:
   ALWAYS_INLINE std::pair<bool, bool> CanPropagateSubpixelAccumulation() const;
+  ALWAYS_INLINE void FixAbsoluteContextToContainerBox();
   ALWAYS_INLINE void UpdatePaintOffset();
   ALWAYS_INLINE void UpdateForPaintOffsetTranslation(
       std::optional<gfx::Vector2d>&);
@@ -3653,6 +3654,41 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipIsolationNode() {
     context_.current.clip = properties_->ClipIsolationNode();
 }
 
+void FragmentPaintPropertyTreeBuilder::FixAbsoluteContextToContainerBox() {
+  const LayoutObject* parent_object = object_.Parent();
+  if (!parent_object) {
+    return;
+  }
+
+  const auto* parent_properties =
+      parent_object->FirstFragment().PaintProperties();
+  if (!parent_properties) {
+    return;
+  }
+
+  // If we have a scroll translation transform, then use whatever is the parent
+  // of that to escape the scroll translation. Otherwise, conceptually we can
+  // figure out which transform node is the deepest one in the parent's stack,
+  // but that should just be the local border box transform. Use that instead as
+  // a more robust getter.
+  if (parent_properties->ScrollTranslation()) {
+    context_.current.transform =
+        parent_properties->ScrollTranslation()->Parent();
+  } else {
+    context_.current.transform =
+        &parent_object->FirstFragment().LocalBorderBoxProperties().Transform();
+  }
+
+  // If we have a scroll parent, use that. Otherwise use the root scroll node.
+  if (parent_properties->Scroll() && parent_properties->Scroll()->Parent()) {
+    context_.current.scroll = parent_properties->Scroll()->Parent();
+  } else {
+    context_.current.scroll = &ScrollPaintPropertyNode::Root();
+  }
+
+  context_.current.paint_offset = parent_object->FirstFragment().PaintOffset();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   if (object_.IsBoxModelObject()) {
     const auto& box_model_object = To<LayoutBoxModelObject>(object_);
@@ -3664,6 +3700,14 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
         DCHECK_EQ(full_context_.container_for_absolute_position,
                   box_model_object.Container());
         SwitchToOOFContext(context_.absolute_position);
+        if (object_.StyleRef().StyleType() == kPseudoIdBackdrop) {
+          Element& overscroll_target = To<PseudoElement>(object_.GetNode())
+                                           ->UltimateOriginatingElement();
+          if (overscroll_target.GetPseudoElement(
+                  kPseudoIdOverscrollAreaParent)) {
+            FixAbsoluteContextToContainerBox();
+          }
+        }
         break;
       }
       case EPosition::kSticky:

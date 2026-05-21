@@ -2515,7 +2515,11 @@ class ComputedStyle final : public ComputedStyleBase {
     if (pseudo == kPseudoIdMarker) {
       return IsDisplayListItem();
     }
-    if (pseudo == kPseudoIdBackdrop && Overlay() == EOverlay::kNone) {
+    // ::backdrop is generated for top layer elements (where Overlay is not
+    // none) or for overscroll targets (which have
+    // -internal-overscroll-position: auto).
+    if (pseudo == kPseudoIdBackdrop && Overlay() == EOverlay::kNone &&
+        !IsInternalOverscrollPositionAuto()) {
       return false;
     }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {

@@ -2996,12 +2996,21 @@ bool ComputedStyle::GapRuleColorIsTransparent(
 
 bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
   if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
-    return (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) ||
-           StyleType() == kPseudoIdBackdrop;
+    if (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) {
+      return true;
+    }
+    if (StyleType() == kPseudoIdBackdrop) {
+      return To<PseudoElement>(element)
+          .UltimateOriginatingElement()
+          .IsInTopLayer();
+    }
+    return false;
   }
 
   if (StyleType() == kPseudoIdBackdrop) {
-    return true;
+    return To<PseudoElement>(element)
+        .UltimateOriginatingElement()
+        .IsInTopLayer();
   }
   if (!element.IsInTopLayer()) {
     return false;

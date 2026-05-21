@@ -11216,7 +11216,7 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     }
     if (!RuntimeEnabledFeatures::OverlayPropertyEnabled() &&
         pseudo_id == kPseudoIdBackdrop) {
-      return IsInTopLayer();
+      return IsInTopLayer() || GetOverscrollContainer();
     }
     return style->CanGeneratePseudoElement(pseudo_id);
   }

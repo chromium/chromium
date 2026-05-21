@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>Overscroll backdrop scrolling isolation visual test</title>
+<link rel="match" href="overscroll-backdrop-scroll-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+  html, body { margin: 0; }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: clip;
+    position: relative;
+    background: red;
+  }
+  #menu {
+    position: absolute;
+    top: -100px;
+    left: 50px;
+    width: 100px;
+    height: 50px;
+    background: blue;
+  }
+  #menu::backdrop {
+    position: absolute;
+    inset: 0;
+    display: block;
+    background: green;
+    border: 20px solid yellow;
+    box-sizing: border-box;
+  }
+  #content {
+    height: 400px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea></div>
+  <div id="content"></div>
+</div>
+
+<script>
+function runTest() {
+  menu.scrollIntoView();
+  requestAnimationFrame(takeScreenshot);
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+</html>

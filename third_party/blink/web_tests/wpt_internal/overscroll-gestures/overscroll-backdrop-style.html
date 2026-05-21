@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="author" content="github.com/vmpstr">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu"></button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  // Initially the menu is closed, backdrop should be display: none.
+  assert_equals(getComputedStyle(menu, '::backdrop').display, "none", "backdrop initially none (closed)");
+
+  let event_promises = [
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  // Click the button to open the menu.
+  await click(button);
+  await Promise.all(event_promises);
+
+  // The backdrop should now be visible.
+  let backdrop_style = getComputedStyle(menu, '::backdrop');
+  assert_equals(backdrop_style.display, "block", "backdrop is block (open)");
+  assert_equals(backdrop_style.backgroundColor, "rgba(0, 0, 0, 0.1)", "backdrop is rgba(0, 0, 0, 0.1)");
+  assert_equals(backdrop_style.opacity, "1", "backdrop opacity is 1");
+
+  let event_promises2 = [
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  // Click the button again to close the menu.
+  await click(button);
+  await Promise.all(event_promises2);
+
+  // The backdrop should be none again.
+  assert_equals(getComputedStyle(menu, '::backdrop').display, "none", "backdrop is none again (closed)");
+}, "::backdrop pseudo element is generated and styled correctly for overscroll targets");
+</script>
