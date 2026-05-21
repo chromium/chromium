@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
@@ -1185,7 +1186,7 @@ class CORE_EXPORT RandomCacheKey : public GarbageCollected<RandomCacheKey> {
     String CssText() const {
       StringBuilder result;
       if (ident) {
-        result.Append(ident);
+        SerializeIdentifier(ident, result);
       }
       if (is_element_scoped) {
         if (!result.empty()) {
@@ -1197,7 +1198,7 @@ class CORE_EXPORT RandomCacheKey : public GarbageCollected<RandomCacheKey> {
         if (!result.empty()) {
           result.Append(" ");
         }
-        result.Append(ua_ident);
+        SerializeIdentifier(ua_ident, result);
       }
       return result.ToString();
     }
