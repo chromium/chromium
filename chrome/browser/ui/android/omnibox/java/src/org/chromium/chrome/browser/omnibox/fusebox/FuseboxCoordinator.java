@@ -464,15 +464,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
-     * Hides the popup if it is showing.
-     *
-     * @return Whether the popup was hidden.
-     */
-    public boolean handleHidePopup() {
-        return mMediator != null && mMediator.handleHidePopup();
-    }
-
-    /**
      * Registers a callback notified when the compactness of the fusebox changes. This callback will
      * only fire if the compact mode variant is enabled and the compactness state changes.
      */

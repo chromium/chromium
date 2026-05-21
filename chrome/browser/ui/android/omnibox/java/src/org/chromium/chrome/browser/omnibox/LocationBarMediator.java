@@ -2267,10 +2267,6 @@ class LocationBarMediator
         if (mCurrentInput == null) return false;
         if (mAutocompleteCoordinator == null) return false;
 
-        if (mFuseboxCoordinator.handleHidePopup()) {
-            return true;
-        }
-
         if (mAutocompleteCoordinator.isServingSuggestions()) {
             // First ESC keypress should close the suggestions list.
             mAutocompleteCoordinator.stopAutocomplete();
