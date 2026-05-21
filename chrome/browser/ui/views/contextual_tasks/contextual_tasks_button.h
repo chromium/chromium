@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_BUTTON_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,6 +19,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserWindowInterface;
+
+namespace ui {
+class LayerOwner;
+}
 
 class ContextualTasksButton
     : public ToolbarButton,
@@ -44,6 +50,9 @@ class ContextualTasksButton
   void OnImmersiveFullscreenExited() override;
   void OnImmersiveModeControllerDestroyed() override;
 
+  // views::ViewObserver:
+  void OnViewLayerBoundsSet(views::View* observed_view) override;
+
  protected:
   void UpdateColorsAndInsets() override;
 
@@ -54,6 +63,7 @@ class ContextualTasksButton
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
+  void UpdateDropShadowLayerBounds();
 
   BooleanPrefMember pin_state_;
   BooleanPrefMember side_panel_alignment_;
@@ -61,6 +71,10 @@ class ContextualTasksButton
   base::CallbackListSubscription eligibility_change_subscription_;
   base::CallbackListSubscription vertical_tabs_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+
+  // Since the contextual tasks button is not a standard shape, it requires a
+  // LayerOwner to paint the custom drop shadow.
+  std::unique_ptr<ui::LayerOwner> drop_shadow_painted_layer_;
 
   base::ScopedObservation<
       contextual_tasks::ContextualTasksPanelController,

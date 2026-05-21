@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -41,6 +42,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -74,6 +77,12 @@ const float kTopLeftRadius = 5.0f;
 // Like the above, this radius corresponds to the button's bottom left corner.
 const float kBottomLeftRadius = 0.0f;
 
+// Margin to outset the background painted layer so the shadow is not clipped.
+const int kShadowOutset = 12;
+
+// Helper class to paint the contextual tasks button shadow. The general
+// ViewShadow class doesn't work for the contextual tasks button because the
+// button doesn't have a standard shape, and thus custom shadow logic.
 class ContextualTasksButtonBackgroundPainter : public views::Painter {
  public:
   ContextualTasksButtonBackgroundPainter(SkColor bg_color,
@@ -91,8 +100,8 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
     const float scale = canvas->UndoDeviceScaleFactor();
 
     gfx::ShadowValues shadow;
-    constexpr int kOffset = 1;
-    constexpr int kBlur = 3;
+    constexpr int kOffset = 4;
+    constexpr int kBlur = 12;
     shadow.emplace_back(gfx::Vector2d(0, kOffset), kBlur, shadow_color_);
 
     cc::PaintFlags flags;
@@ -101,16 +110,19 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(bg_color_);
 
+    gfx::Rect button_rect(size);
+    button_rect.Inset(gfx::Insets(kShadowOutset));
+
     if (is_circle_shape_) {
-      gfx::Rect inset_rect(size);
+      gfx::Rect inset_rect = button_rect;
       inset_rect.Inset(gfx::Insets(kCircleShadowInset));
-      gfx::RectF fill_rect(gfx::ScaleToEnclosingRect(inset_rect, scale));
+      gfx::RectF fill_rect(gfx::ScaleToEnclosedRect(inset_rect, scale));
       gfx::PointF center = fill_rect.CenterPoint();
       float scaled_radius =
           std::min(fill_rect.width(), fill_rect.height()) / 2.0f;
       canvas->DrawCircle(center, scaled_radius, flags);
     } else {
-      gfx::Rect inset_rect(size);
+      gfx::Rect inset_rect = button_rect;
       inset_rect.Inset(gfx::Insets::TLBR(kPillShapeShadowInset, 0,
                                          kPillShapeShadowInset,
                                          kPillShapeShadowInset));
@@ -181,6 +193,8 @@ ContextualTasksButton::ContextualTasksButton(
                     nullptr,
                     nullptr),
       browser_window_interface_(browser_window_interface) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
   const std::u16string button_tooltip =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -264,7 +278,11 @@ ContextualTasksButton::ContextualTasksButton(
   }
 }
 
-ContextualTasksButton::~ContextualTasksButton() = default;
+ContextualTasksButton::~ContextualTasksButton() {
+  if (drop_shadow_painted_layer_) {
+    views::View::RemoveLayerFromRegions(drop_shadow_painted_layer_->layer());
+  }
+}
 
 float ContextualTasksButton::GetCornerRadiusFor(
     ToolbarButton::Edge edge) const {
@@ -384,11 +402,37 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
       *GetProperty(views::kInternalPaddingKey);
   SetLayoutInsets(insets);
 
-  SetBackground(views::CreateBackgroundFromPainter(
+  if (drop_shadow_painted_layer_) {
+    views::View::RemoveLayerFromRegions(drop_shadow_painted_layer_->layer());
+  }
+
+  auto contextual_tasks_button_background_painter =
       std::make_unique<ContextualTasksButtonBackgroundPainter>(
           color_provider->GetColor(kColorToolbar),
           color_provider->GetColor(kColorToolbarContextualTasksButtonShadow),
-          ShouldApplyCircularBackgroundShadow())));
+          ShouldApplyCircularBackgroundShadow());
+
+  drop_shadow_painted_layer_ = views::Painter::CreatePaintedLayer(
+      std::move(contextual_tasks_button_background_painter));
+  ui::Layer* const drop_shadow_layer = drop_shadow_painted_layer_->layer();
+  drop_shadow_layer->SetFillsBoundsOpaquely(false);
+
+  // Use the views version of AddLayerToRegion because the LabelButton already
+  // overrides AddLayerToRegion() to support painting labels. As a result, the
+  // unqualified version will result in the shadow being rendered incorrectly.
+  views::View::AddLayerToRegion(drop_shadow_layer, views::LayerRegion::kBelow);
+  UpdateDropShadowLayerBounds();
+}
+
+void ContextualTasksButton::OnViewLayerBoundsSet(views::View* observed_view) {
+  CHECK_EQ(observed_view, this);
+  ToolbarButton::OnViewLayerBoundsSet(observed_view);
+
+  // Update the position of the drop shadow layer to ensure that it is shown
+  // behind the ContextualTasks button.
+  if (drop_shadow_painted_layer_) {
+    UpdateDropShadowLayerBounds();
+  }
 }
 
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
@@ -448,6 +492,14 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     SetVisible(!panel_controller->IsPanelOpenForContextualTask() &&
                is_button_eligible && controller->ShouldShowEphemeralButton());
   }
+}
+
+void ContextualTasksButton::UpdateDropShadowLayerBounds() {
+  CHECK(drop_shadow_painted_layer_);
+  gfx::Rect layer_bounds = GetLocalBounds();
+  layer_bounds.Outset(kShadowOutset);
+  layer_bounds.Offset(layer()->bounds().OffsetFromOrigin());
+  drop_shadow_painted_layer_->layer()->SetBounds(layer_bounds);
 }
 
 BEGIN_METADATA(ContextualTasksButton)
