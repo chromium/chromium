@@ -109,7 +109,7 @@
     Your organization has turned off this feature
   </message>
   <message name="IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE_HEADER" desc="This is the headline on the Gemini ineligible account notice.">
-    You don't have access to Gemini in Chrome
+    Your account doesn't have access to Gemini in Chrome
   </message>
   <message name="IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE" desc="This is the text of the Gemini ineligible account notice.">
     Check that you're eligible and meet the requirements
