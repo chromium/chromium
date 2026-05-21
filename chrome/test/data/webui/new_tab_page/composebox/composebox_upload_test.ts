@@ -1415,7 +1415,8 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
   });
 
   test('addSearchContext handles tab attachments', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, tabFaviconChipsToCoinsEnabled: false});
     testSupport.createComposeboxElement(testProxy);
     testProxy.element.searchboxNextEnabled = true;
 

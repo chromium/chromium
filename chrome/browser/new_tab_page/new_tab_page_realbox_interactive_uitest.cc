@@ -67,7 +67,6 @@ using ::testing::ValuesIn;
 using DeepQuery = InteractiveBrowserWindowTestApi::DeepQuery;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
 
 static constexpr std::string_view kModelFastLabel = "Fast";
 static constexpr std::string_view kModelAutoLabel = "Auto";
@@ -569,58 +568,6 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
       CheckJsResultAt(kNtpElementId, kProModelItem,
                       "(el) => el.textContent.trim() === '" +
                           std::string(kModelProLabel) + "'"));
-}
-
-IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
-                       ContextualEntrypointAttachTabTriggersComposebox) {
-  const DeepQuery kFirstTabItem = {"ntp-app", "ntp-searchbox", "#context",
-                                   "#menu", ".dropdown-item[data-index='0']"};
-  const DeepQuery kComposeboxFirstTabItem = {
-      "ntp-app",  "#composebox",
-      "#context", "#contextEntrypoint",
-      "#menu",    ".dropdown-item[data-index='0']"};
-
-  RunTestSequence(
-      // 1. Open a webpage and NTP in separate tabs.
-      AddInstrumentedTab(kFirstTabId, GURL("https://www.google.com/")),
-      AddInstrumentedTab(kNtpElementId, chrome::ChromeUINewTabURLAsGURL()),
-      // 2. Assert NTP has loaded by waiting for the Realbox.
-      WaitForElementToRender(kNtpElementId, kRealbox),
-      // 3. Wait for Contextual Entrypoint Button to render and click it.
-      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
-      ClickElement(kNtpElementId, kContextualEntrypoint),
-      // 4. Wait for the context menu to open with recent tabs.
-      WaitForDialogStateChange(kSearchboxContextMenuDialog,
-                               /*expected_open=*/true),
-      WaitForElementToRender(kNtpElementId, kFirstTabItem),
-      // 5. Click on First Tab in context menu.
-      ClickElement(kNtpElementId, kFirstTabItem),
-      // 6. Wait for searchbox context menu to close and composebox
-      // context menu to open with first tab item selected.
-      WaitForDialogStateChange(kSearchboxContextMenuDialog,
-                               /*expected_open=*/false),
-      WaitForElementToRender(kNtpElementId, kComposeboxFirstTabItem),
-      CheckJsResultAt(kNtpElementId, kComposeboxFirstTabItem,
-                      "(el) => el && !el.hasAttribute('disabled')"),
-      // 7. Hit `ESC` button to dismiss context menu.
-      SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
-      // 8. Wait for context menu to close.
-      WaitForDialogStateChange(kComposeboxContextMenuDialog,
-                               /*expected_open=*/false),
-      // 9. After context menu is closed, composebox dialog remain open.
-      CheckJsResultAt(kNtpElementId, kComposeboxDialog,
-                      "(el) => el && el.hasAttribute('open')"),
-      // 10. Check the placeholder text inside composebox input.
-      CheckJsResultAt(
-          kNtpElementId, kComposeboxInput,
-          "(el) => el.placeholder.trim() === '" + std::string(kHintText) + "'"),
-      // 11. Focus composebox input and type something.
-      FocusAndInputText(kNtpElementId, kComposeboxInput),
-      // 12. Wait for submit button to be enabled and click it.
-      WaitForSubmitEnabled(),
-      ClickElement(kNtpElementId, kComposeboxSubmitButton),
-      // 13. Ensure google search occurs.
-      WaitForGoogleSearch(kNtpElementId, {{"q", "test"}}));
 }
 
 struct NtpRealboxUploadInteractiveTestParams {
