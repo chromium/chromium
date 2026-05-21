@@ -11,6 +11,7 @@ enum class AiModeActivationSource;
 enum class ComposeboxDragAndDropType;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxMode;
+enum class ComposeboxModelOption;
 @class ComposeboxUIInputState;
 enum class FuseboxAttachmentButtonType;
 
@@ -71,6 +72,12 @@ enum class FuseboxAttachmentButtonType;
             (ComposeboxInputPlateViewController*)composeboxViewController
                       didTapTool:(ComposeboxMode)toolMode
                 activationSource:(AiModeActivationSource)activationSource;
+
+/// Informs the delegate that a user did select a model option from the
+/// tool menu.
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+                  didSelectModel:(ComposeboxModelOption)modelOption;
 
 /// Informs the delegate that a user did tap on the plus button.
 - (void)composeboxViewControllerDidTapPlusButton:

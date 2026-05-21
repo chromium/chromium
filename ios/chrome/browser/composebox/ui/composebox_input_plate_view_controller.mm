@@ -871,10 +871,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                didTapTool:ComposeboxMode::kDeepSearch
                          activationSource:AiModeActivationSource::kToolMenu];
 }
-/// Notifies the mutator to handle the selection of a new model option.
+/// Notifies the delegate to handle the selection of a new model option.
 - (void)handleModelChangeFromToolsMenuWithOption:
     (ComposeboxModelOption)modelOption {
-  [self.mutator setModelOption:modelOption explicitUserAction:YES];
+  [self.delegate composeboxViewController:self didSelectModel:modelOption];
 }
 
 /// Updates the visibility of the leading/trailing fade views for the carousel.
