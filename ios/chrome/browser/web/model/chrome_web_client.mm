@@ -478,7 +478,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     }
   }
 
-  if (base::FeatureList::IsEnabled(kAimCobrowse)) {
+  if (IsAimCobrowseEnabled()) {
     features.push_back(AimCobrowseJavaScriptFeature::GetInstance());
   }
 
