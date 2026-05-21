@@ -225,7 +225,7 @@ public class FindTest {
     /** Verify Find In Page Next button. */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = 34, message = "b/514878860")
+    @DisabledTest(message = "https://crbug.com/515428606")
     @Feature({"FindInPage"})
     public void testFindNext() {
         String query = "pitts";
@@ -244,9 +244,7 @@ public class FindTest {
     /** Verify Find In Page Next/Previous button. */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_is_greater_than = 34,
-            message = "b/514878860")
+    @DisabledTest(message = "https://crbug.com/515428606")
     @Feature({"FindInPage"})
     public void testFindNextPrevious() {
         String query = "pitts";
