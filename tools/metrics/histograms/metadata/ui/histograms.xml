@@ -1076,6 +1076,15 @@ features through Chrome Labs. -->
   </token>
 </histogram>
 
+<histogram name="Toolbar.Overflow.HomeButton" enum="Boolean"
+    expires_after="2026-08-19">
+  <owner>robliao@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Whether the home button is enabled and overflowed due to width constraints.
+  </summary>
+</histogram>
+
 <histogram name="TopChromeUI.{UIName}.RequestToFirstContentfulPaint" units="ms"
     expires_after="2026-09-12">
   <owner>mych@chromium.org</owner>
