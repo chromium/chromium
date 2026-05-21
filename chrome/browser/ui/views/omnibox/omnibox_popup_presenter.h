@@ -33,6 +33,7 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   void WidgetDestroyed() override;
   bool ShouldShowLocationBarCutout() const override;
   bool ShouldReceiveFocus() const override;
+  bool ShouldHideForInitialLayout() const override;
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const override;
   bool ShouldDetachWebContentsOnHide() const override;

@@ -37,13 +37,22 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
   // triggered reliably.
   // Only needed if `kOmniboxWebUIDeferShowUntilVisualStateReady` is disabled,
   // as waiting for the visual state callback fixes the issue.
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIPopupStabilizeStartupShow) &&
+      !base::FeatureList::IsEnabled(
           omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady)) {
     content_height_ = 1;
   }
 }
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
+
+bool OmniboxPopupPresenter::ShouldHideForInitialLayout() const {
+  return base::FeatureList::IsEnabled(
+             omnibox::kOmniboxWebUIPopupStabilizeStartupShow) &&
+         !base::FeatureList::IsEnabled(
+             omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady);
+}
 
 void OmniboxPopupPresenter::Hide() {
   OmniboxPopupPresenterBase::Hide();
