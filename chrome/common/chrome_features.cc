@@ -156,6 +156,10 @@ BASE_FEATURE(kDesktopPWAsPreventClose,
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the standalone Document Picture-in-Picture window path, replacing
+// the Browser-backed implementation with a dedicated host.
+BASE_FEATURE(kDocumentPipStandaloneWindow, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows fullscreen to claim whole display area when in windowing mode
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDisplayEdgeToEdgeFullscreen, base::FEATURE_ENABLED_BY_DEFAULT);
