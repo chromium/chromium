@@ -7914,11 +7914,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "quick-app-access-test-ui",
-    "owners": [ "mmourgos@chromium.org", "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "quick-share-v2",
     "owners": [ "brandosocarras@google.com", "chromeos-cross-device-eng@google.com"],
     "expiry_milestone": 140

@@ -495,10 +495,6 @@ void AppListControllerImpl::OnSessionStateChanged(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kQuickAppAccessTestUI)) {
-    SetHomeButtonQuickApp(kOsSettingsAppId);
-  }
-
   if (in_clamshell)
     return;
 

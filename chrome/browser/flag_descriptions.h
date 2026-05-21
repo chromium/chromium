@@ -3994,11 +3994,6 @@ inline constexpr char kQuicName[] = "Experimental QUIC protocol";
 inline constexpr char kQuicDescription[] =
     "Enable experimental QUIC protocol support.";
 
-inline constexpr char kQuickAppAccessTestUIName[] =
-    "Internal test: quick app access";
-inline constexpr char kQuickAppAccessTestUIDescription[] =
-    "Show an app in the quick app access area at the start of the session";
-
 inline constexpr char kQuickShareV2Name[] = "Quick Share v2";
 inline constexpr char kQuickShareV2Description[] =
     "Enables Quick Share v2, which defaults Quick Share to 'Your Devices' "
