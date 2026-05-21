@@ -176,7 +176,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @interface TabGridCoordinator () <BringAndroidTabsCommands,
                                   GridCoordinatorAudience,
                                   GridMediatorDelegate,
-
                                   HistoryCoordinatorDelegate,
                                   HistoryPresentationDelegate,
                                   InactiveTabsCoordinatorDelegate,
@@ -188,13 +187,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   TabGridViewControllerDelegate,
                                   TabGroupPositioner,
                                   TabPresentationDelegate> {
-  // Use an explicit ivar instead of synthesizing as the setter isn't using the
-  // ivar.
-  raw_ptr<Browser> _incognitoBrowser;
-
-  // Browser that contain tabs, from the regular browser, that have not been
-  // open since a certain amount of time.
-  raw_ptr<Browser> _inactiveBrowser;
+  // Weak references to browsers to safely auto-nil if they are destroyed during
+  // async transitions or teardowns.
+  base::WeakPtr<Browser> _regularBrowser;
+  base::WeakPtr<Browser> _incognitoBrowser;
+  base::WeakPtr<Browser> _inactiveBrowser;
 
   // The coordinator that shows the bookmarking UI after the user taps the Add
   // to Bookmarks button.
@@ -232,6 +229,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // Browser that contain tabs from the main pane (i.e. non-incognito).
 // TODO(crbug.com/40893775): Make regular ivar as incognito and inactive.
 @property(nonatomic, assign, readonly) Browser* regularBrowser;
+// Browser that contains inactive tabs.
+@property(nonatomic, assign, readonly) Browser* inactiveBrowser;
 // Commad dispatcher used while this coordinator's view controller is active.
 @property(nonatomic, strong) CommandDispatcher* dispatcher;
 // Container view controller for the BVC to live in; this class's view
@@ -282,8 +281,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // be specified.
   TabGridViewController* _viewController;
 }
-// Ivars are not auto-synthesized when accessors are overridden.
-@synthesize regularBrowser = _regularBrowser;
 
 @dynamic baseViewController;
 @synthesize viewController = _viewController;
@@ -300,9 +297,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [_dispatcher startDispatchingToTarget:sceneCommandsEndpoint
                               forProtocol:@protocol(SceneCommands)];
 
-    _regularBrowser = regularBrowser;
-    _inactiveBrowser = inactiveBrowser;
-    _incognitoBrowser = incognitoBrowser;
+    _regularBrowser = regularBrowser->AsWeakPtr();
+    _inactiveBrowser = inactiveBrowser->AsWeakPtr();
+    _incognitoBrowser = incognitoBrowser->AsWeakPtr();
 
     if (IsIncognitoModeDisabled(_regularBrowser->GetProfile()->GetPrefs())) {
       _pageConfiguration = TabGridPageConfiguration::kIncognitoPageDisabled;
@@ -326,7 +323,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Ensure browser which is actually used by the regular coordinator is
   // returned, as it may have been updated.
   return _regularGridCoordinator ? _regularGridCoordinator.browser
-                                 : _regularBrowser;
+                                 : _regularBrowser.get();
+}
+
+- (Browser*)inactiveBrowser {
+  return _inactiveBrowser.get();
 }
 
 - (Browser*)incognitoBrowser {
@@ -1067,7 +1068,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _toolbarsCoordinator = [[TabGridToolbarsCoordinator alloc]
       initWithBaseViewController:_viewController
-                         browser:_regularBrowser];
+                         browser:self.regularBrowser];
   _toolbarsCoordinator.searchDelegate = _viewController;
   _toolbarsCoordinator.toolbarTabGridDelegate = _viewController;
   _toolbarsCoordinator.modeHolder = _modeHolder;
@@ -1077,7 +1078,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _regularGridCoordinator = [[RegularGridCoordinator alloc]
       initWithBaseViewController:_viewController
-                         browser:_regularBrowser
+                         browser:self.regularBrowser
                  toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
             gridMediatorDelegate:self];
   _regularGridCoordinator.disabledTabViewControllerDelegate = _viewController;
@@ -1110,15 +1111,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     CHECK(_regularGridCoordinator.gridViewController);
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
           initWithConsumer:_regularGridCoordinator.gridViewController
-              webStateList:_inactiveBrowser->GetWebStateList()
-        profilePrefService:_inactiveBrowser->GetProfile()->GetPrefs()];
+              webStateList:self.inactiveBrowser->GetWebStateList()
+        profilePrefService:self.inactiveBrowser->GetProfile()->GetPrefs()];
   }
 
   _viewController.priceCardDataSource = self.priceCardMediator;
 
   _incognitoGridCoordinator = [[IncognitoGridCoordinator alloc]
       initWithBaseViewController:_viewController
-                         browser:_incognitoBrowser
+                         browser:self.incognitoBrowser
                  toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
             gridMediatorDelegate:self];
   _incognitoGridCoordinator.disabledTabViewControllerDelegate = _viewController;
@@ -1145,7 +1146,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _tabGroupsPanelCoordinator = [[TabGroupsPanelCoordinator alloc]
           initWithBaseViewController:_viewController
-                      regularBrowser:_regularBrowser
+                      regularBrowser:self.regularBrowser
                      toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
       disabledViewControllerDelegate:_viewController];
 
@@ -1160,7 +1161,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
       initWithBaseViewController:_viewController
-                         browser:_inactiveBrowser
+                         browser:self.inactiveBrowser
                         delegate:self];
   self.inactiveTabsCoordinator.tabContextMenuDelegate = self;
 
@@ -1204,12 +1205,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                    forProtocol:@protocol(BookmarksCommands)];
 
   [sceneState addObserver:self];
-
-  // Once the mediators are set up, stop keeping pointers to the browsers used
-  // to initialize them.
-  _regularBrowser = nil;
-  _incognitoBrowser = nil;
-  _inactiveBrowser = nil;
 }
 
 - (void)stop {
@@ -1231,6 +1226,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   if (IsNewTabGridTransitionsEnabled()) {
     self.transitionHandler = nil;
   }
+
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
 
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;
