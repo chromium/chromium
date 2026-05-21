@@ -12,7 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals_ui.h"
+#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_ui.h"
 #include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
@@ -245,8 +245,6 @@ void RegisterChromeWebUIConfigs() {
 
   auto& map = content::WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(std::make_unique<AccessibilityUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<AccessibilityAnnotatorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<AutofillInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<BrowsingTopicsInternalsUIConfig>());
@@ -287,6 +285,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<OmniboxUIConfig>());
   map.AddWebUIConfig(std::make_unique<OptimizationGuideInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<PersonalContextInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PolicyUIConfig>());
   map.AddWebUIConfig(std::make_unique<PredictorsUIConfig>());
   map.AddWebUIConfig(
@@ -331,9 +330,6 @@ void RegisterChromeWebUIConfigs() {
       std::make_unique<
           content_annotator_internals::ContentAnnotatorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<media_router::AccessCodeCastUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<
-          personal_context::notice::PersonalContextNoticeUIConfig>());
   map.AddWebUIConfig(std::make_unique<actor::ui::ActorOverlayUIConfig>());
   map.AddWebUIConfig(std::make_unique<AppServiceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<AutofillMlInternalsUIConfig>());
@@ -369,6 +365,9 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<on_device_internals::OnDeviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<
+          personal_context::notice::PersonalContextNoticeUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<private_ai::PrivateAiInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ProfileInternalsUIConfig>());

@@ -8,9 +8,9 @@ import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 
-export class AccessibilityAnnotatorInternalsAppElement extends CrLitElement {
+export class PersonalContextInternalsAppElement extends CrLitElement {
   static get is() {
-    return 'accessibility-annotator-internals-app';
+    return 'personal-context-internals-app';
   }
 
   override render() {
@@ -43,11 +43,9 @@ export class AccessibilityAnnotatorInternalsAppElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'accessibility-annotator-internals-app':
-        AccessibilityAnnotatorInternalsAppElement;
+    'personal-context-internals-app': PersonalContextInternalsAppElement;
   }
 }
 
 customElements.define(
-    AccessibilityAnnotatorInternalsAppElement.is,
-    AccessibilityAnnotatorInternalsAppElement);
+    PersonalContextInternalsAppElement.is, PersonalContextInternalsAppElement);

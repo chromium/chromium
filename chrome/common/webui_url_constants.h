@@ -38,10 +38,6 @@ inline constexpr char kChromeUIAboutURL[] = "chrome://about/";
 inline constexpr char kChromeUIAccessCodeCastHost[] = "access-code-cast";
 inline constexpr char kChromeUIAccessCodeCastURL[] =
     "chrome://access-code-cast/";
-inline constexpr char kChromeUIAccessibilityAnnotatorInternalsHost[] =
-    "accessibility-annotator-internals";
-inline constexpr char kChromeUIAccessibilityAnnotatorInternalsURL[] =
-    "chrome://accessibility-annotator-internals/";
 inline constexpr char kChromeUIAccessibilityHost[] = "accessibility";
 inline constexpr char kChromeUIAccountSettingsURL[] =
     "chrome://settings/account";
@@ -259,6 +255,10 @@ inline constexpr char kChromeUIPasswordManagerURL[] =
     "chrome://password-manager";
 inline constexpr char kChromeUiPasswordChangeUrl[] =
     "chrome://password-manager/settings/password-change";
+inline constexpr char kChromeUIPersonalContextInternalsHost[] =
+    "personal-context-internals";
+inline constexpr char kChromeUIPersonalContextInternalsURL[] =
+    "chrome://personal-context-internals/";
 inline constexpr char kChromeUIPolicyHost[] = "policy";
 inline constexpr char kChromeUIPolicyLogsURL[] = "chrome://policy/logs";
 inline constexpr char kChromeUIPolicyTestURL[] = "chrome://policy/test";

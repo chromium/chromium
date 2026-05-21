@@ -28,7 +28,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://accessibility",
 #endif
       "chrome://accessibility-annotator-info",
-      "chrome://accessibility-annotator-internals",
 // TODO:(https://crbug.com/40265685): Flakily crashes on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
       "chrome://app-service-internals",
@@ -128,6 +127,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://optimization-guide-internals",
       "chrome://password-manager",
       "chrome://password-manager-internals",
+      "chrome://personal-context-internals",
       "chrome://policy",
       "chrome://predictors",
 

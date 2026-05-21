@@ -5,16 +5,16 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "accessibility_annotator_internals.mojom" ]
+  sources = [ "personal_context_internals.mojom" ]
   webui_module_path = "/"
 }
 
-source_set("accessibility_annotator_internals") {
+source_set("personal_context_internals") {
   sources = [
-    "accessibility_annotator_internals_page_handler.cc",
-    "accessibility_annotator_internals_page_handler.h",
-    "accessibility_annotator_internals_ui.cc",
-    "accessibility_annotator_internals_ui.h",
+    "personal_context_internals_page_handler.cc",
+    "personal_context_internals_page_handler.h",
+    "personal_context_internals_ui.cc",
+    "personal_context_internals_ui.h",
   ]
 
   public_deps = [

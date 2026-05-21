@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals_page_handler.h"
+#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_page_handler.h"
 
 #include "chrome/browser/accessibility_annotator/first_run/accessibility_annotator_first_run_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service.h"
 
-AccessibilityAnnotatorInternalsPageHandler::
-    AccessibilityAnnotatorInternalsPageHandler(
-        mojo::PendingReceiver<
-            browser::accessibility_annotator_internals::mojom::PageHandler>
-            receiver,
-        Profile* profile,
-        content::WebContents* web_contents)
+PersonalContextInternalsPageHandler::PersonalContextInternalsPageHandler(
+    mojo::PendingReceiver<
+        browser::personal_context_internals::mojom::PageHandler> receiver,
+    Profile* profile,
+    content::WebContents* web_contents)
     : receiver_(this, std::move(receiver)),
       profile_(profile),
       web_contents_(web_contents) {}
 
-AccessibilityAnnotatorInternalsPageHandler::
-    ~AccessibilityAnnotatorInternalsPageHandler() = default;
+PersonalContextInternalsPageHandler::~PersonalContextInternalsPageHandler() =
+    default;
 
-void AccessibilityAnnotatorInternalsPageHandler::TriggerFirstRun(
+void PersonalContextInternalsPageHandler::TriggerFirstRun(
     TriggerFirstRunCallback callback) {
   auto* service =
       AccessibilityAnnotatorFirstRunServiceFactory::GetForProfile(profile_);

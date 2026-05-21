@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandlerFactory, PageHandlerRemote} from './accessibility_annotator_internals.mojom-webui.js';
+import {PageHandlerFactory, PageHandlerRemote} from './personal_context_internals.mojom-webui.js';
 
 export interface BrowserProxy {
   handler: PageHandlerRemote;

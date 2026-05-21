@@ -4,13 +4,13 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {AccessibilityAnnotatorInternalsAppElement} from './app.js';
+import type {PersonalContextInternalsAppElement} from './app.js';
 
-export function getHtml(this: AccessibilityAnnotatorInternalsAppElement) {
+export function getHtml(this: PersonalContextInternalsAppElement) {
   return html`
-    <h1>Accessibility Annotators Internals</h1>
+    <h1>Personal Context Internals</h1>
     <button @click="${this.onTriggerFirstRunClick_}">
-      Show First-Run Info
+      Show First-Run Notice
     </button>
     <div id="message">${this.message_}</div>
   `;

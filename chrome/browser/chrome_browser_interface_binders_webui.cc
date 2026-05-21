@@ -10,8 +10,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals.mojom.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals_ui.h"
+#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals.mojom.h"
+#include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_ui.h"
 #include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
@@ -197,8 +197,8 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       subresource_filter::SubresourceFilterInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      browser::accessibility_annotator_internals::mojom::PageHandlerFactory,
-      AccessibilityAnnotatorInternalsUI>(map);
+      browser::personal_context_internals::mojom::PageHandlerFactory,
+      PersonalContextInternalsUI>(map);
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   content::RegisterWebUIControllerInterfaceBinder<

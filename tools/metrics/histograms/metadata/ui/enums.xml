@@ -918,6 +918,7 @@ chromium-metrics-reviews@google.com.
   <int value="460232055" label="chrome://lens-search-bubble/"/>
   <int value="461287992" label="chrome://help/"/>
   <int value="507734656" label="chrome://profile-customization/"/>
+  <int value="519565566" label="chrome://personal-context-internals/"/>
   <int value="520299179" label="chrome://media-engagement/"/>
   <int value="543723090" label="chrome://traces-internals/"/>
   <int value="554090510" label="chrome://first-run/"/>
@@ -952,7 +953,6 @@ chromium-metrics-reviews@google.com.
   <int value="821023334" label="chrome://screenlock-icon/"/>
   <int value="858923205" label="chrome://cloud-upload/"/>
   <int value="864711974" label="chrome://emoji-picker/"/>
-  <int value="870607687" label="chrome://accessibility-annotator-internals/"/>
   <int value="890996135" label="chrome://enterprise-reporting/"/>
   <int value="891296796" label="chrome://drive-picker-host/"/>
   <int value="894368493" label="chrome://internet-config-dialog/"/>
