@@ -19,7 +19,7 @@
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
-#import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
+#import "ios/chrome/browser/optimization_guide/mojom/model_led_suggestions_service.mojom.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -36,7 +36,7 @@ enum class FloatyUpdateSource;
 }
 
 namespace ai {
-class ZeroStateSuggestionsServiceImpl;
+class ModelLedSuggestionsServiceImpl;
 }
 
 class GeminiSuggestionHandlerTest;
@@ -164,13 +164,13 @@ class GeminiTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
-  struct ZeroStateSuggestions {
-    ZeroStateSuggestions();
-    ~ZeroStateSuggestions();
+  struct ModelLedSuggestions {
+    ModelLedSuggestions();
+    ~ModelLedSuggestions();
 
     // The zero-state suggestions service.
-    mojo::Remote<ai::mojom::ZeroStateSuggestionsService> service;
-    std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
+    mojo::Remote<ai::mojom::ModelLedSuggestionsService> service;
+    std::unique_ptr<ai::ModelLedSuggestionsServiceImpl> service_impl;
 
     // The zero-state suggestions data for the current page.
     std::optional<std::vector<std::string>> suggestions;
@@ -184,8 +184,8 @@ class GeminiTabHelper : public web::WebStateObserver,
   // The PageContext wrapper used to provide context about a page.
   __strong PageContextWrapper* page_context_wrapper_ = nil;
 
-  // Clears the zero-state suggestions and resets the service.
-  void ClearZeroStateSuggestions();
+  // Clears the model-led suggestions and resets the service.
+  void ClearModelLedSuggestions();
 
   // Populates the page context fields if the wrapper exists.
   void PopulatePageContextFields();
@@ -238,7 +238,7 @@ class GeminiTabHelper : public web::WebStateObserver,
   // Parses the response of a zero state suggestions execution.
   void ParseSuggestionsResponse(
       base::OnceCallback<void(NSArray<NSString*>*)> callback,
-      ai::mojom::ZeroStateSuggestionsResponseResultPtr result);
+      ai::mojom::ModelLedSuggestionsResponseResultPtr result);
 
   // Whether Gemini can extract the current web state's page context.
   bool CanExtractPageContextForGemini();
@@ -292,8 +292,8 @@ class GeminiTabHelper : public web::WebStateObserver,
   // Whether to prevent contextual panel entry point.
   bool prevent_contextual_panel_entry_point_ = false;
 
-  // The zero-state suggestions data and service for the current page.
-  std::unique_ptr<ZeroStateSuggestions> zero_state_suggestions_;
+  // The model-led suggestions data and service for the current page.
+  std::unique_ptr<ModelLedSuggestions> model_led_suggestions_;
 
   // Callback to be run when the page has finished loading.
   base::RepeatingClosure page_loaded_callback_;

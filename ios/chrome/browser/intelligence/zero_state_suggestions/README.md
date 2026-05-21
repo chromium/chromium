@@ -10,7 +10,7 @@ When a page is eligible for suggestions, this component can be queried to fetch 
 
 ```mermaid
 graph TD
-    A[GeminiTabHelper] -->|Mojo IPC| B[ZeroStateSuggestionsServiceImpl]
+    A[GeminiTabHelper] -->|Mojo IPC| B[ModelLedSuggestionsServiceImpl]
     B -->|Asynchronously Fetches| C[PageContextWrapper]
     B -->|Executes LLM Model| D[OptimizationGuideService]
 ```
@@ -23,11 +23,11 @@ Below is the sequence of operations triggered when suggestions are requested for
 sequenceDiagram
     autonumber
     participant Client as GeminiTabHelper
-    participant Mojo as ZeroStateSuggestionsServiceImpl
+    participant Mojo as ModelLedSuggestionsServiceImpl
     participant Wrapper as PageContextWrapper
     participant OptGuide as OptimizationGuideService
 
-    Client->>Mojo: FetchZeroStateSuggestions()
+    Client->>Mojo: FetchModelLedSuggestions()
 
     alt Ongoing request for SAME page
         Mojo->>Mojo: Chains callback via RunChainedCallbacks()
@@ -42,7 +42,7 @@ sequenceDiagram
     Mojo->>OptGuide: ExecuteModel(kZeroStateSuggestions, request)
     Note over OptGuide: 5-second timeout (kModelExecutionTimeout)
 
-    OptGuide-->>Mojo: OnZeroStateSuggestionsResponse(result, entry)
+    OptGuide-->>Mojo: OnModelLedSuggestionsResponse(result, entry)
     Mojo-->>Client: Run pending callback(s) with suggestion proto / error
 
     Note over Client: Caches suggestion labels in memory for current GURL
@@ -60,9 +60,9 @@ sequenceDiagram
 Each file in the zero-state suggestions directory has a distinct, single responsibility:
 
 ### Production Implementations
-* **[zero_state_suggestions_service_impl.h](ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h)**
-  Declares the `ai::ZeroStateSuggestionsServiceImpl` class, which inherits from `ai::mojom::ZeroStateSuggestionsService`. It defines the service interface, public callbacks, Mojo receiver management, and weak pointer factories.
-* **[zero_state_suggestions_service_impl.mm](ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.mm)**
+* **[model_led_suggestions_service_impl.h](ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.h)**
+  Declares the `ai::ModelLedSuggestionsServiceImpl` class, which inherits from `ai::mojom::ModelLedSuggestionsService`. It defines the service interface, public callbacks, Mojo receiver management, and weak pointer factories.
+* **[model_led_suggestions_service_impl.mm](ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.mm)**
   Implements the core business logic for zero-state suggestions. It coordinates:
   1. Managing the lifecycle of Mojo connections.
   2. Asynchronously populating page context fields using `PageContextWrapper`.
@@ -71,7 +71,7 @@ Each file in the zero-state suggestions directory has a distinct, single respons
   5. Marshalling/unmarshalling response metadata and handle cancellation events on page reload or navigation.
 
 ### Quality Assurance & Testing
-* **[zero_state_suggestions_service_impl_unittest.mm](/ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl_unittest.mm)**
+* **[model_led_suggestions_service_impl_unittest.mm](/ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl_unittest.mm)**
   Contains unit tests that validate the robustness and correctness of the service implementation. Highlights:
   * Utilizes **OCMock** to mock out and bypass the web state context generation process (`PageContextWrapper`).
   * Employs a `FakeOptimizationGuideService` to simulate successful model execution yields and error returns.

@@ -4,8 +4,8 @@
 
 source_set("model") {
   sources = [
-    "zero_state_suggestions_service_impl.h",
-    "zero_state_suggestions_service_impl.mm",
+    "model_led_suggestions_service_impl.h",
+    "model_led_suggestions_service_impl.mm",
   ]
 
   deps = [
@@ -23,7 +23,7 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "zero_state_suggestions_service_impl_unittest.mm" ]
+  sources = [ "model_led_suggestions_service_impl_unittest.mm" ]
   deps = [
     ":model",
     "//base",

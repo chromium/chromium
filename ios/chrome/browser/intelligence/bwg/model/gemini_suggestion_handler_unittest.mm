@@ -38,9 +38,9 @@ class GeminiSuggestionHandlerTest : public PlatformTest {
   // access.
   void SetSuggestions(GeminiTabHelper* tab_helper,
                       const std::vector<std::string>& suggestions) {
-    ASSERT_TRUE(tab_helper->zero_state_suggestions_);
-    tab_helper->zero_state_suggestions_->can_apply = true;
-    tab_helper->zero_state_suggestions_->suggestions = suggestions;
+    ASSERT_TRUE(tab_helper->model_led_suggestions_);
+    tab_helper->model_led_suggestions_->can_apply = true;
+    tab_helper->model_led_suggestions_->suggestions = suggestions;
   }
 
   // Helper to set current URL in GeminiTabHelper using the friend class access.

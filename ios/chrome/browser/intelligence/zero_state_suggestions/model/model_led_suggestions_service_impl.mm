@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.h"
 
 #import "base/functional/bind.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -18,17 +18,17 @@ namespace {
 // Timeout for the model execution.
 const base::TimeDelta kModelExecutionTimeout = base::Seconds(5);
 
-// Helper to chain two zero-state callbacks for same-page requests.
+// Helper to chain two callbacks for same-page requests.
 void RunChainedCallbacks(
-    ai::mojom::ZeroStateSuggestionsService::FetchZeroStateSuggestionsCallback
+    ai::mojom::ModelLedSuggestionsService::FetchModelLedSuggestionsCallback
         old_callback,
-    ai::mojom::ZeroStateSuggestionsService::FetchZeroStateSuggestionsCallback
+    ai::mojom::ModelLedSuggestionsService::FetchModelLedSuggestionsCallback
         new_callback,
-    ai::mojom::ZeroStateSuggestionsResponseResultPtr result) {
-  ai::mojom::ZeroStateSuggestionsResponseResultPtr result_for_new_callback;
+    ai::mojom::ModelLedSuggestionsResponseResultPtr result) {
+  ai::mojom::ModelLedSuggestionsResponseResultPtr result_for_new_callback;
   if (result->is_error()) {
     result_for_new_callback =
-        ai::mojom::ZeroStateSuggestionsResponseResult::NewError(
+        ai::mojom::ModelLedSuggestionsResponseResult::NewError(
             result->get_error());
   } else {
     std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
@@ -38,11 +38,11 @@ void RunChainedCallbacks(
     if (original_proto) {
       auto cloned_proto = *original_proto;
       result_for_new_callback =
-          ai::mojom::ZeroStateSuggestionsResponseResult::NewResponse(
+          ai::mojom::ModelLedSuggestionsResponseResult::NewResponse(
               mojo_base::ProtoWrapper(std::move(cloned_proto)));
     } else {
       result_for_new_callback =
-          ai::mojom::ZeroStateSuggestionsResponseResult::NewError(
+          ai::mojom::ModelLedSuggestionsResponseResult::NewError(
               "Proto deserialization error.");
     }
   }
@@ -54,8 +54,8 @@ void RunChainedCallbacks(
 
 namespace ai {
 
-ZeroStateSuggestionsServiceImpl::ZeroStateSuggestionsServiceImpl(
-    mojo::PendingReceiver<mojom::ZeroStateSuggestionsService> receiver,
+ModelLedSuggestionsServiceImpl::ModelLedSuggestionsServiceImpl(
+    mojo::PendingReceiver<mojom::ModelLedSuggestionsService> receiver,
     web::WebState* web_state)
     : receiver_(this, std::move(receiver)) {
   web_state_ = web_state->GetWeakPtr();
@@ -63,15 +63,15 @@ ZeroStateSuggestionsServiceImpl::ZeroStateSuggestionsServiceImpl(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }
 
-ZeroStateSuggestionsServiceImpl::~ZeroStateSuggestionsServiceImpl() {
+ModelLedSuggestionsServiceImpl::~ModelLedSuggestionsServiceImpl() {
   CancelOngoingRequests();
 }
 
-void ZeroStateSuggestionsServiceImpl::FetchZeroStateSuggestions(
-    FetchZeroStateSuggestionsCallback callback) {
+void ModelLedSuggestionsServiceImpl::FetchModelLedSuggestions(
+    FetchModelLedSuggestionsCallback callback) {
   if (!web_state_) {
-    mojom::ZeroStateSuggestionsResponseResultPtr result_union =
-        mojom::ZeroStateSuggestionsResponseResult::NewError(
+    mojom::ModelLedSuggestionsResponseResultPtr result_union =
+        mojom::ModelLedSuggestionsResponseResult::NewError(
             "WebState destroyed.");
     std::move(callback).Run(std::move(result_union));
     return;
@@ -82,7 +82,7 @@ void ZeroStateSuggestionsServiceImpl::FetchZeroStateSuggestions(
   // If there's an ongoing request for the same page, chain the new callback to
   // the existing one.
   if (pending_request_callback_ &&
-      zero_state_suggestions_url_ == current_page_url) {
+      model_led_suggestions_url_ == current_page_url) {
     pending_request_callback_ = base::BindOnce(
         &RunChainedCallbacks, std::move(pending_request_callback_),
         std::move(callback));
@@ -92,13 +92,13 @@ void ZeroStateSuggestionsServiceImpl::FetchZeroStateSuggestions(
   // Cancel any in-flight requests for a different page.
   CancelOngoingRequests();
   pending_request_callback_ = std::move(callback);
-  zero_state_suggestions_url_ = current_page_url;
+  model_led_suggestions_url_ = current_page_url;
 
   optimization_guide::proto::ZeroStateSuggestionsRequest request;
 
   // Callback to execute when the PageContext proto is done being generated.
   auto page_context_completion_callback =
-      base::BindOnce(&ZeroStateSuggestionsServiceImpl::OnPageContextGenerated,
+      base::BindOnce(&ModelLedSuggestionsServiceImpl::OnPageContextGenerated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request));
 
   // Populate the PageContext proto and then execute the query.
@@ -109,15 +109,15 @@ void ZeroStateSuggestionsServiceImpl::FetchZeroStateSuggestions(
   [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
-void ZeroStateSuggestionsServiceImpl::OnPageContextGenerated(
+void ModelLedSuggestionsServiceImpl::OnPageContextGenerated(
     optimization_guide::proto::ZeroStateSuggestionsRequest request,
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                    PageContextWrapperError> response) {
   page_context_wrapper_ = nil;
 
   if (!pending_request_callback_ || !response.has_value()) {
-    mojom::ZeroStateSuggestionsResponseResultPtr result_union =
-        mojom::ZeroStateSuggestionsResponseResult::NewError(
+    mojom::ModelLedSuggestionsResponseResultPtr result_union =
+        mojom::ModelLedSuggestionsResponseResult::NewError(
             "Failed to generate PageContext.");
     std::move(pending_request_callback_).Run(std::move(result_union));
     return;
@@ -127,7 +127,7 @@ void ZeroStateSuggestionsServiceImpl::OnPageContextGenerated(
 
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       result_callback = base::BindOnce(
-          &ZeroStateSuggestionsServiceImpl::OnZeroStateSuggestionsResponse,
+          &ModelLedSuggestionsServiceImpl::OnModelLedSuggestionsResponse,
           weak_ptr_factory_.GetWeakPtr());
 
   service_->ExecuteModel(
@@ -136,14 +136,14 @@ void ZeroStateSuggestionsServiceImpl::OnPageContextGenerated(
       std::move(result_callback));
 }
 
-void ZeroStateSuggestionsServiceImpl::OnZeroStateSuggestionsResponse(
+void ModelLedSuggestionsServiceImpl::OnModelLedSuggestionsResponse(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
   if (!pending_request_callback_) {
     return;
   }
 
-  mojom::ZeroStateSuggestionsResponseResultPtr result_union;
+  mojom::ModelLedSuggestionsResponseResultPtr result_union;
 
   if (result.response.has_value()) {
     std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
@@ -152,28 +152,28 @@ void ZeroStateSuggestionsServiceImpl::OnZeroStateSuggestionsResponse(
             result.response.value());
 
     if (response_proto.has_value()) {
-      result_union = mojom::ZeroStateSuggestionsResponseResult::NewResponse(
+      result_union = mojom::ModelLedSuggestionsResponseResult::NewResponse(
           mojo_base::ProtoWrapper(response_proto.value()));
     } else {
-      result_union = mojom::ZeroStateSuggestionsResponseResult::NewError(
+      result_union = mojom::ModelLedSuggestionsResponseResult::NewError(
           "Proto unmarshalling error.");
     }
   } else {
-    result_union = mojom::ZeroStateSuggestionsResponseResult::NewError(
+    result_union = mojom::ModelLedSuggestionsResponseResult::NewError(
         "Server model execution error.");
   }
 
   std::move(pending_request_callback_).Run(std::move(result_union));
 }
 
-void ZeroStateSuggestionsServiceImpl::CancelOngoingRequests() {
+void ModelLedSuggestionsServiceImpl::CancelOngoingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   page_context_wrapper_ = nil;
-  zero_state_suggestions_url_ = GURL();
+  model_led_suggestions_url_ = GURL();
   if (pending_request_callback_) {
-    mojom::ZeroStateSuggestionsResponseResultPtr result_union =
-        mojom::ZeroStateSuggestionsResponseResult::NewError(
-            "Zero state suggestions request cancelled.");
+    mojom::ModelLedSuggestionsResponseResultPtr result_union =
+        mojom::ModelLedSuggestionsResponseResult::NewError(
+            "Model led suggestions request cancelled.");
     std::move(pending_request_callback_).Run(std::move(result_union));
   }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
@@ -22,10 +22,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
-@interface ZeroStateSuggestionsFakePageContextWrapper : PageContextWrapper
+@interface ModelLedSuggestionsFakePageContextWrapper : PageContextWrapper
 @end
 
-@implementation ZeroStateSuggestionsFakePageContextWrapper {
+@implementation ModelLedSuggestionsFakePageContextWrapper {
   base::OnceCallback<void(PageContextWrapperCallbackResponse)> _callback;
 }
 
@@ -67,7 +67,7 @@ std::unique_ptr<KeyedService> CreateFakeOptimizationGuideService(
 
 }  // namespace
 
-class ZeroStateSuggestionsServiceImplTest : public PlatformTest {
+class ModelLedSuggestionsServiceImplTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -90,36 +90,36 @@ class ZeroStateSuggestionsServiceImplTest : public PlatformTest {
     fake_web_state_->SetVisibleURL(GURL("https://example.com"));
 
     // Initialize the service under test.
-    service_ = std::make_unique<ZeroStateSuggestionsServiceImpl>(
+    service_ = std::make_unique<ModelLedSuggestionsServiceImpl>(
         remote_.BindNewPipeAndPassReceiver(), fake_web_state_.get());
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
-  std::unique_ptr<ZeroStateSuggestionsServiceImpl> service_;
-  mojo::Remote<mojom::ZeroStateSuggestionsService> remote_;
+  std::unique_ptr<ModelLedSuggestionsServiceImpl> service_;
+  mojo::Remote<mojom::ModelLedSuggestionsService> remote_;
   raw_ptr<FakeOptimizationGuideService> fake_optimization_guide_service_;
 };
 
 // Tests that an error is returned if the WebState is destroyed before fetching.
-TEST_F(ZeroStateSuggestionsServiceImplTest,
+TEST_F(ModelLedSuggestionsServiceImplTest,
        TestFetchSuggestionsWebStateDestroyed) {
   fake_web_state_.reset();
 
-  base::test::TestFuture<ai::mojom::ZeroStateSuggestionsResponseResultPtr>
+  base::test::TestFuture<ai::mojom::ModelLedSuggestionsResponseResultPtr>
       future;
-  service_->FetchZeroStateSuggestions(future.GetCallback());
+  service_->FetchModelLedSuggestions(future.GetCallback());
 
   EXPECT_TRUE(future.Get()->is_error());
   EXPECT_EQ(future.Get()->get_error(), "WebState destroyed.");
 }
 
 // Tests that a successful model execution returns a response.
-TEST_F(ZeroStateSuggestionsServiceImplTest, TestFetchSuggestionsSuccess) {
+TEST_F(ModelLedSuggestionsServiceImplTest, TestFetchSuggestionsSuccess) {
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
   OCMStub([mockWrapperClass alloc])
-      .andReturn([ZeroStateSuggestionsFakePageContextWrapper alloc]);
+      .andReturn([ModelLedSuggestionsFakePageContextWrapper alloc]);
 
   optimization_guide::proto::ZeroStateSuggestionsResponse response;
 
@@ -127,18 +127,18 @@ TEST_F(ZeroStateSuggestionsServiceImplTest, TestFetchSuggestionsSuccess) {
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
       response, "optimization_guide.proto.ZeroStateSuggestionsResponse");
 
-  base::test::TestFuture<ai::mojom::ZeroStateSuggestionsResponseResultPtr>
+  base::test::TestFuture<ai::mojom::ModelLedSuggestionsResponseResultPtr>
       future;
-  service_->FetchZeroStateSuggestions(future.GetCallback());
+  service_->FetchModelLedSuggestions(future.GetCallback());
 
   EXPECT_TRUE(future.Get()->is_response());
 }
 
 // Tests that an error is returned when the model execution fails.
-TEST_F(ZeroStateSuggestionsServiceImplTest, TestFetchSuggestionsFailure) {
+TEST_F(ModelLedSuggestionsServiceImplTest, TestFetchSuggestionsFailure) {
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
   OCMStub([mockWrapperClass alloc])
-      .andReturn([ZeroStateSuggestionsFakePageContextWrapper alloc]);
+      .andReturn([ModelLedSuggestionsFakePageContextWrapper alloc]);
 
   fake_optimization_guide_service_->SetError(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
@@ -146,9 +146,9 @@ TEST_F(ZeroStateSuggestionsServiceImplTest, TestFetchSuggestionsFailure) {
           optimization_guide::OptimizationGuideModelExecutionError::
               ModelExecutionError::kGenericFailure));
 
-  base::test::TestFuture<ai::mojom::ZeroStateSuggestionsResponseResultPtr>
+  base::test::TestFuture<ai::mojom::ModelLedSuggestionsResponseResultPtr>
       future;
-  service_->FetchZeroStateSuggestions(future.GetCallback());
+  service_->FetchModelLedSuggestions(future.GetCallback());
 
   EXPECT_TRUE(future.Get()->is_error());
   EXPECT_EQ(future.Get()->get_error(), "Server model execution error.");

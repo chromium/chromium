@@ -39,7 +39,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
-#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/model_led_suggestions_service_impl.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
@@ -109,8 +109,8 @@ GeminiPageContextComputationStateFromPageContextWrapperError(
 
 }  // namespace
 
-GeminiTabHelper::ZeroStateSuggestions::ZeroStateSuggestions() = default;
-GeminiTabHelper::ZeroStateSuggestions::~ZeroStateSuggestions() = default;
+GeminiTabHelper::ModelLedSuggestions::ModelLedSuggestions() = default;
+GeminiTabHelper::ModelLedSuggestions::~ModelLedSuggestions() = default;
 
 GeminiTabHelper::GeminiTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -121,13 +121,13 @@ GeminiTabHelper::GeminiTabHelper(web::WebState* web_state)
   web_state_observation_.Observe(web_state);
 
   if (IsZeroStateSuggestionsEnabled()) {
-    zero_state_suggestions_ = std::make_unique<ZeroStateSuggestions>();
-    mojo::PendingReceiver<ai::mojom::ZeroStateSuggestionsService>
-        zero_state_suggestions_receiver =
-            zero_state_suggestions_->service.BindNewPipeAndPassReceiver();
-    zero_state_suggestions_->service_impl =
-        std::make_unique<ai::ZeroStateSuggestionsServiceImpl>(
-            std::move(zero_state_suggestions_receiver), web_state);
+    model_led_suggestions_ = std::make_unique<ModelLedSuggestions>();
+    mojo::PendingReceiver<ai::mojom::ModelLedSuggestionsService>
+        model_led_suggestions_receiver =
+            model_led_suggestions_->service.BindNewPipeAndPassReceiver();
+    model_led_suggestions_->service_impl =
+        std::make_unique<ai::ModelLedSuggestionsServiceImpl>(
+            std::move(model_led_suggestions_receiver), web_state);
   }
 }
 
@@ -204,17 +204,17 @@ void GeminiTabHelper::ExecuteZeroStateSuggestions(
     base::OnceCallback<void(NSArray<NSString*>*)> callback) {
   CHECK(IsZeroStateSuggestionsEnabled());
 
-  if (!zero_state_suggestions_->can_apply) {
+  if (!model_led_suggestions_->can_apply) {
     std::move(callback).Run(nil);
     return;
   }
 
-  if (zero_state_suggestions_->suggestions.has_value()) {
+  if (model_led_suggestions_->suggestions.has_value()) {
     // Ensure the cached suggestions are for the current URL.
     if (web_state_->GetVisibleURL().GetWithoutRef() ==
         current_url_.GetWithoutRef()) {
       std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
-          zero_state_suggestions_->suggestions.value()));
+          model_led_suggestions_->suggestions.value()));
     } else {
       // The cached suggestions are stale and thus obsolete.
       std::move(callback).Run(nil);
@@ -222,17 +222,17 @@ void GeminiTabHelper::ExecuteZeroStateSuggestions(
     return;
   }
 
-  if (!zero_state_suggestions_->service) {
+  if (!model_led_suggestions_->service) {
     std::move(callback).Run(nil);
     return;
   }
 
-  base::OnceCallback<void(ai::mojom::ZeroStateSuggestionsResponseResultPtr)>
+  base::OnceCallback<void(ai::mojom::ModelLedSuggestionsResponseResultPtr)>
       service_callback =
           base::BindOnce(&GeminiTabHelper::ParseSuggestionsResponse,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-  zero_state_suggestions_->service->FetchZeroStateSuggestions(
+  model_led_suggestions_->service->FetchModelLedSuggestions(
       std::move(service_callback));
 }
 
@@ -495,7 +495,7 @@ void GeminiTabHelper::DidStartNavigation(
   }
 
   if (IsZeroStateSuggestionsEnabled()) {
-    ClearZeroStateSuggestions();
+    ClearModelLedSuggestions();
   }
 
   ProfileIOS* profile =
@@ -691,13 +691,13 @@ void GeminiTabHelper::OnPageContextWrapperResponse(
   }
 }
 
-void GeminiTabHelper::ClearZeroStateSuggestions() {
+void GeminiTabHelper::ClearModelLedSuggestions() {
   if (!IsZeroStateSuggestionsEnabled()) {
     return;
   }
 
-  zero_state_suggestions_->suggestions.reset();
-  zero_state_suggestions_->can_apply = false;
+  model_led_suggestions_->suggestions.reset();
+  model_led_suggestions_->can_apply = false;
 }
 
 void GeminiTabHelper::NotifyPageContextUpdated(web::WebState* web_state) {
@@ -839,7 +839,7 @@ void GeminiTabHelper::OnGeminiEligibilityDecision(
 
   const bool eligible = ComputeGeminiEligibility(decision, metadata);
   if (IsZeroStateSuggestionsEnabled()) {
-    zero_state_suggestions_->can_apply = eligible;
+    model_led_suggestions_->can_apply = eligible;
   }
 
   ProfileIOS* profile =
@@ -883,7 +883,7 @@ void GeminiTabHelper::OnGeminiEligibilityOnDemandDecision(
 
 void GeminiTabHelper::ParseSuggestionsResponse(
     base::OnceCallback<void(NSArray<NSString*>*)> callback,
-    ai::mojom::ZeroStateSuggestionsResponseResultPtr result) {
+    ai::mojom::ModelLedSuggestionsResponseResultPtr result) {
   if (!result || result->is_error()) {
     std::move(callback).Run(nil);
     return;
@@ -900,13 +900,13 @@ void GeminiTabHelper::ParseSuggestionsResponse(
   optimization_guide::proto::ZeroStateSuggestionsResponse response_proto =
       response_proto_optional.value();
 
-  zero_state_suggestions_->suggestions.emplace();
+  model_led_suggestions_->suggestions.emplace();
   for (const auto& suggestion : response_proto.suggestions()) {
-    zero_state_suggestions_->suggestions->push_back(suggestion.label());
+    model_led_suggestions_->suggestions->push_back(suggestion.label());
   }
 
   std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
-      zero_state_suggestions_->suggestions.value()));
+      model_led_suggestions_->suggestions.value()));
 }
 
 bool GeminiTabHelper::CanExtractPageContextForGemini() {
