@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState, ZoomAction} from 'chrome://glic/glic.js';
+import {matcherForOrigin, urlMatchesAllowedOrigin, urlMatchesApiAllowedOrigin, WebviewController, WebviewPersistentState, ZoomAction} from 'chrome://glic/glic.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -16,14 +16,15 @@ interface WebViewZoomChangeEvent extends Event {
 
 import {configureLoadTimeData, FakeApiHostEmbedder, FakeBrowserProxy, FakeWebviewDelegate} from './test_helpers.js';
 
-suite('WebviewTest', () => {
+suite('urlMatchesAllowedOriginTest', () => {
   setup(() => {
     configureLoadTimeData();
   });
 
   function assertUrlMatchesAllowedOrigin(expectMatches: boolean, url: string) {
+    const urlObj = new URL(url);
     assertEquals(
-        expectMatches, urlMatchesAllowedOrigin(url),
+        expectMatches, urlMatchesAllowedOrigin(urlObj),
         `urlMatchesAllowedOrigin("${url}")`);
   }
 
@@ -60,7 +61,7 @@ suite('WebviewTest', () => {
     assertEquals('http', result?.protocol);
   });
 
-  test('urlMatchesAllowedOrigin allows the primary url', () => {
+  test('allows the primary url', () => {
     loadTimeData.overrideValues({
       glicAllowedOrigins: '',
       glicGuestURL: 'https://cat.fun/party',
@@ -72,7 +73,7 @@ suite('WebviewTest', () => {
     assertUrlMatchesAllowedOrigin(false, 'http://cat.fun/');
   });
 
-  test('urlMatchesAllowedOrigin allows allowed origins', () => {
+  test('allows allowed origins', () => {
     loadTimeData.overrideValues({
       glicAllowedOrigins: 'https://*.mouse.org https://dog.com',
       glicGuestURL: 'https://cat.fun/party',
@@ -88,7 +89,17 @@ suite('WebviewTest', () => {
     assertUrlMatchesAllowedOrigin(false, 'http://dog.com/party');
   });
 
-  test('urlMatchesAllowedOrigin allows http', () => {
+  test('allows api allowed origins', () => {
+    loadTimeData.overrideValues({
+      glicAllowedOrigins: 'https://dog.com',
+      glicApiAllowedOrigins: 'https://*.mouse.org',
+      glicGuestURL: 'https://cat.fun/party',
+    });
+
+    assertUrlMatchesAllowedOrigin(true, 'https://sub.mouse.org/party');
+  });
+
+  test('allows http', () => {
     loadTimeData.overrideValues({
       glicAllowedOrigins: '',
       glicGuestURL: 'http://test.com',
@@ -99,6 +110,66 @@ suite('WebviewTest', () => {
     assertUrlMatchesAllowedOrigin(false, 'http://other.com');
   });
 });
+
+suite('urlMatchesApiAllowedOriginTest', () => {
+  setup(() => {
+    configureLoadTimeData();
+  });
+
+  function assertUrlMatchesApiAllowedOrigin(
+      expectMatches: boolean, url: string) {
+    assertEquals(
+        expectMatches, urlMatchesApiAllowedOrigin(new URL(url)),
+        `urlMatchesApiAllowedOrigin("${url}")`);
+  }
+
+  test('allows guest origin', () => {
+    loadTimeData.overrideValues({
+      glicGuestURL: 'https://cat.fun/party',
+      glicApiAllowedOrigins: '',
+      devMode: false,
+    });
+    assertUrlMatchesApiAllowedOrigin(true, 'https://cat.fun/party');
+    assertUrlMatchesApiAllowedOrigin(true, 'https://cat.fun/disaster');
+    assertUrlMatchesApiAllowedOrigin(true, 'https://cat.fun/');
+    assertUrlMatchesApiAllowedOrigin(false, 'https://dog.fun/');
+  });
+
+  test('allows api allowed origins', () => {
+    loadTimeData.overrideValues({
+      glicGuestURL: 'https://cat.fun/party',
+      glicApiAllowedOrigins: 'https://*.mouse.org https://dog.com',
+      devMode: false,
+    });
+    assertUrlMatchesApiAllowedOrigin(true, 'https://sub.mouse.org/party');
+    assertUrlMatchesApiAllowedOrigin(true, 'https://inner.sub.mouse.org/party');
+    assertUrlMatchesApiAllowedOrigin(false, 'https://mouse.org');
+    assertUrlMatchesApiAllowedOrigin(true, 'https://dog.com/party');
+    assertUrlMatchesApiAllowedOrigin(false, 'http://dog.com/party');
+  });
+
+  test('devMode bypasses checks', () => {
+    loadTimeData.overrideValues({
+      glicGuestURL: 'https://cat.fun/party',
+      glicApiAllowedOrigins: '',
+      devMode: true,
+    });
+    assertUrlMatchesApiAllowedOrigin(true, 'https://cat.fun/party');
+    assertUrlMatchesApiAllowedOrigin(true, 'https://dog.fun/');
+  });
+
+  test('handles null origin', () => {
+    loadTimeData.overrideValues({
+      glicGuestURL: 'https://cat.fun/party',
+      glicApiAllowedOrigins: 'https://dog.com',
+      devMode: true,
+    });
+    // A URL with 'null' origin should not be allowed even in devMode
+    const nullOriginUrl = new URL('data:text/html,hello');
+    assertFalse(urlMatchesApiAllowedOrigin(nullOriginUrl));
+  });
+});
+
 
 suite('WebviewZoomTest', () => {
   let controller: WebviewController;

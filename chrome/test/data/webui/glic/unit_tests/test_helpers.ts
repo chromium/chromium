@@ -13,6 +13,7 @@ export function configureLoadTimeData(overrides: Record<string, any> = {}) {
   loadTimeData.resetForTesting(Object.assign(
       {
         glicAllowedOrigins: '',
+        glicApiAllowedOrigins: '',
         glicGuestURL: 'https://cat.fun/',
         devMode: false,
         chromeVersion: '123.0.0.0',

@@ -682,6 +682,15 @@ const base::FeatureParam<std::string> kGlicAllowedOriginsOverride{
     &kGlicCSPConfig, "glic-allowed-origins-override",
     // Space-delimited set of allowed origins.
     "https://gemini.google.com https://www.google.com"};
+// Origins that can use the Glic API. The default Glic guest origin is
+// automatically allowed, this restricts API use if the guest navigates.
+const base::FeatureParam<std::string> kGlicApiAllowedOrigins{
+    &kGlicCSPConfig, "glic-api-allowed-origins",
+    // Space-delimited set of origins allowed to have API access.
+    "https://gemini.google.com "
+    "https://gemini-autopush.corp.google.com "
+    "https://gemini-staging.corp.google.com "
+    "https://gemini-preprod.corp.google.com"};
 
 // Enable/disable Glic web client responsiveness check feature.
 BASE_FEATURE(kGlicClientResponsivenessCheck, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -445,10 +445,11 @@ export class WebviewController {
 
     this.destroyHost(WebClientState.UNINITIALIZED);
 
-    const origin = new URL(url).origin;
-    if (this.webview.contentWindow && origin !== 'null') {
+    const urlObj = URL.parse(url);
+    if (urlObj && this.webview.contentWindow &&
+        urlMatchesApiAllowedOrigin(urlObj)) {
       this.communicator =
-          new GlicApiCommunicator(origin, this.webview.contentWindow);
+          new GlicApiCommunicator(urlObj.origin, this.webview.contentWindow);
       this.host = new GlicApiHost(
           this.browserProxy, this.communicator, this.hostEmbedder);
       this.hostSubscriber = this.host.getWebClientState().subscribe(state => {
@@ -474,7 +475,7 @@ export class WebviewController {
       return;
     }
 
-    if (new URL(url).pathname.startsWith('/sorry/')) {
+    if (urlObj?.pathname.startsWith('/sorry/')) {
       this.delegate.webviewPageCommit('guestError');
       return;
     }
@@ -534,7 +535,7 @@ export class WebviewController {
               return {cancel: true};
             }
 
-            return {cancel: !urlMatchesAllowedOrigin(details.url)};
+            return {cancel: !urlMatchesAllowedOrigin(new URL(details.url))};
           };
 }
 
@@ -570,24 +571,45 @@ function getAllowedOriginsParams(): OriginCheckParams|null {
   allowedOrigins.push(...loadTimeData.getString('glicAllowedOrigins')
                           .split(' ')
                           .map(origin => origin.trim()));
+  allowedOrigins.push(...loadTimeData.getString('glicApiAllowedOrigins')
+                          .split(' ')
+                          .map(origin => origin.trim()));
   return new OriginCheckParams([ResourceType.MAIN_FRAME], allowedOrigins);
 }
 // </if>
 
-export function urlMatchesAllowedOrigin(url: string) {
-  // For development.
-  if (loadTimeData.getBoolean('devMode')) {
-    return true;
-  }
-
-  // A URL is allowed if it either matches glicGuestURL's origin, or it matches
-  // any of the approved origins.
-  const defaultUrl = new URL(loadTimeData.getString('glicGuestURL'));
-  if (matcherForOrigin(defaultUrl.origin)?.test(url)) {
+export function urlMatchesAllowedOrigin(url: URL) {
+  if (urlMatchesApiAllowedOrigin(url)) {
     return true;
   }
 
   return loadTimeData.getString('glicAllowedOrigins')
       .split(' ')
       .some(origin => matcherForOrigin(origin.trim())?.test(url));
+}
+
+export function urlMatchesApiAllowedOrigin(url: URL): boolean {
+  if (url.origin === 'null') {
+    return false;
+  }
+
+  // For development.
+  if (loadTimeData.getBoolean('devMode')) {
+    return true;
+  }
+
+  // A URL is allowed to have API access if it either matches glicGuestURL's
+  // origin, or it matches any of the explicit API allowed origins.
+  const defaultUrl = new URL(loadTimeData.getString('glicGuestURL'));
+  if (matcherForOrigin(defaultUrl.origin)?.test(url)) {
+    return true;
+  }
+
+  const apiAllowedOrigins = loadTimeData.getString('glicApiAllowedOrigins');
+  if (!apiAllowedOrigins) {
+    return false;
+  }
+
+  return apiAllowedOrigins.split(' ').some(
+      origin => matcherForOrigin(origin.trim())?.test(url));
 }

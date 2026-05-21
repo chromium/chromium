@@ -17,4 +17,4 @@ export type {RequestMessage} from './glic_api_impl/post_message_transport.js';
 export {PostMessageRequestSender, PostMessageRouter, Queue} from './glic_api_impl/post_message_transport.js';
 export {ObservableValue, Subject} from './observable.js';
 export type {PageType, WebviewDelegate} from './webview.js';
-export {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState} from './webview.js';
+export {matcherForOrigin, urlMatchesAllowedOrigin, urlMatchesApiAllowedOrigin, WebviewController, WebviewPersistentState} from './webview.js';

@@ -302,6 +302,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   }
 
   source->AddString("glicAllowedOrigins", allowed_origins);
+  source->AddString("glicApiAllowedOrigins",
+                    features::kGlicApiAllowedOrigins.Get());
 
   bool reload_after_navigation =
       !command_line->HasSwitch(::switches::kGlicSkipReloadAfterNavigation);
