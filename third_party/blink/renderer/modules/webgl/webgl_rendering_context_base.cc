@@ -1930,8 +1930,12 @@ bool WebGLRenderingContextBase::OnMemoryDump(
     return true;
   }
 
-  std::string context_name = base::StringPrintf(
-      "webgl/context_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
+  std::string context_name =
+      Host()->IsOffscreenCanvas()
+          ? base::StringPrintf("webgl/offscreen_context_0x%" PRIXPTR,
+                               reinterpret_cast<uintptr_t>(this))
+          : base::StringPrintf("webgl/context_0x%" PRIXPTR,
+                               reinterpret_cast<uintptr_t>(this));
 
   for (auto& buffer : buffers_) {
     if (buffer && buffer->HasObject()) {
