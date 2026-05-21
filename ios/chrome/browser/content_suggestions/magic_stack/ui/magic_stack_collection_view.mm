@@ -361,7 +361,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (BOOL)shouldHaveWideLayout {
   return self.traitCollection.horizontalSizeClass ==
              UIUserInterfaceSizeClassRegular ||
-         IsLandscape(self.view.window);
+         self.traitCollection.verticalSizeClass ==
+             UIUserInterfaceSizeClassCompact;
 }
 
 // Cell provider helper.

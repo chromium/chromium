@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_item_view.h"
 #import "ios/chrome/browser/content_suggestions/test/ntp_home_test_utils.h"
@@ -26,6 +28,28 @@
 
 using content_suggestions::SearchFieldWidth;
 using set_up_list_prefs::SetUpListItemState;
+
+namespace {
+
+UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
+                                           UIView* parentView) {
+  if (parentView.accessibilityIdentifier == accessibilityID) {
+    return parentView;
+  }
+  if (parentView.subviews.count == 0) {
+    return nil;
+  }
+  for (UIView* view in parentView.subviews) {
+    UIView* resultView =
+        SubviewWithAccessibilityIdentifier(accessibilityID, view);
+    if (resultView) {
+      return resultView;
+    }
+  }
+  return nil;
+}
+
+}  // namespace
 
 @implementation NewTabPageAppInterface
 
@@ -103,6 +127,25 @@ using set_up_list_prefs::SetUpListItemState;
 
 + (BOOL)hasBackgroundImage {
   return ntp_home::HasBackgroundImage();
+}
+
++ (CGFloat)magicStackCollectionViewWidth {
+  UIView* view = SubviewWithAccessibilityIdentifier(
+      kMagicStackScrollViewAccessibilityIdentifier, GetAnyKeyWindow());
+  return view.bounds.size.width;
+}
+
++ (CGFloat)magicStackFirstCellWidth {
+  UICollectionView* view = base::apple::ObjCCast<UICollectionView>(
+      SubviewWithAccessibilityIdentifier(
+          kMagicStackScrollViewAccessibilityIdentifier, GetAnyKeyWindow()));
+  if (view && view.numberOfSections > 0 &&
+      [view numberOfItemsInSection:0] > 0) {
+    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+    UICollectionViewCell* cell = [view cellForItemAtIndexPath:indexPath];
+    return cell.bounds.size.width;
+  }
+  return -1;
 }
 
 @end

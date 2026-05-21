@@ -58,6 +58,12 @@
 // Returns whether the NTP has a custom background image.
 + (BOOL)hasBackgroundImage;
 
+// Returns the width of the Magic Stack collection view.
++ (CGFloat)magicStackCollectionViewWidth;
+
+// Returns the width of the first cell in the Magic Stack.
++ (CGFloat)magicStackFirstCellWidth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TEST_NEW_TAB_PAGE_APP_INTERFACE_H_

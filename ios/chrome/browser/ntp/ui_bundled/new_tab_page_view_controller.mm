@@ -398,7 +398,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
-  [self updateModuleWidth];
+  [self updateModuleWidthWithWidth:self.view.frame.size.width];
 }
 
 #pragma mark - UIContentContainer
@@ -1215,7 +1215,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   self.transitioningToLandscape =
       IsChromeNextIaEnabled() && [self isOrientationLandscapeForSize:size];
 
-  [self updateModuleWidth];
+  [self updateModuleWidthWithWidth:size.width];
   [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 
   CGFloat heightAboveFeedDifference =
@@ -1771,11 +1771,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 }
 
 // Updates the width constraint of `moduleLayoutGuide`.
-- (void)updateModuleWidth {
+- (void)updateModuleWidthWithWidth:(CGFloat)viewWidth {
   CGFloat oldWidth = _moduleWidth.constant;
   CGFloat widthMultiplier = (100 - kHomeModuleMinimumPadding) / 100;
-  CGFloat width = MIN(self.view.frame.size.width * widthMultiplier,
-                      kDiscoverFeedContentMaxWidth);
+  CGFloat width =
+      MIN(viewWidth * widthMultiplier, kDiscoverFeedContentMaxWidth);
 
   BOOL existingConstraintUpdated = NO;
   if (!_moduleWidth) {

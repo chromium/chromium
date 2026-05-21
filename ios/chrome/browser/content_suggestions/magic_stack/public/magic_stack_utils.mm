@@ -24,13 +24,9 @@
 
 CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
     UITraitCollection* traitCollection) {
-  BOOL isLandscape = [[UIDevice currentDevice] orientation] ==
-                         UIDeviceOrientationLandscapeRight ||
-                     [[UIDevice currentDevice] orientation] ==
-                         UIDeviceOrientationLandscapeLeft;
   BOOL isLargerWidthLayout =
       traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular ||
-      isLandscape;
+      traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
   // For the narrow width layout, make the module just slightly narrower than
   // the inter-module spacing so the UICollectionView renders the adjacent
   // module(s).

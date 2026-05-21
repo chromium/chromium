@@ -178,6 +178,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       @selector(testMinimumHeight),
       @selector(testInitialPositionAndOrientationChange),
       @selector(testMagicStack),
+      @selector(testMagicStackRotationWithChromeNextIA),
       @selector(testSignInSignOutScrolledToTop_AccountMenu),
       @selector(testToggleModuleVisiblityInCustomizationMenu),
       @selector(testNavigateInCustomizationMenu),
@@ -226,6 +227,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   }
 
   if ([self isRunningTest:@selector(testMagicStack)]) {
+    config.additional_args.push_back("--test-ios-module-ranker=safety_check");
+  }
+
+  if ([self isRunningTest:@selector(testMagicStackRotationWithChromeNextIA)]) {
+    config.features_enabled.push_back(kChromeNextIa);
     config.additional_args.push_back("--test-ios-module-ranker=safety_check");
   }
 
@@ -1229,6 +1235,56 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           safety_check::kSafetyCheckViewID)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that rotating to landscape and back to portrait does not cause the
+// Magic Stack collection view width to remain small when ChromeNextIA is
+// enabled.
+- (void)testMagicStackRotationWithChromeNextIA {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Rotation test is for iPhone.");
+  }
+
+  // Force Safety Check module to ensure Magic Stack is not empty.
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnabled];
+  [ChromeEarlGrey
+         setStringValue:NameForSafetyCheckState(
+                            SafeBrowsingSafetyCheckState::kUnsafe)
+      forLocalStatePref:prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult];
+
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  id<GREYMatcher> magicStackScrollView =
+      grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:magicStackScrollView];
+
+  // Get initial width in portrait.
+  CGFloat initialWidth = [NewTabPageAppInterface magicStackFirstCellWidth];
+  GREYAssertTrue(initialWidth > 0,
+                 @"Magic Stack cell width should be greater than 0");
+
+  // Rotate to landscape.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  CGFloat landscapeWidth = [NewTabPageAppInterface magicStackFirstCellWidth];
+  GREYAssertTrue(landscapeWidth > initialWidth,
+                 @"Landscape cell width (%f) should be larger than portrait "
+                 @"cell width (%f)",
+                 landscapeWidth, initialWidth);
+
+  // Rotate back to portrait.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  CGFloat finalWidth = [NewTabPageAppInterface magicStackFirstCellWidth];
+  GREYAssertEqual(initialWidth, finalWidth,
+                  @"Cell width after rotating back to portrait (%f) should "
+                  @"match initial portrait cell width (%f)",
+                  finalWidth, initialWidth);
 }
 
 // Test that signing in and signing out results in the NTP scrolled to the top
