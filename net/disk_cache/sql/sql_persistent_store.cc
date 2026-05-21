@@ -421,7 +421,7 @@ void SqlPersistentStore::ResumePendingEviction(
       base::MakeRefCounted<base::RefCountedData<std::atomic_int64_t>>(
           std::in_place,
           std::max<int64_t>(size_of_all_entries - high_watermark_, 0));
-  auto barrier_callback = base::BarrierCallback<ResIdListOrError>(
+  auto barrier_callback = base::BarrierCallback<HashAndResIdListOrError>(
       GetSizeOfShards(),
       base::BindOnce(&SqlPersistentStore::OnPendingEvictionFinished,
                      weak_factory_.GetWeakPtr(), excluded_res_id_sets,
@@ -440,7 +440,7 @@ void SqlPersistentStore::OnPendingEvictionFinished(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
     base::TimeTicks start_time,
     ErrorCallback callback,
-    std::vector<ResIdListOrError> results) {
+    std::vector<HashAndResIdListOrError> results) {
   Error error = Error::kOk;
   size_t count = 0;
   for (const auto& result : results) {
@@ -483,7 +483,7 @@ void SqlPersistentStore::StartNewEviction(
           std::in_place,
           std::max<int64_t>(size_of_all_entries - high_watermark_, 0));
   eviction_result_callback_ = std::move(callback);
-  auto barrier_callback = base::BarrierCallback<ResIdListOrError>(
+  auto barrier_callback = base::BarrierCallback<HashAndResIdListOrError>(
       GetSizeOfShards(),
       base::BindOnce(&SqlPersistentStore::OnEvictionFinished,
                      weak_factory_.GetWeakPtr(), is_idle_time_eviction,
@@ -501,7 +501,7 @@ void SqlPersistentStore::StartNewEviction(
 void SqlPersistentStore::OnEvictionFinished(
     bool is_idle_time_eviction,
     base::TimeTicks start_time,
-    std::vector<ResIdListOrError> results) {
+    std::vector<HashAndResIdListOrError> results) {
   Error error = Error::kOk;
   size_t count = 0;
   for (const auto& result : results) {
@@ -690,7 +690,7 @@ SqlPersistentStore::IndexState SqlPersistentStore::GetIndexStateForHash(
 void SqlPersistentStore::SetInMemoryEntryDataHints(CacheEntryKey::Hash key_hash,
                                                    ResId res_id,
                                                    MemoryEntryDataHints hints) {
-  return GetShard(key_hash).SetInMemoryEntryDataHints(res_id, hints);
+  return GetShard(key_hash).SetInMemoryEntryDataHints(key_hash, res_id, hints);
 }
 
 std::optional<MemoryEntryDataHints>
@@ -838,7 +838,7 @@ int64_t SqlPersistentStore::StoreStatus::GetEstimatedDiskUsage() const {
 
 SqlPersistentStore::InMemoryIndexAndDoomedResIds::InMemoryIndexAndDoomedResIds(
     SqlPersistentStoreInMemoryIndex&& index,
-    std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids)
+    ResIdList doomed_entry_res_ids)
     : index(std::move(index)),
       doomed_entry_res_ids(std::move(doomed_entry_res_ids)) {}
 SqlPersistentStore::InMemoryIndexAndDoomedResIds::
@@ -865,9 +865,9 @@ bool SqlPersistentStore::EvictionTarget::operator==(
     const EvictionTarget& other) const = default;
 
 SqlPersistentStore::EvictionResult::EvictionResult(
-    std::vector<ResId> deleted_res_ids,
+    HashAndResIdList deleted_hash_and_res_ids,
     EvictionTargetQueue pending_eviction_targets)
-    : deleted_res_ids(std::move(deleted_res_ids)),
+    : deleted_hash_and_res_ids(std::move(deleted_hash_and_res_ids)),
       pending_eviction_targets(std::move(pending_eviction_targets)) {}
 SqlPersistentStore::EvictionResult::~EvictionResult() = default;
 SqlPersistentStore::EvictionResult::EvictionResult(EvictionResult&&) = default;

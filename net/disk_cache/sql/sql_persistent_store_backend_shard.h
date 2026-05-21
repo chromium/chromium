@@ -117,14 +117,14 @@ class SqlPersistentStore::BackendShard {
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
-      ResIdListOrErrorCallback callback);
+      HashAndResIdListOrErrorCallback callback);
   void ResumePendingEviction(
       base::flat_set<ResId> excluded_res_ids,
       bool is_idle_time_eviction,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
-      ResIdListOrErrorCallback callback);
+      HashAndResIdListOrErrorCallback callback);
   bool HasPendingEviction() const { return !pending_eviction_targets_.empty(); }
 
   int32_t GetEntryCount() const;
@@ -134,7 +134,9 @@ class SqlPersistentStore::BackendShard {
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const;
 
   // Updates the in-memory index with the given hints for the specified entry.
-  void SetInMemoryEntryDataHints(ResId res_id, MemoryEntryDataHints hints);
+  void SetInMemoryEntryDataHints(CacheEntryKey::Hash hash,
+                                 ResId res_id,
+                                 MemoryEntryDataHints hints);
 
   // Retrieves the hints for the specified entry from the in-memory index, if
   // available.
@@ -212,10 +214,10 @@ class SqlPersistentStore::BackendShard {
                                const CacheEntryKey& key,
                                IndexMismatchLocation location);
 
-  base::OnceCallback<void(ResIdListOrErrorAndStoreStatus)>
+  base::OnceCallback<void(HashAndResIdListOrErrorAndStoreStatus)>
   WrapErrorCallbackToRemoveFromIndex(ErrorCallback callback,
                                      IndexMismatchLocation location);
-  void OnEvictionFinished(ResIdListOrErrorCallback callback,
+  void OnEvictionFinished(HashAndResIdListOrErrorCallback callback,
                           EvictionResultOrErrorAndStoreStatus result);
   void RecordIndexMismatch(IndexMismatchLocation location);
 
@@ -239,7 +241,7 @@ class SqlPersistentStore::BackendShard {
   // A list of resource IDs of entries that are doomed during the in-memory
   // index is being loaded. Once loading is complete, these entries are removed
   // from the newly loaded index to ensure consistency.
-  ResIdList pending_doomed_res_ids_;
+  HashAndResIdList pending_doomed_hash_and_res_ids_;
 
   bool strict_corruption_check_enabled_ = false;
 

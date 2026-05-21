@@ -39,14 +39,6 @@ bool SqlPersistentStoreInMemoryIndex::Contains(Hash hash) const {
   return impl64_ && impl64_->Contains(hash);
 }
 
-bool SqlPersistentStoreInMemoryIndex::Remove(ResId res_id) {
-  std::optional<ResId32> res_id_32 = ToResId32(res_id);
-  if (res_id_32.has_value()) {
-    return impl32_.Remove(*res_id_32);
-  }
-  return impl64_ && impl64_->Remove(res_id);
-}
-
 bool SqlPersistentStoreInMemoryIndex::Remove(Hash hash, ResId res_id) {
   std::optional<ResId32> res_id_32 = ToResId32(res_id);
   if (res_id_32.has_value()) {
@@ -75,12 +67,13 @@ SqlPersistentStoreInMemoryIndex::TryGetSingleResId(
 }
 
 void SqlPersistentStoreInMemoryIndex::SetEntryDataHints(
+    Hash hash,
     ResId res_id,
     MemoryEntryDataHints hints) {
   if (auto res_id_32 = ToResId32(res_id); res_id_32.has_value()) {
-    impl32_.SetEntryDataHints(*res_id_32, hints);
+    impl32_.SetEntryDataHints(hash, *res_id_32, hints);
   } else if (impl64_) {
-    impl64_->SetEntryDataHints(res_id, hints);
+    impl64_->SetEntryDataHints(hash, res_id, hints);
   }
 }
 

@@ -62,11 +62,12 @@ class SqlPersistentStore::Backend {
                                         base::TimeTicks start_time);
   Error DeleteDoomedEntries(ResIdList res_ids_to_delete,
                             base::TimeTicks start_time);
-  ResIdListOrErrorAndStoreStatus DeleteLiveEntry(const CacheEntryKey& key,
-                                                 base::TimeTicks start_time);
+  HashAndResIdListOrErrorAndStoreStatus DeleteLiveEntry(
+      const CacheEntryKey& key,
+      base::TimeTicks start_time);
 
   ErrorAndStoreStatus DeleteAllEntries(base::TimeTicks start_time);
-  ResIdListOrErrorAndStoreStatus DeleteLiveEntriesBetween(
+  HashAndResIdListOrErrorAndStoreStatus DeleteLiveEntriesBetween(
       base::Time initial_time,
       base::Time end_time,
       base::flat_set<ResId> excluded_res_ids,
@@ -227,10 +228,10 @@ class SqlPersistentStore::Backend {
   Error DeleteDoomedEntryInternal(ResId res_id);
   Error DeleteDoomedEntriesInternal(const ResIdList& res_ids_to_delete,
                                     bool& corruption_detected);
-  ResIdListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
-                                           bool& corruption_detected);
+  HashAndResIdListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
+                                                  bool& corruption_detected);
   Error DeleteAllEntriesInternal(bool& corruption_detected);
-  ResIdListOrError DeleteLiveEntriesBetweenInternal(
+  HashAndResIdListOrError DeleteLiveEntriesBetweenInternal(
       base::Time initial_time,
       base::Time end_time,
       const base::flat_set<ResId>& excluded_res_ids,
@@ -324,16 +325,22 @@ class SqlPersistentStore::Backend {
                        bool& corruption_detected);
   // Deletes all blobs associated with a given res_id.
   Error DeleteBlobsByResId(ResId res_id);
-  // Deletes all blobs associated with a list of entry res_ids.
-  Error DeleteBlobsByResIds(const std::vector<ResId>& res_ids);
+  // Deletes multiple blobs from the `blobs` table by their `res_id`s.
+  Error DeleteBlobsByResIds(const ResIdList& res_ids);
+  Error DeleteBlobsByResIds(const HashAndResIdList& hash_and_res_ids);
   // Deletes a single resource entry from the `resources` table by its `res_id`.
   Error DeleteResourceByResId(ResId res_id);
+  // Deletes a single resource entry from the `resources` table by its `res_id`
+  // and returns the `cache_key_hash` of the deleted entry.
+  HashOrError DeleteResourceByResIdReturnHash(ResId res_id);
   // Deletes a single live resource entry from the `resources` table by its
-  // `res_id` and returns the `bytes_usage` of the deleted entry.
-  Int64OrError DeleteLiveResourceByResIdReturnUsage(ResId res_id);
+  // `res_id` and returns the `bytes_usage` and `cache_key_hash` of the deleted
+  // entry.
+  UsageAndHashOrError DeleteLiveResourceByResIdReturnUsageAndHash(ResId res_id);
   // Deletes multiple resource entries from the `resources` table by their
   // `res_id`s.
-  Error DeleteResourcesByResIds(const std::vector<ResId>& res_ids);
+  Error DeleteResourcesByResIds(const ResIdList& res_ids);
+  Error DeleteResourcesByResIds(const HashAndResIdList& hash_and_res_ids);
 
   // Selects a list of eviction candidates from the `resources` table.
   // Entries in `high_priority_res_ids` are less likely to be selected as

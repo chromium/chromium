@@ -5560,8 +5560,8 @@ TEST_P(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
   EXPECT_EQ(load_index_future.Get(), SqlPersistentStore::Error::kOk);
 
   // 6. The index is now loaded. The doomed entries should not be in the index
-  //    because they were added to `pending_doomed_res_ids_` and removed after
-  //    the index was loaded.
+  //    because they were added to `pending_doomed_hash_and_res_ids_` and
+  //    removed after the index was loaded.
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
   EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),

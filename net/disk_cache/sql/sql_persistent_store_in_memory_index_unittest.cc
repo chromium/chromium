@@ -27,7 +27,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, Insert) {
 TEST(SqlPersistentStoreInMemoryIndexTest, InsertDuplicateResId) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
-  EXPECT_FALSE(index.Insert(kHash2, kResId1));
+  EXPECT_TRUE(index.Insert(kHash2, kResId1));
   EXPECT_TRUE(index.Contains(kHash1));
 }
 
@@ -48,14 +48,13 @@ TEST(SqlPersistentStoreInMemoryIndexTest, RemoveWithHashAndResId) {
 TEST(SqlPersistentStoreInMemoryIndexTest, RemoveWithResId) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
-  EXPECT_TRUE(index.Remove(kResId1));
+  EXPECT_TRUE(index.Remove(kHash1, kResId1));
   EXPECT_FALSE(index.Contains(kHash1));
 }
 
 TEST(SqlPersistentStoreInMemoryIndexTest, RemoveNonExistent) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
-  EXPECT_FALSE(index.Remove(kResId2));
   EXPECT_FALSE(index.Remove(kHash2, kResId2));
   EXPECT_FALSE(index.Remove(kHash2, kResId1));
   EXPECT_FALSE(index.Remove(kHash1, kResId2));
@@ -79,7 +78,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MultipleEntries) {
   EXPECT_TRUE(index.Contains(kHash1));
   EXPECT_TRUE(index.Contains(kHash2));
 
-  EXPECT_TRUE(index.Remove(kResId1));
+  EXPECT_TRUE(index.Remove(kHash1, kResId1));
   EXPECT_FALSE(index.Contains(kHash1));
   EXPECT_TRUE(index.Contains(kHash2));
 
@@ -108,12 +107,11 @@ TEST(SqlPersistentStoreInMemoryIndexTest, BehavesCorrectlyWithBothMaps) {
   EXPECT_TRUE(index.Contains(kHash1));
 
   // Remove the entry from the 32-bit map.
-  EXPECT_TRUE(index.Remove(kResId1));
+  EXPECT_TRUE(index.Remove(kHash1, kResId1));
   EXPECT_EQ(1u, index.size());
   EXPECT_FALSE(index.Contains(kHash1));
 
   // Trying to remove the already removed entry should fail.
-  EXPECT_FALSE(index.Remove(kResId1));
   EXPECT_FALSE(index.Remove(kHash1, kResId1));
 
   // It should be possible to re-insert and remove the same entry.
@@ -121,11 +119,10 @@ TEST(SqlPersistentStoreInMemoryIndexTest, BehavesCorrectlyWithBothMaps) {
   EXPECT_TRUE(index.Remove(kHash1, kResId1));
 
   // Remove the entry from the 64-bit map.
-  EXPECT_TRUE(index.Remove(kResIdLarge));
+  EXPECT_TRUE(index.Remove(kHashLarge, kResIdLarge));
   EXPECT_EQ(0u, index.size());
 
   // It should be possible to re-insert and remove the same entry.
-  EXPECT_FALSE(index.Remove(kResIdLarge));
   EXPECT_FALSE(index.Remove(kHashLarge, kResIdLarge));
 
   // Add entries again to ensure it still works.
@@ -216,7 +213,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest,
   EXPECT_EQ(index.TryGetSingleResId(kHash1), std::nullopt);
 
   // After removing one, it should be unique again.
-  EXPECT_TRUE(index.Remove(kResId2));
+  EXPECT_TRUE(index.Remove(kHash1, kResId2));
   EXPECT_THAT(index.TryGetSingleResId(kHash1), kResId1);
 }
 
@@ -235,7 +232,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest,
   // Should fail because there are multiple entries for the same hash.
   EXPECT_EQ(index.TryGetSingleResId(kHashLarge), std::nullopt);
 
-  EXPECT_TRUE(index.Remove(kResIdLarge2));
+  EXPECT_TRUE(index.Remove(kHashLarge, kResIdLarge2));
   EXPECT_THAT(index.TryGetSingleResId(kHashLarge), kResIdLarge1);
 }
 
@@ -253,7 +250,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest,
   // Should fail because there are multiple entries for the same hash.
   EXPECT_EQ(index.TryGetSingleResId(kHashCollision), std::nullopt);
 
-  EXPECT_TRUE(index.Remove(kResIdLarge));
+  EXPECT_TRUE(index.Remove(kHashCollision, kResIdLarge));
   EXPECT_THAT(index.TryGetSingleResId(kHashCollision), kResIdSmall);
 }
 
@@ -262,7 +259,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntrySmall) {
   const MemoryEntryDataHints kHints(1);
 
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
-  index.SetEntryDataHints(kResId1, kHints);
+  index.SetEntryDataHints(kHash1, kResId1, kHints);
 
   EXPECT_THAT(index.GetEntryDataHints(kHash1), kHints);
 }
@@ -275,7 +272,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntryLarge) {
   const MemoryEntryDataHints kHints(5);
 
   EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
-  index.SetEntryDataHints(kResIdLarge, kHints);
+  index.SetEntryDataHints(kHashLarge, kResIdLarge, kHints);
 
   EXPECT_THAT(index.GetEntryDataHints(kHashLarge), kHints);
 }
@@ -285,7 +282,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallSmall) {
   const MemoryEntryDataHints kHints1(1);
 
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
-  index.SetEntryDataHints(kResId1, kHints1);
+  index.SetEntryDataHints(kHash1, kResId1, kHints1);
 
   EXPECT_TRUE(index.Insert(kHash1, kResId2));
 
@@ -293,7 +290,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallSmall) {
   // should fail.
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 
-  EXPECT_TRUE(index.Remove(kResId2));
+  EXPECT_TRUE(index.Remove(kHash1, kResId2));
   EXPECT_THAT(index.GetEntryDataHints(kHash1), kHints1);
 }
 
@@ -307,12 +304,12 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionLargeLarge) {
   const MemoryEntryDataHints kHints(5);
 
   EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge1));
-  index.SetEntryDataHints(kResIdLarge1, kHints);
+  index.SetEntryDataHints(kHashLarge, kResIdLarge1, kHints);
   EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge2));
 
   EXPECT_EQ(index.GetEntryDataHints(kHashLarge), std::nullopt);
 
-  EXPECT_TRUE(index.Remove(kResIdLarge2));
+  EXPECT_TRUE(index.Remove(kHashLarge, kResIdLarge2));
   EXPECT_THAT(index.GetEntryDataHints(kHashLarge), kHints);
 }
 
@@ -325,12 +322,12 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallLarge) {
   const MemoryEntryDataHints kHints(1);
 
   EXPECT_TRUE(index.Insert(kHashCollision, kResIdSmall));
-  index.SetEntryDataHints(kResIdSmall, kHints);
+  index.SetEntryDataHints(kHashCollision, kResIdSmall, kHints);
   EXPECT_TRUE(index.Insert(kHashCollision, kResIdLarge));
 
   EXPECT_EQ(index.GetEntryDataHints(kHashCollision), std::nullopt);
 
-  EXPECT_TRUE(index.Remove(kResIdLarge));
+  EXPECT_TRUE(index.Remove(kHashCollision, kResIdLarge));
   EXPECT_THAT(index.GetEntryDataHints(kHashCollision), kHints);
 }
 
@@ -357,11 +354,12 @@ TEST(SqlPersistentStoreInMemoryIndexTest, GetResIdsWithHints) {
   const MemoryEntryDataHints kHint2(1 << 1);
 
   // Set hints.
-  index.SetEntryDataHints(kResId1, kHint1);
-  index.SetEntryDataHints(kResId2, kHint2);
-  index.SetEntryDataHints(kResIdLarge, kHint1);
+  index.SetEntryDataHints(kHash1, kResId1, kHint1);
+  index.SetEntryDataHints(kHash2, kResId2, kHint2);
+  index.SetEntryDataHints(kHashLarge, kResIdLarge, kHint1);
   index.SetEntryDataHints(
-      kResIdBoth, MemoryEntryDataHints(kHint1.value() | kHint2.value()));
+      kHashBoth, kResIdBoth,
+      MemoryEntryDataHints(kHint1.value() | kHint2.value()));
 
   // Entries with kHint1 (at least).
   EXPECT_THAT(index.GetResIdsWithHints(kHint1),

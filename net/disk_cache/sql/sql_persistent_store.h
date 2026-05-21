@@ -185,19 +185,26 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     int64_t total_size = 0;
   };
 
+  struct HashAndResId {
+    CacheEntryKey::Hash hash;
+    ResId res_id;
+  };
+
+  using ResIdList = std::vector<ResId>;
+  using HashAndResIdList = std::vector<HashAndResId>;
+
   // A struct to hold the in-memory index and the list of doomed resource IDs.
   // This is used to return both from the backend task that loads them.
   struct InMemoryIndexAndDoomedResIds {
-    InMemoryIndexAndDoomedResIds(
-        SqlPersistentStoreInMemoryIndex&& index,
-        std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids);
+    InMemoryIndexAndDoomedResIds(SqlPersistentStoreInMemoryIndex&& index,
+                                 ResIdList doomed_entry_res_ids);
     ~InMemoryIndexAndDoomedResIds();
     InMemoryIndexAndDoomedResIds(InMemoryIndexAndDoomedResIds&& other);
     InMemoryIndexAndDoomedResIds& operator=(
         InMemoryIndexAndDoomedResIds&& other);
 
     SqlPersistentStoreInMemoryIndex index;
-    std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids;
+    ResIdList doomed_entry_res_ids;
   };
 
   struct NET_EXPORT_PRIVATE EvictionTarget {
@@ -219,13 +226,13 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // The result of an eviction operation.
   struct EvictionResult {
-    EvictionResult(std::vector<ResId> deleted_res_ids,
+    EvictionResult(HashAndResIdList deleted_hash_and_res_ids,
                    EvictionTargetQueue pending_eviction_targets);
     ~EvictionResult();
     EvictionResult(EvictionResult&& other);
     EvictionResult& operator=(EvictionResult&& other);
 
-    std::vector<ResId> deleted_res_ids;
+    HashAndResIdList deleted_hash_and_res_ids;
     EvictionTargetQueue pending_eviction_targets;
   };
 
@@ -267,9 +274,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using Int64OrErrorCallback = base::OnceCallback<void(Int64OrError)>;
   using ResIdOrTime = std::variant<ResId, base::Time>;
 
-  using ResIdList = std::vector<ResId>;
-  using ResIdListOrError = base::expected<ResIdList, Error>;
-  using ResIdListOrErrorCallback = base::OnceCallback<void(ResIdListOrError)>;
+  using HashAndResIdListOrError = base::expected<HashAndResIdList, Error>;
+  using HashAndResIdListOrErrorCallback =
+      base::OnceCallback<void(HashAndResIdListOrError)>;
 
   using ErrorAndStoreStatus = ResultAndStoreStatus<Error>;
   using EntryInfoOrErrorAndStoreStatus = ResultAndStoreStatus<EntryInfoOrError>;
@@ -278,7 +285,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using ResIdOrError = base::expected<ResId, Error>;
   using ResIdOrErrorCallback = base::OnceCallback<void(ResIdOrError)>;
   using ResIdOrErrorAndStoreStatus = ResultAndStoreStatus<ResIdOrError>;
-  using ResIdListOrErrorAndStoreStatus = ResultAndStoreStatus<ResIdListOrError>;
+  using HashAndResIdListOrErrorAndStoreStatus =
+      ResultAndStoreStatus<HashAndResIdListOrError>;
+  using HashOrError = base::expected<CacheEntryKey::Hash, Error>;
+  struct UsageAndHash {
+    int64_t bytes_usage;
+    CacheEntryKey::Hash hash;
+  };
+  using UsageAndHashOrError = base::expected<UsageAndHash, Error>;
   using EvictionResultOrError = base::expected<EvictionResult, Error>;
   using EvictionResultOrErrorAndStoreStatus =
       ResultAndStoreStatus<EvictionResultOrError>;
@@ -652,7 +666,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
       base::TimeTicks start_time,
       ErrorCallback callback,
-      std::vector<ResIdListOrError> results);
+      std::vector<HashAndResIdListOrError> results);
   void StartNewEviction(
       std::vector<base::flat_set<SqlPersistentStore::ResId>>
           excluded_res_id_sets,
@@ -661,7 +675,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       ErrorCallback callback);
   void OnEvictionFinished(bool is_idle_time_eviction,
                           base::TimeTicks start_time,
-                          std::vector<ResIdListOrError> results);
+                          std::vector<HashAndResIdListOrError> results);
 
   void RunNextCheckpoint(base::OnceCallback<void(bool)> callback,
                          std::vector<bool> results);

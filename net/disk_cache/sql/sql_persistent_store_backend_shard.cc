@@ -108,9 +108,10 @@ void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
       RecordIndexMismatch(IndexMismatchLocation::kDoomEntry);
     }
   } else if (loading_index_) {
-    // If the in-memory index is being loaded, add to `pending_doomed_res_ids_`
-    // to be removed from the index upon completion of the index loading.
-    pending_doomed_res_ids_.emplace_back(res_id);
+    // If the in-memory index is being loaded, add to
+    // `pending_doomed_hash_and_res_ids_` to be removed from the index upon
+    // completion of the index loading.
+    pending_doomed_hash_and_res_ids_.push_back({key.hash(), res_id});
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::DoomEntry)
       .WithArgs(key, res_id, base::TimeTicks::Now())
@@ -294,7 +295,7 @@ void SqlPersistentStore::BackendShard::StartEviction(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
-    ResIdListOrErrorCallback callback) {
+    HashAndResIdListOrErrorCallback callback) {
   EvictionResultOrErrorAndStoreStatusCallback result_callback =
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BackendShard::OnEvictionFinished,
@@ -324,9 +325,9 @@ void SqlPersistentStore::BackendShard::ResumePendingEviction(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
-    ResIdListOrErrorCallback callback) {
+    HashAndResIdListOrErrorCallback callback) {
   if (pending_eviction_targets_.empty()) {
-    std::move(callback).Run(ResIdList());
+    std::move(callback).Run(HashAndResIdList());
     return;
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::ResumePendingEviction)
@@ -367,10 +368,12 @@ void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
                 weak_ptr->to_be_deleted_res_ids_ =
                     std::move(result->doomed_entry_res_ids);
                 weak_ptr->loading_index_ = false;
-                for (auto doomed_res_id : weak_ptr->pending_doomed_res_ids_) {
-                  weak_ptr->index_->Remove(doomed_res_id);
+                for (const auto& hash_and_res_id :
+                     weak_ptr->pending_doomed_hash_and_res_ids_) {
+                  weak_ptr->index_->Remove(hash_and_res_id.hash,
+                                           hash_and_res_id.res_id);
                 }
-                weak_ptr->pending_doomed_res_ids_.clear();
+                weak_ptr->pending_doomed_hash_and_res_ids_.clear();
               }
               std::move(callback).Run(result.has_value() ? Error::kOk
                                                          : result.error());
@@ -433,10 +436,11 @@ SqlPersistentStore::BackendShard::GetIndexStateForHash(
 }
 
 void SqlPersistentStore::BackendShard::SetInMemoryEntryDataHints(
+    CacheEntryKey::Hash hash,
     ResId res_id,
     MemoryEntryDataHints hints) {
   if (index_.has_value()) {
-    index_->SetEntryDataHints(res_id, hints);
+    index_->SetEntryDataHints(hash, res_id, hints);
   }
 }
 
@@ -491,7 +495,8 @@ SqlPersistentStore::BackendShard::WrapCallbackWithStoreStatusAndIndexUpdate(
               }
             }
             if (new_hints) {
-              weak_ptr->index_->SetEntryDataHints(*result.result, *new_hints);
+              weak_ptr->index_->SetEntryDataHints(key_hash, *result.result,
+                                                  *new_hints);
             }
           }
           // We should not run the callback when `this` was deleted.
@@ -528,18 +533,20 @@ SqlPersistentStore::BackendShard::WrapEntryInfoOrErrorCallback(
       weak_factory_.GetWeakPtr(), std::move(callback), key.hash(), location);
 }
 
-base::OnceCallback<void(SqlPersistentStore::ResIdListOrErrorAndStoreStatus)>
+base::OnceCallback<
+    void(SqlPersistentStore::HashAndResIdListOrErrorAndStoreStatus)>
 SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
     ErrorCallback callback,
     IndexMismatchLocation location) {
   return base::BindOnce(
       [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
          IndexMismatchLocation location,
-         ResIdListOrErrorAndStoreStatus result) {
+         HashAndResIdListOrErrorAndStoreStatus result) {
         if (weak_ptr) {
           if (result.result.has_value() && weak_ptr->index_.has_value()) {
-            for (ResId res_id : result.result.value()) {
-              if (!weak_ptr->index_->Remove(res_id)) {
+            for (const auto& hash_and_res_id : result.result.value()) {
+              if (!weak_ptr->index_->Remove(hash_and_res_id.hash,
+                                            hash_and_res_id.res_id)) {
                 weak_ptr->RecordIndexMismatch(location);
               }
             }
@@ -554,12 +561,13 @@ SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
 }
 
 void SqlPersistentStore::BackendShard::OnEvictionFinished(
-    ResIdListOrErrorCallback callback,
+    HashAndResIdListOrErrorCallback callback,
     EvictionResultOrErrorAndStoreStatus result) {
   if (result.result.has_value()) {
     if (index_.has_value()) {
-      for (ResId res_id : result.result->deleted_res_ids) {
-        if (!index_->Remove(res_id)) {
+      for (const auto& hash_and_res_id :
+           result.result->deleted_hash_and_res_ids) {
+        if (!index_->Remove(hash_and_res_id.hash, hash_and_res_id.res_id)) {
           RecordIndexMismatch(IndexMismatchLocation::kStartEviction);
         }
       }
@@ -568,10 +576,10 @@ void SqlPersistentStore::BackendShard::OnEvictionFinished(
         std::move(result.result->pending_eviction_targets);
   }
   store_status_ = result.store_status;
-  std::move(callback).Run(
-      result.result.has_value()
-          ? ResIdListOrError(std::move(result.result->deleted_res_ids))
-          : base::unexpected(result.result.error()));
+  std::move(callback).Run(result.result.has_value()
+                              ? HashAndResIdListOrError(std::move(
+                                    result.result->deleted_hash_and_res_ids))
+                              : base::unexpected(result.result.error()));
 }
 
 void SqlPersistentStore::BackendShard::RecordIndexMismatch(

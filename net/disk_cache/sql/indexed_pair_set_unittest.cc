@@ -71,6 +71,24 @@ TEST_F(IndexedPairSetTest, Contains) {
   EXPECT_FALSE(set_.Contains(99));  // Non-existent key
 }
 
+TEST_F(IndexedPairSetTest, ContainsPair) {
+  EXPECT_FALSE(set_.Contains(10, 100));  // Non-existent key
+
+  set_.Insert(10, 100);
+  EXPECT_TRUE(set_.Contains(10, 100));  // Primary map match
+  EXPECT_FALSE(
+      set_.Contains(10, 200));  // Key exists, value doesn't match primary
+
+  set_.Insert(10, 200);
+  EXPECT_TRUE(set_.Contains(10, 100));  // Primary map match
+  EXPECT_TRUE(set_.Contains(10, 200));  // Secondary map match
+  EXPECT_FALSE(
+      set_.Contains(10, 300));  // Key exists, value doesn't match either
+
+  set_.Insert(20, 300);
+  EXPECT_TRUE(set_.Contains(20, 300));
+}
+
 TEST_F(IndexedPairSetTest, Clear) {
   EXPECT_TRUE(set_.Insert(10, 100));
   EXPECT_TRUE(set_.Insert(20, 200));

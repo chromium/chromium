@@ -148,6 +148,22 @@ class NET_EXPORT_PRIVATE IndexedPairSet {
   // Returns true if the given key exists. This is a fast lookup.
   bool Contains(Key key) const { return primary_map_.contains(key); }
 
+  // Returns true if the given key-value pair exists.
+  bool Contains(Key key, Value value) const {
+    auto primary_it = primary_map_.find(key);
+    if (primary_it == primary_map_.end()) {
+      return false;
+    }
+    if (primary_it->second == value) {
+      return true;
+    }
+    auto secondary_it = secondary_map_.find(key);
+    if (secondary_it != secondary_map_.end()) {
+      return secondary_it->second.contains(value);
+    }
+    return false;
+  }
+
   // Returns the total number of elements in the set.
   size_t size() const { return size_; }
 

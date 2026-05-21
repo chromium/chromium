@@ -48,7 +48,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
 
   bool Insert(CacheEntryKeyHash hash, SqlPersistentStoreResId res_id);
   bool Contains(CacheEntryKeyHash hash) const;
-  bool Remove(SqlPersistentStoreResId res_id);
   bool Remove(CacheEntryKeyHash hash, SqlPersistentStoreResId res_id);
   void Clear();
 
@@ -57,8 +56,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   std::optional<SqlPersistentStoreResId> TryGetSingleResId(
       CacheEntryKeyHash hash) const;
 
-  // Updates the in-memory hints for the entry identified by `res_id`.
-  void SetEntryDataHints(SqlPersistentStoreResId res_id,
+  // Updates the in-memory hints for the entry identified by `hash` and
+  // `res_id`.
+  void SetEntryDataHints(CacheEntryKeyHash hash,
+                         SqlPersistentStoreResId res_id,
                          MemoryEntryDataHints hints);
 
   // Retrieves the in-memory hints for the entry identified by `hash`, if
@@ -79,7 +80,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   template <class ResIdType>
   class Impl {
    public:
-    using ResIdToHashMap = absl::flat_hash_map<ResIdType, CacheEntryKeyHash>;
     using ResIdToEntryDataHintsMap =
         absl::flat_hash_map<ResIdType, MemoryEntryDataHints>;
 
@@ -91,11 +91,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     Impl& operator=(Impl&& other) noexcept = default;
 
     bool Insert(CacheEntryKeyHash hash, ResIdType res_id) {
-      if (res_id_to_hash_map_.contains(res_id)) {
-        return false;
-      }
       if (hash_res_id_set_.Insert(hash, res_id)) {
-        res_id_to_hash_map_[res_id] = hash;
         return true;
       }
       return false;
@@ -105,31 +101,17 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
       return hash_res_id_set_.Contains(hash);
     }
 
-    bool Remove(ResIdType res_id) {
-      auto it = res_id_to_hash_map_.find(res_id);
-      if (it == res_id_to_hash_map_.end()) {
-        return false;
-      }
-      RemoveInternal(it);
-      return true;
-    }
-
     bool Remove(CacheEntryKeyHash hash, ResIdType res_id) {
-      auto it = res_id_to_hash_map_.find(res_id);
-      if (it == res_id_to_hash_map_.end()) {
+      if (!hash_res_id_set_.Remove(hash, res_id)) {
         return false;
       }
-      if (it->second != hash) {
-        return false;
-      }
-      RemoveInternal(it);
+      res_id_to_hints_map_.erase(res_id);
       return true;
     }
 
     void Clear() {
       hash_res_id_set_.Clear();
-      res_id_to_hash_map_.clear();
-      res_id_to_hash_map_.clear();
+      res_id_to_hints_map_.clear();
     }
 
     // Tries to retrieve a single resource ID for the given hash.
@@ -137,9 +119,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
       return hash_res_id_set_.TryGetSingleValue(hash);
     }
 
-    // Updates the in-memory hints for the entry identified by `res_id`.
-    void SetEntryDataHints(ResIdType res_id, MemoryEntryDataHints hints) {
-      if (res_id_to_hash_map_.contains(res_id)) {
+    // Updates the in-memory hints for the entry identified by `hash` and
+    // `res_id`.
+    void SetEntryDataHints(CacheEntryKeyHash hash,
+                           ResIdType res_id,
+                           MemoryEntryDataHints hints) {
+      if (hash_res_id_set_.Contains(hash, res_id)) {
         res_id_to_hints_map_[res_id] = hints;
       }
     }
@@ -170,22 +155,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
 
     size_t size() const { return hash_res_id_set_.size(); }
 
-    const ResIdToHashMap& res_id_to_hash_map() const {
-      return res_id_to_hash_map_;
-    }
-
    private:
     using HashResIdSet = IndexedPairSet<CacheEntryKeyHash, ResIdType>;
 
-    void RemoveInternal(ResIdToHashMap::iterator it) {
-      DCHECK(it != res_id_to_hash_map_.end());
-      CHECK(hash_res_id_set_.Remove(it->second, it->first));
-      res_id_to_hints_map_.erase(it->first);
-      res_id_to_hash_map_.erase(it);
-    }
-
     HashResIdSet hash_res_id_set_;
-    ResIdToHashMap res_id_to_hash_map_;
     ResIdToEntryDataHintsMap res_id_to_hints_map_;
   };
 
