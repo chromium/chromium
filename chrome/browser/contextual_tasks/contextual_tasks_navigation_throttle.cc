@@ -111,8 +111,9 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
           /*is_from_embedded_page=*/web_contents !=
                   web_contents->GetResponsibleWebContents() ||
               navigation_handle()->IsGuestViewMainFrame(),
-          /*from_can_create_window=*/false, is_same_site_or_from_ui,
-          is_mobile_ua)) {
+          /*is_to_new_tab=*/false,
+          /*is_same_site_or_from_ui=*/is_same_site_or_from_ui,
+          /*is_mobile_ua=*/is_mobile_ua)) {
     return CANCEL;
   }
   return PROCEED;
