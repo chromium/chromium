@@ -73,7 +73,7 @@ void PostResponse(AuthOperationCallback result,
                                 std::move(error)));
 }
 
-PinBackend* g_instance_ = nullptr;
+PinBackend* g_instance = nullptr;
 
 // UMA Metrics
 void RecordUMAHistogram(PinBackend::BackfillEvent event) {
@@ -98,24 +98,30 @@ bool ShouldUseCryptohome(bool is_cryptohome_backend_supported,
 
 }  // namespace
 
+void PinBackend::Initialize() {
+  CHECK(!g_instance);
+  g_instance = new PinBackend();
+}
+
 // static
 PinBackend* PinBackend::GetInstance() {
-  if (!g_instance_) {
-    g_instance_ = new PinBackend();
-  }
-  return g_instance_;
+  CHECK(g_instance);
+  return g_instance;
 }
 
 // static
 void PinBackend::Shutdown() {
-  if (!g_instance_) {
+  if (!g_instance) {
     return;
   }
 
   // Cancel ongoing PinStorageCryptohome::IsSupported() request if any.
-  g_instance_->weak_ptr_factory_.InvalidateWeakPtrs();
-  g_instance_->on_cryptohome_support_received_.clear();
-  g_instance_->cryptohome_state_.Shutdown();
+  g_instance->weak_ptr_factory_.InvalidateWeakPtrs();
+  g_instance->on_cryptohome_support_received_.clear();
+  g_instance->cryptohome_state_.Shutdown();
+
+  // TODO(crbug.com/498416395): We should destroy the object.
+  g_instance = nullptr;
 }
 
 // static
@@ -141,12 +147,6 @@ std::string PinBackend::ComputeSecret(const std::string& pin,
   Key key(pin);
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, salt);
   return key.GetSecret();
-}
-
-// static
-void PinBackend::ResetForTesting() {
-  delete g_instance_;
-  g_instance_ = nullptr;
 }
 
 PinBackend::PinBackend() {
