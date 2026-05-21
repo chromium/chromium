@@ -475,6 +475,80 @@ public class PkpTest {
                                 DISTANT_FUTURE));
     }
 
+    private TestUrlRequestCallback startIdnPinningTest(byte[] pinHash) throws Exception {
+        // Note the strategic use of ß as our test character, which is handled differently based on
+        // which version of IDNA is used - see Unicode Technical Standard #46.
+        final var IDN_UNICODE = "example-idn-begin-ß-end";
+        // Cronet currently uses IDNA2003, under which "ß" is mapped to "ss".
+        // TODO(https://crbug.com/513446116): ideally, Cronet should use IDNA2008, which is the
+        // recommended version and the one used by modern browsers.
+        final var EXPECTED_IDN_ASCII = "example-idn-begin-ss-end";
+
+        final var testFramework = mTestRule.getTestFramework();
+        applyCronetEngineBuilderConfigurationPatchWithMockCertVerifier(
+                testFramework, DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS);
+        applyPkpSha256Patch(
+                testFramework, IDN_UNICODE, pinHash, EXCLUDE_SUBDOMAINS, DISTANT_FUTURE);
+        // Make sure Cronet can resolve the test hostname.
+        testFramework.applyEngineBuilderPatch(
+                (builder) -> {
+                    builder.setExperimentalOptions(
+                            new JSONObject()
+                                    .put(
+                                            "HostResolverRules",
+                                            new JSONObject()
+                                                    .put(
+                                                            "host_resolver_rules",
+                                                            "MAP "
+                                                                    + EXPECTED_IDN_ASCII
+                                                                    + " 127.0.0.1"))
+                                    .toString());
+                });
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        testFramework
+                .startEngine()
+                .newUrlRequestBuilder(
+                        "https://" + IDN_UNICODE + ":" + Http2TestServer.getServerPort() + "/",
+                        callback,
+                        callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        return callback;
+    }
+
+    /**
+     * Tests that Public Key Pinning works when pins are added using an IDN hostname and the pin
+     * matches.
+     */
+    @Test
+    @SmallTest
+    // TODO(https://crbug.com/40941277): Enable for HttpEngine once we have fake hostname support
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Uses HostResolverRules, which HttpEngine does not support.")
+    public void testIdnPinningSuccessIfPinMatches() throws Exception {
+        assertSuccessfulResponse(
+                startIdnPinningTest(
+                        CertTestUtil.getPublicKeySha256(
+                                readCertFromFileInPemFormat(SERVER_CERT_PEM))));
+    }
+
+    /**
+     * Tests that Public Key Pinning works when pins are added using an IDN hostname and the pin
+     * does not match.
+     */
+    @Test
+    @SmallTest
+    // TODO(https://crbug.com/40941277): Enable for HttpEngine once we have fake hostname support
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Uses HostResolverRules, which HttpEngine does not support.")
+    public void testIdnPinningErrorCodeIfPinDoesNotMatch() throws Exception {
+        assertErrorResponse(startIdnPinningTest(generateSomeSha256()));
+    }
+
     /** Asserts that the response from the server contains an PKP error. */
     private void assertErrorResponse(TestUrlRequestCallback callback) {
         assertThat(callback.mError).isNotNull();
