@@ -35,6 +35,18 @@ MediaFoundationSourceWrapper::~MediaFoundationSourceWrapper() {
   }
 }
 
+IFACEMETHODIMP_(ULONG) MediaFoundationSourceWrapper::Release() {
+  ULONG ref_count = InternalRelease();
+  if (ref_count == 0) {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->DeleteSoon(FROM_HERE, this);
+    } else {
+      delete this;
+    }
+  }
+  return ref_count;
+}
+
 HRESULT MediaFoundationSourceWrapper::RuntimeClassInitialize(
     MediaResource* media_resource,
     MediaLog* media_log,

@@ -14,6 +14,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/media_export.h"
 #include "media/base/media_resource.h"
 #include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/renderers/win/media_foundation_stream_wrapper.h"
@@ -31,7 +32,7 @@ class MediaLog;
 // Note: The methods in this class can be called on two different threads -
 //       Chromium thread and MF threadpool thread.
 //
-class MediaFoundationSourceWrapper
+class MEDIA_EXPORT MediaFoundationSourceWrapper
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<
               Microsoft::WRL::RuntimeClassType::ClassicCom>,
@@ -43,6 +44,8 @@ class MediaFoundationSourceWrapper
  public:
   MediaFoundationSourceWrapper();
   ~MediaFoundationSourceWrapper() override;
+
+  IFACEMETHODIMP_(ULONG) Release() override;
 
   // This is only called on |task_runner|.
   void DetachResource();

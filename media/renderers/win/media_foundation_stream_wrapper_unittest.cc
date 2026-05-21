@@ -86,6 +86,7 @@ class MediaFoundationStreamWrapperTest : public testing::Test {
 
   ~MediaFoundationStreamWrapperTest() override {
     mf_video_stream_wrapper_.Reset();
+    task_environment_.RunUntilIdle();
   }
 
   // Polls the MediaFoundationStreamWrapper object for queued media events.
@@ -340,6 +341,29 @@ TEST_F(MediaFoundationStreamWrapperTest,
 TEST_F(MediaFoundationStreamWrapperTest,
        VerifySamplesBufferedPostFlushProcessedPostSeek) {
   VerifyBufferedPostFlushSamplesProcessed(/*startEvent*/ false);
+}
+
+// Initializes a MediaFoundationStreamWrapper inside a simulated task runner
+// environment, then manually triggers its destruction from a background thread
+// to verify that it successfully bounces the destruction back to the sequenced
+// task runner.
+TEST_F(MediaFoundationStreamWrapperTest, DestructionOnTaskRunner) {
+  auto wrapper = mf_video_stream_wrapper_;
+  mf_video_stream_wrapper_.Reset();
+
+  base::WaitableEvent event;
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](ComPtr<MediaFoundationStreamWrapper> wrapper,
+                        base::WaitableEvent* event) {
+                       wrapper.Reset();
+                       event->Signal();
+                     },
+                     std::move(wrapper), &event));
+  event.Wait();
+
+  // Wait for the task runner to process the deletion.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media
