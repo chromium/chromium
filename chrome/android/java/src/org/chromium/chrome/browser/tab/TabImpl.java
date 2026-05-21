@@ -1251,6 +1251,11 @@ class TabImpl implements Tab {
     @CalledByNative
     private void destroyInternal(boolean deleteNativeWebContents) {
         ThreadUtils.assertOnUiThread();
+
+        // Ensure the tab signals to C++ it was removed from the TabModel. This should be a no-op
+        // for most tab closures, but during activity shutdown/recreation it can be relevant.
+        clearCurrentTabSupplier(DetachReason.DELETE);
+
         // Set at the start since destroying the WebContents can lead to calling back into
         // this class.
         mIsDestroyed = true;
@@ -2089,7 +2094,7 @@ class TabImpl implements Tab {
     }
 
     @CalledByNative
-    private void clearNativePtr() {
+    void clearNativePtr() {
         assert mNativeTabAndroid != 0;
         var oldValue = sTabMap.remove(mNativeTabAndroid);
         assert oldValue == this;
@@ -3073,7 +3078,10 @@ class TabImpl implements Tab {
 
     void setNativePtrForTesting(long nativePtr) {
         setNativePtr(nativePtr);
-        ResettersForTesting.register(this::clearNativePtr);
+        ResettersForTesting.register(
+                () -> {
+                    if (mNativeTabAndroid != 0) clearNativePtr();
+                });
     }
 
     /**

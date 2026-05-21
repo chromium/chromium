@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -49,7 +50,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.SettableLookAheadObservableSupplier;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -58,6 +61,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
+import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
@@ -524,5 +528,26 @@ public class TabUnitTest {
         // Triggering again should not emit another theme color change.
         tabWebContentsObserver.getWebContentsObserverForTesting().didChangeVisibleSecurityState();
         verify(mObserver, times(1)).onDidChangeThemeColor(tab, TabState.UNSPECIFIED_THEME_COLOR);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES})
+    public void testDestroy_SendsWillDetachUpdate() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        mTab.setNativePtrForTesting(1);
+        doAnswer(
+                        invocation -> {
+                            mTab.clearNativePtr();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .destroy(1);
+
+        mTab.onAddedToTabModel(mTabSupplier, ignored -> false);
+        mTab.destroy();
+
+        verify(mNativeMock).sendWillDetachUpdate(1, DetachReason.DELETE);
+        verify(mNativeMock).destroy(1);
     }
 }
