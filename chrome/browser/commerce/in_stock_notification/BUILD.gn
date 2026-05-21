@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("in_stock_notification") {
+  sources = [
+    "in_stock_notification_manager.cc",
+    "in_stock_notification_manager.h",
+  ]
+  deps = [
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+  ]
+}

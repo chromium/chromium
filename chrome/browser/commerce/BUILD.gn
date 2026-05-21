@@ -19,6 +19,7 @@ source_set("impl") {
     ":commerce",
     "//chrome/browser:browser_process",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/commerce/in_stock_notification",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/persisted_state_db",

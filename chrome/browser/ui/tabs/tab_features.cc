@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
+#include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
@@ -131,6 +132,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
@@ -349,6 +351,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               .CreateInstance<CollaborationMessagingPageActionController>(
                   tab, tab, *page_action_controller_,
                   *collaboration_messaging_tab_data_);
+    }
+
+    if (base::FeatureList::IsEnabled(commerce::kInStockNotification) &&
+        !profile->IsIncognitoProfile()) {
+      in_stock_notification_manager_ =
+          GetUserDataFactory()
+              .CreateInstance<commerce::InStockNotificationManager>(tab, &tab);
     }
 
     if (glic::GlicEnabling::IsProfileEligible(profile)) {

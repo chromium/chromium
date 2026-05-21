@@ -69,8 +69,9 @@ class ActorUiTabControllerInterface;
 
 namespace commerce {
 class CommerceUiTabHelper;
-class PriceInsightsPageActionViewController;
 class DiscountsPageActionViewController;
+class InStockNotificationManager;
+class PriceInsightsPageActionViewController;
 }  // namespace commerce
 
 namespace enterprise_data_protection {
@@ -380,6 +381,8 @@ class TabFeatures {
 
   // Responsible for commerce related features.
   std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
+  std::unique_ptr<commerce::InStockNotificationManager>
+      in_stock_notification_manager_;
 
   // Responsible for updating status indicator of the pinned translate button.
   std::unique_ptr<PinnedTranslateActionListener>
