@@ -152,6 +152,7 @@ void UdpSocket::OnReceived(
     int32_t net_result,
     const std::optional<net::IPEndPoint>& source_endpoint,
     std::optional<base::span<const uint8_t>> data) {
+  base::WeakPtr<UdpSocket> weak_this = weak_ptr_factory_.GetWeakPtr();
   if (net_result != net::OK) {
     client_->OnRead(this, Error::Code::kSocketReadFailure);
   } else if (data) {
@@ -163,7 +164,9 @@ void UdpSocket::OnReceived(
     client_->OnRead(this, std::move(packet));
   }
 
-  udp_socket_->ReceiveMore(1);
+  if (weak_this) {
+    udp_socket_->ReceiveMore(1);
+  }
 }
 
 void UdpSocket::BindCallback(int32_t result,
