@@ -1159,6 +1159,11 @@ config("linker") {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
+  if (is_android && experimental_linker_path != "") {
+    # Wild linker does not support the default of android+relr.
+    ldflags += [ "-Wl,--pack-dyn-relocs=relr" ]
+  }
+
   # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
   # --no-undefined-version.
   if ((use_lld || linker_path != "") && !is_win && !is_mac && !is_ios &&
