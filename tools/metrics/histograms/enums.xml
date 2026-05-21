@@ -19388,6 +19388,7 @@ from previous Chrome versions.
   <int value="1719998906" label="KeyboardLockPrompt:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>
   <int value="1720657677" label="SensitiveContent:enabled"/>
+  <int value="1721558583" label="ToolbarGlicButtonResizing:disabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
   <int value="1722214178" label="ContextManagementInComposebox:enabled"/>
   <int value="1722521465" label="CrosBatterySaverAlwaysOn:disabled"/>
@@ -20222,6 +20223,7 @@ from previous Chrome versions.
   <int value="1988810119" label="AutofillDropdownLayout:enabled"/>
   <int value="1989051182" label="view-passwords:enabled"/>
   <int value="1989739884" label="CustomizeChromeWallpaperSearch:enabled"/>
+  <int value="1989877247" label="ToolbarGlicButtonResizing:enabled"/>
   <int value="1989877708" label="PostScriptPrinting:enabled"/>
   <int value="1990468492" label="AndroidWindowOcclusion:disabled"/>
   <int value="1990528959" label="SchemefulSameSite:disabled"/>

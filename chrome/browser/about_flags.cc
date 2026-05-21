@@ -9581,6 +9581,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kToolbarAppMenuLabelResizingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kToolbarAppMenuLabelResizing)},
 
+    {"toolbar-glic-button-resizing",
+     flag_descriptions::kToolbarGlicButtonResizingName,
+     flag_descriptions::kToolbarGlicButtonResizingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kToolbarGlicButtonResizing)},
+
     {"rounded-icons", flag_descriptions::kRoundedIconsName,
      flag_descriptions::kRoundedIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRoundedIcons)},

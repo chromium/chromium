@@ -4423,6 +4423,11 @@ inline constexpr char kToolbarAppMenuLabelResizingName[] =
 inline constexpr char kToolbarAppMenuLabelResizingDescription[] =
     "Enables resizing of the app menu label in the toolbar.";
 
+inline constexpr char kToolbarGlicButtonResizingName[] =
+    "Toolbar Glic Button Label Resizing";
+inline constexpr char kToolbarGlicButtonResizingDescription[] =
+    "Enables resizing of the glic button in the toolbar.";
+
 inline constexpr char kRoundedIconsName[] = "Rounded Icons";
 inline constexpr char kRoundedIconsDescription[] = "Enables rounded icons.";
 
