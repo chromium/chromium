@@ -68,7 +68,7 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
 
     private boolean shouldKeepScreenOn() {
         boolean[] hasActiveTask = new boolean[1];
-        forEachActiveTask(task -> hasActiveTask[0] = true);
+        forEachRunningTask(task -> hasActiveTask[0] = true);
         return hasActiveTask[0];
     }
 
@@ -77,7 +77,7 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
 
     @Override
     public void onStopWithNative() {
-        forEachActiveTask(
+        forEachRunningTask(
                 task -> {
                     if (isTaskInCurrentWindow(task)) {
                         task.pause();
@@ -101,10 +101,17 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
         ActorKeyedService service = maybeGetActorService();
         if (service == null) return;
         for (ActorTask task : service.getActiveTasks()) {
-            if (ActorUtils.isRunningState(task.getState())) {
-                callback.onResult(task);
-            }
+            callback.onResult(task);
         }
+    }
+
+    private void forEachRunningTask(Callback<ActorTask> callback) {
+        forEachActiveTask(
+                task -> {
+                    if (ActorUtils.isRunningState(task.getState())) {
+                        callback.onResult(task);
+                    }
+                });
     }
 
     private @Nullable ActorKeyedService maybeGetActorService() {
@@ -120,6 +127,16 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
             if (mActorService != null) mActorService.addObserver(this);
         }
         return mActorService;
+    }
+
+    /** Stops any active Actor tasks that belong to this window when the activity is destroyed. */
+    public void onDestroy() {
+        forEachActiveTask(
+                task -> {
+                    if (isTaskInCurrentWindow(task) && mActorService != null) {
+                        mActorService.stopTask(task.getId(), StoppedReason.SHUTDOWN);
+                    }
+                });
     }
 
     /** Cleans up the helper, removing observers and clearing flags. */

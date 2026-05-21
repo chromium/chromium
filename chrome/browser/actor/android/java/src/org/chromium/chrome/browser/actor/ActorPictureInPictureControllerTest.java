@@ -379,7 +379,7 @@ public class ActorPictureInPictureControllerTest {
         mController.destroy();
 
         verify(mMockCoordinator).destroy();
-        verify(mActorService).stopTask(101, StoppedReason.STOPPED_BY_USER);
+        verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
         verify(mActorService).removeObserver(mController);
     }
 

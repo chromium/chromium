@@ -185,4 +185,38 @@ public class ActorTaskHelperTest {
         verify(taskInWindow).pause();
         verify(taskOtherWindow, never()).pause();
     }
+
+    @Test
+    public void testOnDestroy_OnlyCurrentWindow() {
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getId()).thenReturn(101);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        ActorTask taskOtherWindow = mock(ActorTask.class);
+        when(taskOtherWindow.getId()).thenReturn(102);
+        when(taskOtherWindow.getTabs()).thenReturn(Collections.singleton(102));
+        when(selector.getTabById(102)).thenReturn(null);
+
+        when(mActorService.getActiveTasks())
+                .thenReturn(Arrays.asList(taskInWindow, taskOtherWindow));
+
+        helper.onDestroy();
+
+        verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
+        verify(mActorService, never()).stopTask(102, StoppedReason.SHUTDOWN);
+    }
 }

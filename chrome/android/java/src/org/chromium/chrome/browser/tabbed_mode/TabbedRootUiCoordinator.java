@@ -900,6 +900,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mActorTaskHelper != null) {
+            mActorTaskHelper.onDestroy();
             mActorTaskHelper.destroy();
             mActorTaskHelper = null;
         }
