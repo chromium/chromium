@@ -8,11 +8,7 @@
 namespace blink {
 
 double CSSValueClampingUtils::ClampDouble(double value) {
-  // https://www.w3.org/TR/css-values-4/#top-level-calculation
-  if (std::isnan(value)) {
-    value = 0;
-  }
-  return ClampTo<double>(value);
+  return ClampTo<double>(CensorNaNToZero(value));
 }
 
 double CSSValueClampingUtils::ClampLength(double value) {
@@ -20,11 +16,7 @@ double CSSValueClampingUtils::ClampLength(double value) {
 }
 
 float CSSValueClampingUtils::ClampLength(float value) {
-  // https://www.w3.org/TR/css-values-4/#top-level-calculation
-  if (std::isnan(value)) {
-    value = 0;
-  }
-  return ClampTo<float>(value);
+  return ClampTo<float>(CensorNaNToZero(value));
 }
 
 double CSSValueClampingUtils::ClampTime(double value) {
@@ -32,10 +24,6 @@ double CSSValueClampingUtils::ClampTime(double value) {
 }
 
 double CSSValueClampingUtils::ClampAngle(double value) {
-  // https://www.w3.org/TR/css-values-4/#top-level-calculation
-  if (std::isnan(value)) {
-    value = 0;
-  }
   // The value must be multiple of 360deg.
   // Reference:  https://drafts.csswg.org/css-values/#numeric-types
   //
@@ -45,7 +33,7 @@ double CSSValueClampingUtils::ClampAngle(double value) {
   //
   // The details: https://bit.ly/349gXjq
   static constexpr double kApproxDoubleInfinityAngle = 2867080569122160;
-  return ClampTo<double>(value, -kApproxDoubleInfinityAngle,
+  return ClampTo<double>(CensorNaNToZero(value), -kApproxDoubleInfinityAngle,
                          kApproxDoubleInfinityAngle);
 }
 
