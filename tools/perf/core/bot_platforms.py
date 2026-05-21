@@ -993,18 +993,6 @@ PLATFORM_INFO = {
         'platform_os': 'android',
         'is_fyi': False
     },
-    'android-pixel25-ultra-perf': {
-        'description': 'Android B',
-        'num_shards': 4,
-        'platform_os': 'android',
-        'is_fyi': False
-    },
-    'android-pixel25-ultra-xl-perf': {
-        'description': 'Android B',
-        'num_shards': 3,
-        'platform_os': 'android',
-        'is_fyi': False
-    },
     'android-pixel10-perf': {
         'description': 'Android B',
         'num_shards': 25,

@@ -2,8 +2,6 @@ bot,repeat,shard,estimated_runtime
 android-pixel-fold-perf,1,1,60
 android-pixel-tangor-perf,1,1,60
 android-pixel10-perf,1,1,60
-android-pixel25-ultra-perf,1,1,60
-android-pixel25-ultra-xl-perf,1,1,60
 android-pixel4-perf,1,1,60
 android-pixel4-perf-pgo,1,1,60
 android-pixel6-perf,1,1,60
