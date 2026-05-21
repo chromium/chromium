@@ -108,16 +108,15 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
     std::string_view name;
     security_state::SecurityLevel security_level;
     std::u16string display_text;
-    std::u16string accessibility_text;
     toolbar_ui_api::mojom::SecurityLevel expected_mojo_level;
   } kTestCases[] = {
       {"Secure", security_state::SECURE, std::u16string(),
-       u"Connection is secure", toolbar_ui_api::mojom::SecurityLevel::kSecure},
+       toolbar_ui_api::mojom::SecurityLevel::kSecure},
       {"Dangerous", security_state::DANGEROUS, u"Dangerous",
-       u"Site is dangerous", toolbar_ui_api::mojom::SecurityLevel::kDangerous},
-      {"Warning", security_state::WARNING, u"Not secure", u"Site is not secure",
+       toolbar_ui_api::mojom::SecurityLevel::kDangerous},
+      {"Warning", security_state::WARNING, u"Not secure",
        toolbar_ui_api::mojom::SecurityLevel::kWarning},
-      {"None", security_state::NONE, std::u16string(), u"Site info",
+      {"None", security_state::NONE, std::u16string(),
        toolbar_ui_api::mojom::SecurityLevel::kNone},
   };
 
@@ -126,8 +125,6 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
 
     location_bar_model_->set_security_level(test_case.security_level);
     location_bar_model_->set_secure_display_text(test_case.display_text);
-    location_bar_model_->set_secure_accessibility_text(
-        test_case.accessibility_text);
 
     // Force update
     location_bar_->OnChanged();
@@ -142,20 +139,6 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
         state->location_bar_state->lhs_chips_state->security_chip;
     EXPECT_EQ(chip->security_level, test_case.expected_mojo_level);
     EXPECT_EQ(chip->text, test_case.display_text);
-
-    // To keep screen reader announcements concise, "name" and "description"
-    // are mutually exclusive for the security chip. If the visual text is
-    // present, it's used as the name and the description is kept empty.
-    // If there's no visual text, the descriptive accessibility string is
-    // passed as the description.
-    if (test_case.display_text.empty()) {
-      EXPECT_EQ(chip->accessibility_state->description,
-                test_case.accessibility_text);
-      EXPECT_TRUE(chip->accessibility_state->label.empty());
-    } else {
-      EXPECT_EQ(chip->accessibility_state->label, test_case.display_text);
-      EXPECT_TRUE(chip->accessibility_state->description.empty());
-    }
     EXPECT_TRUE(chip->is_clickable);
   }
 }

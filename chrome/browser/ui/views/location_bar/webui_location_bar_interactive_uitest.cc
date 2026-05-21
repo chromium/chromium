@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
-#include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
@@ -405,17 +404,4 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, InlineSuggestion) {
 
       // Removing the focus should hide the popup.
       RemoveFocusFromPopup());
-}
-
-// Clicking the location icon should show the Page Info bubble.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ClickLocationIcon) {
-  RunTestSequence(
-      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
-      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
-      FocusWebContents(kWebUIToolbarId),
-      ExecuteJsAt(
-          kWebUIToolbarId,
-          {"toolbar-app", "location-bar", "location-icon", "#container"},
-          "el => el.click()"),
-      WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
 }

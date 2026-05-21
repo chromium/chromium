@@ -443,16 +443,10 @@ enum SecurityLevel {
   kWarning,
 };
 
-struct SecurityChipAccessibilityState {
-  mojo_base.mojom.String16 label;
-  mojo_base.mojom.String16 description;
-};
-
 struct SecurityChipState {
   IconHandle icon;
   SecurityLevel security_level;
   mojo_base.mojom.String16 text;
-  SecurityChipAccessibilityState accessibility_state;
   bool is_clickable;
   // True specifically when the text is exactly "Dangerous" (e.g. Malware). This
   // represents a higher alert state than the standard kDangerous security

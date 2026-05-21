@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
@@ -24,53 +24,6 @@ suite('LocationBar', function() {
     document.body.appendChild(locationBar);
   });
 
-  test('SecurityIconAccessibility', async () => {
-    const accessibilityLabel = 'Connection is secure';
-    const accessibilityDescription = 'This site uses an encrypted connection';
-    locationBar.locationBarState = {
-      ...initialState,
-      lhsChipsState: {
-        securityChip: {
-          icon: {handleId: 0n},
-          securityLevel: 0,
-          text: '',
-          accessibilityState: {
-            label: accessibilityLabel,
-            description: accessibilityDescription,
-          },
-          isClickable: true,
-          isTextDangerous: false,
-          isVisible: true,
-        },
-        activityIndicators: [],
-        permissionDashboard: null,
-      },
-    };
-    await microtasksFinished();
-
-    const locationIcon = locationBar.shadowRoot.querySelector('location-icon')!;
-    const button = locationIcon.shadowRoot.querySelector('#container')!;
-    assertEquals('BUTTON', button.tagName);
-    assertEquals(accessibilityLabel, button.getAttribute('aria-label'));
-    assertEquals(
-        accessibilityDescription, button.getAttribute('aria-description'));
-    assertEquals('0', button.getAttribute('tabindex'));
-
-    // Test non-clickable state
-    locationBar.locationBarState = {
-      ...initialState,
-      lhsChipsState: {
-        ...locationBar.locationBarState.lhsChipsState,
-        securityChip: {
-          ...locationBar.locationBarState.lhsChipsState.securityChip,
-          isClickable: false,
-        },
-      },
-    };
-    await microtasksFinished();
-    assertEquals('-1', button.getAttribute('tabindex'));
-  });
-
   test('Chip hovered state', async () => {
     // Force the location bar to show the security chip.
     locationBar.locationBarState = {
@@ -80,10 +33,6 @@ suite('LocationBar', function() {
           icon: {handleId: 0n},
           securityLevel: 0,
           text: 'Not secure',
-          accessibilityState: {
-            label: 'Not secure',
-            description: '',
-          },
           isClickable: true,
           isTextDangerous: false,
           isVisible: true,

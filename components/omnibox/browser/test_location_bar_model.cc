@@ -75,7 +75,7 @@ std::u16string TestLocationBarModel::GetSecureDisplayText() const {
 }
 
 std::u16string TestLocationBarModel::GetSecureAccessibilityText() const {
-  return secure_accessibility_text_;
+  return std::u16string();
 }
 
 bool TestLocationBarModel::ShouldDisplayURL() const {
