@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 
+#import "base/apple/foundation_util.h"
+
 @implementation CredentialExchangePasskey
 
 - (instancetype)initWithCredentialId:(NSData*)credentialId
@@ -22,6 +24,25 @@
     _privateKey = privateKey;
   }
   return self;
+}
+
+- (BOOL)isEqual:(id)object {
+  if (self == object) {
+    return YES;
+  }
+  CredentialExchangePasskey* other =
+      base::apple::ObjCCast<CredentialExchangePasskey>(object);
+  return other && [self.userName isEqualToString:other.userName] &&
+         [self.userDisplayName isEqualToString:other.userDisplayName] &&
+         [self.rpId isEqualToString:other.rpId] &&
+         [self.credentialId isEqualToData:other.credentialId] &&
+         [self.userId isEqualToData:other.userId] &&
+         [self.privateKey isEqualToData:other.privateKey];
+}
+
+- (NSUInteger)hash {
+  return self.userName.hash ^ self.userDisplayName.hash ^ self.rpId.hash ^
+         self.credentialId.hash ^ self.userId.hash ^ self.privateKey.hash;
 }
 
 @end

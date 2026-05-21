@@ -47,7 +47,6 @@
 
 #pragma mark - Public
 
-// TODO(crbug.com/449859205): Add a unit test for this method.
 - (void)startExportWithPasswords:
             (std::vector<password_manager::CredentialUIEntry>)passwords
                         passkeys:

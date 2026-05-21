@@ -51,6 +51,7 @@ source_set("credential_exchange_types") {
     "import_stats.h",
     "import_stats.mm",
   ]
+  deps = [ "//base" ]
 }
 
 swift_source_set("credential_export_manager_swift") {
