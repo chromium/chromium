@@ -201,6 +201,14 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
       (state != ContextualPanelEntrypointState::kAvailable);
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  if (_badgeBackgroundView) {
+    _badgeBackgroundView.layer.cornerRadius =
+        _badgeBackgroundView.bounds.size.height / 2.0;
+  }
+}
+
 - (void)setIncognitoBadgeView:(UIView*)incognitoBadgeView {
   if (_incognitoBadgeView) {
     return;
