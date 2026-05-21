@@ -10,6 +10,7 @@
 #include <queue>
 #include <string_view>
 
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
@@ -47,7 +48,9 @@ bool TransientChildIsChildModal(const aura::Window* window) {
 }
 
 aura::Window* GetModalParent(const aura::Window* window) {
-  return window->GetProperty(aura::client::kChildModalParentKey);
+  base::WeakPtr<aura::Window>* weak_ptr =
+      window->GetProperty(aura::client::kChildModalParentKey);
+  return weak_ptr ? weak_ptr->get() : nullptr;
 }
 
 bool IsModalTransientChild(const aura::Window* transient,
@@ -77,7 +80,12 @@ const aura::Window* GetModalTransientChild(const aura::Window* activatable,
 }  // namespace
 
 void SetModalParent(aura::Window* child, aura::Window* parent) {
-  child->SetProperty(aura::client::kChildModalParentKey, parent);
+  if (parent) {
+    child->SetProperty(aura::client::kChildModalParentKey,
+                       parent->GetWeakPtrAsWindow());
+  } else {
+    child->ClearProperty(aura::client::kChildModalParentKey);
+  }
 }
 
 aura::Window* GetModalTransient(aura::Window* window) {

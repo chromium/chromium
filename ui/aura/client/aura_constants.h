@@ -108,7 +108,8 @@ AURA_EXPORT extern const WindowProperty<base::WeakPtr<Window>*>* const
     kHostWindowKey;
 
 // The modal parent of a child modal window.
-AURA_EXPORT extern const WindowProperty<Window*>* const kChildModalParentKey;
+AURA_EXPORT extern const WindowProperty<base::WeakPtr<Window>*>* const
+    kChildModalParentKey;
 
 // A property key to store the window modality.
 AURA_EXPORT extern const WindowProperty<ui::mojom::ModalType>* const kModalKey;

@@ -50,7 +50,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDrawAttentionKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusClient*, kFocusClientKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kHeadlessBoundsKey)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::WeakPtr<Window>, kHostWindowKey)
-DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kChildModalParentKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::WeakPtr<Window>, kChildModalParentKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::ModalType,
                              kModalKey,
                              ui::mojom::ModalType::kNone)
