@@ -6872,7 +6872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AppliedProcessGlobalCacheDirectoryBasePath"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -6884,7 +6884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AppliedProcessGlobalDataDirectoryBasePath"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8809,7 +8809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CheckNeedsPost.CalledOnUiThread"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8827,7 +8827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CheckNeedsPost.IsChromiumInitialized"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8914,7 +8914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CookieManagerThreadingCondition"
-    enum="CookieManagerThreadingCondition" expires_after="2026-06-01">
+    enum="CookieManagerThreadingCondition" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8931,7 +8931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.AssetsAddTime" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8947,7 +8947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.CreateContextTime"
-    units="ms" expires_after="2026-06-01">
+    units="ms" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -9017,7 +9017,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Startup.CreationTime.GetProviderClassForNameTime"
-    units="ms" expires_after="2026-06-01">
+    units="ms" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -9055,7 +9055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.NativeLoadTime"
-    units="ms" expires_after="2026-06-01">
+    units="ms" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -9224,7 +9224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.IsUiThreadMainLooper" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -9275,7 +9275,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Static.GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted"
-    enum="Boolean" expires_after="2026-07-01">
+    enum="Boolean" expires_after="2027-05-01">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
