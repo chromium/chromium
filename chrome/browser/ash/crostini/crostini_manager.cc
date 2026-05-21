@@ -4028,7 +4028,8 @@ void CrostiniManager::UnregisterAllContainers() {
   // Copy the list since we're going to iterate+mutate.
   auto guests = base::flat_set<guest_os::GuestId>(share_service->ListGuests());
   for (const auto& guest : guests) {
-    if (guest.vm_type == kCrostiniDefaultVmType) {
+    if (guest.vm_type == kCrostiniDefaultVmType ||
+        guest.vm_type == kBaguetteDefaultVmType) {
       share_service->UnregisterGuest(guest);
     }
   }
