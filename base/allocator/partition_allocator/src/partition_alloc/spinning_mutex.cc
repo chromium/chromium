@@ -86,14 +86,6 @@ class ScopedLockAcquisitionTimer {
 }  // namespace
 
 // static
-std::atomic<int> SpinningMutex::s_spin_count{SpinningMutex::kSpinCount};
-
-// static
-void SpinningMutex::SetSpinCount(int spin_count) {
-  s_spin_count.store(spin_count, std::memory_order_relaxed);
-}
-
-// static
 void SpinningMutex::SetLockMetricsRecorder(
     LockMetricsRecorderInterface* recorder) {
   auto* old_recorder =
@@ -119,7 +111,6 @@ void SpinningMutex::Reinit() {
 void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
-  const int spin_count = s_spin_count.load(std::memory_order_relaxed);
 
   do {
     if (Try()) [[likely]] {
@@ -145,7 +136,7 @@ void SpinningMutex::AcquireSpinThenBlock() {
     }
     constexpr int kMaxBackoff = 16;
     backoff = std::min(kMaxBackoff, backoff << 1);
-  } while (tries < spin_count);
+  } while (tries < kSpinCount);
 
   ScopedLockAcquisitionTimer timer;
   LockSlow();

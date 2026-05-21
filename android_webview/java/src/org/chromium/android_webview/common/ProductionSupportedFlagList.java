@@ -1208,9 +1208,6 @@ public final class ProductionSupportedFlagList {
                 "HttpCacheInitializeDiskCacheBackendEarly",
                 "If true, Initialize disk cache backend early for HTTP cache."),
         Flag.baseFeature(
-                "PartitionAllocLockTuneSpin",
-                "When enabled, PartitionAlloc's SpinningMutex will use a different spin count."),
-        Flag.baseFeature(
                 ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
                 "When enabled, physical keyboard autocorrect underline will display"),
         Flag.baseFeature(

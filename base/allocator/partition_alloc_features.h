@@ -224,11 +224,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocFreeWithSize);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                        kPartitionAllocStrictFreeSizeCheck);
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLockTuneSpin);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kPartitionAllocLockSpinCount);
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-
 }  // namespace base::features
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_

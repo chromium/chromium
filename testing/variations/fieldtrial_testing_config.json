@@ -17752,25 +17752,6 @@
             ]
         }
     ],
-    "PartitionAllocLockTuneSpin": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2048_20260302",
-                    "params": {
-                        "spin_count": "2048"
-                    },
-                    "enable_features": [
-                        "PartitionAllocLockTuneSpin"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocMemoryReclaimer": [
         {
             "platforms": [

@@ -442,16 +442,4 @@ BASE_FEATURE_PARAM(bool,
                    "strict-free-size-check",
                    true);
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-BASE_FEATURE(kPartitionAllocLockTuneSpin, FEATURE_ENABLED_BY_DEFAULT);
-
-// On ARM64, 2048 cycles results in spinning for 500-1500 nanoseconds on most
-// Android devices which overlaps with the time spent on a futex syscall.
-BASE_FEATURE_PARAM(int,
-                   kPartitionAllocLockSpinCount,
-                   &kPartitionAllocLockTuneSpin,
-                   "spin_count",
-                   2048);
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-
 }  // namespace base::features
