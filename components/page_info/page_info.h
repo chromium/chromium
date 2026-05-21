@@ -274,6 +274,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
     return safe_browsing_status_;
   }
 
+  const GURL& site_url() const { return site_url_; }
+
   // For most sites, this returns a human-friendly string based on site origin,
   // without scheme, the username and password, the path or trivial subdomains.
   //

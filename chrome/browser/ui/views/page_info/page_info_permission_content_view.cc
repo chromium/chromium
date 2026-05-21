@@ -129,8 +129,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
         FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
             web_contents->GetBrowserContext());
     if (context) {
-      granted_file_paths = context->GetGrantedPaths(
-          url::Origin::Create(web_contents->GetLastCommittedURL()));
+      granted_file_paths =
+          context->GetGrantedPaths(url::Origin::Create(presenter_->site_url()));
     }
     if (!granted_file_paths.empty()) {
       std::unique_ptr<views::ScrollView> scroll_panel =
@@ -281,8 +281,8 @@ void PageInfoPermissionContentView::SetPermissionInfo(
       remember_setting_->SetVisible(context &&
                                     setting != CONTENT_SETTING_BLOCK);
       remember_setting_->SetChecked(
-          context && context->OriginHasExtendedPermission(url::Origin::Create(
-                         web_contents_->GetLastCommittedURL())));
+          context && context->OriginHasExtendedPermission(
+                         url::Origin::Create(presenter_->site_url())));
     }
   } else {
     auto* info =
@@ -380,8 +380,7 @@ void PageInfoPermissionContentView::ToggleFileSystemExtendedPermissions() {
     return;
   }
   bool checkbox_enabled = remember_setting_->GetChecked();
-  const url::Origin site_origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  const url::Origin site_origin = url::Origin::Create(presenter_->site_url());
   bool origin_has_extended_permission =
       context->OriginHasExtendedPermission(site_origin);
 
