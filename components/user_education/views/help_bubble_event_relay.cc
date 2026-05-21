@@ -75,12 +75,15 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
     // Pass mouse events on to the button as normal.
     case ui::EventType::kMousePressed:
       if (target_button) {
+        const auto weak_this = weak_ptr_factory_.GetWeakPtr();
         auto* const mouse_event = event.AsMouseEvent();
         target_button->OnMousePressed(ui::MouseEvent(
             ui::EventType::kMousePressed, gfx::PointF(target_point),
             gfx::PointF(screen_coords), mouse_event->time_stamp(),
             mouse_event->flags(), mouse_event->changed_button_flags()));
-        sent_click_ = true;
+        if (weak_this) {
+          weak_this->sent_click_ = true;
+        }
       }
       break;
     case ui::EventType::kMouseReleased:
@@ -98,13 +101,16 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
     // purpose of pressing buttons.
     case ui::EventType::kTouchPressed:
       if (target_button) {
+        const auto weak_this = weak_ptr_factory_.GetWeakPtr();
         auto* const touch_event = event.AsTouchEvent();
         target_button->OnMousePressed(ui::MouseEvent(
             ui::EventType::kMousePressed, gfx::PointF(target_point),
             gfx::PointF(screen_coords), touch_event->time_stamp(),
             touch_event->flags() | ui::EF_LEFT_MOUSE_BUTTON | ui::EF_FROM_TOUCH,
             ui::EF_LEFT_MOUSE_BUTTON));
-        sent_click_ = true;
+        if (weak_this) {
+          weak_this->sent_click_ = true;
+        }
       }
       break;
     case ui::EventType::kTouchReleased:
@@ -121,12 +127,15 @@ bool HelpBubbleEventRelay::OnEvent(const ui::LocatedEvent& event,
     // If a gesture is received, forward it as-is.
     case ui::EventType::kGestureTap:
       if (target_button) {
+        const auto weak_this = weak_ptr_factory_.GetWeakPtr();
         auto* const gesture = event.AsGestureEvent();
         ui::GestureEvent tap(gesture->x(), gesture->y(), gesture->flags(),
                              gesture->time_stamp(), gesture->details(),
                              gesture->unique_touch_event_id());
         target_button->button_controller()->OnGestureEvent(&tap);
-        sent_click_ = true;
+        if (weak_this) {
+          weak_this->sent_click_ = true;
+        }
       }
       break;
 
