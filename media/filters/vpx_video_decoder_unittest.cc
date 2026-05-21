@@ -481,7 +481,8 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)
 
-TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
+// TODO(crbug.com/395659818): Enable after updating parsing in Chromium.
+TEST_F(VpxVideoDecoderTest, DISABLED_AgtmMetadata) {
   base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
   Initialize();
 
