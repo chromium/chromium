@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
@@ -49,8 +50,12 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
@@ -1630,6 +1635,42 @@ TEST_P(ProduceSubCaptureTargetTest, IdStringFormat) {
   const String& id = target->GetId();
   EXPECT_TRUE(id.ContainsOnlyAsciiOrEmpty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(id.Ascii()).is_valid());
+}
+
+class MediaDevicesSimTest : public SimTest {};
+
+TEST_F(MediaDevicesSimTest, SetPreferredSinkIdRejectsInIframe) {
+  SimRequest main_resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Complete(R"(
+    <iframe id="test-iframe" src="about:blank"></iframe>
+  )");
+
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("test-iframe")));
+  ASSERT_TRUE(iframe);
+  auto* child_frame = To<LocalFrame>(iframe->ContentFrame());
+  ASSERT_TRUE(child_frame);
+
+  LocalDOMWindow* child_window = child_frame->DomWindow();
+  ASSERT_TRUE(child_window);
+  ASSERT_FALSE(child_frame->IsOutermostMainFrame());
+
+  ScriptState* child_script_state = ToScriptStateForMainWorld(child_frame);
+  ScriptState::Scope child_scope(child_script_state);
+
+  MediaDevices* child_media_devices =
+      MakeGarbageCollected<MediaDevices>(*child_window->navigator());
+
+  DummyExceptionStateForTesting exception_state;
+  child_media_devices->setPreferredSinkId(child_script_state, kValidSinkId,
+                                          exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            ToExceptionCode(DOMExceptionCode::kInvalidStateError));
+  EXPECT_EQ(exception_state.Message(),
+            "Can only be called from the top-level document.");
 }
 
 // TODO(crbug.com/1418194): Add tests after MediaDevicesDispatcherHost

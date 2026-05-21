@@ -53,6 +53,7 @@
 #include "media/capture/video/video_capture_system_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -217,7 +218,8 @@ class MediaDevicesDispatcherHostTest
     InitializeRenderFrameHost();
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
         render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
-        render_frame_host_->GetGlobalId(), media_stream_manager_.get());
+        render_frame_host_->GetGlobalId(), media_stream_manager_.get(),
+        true /* is_outermost_main_frame */);
     media_stream_manager_->media_devices_manager()
         ->set_get_salt_and_origin_cb_for_testing(base::BindRepeating(
             &MediaDevicesDispatcherHostTest::GetSaltAndOrigin,
@@ -953,6 +955,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
     MediaDevicesDispatcherHost::Create(
         render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
         render_frame_host_->GetGlobalId(), media_stream_manager_.get(),
+        true /* is_outermost_main_frame */,
         client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());
     EXPECT_EQ(media_stream_manager_->media_devices_manager()
@@ -976,6 +979,34 @@ TEST_P(MediaDevicesDispatcherHostTest, SetPreferredSinkIdNoFeature) {
                   render_frame_host_->GetGlobalId().child_id,
                   bad_message::MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE));
   host_->SetPreferredSinkId(kDefaultAudioDeviceID, base::DoNothing());
+}
+
+TEST_P(MediaDevicesDispatcherHostTest, SetPreferredSinkIdNotMainFrame) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPreferredAudioOutputDevices);
+
+  std::string received_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { received_error = error; }));
+
+  mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
+  MediaDevicesDispatcherHost::Create(
+      render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
+      render_frame_host_->GetGlobalId(), media_stream_manager_.get(),
+      /*is_outermost_main_frame=*/false, client.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<media::OutputDeviceStatus> future;
+  client->SetPreferredSinkId(kDefaultAudioDeviceID, future.GetCallback());
+
+  EXPECT_EQ(
+      future.Get(),
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
+  EXPECT_EQ(
+      received_error,
+      "setPreferredSinkId can only be called from the top-level document.");
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoFeature) {

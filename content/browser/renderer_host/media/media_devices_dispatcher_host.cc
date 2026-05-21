@@ -88,20 +88,24 @@ void MediaDevicesDispatcherHost::Create(
     const GlobalRenderFrameHostToken& main_frame_host_token,
     GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager,
+    bool is_outermost_main_frame,
     mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   media_stream_manager->media_devices_manager()->RegisterDispatcherHost(
       std::make_unique<MediaDevicesDispatcherHost>(
-          main_frame_host_token, render_frame_host_id, media_stream_manager),
+          main_frame_host_token, render_frame_host_id, media_stream_manager,
+          is_outermost_main_frame),
       std::move(receiver));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
     const GlobalRenderFrameHostToken& main_frame_host_token,
     GlobalRenderFrameHostId render_frame_host_id,
-    MediaStreamManager* media_stream_manager)
+    MediaStreamManager* media_stream_manager,
+    bool is_outermost_main_frame)
     : main_frame_host_token_(main_frame_host_token),
       render_frame_host_id_(render_frame_host_id),
+      is_outermost_main_frame_(is_outermost_main_frame),
       media_stream_manager_(media_stream_manager),
       num_pending_audio_input_parameters_(0),
       authorization_handler_factory_callback_(base::BindRepeating(
@@ -351,6 +355,15 @@ void MediaDevicesDispatcherHost::SetPreferredSinkId(
     const std::string& hashed_sink_id,
     SetPreferredSinkIdCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!is_outermost_main_frame_) {
+    mojo::ReportBadMessage(
+        "setPreferredSinkId can only be called from the top-level document.");
+    std::move(callback).Run(
+        media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(
           blink::features::kPreferredAudioOutputDevices)) {
     ReceivedBadMessage(render_frame_host_id_.child_id,

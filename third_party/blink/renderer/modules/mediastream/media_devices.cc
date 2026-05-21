@@ -985,11 +985,17 @@ ScriptPromise<IDLUndefined> MediaDevices::setPreferredSinkId(
     return ScriptPromise<IDLUndefined>();
   }
 
+  LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
+  if (!frame || !frame->IsOutermostMainFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Can only be called from the top-level document.");
+    return ScriptPromise<IDLUndefined>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
-
-  LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
   GetDispatcherHost(frame).SetPreferredSinkId(
       sink_id,
       BindOnce(&MediaDevices::SetPreferredSinkIdResultReceived,
