@@ -70,7 +70,7 @@ class SaveFileManager::SimpleURLLoaderHelper
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
       SaveFileManager* save_file_manager,
-      base::OnceClosure quarantine_callback,
+      base::OnceCallback<void(const GURL&)> quarantine_callback,
       URLLoaderCompleteCallback on_complete_cb) {
     return std::unique_ptr<SimpleURLLoaderHelper>(new SimpleURLLoaderHelper(
         std::move(resource_request), save_item_id, save_package_id,
@@ -94,7 +94,7 @@ class SaveFileManager::SimpleURLLoaderHelper
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
       SaveFileManager* save_file_manager,
-      base::OnceClosure quarantine_callback,
+      base::OnceCallback<void(const GURL&)> quarantine_callback,
       URLLoaderCompleteCallback on_complete_cb)
       : save_file_manager_(save_file_manager),
         save_item_id_(save_item_id),
@@ -159,7 +159,7 @@ class SaveFileManager::SimpleURLLoaderHelper
   SaveItemId save_item_id_;
   SavePackageId save_package_id_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  base::OnceClosure quarantine_callback_;
+  base::OnceCallback<void(const GURL&)> quarantine_callback_;
   URLLoaderCompleteCallback on_complete_cb_;
 };
 
@@ -232,11 +232,10 @@ void SaveFileManager::SaveURL(
   DCHECK(!packages_.contains(save_item_id));
   packages_[save_item_id] = save_package;
 
-  base::OnceClosure quarantine_callback = base::BindOnce(
+  base::OnceCallback<void(const GURL&)> quarantine_callback = base::BindOnce(
       &SaveFileManager::QuarantineItem, this, save_item_id, save_package->id(),
-      context->IsOffTheRecord() ? GURL() : url,
       context->IsOffTheRecord() ? GURL() : referrer.url, client_guid,
-      std::move(remote_quarantine));
+      std::move(remote_quarantine), context->IsOffTheRecord());
 
   // Register a saving job.
   if (save_source == SaveFileCreateInfo::SAVE_FILE_FROM_NET) {
@@ -394,16 +393,18 @@ void SaveFileManager::SendCancelRequest(SaveItemId save_item_id) {
 void SaveFileManager::QuarantineItem(
     SaveItemId save_item_id,
     SavePackageId save_package_id,
-    const GURL& url,
     const GURL& referrer_url,
     const std::string& client_guid,
-    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine) {
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+    bool is_off_the_record,
+    const GURL& url) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
   SaveFile* save_file = LookupSaveFile(save_item_id);
   CHECK(save_file);
 
   save_file->AnnotateWithSourceInformation(
-      client_guid, url, referrer_url, std::move(remote_quarantine),
+      client_guid, is_off_the_record ? GURL() : url, referrer_url,
+      std::move(remote_quarantine),
       base::BindOnce(&SaveFileManager::OnQuarantineComplete, this, save_item_id,
                      save_package_id));
 }

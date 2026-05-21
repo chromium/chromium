@@ -82,7 +82,7 @@ struct SaveFileCreateInfo {
   // Source type of saved file.
   SaveFileSource save_source;
   // Callback to run to quarantine the file;
-  base::OnceClosure quarantine_callback;
+  base::OnceCallback<void(const GURL&)> quarantine_callback;
 };
 
 }  // namespace content

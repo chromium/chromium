@@ -93,7 +93,7 @@ std::string SaveFile::DebugString() const {
 
 void SaveFile::RunQuarantineCallback() {
   if (!info_->quarantine_callback.is_null()) {
-    std::move(info_->quarantine_callback).Run();
+    std::move(info_->quarantine_callback).Run(info_->final_url);
   }
 }
 

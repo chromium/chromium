@@ -17,6 +17,7 @@ SaveFileCreateInfo::SaveFileCreateInfo(const base::FilePath& path,
                                        SaveFileSource save_source)
     : path(path),
       url(url),
+      final_url(url),
       save_item_id(save_item_id),
       save_package_id(save_package_id),
       render_process_id(render_process_id),

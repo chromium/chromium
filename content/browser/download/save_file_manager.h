@@ -194,10 +194,11 @@ class CONTENT_EXPORT SaveFileManager
   void QuarantineItem(
       SaveItemId save_item_id,
       SavePackageId save_package_id,
-      const GURL& url,
       const GURL& referrer_url,
       const std::string& client_guid,
-      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine);
+      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+      bool is_off_the_record,
+      const GURL& url);
 
   // Called on the download TaskRunner when file quarantine finishes on a
   // SaveItem.
