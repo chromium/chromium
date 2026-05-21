@@ -116,26 +116,6 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
           healthd::RoutineArgument::Tag::kUnrecognizedArgument));
 }
 
-TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, IsRoutineArgumentSupported) {
-  cros_healthd::FakeCrosHealthd::Get()
-      ->SetIsRoutineArgumentSupportedResponseForTesting(
-          healthd::SupportStatus::NewSupported(healthd::Supported::New()));
-
-  auto arg =
-      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
-          true);
-  base::test::TestFuture<crosapi::TelemetryExtensionSupportStatusPtr> future;
-  routines_service()->IsRoutineArgumentSupported(std::move(arg),
-                                                 future.GetCallback());
-
-  FlushForTesting();
-
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Take(),
-            crosapi::TelemetryExtensionSupportStatus::NewSupported(
-                crosapi::TelemetryExtensionSupported::New()));
-}
-
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, StartRoutine) {
   mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
 

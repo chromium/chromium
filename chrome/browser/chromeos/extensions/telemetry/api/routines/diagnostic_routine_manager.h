@@ -79,11 +79,6 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
       const base::Uuid& routine_id,
       crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr reply);
 
-  void IsRoutineArgumentSupported(
-      crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr arg,
-      base::OnceCallback<
-          void(crosapi::mojom::TelemetryExtensionSupportStatusPtr)> callback);
-
   // `ExtensionRegistryObserver`:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,

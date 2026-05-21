@@ -295,15 +295,33 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertVolumeButtonRoutineButtonType) {
   EXPECT_EQ(
       ConvertVolumeButtonRoutineButtonType(cx_diag::VolumeButtonType::kNone),
-      crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+      ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType::
           kUnmappedEnumField);
 
   EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
                 cx_diag::VolumeButtonType::kVolumeUp),
+            ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType::
+                kVolumeUp);
+
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
+                cx_diag::VolumeButtonType::kVolumeDown),
+            ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType::
+                kVolumeDown);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertVolumeButtonRoutineButtonTypeCrosapi) {
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonTypeCrosapi(
+                cx_diag::VolumeButtonType::kNone),
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kUnmappedEnumField);
+
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonTypeCrosapi(
+                cx_diag::VolumeButtonType::kVolumeUp),
             crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
                 ButtonType::kVolumeUp);
 
-  EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonTypeCrosapi(
                 cx_diag::VolumeButtonType::kVolumeDown),
             crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
                 ButtonType::kVolumeDown);

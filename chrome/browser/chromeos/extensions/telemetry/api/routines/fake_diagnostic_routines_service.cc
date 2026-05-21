@@ -36,11 +36,6 @@ void FakeDiagnosticRoutinesService::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
-void FakeDiagnosticRoutinesService::SetIsRoutineArgumentSupportedResponse(
-    crosapi::TelemetryExtensionSupportStatusPtr result) {
-  is_routine_argument_supported_response_ = std::move(result);
-}
-
 void FakeDiagnosticRoutinesService::CreateRoutine(
     crosapi::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
     mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineControl>
@@ -55,12 +50,6 @@ void FakeDiagnosticRoutinesService::CreateRoutine(
   if (on_routine_created_) {
     on_routine_created_.Run();
   }
-}
-
-void FakeDiagnosticRoutinesService::IsRoutineArgumentSupported(
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
-    IsRoutineArgumentSupportedCallback callback) {
-  std::move(callback).Run(is_routine_argument_supported_response_->Clone());
 }
 
 void FakeDiagnosticRoutinesService::SetOnCreateRoutineCalled(

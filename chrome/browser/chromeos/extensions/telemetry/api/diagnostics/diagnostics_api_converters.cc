@@ -62,7 +62,7 @@ ConvertExtensionUnionToMojoUnion(
   }
 
   auto args = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
-  args->type = ConvertVolumeButtonRoutineButtonType(cx_args.button_type);
+  args->type = ConvertVolumeButtonRoutineButtonTypeCrosapi(cx_args.button_type);
   args->timeout = base::Seconds(cx_args.timeout_seconds);
   return crosapi::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
       std::move(args));
@@ -388,8 +388,25 @@ ash::cros_healthd::mojom::NvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
   NOTREACHED();
 }
 
-crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
+ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType
 ConvertVolumeButtonRoutineButtonType(
+    cx_diag::VolumeButtonType volume_button_type) {
+  switch (volume_button_type) {
+    case cx_diag::VolumeButtonType::kNone:
+      return ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType::
+          kUnmappedEnumField;
+    case cx_diag::VolumeButtonType::kVolumeUp:
+      return ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType::
+          kVolumeUp;
+    case cx_diag::VolumeButtonType::kVolumeDown:
+      return ash::cros_healthd::mojom::VolumeButtonRoutineArgument::ButtonType::
+          kVolumeDown;
+  }
+  NOTREACHED();
+}
+
+crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
+ConvertVolumeButtonRoutineButtonTypeCrosapi(
     cx_diag::VolumeButtonType volume_button_type) {
   switch (volume_button_type) {
     case cx_diag::VolumeButtonType::kNone:

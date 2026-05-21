@@ -34,10 +34,6 @@ class FakeDiagnosticRoutinesService
 
   void FlushForTesting();
 
-  // Sets the response value for a call to `IsRoutineArgumentSupported`.
-  void SetIsRoutineArgumentSupportedResponse(
-      crosapi::mojom::TelemetryExtensionSupportStatusPtr result);
-
   // `TelemetryDiagnosticRoutinesService`:
   void CreateRoutine(
       crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
@@ -45,9 +41,6 @@ class FakeDiagnosticRoutinesService
           control_remote,
       mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
           observer_receiver) override;
-  void IsRoutineArgumentSupported(
-      crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
-      IsRoutineArgumentSupportedCallback callback) override;
 
   // Sets a callback that is invoked when `CreateRoutine` was called.
   // This is useful since in tests we usually want to perform a certain action
@@ -62,11 +55,6 @@ class FakeDiagnosticRoutinesService
  private:
   mojo::Receiver<crosapi::mojom::TelemetryDiagnosticRoutinesService> receiver_{
       this};
-
-  crosapi::mojom::TelemetryExtensionSupportStatusPtr
-      is_routine_argument_supported_response_{
-          crosapi::mojom::TelemetryExtensionSupportStatus::
-              NewUnmappedUnionField(0)};
 
   base::RepeatingClosure on_routine_created_;
   std::map<crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag,

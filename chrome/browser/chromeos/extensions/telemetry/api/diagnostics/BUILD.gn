@@ -24,6 +24,7 @@ source_set("diagnostics") {
     "//chrome/browser/chromeos/extensions/telemetry/api/routines:routine_manager",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/telemetry_extension/diagnostics",
+    "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",

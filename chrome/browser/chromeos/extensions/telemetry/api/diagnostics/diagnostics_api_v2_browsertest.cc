@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -111,8 +113,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        IsRoutineArgSupportedApiInternalError) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(0));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -133,11 +136,13 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        IsRoutineArgSupportedException) {
-  auto exception = crosapi::TelemetryExtensionException::New();
+  auto exception = ash::cros_healthd::mojom::Exception::New();
   exception->debug_message = "TEST_MESSAGE";
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewException(
-          std::move(exception)));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewException(
+              std::move(exception)));
+
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -159,10 +164,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticsApiV2BrowserTest,
     IsRoutineArgSupportedSuccessWithUnrecognizedRoutineName) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewUnsupported(
-          crosapi::TelemetryExtensionUnsupported::New("TEST_MESSAGE",
-                                                      /*reason=*/nullptr)));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewUnsupported(
+              ash::cros_healthd::mojom::Unsupported::New("TEST_MESSAGE",
+                                                         /*reason=*/nullptr)));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -182,9 +188,10 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        IsRoutineArgSupportedSuccess) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewSupported(
-          crosapi::TelemetryExtensionSupported::New()));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewSupported(
+              ash::cros_healthd::mojom::Supported::New()));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -725,8 +732,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsMemoryRoutineArgSupportedApiInternalError) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(0));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -747,11 +755,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsMemoryRoutineArgSupportedException) {
-  auto exception = crosapi::TelemetryExtensionException::New();
+  auto exception = ash::cros_healthd::mojom::Exception::New();
   exception->debug_message = "TEST_MESSAGE";
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewException(
-          std::move(exception)));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewException(
+              std::move(exception)));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -772,9 +781,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsMemoryRoutineArgSupportedSuccess) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewSupported(
-          crosapi::TelemetryExtensionSupported::New()));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewSupported(
+              ash::cros_healthd::mojom::Supported::New()));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -796,8 +806,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticsApiV2BrowserTest,
     LegacyIsVolumeButtonRoutineArgSupportedApiInternalError) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(0));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -819,11 +830,12 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsVolumeButtonRoutineArgSupportedException) {
-  auto exception = crosapi::TelemetryExtensionException::New();
+  auto exception = ash::cros_healthd::mojom::Exception::New();
   exception->debug_message = "TEST_MESSAGE";
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewException(
-          std::move(exception)));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewException(
+              std::move(exception)));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -845,9 +857,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsVolumeButtonRoutineArgSupportedSuccess) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewSupported(
-          crosapi::TelemetryExtensionSupported::New()));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewSupported(
+              ash::cros_healthd::mojom::Supported::New()));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -954,8 +967,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsFanRoutineArgSupportedApiInternalError) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(0));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -975,11 +989,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsFanRoutineArgSupportedException) {
-  auto exception = crosapi::TelemetryExtensionException::New();
+  auto exception = ash::cros_healthd::mojom::Exception::New();
   exception->debug_message = "TEST_MESSAGE";
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewException(
-          std::move(exception)));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewException(
+              std::move(exception)));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -999,9 +1014,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        LegacyIsFanRoutineArgSupportedSuccess) {
-  fake_service().SetIsRoutineArgumentSupportedResponse(
-      crosapi::TelemetryExtensionSupportStatus::NewSupported(
-          crosapi::TelemetryExtensionSupported::New()));
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetIsRoutineArgumentSupportedResponseForTesting(
+          ash::cros_healthd::mojom::SupportStatus::NewSupported(
+              ash::cros_healthd::mojom::Supported::New()));
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(

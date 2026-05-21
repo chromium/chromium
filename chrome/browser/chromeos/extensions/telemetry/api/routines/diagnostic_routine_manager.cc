@@ -199,14 +199,6 @@ bool DiagnosticRoutineManager::ReplyToRoutineInquiryForExtension(
   return true;
 }
 
-void DiagnosticRoutineManager::IsRoutineArgumentSupported(
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr arg,
-    base::OnceCallback<void(crosapi::TelemetryExtensionSupportStatusPtr)>
-        callback) {
-  GetRemoteService()->IsRoutineArgumentSupported(std::move(arg),
-                                                 std::move(callback));
-}
-
 void DiagnosticRoutineManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,

@@ -126,22 +126,6 @@ void TelemetryDiagnosticsRoutineServiceAsh::CreateRoutine(
           std::move(cros_healthd_receiver), std::move(cros_healthd_observer));
 }
 
-void TelemetryDiagnosticsRoutineServiceAsh::IsRoutineArgumentSupported(
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr arg,
-    IsRoutineArgumentSupportedCallback callback) {
-  cros_healthd::ServiceConnection::GetInstance()
-      ->GetRoutinesService()
-      ->IsRoutineArgumentSupported(
-          converters::ConvertRoutinePtr(std::move(arg)),
-          base::BindOnce(
-              [](IsRoutineArgumentSupportedCallback callback,
-                 healthd::SupportStatusPtr status) {
-                std::move(callback).Run(
-                    converters::ConvertCommonPtr(std::move(status)));
-              },
-              std::move(callback)));
-}
-
 void TelemetryDiagnosticsRoutineServiceAsh::OnConnectionClosed(
     base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection) {
   routine_controls_and_observers_.erase(closed_connection);

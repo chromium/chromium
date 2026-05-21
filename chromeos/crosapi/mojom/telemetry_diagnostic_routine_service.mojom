@@ -624,6 +624,8 @@ interface TelemetryDiagnosticRoutineObserver {
 // NextMinVersion: 3, NextIndex: 2
 [Uuid="0c7a9109-17eb-459d-82cd-60903bba315d"]
 interface TelemetryDiagnosticRoutinesService {
+  // IsRoutineArgumentSupported@1 was removed.
+
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the
   // RoutineArgument supplied.
@@ -668,17 +670,4 @@ interface TelemetryDiagnosticRoutinesService {
       TelemetryDiagnosticRoutineArgument routine_argument,
       pending_receiver<TelemetryDiagnosticRoutineControl> routine_receiver,
       pending_remote<TelemetryDiagnosticRoutineObserver>? routine_observer);
-
-  // Checks whether a given `TelemetryDiagnosticRoutineArgument` is supported.
-  //
-  // The request:
-  // * |routine_argument| - a TelemetryDiagnosticRoutineArgument type that
-  //                        provides all the necessary parameters to create a
-  //                        particular type of routine.
-  //
-  // The response:
-  // * |status| - See the documentation of `TelemetryExtensionSupportStatus`.
-  [MinVersion=2] IsRoutineArgumentSupported@1(
-      TelemetryDiagnosticRoutineArgument routine_argument) =>
-        (TelemetryExtensionSupportStatus status);
 };
