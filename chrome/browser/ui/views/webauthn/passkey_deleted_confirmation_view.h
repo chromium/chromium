@@ -27,9 +27,6 @@ class PasskeyDeletedConfirmationView : public PasswordBubbleViewBase {
   const PasskeyDeletedConfirmationController* GetController() const override;
   ui::ImageModel GetWindowIcon() override;
 
-  // Notifies the `controller_` to open password manager and closes the bubble.
-  void OnManagePasskeysButtonClicked();
-
   PasskeyDeletedConfirmationController controller_;
 };
 

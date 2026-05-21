@@ -42,8 +42,6 @@ class PasskeyUpgradeBubbleView : public PasswordBubbleViewBase {
   RichHoverButton* manage_passkeys_button_for_testing();
 
  private:
-  void ManagePasskeysButtonClicked();
-
   // PasswordBubbleViewBase:
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;

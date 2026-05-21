@@ -47,10 +47,6 @@ class AmbientSigninController
     : public AuthenticatorRequestDialogModel::Observer,
       public content::DocumentUserData<AmbientSigninController> {
  public:
-  using PasskeyCredentialSelectionCallback =
-      base::OnceCallback<void(const std::vector<uint8_t>)>;
-  using PasswordCredentialSelectionCallback =
-      base::OnceCallback<void(PasswordCredentialPair)>;
 
   ~AmbientSigninController() override;
 

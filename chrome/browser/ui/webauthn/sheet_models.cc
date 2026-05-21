@@ -2094,10 +2094,6 @@ CombinedSelectorSheetModel::GetSelectionStatus(size_t index) const {
                                    : SelectionStatus::kNotSelected;
 }
 
-size_t CombinedSelectorSheetModel::GetSelectionIndex() const {
-  return selection_index_;
-}
-
 void CombinedSelectorSheetModel::SetSelectionIndex(size_t index) {
   selection_index_ = index;
 }

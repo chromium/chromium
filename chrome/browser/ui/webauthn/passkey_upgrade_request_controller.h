@@ -54,7 +54,6 @@ class PasskeyUpgradeRequestController
     : public password_manager::PasswordStoreConsumer,
       public GPMEnclaveTransaction::Delegate {
  public:
-  using Callback = base::OnceCallback<void(bool success)>;
   using EnclaveRequestCallback = base::RepeatingCallback<void(
       std::unique_ptr<device::enclave::CredentialRequest>)>;
 

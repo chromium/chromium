@@ -57,7 +57,6 @@ class HoverListView : public views::View {
                           std::u16string item_description,
                           bool enabled,
                           int item_tag);
-  void CreateAndAppendPlaceholderItem();
   views::Button& GetTopListItemView() const;
   int GetPreferredViewHeight() const;
 

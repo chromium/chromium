@@ -864,7 +864,6 @@ class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model);
 
   SelectionStatus GetSelectionStatus(size_t index) const;
-  size_t GetSelectionIndex() const;
   void SetSelectionIndex(size_t index);
 
  private:

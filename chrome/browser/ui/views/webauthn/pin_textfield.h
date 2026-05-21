@@ -15,10 +15,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 
-namespace ui {
-struct AXNodeData;
-}  // namespace ui
-
 // Implements textfield for entering a PIN number with custom drawing logic for
 // displaying each digit in a separate cell.
 class PinTextfield : public views::Textfield {
