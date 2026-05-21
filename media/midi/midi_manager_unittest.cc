@@ -28,6 +28,8 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/threading/simple_thread.h"
 #include "media/midi/midi_manager_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -443,6 +445,58 @@ TEST_F(PlatformMidiManagerTest, InstanceIdOverflow) {
 
   EndSession();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class ConcurrencyTestThread : public base::SimpleThread {
+ public:
+  ConcurrencyTestThread(const std::string& name, base::OnceClosure closure)
+      : base::SimpleThread(name), closure_(std::move(closure)) {}
+  void Run() override { std::move(closure_).Run(); }
+ private:
+  base::OnceClosure closure_;
+};
+
+TEST_F(MidiManagerTest, MidiManagerAndroidConcurrency) {
+  auto manager = std::make_unique<MidiManagerAndroid>(service());
+  std::atomic<bool> stop{false};
+
+  // SendThread: Repeatedly sends MIDI data. Since the list of output ports is
+  // empty, this quickly bounds-checks and exits under the lock, simulating
+  // high-frequency concurrent messaging activity.
+  base::OnceClosure send_task = base::BindOnce(
+      [](MidiManagerAndroid* manager, std::atomic<bool>* stop) {
+        std::vector<uint8_t> data;
+        while (!stop->load()) {
+          manager->DispatchSendMidiData(nullptr, 0, data, base::TimeTicks());
+        }
+      },
+      manager.get(), &stop);
+
+  // DetachThread: Repeatedly simulates detaching a device. Since the list
+  // of devices is empty, this quickly exits under the lock, simulating
+  // concurrent dynamic device-attach/detach JNI events.
+  base::OnceClosure detach_task = base::BindOnce(
+      [](MidiManagerAndroid* manager, std::atomic<bool>* stop) {
+        JNIEnv* env = base::android::AttachCurrentThread();
+        while (!stop->load()) {
+          manager->OnDetached(env, nullptr);
+        }
+      },
+      manager.get(), &stop);
+
+  ConcurrencyTestThread thread1("SendThread", std::move(send_task));
+  ConcurrencyTestThread thread2("DetachThread", std::move(detach_task));
+
+  thread1.Start();
+  thread2.Start();
+
+  base::PlatformThread::Sleep(base::Milliseconds(100));
+  stop.store(true);
+
+  thread1.Join();
+  thread2.Join();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
