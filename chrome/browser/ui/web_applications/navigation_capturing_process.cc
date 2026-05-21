@@ -456,9 +456,51 @@ NavigationCapturingProcess::NavigationCapturingProcess(
 }
 
 NavigationCapturingProcess::~NavigationCapturingProcess() {
-  bool record = navigation_capturing_enabled_;
+  // True if debug logs should be recorded to chrome://web-app-internals.
+  // Normally this is only done if the navigation capturing experiment is
+  // enabled and the navigation ended up being captured.
+  bool record_debug_data = false;
+
+  bool final_result_captured = launched_app_id_.has_value();
+
+  // Navigations that focus an existing app window/tab cancel the current
+  // navigation, so `launched_app_id_` is not set. We need to check the
+  // initial result to account for these.
+  if (initial_nav_handling_result_ ==
+          NavigationCapturingInitialResult::kFocusExistingAppWindow ||
+      initial_nav_handling_result_ ==
+          NavigationCapturingInitialResult::kFocusExistingAppBrowserTab) {
+    final_result_captured = true;
+  }
+
+  // If redirects happened, check if the final outcome was a capture.
+  if (redirection_result_.has_value()) {
+    switch (redirection_result_.value()) {
+      case NavigationCapturingRedirectionResult::kReparentBrowserTabToApp:
+      case NavigationCapturingRedirectionResult::kReparentAppToApp:
+      case NavigationCapturingRedirectionResult::kAppWindowOpened:
+      case NavigationCapturingRedirectionResult::kAppBrowserTabOpened:
+      case NavigationCapturingRedirectionResult::kNavigateExistingAppBrowserTab:
+      case NavigationCapturingRedirectionResult::kNavigateExistingAppWindow:
+      case NavigationCapturingRedirectionResult::kFocusExistingAppBrowserTab:
+      case NavigationCapturingRedirectionResult::kFocusExistingAppWindow:
+        final_result_captured = true;
+        break;
+      case NavigationCapturingRedirectionResult::
+          kReparentBrowserTabToBrowserTab:
+      case NavigationCapturingRedirectionResult::kReparentAppToBrowserTab:
+      case NavigationCapturingRedirectionResult::kSameContext:
+      case NavigationCapturingRedirectionResult::kNotCapturable:
+      case NavigationCapturingRedirectionResult::kNotHandled:
+        break;
+    }
+  }
+
+  record_debug_data = navigation_capturing_enabled_ && final_result_captured;
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  record = true;
+  // If expensive DCHECKs are enabled, always record debug logs to facilitate
+  // debugging.
+  record_debug_data = true;
 #endif
 
   RecordInitialNavigationCapturingResult(initial_nav_handling_result_);
@@ -469,7 +511,7 @@ NavigationCapturingProcess::~NavigationCapturingProcess() {
         redirection_result_.value());
   }
 
-  if (!debug_data_.empty() && record) {
+  if (!debug_data_.empty() && record_debug_data) {
     WebAppProvider* provider = WebAppProvider::GetForWebApps(&*profile_);
     provider->navigation_capturing_log().LogData(
         "NavigationCapturingProcess",
@@ -1746,15 +1788,12 @@ NavigationCapturingProcess::MaybeNavigationCapturingOverride
 NavigationCapturingProcess::NoInitialActionRedirectionHandlingEligible() {
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kNewTabRedirectionEligible;
-  // Don't record debug information for ALL navigations unless expensive DCHECKs
-  // are enabled.
-  // TODO(https://crbug.com/351775835): Consider not erasing debug data until we
-  // know the redirect wasn't navigation captured either.
+  // We do not clear debug_data_ here to preserve logs if this navigation
+  // redirects to a capturable app. The destructor will handle filtering out
+  // logs for navigations that were not captured.
 #if EXPENSIVE_DCHECKS_ARE_ON()
   debug_data_.Set("!result",
                   "no initial action, redirection handling eligible");
-#else
-  debug_data_.clear();
 #endif
   CHECK_EQ(state_, PipelineState::kCreated);
   state_ = PipelineState::kInitialOverrideCalculated;
