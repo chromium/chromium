@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/android/event_forwarder.h"
 #include "ui/android/view_android.h"
+#include "ui/android/view_android_observer.h"
 #include "ui/events/android/motion_event_android.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -27,7 +28,8 @@ namespace content {
 // Observes mouse events and updates the cursor overlay.
 // This is used to draw the mouse cursor for things such as tab sharing.
 class MouseCursorOverlayController::Observer
-    : public ui::EventForwarder::Observer {
+    : public ui::EventForwarder::Observer,
+      public ui::ViewAndroidObserver {
  public:
   Observer(MouseCursorOverlayController* controller, gfx::NativeView view)
       : controller_(controller), view_(view) {
@@ -35,6 +37,7 @@ class MouseCursorOverlayController::Observer
     CHECK(view_);
 
     controller_->OnMouseHasGoneIdle();
+    view_->AddObserver(this);
 
     // Get contentview's event forwarder.
     gfx::NativeView parent = view_->parent();
@@ -55,6 +58,7 @@ class MouseCursorOverlayController::Observer
     }
 
     if (view_) {
+      view_->RemoveObserver(this);
       view_ = nullptr;
       controller_->OnMouseHasGoneIdle();
     }
@@ -99,11 +103,14 @@ class MouseCursorOverlayController::Observer
     // Ignore touch events. The cursor overlay is strictly for mouse input.
   }
 
+  // ui::ViewAndroidObserver overrides:
+  void OnViewAndroidDestroyed() override { StopTracking(); }
+
   gfx::NativeView view() const { return view_; }
 
  private:
   raw_ptr<MouseCursorOverlayController> controller_;
-  gfx::NativeView view_;
+  raw_ptr<ui::ViewAndroid> view_;
   // The specific forwarder we are observing (the parent's).
   raw_ptr<ui::EventForwarder> observed_forwarder_ = nullptr;
 };

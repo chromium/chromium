@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/android_cursor_renderer.h"
+#include "ui/android/view_android.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -234,6 +235,7 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  MouseCursorOverlayController controller_;
 
  private:
   gfx::PointF ToAbsoluteLocationInView(float relative_x, float relative_y) {
@@ -266,8 +268,6 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     SimulateMouseTravel(x, y + distance_y, x, y);
     base::RunLoop().RunUntilIdle();
   }
-
-  MouseCursorOverlayController controller_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<wm::CursorLoader> cursor_loader_;
@@ -358,6 +358,19 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
   ExpectOverlaySizeMatchesCurrentCursor(*overlay);
   EXPECT_TRUE(IsUserInteractingWithView());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
+                       DoesNotCrashWhenViewAndroidDestroyed) {
+  auto dummy_view = std::make_unique<ui::ViewAndroid>();
+  controller_.SetTargetView(dummy_view.get());
+
+  dummy_view.reset();
+
+  // This accesses the observer's target view when updating the overlay.
+  controller_.OnMouseMoved(gfx::PointF());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // This test verifies that MouseCoordinatesUpdated calls are forwarded to the
 // overlay.
