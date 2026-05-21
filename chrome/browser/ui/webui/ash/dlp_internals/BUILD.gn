@@ -6,6 +6,38 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos)
 
+static_library("dlp_internals") {
+  sources = [
+    "dlp_internals_page_handler.cc",
+    "dlp_internals_page_handler.h",
+    "dlp_internals_ui.cc",
+    "dlp_internals_ui.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":mojo_bindings",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/enterprise/data_controls",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/dlp_internals:resources",
+    "//chrome/common",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
+    "//components/enterprise/data_controls/core/browser",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//ui/base/clipboard",
+    "//ui/webui",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "dlp_internals.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]

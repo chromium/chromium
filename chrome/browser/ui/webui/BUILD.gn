@@ -134,6 +134,7 @@ source_set("configs") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ui/webui/ash/config",
+      "//chrome/browser/ui/webui/ash/dlp_internals",
       "//chromeos/constants",
     ]
   }
