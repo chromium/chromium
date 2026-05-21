@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.text.SpannableString;
 import android.util.DisplayMetrics;
@@ -26,6 +28,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -187,7 +190,18 @@ public abstract class SuggestionsPopupWindow
         String wordToAdd = mHighlightedText;
         intent.putExtra(USER_DICTIONARY_EXTRA_WORD, wordToAdd);
         intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
+
+        ResolveInfo resolveInfo = PackageManagerUtils.resolveActivity(intent, 0);
+        if (resolveInfo != null
+                && resolveInfo.activityInfo != null
+                && resolveInfo.activityInfo.applicationInfo != null) {
+            int flags = resolveInfo.activityInfo.applicationInfo.flags;
+            if ((flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP))
+                    != 0) {
+                intent.setPackage(resolveInfo.activityInfo.packageName);
+                mContext.startActivity(intent);
+            }
+        }
     }
 
     private class SuggestionAdapter extends BaseAdapter {

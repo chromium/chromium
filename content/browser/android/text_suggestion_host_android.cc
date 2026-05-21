@@ -124,6 +124,10 @@ void TextSuggestionHostAndroid::ShowSpellCheckSuggestionMenu(
     return;
   }
 
+  if (!render_frame_host().HasTransientUserActivation()) {
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   Java_TextSuggestionPopupController_showSpellCheckSuggestionMenu(
       env, web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this),
@@ -139,6 +143,10 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
+    return;
+  }
+
+  if (!render_frame_host().HasTransientUserActivation()) {
     return;
   }
 
@@ -169,6 +177,9 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
 
 void TextSuggestionHostAndroid::StartSuggestionMenuTimer() {
   suggestion_menu_timeout_.Stop();
+  if (!render_frame_host().HasTransientUserActivation()) {
+    return;
+  }
   suggestion_menu_timeout_.Start(
       base::Milliseconds(gfx::ViewConfiguration::GetDoubleTapTimeoutInMs()));
 }
