@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_
-#define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
+#define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
 
 #include <memory>
 
@@ -21,15 +21,15 @@ class PersonalContextFirstRunBottomSheetBridge;
 }
 #endif
 
-class ChromeAccessibilityAnnotatorFirstRunClient
+class ChromePersonalContextFirstRunClient
     : public accessibility_annotator::AccessibilityAnnotatorFirstRunClient {
  public:
-  ChromeAccessibilityAnnotatorFirstRunClient();
-  ChromeAccessibilityAnnotatorFirstRunClient(
-      const ChromeAccessibilityAnnotatorFirstRunClient&) = delete;
-  ChromeAccessibilityAnnotatorFirstRunClient& operator=(
-      const ChromeAccessibilityAnnotatorFirstRunClient&) = delete;
-  ~ChromeAccessibilityAnnotatorFirstRunClient() override;
+  ChromePersonalContextFirstRunClient();
+  ChromePersonalContextFirstRunClient(
+      const ChromePersonalContextFirstRunClient&) = delete;
+  ChromePersonalContextFirstRunClient& operator=(
+      const ChromePersonalContextFirstRunClient&) = delete;
+  ~ChromePersonalContextFirstRunClient() override;
 
   // AccessibilityAnnotatorFirstRunClient:
   void ShowRemoteAnnotatorInfo(
@@ -49,4 +49,4 @@ class ChromeAccessibilityAnnotatorFirstRunClient
 #endif
 };
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CLIENT_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_CHROME_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_

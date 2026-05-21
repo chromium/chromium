@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/accessibility_annotator_internals/personal_context_internals_page_handler.h"
 
-#include "chrome/browser/accessibility_annotator/first_run/accessibility_annotator_first_run_service_factory.h"
+#include "chrome/browser/accessibility_annotator/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service.h"
 
@@ -23,7 +23,7 @@ PersonalContextInternalsPageHandler::~PersonalContextInternalsPageHandler() =
 void PersonalContextInternalsPageHandler::TriggerFirstRun(
     TriggerFirstRunCallback callback) {
   auto* service =
-      AccessibilityAnnotatorFirstRunServiceFactory::GetForProfile(profile_);
+      PersonalContextFirstRunServiceFactory::GetForProfile(profile_);
   if (!service) {
     std::move(callback).Run(false);
     return;

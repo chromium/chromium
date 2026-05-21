@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/first_run/chrome_accessibility_annotator_first_run_client.h"
+#include "chrome/browser/accessibility_annotator/first_run/chrome_personal_context_first_run_client.h"
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
@@ -33,13 +33,13 @@ accessibility_annotator::InfoResult ToInfoResult(
 }  // namespace
 #endif
 
-ChromeAccessibilityAnnotatorFirstRunClient::
-    ChromeAccessibilityAnnotatorFirstRunClient() = default;
+ChromePersonalContextFirstRunClient::ChromePersonalContextFirstRunClient() =
+    default;
 
-ChromeAccessibilityAnnotatorFirstRunClient::
-    ~ChromeAccessibilityAnnotatorFirstRunClient() = default;
+ChromePersonalContextFirstRunClient::~ChromePersonalContextFirstRunClient() =
+    default;
 
-void ChromeAccessibilityAnnotatorFirstRunClient::ShowRemoteAnnotatorInfo(
+void ChromePersonalContextFirstRunClient::ShowRemoteAnnotatorInfo(
     content::WebContents* web_contents,
     accessibility_annotator::FirstRunInvocationSource invocation_source,
     base::OnceCallback<void(accessibility_annotator::InfoResult)> callback) {
@@ -68,15 +68,15 @@ void ChromeAccessibilityAnnotatorFirstRunClient::ShowRemoteAnnotatorInfo(
   android_bridge_ = std::make_unique<
       personal_context::PersonalContextFirstRunBottomSheetBridge>(
       web_contents,
-      base::BindOnce(&ChromeAccessibilityAnnotatorFirstRunClient::
-                         OnRemoteAnnotatorInfoResult,
-                     base::Unretained(this), std::move(callback)));
+      base::BindOnce(
+          &ChromePersonalContextFirstRunClient::OnRemoteAnnotatorInfoResult,
+          base::Unretained(this), std::move(callback)));
   android_bridge_->Show();
 #endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ChromeAccessibilityAnnotatorFirstRunClient::OnRemoteAnnotatorInfoResult(
+void ChromePersonalContextFirstRunClient::OnRemoteAnnotatorInfoResult(
     base::OnceCallback<void(accessibility_annotator::InfoResult)> callback,
     accessibility_annotator::InfoResult result) {
   std::move(callback).Run(result);

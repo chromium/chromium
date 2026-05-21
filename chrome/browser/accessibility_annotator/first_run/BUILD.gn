@@ -8,10 +8,10 @@ if (is_android) {
 
 source_set("first_run") {
   sources = [
-    "accessibility_annotator_first_run_service_factory.cc",
-    "accessibility_annotator_first_run_service_factory.h",
-    "chrome_accessibility_annotator_first_run_client.cc",
-    "chrome_accessibility_annotator_first_run_client.h",
+    "chrome_personal_context_first_run_client.cc",
+    "chrome_personal_context_first_run_client.h",
+    "personal_context_first_run_service_factory.cc",
+    "personal_context_first_run_service_factory.h",
   ]
 
   if (is_android) {
