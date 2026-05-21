@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
-#define COMPONENTS_SIGNIN_PUBLIC_BASE_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
+#ifndef CHROME_BROWSER_SIGNIN_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
+#define CHROME_BROWSER_SIGNIN_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
 
 #include <optional>
 #include <string>
@@ -28,8 +28,6 @@ namespace unexportable_keys {
 class UnexportableKeyService;
 class UnexportableKeyLoader;
 }  // namespace unexportable_keys
-
-namespace signin {
 
 // Helper class for generating registration tokens to bind the key on the
 // server.
@@ -89,8 +87,7 @@ class BindingKeyRegistrationTokenHelper {
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       KeyInitParam key_init_param);
 
-  BindingKeyRegistrationTokenHelper(const BindingKeyRegistrationTokenHelper&) =
-      delete;
+  BindingKeyRegistrationTokenHelper(const BindingKeyRegistrationTokenHelper&) = delete;
   BindingKeyRegistrationTokenHelper& operator=(
       const BindingKeyRegistrationTokenHelper&) = delete;
 
@@ -138,10 +135,7 @@ class BindingKeyRegistrationTokenHelper {
   const KeyInitParam key_init_param_;
 
   std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
-  base::WeakPtrFactory<BindingKeyRegistrationTokenHelper> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<BindingKeyRegistrationTokenHelper> weak_ptr_factory_{this};
 };
 
-}  // namespace signin
-
-#endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
+#endif  // CHROME_BROWSER_SIGNIN_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
