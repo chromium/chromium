@@ -47,11 +47,23 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
   CGRect _lastBounds;
   CAShapeLayer* _shadowLayer;
   UIVisualEffectView* _blurView;
+  // Shape layer used to render the background color. This allows the view's own
+  // background color to remain transparent/clear, preventing EarlGrey from
+  // incorrectly identifying the entire bounding box of the view as opaque and
+  // blocking visibility of underlying elements in tests.
+  CAShapeLayer* _backgroundShapeLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    self.opaque = NO;
+    _backgroundShapeLayer = [CAShapeLayer layer];
+    [self.layer insertSublayer:_backgroundShapeLayer atIndex:0];
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(updateBackgroundColor)];
+
     _maskLayer = [CAShapeLayer layer];
     _maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.layer.mask = _maskLayer;
@@ -130,20 +142,15 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
 
 // Updates the background color of the app bar.
 - (void)updateBackgroundColor {
+  UIColor* color = [UIColor colorNamed:kAppBarColor];
   if (self.hideColorBackground) {
-    self.backgroundColor = [UIColor clearColor];
-    return;
+    color = [UIColor clearColor];
+  } else if (self.incognito) {
+    color = [UIColor colorNamed:kAppBarIncognitoColor];
+  } else if (IsFullscreenRefactoringEnabled()) {
+    color = [UIColor clearColor];
   }
-  if (self.incognito) {
-    self.backgroundColor = [UIColor colorNamed:kAppBarIncognitoColor];
-    return;
-  }
-  if (IsFullscreenRefactoringEnabled()) {
-    self.backgroundColor = [UIColor clearColor];
-    return;
-  }
-
-  self.backgroundColor = [UIColor colorNamed:kAppBarColor];
+  _backgroundShapeLayer.fillColor = color.CGColor;
 }
 
 // Updates the cut out mask if the shape of the app bar changed.
@@ -166,6 +173,7 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
   [_maskPath closePath];
 
   _maskLayer.path = _maskPath.CGPath;
+  _backgroundShapeLayer.path = _maskPath.CGPath;
 
   // Inner shadow implementation.
   // Create a path that is specifically above the top cutout edge.
