@@ -53,8 +53,8 @@ class CONTENT_EXPORT MemoryConsumerRegistry
     void UpdateMemoryLimit(int percentage);
 
     // Adds/removes a consumer.
-    void AddMemoryConsumer(base::RegisteredMemoryConsumer consumer);
-    void RemoveMemoryConsumer(base::RegisteredMemoryConsumer consumer);
+    void AddMemoryConsumer(base::MemoryConsumer* consumer);
+    void RemoveMemoryConsumer(base::MemoryConsumer* consumer);
 
     const std::string& consumer_name() const { return consumer_name_; }
 
@@ -67,7 +67,7 @@ class CONTENT_EXPORT MemoryConsumerRegistry
 
     int memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
 
-    std::vector<base::RegisteredMemoryConsumer> memory_consumers_;
+    std::vector<base::MemoryConsumer*> memory_consumers_;
     std::string consumer_name_;
   };
 
@@ -75,10 +75,9 @@ class CONTENT_EXPORT MemoryConsumerRegistry
   void OnMemoryConsumerAdded(uint32_t consumer_id,
                              std::string_view consumer_name,
                              std::optional<base::MemoryConsumerTraits> traits,
-                             base::RegisteredMemoryConsumer consumer) override;
-  void OnMemoryConsumerRemoved(
-      uint32_t consumer_id,
-      base::RegisteredMemoryConsumer consumer) override;
+                             base::MemoryConsumer* consumer) override;
+  void OnMemoryConsumerRemoved(uint32_t consumer_id,
+                               base::MemoryConsumer* consumer) override;
 
   const ProcessType process_type_;
   const ChildProcessId child_process_id_;

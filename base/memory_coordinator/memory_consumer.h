@@ -113,7 +113,7 @@ class BASE_EXPORT MemoryConsumer {
   virtual void OnUpdateMemoryLimit() = 0;
 
  private:
-  friend class RegisteredMemoryConsumer;
+  friend class MemoryConsumerRegistry;
   friend class AsyncMemoryConsumerRegistration;
 
   // Instructs this consumer to update its internal memory limit. See the class

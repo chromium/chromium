@@ -28,27 +28,27 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
     std::optional<MemoryConsumerTraits> traits,
-    RegisteredMemoryConsumer consumer) {
+    MemoryConsumer* consumer) {
   CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
 }
 
 void TestMemoryConsumerRegistry::OnMemoryConsumerRemoved(
     uint32_t consumer_id,
-    RegisteredMemoryConsumer consumer) {
+    MemoryConsumer* consumer) {
   size_t removed = std::erase(memory_consumers_, consumer);
   CHECK_EQ(removed, 1u);
 }
 
 void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimit(int percentage) {
-  for (RegisteredMemoryConsumer consumer : memory_consumers_) {
-    consumer.UpdateMemoryLimit(percentage);
+  for (MemoryConsumer* consumer : memory_consumers_) {
+    MemoryConsumerRegistry::NotifyUpdateMemoryLimit(consumer, percentage);
   }
 }
 
 void TestMemoryConsumerRegistry::NotifyReleaseMemory() {
-  for (RegisteredMemoryConsumer consumer : memory_consumers_) {
-    consumer.ReleaseMemory();
+  for (MemoryConsumer* consumer : memory_consumers_) {
+    MemoryConsumerRegistry::NotifyReleaseMemory(consumer);
   }
 }
 

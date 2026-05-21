@@ -25,32 +25,34 @@ MemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
 }
 
 void MemoryConsumerRegistry::ConsumerGroup::ReleaseMemory() {
-  for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
-    consumer.ReleaseMemory();
+  for (base::MemoryConsumer* consumer : memory_consumers_) {
+    base::MemoryConsumerRegistry::NotifyReleaseMemory(consumer);
   }
 }
 
 void MemoryConsumerRegistry::ConsumerGroup::UpdateMemoryLimit(int percentage) {
   memory_limit_ = percentage;
-  for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
-    consumer.UpdateMemoryLimit(memory_limit_);
+  for (base::MemoryConsumer* consumer : memory_consumers_) {
+    base::MemoryConsumerRegistry::NotifyUpdateMemoryLimit(consumer,
+                                                          memory_limit_);
   }
 }
 
 void MemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
-    base::RegisteredMemoryConsumer consumer) {
+    base::MemoryConsumer* consumer) {
   CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
 
   // Ensure the added consumer is up to date with the current memory limit
   // applied to this consumer group.
   if (memory_limit_ != base::MemoryConsumer::kDefaultMemoryLimit) {
-    consumer.UpdateMemoryLimitNoNotification(memory_limit_);
+    base::MemoryConsumerRegistry::NotifyUpdateMemoryLimitNoNotification(
+        consumer, memory_limit_);
   }
 }
 
 void MemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
-    base::RegisteredMemoryConsumer consumer) {
+    base::MemoryConsumer* consumer) {
   size_t removed = std::erase(memory_consumers_, consumer);
   CHECK_EQ(removed, 1u);
 }
@@ -91,7 +93,7 @@ void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
     std::optional<base::MemoryConsumerTraits> traits,
-    base::RegisteredMemoryConsumer consumer) {
+    base::MemoryConsumer* consumer) {
   CHECK_LE(consumer_name.size(), kMaxMemoryConsumerNameLength);
 
   auto [it, inserted] = consumer_groups_.try_emplace(consumer_id);
@@ -114,7 +116,7 @@ void MemoryConsumerRegistry::OnMemoryConsumerAdded(
 
 void MemoryConsumerRegistry::OnMemoryConsumerRemoved(
     uint32_t consumer_id,
-    base::RegisteredMemoryConsumer consumer) {
+    base::MemoryConsumer* consumer) {
   auto it = consumer_groups_.find(consumer_id);
   CHECK(it != consumer_groups_.end());
   ConsumerGroup& consumer_group = *it->second;

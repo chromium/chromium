@@ -30,11 +30,11 @@ class MockMemoryConsumerRegistry : public MemoryConsumerRegistry {
               (uint32_t observer_id,
                std::string_view consumer_name,
                std::optional<MemoryConsumerTraits> traits,
-               RegisteredMemoryConsumer consumer),
+               MemoryConsumer* consumer),
               (override));
   MOCK_METHOD(void,
               OnMemoryConsumerRemoved,
-              (uint32_t observer_id, RegisteredMemoryConsumer consumer),
+              (uint32_t observer_id, MemoryConsumer* consumer),
               (override));
 };
 

@@ -21,25 +21,7 @@ namespace base {
 
 class MemoryConsumerRegistration;
 
-// Provides an interface to safely notify MemoryConsumers of their memory limit.
-class BASE_EXPORT RegisteredMemoryConsumer {
- public:
-  void UpdateMemoryLimit(int percentage);
-  void UpdateMemoryLimitNoNotification(int percentage);
-  void ReleaseMemory();
 
-  friend bool operator==(const RegisteredMemoryConsumer& lhs,
-                         const RegisteredMemoryConsumer& rhs) = default;
-
-  int memory_limit() const { return memory_consumer_->memory_limit(); }
-
- private:
-  friend class MemoryConsumerRegistry;
-
-  explicit RegisteredMemoryConsumer(MemoryConsumer* memory_consumer);
-
-  raw_ptr<MemoryConsumer> memory_consumer_;
-};
 
 // A base class for registering a MemoryConsumer with the global registry for
 // the current process.
@@ -69,10 +51,11 @@ class BASE_EXPORT MemoryConsumerRegistry {
       MemoryConsumerRegistryDestructionObserver* observer);
 
  protected:
-  RegisteredMemoryConsumer CreateRegisteredMemoryConsumer(
-      MemoryConsumer* memory_consumer) {
-    return RegisteredMemoryConsumer(memory_consumer);
-  }
+  // Helpers to notify consumers of memory events.
+  static void NotifyReleaseMemory(MemoryConsumer* consumer);
+  static void NotifyUpdateMemoryLimit(MemoryConsumer* consumer, int percentage);
+  static void NotifyUpdateMemoryLimitNoNotification(MemoryConsumer* consumer,
+                                                    int percentage);
 
   // Implementations must call this at the beginning of their destructors.
   // Notifies all registered MemoryConsumerRegistryDestructionObservers.
@@ -82,9 +65,9 @@ class BASE_EXPORT MemoryConsumerRegistry {
   virtual void OnMemoryConsumerAdded(uint32_t consumer_id,
                                      std::string_view consumer_name,
                                      std::optional<MemoryConsumerTraits> traits,
-                                     RegisteredMemoryConsumer consumer) = 0;
+                                     MemoryConsumer* consumer) = 0;
   virtual void OnMemoryConsumerRemoved(uint32_t consumer_id,
-                                       RegisteredMemoryConsumer consumer) = 0;
+                                       MemoryConsumer* consumer) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

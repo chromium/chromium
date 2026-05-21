@@ -16,21 +16,23 @@ MemoryConsumerRegistry* g_memory_consumer_registry = nullptr;
 
 }  // namespace
 
-void RegisteredMemoryConsumer::UpdateMemoryLimit(int percentage) {
-  memory_consumer_->UpdateMemoryLimit(percentage);
+void MemoryConsumerRegistry::NotifyReleaseMemory(MemoryConsumer* consumer) {
+  CHECK(consumer);
+  consumer->ReleaseMemory();
 }
 
-void RegisteredMemoryConsumer::UpdateMemoryLimitNoNotification(int percentage) {
-  memory_consumer_->UpdateMemoryLimitNoNotification(percentage);
+void MemoryConsumerRegistry::NotifyUpdateMemoryLimit(MemoryConsumer* consumer,
+                                                     int percentage) {
+  CHECK(consumer);
+  consumer->UpdateMemoryLimit(percentage);
 }
 
-void RegisteredMemoryConsumer::ReleaseMemory() {
-  memory_consumer_->ReleaseMemory();
+void MemoryConsumerRegistry::NotifyUpdateMemoryLimitNoNotification(
+    MemoryConsumer* consumer,
+    int percentage) {
+  CHECK(consumer);
+  consumer->UpdateMemoryLimitNoNotification(percentage);
 }
-
-RegisteredMemoryConsumer::RegisteredMemoryConsumer(
-    MemoryConsumer* memory_consumer)
-    : memory_consumer_(memory_consumer) {}
 
 // static
 bool MemoryConsumerRegistry::Exists() {
@@ -73,8 +75,7 @@ void MemoryConsumerRegistry::AddMemoryConsumer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   uint32_t consumer_id = PersistentHash(consumer_name);
-  OnMemoryConsumerAdded(consumer_id, consumer_name, traits,
-                        RegisteredMemoryConsumer(consumer));
+  OnMemoryConsumerAdded(consumer_id, consumer_name, traits, consumer);
 }
 
 void MemoryConsumerRegistry::RemoveMemoryConsumer(
@@ -82,7 +83,7 @@ void MemoryConsumerRegistry::RemoveMemoryConsumer(
     MemoryConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t consumer_id = PersistentHash(consumer_name);
-  OnMemoryConsumerRemoved(consumer_id, RegisteredMemoryConsumer(consumer));
+  OnMemoryConsumerRemoved(consumer_id, consumer);
 }
 
 void MemoryConsumerRegistry::AddDestructionObserver(

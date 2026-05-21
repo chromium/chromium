@@ -121,12 +121,12 @@ class SyncNotifyingMemoryConsumerRegistry : public MemoryConsumerRegistry {
   void OnMemoryConsumerAdded(uint32_t consumer_id,
                              std::string_view consumer_name,
                              std::optional<MemoryConsumerTraits> traits,
-                             RegisteredMemoryConsumer consumer) override {
-    consumer.UpdateMemoryLimitNoNotification(50);
+                             MemoryConsumer* consumer) override {
+    NotifyUpdateMemoryLimitNoNotification(consumer, 50);
   }
 
   void OnMemoryConsumerRemoved(uint32_t consumer_id,
-                               RegisteredMemoryConsumer consumer) override {}
+                               MemoryConsumer* consumer) override {}
 };
 
 TEST(MultiMemoryConsumerTest, NoNotificationDuringConstruction) {

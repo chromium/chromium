@@ -27,9 +27,9 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   void OnMemoryConsumerAdded(uint32_t consumer_id,
                              std::string_view consumer_name,
                              std::optional<MemoryConsumerTraits> traits,
-                             RegisteredMemoryConsumer consumer) override;
+                             MemoryConsumer* consumer) override;
   void OnMemoryConsumerRemoved(uint32_t consumer_id,
-                               RegisteredMemoryConsumer consumer) override;
+                               MemoryConsumer* consumer) override;
 
   // Invokes UpdateMemoryLimit(percentage) on all consumers.
   void NotifyUpdateMemoryLimit(int percentage);
@@ -44,7 +44,7 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   size_t size() const { return memory_consumers_.size(); }
 
  private:
-  std::vector<RegisteredMemoryConsumer> memory_consumers_;
+  std::vector<MemoryConsumer*> memory_consumers_;
 
   WeakPtrFactory<TestMemoryConsumerRegistry> weak_ptr_factory_{this};
 };
