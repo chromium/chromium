@@ -1375,6 +1375,8 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
       base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) override {}
 
+  String ToolName() const override { return "test_tool"; }
+  String ToolDescription() const override { return "description"; }
   String ComputeInputSchema() override { return "{}"; }
   Element* FormElement() const override { return nullptr; }
   void Trace(Visitor* visitor) const override {}
@@ -1391,8 +1393,7 @@ TEST_F(ModelContextTest, ForEachScriptToolGC) {
 
   {
     auto* mock_tool = MakeGarbageCollected<MockDeclarativeTool>();
-    model_context->RegisterDeclarativeTool("test_tool", "description",
-                                           mock_tool);
+    model_context->RegisterDeclarativeTool(mock_tool);
   }
 
   // Trigger GC, which should not reclaim mock_tool.

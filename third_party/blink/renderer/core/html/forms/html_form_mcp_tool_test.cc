@@ -55,7 +55,7 @@ class HTMLFormMcpToolTest : public PageTestBase {
 
   static bool IsValidWebMCPForm(HTMLFormElement& form_element) {
     test::RunPendingTasks();
-    return form_element.IsValidWebMCPForm();
+    return form_element.active_webmcp_tool_;
   }
 
   static bool FillFormControls(HTMLFormElement& form_element,

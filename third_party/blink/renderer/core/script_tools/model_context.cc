@@ -643,8 +643,6 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
 }
 
 void ModelContext::RegisterDeclarativeTool(
-    String name,
-    String description,
     DeclarativeWebMCPTool* declarative_tool) {
   if (!document_->GetExecutionContext()->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kTools)) {
@@ -659,8 +657,8 @@ void ModelContext::RegisterDeclarativeTool(
                     WebFeature::kModelContextRegisterDeclarativeTool);
 
   auto script_tool = mojom::blink::ScriptTool::New();
-  script_tool->name = name;
-  script_tool->description = description;
+  script_tool->name = declarative_tool->ToolName();
+  script_tool->description = declarative_tool->ToolDescription();
   script_tool->input_schema = declarative_tool->ComputeInputSchema();
   // TODO(https://crbug.com/509568047): Stop setting these two members.
   script_tool->tool_owner_frame_token = document_->GetFrame()->GetFrameToken();
@@ -669,7 +667,7 @@ void ModelContext::RegisterDeclarativeTool(
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool), declarative_tool);
 
-  tool_map_.insert(name, tool_data);
+  tool_map_.insert(declarative_tool->ToolName(), tool_data);
   model_context_host_remote_->RegisterScriptTool(
       tool_data->ScriptTool().Clone());
   probe::WebMCPToolAdded(document_, *tool_data);

@@ -49,6 +49,10 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
       base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) = 0;
 
+  virtual String ToolName() const = 0;
+
+  virtual String ToolDescription() const = 0;
+
   // Returns the input json-schema associated with the tool.
   virtual String ComputeInputSchema() = 0;
 
@@ -158,9 +162,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
     tool_change_closure_ = std::move(cb);
   }
 
-  void RegisterDeclarativeTool(String name,
-                               String description,
-                               DeclarativeWebMCPTool* tool);
+  void RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
   void PauseExecution();
 
   // mojom::blink::ScriptToolReceiver implementation:
