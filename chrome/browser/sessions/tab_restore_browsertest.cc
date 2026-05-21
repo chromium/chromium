@@ -2745,6 +2745,87 @@ IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreWindowWithGroupAndSplit) {
             restored_model->GetTabAtIndex(2)->GetSplit().value());
 }
 
+// Close a split view and verify it persists after a restart.
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, PRE_RestoreSplitAfterRestart) {
+  // Enable session service in default mode to ensure state is saved.
+  EnableSessionService();
+
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a split with tabs 1 and 2.
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the split view.
+  tab_strip_model->CloseSelectedTabs();
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreSplitAfterRestart) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  CHECK(tab_restore_service);
+
+  // Restore the window first.
+  RestoreMostRecentlyClosed(browser());
+  // Restore the split view next.
+  RestoreMostRecentlyClosed(browser());
+
+  // Verify that the tabs are back and in a split.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(3, tab_strip_model->count());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(2)->GetSplit().has_value());
+  EXPECT_EQ(tab_strip_model->GetTabAtIndex(1)->GetSplit().value(),
+            tab_strip_model->GetTabAtIndex(2)->GetSplit().value());
+}
+
+// Close a split view containing one unpersistable tab (new tab) and verify its
+// restoration after a restart.
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest,
+                       PRE_RestoreSplitWithUnpersistableTab) {
+  // Enable session service in default mode to ensure state is saved.
+  EnableSessionService();
+
+  AddHTTPSSchemeTabs(browser(), 1);
+
+  // Add an unpersistable blank tab at index 2.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(3, tab_strip_model->count());
+
+  // Create a split with Tab 1 (persistable) and Tab 2 (unpersistable).
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the split view.
+  tab_strip_model->CloseSelectedTabs();
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreSplitWithUnpersistableTab) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  // Restore the window first.
+  RestoreMostRecentlyClosed(browser());
+  // Restore the split view/tab next.
+  RestoreMostRecentlyClosed(browser());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  // The unpersistable tab is not restored, so we should have exactly 2 tabs.
+  EXPECT_EQ(2, tab_strip_model->count());
+  // The restored tab should no longer be a part of the split.
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
+}
+
 class SoftNavigationTabRestoreTest : public TabRestoreTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {

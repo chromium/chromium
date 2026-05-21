@@ -52,7 +52,7 @@ Split::~Split() = default;
 
 size_t Split::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
-  return EstimateMemoryUsage(leading_tab) + EstimateMemoryUsage(trailing_tab);
+  return EstimateMemoryUsage(tabs);
 }
 
 // static

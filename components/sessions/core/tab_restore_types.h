@@ -152,9 +152,8 @@ struct SESSIONS_EXPORT Split : public Entry {
   // The unique identifier for this split view instance.
   std::optional<split_tabs::SplitTabId> split_id = std::nullopt;
 
-  // The two tabs that make up the split view.
-  std::unique_ptr<Tab> leading_tab;
-  std::unique_ptr<Tab> trailing_tab;
+  // The tabs that comprised the split view, in order.
+  std::vector<std::unique_ptr<Tab>> tabs;
 };
 
 // Represents a previously open group.
