@@ -7212,6 +7212,8 @@ test("unit_tests") {
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_clusters:unit_tests",
     "//chrome/browser/idle",
+    "//chrome/browser/infobars",
+    "//chrome/browser/infobars:unit_tests",
     "//chrome/browser/language",
     "//chrome/browser/language:unit_tests",
     "//chrome/browser/lifetime",
