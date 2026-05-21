@@ -377,6 +377,9 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
   animation.expand_on_hover =
       *controller->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
                                    TabStripAnimations::kTabStripHoverWidth);
+  animation.tab_strip_width =
+      *controller->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
+                                   TabStripAnimations::kTabStripWidth);
   animation.top_corner = *controller->GetCurrentValue(
       TabStripAnimations::kVerticalTabStrip, TabStripAnimations::kTopCorner);
   animation.bottom_corner = *controller->GetCurrentValue(
