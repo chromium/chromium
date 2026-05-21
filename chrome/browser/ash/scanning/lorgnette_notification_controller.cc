@@ -51,9 +51,9 @@ std::unique_ptr<message_center::Notification> NewNotification(
 LorgnetteNotificationController::LorgnetteNotificationController(
     Profile* profile)
     : dlc_observer_(this),
-      supported_dlc_ids_(
-          std::set<std::string>({lorgnette::kSaneBackendsPfuDlcId,
-                                 lorgnette::kSaneBackendsCanonDlcId})),
+      supported_dlc_ids_(std::set<std::string>(
+          {lorgnette::kSaneBackendsPfuDlcId, lorgnette::kSaneBackendsCanonDlcId,
+           lorgnette::kSaneBackendsBrother5DlcId})),
       profile_(profile) {
   DCHECK(profile);
   dlc_observer_.Observe(DlcserviceClient::Get());
