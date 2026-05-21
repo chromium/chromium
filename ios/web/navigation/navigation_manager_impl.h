@@ -321,6 +321,7 @@ class NavigationManagerImpl final : public NavigationManager {
     mutable GURL cached_visible_origin_url_;
     mutable NSString* cached_visible_host_nsstring_;
     mutable NSString* cached_visible_scheme_nsstring_;
+    mutable NSNumber* cached_visible_port_nsnumber_;
 
     std::vector<std::unique_ptr<NavigationItemImpl>> cached_items_;
     int cached_current_item_index_;
