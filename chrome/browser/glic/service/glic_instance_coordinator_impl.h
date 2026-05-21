@@ -52,6 +52,7 @@ class Point;
 
 namespace glic {
 
+class GlicActiveInstanceSharingManager;
 class ContextualCueingService;
 class WebUIContentsContainer;
 class GlicWebContentsWarmingPool;
@@ -180,6 +181,7 @@ class GlicInstanceCoordinatorImpl
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) override;
   GlicInstance* GetActiveInstance() override;
+  GlicSharingManager& active_instance_sharing_manager() override;
 
   // Returns a pointer to an instance with a Floaty embedder or nullptr.
   GlicInstanceImpl* GetInstanceWithFloaty() const;
@@ -297,6 +299,8 @@ class GlicInstanceCoordinatorImpl
       identity_manager_observation_{this};
 
   std::unique_ptr<InstanceIndependentHotkeyManager> hotkey_manager_;
+  std::unique_ptr<GlicActiveInstanceSharingManager>
+      active_instance_sharing_manager_;
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
 

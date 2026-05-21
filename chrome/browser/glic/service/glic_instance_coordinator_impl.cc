@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/common/instance_independent_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -91,7 +92,10 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
           this),
       metrics_(this),
       web_contents_warming_pool_(
-          std::make_unique<GlicWebContentsWarmingPool>(profile)) {
+          std::make_unique<GlicWebContentsWarmingPool>(profile)),
+      active_instance_sharing_manager_(
+          std::make_unique<GlicActiveInstanceSharingManager>(profile,
+                                                             enabling)) {
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
@@ -99,10 +103,14 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
                                     weak_ptr_factory_.GetWeakPtr()));
   hotkey_manager_ = std::make_unique<InstanceIndependentHotkeyManager>(this);
+
   metrics_.StartPeriodicMemoryMetricsRecording();
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
+  CHECK(active_instance_sharing_manager_);
+  active_instance_sharing_manager_->SetActiveSharingManager(nullptr);
+
   for (auto& [id, instance] : instances_) {
     instance->CloseInstanceAndShutdown();
   }
@@ -131,6 +139,12 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
     active_instance_ = nullptr;
   } else {
     return;
+  }
+  if (active_instance_) {
+    active_instance_sharing_manager_->SetActiveSharingManager(
+        &active_instance_->sharing_manager());
+  } else {
+    active_instance_sharing_manager_->SetActiveSharingManager(nullptr);
   }
   NotifyActiveInstanceChanged();
   ComputeContentAccessIndicator();
@@ -509,6 +523,12 @@ base::CallbackListSubscription GlicInstanceCoordinatorImpl::
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetActiveInstance() {
   return active_instance_;
+}
+
+GlicSharingManager&
+GlicInstanceCoordinatorImpl::active_instance_sharing_manager() {
+  CHECK(active_instance_sharing_manager_);
+  return *active_instance_sharing_manager_;
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForConversationId(

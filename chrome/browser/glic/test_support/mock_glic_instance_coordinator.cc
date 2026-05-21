@@ -6,7 +6,10 @@
 
 namespace glic {
 
-MockGlicInstanceCoordinator::MockGlicInstanceCoordinator() = default;
+MockGlicInstanceCoordinator::MockGlicInstanceCoordinator() {
+  ON_CALL(*this, active_instance_sharing_manager())
+      .WillByDefault(testing::ReturnRef(dummy_sharing_manager_));
+}
 MockGlicInstanceCoordinator::~MockGlicInstanceCoordinator() = default;
 
 }  // namespace glic

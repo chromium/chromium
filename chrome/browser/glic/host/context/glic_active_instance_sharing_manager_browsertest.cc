@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 
 #include "base/test/run_until.h"
 #include "chrome/browser/glic/glic_pref_names.h"

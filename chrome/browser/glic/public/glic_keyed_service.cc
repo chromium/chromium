@@ -37,7 +37,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
-#include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -164,10 +163,6 @@ GlicKeyedService::GlicKeyedService(
           this,
           enabling_.get(),
           contextual_cueing_service)),
-      sharing_manager_(std::make_unique<GlicActiveInstanceSharingManager>(
-          profile,
-          enabling_.get(),
-          &instance_coordinator())),
       auth_controller_(
           std::make_unique<AuthController>(profile, identity_manager)),
 
@@ -374,7 +369,7 @@ GlicExperimentalOptInController& GlicKeyedService::opt_in_controller() {
 #endif
 
 GlicSharingManager& GlicKeyedService::active_instance_sharing_manager() {
-  return *sharing_manager_.get();
+  return instance_coordinator().active_instance_sharing_manager();
 }
 
 bool GlicKeyedService::IsPanelShowingForBrowser(
@@ -493,9 +488,11 @@ void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
   return is_context_access_indicator_enabled_ &&
-         sharing_manager_->GetFocusedTabData().focus() &&
-         sharing_manager_->GetFocusedTabData().focus()->GetContents() ==
-             contents;
+         active_instance_sharing_manager().GetFocusedTabData().focus() &&
+         active_instance_sharing_manager()
+                 .GetFocusedTabData()
+                 .focus()
+                 ->GetContents() == contents;
 }
 
 void GlicKeyedService::AddPreloadCallback(base::OnceCallback<void()> callback) {

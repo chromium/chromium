@@ -292,7 +292,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 #endif
   // Is a GlicInstanceCoordinatorImpl.
   std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
-  std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
 
   std::unique_ptr<AuthController> auth_controller_;
