@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
@@ -63,6 +64,20 @@ TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_InvalidSharingPage) {
   content::WebContents* web_contents =
       CreateWebContents(GURL(chrome::kChromeUIAboutURL));
   EXPECT_FALSE(IsTabValidForSharing(web_contents));
+}
+
+TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_TabInterface_HttpsUrl) {
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetURL())
+      .WillRepeatedly(testing::Return(GURL("https://example.com")));
+  EXPECT_TRUE(IsTabValidForSharing(&mock_tab));
+}
+
+TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_TabInterface_InvalidUrl) {
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetURL())
+      .WillRepeatedly(testing::Return(GURL(chrome::kChromeUIAboutURL)));
+  EXPECT_FALSE(IsTabValidForSharing(&mock_tab));
 }
 
 }  // namespace glic

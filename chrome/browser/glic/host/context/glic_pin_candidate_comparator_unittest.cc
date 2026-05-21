@@ -7,8 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/web_contents_tester.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -35,23 +35,9 @@ class GlicPinCandidateComparatorParamTest
     base::test::InitializeICUForTesting();
   }
 
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    web_contents1_ =
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    web_contents2_ =
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  }
-
-  void TearDown() override {
-    web_contents1_.reset();
-    web_contents2_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
  protected:
-  std::unique_ptr<content::WebContents> web_contents1_;
-  std::unique_ptr<content::WebContents> web_contents2_;
+  tabs::MockTabInterface tab1_;
+  tabs::MockTabInterface tab2_;
 };
 
 TEST_P(GlicPinCandidateComparatorParamTest, AllCases) {
@@ -60,22 +46,18 @@ TEST_P(GlicPinCandidateComparatorParamTest, AllCases) {
 
   GlicPinCandidateComparator comparator(params.query);
 
-  content::WebContentsTester::For(web_contents1_.get())
-      ->SetTitle(params.title1);
-  content::WebContentsTester::For(web_contents2_.get())
-      ->SetTitle(params.title2);
+  EXPECT_CALL(tab1_, GetTitle()).WillRepeatedly(testing::Return(params.title1));
+  EXPECT_CALL(tab2_, GetTitle()).WillRepeatedly(testing::Return(params.title2));
 
-  const auto now = base::TimeTicks::Now();
-  content::WebContentsTester::For(web_contents1_.get())
-      ->SetLastActiveTimeTicks(now + params.time1_delta);
-  content::WebContentsTester::For(web_contents2_.get())
-      ->SetLastActiveTimeTicks(now + params.time2_delta);
+  const auto now = base::Time::Now();
+  EXPECT_CALL(tab1_, GetLastActiveTime())
+      .WillRepeatedly(testing::Return(now + params.time1_delta));
+  EXPECT_CALL(tab2_, GetLastActiveTime())
+      .WillRepeatedly(testing::Return(now + params.time2_delta));
 
-  EXPECT_EQ(params.expected,
-            comparator(web_contents1_.get(), web_contents2_.get()));
+  EXPECT_EQ(params.expected, comparator(&tab1_, &tab2_));
   // Check that inverted ordering also holds.
-  EXPECT_EQ(!params.expected,
-            comparator(web_contents2_.get(), web_contents1_.get()));
+  EXPECT_EQ(!params.expected, comparator(&tab2_, &tab1_));
 }
 
 INSTANTIATE_TEST_SUITE_P(

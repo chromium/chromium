@@ -12,11 +12,11 @@
 #include "base/types/optional_ref.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
-namespace content {
+namespace tabs {
 
-class WebContents;
+class TabInterface;
 
-}  // namespace content
+}  // namespace tabs
 
 namespace glic {
 
@@ -39,7 +39,7 @@ class GlicPinCandidateComparator {
   GlicPinCandidateComparator& operator=(const GlicPinCandidateComparator&) =
       delete;
 
-  bool operator()(content::WebContents* a, content::WebContents* b);
+  bool operator()(tabs::TabInterface* a, tabs::TabInterface* b);
 
  private:
   const SearchResult GetSearchResults(const std::u16string& title);

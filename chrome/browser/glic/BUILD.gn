@@ -640,6 +640,7 @@ source_set("unit_tests") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser/background/glic",
+    "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/clipboard:clipboard_test_support",
@@ -689,7 +690,6 @@ source_set("unit_tests") {
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/skills/public:metrics",
-      "//components/tabs:test_support",
     ]
   } else {
     sources += [ "common/glic_tab_observer_android_unittest.cc" ]

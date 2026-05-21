@@ -77,11 +77,8 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
 
   // Visible for testing.
   virtual bool IsBrowserValidForSharing(BrowserWindowInterface* browser_window);
-  // Visible for testing.
   virtual bool IsTabValidForPinning(tabs::TabInterface* tab);
-  // Visible for testing.
-  virtual bool IsValidForSharing(content::WebContents* web_contents);
-  // Visible for testing.
+  virtual bool IsValidForSharing(tabs::TabInterface* tab);
   virtual bool IsGlicWindowShowing();
 
  private:
@@ -94,9 +91,9 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
   // Sends the current list of pin candidates to the observer.
   void SendPinCandidatesUpdate();
 
-  // Returns a vector of web contents for potential pin candidates. The vector
+  // Returns a vector of tabs for potential pin candidates. The vector
   // is not sorted or truncated.
-  std::vector<content::WebContents*> GetUnsortedPinCandidates();
+  std::vector<tabs::TabInterface*> GetUnsortedPinCandidates();
 
   class PinnedTabObserver;
   friend PinnedTabObserver;

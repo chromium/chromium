@@ -11,7 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/browser/web_contents.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -66,20 +66,19 @@ GlicPinCandidateComparator::GlicPinCandidateComparator(
 
 GlicPinCandidateComparator::~GlicPinCandidateComparator() = default;
 
-bool GlicPinCandidateComparator::operator()(content::WebContents* a,
-                                            content::WebContents* b) {
+bool GlicPinCandidateComparator::operator()(tabs::TabInterface* a,
+                                            tabs::TabInterface* b) {
   if (query_.empty()) {
-    return a->GetLastActiveTimeTicks() > b->GetLastActiveTimeTicks();
+    return a->GetLastActiveTime() > b->GetLastActiveTime();
   }
 
   const SearchResult a_results = GetSearchResults(a->GetTitle());
   const SearchResult b_results = GetSearchResults(b->GetTitle());
 
-  // Use last active time as a tie-breaker when other search result criteria are
-  // equal.
-  auto a_tie_breaker = a->GetLastActiveTimeTicks();
-  auto b_tie_breaker = b->GetLastActiveTimeTicks();
-
+  // Use last active time (via GetLastActiveTime) as a tie-breaker when other
+  // search result criteria are equal.
+  auto a_tie_breaker = a->GetLastActiveTime();
+  auto b_tie_breaker = b->GetLastActiveTime();
   // Compare WebContents based on a tuple of search result criteria and
   // last active time. The comparison order prioritizes:
   // 1. `matches_prefix`: Whether the query matches the beginning of the title.

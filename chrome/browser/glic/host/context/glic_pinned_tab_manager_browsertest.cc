@@ -112,7 +112,7 @@ class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManagerImpl {
               IsBrowserValidForSharing,
               (BrowserWindowInterface*),
               (override));
-  MOCK_METHOD(bool, IsValidForSharing, (content::WebContents*), (override));
+  MOCK_METHOD(bool, IsValidForSharing, (tabs::TabInterface*), (override));
   MOCK_METHOD(bool, IsGlicWindowShowing, (), (override));
 };
 

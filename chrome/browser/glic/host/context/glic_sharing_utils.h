@@ -34,6 +34,7 @@ bool IsTabValidForPinningInProfile(tabs::TabInterface* tab, Profile* profile);
 // This becomes invalid when the committed URL changes.
 // Sharing may still fail for other reasons.
 bool IsTabValidForSharing(content::WebContents* web_contents);
+bool IsTabValidForSharing(tabs::TabInterface* tab);
 
 // Returns an empty pin event.
 GlicPinEvent GetEmptyPinEvent();

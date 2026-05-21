@@ -25,6 +25,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -249,8 +250,23 @@ int GetTabId(content::WebContents* web_contents) {
   }
 }
 
+int GetTabId(tabs::TabInterface* tab) {
+  if (tab) {
+    return tab->GetHandle().raw_value();
+  } else {
+    return tabs::TabHandle::Null().raw_value();
+  }
+}
+
 const GURL& GetTabUrl(content::WebContents* web_contents) {
   return web_contents->GetLastCommittedURL();
+}
+
+GURL GetTabUrl(tabs::TabInterface* tab) {
+  if (!tab) {
+    return GURL();
+  }
+  return tab->GetURL();
 }
 
 // CreateTabData Implementation:
@@ -259,38 +275,63 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
     return nullptr;
   }
   content::WebContents* web_contents = tab->GetContents();
+#if !BUILDFLAG(IS_ANDROID)
   if (!web_contents) {
     return nullptr;
   }
+#endif
+
+  int tab_id = GetTabId(tab);
+
+  int window_id = SessionID::InvalidValue().id();
+  if (web_contents) {
+    window_id =
+        sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id();
+  } else if (tab->GetBrowserWindowInterface()) {
+    window_id = tab->GetBrowserWindowInterface()->GetSessionID().id();
+  }
+
+  GURL url = web_contents ? GetTabUrl(web_contents) : tab->GetURL();
+  std::string title = base::UTF16ToUTF8(web_contents ? web_contents->GetTitle()
+                                                     : tab->GetTitle());
 
   SkBitmap favicon;
   std::optional<GURL> favicon_url;
 #if !BUILDFLAG(IS_ANDROID)
-  auto* favicon_driver =
-      favicon::ContentFaviconDriver::FromWebContents(web_contents);
-  if (favicon_driver && favicon_driver->FaviconIsValid()) {
-    // Attempt to get a 32x32 favicon by default (16x16 DIP at 2x scale).
-    favicon = favicon_driver->GetFavicon()
-                  .ToImageSkia()
-                  ->GetRepresentation(2.0f)
-                  .GetBitmap();
-    if (base::FeatureList::IsEnabled(features::kGlicFaviconDataUrls)) {
-      favicon_url = GURL(skia::EncodePngAsDataUri(favicon.pixmap()));
+  if (web_contents) {
+    auto* favicon_driver =
+        favicon::ContentFaviconDriver::FromWebContents(web_contents);
+    if (favicon_driver && favicon_driver->FaviconIsValid()) {
+      // Attempt to get a 32x32 favicon by default (16x16 DIP at 2x scale).
+      favicon = favicon_driver->GetFavicon()
+                    .ToImageSkia()
+                    ->GetRepresentation(2.0f)
+                    .GetBitmap();
+      if (base::FeatureList::IsEnabled(features::kGlicFaviconDataUrls)) {
+        favicon_url = GURL(skia::EncodePngAsDataUri(favicon.pixmap()));
+      }
     }
   }
 #endif
 
-  // TODO(b/426644734): investigate triggering updates due to changes to
-  // observability for focused tab data.
-  bool is_audible = web_contents->IsCurrentlyAudible();
-  bool is_tab_content_captured = web_contents->IsBeingCaptured();
-  bool is_foreground = IsForeground(web_contents->GetVisibility());
-  bool is_observable = is_audible || is_foreground;
+  std::string mime_type =
+      web_contents ? web_contents->GetContentsMimeType() : "";
+
+  bool is_observable = false;
+  bool is_audible = false;
+  bool is_tab_content_captured = false;
+  if (web_contents) {
+    // TODO(b/426644734): investigate triggering updates due to changes to
+    // observability for focused tab data.
+    is_audible = web_contents->IsCurrentlyAudible();
+    is_tab_content_captured = web_contents->IsBeingCaptured();
+    is_observable = is_audible || IsForeground(web_contents->GetVisibility());
+  }
+
   bool is_active_in_window = false;
   bool is_window_active = false;
-
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
-    is_active_in_window = tab && tab->IsActivated();
+    is_active_in_window = tab->IsActivated();
 #if !BUILDFLAG(IS_ANDROID)
     is_window_active = tab->GetBrowserWindowInterface()
                            ? IsActive(tab->GetBrowserWindowInterface())
@@ -310,11 +351,8 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
   }
 
   return glic::mojom::TabData::New(
-      GetTabId(web_contents),
-      sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
-      GetTabUrl(web_contents), base::UTF16ToUTF8(web_contents->GetTitle()),
-      favicon, favicon_url, web_contents->GetContentsMimeType(), is_observable,
-      is_audible, is_tab_content_captured, is_active_in_window,
+      tab_id, window_id, url, title, favicon, favicon_url, mime_type,
+      is_observable, is_audible, is_tab_content_captured, is_active_in_window,
       is_window_active, std::move(lightweight_page_features));
 }
 
