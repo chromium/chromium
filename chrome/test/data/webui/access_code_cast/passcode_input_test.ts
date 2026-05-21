@@ -140,3 +140,24 @@ suite('PasscodeInputElementTest', () => {
     assertTrue(c2cInput.getDisplayChar(2).classList.contains('disabled'));
   });
 });
+
+suite('PasscodeInputElementInitialFocusTest', () => {
+  let c2cInput: PasscodeInputElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    c2cInput = document.createElement('c2c-passcode-input');
+    c2cInput.length = 6;
+    document.body.appendChild(c2cInput);
+    // Immediately after adding it to the body, focus.
+    await c2cInput.focusInput();
+
+    await microtasksFinished();
+  });
+
+  test('focuses input correctly', () => {
+    const innerActiveElement = c2cInput.shadowRoot.activeElement;
+    assertTrue(innerActiveElement === c2cInput.$.inputElement);
+  });
+});

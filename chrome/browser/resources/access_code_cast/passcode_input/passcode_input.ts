@@ -90,7 +90,8 @@ export class PasscodeInputElement extends CrLitElement {
     return this.shadowRoot.querySelector<HTMLElement>('#char-' + charIndex)!;
   }
 
-  focusInput() {
+  async focusInput() {
+    await this.updateComplete;
     this.$.inputElement.focus();
     this.focused = true;
     this.renderSelection();
