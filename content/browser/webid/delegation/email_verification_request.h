@@ -26,6 +26,35 @@ class RenderFrameHostImpl;
 
 namespace content::webid {
 
+// This enum describes the status of an Email Verification Protocol (EVP)
+// request. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+// LINT.IfChange(EvpRequestStatus)
+enum class EvpRequestStatus {
+  kSuccess = 0,
+  kInvalidEmail = 1,
+  kDnsFetchFailed = 2,
+  kDnsInvalidRecord = 3,
+  kWellKnownHttpNotFound = 4,
+  kWellKnownNoResponse = 5,
+  kWellKnownInvalidResponse = 6,
+  kWellKnownListEmpty = 7,
+  kWellKnownInvalidContentType = 8,
+  kWellKnownMissingIssuanceEndpoint = 9,
+  kWellKnownIssuanceEndpointCrossOrigin = 10,
+  kWellKnownUnsupportedSigningAlgorithm = 11,
+  kTokenHttpNotFound = 12,
+  kTokenNoResponse = 13,
+  kTokenInvalidResponse = 14,
+  kTokenInvalidContentType = 15,
+  kTokenMalformedSdJwt = 16,
+  kTokenInvalidSdJwt = 17,
+  kKeyBindingSigningFailed = 18,
+  kRpOriginIsOpaque = 19,
+  kMaxValue = kRpOriginIsOpaque
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpRequestStatus)
+
 // For a given email address, returns the domain. Returns std::nullopt if the
 // email is not valid.
 // e.g. "test@example.com" -> "example.com"
@@ -75,6 +104,10 @@ class CONTENT_EXPORT EmailVerificationRequest {
       EmailVerifier::OnEmailVerifiedCallback callback,
       FetchStatus token_status,
       EmailVerifierNetworkRequestManager::TokenResult&& result);
+
+  void CompleteRequest(EmailVerifier::OnEmailVerifiedCallback callback,
+                       std::optional<std::string> response,
+                       EvpRequestStatus status);
 
   std::unique_ptr<DnsRequest> dns_request_;
   std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;

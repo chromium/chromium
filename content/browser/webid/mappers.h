@@ -24,6 +24,7 @@ enum class FedCmLifecycleStateFailureReason;
 namespace webid {
 
 enum class FederatedLoginResult;
+enum class EvpRequestStatus;
 
 // This header file defines functions which convert between FedCM types. It also
 // defines some constants used in some of these conversions.
@@ -100,6 +101,16 @@ ErrorDialogResult DismissReasonToErrorDialogResult(
 // invoked when the parse_status is ParseStatus::kSuccess.
 std::pair<blink::mojom::FederatedAuthRequestResult, RequestIdTokenStatus>
 IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status);
+
+// Converts a ParseStatus from a well-known fetch to an EvpRequestStatus.
+// Should not be invoked when parse_status is ParseStatus::kSuccess.
+CONTENT_EXPORT EvpRequestStatus
+WellKnownParseStatusToEvpRequestStatus(ParseStatus parse_status);
+
+// Converts a ParseStatus from a token fetch to an EvpRequestStatus.
+// Should not be invoked when parse_status is ParseStatus::kSuccess.
+CONTENT_EXPORT EvpRequestStatus
+TokenParseStatusToEvpRequestStatus(ParseStatus parse_status);
 
 // Returns a list of fields that we should mediate authorization for. If
 // empty, we should not show a permission request dialog.

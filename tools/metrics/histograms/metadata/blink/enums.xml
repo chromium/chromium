@@ -257,6 +257,33 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="NetworkEfficiencyGuardrails"/>
 </enum>
 
+<!-- LINT.IfChange(EvpRequestStatus) -->
+
+<enum name="EvpRequestStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="InvalidEmail"/>
+  <int value="2" label="DnsFetchFailed"/>
+  <int value="3" label="DnsInvalidRecord"/>
+  <int value="4" label="WellKnownHttpNotFound"/>
+  <int value="5" label="WellKnownNoResponse"/>
+  <int value="6" label="WellKnownInvalidResponse"/>
+  <int value="7" label="WellKnownListEmpty"/>
+  <int value="8" label="WellKnownInvalidContentType"/>
+  <int value="9" label="WellKnownMissingIssuanceEndpoint"/>
+  <int value="10" label="WellKnownIssuanceEndpointCrossOrigin"/>
+  <int value="11" label="WellKnownUnsupportedSigningAlgorithm"/>
+  <int value="12" label="TokenHttpNotFound"/>
+  <int value="13" label="TokenNoResponse"/>
+  <int value="14" label="TokenInvalidResponse"/>
+  <int value="15" label="TokenInvalidContentType"/>
+  <int value="16" label="TokenMalformedSdJwt"/>
+  <int value="17" label="TokenInvalidSdJwt"/>
+  <int value="18" label="KeyBindingSigningFailed"/>
+  <int value="19" label="RpOriginIsOpaque"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/webid/delegation/email_verification_request.h:EvpRequestStatus) -->
+
 <!-- LINT.IfChange(FeatureObserver) -->
 
 <enum name="FeatureObserver">

@@ -11,8 +11,10 @@
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
+#include "content/browser/webid/delegation/evp_metrics.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/mappers.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -107,7 +109,8 @@ void EmailVerificationRequest::Send(
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback) {
   if (render_frame_host_->GetLastCommittedOrigin().opaque()) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kRpOriginIsOpaque);
     return;
   }
 
@@ -118,7 +121,8 @@ void EmailVerificationRequest::Send(
 
   std::optional<std::string> domain = GetDomainFromEmail(email);
   if (!domain) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kInvalidEmail);
     return;
   }
   std::string hostname = "_email-verification." + *domain;
@@ -137,20 +141,23 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   // Step 3.2: when the DNS response is received, the browser
   // parses the TXT record to extract the issuer's origin.
   if (!text_records || text_records->size() != 1) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kDnsFetchFailed);
     return;
   }
 
   const std::string& record = (*text_records)[0];
   static constexpr char kIssPrefix[] = "iss=";
   if (!base::StartsWith(record, kIssPrefix, base::CompareCase::SENSITIVE)) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kDnsInvalidRecord);
     return;
   }
 
   std::string iss = record.substr(sizeof(kIssPrefix) - 1);
   if (iss.empty()) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kDnsInvalidRecord);
     return;
   }
 
@@ -176,17 +183,21 @@ void EmailVerificationRequest::OnWellKnownFetched(
   // the browser checks that the issuance_endpoint is present.
 
   if (status.parse_status != ParseStatus::kSuccess) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(
+        std::move(callback), std::nullopt,
+        WellKnownParseStatusToEvpRequestStatus(status.parse_status));
     return;
   }
 
   if (well_known.issuance_endpoint.is_empty()) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kWellKnownMissingIssuanceEndpoint);
     return;
   }
 
   if (!issuer.IsSameOriginWith(well_known.issuance_endpoint)) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kWellKnownIssuanceEndpointCrossOrigin);
     return;
   }
 
@@ -215,7 +226,8 @@ void EmailVerificationRequest::OnWellKnownFetched(
   }
 
   if (!private_key) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kWellKnownUnsupportedSigningAlgorithm);
     return;
   }
 
@@ -250,9 +262,16 @@ void EmailVerificationRequest::OnTokenRequestComplete(
     EmailVerifierNetworkRequestManager::TokenResult&& result) {
   // Step 5: Token Presentation
 
-  if (token_status.parse_status != ParseStatus::kSuccess || !result.token ||
-      !result.token->is_string()) {
-    std::move(callback).Run(std::nullopt);
+  if (token_status.parse_status != ParseStatus::kSuccess) {
+    CompleteRequest(
+        std::move(callback), std::nullopt,
+        TokenParseStatusToEvpRequestStatus(token_status.parse_status));
+    return;
+  }
+
+  if (!result.token || !result.token->is_string()) {
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kTokenInvalidResponse);
     return;
   }
 
@@ -264,14 +283,16 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   // are present and valid.
 
   if (!token) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kTokenMalformedSdJwt);
     return;
   }
 
   auto sd_jwt = sdjwt::SdJwt::From(*token);
 
   if (!sd_jwt) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kTokenInvalidSdJwt);
     return;
   }
 
@@ -304,7 +325,8 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   auto signer = sdjwt::CreateJwtSigner(*private_key);
 
   if (!kb_jwt.Sign(std::move(signer))) {
-    std::move(callback).Run(std::nullopt);
+    CompleteRequest(std::move(callback), std::nullopt,
+                    EvpRequestStatus::kKeyBindingSigningFailed);
     return;
   }
 
@@ -313,7 +335,16 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   // Step 5.3: the browser notifies the page that
   // the SD-JWT+KB is ready.
 
-  std::move(callback).Run(sd_jwt_kb.Serialize());
+  CompleteRequest(std::move(callback), sd_jwt_kb.Serialize(),
+                  EvpRequestStatus::kSuccess);
+}
+
+void EmailVerificationRequest::CompleteRequest(
+    EmailVerifier::OnEmailVerifiedCallback callback,
+    std::optional<std::string> response,
+    EvpRequestStatus status) {
+  RecordEvpRequestStatus(status);
+  std::move(callback).Run(std::move(response));
 }
 
 }  // namespace content::webid

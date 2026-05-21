@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/delegation/email_verification_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/metrics.h"
 #include "content/public/browser/webid/identity_credential_source.h"
@@ -277,6 +278,40 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status) {
       NOTREACHED() << "EmptyListError is not an option for this fetch";
     case ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked with success";
+  }
+}
+
+EvpRequestStatus WellKnownParseStatusToEvpRequestStatus(
+    ParseStatus parse_status) {
+  switch (parse_status) {
+    case ParseStatus::kHttpNotFoundError:
+      return EvpRequestStatus::kWellKnownHttpNotFound;
+    case ParseStatus::kNoResponseError:
+      return EvpRequestStatus::kWellKnownNoResponse;
+    case ParseStatus::kInvalidResponseError:
+      return EvpRequestStatus::kWellKnownInvalidResponse;
+    case ParseStatus::kEmptyListError:
+      return EvpRequestStatus::kWellKnownListEmpty;
+    case ParseStatus::kInvalidContentTypeError:
+      return EvpRequestStatus::kWellKnownInvalidContentType;
+    case ParseStatus::kSuccess:
+      NOTREACHED();
+  }
+}
+
+EvpRequestStatus TokenParseStatusToEvpRequestStatus(ParseStatus parse_status) {
+  switch (parse_status) {
+    case ParseStatus::kHttpNotFoundError:
+      return EvpRequestStatus::kTokenHttpNotFound;
+    case ParseStatus::kNoResponseError:
+      return EvpRequestStatus::kTokenNoResponse;
+    case ParseStatus::kInvalidResponseError:
+      return EvpRequestStatus::kTokenInvalidResponse;
+    case ParseStatus::kInvalidContentTypeError:
+      return EvpRequestStatus::kTokenInvalidContentType;
+    case ParseStatus::kEmptyListError:
+    case ParseStatus::kSuccess:
+      NOTREACHED();
   }
 }
 
