@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, ReadAnythingSettingsChange, SUBMENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -12,11 +12,14 @@ import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interaction
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 
 suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
+  let metrics: TestMetricsBrowserProxy;
 
   function queryLinksToggle(): HTMLButtonElement|null {
     const actionMenu = settingsMenu.$.lazyMenu.get();
@@ -31,6 +34,7 @@ suite('SettingsMenuElement', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.imagesFeatureEnabled = true;
     chrome.readingMode.isLineFocusEnabled = true;
+    metrics = mockMetrics();
 
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.id = 'settingsMenu';
@@ -116,7 +120,7 @@ suite('SettingsMenuElement', () => {
         assertEquals(8, submenuEvents);
       });
 
-  test('links event is fired when links item is clicked', () => {
+  test('links event is fired when links item is clicked', async () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =
         Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
@@ -132,9 +136,13 @@ suite('SettingsMenuElement', () => {
     targetItem.click();
     assertTrue(linksEventWasFired);
     assertTrue(linkEnabledTogled);
+    assertEquals(
+        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(1, metrics.getCallCount('recordTextSettingsChange'));
   });
 
-  test('images event is fired when images item is clicked', () => {
+  test('images event is fired when images item is clicked', async () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =
         Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
@@ -152,6 +160,10 @@ suite('SettingsMenuElement', () => {
     targetItem.click();
     assertTrue(imagesEventWasFired);
     assertTrue(imagesEnabledTogled);
+    assertEquals(
+        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(1, metrics.getCallCount('recordTextSettingsChange'));
   });
 
   test('images toggle is disabled when speech is active', async () => {
