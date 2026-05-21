@@ -258,6 +258,8 @@ export const ComposeboxEmbedderMixin =
         lensSendRawFileMediaTypesEnabled: boolean =
             loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
+        private smartComposeAnnounceTimeout_: number|null = null;
+
         // =====================================================================
         // Lifecycle Hooks
         // =====================================================================
@@ -423,18 +425,24 @@ export const ComposeboxEmbedderMixin =
               this.input = this.lastQueriedInput;
             }
           }
-
           if (changedPrivateProperties.has('smartComposeInlineHint')) {
+            if (this.smartComposeAnnounceTimeout_ !== null) {
+              clearTimeout(this.smartComposeAnnounceTimeout_);
+              this.smartComposeAnnounceTimeout_ = null;
+            }
             if (this.smartComposeInlineHint) {
-              // TODO(crbug.com/452619068): Investigate why screenreader is
-              // inconsistent.
-              const announcer = getAnnouncerInstance();
-              announcer.announce(
-                  this.smartComposeInlineHint + ', ' +
-                  this.i18n('composeboxSmartComposeTitle'));
+              this.smartComposeAnnounceTimeout_ = setTimeout(() => {
+                this.smartComposeAnnounceTimeout_ = null;
+                if (this.smartComposeInlineHint) {
+                  const announcer = getAnnouncerInstance(
+                      this.closest('dialog') || document.body);
+                  announcer.announce(
+                      this.smartComposeInlineHint + ', ' +
+                      this.i18n('composeboxSmartComposeTitle'));
+                }
+              }, 1000);
             }
           }
-
           if (changedPrivateProperties.has('state') && this.state) {
             this.updateState(this.state);
           }
