@@ -643,6 +643,48 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnUpdatedAndAcceptedForSaveAndFill) {
   [mediator_ didTapSave];
 }
 
+TEST_F(SaveCardBottomSheetMediatorTest,
+       OnUpdatedAndAcceptedForSaveAndFill_SingleDigitMonth) {
+  // Expect the model to receive the call with the correct details.
+  EXPECT_CALL(
+      *model_,
+      OnUpdatedAndAcceptedForSaveAndFill(testing::AllOf(
+          testing::Field(&autofill::payments::PaymentsAutofillClient::
+                             UserProvidedCardSaveAndFillDetails::card_number,
+                         u"5555555555554444"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::cardholder_name,
+              u"John Doe"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::expiration_date_month,
+              u"1"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::expiration_date_year,
+              u"2025"),
+          testing::Field(&autofill::payments::PaymentsAutofillClient::
+                             UserProvidedCardSaveAndFillDetails::security_code,
+                         testing::Optional(std::u16string(u"123"))),
+          testing::Field(&autofill::payments::PaymentsAutofillClient::
+                             UserProvidedCardSaveAndFillDetails::nickname,
+                         testing::Optional(std::u16string(u"My Test Card"))))));
+
+  [mediator_ didUpdateValue:@"5555555555554444"
+                   forField:AutofillCreditCardUIType::kNumber];
+  [mediator_ didUpdateValue:@"1/2025"
+                   forField:AutofillCreditCardUIType::kExpMonth];
+  [mediator_ didUpdateValue:@"John Doe"
+                   forField:AutofillCreditCardUIType::kFullName];
+  [mediator_ didUpdateValue:@"123"
+                   forField:AutofillCreditCardUIType::kSecurityCode];
+  [mediator_ didUpdateValue:@"My Test Card"
+                   forField:AutofillCreditCardUIType::kNickname];
+
+  [mediator_ didTapSave];
+}
+
 TEST_F(SaveCardBottomSheetMediatorTest, UpdateSaveButtonStatus) {
   FakeSaveCardBottomSheetConsumer* consumer =
       [[FakeSaveCardBottomSheetConsumer alloc] init];

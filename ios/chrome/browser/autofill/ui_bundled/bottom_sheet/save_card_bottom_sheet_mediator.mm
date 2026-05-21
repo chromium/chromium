@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/data_model/data_model_utils.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
@@ -67,15 +68,11 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
     base::Seconds(5);
 
 std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
-  NSString* cleanExpDate = [[expirationDate
-      componentsSeparatedByCharactersInSet:[[NSCharacterSet
-                                               decimalDigitCharacterSet]
-                                               invertedSet]]
-      componentsJoinedByString:@""];
-  if (cleanExpDate.length >= 4) {
-    NSString* month = [cleanExpDate substringToIndex:2];
-    NSString* year = [cleanExpDate substringFromIndex:2];
-    return {month, year};
+  std::u16string month;
+  std::u16string year;
+  if (autofill::data_util::ParseExpirationDate(
+          base::SysNSStringToUTF16(expirationDate), &month, &year)) {
+    return {base::SysUTF16ToNSString(month), base::SysUTF16ToNSString(year)};
   }
   return {@"", @""};
 }

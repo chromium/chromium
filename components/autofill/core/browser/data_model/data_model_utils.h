@@ -167,6 +167,14 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
 // years between 2000 and 2999. On failure, it returns `std::nullopt`.
 std::optional<int> ParseYearFromString(std::u16string_view text);
 
+// Parses `text` as an expiration date and extracts the month and year as
+// strings. Returns true if parsing is successful. Supported formats include
+// MMYY, MMYYYY, and patterns with separators like MM/YY, MM-YYYY, etc.
+// Outputs month and year parameters are optional and can be nullptr.
+bool ParseExpirationDate(std::u16string_view text,
+                         std::u16string* month,
+                         std::u16string* year);
+
 // Returns the corresponding `int` value if parsing a valid month (1-12) was
 // successful. On failure, it returns `std::nullopt`.
 std::optional<int> GetExpirationMonth(int value);

@@ -963,40 +963,9 @@ bool CreditCard::SetExpirationYearFromString(std::u16string_view text) {
 }
 
 void CreditCard::SetExpirationDateFromString(std::u16string_view text) {
-  static constexpr char16_t kDateRegex[] =
-      uR"(^\s*[0-9]{1,2}\s*[-/|]?\s*[0-9]{2,4}\s*$)";
-  // Check that `text` fits the supported patterns: mmyy, mmyyyy, m-yy,
-  // mm-yy, m-yyyy and mm-yyyy. Note that myy and myyyy matched by this pattern
-  // but are not supported (ambiguous). Separators: -, / and |.
-  if (!MatchesRegex<kDateRegex>(text)) {
-    return;
-  }
-
   std::u16string month;
   std::u16string year;
-
-  // Check for a separator.
-  std::u16string found_separator;
-  const std::vector<std::u16string> kSeparators{u"-", u"/", u"|"};
-  for (const std::u16string& separator : kSeparators) {
-    if (text.find(separator) != std::u16string::npos) {
-      found_separator = separator;
-      break;
-    }
-  }
-
-  if (!found_separator.empty()) {
-    std::vector<std::u16string> month_year = base::SplitString(
-        text, found_separator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    DCHECK_EQ(2u, month_year.size());
-    month = month_year[0];
-    year = month_year[1];
-  } else if (text.size() % 2 == 0) {
-    // If there are no separators, the supported formats are mmyy and mmyyyy.
-    month = text.substr(0, 2);
-    year = text.substr(2);
-  } else {
-    // Odd number of digits with no separator is too ambiguous.
+  if (!data_util::ParseExpirationDate(text, &month, &year)) {
     return;
   }
 
