@@ -19,12 +19,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.autofill.settings.AutofillAiDelegate.ToggleConfig;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
@@ -37,13 +37,18 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment
 
     public static final String PREF_OPT_IN_TOGGLE = "autofill_ai_identity_docs_opt_in";
 
+    private static final ToggleConfig TOGGLE_CONFIG_IDENTITY = new ToggleConfig(PREF_OPT_IN_TOGGLE,
+            R.string.autofill_identity_docs_opt_in_toggle_label,
+            R.string.autofill_identity_docs_opt_in_toggle_sub_label,
+            Pref.AUTOFILL_AI_IDENTITY_ENTITIES_ENABLED);
+
     private static final Set<Integer> IDENTITY_DOC_TYPES =
             Set.of(
                     EntityTypeName.PASSPORT,
                     EntityTypeName.DRIVERS_LICENSE,
                     EntityTypeName.NATIONAL_ID_CARD);
 
-    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this, this);
+    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this, this, TOGGLE_CONFIG_IDENTITY);
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -105,34 +110,12 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment
         mAutofillAiDelegate.maybeAddDisabledSettingsInfoCard(
                 screen, AutofillOptionsReferrer.AUTOFILL_IDENTITY_DOCS_FRAGMENT);
         mAutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(screen);
-
-        if (shouldShowOptInToggle()) {
-            addOptInToggle(screen);
-        }
-
         mAutofillAiDelegate.addAutofillAiEntities(screen, IDENTITY_DOC_TYPES);
-    }
-
-    private void addOptInToggle(PreferenceScreen screen) {
-        // TODO(crbug.com/482994257): Toggle visibility and state handling.
-
-        ChromeSwitchPreference optInToggle = new ChromeSwitchPreference(getStyledContext());
-        optInToggle.setKey(PREF_OPT_IN_TOGGLE);
-        optInToggle.setTitle(R.string.autofill_identity_docs_opt_in_toggle_label);
-        optInToggle.setSummary(R.string.autofill_identity_docs_opt_in_toggle_sub_label);
-        screen.addPreference(optInToggle);
     }
 
     @Override
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
-    }
-
-    private static boolean shouldShowOptInToggle() {
-        // TODO(crbug.com/482994257): Implement proper visibility logic.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID);
     }
 
     private Context getStyledContext() {
@@ -148,13 +131,8 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment
                             indexData, profile, getPrefFragmentName());
                     AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
                             indexData, profile, getPrefFragmentName());
-                    if (shouldShowOptInToggle()) {
-                        indexData.addEntryForKey(
-                                getPrefFragmentName(),
-                                PREF_OPT_IN_TOGGLE,
-                                R.string.autofill_identity_docs_opt_in_toggle_label,
-                                R.string.autofill_identity_docs_opt_in_toggle_sub_label);
-                    }
+                    AutofillAiDelegate.maybeAddOptInToggle(indexData, getPrefFragmentName(),
+                        TOGGLE_CONFIG_IDENTITY);
                 }
             };
 }

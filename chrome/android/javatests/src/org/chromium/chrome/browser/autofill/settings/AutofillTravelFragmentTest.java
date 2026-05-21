@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -65,7 +66,9 @@ import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Arrays;
@@ -77,6 +80,11 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({
+    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+    ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT,
+})
 public class AutofillTravelFragmentTest {
     @Rule
     public SettingsActivityTestRule<AutofillTravelFragment> mSettingsActivityTestRule =
@@ -103,6 +111,7 @@ public class AutofillTravelFragmentTest {
         when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
         when(mEntityDataManager.canEnableOrDisableAutofillAiForType(anyInt())).thenReturn(true);
         when(mEntityDataManager.isEligibleToAutofillAiForType(anyInt())).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
     }
 
     @Test
@@ -122,10 +131,6 @@ public class AutofillTravelFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-    })
     public void testSearchIndexWhenAllEnabled() {
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -164,10 +169,6 @@ public class AutofillTravelFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-    })
     public void testAutofillAiEntities_renderedCorrectly() {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -244,10 +245,6 @@ public class AutofillTravelFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-    })
     public void testAutofillAiEntities_opensEditorOnAddClickForLocalEntity() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
@@ -259,6 +256,7 @@ public class AutofillTravelFragmentTest {
         when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
+        setTravelTogglePreference(true);
 
         Preference addVehicle =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -285,20 +283,65 @@ public class AutofillTravelFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-    })
-    public void testToggleVisible_whenFeaturesEnabled() {
+    public void testToggle_correctStateWhenTurnedOff() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        setTravelTogglePreference(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            mSettingsActivityTestRule
+                                    .getFragment()
+                                    .findPreference(AutofillTravelFragment.PREF_OPT_IN_TOGGLE);
+                    assertNotNull(toggle);
+                    assertThat(toggle.isPersistent()).isFalse();
+                    assertThat(toggle.isVisible()).isTrue();
+                    assertThat(toggle.isEnabled()).isTrue();
+                    assertThat(toggle.isChecked()).isFalse();
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testToggle_correctStateWhenTurnedOn() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        setTravelTogglePreference(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            mSettingsActivityTestRule
+                                    .getFragment()
+                                    .findPreference(AutofillTravelFragment.PREF_OPT_IN_TOGGLE);
+                    assertNotNull(toggle);
+                    assertThat(toggle.isVisible()).isTrue();
+                    assertThat(toggle.isEnabled()).isTrue();
+                    assertThat(toggle.isChecked()).isTrue();
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testToggleDisabled_whenAutofillAiSettingsDisabled() {
+        when(mEntityDataManager.canEnableOrDisableAutofillAiForType(anyInt())).thenReturn(false);
         mSettingsActivityTestRule.startSettingsActivity();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillTravelFragment fragment = mSettingsActivityTestRule.getFragment();
-                    Preference toggle =
+                    ChromeSwitchPreference toggle =
                             fragment.findPreference(AutofillTravelFragment.PREF_OPT_IN_TOGGLE);
                     assertNotNull(toggle);
                     assertThat(toggle.isVisible()).isTrue();
+                    assertThat(toggle.isEnabled()).isFalse();
+                    assertThat(toggle.isChecked()).isFalse();
                 });
+    }
+
+    private void setTravelTogglePreference(boolean value) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(mSettingsActivityTestRule.getFragment().getProfile())
+                                .setBoolean(Pref.AUTOFILL_AI_TRAVEL_ENTITIES_ENABLED, value));
     }
 }

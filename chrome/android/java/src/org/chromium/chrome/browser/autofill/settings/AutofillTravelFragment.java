@@ -19,12 +19,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.autofill.settings.AutofillAiDelegate.ToggleConfig;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
@@ -37,6 +37,12 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment
 
     public static final String PREF_OPT_IN_TOGGLE = "autofill_ai_travel_opt_in";
 
+    private static final ToggleConfig TOGGLE_CONFIG_TRAVEL =
+            new ToggleConfig(
+                    PREF_OPT_IN_TOGGLE,
+                    R.string.autofill_travel_opt_in_toggle_label,
+                    R.string.autofill_travel_opt_in_toggle_sub_label,
+                    Pref.AUTOFILL_AI_TRAVEL_ENTITIES_ENABLED);
     private static final Set<Integer> TRAVEL_TYPES =
             Set.of(
                     EntityTypeName.FLIGHT_RESERVATION,
@@ -44,7 +50,8 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment
                     EntityTypeName.REDRESS_NUMBER,
                     EntityTypeName.VEHICLE);
 
-    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this, this);
+    private final AutofillAiDelegate mAutofillAiDelegate =
+            new AutofillAiDelegate(this, this, TOGGLE_CONFIG_TRAVEL);
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -106,21 +113,7 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment
         mAutofillAiDelegate.maybeAddDisabledSettingsInfoCard(
                 screen, AutofillOptionsReferrer.AUTOFILL_TRAVEL_FRAGMENT);
         mAutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(screen);
-        if (shouldShowOptInToggle()) {
-            addOptInToggle(screen);
-        }
-
         mAutofillAiDelegate.addAutofillAiEntities(screen, TRAVEL_TYPES);
-    }
-
-    private void addOptInToggle(PreferenceScreen screen) {
-        // TODO(crbug.com/482994258): Toggle visibility and state handling.
-
-        ChromeSwitchPreference optInToggle = new ChromeSwitchPreference(getStyledContext());
-        optInToggle.setKey(PREF_OPT_IN_TOGGLE);
-        optInToggle.setTitle(R.string.autofill_travel_opt_in_toggle_label);
-        optInToggle.setSummary(R.string.autofill_travel_opt_in_toggle_sub_label);
-        screen.addPreference(optInToggle);
     }
 
     private Context getStyledContext() {
@@ -132,13 +125,6 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    private static boolean shouldShowOptInToggle() {
-        // TODO(crbug.com/482994258): Implement proper visibility logic for Travel.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID);
-    }
-
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(AutofillTravelFragment.class.getName(), 0) {
                 @Override
@@ -148,14 +134,8 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment
                             indexData, profile, getPrefFragmentName());
                     AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
                             indexData, profile, getPrefFragmentName());
-
-                    if (shouldShowOptInToggle()) {
-                        indexData.addEntryForKey(
-                                getPrefFragmentName(),
-                                PREF_OPT_IN_TOGGLE,
-                                R.string.autofill_travel_opt_in_toggle_label,
-                                R.string.autofill_travel_opt_in_toggle_sub_label);
-                    }
+                    AutofillAiDelegate.maybeAddOptInToggle(
+                            indexData, getPrefFragmentName(), TOGGLE_CONFIG_TRAVEL);
                 }
             };
 }

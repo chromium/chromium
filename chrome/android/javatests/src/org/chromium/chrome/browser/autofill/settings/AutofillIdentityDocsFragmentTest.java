@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -91,9 +92,11 @@ import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Arrays;
@@ -137,6 +140,7 @@ public class AutofillIdentityDocsFragmentTest {
         when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
         when(mEntityDataManager.canEnableOrDisableAutofillAiForType(anyInt())).thenReturn(true);
         when(mEntityDataManager.isEligibleToAutofillAiForType(anyInt())).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
         when(mMockReauthenticatorBridge.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
     }
@@ -500,6 +504,7 @@ public class AutofillIdentityDocsFragmentTest {
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -514,33 +519,61 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Test
     @MediumTest
-    public void testToggleVisible_whenFeaturesEnabled() {
+    public void testToggle_correctStateWhenTurnedOff() {
         mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
-                    Preference toggle =
-                            fragment.findPreference(
-                                    AutofillIdentityDocsFragment.PREF_OPT_IN_TOGGLE);
+                    ChromeSwitchPreference toggle =
+                            mSettingsActivityTestRule
+                                    .getFragment()
+                                    .findPreference(
+                                            AutofillIdentityDocsFragment.PREF_OPT_IN_TOGGLE);
                     assertNotNull(toggle);
+                    assertThat(toggle.isPersistent()).isFalse();
                     assertThat(toggle.isVisible()).isTrue();
+                    assertThat(toggle.isEnabled()).isTrue();
+                    assertThat(toggle.isChecked()).isFalse();
                 });
     }
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testToggleHidden_whenFeatureDisabled() {
+    public void testToggle_correctStateWhenTurnedOn() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            mSettingsActivityTestRule
+                                    .getFragment()
+                                    .findPreference(
+                                            AutofillIdentityDocsFragment.PREF_OPT_IN_TOGGLE);
+                    assertNotNull(toggle);
+                    assertThat(toggle.isVisible()).isTrue();
+                    assertThat(toggle.isEnabled()).isTrue();
+                    assertThat(toggle.isChecked()).isTrue();
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testToggleDisabled_whenAutofillAiSettingsDisabled() {
+        when(mEntityDataManager.canEnableOrDisableAutofillAiForType(anyInt())).thenReturn(false);
         mSettingsActivityTestRule.startSettingsActivity();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
-                    Preference toggle =
+                    ChromeSwitchPreference toggle =
                             fragment.findPreference(
                                     AutofillIdentityDocsFragment.PREF_OPT_IN_TOGGLE);
-                    assertNull("Toggle should NOT be added when feature disabled", toggle);
+                    assertNotNull(toggle);
+                    assertThat(toggle.isVisible()).isTrue();
+                    assertThat(toggle.isEnabled()).isFalse();
+                    assertThat(toggle.isChecked()).isFalse();
                 });
     }
 
@@ -765,6 +798,7 @@ public class AutofillIdentityDocsFragmentTest {
         when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -804,6 +838,7 @@ public class AutofillIdentityDocsFragmentTest {
         when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -942,5 +977,12 @@ public class AutofillIdentityDocsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
 
         intended(intentMatcher);
+    }
+
+    private void setIdentityTogglePreference(boolean value) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(mSettingsActivityTestRule.getFragment().getProfile())
+                                .setBoolean(Pref.AUTOFILL_AI_IDENTITY_ENTITIES_ENABLED, value));
     }
 }

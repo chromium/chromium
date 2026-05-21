@@ -121,7 +121,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 }
             };
 
-    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this, this);
+    private final AutofillAiDelegate mAutofillAiDelegate =
+            new AutofillAiDelegate(this, this, /* toggleConfig= */ null);
 
     private static @Nullable EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
