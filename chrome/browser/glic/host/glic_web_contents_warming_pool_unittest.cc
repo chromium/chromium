@@ -27,6 +27,7 @@ class FakeWebUIContentsContainer : public WebUIContentsContainer {
   ~FakeWebUIContentsContainer() override = default;
 
   void AttachToHost(Host* host) override {}
+  void SetVisibility(content::Visibility visibility) override {}
   content::WebContents* web_contents() const override { return web_contents_; }
 
  private:

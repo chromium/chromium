@@ -99,6 +99,10 @@ BASE_DECLARE_FEATURE(kGlicOptInImpressionMetrics);
 
 BASE_DECLARE_FEATURE(kGlicContentsInitiallyHidden);
 
+BASE_DECLARE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling);
+
+BASE_DECLARE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling);
+
 BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
 }  // namespace features
 

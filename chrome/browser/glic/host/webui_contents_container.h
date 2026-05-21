@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Profile;
@@ -25,6 +26,7 @@ class WebUIContentsContainer {
   // Attaches this container's WebContents to the provided Host. This must be
   // called exactly once.
   virtual void AttachToHost(Host* host) = 0;
+  virtual void SetVisibility(content::Visibility visibility) = 0;
   virtual content::WebContents* web_contents() const = 0;
   base::TimeTicks creation_time() const { return creation_time_; }
 
@@ -47,6 +49,7 @@ class WebUIContentsContainerImpl : public content::WebContentsObserver,
 
   // WebUIContentsContainer impl.
   void AttachToHost(Host* host) override;
+  void SetVisibility(content::Visibility visibility) override;
   content::WebContents* web_contents() const override;
 
  private:

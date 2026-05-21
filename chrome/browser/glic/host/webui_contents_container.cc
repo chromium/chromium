@@ -175,6 +175,10 @@ void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
   // WARNING: Do not do any more work, as `this` may have been destroyed.
 }
 
+void WebUIContentsContainerImpl::SetVisibility(content::Visibility visibility) {
+  web_contents_->UpdateWebContentsVisibility(visibility);
+}
+
 content::WebContents* WebUIContentsContainerImpl::web_contents() const {
   return web_contents_.get();
 }

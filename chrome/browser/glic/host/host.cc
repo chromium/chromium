@@ -532,6 +532,12 @@ content::WebContents* Host::webui_contents() const {
   return nullptr;
 }
 
+void Host::SetWebContentsVisibility(content::Visibility visibility) {
+  if (contents_) {
+    contents_->SetVisibility(visibility);
+  }
+}
+
 content::WebContents* Host::web_client_contents() const {
   return content::WebContents::FromRenderFrameHost(GetGuestMainFrame());
 }

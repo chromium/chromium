@@ -22,6 +22,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/visibility.h"
 
 class Profile;
 namespace content {
@@ -250,6 +251,9 @@ class Host : public GlicSharingManagerProvider {
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
   content::WebContents* webui_contents() const;
+
+  // Sets the visibility of the WebUI web contents.
+  void SetWebContentsVisibility(content::Visibility visibility);
 
   // Returns the WebClient web contents. May be null.
   content::WebContents* web_client_contents() const;

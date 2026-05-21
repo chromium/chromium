@@ -68,6 +68,7 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -357,8 +358,8 @@ bool GlicInstanceImpl::ShouldShowInactiveSidePanel(
 void GlicInstanceImpl::Show(const ShowOptions& options) {
   VLOG(1) << "Glic [InstanceImpl] Show, id=" << id_.value();
 
-  TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::Show",
-                      perfetto::Flow::FromPointer(this));
+  TRACE_EVENT("glic", "GlicInstanceImpl::Show",
+              perfetto::Flow::FromPointer(this));
 
   if (const auto* side_panel_options =
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
@@ -1063,10 +1064,10 @@ void GlicInstanceImpl::MaybeShowHostUi(
   if (!delegate) {
     return;
   }
+  VLOG(2) << "Glic [InstanceImpl] MaybeShowHostUi, id=" << id_.value();
 
   host_.SetDelegate(delegate);
-  host_.webui_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
+  host_.SetWebContentsVisibility(content::Visibility::VISIBLE);
   host_.NotifyWindowIntentToShow();
 
   NotifyPanelWillOpen(invocation_source, prompt_suggestion, fre_override);
@@ -1313,6 +1314,21 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
 }
 
 void GlicInstanceImpl::OnAllEmbeddersInactive() {
+  TRACE_EVENT("glic", "GlicInstanceImpl::OnAllEmbeddersInactive");
+
+  if (base::FeatureList::IsEnabled(
+          features::kGlicSetWebContentsVisibilityWhenToggling)) {
+    // Make WebContents hidden to avoid frame production and reduce the priority
+    // of its renderer processes.
+    // Some actuations steps need the WebContents to be visible in order to
+    // make progress, so we need to keep it visible in that case.
+    // TODO(crbug.com/513209932): Hide WebContents when Glic is not showing,
+    // regardless of whether it is actuating or not.
+    if (!IsActuating()) {
+      host_.SetWebContentsVisibility(content::Visibility::HIDDEN);
+    }
+  }
+
   NotifyInstanceActivationChanged(false);
   if (actor_task_manager_) {
     // Attempt to show toast on UI deactivated (and not replaced by anything

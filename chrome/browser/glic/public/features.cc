@@ -164,4 +164,10 @@ BASE_FEATURE(kGlicContentsInitiallyHidden,
 
 BASE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Killswitch that controls whether to update the WebContents visibility state
+// when toggling the Glic panel.
+BASE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -76,6 +76,26 @@ namespace glic {
 
 namespace {
 
+content::Visibility GetContentsVisibility(GlicInstanceImpl* instance) {
+  EXPECT_TRUE(instance);
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  return webui_contents ? webui_contents->GetVisibility()
+                        : content::Visibility::HIDDEN;
+}
+
+std::string GetContentsVisibilityAsString(GlicInstanceImpl* instance) {
+  content::Visibility visibility = GetContentsVisibility(instance);
+  switch (visibility) {
+    case content::Visibility::HIDDEN:
+      return "HIDDEN";
+    case content::Visibility::OCCLUDED:
+      return "OCCLUDED";
+    case content::Visibility::VISIBLE:
+      return "VISIBLE";
+  }
+  return "UNKNOWN";
+}
+
 // Waits for a tab to be added using GlicTabObserver.
 class GlicTestTabAddedWaiter {
  public:
@@ -193,11 +213,20 @@ TestResult<> WaitForEmbedderActivationOrPeek(GlicInstanceImpl* instance,
     RETURN_IF_ERROR(RunUntilEqual(
         [&]() { return instance->GetEmbedderForTab(tab) != nullptr; }, true,
         "Timeout waiting for embedder to bind"));
-    return WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kPeek);
-  } else {
+    RETURN_IF_ERROR(
+        WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kPeek));
     return RunUntilEqual(
+        [&]() { return GetContentsVisibilityAsString(instance); },
+        std::string("HIDDEN"),
+        "Timeout waiting for webui WebContents visibility to be HIDDEN");
+  } else {
+    RETURN_IF_ERROR(RunUntilEqual(
         [&]() { return instance->GetActiveEmbedderTabForTesting(); }, tab,
-        "Timeout waiting for active embedder to match tab");
+        "Timeout waiting for active embedder to match tab"));
+    return RunUntilEqual(
+        [&]() { return GetContentsVisibilityAsString(instance); },
+        std::string("VISIBLE"),
+        "Timeout waiting for webui WebContents visibility to be VISIBLE");
   }
 }
 
@@ -260,13 +289,38 @@ class GlicInstanceCoordinatorBrowserTest
     chrome::RestoreTab(PlatformBrowserTest::browser());
 #endif
   }
+
   TestResult<> CloseGlicForTabAndWait(tabs::TabInterface* tab) {
     auto* instance = coordinator().GetInstanceImplForTab(tab);
     if (!instance) {
       return base::ok();
     }
+    base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
     instance->Close(EmbedderKey(tab), CloseOptions());
-    return WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed);
+    RETURN_IF_ERROR(
+        WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
+
+    // TODO(crbug.com/513209932): Actuating instances intentionally keep the
+    // WebContents visible on Android to make progress. On other platforms, the
+    // WebContents is hidden on close because the WebView is detached from the
+    // views hierarchy. Android doesn't seem to have the same automatic
+    // visibility change.
+#if BUILDFLAG(IS_ANDROID)
+    bool is_actuating = instance->IsActuating();
+    std::string expected_visibility = is_actuating ? "VISIBLE" : "HIDDEN";
+#else
+    std::string expected_visibility = "HIDDEN";
+#endif
+
+    return RunUntilEqual(
+        [&]() {
+          return weak_instance
+                     ? GetContentsVisibilityAsString(weak_instance.get())
+                     : "HIDDEN";
+        },
+        expected_visibility,
+        "Timeout waiting for webui WebContents visibility to be " +
+            expected_visibility);
   }
 
  protected:
@@ -285,7 +339,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InitialState) {
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ToggleCreatesInstance) {
   ToggleGlicForActiveTab();
-  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
+  auto result = WaitForGlicOpen();
+  EXPECT_OK(result);
+  auto* instance = result.value();
+  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::VISIBLE);
 }
 
 // ClearPrimaryAccount is not supported on ChromeOS.
@@ -316,12 +373,12 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        DISABLED_CloseHidesInstance) {
   ToggleGlicForActiveTab();
-  ASSERT_OK(WaitForGlicOpen());
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen());
+
   ToggleGlicForActiveTab();
   ASSERT_OK(WaitForGlicClose());
-  for (auto* instance : coordinator().GetInstancesForTesting()) {
-    EXPECT_FALSE(instance->IsShowing());
-  }
+  EXPECT_FALSE(instance->IsShowing());
+  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::HIDDEN);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -336,7 +393,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // Because features::kGlicDefaultToLastActiveConversation is disabled in this
   // suite, it should NOT unbind from the tab.
-  EXPECT_TRUE(GetInstanceForTab(tab));
+  auto* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::HIDDEN);
 }
 
 class GlicInstanceCoordinatorUnbindOnCloseTest
@@ -385,6 +444,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   // should still exist.
   EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_EQ(GetInstanceForTab(tab1), instance1);
+  EXPECT_EQ(GetContentsVisibility(instance1), content::Visibility::HIDDEN);
 }
 
 // TODO(crbug.com/514816170): Re-enable when no longer flaky
@@ -428,6 +488,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   // But because it was bound to tab1 (and kept bound), the instance itself
   // should still exist.
   EXPECT_EQ(GetInstanceForTab(tab1), instance1);
+  EXPECT_EQ(GetContentsVisibility(instance1), content::Visibility::HIDDEN);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
@@ -452,6 +513,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_TRUE(GetInstanceForTab(tab2));
   EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_FALSE(instance2->IsShowing());
+  EXPECT_EQ(GetContentsVisibility(instance2), content::Visibility::HIDDEN);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
@@ -477,7 +539,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
 
   // Because it was pinned with kConversationChange (not kInstanceCreation),
   // it should NOT unbind from tab2, even though no input was submitted.
-  EXPECT_TRUE(GetInstanceForTab(tab2));
+  auto* instance2 = GetInstanceForTab(tab2);
+  ASSERT_TRUE(instance2);
+  EXPECT_EQ(GetContentsVisibility(instance2), content::Visibility::HIDDEN);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
@@ -492,6 +556,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(GetInstanceForTab(tab1), instance);
   EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_TRUE(instance->IsShowing());
+  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::VISIBLE);
 
   // Do not submit any input, close the side panel for the active tab (tab2).
   ASSERT_OK(CloseGlicForTabAndWait(tab2));
@@ -501,6 +566,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_TRUE(GetInstanceForTab(tab2));
   EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
   EXPECT_FALSE(instance->IsShowing());
+  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::HIDDEN);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -558,6 +624,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   EXPECT_EQ(GetInstanceForTab(tab1), instance2);
   EXPECT_EQ(GetInstanceForTab(tab2), instance2);
+  EXPECT_EQ(GetContentsVisibility(instance2), content::Visibility::VISIBLE);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -844,12 +911,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(instance, coordinator().GetInstanceImplForTab(tab3));
   EXPECT_FALSE(coordinator().GetInstanceImplForTab(tab2));
 
-  // Activate Tab 2 (Unbound) to establish history.
-  ActivateTab(tab2);
-  // Activate Tab 3 (Bound).
-  ActivateTab(tab3);
-
-  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab3));
+  EXPECT_OK(
+      WaitForSidePanelState(tab3, GlicSidePanelCoordinator::State::kShown));
 
   base::test::TestFuture<GlicInstance*> future;
   auto subscription =
