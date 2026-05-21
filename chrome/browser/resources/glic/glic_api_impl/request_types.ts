@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CreateSkillRequest, Credential, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, FormFillingRequest, FormFillingResponse, GetPinCandidatesOptions, HostCapability, InvokeOptions, Journal, MetricUserInputReactionType, MicrophoneStatus, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CreateSkillRequest, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UpdateSkillRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
+import type {ActorClientRequestTypes, ActorHostRequestTypes} from './actor/actor_types.js';
+import type {ValidateRequestMap} from './messaging.js';
+import {assertNever} from './messaging.js';
+import type {ResponseExtras} from './post_message_transport.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -15,33 +19,9 @@ messages by concatenating the interface name with the method name. This helps
 readability, and ensures that each name is unique.
 */
 
-/**
- * Defines a request and optionally a corresponding response messages.
- */
-export interface RequestDef {
-  // The type of payload sent. Defaults to 'undefined', which means the request
-  // has no request payload.
-  request?: unknown;
-  // The type of response payload. Defaults to 'void', which means the request
-  // sends no response payload.
-  response?: unknown;
-  /**
-   * Whether the request can be processed in the background.
-   *
-   * If true, the request is allowed to be sent and serviced in the
-   * background.
-   * If false (the default if omitted):
-   * For Host requests, `BACKGROUND_RESPONSES` defines how these are handled.
-   * For Client requests, it affects usage of `GatedSender`.
-   */
-  backgroundAllowed?: boolean;
-}
-
-// Validates each key is a RequestDef.
-type ValidateRequestMap<T extends Record<string, RequestDef>> = T;
 
 // Types of requests to the host (Chrome).
-export declare type HostRequestTypes = ValidateRequestMap<{
+export declare type WebClientHostRequestTypes = ValidateRequestMap<{
   // This message is sent just before calling initialize() on the web client.
   // It is not part of the GlicBrowserHost public API.
   glicBrowserWebClientCreated: {
@@ -73,7 +53,6 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
-
 
   // The messages that fulfil the GlicBrowserHost public API follow below.
 
@@ -141,102 +120,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
       tabContextResult: TabContextResultPrivate,
     },
   },
-  glicBrowserGetContextForActorFromTab: {
-    request: {
-      tabId: string,
-      options: TabContextOptions,
-    },
-    response: {
-      tabContextResult: TabContextResultPrivate,
-    },
-    backgroundAllowed: true,
-  },
   glicBrowserSetMaximumNumberOfPinnedTabs: {
     request: {
       requestedMax: number,
     },
     response: {
       effectiveMax: number,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserCreateTask: {
-    request: {
-      taskOptions?: TaskOptions,
-    },
-    response: {
-      taskId: number,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserPerformActions: {
-    request: {
-      actions: ArrayBuffer,
-    },
-    response: {
-      actionsResult: ArrayBuffer,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserCancelActions: {
-    request: {
-      taskId: number,
-    },
-    response: {
-      result: CancelActionsResult,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserStopActorTask: {
-    request: {
-      taskId: number,
-      stopReason: ActorTaskStopReason,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserPauseActorTask: {
-    request: {
-      taskId: number,
-      pauseReason: ActorTaskPauseReason,
-      tabId: string,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserResumeActorTask: {
-    request: {
-      taskId: number,
-      tabContextOptions: TabContextOptions,
-    },
-    response: {
-      resumeActorTaskResult: ResumeActorTaskResultPrivate,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserInterruptActorTask: {
-    request: {
-      taskId: number,
-      interruptReason?: ActorTaskInterruptReason,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserUninterruptActorTask: {
-    request: {
-      taskId: number,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserCreateActorTab: {
-    request: {
-      taskId: number,
-      options: {
-        initiatorTabId?: string,
-        initiatorWindowId?: string,
-        openInBackground?: boolean,
-      },
-    },
-    response: {
-      // Undefined on failure.
-      tabData?: TabDataPrivate,
     },
     backgroundAllowed: true,
   },
@@ -336,59 +225,6 @@ export declare type HostRequestTypes = ValidateRequestMap<{
   glicBrowserSetAudioDucking: {
     request: {
       enabled: boolean,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserLogBeginAsyncEvent: {
-    request: {
-      asyncEventId: number,
-      taskId: number,
-      event: string,
-      details: string,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserLogEndAsyncEvent: {
-    request: {
-      asyncEventId: number,
-      details: string,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserLogInstantEvent: {
-    request: {
-      taskId: number,
-      event: string,
-      details: string,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserJournalClear: {
-    backgroundAllowed: true,
-  },
-  glicBrowserJournalSnapshot: {
-    request: {
-      clear: boolean,
-    },
-    response: {
-      journal: Journal,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserJournalStart: {
-    request: {
-      maxBytes: number,
-      captureScreenshots: boolean,
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserJournalStop: {
-    backgroundAllowed: true,
-  },
-  glicBrowserJournalRecordFeedback: {
-    request: {
-      positive: boolean,
-      reason: string,
     },
     backgroundAllowed: true,
   },
@@ -621,33 +457,6 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
-  glicBrowserAutofillSuggestionDialogOnFormPresented: {
-    request: {
-      taskId: number,
-      params: {formFillingRequestIndex: number},
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserAutofillSuggestionDialogOnFormPreviewChanged: {
-    request: {
-      taskId: number,
-      params: {
-        formFillingRequestIndex: number,
-        response?: FormFillingResponse,
-      },
-    },
-    backgroundAllowed: true,
-  },
-  glicBrowserAutofillSuggestionDialogOnFormConfirmed: {
-    request: {
-      taskId: number,
-      params: {
-        formFillingRequestIndex: number,
-        response: FormFillingResponse,
-      },
-    },
-    backgroundAllowed: true,
-  },
   glicBrowserOnMicrophoneStatusChange: {
     request: {
       status: MicrophoneStatus,
@@ -682,8 +491,10 @@ export declare type HostRequestTypes = ValidateRequestMap<{
   },
 }>;
 
+export type HostRequestTypes = WebClientHostRequestTypes&ActorHostRequestTypes;
+
 // Types of requests to the GlicWebClient.
-export declare type WebClientRequestTypes = ValidateRequestMap<{
+export declare type WebClientClientRequestTypes = ValidateRequestMap<{
   glicWebClientNotifyPanelWillOpen: {
     request: {
       panelOpeningData: PanelOpeningData,
@@ -836,45 +647,11 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
       options: ZeroStateSuggestionsOptions,
     },
   },
-  glicWebClientNotifyActorTaskStateChanged: {
-    request: {
-      taskId: number,
-      state: ActorTaskState,
-    },
-    backgroundAllowed: true,
-  },
   glicWebClientPageMetadataChanged: {
     request: {
       tabId: string,
       pageMetadata: PageMetadata | null,
     },
-  },
-  glicWebClientRequestToShowDialog: {
-    request: {
-      request: SelectCredentialDialogRequestPrivate,
-    },
-    response: {
-      response: SelectCredentialDialogResponsePrivate,
-    },
-    backgroundAllowed: true,
-  },
-  glicWebClientRequestToShowConfirmationDialog: {
-    request: {
-      request: UserConfirmationDialogRequestPrivate,
-    },
-    response: {
-      response: UserConfirmationDialogResponsePrivate,
-    },
-    backgroundAllowed: true,
-  },
-  glicWebClientRequestToConfirmNavigation: {
-    request: {
-      request: NavigationConfirmationRequestPrivate,
-    },
-    response: {
-      response: NavigationConfirmationResponsePrivate,
-    },
-    backgroundAllowed: true,
   },
   glicWebClientNotifyAdditionalContext: {
     request: {
@@ -890,15 +667,6 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
   glicWebClientNotifyActOnWebCapabilityChanged: {
     request: {
       canActOnWeb: boolean,
-    },
-    backgroundAllowed: true,
-  },
-  glicWebClientRequestToShowAutofillSuggestionsDialog: {
-    request: {
-      request: SelectAutofillSuggestionsDialogRequestPrivate,
-    },
-    response: {
-      response: SelectAutofillSuggestionsDialogResponsePrivate,
     },
     backgroundAllowed: true,
   },
@@ -953,6 +721,9 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     backgroundAllowed: true,
   },
 }>;
+
+export type WebClientRequestTypes =
+    WebClientClientRequestTypes&ActorClientRequestTypes;
 
 // Each host request needs to be added to either UnreportedRequests or
 // RECORDED_REQUEST_IDS. Requests in UnreportedRequests will not record
@@ -1126,6 +897,14 @@ export type RequestResponseType<T extends keyof AllRequestTypes> =
     AllRequestTypes[T]['response'] :
     void;
 
+type Promisify<T> = T extends void ? void : Promise<T>;
+
+export type MessageHandlerInterface<MapType> = {
+  [Property in Extract<keyof MapType, keyof AllRequestTypes>]:
+      (payload: RequestRequestType<Property>, extras: ResponseExtras) =>
+          Promisify<RequestResponseType<Property>>;
+};
+
 type AllValues<T> = T[keyof T];
 type ArrayElement<ArrayType extends unknown[]> =
     ArrayType extends Array<infer ElementType>? ElementType : never;
@@ -1150,11 +929,11 @@ type CheckStructuredClonableObject<T> = T extends TransferableTypes ?
     never :
     AllValues<{[K in keyof T] -?: CheckStructuredClonable<T[K]>;}>;
 
-/* eslint-disable-next-line @typescript-eslint/naming-convention */
-function assertNever<_T extends never>() {}
-
 assertNever<CheckStructuredClonable<HostRequestTypes>>();
 assertNever<CheckStructuredClonable<WebClientRequestTypes>>();
+// Message names should be unique.
+assertNever<keyof WebClientClientRequestTypes&keyof ActorClientRequestTypes>();
+assertNever<keyof WebClientHostRequestTypes&keyof ActorHostRequestTypes>();
 
 //
 // Types used in messages that are not exposed directly to the API.
@@ -1286,95 +1065,6 @@ export declare interface AdditionalContextPrivate extends
 export declare interface InvokeOptionsPrivate extends
     Omit<InvokeOptions, 'context'> {
   context?: AdditionalContextPrivate;
-}
-
-export declare interface CredentialPrivate extends
-    Omit<Credential, 'getIcon'|'getAccountPicture'> {
-  accountPicture?: RgbaImage;
-}
-
-export declare interface SelectCredentialDialogRequestPrivate extends Omit<
-    SelectCredentialDialogRequest, 'onDialogClosed'|'icons'|'credentials'> {
-  icons: Map<string, RgbaImage>;
-  credentials: CredentialPrivate[];
-}
-
-/** Reasons why the credential selection dialog request failed. */
-export enum SelectCredentialDialogErrorReason {
-  // The hosting WebUI received the request, but the web client has not
-  // subscribed to the request yet. We couldn't show the dialog in this case.
-  DIALOG_PROMISE_NO_SUBSCRIBER = 0,
-}
-
-export declare interface SelectCredentialDialogResponsePrivate extends
-    SelectCredentialDialogResponse {
-  errorReason?: SelectCredentialDialogErrorReason;
-}
-
-export declare interface AutofillSuggestionPrivate extends
-    Omit<AutofillSuggestion, 'getIcon'> {
-  icon?: RgbaImage;
-}
-
-export declare interface FormFillingRequestPrivate extends
-    Omit<FormFillingRequest, 'suggestions'> {
-  suggestions: AutofillSuggestionPrivate[];
-}
-
-export declare interface SelectAutofillSuggestionsDialogRequestPrivate extends
-    Omit<
-        SelectAutofillSuggestionsDialogRequest,
-        'onDialogClosed'|'onFormPresented'|'onFormPreviewChanged'|
-        'onFormConfirmed'|'formFillingRequests'> {
-  taskId: number;
-  formFillingRequests: FormFillingRequestPrivate[];
-}
-
-// LINT.IfChange(SelectAutofillSuggestionsDialogErrorReason)
-/** Reasons why the autofill suggestion selection dialog request failed. */
-export enum SelectAutofillSuggestionsDialogErrorReason {
-  // The hosting WebUI received the request, but the web client has not
-  // subscribed to the request yet. We couldn't show the dialog in this case.
-  DIALOG_PROMISE_NO_SUBSCRIBER = 0,
-  // The requested task id did not match the response task id. This error is
-  // internal to the browser and not sent by the client over mojo.
-  MISMATCHED_TASK_ID = 1,
-  // The task is not connected to a delegate. I.e. attempting to run the task
-  // from the experimental actor API. This error is internal to the browser and
-  // not sent by the client over mojo.
-  NO_ACTOR_TASK_DELEGATE = 2,
-}
-// LINT.ThenChange(//chrome/common/actor_webui.mojom:SelectAutofillSuggestionsDialogErrorReason)
-
-export declare interface SelectAutofillSuggestionsDialogResponsePrivate extends
-    SelectAutofillSuggestionsDialogResponse {
-  taskId: number;
-  errorReason?: SelectAutofillSuggestionsDialogErrorReason;
-}
-
-export declare interface UserConfirmationDialogRequestPrivate extends
-    Omit<UserConfirmationDialogRequest, 'onDialogClosed'> {}
-
-export enum ConfirmationRequestErrorReason {
-  // The hosting WebUI received the request, but the web client has not
-  // subscribed to the request yet. We couldn't show the dialog in this case.
-  REQUEST_PROMISE_NO_SUBSCRIBER = 0,
-  // The task requested a new user confirmation dialog before the current
-  // one completed.
-  PREEMPTED_BY_NEW_REQUEST = 1,
-}
-
-export declare interface UserConfirmationDialogResponsePrivate extends
-    UserConfirmationDialogResponse {
-  errorReason?: ConfirmationRequestErrorReason;
-}
-
-export declare interface NavigationConfirmationRequestPrivate extends
-    Omit<NavigationConfirmationRequest, 'onConfirmationDecision'> {}
-
-export declare interface NavigationConfirmationResponsePrivate extends
-    NavigationConfirmationResponse {
-  errorReason?: ConfirmationRequestErrorReason;
 }
 
 export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error

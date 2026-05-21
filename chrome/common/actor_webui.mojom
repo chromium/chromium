@@ -4,9 +4,9 @@
 
 module actor.webui.mojom;
 
+import "chrome/common/glic_enums.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "url/mojom/origin.mojom";
-import "chrome/common/glic_enums.mojom";
 
 //
 // Place the mojom structs that require Javascript bindings here.
@@ -161,8 +161,8 @@ enum SelectAutofillSuggestionsDialogErrorReason {
   // not sent by the client over mojo.
   kNoActorTaskDelegate = 2,
 };
-// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:SelectAutofillSuggestionsDialogErrorReason)
 
+// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/actor/actor_types.ts:SelectAutofillSuggestionsDialogErrorReason)
 struct FormFillingResponse {
   // The ID corresponding to the user selected suggestion.
   string selected_suggestion_id;

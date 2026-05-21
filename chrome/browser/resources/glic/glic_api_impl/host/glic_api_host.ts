@@ -15,6 +15,7 @@ import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
 import {OneShotTimer} from '../../timer.js';
+import {ActorHostMessageHandler} from '../actor/actor_host.js';
 
 import type {PostMessageRequestHandler, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
 import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
@@ -173,6 +174,43 @@ export class GlicApiCommunicator implements PostMessageRequestHandler {
   }
 }
 
+interface Destroyable {
+  destroy?(): void;
+}
+
+type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
+    Promise<{payload: unknown}>;
+class HandlerDispatcher {
+  private handlers: Map<string, HandlerFunction> = new Map();
+  private handlerObjects: Destroyable[] = [];
+  registerAll(objectWithHandlers: object&Destroyable): void {
+    const propNames = [
+      ...Object.getOwnPropertyNames(objectWithHandlers),
+      ...Object.getOwnPropertyNames(Object.getPrototypeOf(objectWithHandlers)),
+    ];
+    for (const name of propNames) {
+      if (!name.startsWith('glicBrowser')) {
+        continue;
+      }
+      const handler = (objectWithHandlers as Record<string, unknown>)[name];
+      if (typeof handler === 'function') {
+        this.handlers.set(name, handler.bind(objectWithHandlers));
+      }
+    }
+    this.handlerObjects.push(objectWithHandlers);
+  }
+  getHandler(name: string): HandlerFunction|undefined {
+    return this.handlers.get(name);
+  }
+  destroy(): void {
+    this.handlers.clear();
+    for (const obj of this.handlerObjects) {
+      obj.destroy?.();
+    }
+    this.handlerObjects = [];
+  }
+}
+
 /**
  * The host side of the Glic API.
  *
@@ -180,7 +218,7 @@ export class GlicApiCommunicator implements PostMessageRequestHandler {
  * the browser (over Mojo).
  */
 export class GlicApiHost implements PostMessageRequestHandler {
-  private messageHandler: HostMessageHandler;
+  private dispatcher: HandlerDispatcher = new HandlerDispatcher();
   sender: GatedSender;
   private enableApiActivationGating = true;
   panelIsActive = false;
@@ -237,8 +275,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
         new TabFaviconHandlerSet(communicator.postMessageSender, this.handler);
     this.browserProxy.pageHandler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
-    this.messageHandler =
-        new HostMessageHandler(this.handler, this.sender, embedder, this);
+    this.dispatcher.registerAll(
+        new HostMessageHandler(this.handler, this.sender, embedder, this));
     this.webClientErrorTimer = new OneShotTimer(
         loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs'));
 
@@ -249,7 +287,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.webClientState = ObservableValue.withValue<WebClientState>(
         WebClientState.ERROR);  // Final state
     this.webClientErrorTimer.reset();
-    this.messageHandler.destroy();
+    this.dispatcher.destroy();
     this.pinCandidatesObserver?.disconnectFromSource();
     this.captureRegionObserver?.disconnectFromSource();
     if (this.actorHandler) {
@@ -272,6 +310,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
       this.handler.createActorHandler(
           this.actorHandler.$.bindNewPipeAndPassReceiver(),
           actorClientReceiver.$.bindNewPipeAndPassRemote());
+      this.dispatcher.registerAll(
+          new ActorHostMessageHandler(this.actorHandler));
     }
     this.updateSenderActive();
   }
@@ -510,16 +550,13 @@ export class GlicApiHost implements PostMessageRequestHandler {
         .isAllowed;
   }
 
+
   // PostMessageRequestHandler implementation.
   async handleRawRequest(
       type: string, payload: unknown,
       extras: ResponseExtras): Promise<{payload: unknown}|undefined> {
-    type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
-        Promise<{payload: unknown}>;
-    type IndexableMessageHandler = Record<string, HandlerFunction>;
-    const handlerFunction =
-        (this.messageHandler as unknown as IndexableMessageHandler)[type]!;
-    if (typeof handlerFunction !== 'function') {
+    const handlerFunction = this.dispatcher.getHandler(type);
+    if (!handlerFunction) {
       console.warn(`GlicApiHost: Unknown message type ${type}`);
       return;
     }
@@ -556,8 +593,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     } else {
       // Request is not gated, so call the handler directly.
       const startTime = performance.now();
-      response =
-          await handlerFunction.call(this.messageHandler, payload, extras);
+      response = await handlerFunction(payload, extras);
       if (response) {
         // Report latency metric for handled requests that return a response.
         const latency = performance.now() - startTime;

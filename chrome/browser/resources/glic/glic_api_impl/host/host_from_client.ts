@@ -12,34 +12,20 @@ import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-we
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import type {CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, ClientErrorDialogType as ClientErrorDialogTypeMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, SkillSource as SkillSourceMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CreateSkillRequest, ExperimentalTriggeringUpdate, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, ClientCapabilities, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
+import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CreateSkillRequest, ExperimentalTriggeringUpdate, GetPinCandidatesOptions, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillsWebClientEvent, TabContextOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, ClientCapabilities, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
 import type {PostMessageRequestSender} from '../post_message_transport.js';
-import type {HostRequestTypes, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TransferableException, WebClientInitialStatePrivate} from '../request_types.js';
+import type {MessageHandlerInterface, RgbaImage, TabContextResultPrivate, TransferableException, WebClientHostRequestTypes, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationType} from '../request_types.js';
 
-import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, resumeActorTaskResultToClient, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
+import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, focusedTabDataToClient, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
 import {WebClientImpl} from './host_to_client.js';
-
-// Turn everything except void into a promise.
-type Promisify<T> = T extends void ? void : Promise<T>;
-
-// A type which the host should implement. This helps verify that
-// `HostMessageHandler` is implemented with the correct parameter and return
-// types.
-type HostMessageHandlerInterface = {
-  [Property in keyof HostRequestTypes as string extends Property ? never :
-                                                                   Property]:
-      // `payload` is the message payload.
-  (payload: RequestRequestType<Property>, extras: ResponseExtras) =>
-      Promisify<RequestResponseType<Property>>;
-};
 
 /**
  * Handles all requests to the host.
@@ -50,7 +36,8 @@ type HostMessageHandlerInterface = {
  * Any new state or function that's not a handler should be added to
  * `GlicApiHost`.
  */
-export class HostMessageHandler implements HostMessageHandlerInterface {
+export class HostMessageHandler implements
+    MessageHandlerInterface<WebClientHostRequestTypes> {
   // Undefined until the web client is initialized.
   private receiver: WebClientReceiver|undefined;
 
@@ -304,24 +291,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  async glicBrowserGetContextForActorFromTab(
-      request: {tabId: string, options: TabContextOptions},
-      extras: ResponseExtras):
-      Promise<{tabContextResult: TabContextResultPrivate}> {
-    const {result: {errorReason, tabContext}} =
-        await this.host.actorHandler!.getContextForActorFromTab(
-            idFromClient(request.tabId),
-            tabContextOptionsFromClient(request.options));
-    if (!tabContext) {
-      throw new Error(`tabContext failed: ${errorReason}`);
-    }
-    const tabContextResult = tabContextToClient(tabContext, extras);
-
-    return {
-      tabContextResult: tabContextResult,
-    };
-  }
-
   async glicBrowserSetMaximumNumberOfPinnedTabs(request: {
     requestedMax: number,
   }): Promise<{effectiveMax: number}> {
@@ -329,105 +298,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     const {effectiveMax} =
         await this.handler.setMaximumNumberOfPinnedTabs(requestedMax);
     return {effectiveMax};
-  }
-
-  async glicBrowserCreateTask(request: {taskOptions?: TaskOptions}):
-      Promise<{taskId: number}> {
-    try {
-      const taskId = await this.host.actorHandler!.createTask(
-          taskOptionsToMojo(request.taskOptions));
-      return {
-        taskId: taskId,
-      };
-    } catch (errorReason) {
-      throw new ErrorWithReasonImpl(
-          'createTask',
-          (errorReason as CreateTaskErrorReason | undefined) ??
-              CreateTaskErrorReason.UNKNOWN);
-    }
-  }
-
-  async glicBrowserPerformActions(request: {actions: ArrayBuffer}):
-      Promise<{actionsResult: ArrayBuffer}> {
-    try {
-      const resultProto = await this.host.actorHandler!.performActions(
-          byteArrayFromClient(request.actions));
-      const buffer = getArrayBufferFromBigBuffer(resultProto.smuggled);
-      if (!buffer) {
-        throw PerformActionsErrorReason.UNKNOWN;
-      }
-      return {
-        actionsResult: buffer,
-      };
-    } catch (errorReason) {
-      throw new ErrorWithReasonImpl(
-          'performActions',
-          (errorReason as PerformActionsErrorReason | undefined) ??
-              PerformActionsErrorReason.UNKNOWN);
-    }
-  }
-
-  async glicBrowserCancelActions(request: {taskId: number}):
-      Promise<{result: CancelActionsResult}> {
-    const cancelResult =
-        await this.host.actorHandler!.cancelActions(request.taskId);
-    return {
-      result: enumToClient(cancelResult.result),
-    };
-  }
-
-  glicBrowserStopActorTask(
-      request: {taskId: number, stopReason: ActorTaskStopReason}): void {
-    this.host.actorHandler!.stopActorTask(
-        request.taskId, enumFromClient(request.stopReason));
-  }
-
-  glicBrowserPauseActorTask(request: {
-    taskId: number,
-    pauseReason: ActorTaskPauseReason,
-    tabId: string,
-  }): void {
-    this.host.actorHandler!.pauseActorTask(
-        request.taskId, enumFromClient(request.pauseReason),
-        idFromClient(request.tabId));
-  }
-
-  async glicBrowserResumeActorTask(
-      request: {taskId: number, tabContextOptions: TabContextOptions},
-      extras: ResponseExtras): Promise<{
-    resumeActorTaskResult: ResumeActorTaskResultPrivate,
-  }> {
-    const {
-      result: {
-        getContextResult,
-        actionResult,
-      },
-    } =
-        await this.host.actorHandler!.resumeActorTask(
-            request.taskId,
-            tabContextOptionsFromClient(request.tabContextOptions));
-    if (!getContextResult.tabContext || actionResult === null) {
-      throw new Error(
-          `resumeActorTask failed: ${getContextResult.errorReason}`);
-    }
-    return {
-      resumeActorTaskResult: resumeActorTaskResultToClient(
-          getContextResult.tabContext, actionResult, extras),
-    };
-  }
-
-  glicBrowserInterruptActorTask(request: {
-    taskId: number,
-    interruptReason?: ActorTaskInterruptReason,
-  }): void {
-    this.host.actorHandler!.interruptActorTask(
-        request.taskId, enumFromClient(request.interruptReason));
-  }
-
-  glicBrowserUninterruptActorTask(request: {
-    taskId: number,
-  }): void {
-    this.host.actorHandler!.uninterruptActorTask(request.taskId);
   }
 
   async glicBrowserCreateSkill(request: {
@@ -482,32 +352,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     event: SkillsWebClientEvent,
   }): void {
     this.handler.recordSkillsWebClientEvent(enumFromClient(request.event));
-  }
-
-  async glicBrowserCreateActorTab(request: {
-    taskId: number,
-    options: {
-      initiatorTabId?: string,
-      initiatorWindowId?: string,
-      openInBackground?: boolean,
-    },
-  }) {
-    const response = await this.host.actorHandler!.createActorTab(
-        request.taskId, request.options.openInBackground === true,
-        idFromClient(request.options.initiatorTabId),
-        idFromClient(request.options.initiatorWindowId));
-    const tabData = response.tabData;
-    if (tabData) {
-      return {
-        tabData: {
-          tabId: idToClient(tabData.tabId),
-          windowId: idToClient(tabData.windowId),
-          url: urlToClient(tabData.url),
-          title: optionalToClient(tabData.title),
-        },
-      };
-    }
-    return {};
   }
 
   glicBrowserActivateTab(request: {tabId: string}): void {
@@ -700,62 +544,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserRecordHistogram(request: {name: string, sparseValue: number}):
       void {
     chrome.histograms.recordSparseValue(request.name, request.sparseValue);
-  }
-
-  glicBrowserLogBeginAsyncEvent(request: {
-    asyncEventId: number,
-    taskId: number,
-    event: string,
-    details: string,
-  }): void {
-    this.host.actorHandler!.logBeginAsyncEvent(
-        BigInt(request.asyncEventId), request.taskId, request.event,
-        request.details);
-  }
-
-  glicBrowserLogEndAsyncEvent(request: {asyncEventId: number, details: string}):
-      void {
-    this.host.actorHandler!.logEndAsyncEvent(
-        BigInt(request.asyncEventId), request.details);
-  }
-
-  glicBrowserLogInstantEvent(
-      request: {taskId: number, event: string, details: string}): void {
-    this.host.actorHandler!.logInstantEvent(
-        request.taskId, request.event, request.details);
-  }
-
-  glicBrowserJournalClear(): void {
-    this.host.actorHandler!.journalClear();
-  }
-
-  async glicBrowserJournalSnapshot(
-      request: {clear: boolean},
-      extras: ResponseExtras): Promise<{journal: Journal}> {
-    const result = await this.host.actorHandler!.journalSnapshot(request.clear);
-    const journalArray = new Uint8Array(result.journal.data);
-    extras.addTransfer(journalArray.buffer);
-    return {
-      journal: {
-        data: journalArray.buffer,
-      },
-    };
-  }
-
-  glicBrowserJournalStart(
-      request: {maxBytes: number, captureScreenshots: boolean}): void {
-    this.host.actorHandler!.journalStart(
-        BigInt(request.maxBytes), request.captureScreenshots);
-  }
-
-  glicBrowserJournalStop(): void {
-    this.host.actorHandler!.journalStop();
-  }
-
-  glicBrowserJournalRecordFeedback(
-      request: {positive: boolean, reason: string}): void {
-    this.host.actorHandler!.journalRecordFeedback(
-        request.positive, request.reason);
   }
 
   glicBrowserOnResponseRated(request: {positive: boolean}): void {
@@ -984,39 +772,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       this.host.tabFaviconHandlerSet.create(
           idFromClient(payload.tabId), payload.observationId);
     }
-  }
-
-  glicBrowserAutofillSuggestionDialogOnFormPresented(payload: {
-    taskId: number,
-    params: {formFillingRequestIndex: number},
-  }): void {
-    this.host.actorHandler!.autofillSuggestionDialogOnFormPresented(
-        payload.taskId, payload.params);
-  }
-
-  glicBrowserAutofillSuggestionDialogOnFormPreviewChanged(payload: {
-    taskId: number,
-    params: {
-      formFillingRequestIndex: number,
-      response?: FormFillingResponse,
-    },
-  }): void {
-    this.host.actorHandler!.autofillSuggestionDialogOnFormPreviewChanged(
-        payload.taskId, {
-          formFillingRequestIndex: payload.params.formFillingRequestIndex,
-          response: payload.params.response ?? null,
-        });
-  }
-
-  glicBrowserAutofillSuggestionDialogOnFormConfirmed(payload: {
-    taskId: number,
-    params: {
-      formFillingRequestIndex: number,
-      response: FormFillingResponse,
-    },
-  }): void {
-    this.host.actorHandler!.autofillSuggestionDialogOnFormConfirmed(
-        payload.taskId, payload.params);
   }
 
   glicBrowserSetErrorDialogState(request: {

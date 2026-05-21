@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
+import {ActorWebClientMessageHandler, GlicBrowserHostJournalImpl} from '../actor/actor_client.js';
 
 import {replaceProperties} from './../conversions.js';
 import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
 import type {PostMessageRequestSender, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
-import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason, SubscriberObservationType} from './../request_types.js';
-import {rgbaImageToBmpBlob} from './image_utils.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, MessageHandlerInterface, PdfDocumentDataPrivate, PinCandidatePrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientClientRequestTypes} from './../request_types.js';
+import {ErrorWithReasonImpl, newTransferableException, SubscriberObservationType} from './../request_types.js';
+import {rgbaImageToBlob} from './image_utils.js';
 
 // Web client side of the Glic API.
 // Communicates with the Chrome-WebUI-side in glic_api_host.ts
@@ -42,19 +43,11 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
   }
 }
 
-type Promisify<T> = T extends void ? void : Promise<T>;
-
 // A type which the guest should implement.
 // This helps verify that WebClientMessageHandler is implemented with the
 // correct parameter and return types.
-type WebClientMessageHandlerInterface = {
-  [Property in keyof WebClientRequestTypes]:
-      // `payload` is the message payload.
-  (payload: RequestRequestType<Property>, extras: ResponseExtras) =>
-      Promisify<RequestResponseType<Property>>;
-};
-
-class WebClientMessageHandler implements WebClientMessageHandlerInterface {
+class WebClientMessageHandler implements
+    MessageHandlerInterface<WebClientClientRequestTypes> {
   private cachedPinnedTabs: TabData[]|undefined = undefined;
   private cachedSkillPreviews: SkillPreview[] = [];
   private cachedContextualSkillPreviews: SkillPreview[] = [];
@@ -336,11 +329,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.skillToInvoke.assignAndSignal(payload.skill);
   }
 
-  glicWebClientNotifyActorTaskStateChanged(
-      payload: {taskId: number, state: ActorTaskState}): void {
-    this.host.setActorTaskState(payload.taskId, payload.state);
-  }
-
   glicWebClientPageMetadataChanged(
       payload: {tabId: string, pageMetadata: PageMetadata|null}): void {
     const observable = this.host.pageMetadataObservers.get(payload.tabId);
@@ -356,114 +344,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       }
       this.host.pageMetadataObservers.delete(payload.tabId);
     }
-  }
-
-  async glicWebClientRequestToShowDialog(payload: {
-    request: SelectCredentialDialogRequestPrivate,
-  }): Promise<{response: SelectCredentialDialogResponsePrivate}> {
-    const request = payload.request;
-    return new Promise(resolve => {
-      if (!this.host.selectCredentialDialogRequestSubject
-               .hasActiveSubscription()) {
-        // Since there is no subscriber, respond to the browser immediately as
-        // if no credential is selected.
-        window.console.warn(
-            'GlicWebClient: no subscriber for' +
-            ' selectCredentialDialogRequest()!');
-        resolve({
-          response: {
-            taskId: request.taskId,
-            errorReason:
-                SelectCredentialDialogErrorReason.DIALOG_PROMISE_NO_SUBSCRIBER,
-          },
-        });
-        return;
-      }
-      const iconsGetter = new Map<string, () => Promise<Blob>>();
-      for (const [id, image] of payload.request.icons.entries()) {
-        let promise: Promise<Blob>|undefined;
-        iconsGetter.set(id, () => {
-          if (!promise) {
-            promise = Promise.resolve(rgbaImageToBlob(image));
-          }
-          return promise;
-        });
-      }
-      const credentials =
-          request.credentials.map((credential: CredentialPrivate) => {
-            const getIcon = iconsGetter.get(credential.sourceSiteOrApp);
-            const accountPicture = credential.accountPicture;
-            const getAccountPicture = accountPicture ?
-                () => Promise.resolve(rgbaImageToBlob(accountPicture)) :
-                undefined;
-            return {
-              ...credential,
-              getIcon,
-              getAccountPicture,
-            };
-          });
-      const requestWithCallback: SelectCredentialDialogRequest = {
-        ...request,
-        credentials,
-        onDialogClosed: resolve,
-      };
-      this.host.selectCredentialDialogRequestSubject.next(requestWithCallback);
-    });
-  }
-
-  glicWebClientRequestToShowConfirmationDialog(payload: {
-    request: UserConfirmationDialogRequestPrivate,
-  }): Promise<{response: UserConfirmationDialogResponsePrivate}> {
-    return new Promise(resolve => {
-      if (!this.host.userConfirmationDialogRequestSubject
-               .hasActiveSubscription()) {
-        // Since there is no subscriber, respond to the browser immediately as
-        // if the user denied the request.
-        window.console.warn(
-            'GlicWebClient: no subscriber for ' +
-            'userConfirmationDialogRequest()!');
-        resolve({
-          response: {
-            permissionGranted: false,
-            errorReason:
-                ConfirmationRequestErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
-          },
-        });
-        return;
-      }
-      const requestWithCallback: UserConfirmationDialogRequest = {
-        ...payload.request,
-        onDialogClosed: resolve,
-      };
-      this.host.userConfirmationDialogRequestSubject.next(requestWithCallback);
-    });
-  }
-
-  glicWebClientRequestToConfirmNavigation(payload: {
-    request: NavigationConfirmationRequestPrivate,
-  }): Promise<{response: NavigationConfirmationResponsePrivate}> {
-    return new Promise(resolve => {
-      if (!this.host.navigationConfirmationRequestSubject
-               .hasActiveSubscription()) {
-        // Since there is no subscriber, respond to the browser immediately as
-        // if the user denied the request.
-        window.console.warn(
-            'GlicWebClient: no subscriber for ' +
-            'navigationConfirmationRequest()!');
-        resolve({
-          response: {
-            errorReason:
-                ConfirmationRequestErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
-          },
-        });
-        return;
-      }
-      const requestWithCallback: NavigationConfirmationRequest = {
-        ...payload.request,
-        onConfirmationDecision: resolve,
-      };
-      this.host.navigationConfirmationRequestSubject.next(requestWithCallback);
-    });
   }
 
   glicWebClientNotifyAdditionalContext(payload: {
@@ -501,63 +381,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientNotifyActorTaskListRowClicked(payload: {taskId: number}): void {
     this.host.actorTaskListRowClickedSubject.next(payload.taskId);
-  }
-
-  async glicWebClientRequestToShowAutofillSuggestionsDialog(payload: {
-    request: SelectAutofillSuggestionsDialogRequestPrivate,
-  }): Promise<{response: SelectAutofillSuggestionsDialogResponsePrivate}> {
-    const request = payload.request;
-    return new Promise(resolve => {
-      if (!this.host.selectAutofillSuggestionsDialogRequestSubject
-               .hasActiveSubscription()) {
-        resolve({
-          response: {
-            taskId: request.taskId,
-            errorReason: SelectAutofillSuggestionsDialogErrorReason
-                             .DIALOG_PROMISE_NO_SUBSCRIBER,
-            selectedSuggestions: [],
-          },
-        });
-        return;
-      }
-      const requestWithCallback: SelectAutofillSuggestionsDialogRequest = {
-        ...request,
-        formFillingRequests: request.formFillingRequests.map(
-            formFillingRequest => ({
-              ...formFillingRequest,
-              suggestions: formFillingRequest.suggestions.map(suggestion => {
-                const icon = suggestion.icon;
-                const getIcon = icon ?
-                    () => Promise.resolve(rgbaImageToBlob(icon)) :
-                    undefined;
-                return {...suggestion, getIcon};
-              }),
-            })),
-        onDialogClosed: (result) => {
-          const response: SelectAutofillSuggestionsDialogResponsePrivate = {
-            ...result.response,
-            taskId: request.taskId,
-          };
-          resolve({
-            response: response,
-          });
-        },
-        onFormPresented: (params) => {
-          this.host.autofillSuggestionDialogOnFormPresented(
-              request.taskId, params);
-        },
-        onFormPreviewChanged: (params) => {
-          this.host.autofillSuggestionDialogOnFormPreviewChanged(
-              request.taskId, params);
-        },
-        onFormConfirmed: (params) => {
-          this.host.autofillSuggestionDialogOnFormConfirmed(
-              request.taskId, params);
-        },
-      };
-      this.host.selectAutofillSuggestionsDialogRequestSubject.next(
-          requestWithCallback);
-    });
   }
 
   glicWebClientTabDataChanged(payload: {
@@ -602,12 +425,13 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }
 }
 
-class GlicBrowserHostImpl implements GlicBrowserHost {
+export class GlicBrowserHostImpl implements GlicBrowserHost {
   private readonly hostId = newSenderId();
   private readonly router: PostMessageRouter;
   readonly sender: PostMessageRequestSender;
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
+  private actorWebClientMessageHandler: ActorWebClientMessageHandler;
   private chromeVersion?: ChromeVersion;
   private platform?: Platform;
   private formFactor?: FormFactor;
@@ -703,11 +527,18 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
             this.idGenerator);
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
+    this.actorWebClientMessageHandler = new ActorWebClientMessageHandler(this);
     this.journalHost = new GlicBrowserHostJournalImpl(this.sender);
     this.metrics = new GlicBrowserHostMetricsImpl(this.sender);
 
     for (const name of Object.getOwnPropertyNames(
              WebClientMessageHandler.prototype)) {
+      if (name !== 'constructor') {
+        this.handlerFunctionNames.add(name);
+      }
+    }
+    for (const name of Object.getOwnPropertyNames(
+             ActorWebClientMessageHandler.prototype)) {
       if (name !== 'constructor') {
         this.handlerFunctionNames.add(name);
       }
@@ -869,9 +700,19 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         Promise<{payload: unknown}>;
     type IndexableWebClientMessageHandler = Record<string, HandlerFunction>;
 
+    let handlerTarget: unknown = this.webClientMessageHandler;
+    let handlerFunction =
+        (this.webClientMessageHandler as unknown as
+         IndexableWebClientMessageHandler)[type];
+    if (typeof handlerFunction !== 'function') {
+      handlerTarget = this.actorWebClientMessageHandler;
+      handlerFunction =
+          (this.actorWebClientMessageHandler as unknown as
+           IndexableWebClientMessageHandler)[type];
+    }
+
     const response =
-        await (this.webClientMessageHandler as unknown as
-               IndexableWebClientMessageHandler)[type]!(payload, extras);
+        await handlerFunction!.call(handlerTarget, payload, extras);
     if (!response) {
       return;
     }
@@ -1563,54 +1404,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 }
 
-class GlicBrowserHostJournalImpl implements GlicBrowserHostJournal {
-  constructor(private sender: PostMessageRequestSender) {}
-
-  beginAsyncEvent(
-      asyncEventId: number, taskId: number, event: string,
-      details: string): void {
-    this.sender.requestNoResponse(
-        'glicBrowserLogBeginAsyncEvent',
-        {asyncEventId, taskId, event, details});
-  }
-
-  clear(): void {
-    this.sender.requestNoResponse('glicBrowserJournalClear', undefined);
-  }
-
-  endAsyncEvent(asyncEventId: number, details: string): void {
-    this.sender.requestNoResponse(
-        'glicBrowserLogEndAsyncEvent', {asyncEventId, details});
-  }
-
-  instantEvent(taskId: number, event: string, details: string): void {
-    this.sender.requestNoResponse(
-        'glicBrowserLogInstantEvent', {taskId, event, details});
-  }
-
-  async snapshot(clear: boolean): Promise<Journal> {
-    const snapshotResult = await this.sender.requestWithResponse(
-        'glicBrowserJournalSnapshot', {clear});
-    return snapshotResult.journal;
-  }
-
-  start(maxBytes: number, captureScreenshots: boolean): void {
-    this.sender.requestNoResponse(
-        'glicBrowserJournalStart', {maxBytes, captureScreenshots});
-  }
-
-  stop(): void {
-    this.sender.requestNoResponse('glicBrowserJournalStop', undefined);
-  }
-
-  recordFeedback(positive: boolean, reason: string) {
-    this.sender.requestNoResponse(
-        'glicBrowserJournalRecordFeedback',
-        {positive, reason},
-    );
-  }
-}
-
 class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
   constructor(private sender: PostMessageRequestSender) {}
 
@@ -1919,12 +1712,6 @@ class GetTabFaviconByIdObservableSetImpl implements
         'glicBrowserSubscribeToTabFavicon',
         {tabId, observationId, cancel: true});
   }
-}
-
-// Converts an RgbaImage into a Blob through the canvas API. Output is a PNG or
-// BMP.
-function rgbaImageToBlob(image: RgbaImage): Blob {
-  return rgbaImageToBmpBlob(image);
 }
 
 function convertTabDataFromPrivate(data: TabDataPrivate): TabData;

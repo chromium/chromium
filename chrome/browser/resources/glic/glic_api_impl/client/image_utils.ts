@@ -122,7 +122,7 @@ const bitmapHeaderGenerators: Array < BitmapHeaderGenerator|
     undefined >= [undefined, undefined];
 
 // Converts an RgbaImage into a Blob. Output is a BMP.
-export function rgbaImageToBmpBlob(image: RgbaImage): Blob {
+export function rgbaImageToBlob(image: RgbaImage): Blob {
   // It would be abnormal to see more than one color type, but we handle it
   // for safety.
   let headerGenerator = bitmapHeaderGenerators[image.colorType];

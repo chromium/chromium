@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type * as actorWebUiMojom from '../actor_webui.mojom-webui.js';
 import type * as mojom from '../glic.mojom-webui.js';
 import type * as api from '../glic_api/glic_api.js';
 
+import {assertNever} from './messaging.js';
 import type * as requestTypes from './request_types.js';
-
-
-/* eslint-disable-next-line @typescript-eslint/naming-convention */
-function assertNever<_T extends never>() {}
 
 // Helper function to shallow-copy an object and replace some properties.
 // Useful to convert from these private types to public types. This will fail to
@@ -19,8 +15,6 @@ export function replaceProperties<O, R>(
     original: O, replacements: R): Omit<O, keyof R>&R {
   return Object.assign({}, original, replacements);
 }
-
-
 
 //
 // This code checks that mojom enums are equivalent to their counterparts in
@@ -58,7 +52,7 @@ type AnnotateError<T, M> = T extends never ? never : [M, T];
 
 // Checks that both enums share the same keys.
 // Returns never on success, or an error message otherwise.
-type CheckEnumCompatibility<MojoEnum, TsEnum> = AnnotateError<
+export type CheckEnumCompatibility<MojoEnum, TsEnum> = AnnotateError<
     Exclude<AllMojomEnumKeysAsUppercase<MojoEnum>, AllEnumKeys<TsEnum>>,
     'typescript enum missing value'>|
     AnnotateError<
@@ -96,15 +90,6 @@ assertNever<CheckEnumCompatibility<
     typeof mojom.ActorTaskPauseReason, typeof api.ActorTaskPauseReason>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.ActorTaskStopReason, typeof api.ActorTaskStopReason>>();
-assertNever<CheckEnumCompatibility<
-    typeof actorWebUiMojom.UserGrantedPermissionDuration,
-    typeof api.UserGrantedPermissionDuration>>();
-assertNever<CheckEnumCompatibility<
-    typeof actorWebUiMojom.SelectCredentialDialogErrorReason,
-    typeof requestTypes.SelectCredentialDialogErrorReason>>();
-assertNever<CheckEnumCompatibility<
-    typeof actorWebUiMojom.ConfirmationRequestErrorReason,
-    typeof requestTypes.ConfirmationRequestErrorReason>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.MetricUserInputReactionType,
     typeof api.MetricUserInputReactionType>>();
