@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -236,9 +237,9 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
 
     // PageNode may be replaced after discard. TabHandle is not replaced after
     // discard.
-    TabPageDecorator::TabHandle* tab_handle;
+    base::WeakPtr<TabPageDecorator::TabHandle> tab_handle;
     if (!result.first_discard_time.has_value()) {
-      tab_handle = TabPageDecorator::FromPageNode(node);
+      tab_handle = TabPageDecorator::WeakHandleFromPageNode(node);
     }
 
     // Do the discard.
