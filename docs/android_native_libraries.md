@@ -177,58 +177,7 @@ Builds on | Variant | Description
    * For non-renderer processes, the above Android N+ logic applies.
    * For renderer processes, the OS starts all Monochrome renderer processes by `fork()`ing the WebView zygote rather than the normal application zygote.
 
-## Partitioned libraries
-Some Chrome code is placed in feature-specific libraries and delivered via
-[Dynamic Feature Modules](android_dynamic_feature_modules.md).
 
-A linker-assisted partitioning system automates the placement of code into
-either the main Chrome library or feature-specific .so libraries. Feature code
-may continue to make use of core Chrome code (eg. base::) without modification,
-but Chrome must call feature code through a virtual interface.
-
-**How partitioning works**
-
-The lld linker is now capable of producing a [partitioned
-library](https://lld.llvm.org/Partitions.html), which is effectively an
-intermediate single file containing multiple libraries. A separate tool
-*(llvm-objcopy)* then splits the file into standalone .so files, invoked through
-a [partitioned shared library](https://cs.chromium.org/chromium/src/build/partitioned_shared_library.gni)
-GN template.
-
-The primary partition is Chrome's main library (eg. libchrome.so), and other
-partitions may contain feature code (eg. libvr.so). By specifying a list of
-C/C++ symbols to use as entrypoints, the linker can collect all code used only
-through these entrypoints, and place it in a particular partition.
-
-To facilitate partitioning, all references from Chrome to the feature
-entrypoints must be indirect. That is, Chrome must obtain a symbol from the
-feature library through dlsym(), cast the pointer to its actual type, and call
-through the resulting pointer.
-
-Feature code retains the ability to freely call back into Chrome's core code.
-When loading the library, the feature module system uses the feature name to
-look up a partition name *(libfoo.so)* in an address offset table built into the
-main library. The resulting offset is supplied to android_dlopen_ext(), which
-instructs Android to load the library in a particular reserved address region.
-This allows the feature library's relative references back to the main library
-to work, as if the feature code had been linked into the main library
-originally. No dynamic symbol resolution is required here.
-
-**Implications on code placement**
-
-* Any symbol referenced by multiple partitions ends up in the main library (even
-  if all calling libraries are feature partitions).
-* Symbols that aren't feature code (eg. base::) will be pulled into the
-  feature's library if only that feature uses the code. This is a benefit, but
-  can be unexpected.
-
-**Builds that support partitioned libraries**
-
-Partitioned libraries are usable when all of the following are true:
-* Component build is disabled (component build splits code across GN component
-  target boundaries instead).
-* The compiler is Clang.
-* The linker is lld.
 
 ## Library Prefetching
  * During start-up, we `fork()` a process that reads a byte from each page of the library's memory (or just the ordered range of the library).

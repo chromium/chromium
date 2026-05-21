@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BundleUtils;
@@ -130,18 +131,17 @@ public class Module<T> {
     }
 
     /**
-     * Loads native libraries and/or resources if and only if this is not already done, assuming
-     * that the module is installed, and enableNativeLoad() has been called.
+     * Loads pak resources if and only if this is not already done, assuming that the module is
+     * installed, and enableNativeLoad() has been called.
      */
     public void ensureNativeLoaded() {
         // Can only initialize native once per lifetime of Chrome.
         if (mIsNativeLoaded) return;
         assert LibraryLoader.getInstance().isInitialized();
         ModuleDescriptor moduleDescriptor = getModuleDescriptor();
-        String[] libraries = moduleDescriptor.getLibraries();
         String[] paks = moduleDescriptor.getPaks();
-        if (libraries.length > 0 || paks.length > 0) {
-            ModuleJni.get().loadNative(mName, libraries, paks);
+        if (paks.length > 0) {
+            ModuleJni.get().loadNative(mName, paks);
         }
         mIsNativeLoaded = true;
     }
@@ -168,11 +168,6 @@ public class Module<T> {
                 // Happens for ChromePublic.apk
                 ret =
                         new ModuleDescriptor() {
-                            @Override
-                            public String[] getLibraries() {
-                                return new String[0];
-                            }
-
                             @Override
                             public String[] getPaks() {
                                 return new String[0];
@@ -226,6 +221,8 @@ public class Module<T> {
 
     @NativeMethods
     interface Natives {
-        void loadNative(String name, String[] libraries, String[] paks);
+        void loadNative(
+                @JniType("std::string") String name,
+                @JniType("std::vector<std::string>") String[] paks);
     }
 }

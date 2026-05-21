@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-import("//chrome/android/modules/buildflags.gni")
 import("//chrome/android/modules/on_demand/on_demand_module.gni")
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/xr/xr_module.gni")

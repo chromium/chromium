@@ -2851,7 +2851,7 @@ if (_is_default_toolchain) {
                 "apks/$_trichrome_webview_basename_for_size",
                 "apks/$_trichrome_webview_bundle_for_size.unused_resources",
                 "apks/$_trichrome_webview_bundle_for_size.R.txt",
-                "${_symbol_dir_for_size}/libmonochrome__combined.so",
+                "${_symbol_dir_for_size}/libmonochrome.so",
               ]
           to_resource_sizes_py = {
             apk_name = "apks/$target_name"
@@ -2873,7 +2873,7 @@ if (_is_default_toolchain) {
 
           archive_files = [
             "apks/TrichromeLibrary64.apk",
-            "lib.unstripped/libmonochrome_64__combined.so",
+            "lib.unstripped/libmonochrome_64.so",
           ]
           supersize_input_file = "apks/TrichromeLibrary64.apk"
         }
@@ -3285,13 +3285,6 @@ if (_is_default_toolchain) {
       "//ui/base/clipboard:clipboard_test_support",
     ]
 
-    # Make this a partitioned library, since some partitioned code is linked in
-    # (otherwise, the library will warn at build time that it contains multiple
-    # symbol tables). However, do not create the partitions, as they are not
-    # required or packaged into the APK. This can be removed if LLD starts
-    # supporting a "no partitions" argument (https://crbug.com/40656873).
-    module_descs = []
-
     java_targets = [
       "//chrome/android:chrome_public_unit_test_apk__test_apk",
       "//chrome/android:chrome_public_test_apk__test_apk",
@@ -3323,7 +3316,6 @@ if (_is_default_toolchain) {
   libchrome_impl("libchrome") {
     define_unwind_table_target =
         add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
-    module_descs = chrome_module_descs
 
     # Java and native targets form two independent compile graphs. Deps from
     # java targets onto native ones (or vice versa) are unnecessary and reduce
@@ -3364,7 +3356,6 @@ template("libmonochrome_tmpl") {
     }
 
     is_trichrome = true
-    module_descs = chrome_module_descs
 
     forward_variables_from(invoker, "*", [ "deps" ])
   }

@@ -108,19 +108,7 @@ def _CreateUnifiedDiff(name, before, after):
 def _ResolveElfPath(elf_path):
   if os.path.exists(elf_path):
     return elf_path
-
-  # See if it was a partitioned library and the __combined.so file exists.
-  if elf_path.endswith('_partition.so'):
-    parent, filename = os.path.split(elf_path)
-    filename = filename[:filename.index('_')] + '__combined.so'
-    combined_elf_path = os.path.join(parent, filename)
-  else:
-    combined_elf_path = elf_path[:-3] + '__combined.so'
-
-  if os.path.exists(combined_elf_path):
-    return combined_elf_path
-  logging.warning('%s does not exist (nor does %s).', elf_path,
-                  combined_elf_path)
+  logging.warning('%s does not exist.', elf_path)
   return None
 
 

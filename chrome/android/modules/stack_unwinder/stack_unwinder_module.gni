@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/android/modules/buildflags.gni")
+import("//build/config/android/channel.gni")
+import("//build/config/android/config.gni")
 
 # Enable stack unwinding only on official build with specific channels. It is
 # not enabled on non-official builds to not affect build time for developers.
@@ -18,8 +19,5 @@ stack_unwinder_module_desc = {
   name = "stack_unwinder"
   android_manifest = "//chrome/android/modules/stack_unwinder/internal/java/AndroidManifest.xml"
   java_deps = [ "//chrome/android/modules/stack_unwinder/internal:java" ]
-  native_deps = [ "//chrome/android/modules/stack_unwinder/internal:native" ]
-  jni_registration = "//chrome/android/modules/stack_unwinder/internal:stack_unwinder__jni_registration($default_toolchain)"
-  load_native_on_get_impl = false
   include_unwind_assets = add_unwind_tables_in_chrome_32bit_apk
 }

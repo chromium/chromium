@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//chrome/android/modules/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -161,12 +160,6 @@ if (enable_vr) {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     defines = [ "VR_UI_IMPLEMENTATION" ]
-
-    if (use_native_partitions) {
-      # Mark symbols in this library as belonging to the VR partition. Only
-      # exported symbols (module entrypoints) are affected.
-      cflags = [ "-fsymbol-partition=vr_partition" ]
-    }
 
     if (is_android) {
       sources += [ "jni_onload.cc" ]

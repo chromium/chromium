@@ -9,9 +9,6 @@ import org.chromium.build.annotations.NullMarked;
 /** Provides information about a dynamic feature module. */
 @NullMarked
 public interface ModuleDescriptor {
-    /** Returns the list of native library names this module requires at runtime. */
-    String[] getLibraries();
-
     /** Returns the list of PAK resources files this module contains. */
     String[] getPaks();
 

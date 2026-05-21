@@ -8,8 +8,6 @@ import("//build/config/android/create_unwind_table.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
-import("//build/partitioned_shared_library.gni")
-import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
@@ -22,13 +20,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 #    is_trichrome: Optional. If set, the library is for use in Trichrome.
 #    is_webview: If true, the library is for webview, and browser-specific
 #      config is skipped.
-#    module_descs: Optional. Descriptors of feature modules for which library
-#      targets should be auto-generated. The targets are called
-#      "${target_name}_<module name>" and can be depended on like shared_library
-#      targets. If enabled, the library targets create partitions containing the
-#      module's native code. Otherwise, they simply depend on the module's
-#      native_deps. See //chrome/android/modules/chrome_feature_modules.gni for
-#      the descriptor format.
 template("chrome_common_shared_library") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
@@ -38,42 +29,20 @@ template("chrome_common_shared_library") {
   _collect_inputs_only =
       defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
 
-  # Create a partitioned libraries if the build config supports it, and the
-  # invoker has supplied module descriptors.
-  _generate_partitions = defined(invoker.module_descs) &&
-                         use_native_partitions && !_collect_inputs_only
-  _module_descs = []
-  if (defined(invoker.module_descs)) {
-    _module_descs = invoker.module_descs
-  }
-
   _use_linker_script = !_collect_inputs_only
   if (_use_linker_script) {
     _linker_script_target = "${target_name}_linker_script"
     _linker_script = "$target_gen_dir/${target_name}_linker_script.txt"
 
-    # Create a custom linker script based on JNI and feature module requirements.
+    # Create a custom linker script based on JNI and feature module
+    # requirements.
     generate_linker_version_script(_linker_script_target) {
       linker_script = _linker_script
       export_feature_registrations = true
-      if (_generate_partitions) {
-        export_symbol_allowlist_files = []
-        foreach(_module_desc, invoker.module_descs) {
-          if (defined(_module_desc.native_entrypoints)) {
-            export_symbol_allowlist_files += [ _module_desc.native_entrypoints ]
-          }
-        }
-      }
     }
   }
 
-  if (_generate_partitions) {
-    _target_type = "partitioned_shared_library_with_jni"
-  } else {
-    _target_type = "shared_library_with_jni"
-  }
-
-  target(_target_type, target_name) {
+  shared_library_with_jni(target_name) {
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [
@@ -125,22 +94,6 @@ template("chrome_common_shared_library") {
                    rebase_path(_linker_script, root_build_dir) ]
     }
 
-    if (_generate_partitions) {
-      partitions = []
-      foreach(_module_desc, _module_descs) {
-        if (defined(_module_desc.native_deps)) {
-          partitions += [ _module_desc.name ]
-          deps += _module_desc.native_deps
-        }
-      }
-    } else {
-      foreach(_module_desc, _module_descs) {
-        if (defined(_module_desc.native_deps)) {
-          deps += _module_desc.native_deps
-        }
-      }
-    }
-
     if ((_is_trichrome || _is_webview || chromium_linker_supported) &&
         target_cpu != "mipsel" && target_cpu != "mips64el") {
       # By default, the static linker will create ELF executables with both
@@ -159,18 +112,6 @@ template("chrome_common_shared_library") {
 
     if (defined(invoker.extra_configs)) {
       configs += invoker.extra_configs
-    }
-  }
-
-  if (!_generate_partitions && !_collect_inputs_only) {
-    # Make helper targets so that we always have module native targets no matter
-    # whether partitions are enabled.
-    foreach(_module_desc, _module_descs) {
-      if (defined(_module_desc.native_deps)) {
-        group("${target_name}_${_module_desc.name}") {
-          deps = _module_desc.native_deps
-        }
-      }
     }
   }
 

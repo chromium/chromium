@@ -673,8 +673,6 @@ def _MakeNativeSpec(json_config, **kwargs):
 
 def _DeduceMapPath(elf_path):
   to_try = [
-      elf_path.replace('.so', '__combined.so') + '.map',
-      elf_path.replace('.so', '__combined.so') + '.map.gz',
       elf_path + '.map',
       elf_path + '.map.gz',
   ]
@@ -701,16 +699,12 @@ def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
   # if --elf-path or --map-path (rather than --aux-elf-path, --aux-map-path):
   if not apk_infolist:
     if map_path or elf_path:
-      combined_elf_path = None
-      if map_path and '__combined.so' in map_path:
-        combined_elf_path = elf_path[:-3] + '__combined.so'
-
       ret.append(
           _MakeNativeSpec(json_config,
                           apk_so_path=None,
                           map_path=map_path,
                           elf_path=elf_path,
-                          combined_elf_path=combined_elf_path,
+                          combined_elf_path=None,
                           track_string_literals=track_string_literals))
     return abi_filters, ret
 
@@ -728,11 +722,6 @@ def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
     cur_map_path = None
     if not matches_abi(apk_so_path):
       logging.debug('Not breaking down %s: secondary ABI', apk_so_path)
-    elif apk_so_path.endswith('_partition.so'):
-      # TODO(agrieve): Support symbol breakdowns for partitions (they exist in
-      #     the __combined .map file. Debug information (nm output) is shared
-      #     with base partition.
-      logging.debug('Not breaking down %s: partitioned library', apk_so_path)
     else:
       if elf_path:
         # Consume --aux-elf-file for the largest matching binary.
@@ -765,16 +754,12 @@ def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
         logging.info('Detected --abi-filter %s', abi_filters[0])
         auto_abi_filters = False
 
-    combined_elf_path = None
-    if cur_map_path and '__combined.so' in cur_map_path:
-      combined_elf_path = cur_elf_path[:-3] + '__combined.so'
-
     ret.append(
         _MakeNativeSpec(json_config,
                         apk_so_path=apk_so_path,
                         map_path=cur_map_path,
                         elf_path=cur_elf_path,
-                        combined_elf_path=combined_elf_path,
+                        combined_elf_path=None,
                         track_string_literals=track_string_literals))
 
   return abi_filters, ret
