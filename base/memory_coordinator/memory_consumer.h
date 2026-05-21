@@ -15,6 +15,7 @@
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 
@@ -88,7 +89,7 @@ class MemoryConsumerRegistry;
 // base/memory_coordinator/multi_memory_consumer.h) which is specifically
 // designed to support multiple registrations.
 //
-class BASE_EXPORT MemoryConsumer {
+class BASE_EXPORT MemoryConsumer : public CheckedObserver {
  public:
   // This is the default value for a consumer's memory limit. It corresponds to
   // 100%, meaning the consumer is not restricted in its memory usage.
@@ -96,7 +97,7 @@ class BASE_EXPORT MemoryConsumer {
   static constexpr double kDefaultMemoryLimitRatio = 1.0;
 
   MemoryConsumer();
-  virtual ~MemoryConsumer() = default;
+  ~MemoryConsumer() override = default;
 
   // The memory limit, expressed as a percentage.
   int memory_limit() const { return memory_limit_; }

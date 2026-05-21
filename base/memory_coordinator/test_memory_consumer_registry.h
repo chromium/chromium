@@ -8,11 +8,11 @@
 #include <stddef.h>
 
 #include <cstddef>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "base/observer_list.h"
 
 namespace base {
 
@@ -41,10 +41,11 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
                                     OnceClosure on_notification_sent_callback);
   void NotifyReleaseMemoryAsync(OnceClosure on_notification_sent_callback);
 
-  size_t size() const { return memory_consumers_.size(); }
+  size_t size() const { return size_; }
 
  private:
-  std::vector<MemoryConsumer*> memory_consumers_;
+  ObserverList<MemoryConsumer> memory_consumers_;
+  size_t size_ = 0;
 
   WeakPtrFactory<TestMemoryConsumerRegistry> weak_ptr_factory_{this};
 };

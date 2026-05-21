@@ -142,4 +142,111 @@ TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
   registry().RemoveMemoryConsumer(kConsumerName, &consumer2);
 }
 
+class ReentrantSelfRemovingMemoryConsumer : public base::MemoryConsumer {
+ public:
+  ReentrantSelfRemovingMemoryConsumer(MemoryConsumerRegistry& registry,
+                                      const std::string& name)
+      : registry_(registry), name_(name) {}
+
+  ~ReentrantSelfRemovingMemoryConsumer() override = default;
+
+  void OnReleaseMemory() override {
+    registry_->RemoveMemoryConsumer(name_, this);
+    released_ = true;
+  }
+
+  void OnUpdateMemoryLimit() override {}
+
+  bool released() const { return released_; }
+
+ private:
+  const raw_ref<MemoryConsumerRegistry> registry_;
+  std::string name_;
+  bool released_ = false;
+};
+
+TEST_F(MemoryConsumerRegistryTest, ReentrantRemoval) {
+  const std::string kConsumerName = "reentrant_consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  ReentrantSelfRemovingMemoryConsumer consumer(registry(), kConsumerName);
+
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  ASSERT_EQ(registry().size(), 1u);
+
+  // Trigger release memory, which will call OnReleaseMemory and cause the
+  // consumer to remove itself.
+  entries().front().host->UpdateConsumers({{kConsumerId, std::nullopt, true}});
+
+  // Verify it was called and successfully removed itself without crashing!
+  EXPECT_TRUE(consumer.released());
+  ASSERT_EQ(registry().size(), 0u);
+}
+
+class ReentrantSelfRemovingOnLimitMemoryConsumer : public base::MemoryConsumer {
+ public:
+  ReentrantSelfRemovingOnLimitMemoryConsumer(MemoryConsumerRegistry& registry,
+                                             const std::string& name)
+      : registry_(registry), name_(name) {}
+
+  ~ReentrantSelfRemovingOnLimitMemoryConsumer() override = default;
+
+  void OnReleaseMemory() override { released_ = true; }
+
+  void OnUpdateMemoryLimit() override {
+    registry_->RemoveMemoryConsumer(name_, this);
+    limit_updated_ = true;
+  }
+
+  bool released() const { return released_; }
+  bool limit_updated() const { return limit_updated_; }
+
+ private:
+  const raw_ref<MemoryConsumerRegistry> registry_;
+  std::string name_;
+  bool released_ = false;
+  bool limit_updated_ = false;
+};
+
+TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdate) {
+  const std::string kConsumerName = "reentrant_limit_consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  ReentrantSelfRemovingOnLimitMemoryConsumer consumer(registry(),
+                                                      kConsumerName);
+
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  ASSERT_EQ(registry().size(), 1u);
+
+  // Trigger update with both limit and release.
+  // The limit update should trigger OnUpdateMemoryLimit, which removes the
+  // consumer. Since it was the last consumer, the group is destroyed. Then it
+  // should NOT crash when attempting to call ReleaseMemory on the destroyed
+  // group.
+  entries().front().host->UpdateConsumers({{kConsumerId, 50, true}});
+
+  // Verify it was called and successfully removed itself without crashing!
+  EXPECT_TRUE(consumer.limit_updated());
+  EXPECT_FALSE(consumer.released());
+  ASSERT_EQ(registry().size(), 0u);
+}
+
+TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdateOnly) {
+  const std::string kConsumerName = "reentrant_limit_only_consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  ReentrantSelfRemovingOnLimitMemoryConsumer consumer(registry(),
+                                                      kConsumerName);
+
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  ASSERT_EQ(registry().size(), 1u);
+
+  // Trigger update with limit ONLY.
+  entries().front().host->UpdateConsumers({{kConsumerId, 50, false}});
+
+  // Verify it was called and successfully removed itself without crashing!
+  EXPECT_TRUE(consumer.limit_updated());
+  ASSERT_EQ(registry().size(), 0u);
+}
+
 }  // namespace content

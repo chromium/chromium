@@ -21,8 +21,6 @@ namespace base {
 
 class MemoryConsumerRegistration;
 
-
-
 // A base class for registering a MemoryConsumer with the global registry for
 // the current process.
 class BASE_EXPORT MemoryConsumerRegistry {
