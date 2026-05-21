@@ -8,6 +8,7 @@ markdown documentation and persona cheat sheets.
 """
 
 import collections
+import importlib.util
 import json
 import os
 import re
@@ -338,9 +339,6 @@ def CheckJsonFiles(input_api, output_api):
         for af in input_api.AffectedFiles(include_deletes=False)
     }
 
-    project_content_cache = {}
-    persona_content_cache = {}
-
     schema_content_str = None
     if schema_path in affected_files_map:
         schema_content_str = input_api.ReadFile(
@@ -375,6 +373,22 @@ def CheckJsonFiles(input_api, output_api):
                                         {}).get('ReviewFeedback', {})
     constraints_schema = schema.get('definitions', {}).get('Constraints', {})
     persona_def_schema = schema.get('definitions', {}).get('PersonaDef', {})
+
+    # Load check_json_format.py once for efficient reuse.
+    check_json_format = None
+    if not getattr(input_api, 'is_test', False):
+        this_dir = input_api.PresubmitLocalPath()
+        check_json_script = input_api.os_path.join(this_dir,
+                                                   'check_json_format.py')
+        try:
+            spec = importlib.util.spec_from_file_location(
+                'check_json_format', check_json_script)
+            if spec:
+                mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                check_json_format = mod
+        except (ImportError, AttributeError, FileNotFoundError):
+            pass
 
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
@@ -454,13 +468,27 @@ def CheckJsonFiles(input_api, output_api):
                     if re.search(pattern, combined_mandate, re.IGNORECASE):
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} contains conversational '
-                                f'filler or role-playing vestige: "{pattern}"')
-                        )
+                                f'File {f.LocalPath()} contains '
+                                'conversational filler or role-playing '
+                                f'vestige: "{pattern}"'))
         else:
             continue
 
         results.extend(_ValidateSchema(output_api, f, content, active_schema))
+
+        # 2.5 Formatting & Joining Rule Validation
+        if check_json_format:
+            fmt_ok, lint_errs = check_json_format.CheckFormatting(
+                f.AbsoluteLocalPath(), fix=False)
+            if not fmt_ok:
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} has incorrect JSON '
+                        'formatting. Please run: python3 '
+                        'remoting/tools/magi-mode/check_json_format.py '
+                        '--fix'))
+            for err in lint_errs:
+                results.append(output_api.PresubmitError(f'LINT: {err}'))
 
         # 3. Checklist Validation (Correctness & Schema)
         checklist = content.get('checklist')
@@ -538,46 +566,47 @@ def CheckJsonFiles(input_api, output_api):
                 if not isinstance(environment, dict):
                     results.append(
                         output_api.PresubmitError(
-                            f'File {f.LocalPath()} key "environment" must be an object.'
-                        ))
+                            f'File {f.LocalPath()} key "environment" '
+                            'must be an object.'))
                 else:
                     vcs = environment.get('vcs')
                     harness = environment.get('harness')
                     if vcs not in ('GIT', 'JJ'):
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} environment.vcs must be GIT or JJ, '
-                                f'got {vcs}'))
+                                f'File {f.LocalPath()} environment.vcs '
+                                f'must be GIT or JJ, got {vcs}'))
                     if harness not in ('JETSKI', 'GENERIC_CLI'):
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} environment.harness must be '
-                                f'JETSKI or GENERIC_CLI, got {harness}'))
+                                f'File {f.LocalPath()} environment.harness '
+                                f'must be JETSKI or GENERIC_CLI, '
+                                f'got {harness}'))
                     repo_type = environment.get('repo_type')
                     output_directory = environment.get('output_directory')
 
                     if 'repo_type' not in environment:
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} environment is missing required '
-                                f'key "repo_type".'))
+                                f'File {f.LocalPath()} environment is '
+                                'missing required key "repo_type".'))
                     elif repo_type not in ('CHROMIUM', 'GOOGLE_INTERNAL'):
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} environment.repo_type must be '
-                                f'CHROMIUM or GOOGLE_INTERNAL, got {repo_type}'
-                            ))
+                                f'File {f.LocalPath()} environment.repo_type '
+                                'must be CHROMIUM or GOOGLE_INTERNAL, '
+                                f'got {repo_type}'))
 
                     if 'output_directory' not in environment:
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} environment is missing required '
-                                f'key "output_directory".'))
+                                f'File {f.LocalPath()} environment is '
+                                'missing required key "output_directory".'))
                     elif not isinstance(output_directory, str):
                         results.append(
                             output_api.PresubmitError(
-                                f'File {f.LocalPath()} environment.output_directory '
-                                f'must be '
+                                f'File {f.LocalPath()} '
+                                'environment.output_directory must be '
                                 f'a string, got {type(output_directory).__name__}'
                             ))
 

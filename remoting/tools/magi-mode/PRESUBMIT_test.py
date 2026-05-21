@@ -32,6 +32,7 @@ class MockAffectedFile:
 class MockInputApi:
 
     def __init__(self):
+        self.is_test = True
         self.change = MagicMock()
         self.change.RepositoryRoot.return_value = os.path.abspath('fake_repo')
         self.affected_files = []
