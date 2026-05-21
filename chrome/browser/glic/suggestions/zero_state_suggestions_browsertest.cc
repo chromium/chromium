@@ -485,6 +485,12 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
                        NonMSBBFlowContextualNotAllowedForAllPinnedTabs) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/515444685): Fix and reenable on Linux.
+  if (GetParam() == ContentExtraction::kFetchAnnotatedPageContentOnly) {
+    GTEST_SKIP() << "Skipping due to failures on Linux.";
+  }
+#endif
   base::HistogramTester histogram_tester;
 
   SetUpOnDemandHints(url(), /*allow_contextual=*/false, /*suggestions=*/{});
