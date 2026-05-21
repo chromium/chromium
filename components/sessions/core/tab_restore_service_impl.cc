@@ -129,6 +129,7 @@ const SessionCommand::id_type kCommandSetWindowUserTitle = 12;
 const SessionCommand::id_type kCommandCreateGroup = 13;
 const SessionCommand::id_type kCommandAddTabExtraData = 14;
 const SessionCommand::id_type kCommandCreateSplit = 15;
+const SessionCommand::id_type kCommandSetTabSplitData = 16;
 
 // Number of entries (not commands) before we clobber the file and write
 // everything.
@@ -980,6 +981,14 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
     command_storage_manager_->ScheduleCommand(std::move(command));
   }
 
+  if (tab.split_id.has_value()) {
+    base::Pickle pickle;
+    WriteTokenToPickle(&pickle, tab.split_id.value().token());
+    std::unique_ptr<SessionCommand> command(
+        new SessionCommand(kCommandSetTabSplitData, pickle));
+    command_storage_manager_->ScheduleCommand(std::move(command));
+  }
+
   if (!tab.extension_app_id.empty()) {
     command_storage_manager_->ScheduleCommand(CreateSetTabExtensionAppIDCommand(
         kCommandSetExtensionAppID, tab.id, tab.extension_app_id));
@@ -1504,9 +1513,37 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         break;
       }
 
+      case kCommandSetTabSplitData: {
+        if (!current_tab) {
+          // Should be in a tab when we get this.
+          return;
+        }
+        base::PickleIterator iter = command.ContentsAsPickle();
+        std::optional<base::Token> split_token = ReadTokenFromPickle(&iter);
+        if (split_token.has_value()) {
+          current_tab->split_id =
+              split_tabs::SplitTabId::FromRawToken(split_token.value());
+        }
+        break;
+      }
+
       default:
         // Unknown type, usually indicates corruption of file. Ignore it.
         return;
+    }
+  }
+
+  // Post-process Group entries to populate their split_tabs mapping from tab
+  // entries.
+  for (auto& entry : entries) {
+    if (entry->type == tab_restore::Type::GROUP) {
+      auto& group = static_cast<tab_restore::Group&>(*entry);
+      group.split_tabs.clear();
+      for (auto& tab : group.tabs) {
+        if (tab->split_id.has_value()) {
+          group.split_tabs[tab->split_id.value()].push_back(tab.get());
+        }
+      }
     }
   }
 
