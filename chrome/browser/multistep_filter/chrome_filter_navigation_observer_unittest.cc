@@ -45,10 +45,6 @@ class MockFilterUiController : public FilterUiController {
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
-  MOCK_METHOD(bool,
-              ShouldSuppressSuggestions,
-              (const GURL& url),
-              (const, override));
 };
 
 class MockMultistepFilterService : public MultistepFilterService {
@@ -238,24 +234,6 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateHandlesNullController) {
   // No controller is attached to the tab, so calls should be gracefully
   // handled without crashing.
   std::move(captured_callback).Run(std::nullopt);
-}
-
-TEST_F(ChromeFilterNavigationObserverTest, DelegateShouldSuppressSuggestions) {
-  auto mock_controller =
-      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
-
-  const GURL test_url("https://test.com");
-
-  EXPECT_CALL(*mock_controller, ShouldSuppressSuggestions(test_url))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(*mock_service(), GenerateFilterSuggestions).Times(0);
-  EXPECT_CALL(*mock_controller,
-              OnSuggestionGenerated(testing::Eq(std::nullopt)));
-
-  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      test_url, main_rfh());
-  simulator->SetHasUserGesture(true);
-  simulator->Commit();
 }
 
 TEST_F(ChromeFilterNavigationObserverTest, NavigationWithController) {

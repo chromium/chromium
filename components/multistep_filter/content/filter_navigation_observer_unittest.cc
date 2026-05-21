@@ -65,10 +65,6 @@ class MockUiDelegate : public MultistepFilterUiDelegate {
               OnSuggestionGenerated,
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
-  MOCK_METHOD(bool,
-              ShouldSuppressSuggestions,
-              (const GURL& url),
-              (const, override));
   base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -428,19 +424,7 @@ TEST_F(FilterNavigationObserverTest,
   navigation->Commit();
 }
 
-TEST_F(FilterNavigationObserverTest, SuppressSuggestions) {
-  const GURL url("https://www.example.com");
-  EXPECT_CALL(delegate(), ClearSuggestion());
-  EXPECT_CALL(mock_service(), ExtractAnnotation(_, url));
 
-  EXPECT_CALL(delegate(), ShouldSuppressSuggestions(url))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(delegate(), OnSuggestionGenerated(testing::Eq(std::nullopt)));
-  EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
-
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             url);
-}
 
 }  // namespace
 

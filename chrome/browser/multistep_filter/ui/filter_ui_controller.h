@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
@@ -68,8 +67,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   // Applies the current suggestion by navigating to the suggested URL.
   virtual void ApplySuggestion();
 
-  // Returns true if suggestions should be suppressed for the given URL.
-  virtual bool ShouldSuppressSuggestions(const GURL& url) const;
 
   // Returns the UI data for the given `suggestion` and `time`.
   SuggestionUiData GetSuggestionUiData(const UrlFilterSuggestion& suggestion,
@@ -83,7 +80,7 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   virtual void NavigateTo(const GURL& url);
 
   // Returns the callback to be executed when the suggestion UI is dismissed.
-  base::OnceClosure GetOnDismissedCallback(std::string suppression_domain,
+  base::OnceClosure GetOnDismissedCallback(std::string dismissal_domain,
                                            int64_t navigation_id,
                                            std::string triggering_domain);
 
@@ -91,7 +88,7 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   friend class FilterUiControllerTestApi;
 
   // Invoked when a filter suggestion is dismissed by the user.
-  void OnSuggestionDismissed(std::string suppression_domain,
+  void OnSuggestionDismissed(std::string dismissal_domain,
                              int64_t navigation_id,
                              std::string triggering_domain);
 
@@ -102,11 +99,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   // when the user accepts the suggestion, we have access to the details without
   // needing to pass them back from the UI layer.
   std::optional<UrlFilterSuggestion> current_url_filter_suggestion_;
-
-  // Hosts for which the user has dismissed a suggestion in the current tab.
-  // TODO (crbug.com/495396112): Identify if dismissed hosts should be persisted
-  // or shared across tabs.
-  base::flat_set<std::string> dismissed_hosts_;
 
   // Router for logging filter events.
   raw_ptr<MultistepFilterLogRouter> log_router_ = nullptr;

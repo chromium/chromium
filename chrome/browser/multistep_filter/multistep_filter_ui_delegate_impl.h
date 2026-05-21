@@ -12,8 +12,6 @@
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 
-class GURL;
-
 namespace tabs {
 class TabInterface;
 }
@@ -35,7 +33,6 @@ class MultistepFilterUiDelegateImpl final : public MultistepFilterUiDelegate {
   void ClearSuggestion() override;
   void OnSuggestionGenerated(
       std::optional<UrlFilterSuggestion> suggestion) override;
-  bool ShouldSuppressSuggestions(const GURL& url) const override;
   base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override;
 
  private:

@@ -33,13 +33,6 @@ void MultistepFilterUiDelegateImpl::OnSuggestionGenerated(
   }
 }
 
-bool MultistepFilterUiDelegateImpl::ShouldSuppressSuggestions(
-    const GURL& url) const {
-  if (const FilterUiController* controller = GetController()) {
-    return controller->ShouldSuppressSuggestions(url);
-  }
-  return false;
-}
 
 base::WeakPtr<MultistepFilterUiDelegate>
 MultistepFilterUiDelegateImpl::GetWeakPtr() {

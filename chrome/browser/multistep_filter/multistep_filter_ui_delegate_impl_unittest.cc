@@ -33,10 +33,6 @@ class MockFilterUiController : public FilterUiController {
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
-  MOCK_METHOD(bool,
-              ShouldSuppressSuggestions,
-              (const GURL& url),
-              (const, override));
 };
 
 class MultistepFilterUiDelegateImplTest
@@ -102,25 +98,6 @@ TEST_F(MultistepFilterUiDelegateImplTest,
                                  kTestNavigationId, "suggestion.com");
   // Should not crash when there is no controller.
   delegate_->OnSuggestionGenerated(suggestion);
-}
-
-TEST_F(MultistepFilterUiDelegateImplTest,
-       ShouldSuppressSuggestions_WithController) {
-  auto mock_controller =
-      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
-
-  const GURL url("https://example.com");
-  EXPECT_CALL(*mock_controller, ShouldSuppressSuggestions(url))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_TRUE(delegate_->ShouldSuppressSuggestions(url));
-}
-
-TEST_F(MultistepFilterUiDelegateImplTest,
-       ShouldSuppressSuggestions_WithoutController) {
-  const GURL url("https://example.com");
-  // Without a controller, the default should be false.
-  EXPECT_FALSE(delegate_->ShouldSuppressSuggestions(url));
 }
 
 TEST_F(MultistepFilterUiDelegateImplTest, GetWeakPtr) {

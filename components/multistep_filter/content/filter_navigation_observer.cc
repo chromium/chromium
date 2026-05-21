@@ -213,13 +213,6 @@ void FilterNavigationObserver::DidFinishNavigation(
     return;
   }
 
-  if (delegate_->ShouldSuppressSuggestions(metadata.url)) {
-    LogSuggestionSuppressed(log_router_, navigation_id, metadata.etld_plus_one,
-                            "delegate_suppressed");
-    delegate_->OnSuggestionGenerated(std::nullopt);
-    return;
-  }
-
   LogSuggestionGenerationStarted(log_router_, navigation_id,
                                  metadata.etld_plus_one);
   service_->GenerateFilterSuggestions(

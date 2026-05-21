@@ -35,15 +35,6 @@ namespace multistep_filter {
 
 namespace {
 
-void LogSuggestionSuppressed(MultistepFilterLogRouter* const log_router,
-                             const int64_t navigation_id,
-                             const std::string_view triggering_domain,
-                             const std::string_view suppression_reason) {
-  MULTISTEP_FILTER_LOG(log_router, navigation_id,
-                       LogEventType::kSuggestionSuppressed, triggering_domain)
-      << LogDetail{"reason", std::string(suppression_reason)};
-}
-
 void LogUiAccepted(MultistepFilterLogRouter* const log_router,
                    const int64_t navigation_id,
                    const std::string_view triggering_domain) {
@@ -112,21 +103,7 @@ FilterUiController::~FilterUiController() = default;
 
 void FilterUiController::OnSuggestionGenerated(
     std::optional<UrlFilterSuggestion> suggestion) {
-  if (!suggestion) {
-    return;
-  }
-
-  content::WebContents* web_contents = tab().GetContents();
-  if (!web_contents) {
-    return;
-  }
-
-  std::string_view domain = suggestion->triggering_domain;
-  const GURL& current_url = web_contents->GetLastCommittedURL();
-
-  if (ShouldSuppressSuggestions(current_url)) {
-    LogSuggestionSuppressed(log_router_, suggestion->triggering_navigation_id,
-                            domain, "delegate_suppressed");
+  if (!suggestion || !tab().GetContents()) {
     return;
   }
 
@@ -160,10 +137,6 @@ void FilterUiController::ApplySuggestion() {
   // this as a dismissal because it invalidates the dismissal weak pointers.
   ClearSuggestion();
   NavigateTo(url);
-}
-
-bool FilterUiController::ShouldSuppressSuggestions(const GURL& url) const {
-  return dismissed_hosts_.contains(GetEtldPlusOne(url));
 }
 
 FilterUiController::SuggestionUiData FilterUiController::GetSuggestionUiData(
@@ -225,34 +198,31 @@ void FilterUiController::ShowSuggestionUi(
       ToastParams params(data.toast_id);
       params.body_string_replacement_params =
           std::move(data.replacement_params);
-      const std::string suppression_domain = GetEtldPlusOne(source_url);
-      params.toast_close_callback = base::ScopedClosureRunner(base::BindOnce(
-          &FilterUiController::OnSuggestionDismissed,
-          dismissal_weak_factory_.GetWeakPtr(), std::move(suppression_domain),
-          suggestion.triggering_navigation_id, suggestion.triggering_domain));
+      const std::string dismissal_domain = GetEtldPlusOne(source_url);
+      params.toast_close_callback =
+          base::ScopedClosureRunner(GetOnDismissedCallback(
+              std::move(dismissal_domain), suggestion.triggering_navigation_id,
+              suggestion.triggering_domain));
       toast_controller->MaybeShowToast(std::move(params));
     }
   }
 }
 
 base::OnceClosure FilterUiController::GetOnDismissedCallback(
-    std::string suppression_domain,
+    std::string dismissal_domain,
     int64_t navigation_id,
     std::string triggering_domain) {
   return base::BindOnce(&FilterUiController::OnSuggestionDismissed,
                         dismissal_weak_factory_.GetWeakPtr(),
-                        std::move(suppression_domain), navigation_id,
+                        std::move(dismissal_domain), navigation_id,
                         std::move(triggering_domain));
 }
 
-void FilterUiController::OnSuggestionDismissed(std::string suppression_domain,
+void FilterUiController::OnSuggestionDismissed(std::string dismissal_domain,
                                                int64_t navigation_id,
                                                std::string triggering_domain) {
   LogUiDismissed(log_router_, navigation_id, triggering_domain,
-                 suppression_domain);
-  if (!suppression_domain.empty()) {
-    dismissed_hosts_.insert(std::move(suppression_domain));
-  }
+                 dismissal_domain);
   // This invalidates the weak pointers, including the one that triggered this
   // callback, making it a OnceClosure effectively.
   ClearSuggestion();
