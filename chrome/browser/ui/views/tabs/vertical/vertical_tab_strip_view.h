@@ -20,7 +20,6 @@ class VerticalUnpinnedTabContainerView;
 namespace views {
 class ScrollView;
 class Separator;
-class View;
 }  // namespace views
 
 // The view class for vertical tab strip which holds the pinned and unpinned
@@ -38,12 +37,16 @@ class VerticalTabStripView final : public views::View,
   ~VerticalTabStripView() override;
 
   views::Separator* GetTabsSeparator() { return tabs_separator_; }
-  views::ScrollView* unpinned_tabs_scroll_view_for_testing() {
-    return unpinned_tabs_scroll_view_;
-  }
 
   VerticalPinnedTabContainerView* GetPinnedTabsContainer();
   VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
+
+  views::ScrollView* pinned_tabs_scroll_view() {
+    return pinned_tabs_scroll_view_;
+  }
+  views::ScrollView* unpinned_tabs_scroll_view() {
+    return unpinned_tabs_scroll_view_;
+  }
 
   void SetCollapsedState(bool is_collapsed);
   void SetIsAnimatingSize(bool is_animating);

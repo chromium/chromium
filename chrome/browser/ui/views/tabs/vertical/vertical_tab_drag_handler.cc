@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_link_drop_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
@@ -169,9 +170,11 @@ int GetInsertionIndexForNode(const TabCollectionNode& node,
 
 VerticalTabDragHandlerImpl::VerticalTabDragHandlerImpl(
     TabStripModel& tab_strip_model,
-    TabCollectionNode& root_node)
+    TabCollectionNode& root_node,
+    VerticalTabStripRegionView& tab_strip_region_view)
     : tab_strip_model_(tab_strip_model),
       root_node_(root_node),
+      tab_strip_region_view_(tab_strip_region_view),
       link_drop_handler_(
           std::make_unique<VerticalTabLinkDropHandler>(tab_strip_model)) {}
 
@@ -706,6 +709,17 @@ void VerticalTabDragHandlerImpl::StartedDragging(
           browser_view->tab_strip_view()->GetExpandOnHoverLock(
               ExpandOnHoverLockType::kKeepExpanded);
     }
+
+    auto* tab_strip_view = views::AsViewClass<VerticalTabStripView>(
+        tab_strip_region_view_->GetTabStripView());
+    CHECK(tab_strip_view);
+    for (views::ScrollView* scroll_view :
+         {tab_strip_view->pinned_tabs_scroll_view(),
+          tab_strip_view->unpinned_tabs_scroll_view()}) {
+      CHECK(scroll_view);
+      scroll_synchronizers_.push_back(
+          scroll_view->EnableScrollSynchronization());
+    }
   }
 
   CHECK(drag_controller_);
@@ -734,10 +748,12 @@ void VerticalTabDragHandlerImpl::StartedDragging(
 
 void VerticalTabDragHandlerImpl::DraggedTabsDetached() {
   expand_on_hover_lock_.reset();
+  scroll_synchronizers_.clear();
 }
 
 void VerticalTabDragHandlerImpl::StoppedDragging() {
   expand_on_hover_lock_.reset();
+  scroll_synchronizers_.clear();
 
   for (auto& [_, slot_view] : slot_views_) {
     views::View* dragged_view = ViewFromTabSlot(slot_view);
@@ -860,6 +876,7 @@ void VerticalTabDragHandlerImpl::OnNodeWillDestroy(TabCollectionNode& node) {
 
 void VerticalTabDragHandlerImpl::ResetDragState() {
   drag_controller_.reset();
+  scroll_synchronizers_.clear();
 }
 
 bool VerticalTabDragHandlerImpl::HandleDraggedTabsIntoPosition(

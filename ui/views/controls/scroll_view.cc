@@ -395,6 +395,7 @@ void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
   contents_ = ReplaceChildView(
       contents_viewport_, contents_.ExtractAsDangling(), std::move(a_view));
   UpdateBackground();
+  UpdateMainSideScrollingEnabledState();
 }
 
 void ScrollView::SetContents(std::nullptr_t) {
@@ -1053,7 +1054,7 @@ void ScrollView::OnScrollEvent(ui::ScrollEvent* event) {
 
   ui::ScrollInputHandler* compositor_scroller =
       GetWidget()->GetCompositor()->scroll_input_handler();
-  if (compositor_scroller) {
+  if (compositor_scroller && scroll_synchronizer_count_ == 0) {
     DCHECK(scroll_with_layers_enabled_);
     if (compositor_scroller->OnScrollEvent(e, contents_->layer())) {
       e.SetHandled();
@@ -1396,6 +1397,53 @@ void ScrollView::EnableViewportLayer() {
   more_content_right_->SetPaintToLayer();
   more_content_bottom_->SetPaintToLayer();
   UpdateBackground();
+  UpdateMainSideScrollingEnabledState();
+}
+
+ScrollView::ScopedScrollSynchronizer::ScopedScrollSynchronizer(
+    base::PassKey<ScrollView>,
+    ScrollView& scroll_view)
+    : scroll_view_(&scroll_view) {
+  scroll_view.AddObserver(this);
+}
+
+ScrollView::ScopedScrollSynchronizer::~ScopedScrollSynchronizer() {
+  if (scroll_view_) {
+    scroll_view_->OnScopedScrollSynchronizerDestroyed();
+    scroll_view_->RemoveObserver(this);
+  }
+}
+
+void ScrollView::ScopedScrollSynchronizer::OnViewIsDeleting(
+    View* observed_view) {
+  scroll_view_ = nullptr;
+}
+
+std::unique_ptr<ScrollView::ScopedScrollSynchronizer>
+ScrollView::EnableScrollSynchronization() {
+  if (++scroll_synchronizer_count_ == 1) {
+    UpdateMainSideScrollingEnabledState();
+  }
+  return std::make_unique<ScopedScrollSynchronizer>(base::PassKey<ScrollView>(),
+                                                    *this);
+}
+
+void ScrollView::OnScopedScrollSynchronizerDestroyed() {
+  CHECK_GT(scroll_synchronizer_count_, 0);
+  if (--scroll_synchronizer_count_ == 0) {
+    UpdateMainSideScrollingEnabledState();
+  }
+}
+
+void ScrollView::UpdateMainSideScrollingEnabledState() {
+  if (!ScrollsWithLayers()) {
+    return;
+  }
+
+  const bool enabled = scroll_synchronizer_count_ == 0;
+  if (contents_ && contents_->layer()) {
+    contents_->layer()->SetMainSideScrollingEnabled(enabled);
+  }
 }
 
 void ScrollView::OnLayerScrolled(const gfx::PointF& current_offset,

@@ -558,6 +558,14 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // needs to be created.
   void SetScrollable(const gfx::Size& container_bounds);
 
+  // When set to true, disables optimizations to apply scrolls directly to the
+  // compositor's "Impl" tree, prioritizing the ability to synchronize other
+  // layout updates with scroll updates.
+  void SetMainSideScrollingEnabled(bool enabled);
+  bool main_side_scrolling_enabled() const {
+    return main_side_scrolling_enabled_;
+  }
+
   // Gets and sets the current scroll offset of the layer.
   gfx::PointF CurrentScrollOffset() const;
   void SetScrollOffset(const gfx::PointF& offset);
@@ -911,6 +919,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // If the value == 0, means we should not perform trilinear filtering on the
   // layer.
   unsigned trilinear_filtering_request_;
+
+  // If true, scroll updates will not use the impl-side fast-path, and will be
+  // applied to the main layer tree.
+  bool main_side_scrolling_enabled_ = false;
 
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 };

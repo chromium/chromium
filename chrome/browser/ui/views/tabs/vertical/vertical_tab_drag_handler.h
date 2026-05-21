@@ -23,10 +23,12 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/scroll_view.h"
 
 class TabCollectionNode;
 class TabStripModel;
 class VerticalTabLinkDropHandler;
+class VerticalTabStripRegionView;
 class ExpandOnHoverLock;
 
 enum class DragPositionHint {
@@ -110,8 +112,10 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    public TabDragContext {
   METADATA_HEADER(VerticalTabDragHandlerImpl, TabDragContext)
  public:
-  explicit VerticalTabDragHandlerImpl(TabStripModel& tab_strip_model,
-                                      TabCollectionNode& root_node);
+  explicit VerticalTabDragHandlerImpl(
+      TabStripModel& tab_strip_model,
+      TabCollectionNode& root_node,
+      VerticalTabStripRegionView& tab_strip_region_view);
   ~VerticalTabDragHandlerImpl() override;
   VerticalTabDragHandlerImpl(const VerticalTabDragHandlerImpl&) = delete;
   VerticalTabDragHandlerImpl& operator=(const VerticalTabDragHandlerImpl&) =
@@ -220,6 +224,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   const raw_ref<TabStripModel> tab_strip_model_;
   const raw_ref<TabCollectionNode> root_node_;
+  const raw_ref<VerticalTabStripRegionView> tab_strip_region_view_;
 
   std::unique_ptr<VerticalTabLinkDropHandler> link_drop_handler_;
 
@@ -227,6 +232,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   std::unique_ptr<TabDragController> drag_controller_ = nullptr;
 
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
+
+  std::vector<std::unique_ptr<views::ScrollView::ScopedScrollSynchronizer>>
+      scroll_synchronizers_;
 
   // A mapping from nodes to their `TabSlotView`, used for compatibility
   // with the core dragging system.

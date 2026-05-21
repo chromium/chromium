@@ -558,8 +558,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                 ->GetTabStripView();
         VerticalTabStripView* vertical_tab_strip_view =
             views::AsViewClass<VerticalTabStripView>(tab_strip_view);
-        vertical_tab_strip_view->unpinned_tabs_scroll_view_for_testing()
-            ->ScrollByOffset({0, -100});
+        vertical_tab_strip_view->unpinned_tabs_scroll_view()->ScrollByOffset(
+            {0, -100});
       }),
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
@@ -581,8 +581,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                 ->GetTabStripView();
         VerticalTabStripView* vertical_tab_strip_view =
             views::AsViewClass<VerticalTabStripView>(tab_strip_view);
-        vertical_tab_strip_view->unpinned_tabs_scroll_view_for_testing()
-            ->ScrollByOffset({0, -100});
+        vertical_tab_strip_view->unpinned_tabs_scroll_view()->ScrollByOffset(
+            {0, -100});
       }),
       WaitForHide(kTabGroupEditorBubbleId));
 }

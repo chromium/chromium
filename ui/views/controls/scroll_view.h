@@ -72,6 +72,24 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   using ScrollViewCallbackList = base::RepeatingClosureList;
   using ScrollViewCallback = ScrollViewCallbackList::CallbackType;
 
+  // While held, the `ScrollView` will disable optimizations to prioritize the
+  // ability to synchronize other layout updates with scroll updates.
+  class VIEWS_EXPORT ScopedScrollSynchronizer : public ViewObserver {
+   public:
+    explicit ScopedScrollSynchronizer(base::PassKey<ScrollView>,
+                                      ScrollView& scroll_view);
+    ScopedScrollSynchronizer(const ScopedScrollSynchronizer&) = delete;
+    ScopedScrollSynchronizer& operator=(const ScopedScrollSynchronizer&) =
+        delete;
+    ~ScopedScrollSynchronizer() override;
+
+    // ViewObserver
+    void OnViewIsDeleting(View* observed_view) override;
+
+   private:
+    raw_ptr<ScrollView> scroll_view_;
+  };
+
   ScrollView();
 
   // Additional constructor for overriding scrolling as defined by
@@ -220,6 +238,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   bool IsHorizontalContentOverflowing() const;
   bool IsVerticalContentOverflowing() const;
 
+  // Ensures that this will disabled optimizations to prioritize the ability
+  // to synchronize other layout updates with scrolling updates.
+  std::unique_ptr<ScopedScrollSynchronizer> EnableScrollSynchronization();
+
   // Called when |contents_| scrolled. This can be triggered by each single
   // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
   // ui::VKEY_RIGHT, or only ui::EventType::kMousewheel will only trigger this
@@ -359,6 +381,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // scrolling content within the viewport.
   void UpdateOverflowIndicatorVisibility(const gfx::PointF& offset);
 
+  void OnScopedScrollSynchronizerDestroyed();
+  void UpdateMainSideScrollingEnabledState();
+
   View* GetContentsViewportForTest() const;
 
   // Update gradient mask for a single direction - horizontal or vertical.
@@ -461,6 +486,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Track if the trailing gradient is shown
   bool is_trailing_gradient_visible_ = false;
+
+  int scroll_synchronizer_count_ = 0;
 
   base::WeakPtrFactory<ScrollView> weak_ptr_factory_{this};
 };

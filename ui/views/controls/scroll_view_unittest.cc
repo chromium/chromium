@@ -1680,6 +1680,26 @@ TEST_F(ScrollViewTest,
             corner_radii);
 }
 
+TEST_F(ScrollViewTest, ScrollSynchronization) {
+  ScrollView scroll_view(ScrollView::ScrollWithLayers::kEnabled);
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(100, 200));
+  scroll_view.SetContents(std::move(contents));
+  scroll_view.SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  views::test::RunScheduledLayout(&scroll_view);
+
+  ASSERT_TRUE(scroll_view.contents()->layer());
+  EXPECT_TRUE(scroll_view.contents()->layer()->main_side_scrolling_enabled());
+
+  {
+    auto synchronizer = scroll_view.EnableScrollSynchronization();
+    EXPECT_FALSE(
+        scroll_view.contents()->layer()->main_side_scrolling_enabled());
+  }
+
+  EXPECT_TRUE(scroll_view.contents()->layer()->main_side_scrolling_enabled());
+}
+
 #if BUILDFLAG(IS_MAC)
 // Tests the overlay scrollbars on Mac. Ensure that they show up properly and
 // do not overlap each other.
