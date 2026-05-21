@@ -171,10 +171,14 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   StoragePartition* storage_partition =
       browser_context->GetStoragePartition(web_contents->GetSiteInstance());
 
+  bool is_valid_storage_context =
+      storage_partition == browser_context->GetDefaultStoragePartition() ||
+      !rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
+  bool is_policy_enabled = rfh->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kOnDeviceSpeechRecognition);
+
   bool can_render_frame_use_on_device =
-      storage_partition == browser_context->GetDefaultStoragePartition()
-          ? true
-          : !rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
+      is_valid_storage_context && is_policy_enabled;
   const std::string& language =
       SpeechRecognitionDispatcherHost::GetAcceptedLanguages(
           params->language,

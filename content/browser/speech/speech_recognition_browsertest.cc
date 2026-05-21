@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -612,6 +613,156 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
   EXPECT_THAT(shell->web_contents()->GetLastCommittedURL().GetRef(),
               testing::HasSubstr("error_service-not-allowed"));
 }
+
+class SpeechRecognitionCrossOriginBrowserTest
+    : public SpeechRecognitionBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SpeechRecognitionBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("use-fake-device-for-media-stream");
+    command_line->AppendSwitch("use-fake-ui-for-media-stream");
+    command_line->AppendSwitchASCII("autoplay-policy",
+                                    "no-user-gesture-required");
+    command_line->AppendSwitchASCII("enable-blink-features",
+                                    "MediaStreamTrackWebSpeech");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionCrossOriginBrowserTest,
+                       OnDeviceWebSpeechCrossOriginIframeBypass) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return;
+  }
+  mock_soda_installer_.NotifySodaInstalledForTesting();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string web_service_base_url =
+      embedded_test_server()->base_url().spec() + "foo";
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      web_service_base_url.c_str());
+
+  GURL main_url = embedded_test_server()->GetURL("127.0.0.1", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL iframe_url = embedded_test_server()->GetURL("localhost", "/empty.html");
+  std::string js_add_iframe =
+      "var iframe = document.createElement('iframe');"
+      "iframe.id = 'myiframe';"
+      "iframe.allow = 'microphone';"
+      "document.body.appendChild(iframe);";
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), js_add_iframe));
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell()->web_contents(), "myiframe", iframe_url));
+
+  RenderFrameHost* iframe_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe_rfh);
+  EXPECT_EQ(iframe_url, iframe_rfh->GetLastCommittedURL());
+
+  const char js_to_execute[] = R"(
+    new Promise(async resolve => {
+      try {
+        let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        let track = stream.getAudioTracks()[0];
+        if (!track) { resolve('no-track'); return; }
+
+        let recognition = new webkitSpeechRecognition();
+        recognition.onerror = function(event) {
+          resolve('error_' + event.error);
+        };
+        recognition.onstart = function() {
+          // do not resolve
+        };
+        recognition.onend = function() {
+          resolve('ended');
+        };
+
+        setTimeout(() => resolve('timeout_in_js'), 5000);
+
+        recognition.start(track);
+      } catch (e) {
+        resolve('exception_' + e.name);
+      }
+    })
+  )";
+
+  EXPECT_EQ("error_network", EvalJs(iframe_rfh, js_to_execute));
+
+  // Remove reference to URL string that's on the stack.
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionCrossOriginBrowserTest,
+                       OnDeviceWebSpeechCrossOriginIframeBypassProcessLocally) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return;
+  }
+  mock_soda_installer_.NotifySodaInstalledForTesting();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string web_service_base_url =
+      embedded_test_server()->base_url().spec() + "foo";
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      web_service_base_url.c_str());
+
+  GURL main_url = embedded_test_server()->GetURL("127.0.0.1", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL iframe_url = embedded_test_server()->GetURL("localhost", "/empty.html");
+  std::string js_add_iframe =
+      "var iframe = document.createElement('iframe');"
+      "iframe.id = 'myiframe';"
+      "iframe.allow = 'microphone';"
+      "document.body.appendChild(iframe);";
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), js_add_iframe));
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell()->web_contents(), "myiframe", iframe_url));
+
+  RenderFrameHost* iframe_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe_rfh);
+  EXPECT_EQ(iframe_url, iframe_rfh->GetLastCommittedURL());
+
+  const char js_to_execute[] = R"(
+    new Promise(async resolve => {
+      try {
+        let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        let track = stream.getAudioTracks()[0];
+        if (!track) { resolve('no-track'); return; }
+
+        let recognition = new webkitSpeechRecognition();
+        recognition.processLocally = true;
+        recognition.onerror = function(event) {
+          resolve('error_' + event.error);
+        };
+        recognition.onstart = function() {
+          // do not resolve
+        };
+        recognition.onend = function() {
+          resolve('ended');
+        };
+
+        setTimeout(() => resolve('timeout_in_js'), 5000);
+
+        recognition.start(track);
+      } catch (e) {
+        resolve('exception_' + e.name);
+      }
+    })
+  )";
+
+  EXPECT_EQ("exception_NotAllowedError", EvalJs(iframe_rfh, js_to_execute));
+
+  // Remove reference to URL string that's on the stack.
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace content

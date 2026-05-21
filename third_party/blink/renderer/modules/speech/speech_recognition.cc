@@ -546,6 +546,21 @@ void SpeechRecognition::CheckAvailabilityAndStart(
     return;
   }
 
+  bool can_use_on_device_recognition = DomWindow()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kOnDeviceSpeechRecognition);
+
+  if (process_locally_ && !can_use_on_device_recognition) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                         kExceptionMessagePermissionPolicy);
+    } else {
+      ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
+          media::mojom::blink::SpeechRecognitionErrorCode::kNotAllowed,
+          media::mojom::blink::SpeechAudioErrorDetails::kNone));
+    }
+    return;
+  }
+
   if (process_locally_ && lang_) {
     controller_->AvailableOnDevice(
         Vector<String>{lang_}, SpeechRecognitionQualityToMojom(quality_),
@@ -614,6 +629,10 @@ void SpeechRecognition::StartController(
   // the ExecutionContext is destroyed.
   CHECK(GetExecutionContext());
 
+  LocalDOMWindow* window = DomWindow();
+  bool can_use_on_device_recognition = window->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kOnDeviceSpeechRecognition);
+
   mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
       session_client;
   // See https://bit.ly/2S0zRAS for task types.
@@ -625,7 +644,7 @@ void SpeechRecognition::StartController(
   auto params = controller_->BuildStartSpeechRecognitionRequestParams(
       std::move(session_receiver), std::move(session_client), *grammars_,
       phrases_.Get(), lang_, continuous_, interim_results_, max_alternatives_,
-      /*on_device=*/true,  // On-device speech recognition is always preferred.
+      can_use_on_device_recognition,
       /*allow_cloud_fallback=*/!process_locally_,
       SpeechRecognitionQualityToMojom(quality_),
       std::move(audio_forwarder_receiver), std::move(audio_parameters));
