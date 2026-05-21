@@ -637,13 +637,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
         &tab->GetContents()->GetController(), /*needs_reload=*/false);
   }
 
-  OMNIBOX_LOG("nav_trace")
-      << "ContextualTasks navigation trace: OnThreadLinkClicked "
-         "loading URL: "
-      << url;
-  new_contents->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(url));
-
   // If the source contents is the panel, open the AI page in a new foreground
   // tab.
   // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
@@ -677,6 +670,13 @@ void ContextualTasksUiService::OnThreadLinkClicked(
                                   active_tab->GetHandle());
       }
       tab_list->ActivateTab(new_tab->GetHandle());
+
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: OnThreadLinkClicked "
+             "loading URL in inserted tab: "
+          << url;
+      new_tab->GetContents()->GetController().LoadURLWithParams(
+          content::NavigationController::LoadURLParams(url));
     } else {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
@@ -731,6 +731,13 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 
   tab_list->ActivateTab(new_tab->GetHandle());
   CHECK(new_contents_ptr == tab_list->GetActiveTab()->GetContents());
+
+  OMNIBOX_LOG("nav_trace")
+      << "ContextualTasks navigation trace: OnThreadLinkClicked "
+         "loading URL in inserted tab: "
+      << url;
+  new_tab->GetContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url));
 
   // Detach the WebContents from tab.
   std::unique_ptr<content::WebContents> contextual_task_contents =
