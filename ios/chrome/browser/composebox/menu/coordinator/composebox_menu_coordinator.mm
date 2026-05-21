@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 
+#import <algorithm>
+#import <iterator>
 #import <memory>
 #import <set>
 #import <vector>
@@ -19,6 +21,7 @@
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
@@ -385,6 +388,15 @@ CGFloat const kSheetTopPadding = 40.0f;
         (std::set<web::WebStateID>)selectedWebStateIDs
                     cachedWebStateIDs:
                         (std::set<web::WebStateID>)cachedWebStateIDs {
+  std::set<web::WebStateID> alreadyProcessedIDs =
+      [_mediator allAttachedWebStateIDs];
+  composebox::TabDiff diff =
+      composebox::ComputeTabDiff(alreadyProcessedIDs, selectedWebStateIDs);
+
+  if (diff.added.size() > 0) {
+    [_metricsRecorder recordTabPickerTabsAttached:diff.added.size()];
+  }
+
   [_mediator processWebStateIDs:selectedWebStateIDs
               cachedWebStateIDs:cachedWebStateIDs];
 }

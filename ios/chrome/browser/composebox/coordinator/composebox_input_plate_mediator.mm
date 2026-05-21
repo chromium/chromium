@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -1316,33 +1317,26 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                             (std::set<web::WebStateID>)cachedWebStateIDs
                      fromExternalWebState:(web::WebState*)externalWebState
                                    source:(ComposeboxInputItemSource)source {
-  [self.metricsRecorder recordTabPickerTabsAttached:selectedWebStateIDs.size()];
-
   _pageContextWrappers.clear();
 
   // Remove tabs from context that were deselected in the tab picker.
   std::set<web::WebStateID> alreadyProcessedIDsFromCurrentWebState =
       [self attachedWebStateIDsInCurrentContext];
-  std::set<web::WebStateID> deselectedIDs;
-  set_difference(alreadyProcessedIDsFromCurrentWebState.begin(),
-                 alreadyProcessedIDsFromCurrentWebState.end(),
-                 selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
-                 inserter(deselectedIDs, deselectedIDs.begin()));
-  [self removeDeselectedIDs:deselectedIDs];
+  composebox::TabDiff currentContextDiff = composebox::ComputeTabDiff(
+      alreadyProcessedIDsFromCurrentWebState, selectedWebStateIDs);
+  [self removeDeselectedIDs:currentContextDiff.removed];
 
   // Prevent duplicate tabs from external web states from being added to
   // context.
   std::set<web::WebStateID> alreadyProcessedIDs = [self allAttachedWebStateIDs];
-  std::set<web::WebStateID> newlyAddedIDs;
-  set_difference(selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
-                 alreadyProcessedIDs.begin(), alreadyProcessedIDs.end(),
-                 inserter(newlyAddedIDs, newlyAddedIDs.begin()));
+  composebox::TabDiff allDiff =
+      composebox::ComputeTabDiff(alreadyProcessedIDs, selectedWebStateIDs);
 
-  if (newlyAddedIDs.empty()) {
+  if (allDiff.added.empty()) {
     return;
   }
 
-  for (const web::WebStateID& candidateID : newlyAddedIDs) {
+  for (const web::WebStateID& candidateID : allDiff.added) {
     web::WebState* candidateWebState;
 
     if (!externalWebState) {
