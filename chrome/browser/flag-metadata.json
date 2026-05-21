@@ -2635,10 +2635,8 @@
   },
   {
     "name": "email-verification-protocol",
-    "owners": [
-      "goto@chromium.org"
-    ],
-    "expiry_milestone": 150
+    "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-ac-prefetch",
