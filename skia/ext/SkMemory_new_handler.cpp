@@ -14,6 +14,8 @@
 #include "base/debug/alias.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/private/base/SkMalloc.h"
 
@@ -160,7 +162,9 @@ void* sk_malloc_flags(size_t size, unsigned flags) {
   }
 }
 
-size_t sk_malloc_size(void* addr, size_t size) {
+// DEPRECATED: To be removed from include/ports/SkMemory.h in favor of new
+// sk_malloc_good_size()
+[[maybe_unused]] size_t sk_malloc_size(void* addr, size_t size) {
   if (!addr) {
     return 0;
   }
@@ -177,4 +181,31 @@ size_t sk_malloc_size(void* addr, size_t size) {
 
   // Guarantee that we return at least `size`
   return std::max(completeSize, size);
+}
+
+// NOTE: This is not used yet but must be available for linking to `extern
+// sk_malloc_good_size` for Skia to roll into Chromium.
+[[maybe_unused]] size_t sk_malloc_good_size(size_t needed_size) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Retrieve the main allocator instance used by the allocator shim
+  auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
+  if (root) {
+    return root->AllocationCapacityFromRequestedSize(needed_size);
+  }
+#endif
+
+  // Fallback for when PartitionAlloc isn't the active system allocator
+  // (e.g., specific test targets or platforms where PA-as-malloc is disabled).
+  // NOTE: This is equivalent to Skia's default sk_malloc_good_size.
+#if PA_BUILDFLAG(IS_APPLE)
+  return std::max(needed_size, malloc_good_size(needed_size));
+#else
+  const size_t mask =
+      (needed_size > (1 << 15) ? (1 << 12) : alignof(std::max_align_t)) - 1;
+  if (needed_size > std::numeric_limits<size_t>::max() - mask) {
+    return needed_size;  // aligning would overflow, return the original size
+  } else {
+    return (needed_size + mask) & ~mask;
+  }
+#endif
 }
