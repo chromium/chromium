@@ -76,12 +76,10 @@ constexpr char kEpsonTestName[] =
 constexpr char kDocumentSourceName[] = "Flatbed";
 constexpr char kAdfSourceName[] = "ADF Duplex";
 
-// Resolutions used for tests.
-// TODO(crbug.com/479031241): Some tests here rely on these being the default
-// resolutions used by FakeLorgnetteScanManager and moreover on the hardcoded
-// settings map in FakeLorgnetteScan. Get rid of these dependencies.
-constexpr uint32_t kFirstResolution = 75;
-constexpr uint32_t kSecondResolution = 300;
+// Resolutions used for tests, intentionally different from FakeLorgnette's
+// default so as not to hide bugs.
+constexpr uint32_t kFirstResolution = 150;
+constexpr uint32_t kSecondResolution = 600;
 
 // Email used for test profile.
 constexpr char kUserEmail[] = "user@email.com";
@@ -469,7 +467,14 @@ TEST_F(ScanServiceTest, NoCapabilities) {
 
 // Test that scanner capabilities can be obtained successfully.
 TEST_F(ScanServiceTest, GetScannerCapabilities) {
-  AddScanner(kFirstTestScannerName);
+  lorgnette::ScannerCapabilities capabilities;
+  lorgnette::DocumentSource* source = capabilities.add_sources();
+  source->set_type(lorgnette::SOURCE_PLATEN);
+  source->set_name(kDocumentSourceName);
+  source->add_color_modes(lorgnette::MODE_COLOR);
+  source->add_resolutions(kFirstResolution);
+  source->add_resolutions(kSecondResolution);
+  AddScanner(kFirstTestScannerName, std::move(capabilities));
 
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
