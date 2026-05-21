@@ -96,6 +96,9 @@ extern const base::FeatureParam<bool> kContextButtonHasBackground;
 extern const base::FeatureParam<bool> kContextButtonShapeIsOblong;
 // Whether to show the "Ask about tabs" label for the context menu entrypoint.
 extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
+// If enabled, then the WebUI Omnibox will be rendered in a WebView in the
+// BrowserView.
+extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupV2UseBrowserView;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();
@@ -103,6 +106,9 @@ bool IsWebUIOmniboxPopupEnabled();
 // Returns true if either `kWebUIOmniboxFullPopup` or `kWebUIOmniboxFullPopupV2`
 // is enabled.
 bool IsWebUIOmniboxFullPopupEnabled();
+
+// Returns true if `kWebUIOmniboxInBrowserView` is enabled.
+bool IsWebUIOmniboxInBrowserViewEnabled();
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the

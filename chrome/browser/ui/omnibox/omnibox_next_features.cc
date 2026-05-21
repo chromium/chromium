@@ -224,6 +224,11 @@ bool IsWebUIOmniboxFullPopupEnabled() {
          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2);
 }
 
+bool IsWebUIOmniboxInBrowserViewEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2) &&
+         kWebUIOmniboxFullPopupV2UseBrowserView.Get();
+}
+
 bool IsAimPopupFeatureEnabled() {
   return base::FeatureList::IsEnabled(internal::kWebUIOmniboxAimPopup);
 }
@@ -363,6 +368,8 @@ const base::FeatureParam<bool> kContextButtonShapeIsOblong{
 const base::FeatureParam<bool> kContextButtonShowSuggestionLabel{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextButtonShowSuggestionLabel", false};
+const base::FeatureParam<bool> kWebUIOmniboxFullPopupV2UseBrowserView{
+    &kWebUIOmniboxFullPopupV2, "Omnibox_UseBrowserView", false};
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

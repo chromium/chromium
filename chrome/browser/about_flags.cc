@@ -995,6 +995,11 @@ const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
 const FeatureEntry::FeatureVariation kWebUIOmniboxPopupDebugVariations[] = {
     {"Side by Side", kWebUIOmniboxPopupDebugSxS, nullptr}};
+
+const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupV2UseBrowserView[] = {
+    {"Omnibox_UseBrowserView", "true"}};
+const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupV2Variations[] = {
+    {"- Use BrowserView", kWebUIOmniboxFullPopupV2UseBrowserView, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
@@ -9337,7 +9342,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"webui-omnibox-full-popup-v2",
      flag_descriptions::kWebUIOmniboxFullPopupV2Name,
      flag_descriptions::kWebUIOmniboxFullPopupV2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopupV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopupV2,
+                                    kWebUIOmniboxFullPopupV2Variations,
+                                    "WebUIOmniboxFullPopupV2")},
 
     {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
      flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,

@@ -24,6 +24,7 @@ class OmniboxController;
 class OmniboxPopupPresenterBase;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
+class OmniboxPopupViewBrowserView;
 namespace ui {
 struct AXNodeData;
 }
@@ -71,6 +72,9 @@ class OmniboxPopupView {
 
   // Returns true if the popup controls its own selection state.
   virtual bool IsSelectionPopupControlled() const = 0;
+
+  // Safe downcasting to the BrowserView-embedded implementation.
+  virtual OmniboxPopupViewBrowserView* AsOmniboxPopupViewBrowserView();
 
   base::TimeTicks construction_time() const { return construction_time_; }
 

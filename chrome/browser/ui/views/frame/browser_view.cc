@@ -98,6 +98,7 @@
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -181,6 +182,7 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -4727,6 +4729,19 @@ void BrowserView::Layout(PassKey) {
   toolbar_->location_bar()->UpdateFocusBehavior(IsToolbarVisible());
   GetFrameView()->UpdateMinimumSize();
 
+  if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+    // When the WebUI Omnibox is embedded directly in the `BrowserView` (instead
+    // of being a separate popup widget), its layout depends on the position of
+    // the `LocationBarView`. We must update its layout after the
+    // `BrowserView` layout to ensure it aligns correctly with the location bar.
+    auto* popup_view = toolbar_->location_bar_view()->GetOmniboxPopupView();
+    if (popup_view) {
+      if (auto* embedded_view = popup_view->AsOmniboxPopupViewBrowserView()) {
+        embedded_view->UpdateLayout();
+      }
+    }
+  }
+
   // Some of the situations when the BrowserView is laid out are:
   // - Enter/exit immersive fullscreen mode.
   // - Enter/exit tablet mode.
@@ -4816,6 +4831,19 @@ void BrowserView::AddedToWidget() {
 #endif
 
   toolbar_->Init();
+
+  if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+    // When the WebUI Omnibox is embedded directly in the `BrowserView` (instead
+    // of being a separate popup widget), the popup view needs a reference to
+    // `BrowserView` to add the popup frame as a child view. We inject it here
+    // after the toolbar (and location bar) have been initialized.
+    auto* popup_view = toolbar_->location_bar_view()->GetOmniboxPopupView();
+    if (popup_view) {
+      if (auto* embedded_view = popup_view->AsOmniboxPopupViewBrowserView()) {
+        embedded_view->SetBrowserView(this);
+      }
+    }
+  }
 
   UpdateTabSearchBubbleHost();
 

@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -383,6 +384,9 @@ void LocationBarView::Init() {
           /*omnibox_view=*/omnibox_view_,
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
           /*presenter_delegate=*/*this);
+    } else if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+      omnibox_popup_view_ =
+          std::make_unique<OmniboxPopupViewBrowserView>(this, browser_);
     } else if (base::FeatureList::IsEnabled(
                    omnibox::kWebUIOmniboxFullPopupV2)) {
       omnibox_popup_view_ = std::make_unique<OmniboxPopupViewFullWebUI>(
@@ -2030,7 +2034,8 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
   // Note: GetWidget() returns the BrowserView's widget, not the popup widget.
   if (views::Widget* widget = GetWidget();
       !widget || !widget->IsVisible() ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
+      omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
     return;
   }
 
