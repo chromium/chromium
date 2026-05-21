@@ -61,7 +61,8 @@ class MessageView {
   MessageView& operator=(const MessageView&) = delete;
 
   ~MessageView() {
-    if (message_ && base::ShouldRecordSubsampledMetric(0.001)) {
+    if (message_ && base::ShouldRecordSubsampledMetric(
+                        Channel::kMetricSubsamplingProbability)) {
       UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
                           base::TimeTicks::Now() - start_time_);
     }
@@ -141,7 +142,7 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
-  RecordSentMessageMetrics(message->data_num_bytes());
+  RecordSentMessageMetricsSubsampled(message->data_num_bytes());
 
   bool write_error = false;
   {

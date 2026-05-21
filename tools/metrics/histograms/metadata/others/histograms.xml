@@ -4970,6 +4970,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.ChannelLinux.SharedMemoryWriteLatencyUs"
+    units="microseconds" expires_after="2026-11-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time taken to write a channel message to the underlying shared
+    memory ring buffer in ChannelLinux.
+
+    The metric is downsampled to reduce its costs.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.Connector.MaxUnreadMessageQuotaUsed" units="messages"
     expires_after="2022-05-01">
   <owner>siggi@chromium.org</owner>

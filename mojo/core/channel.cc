@@ -261,7 +261,8 @@ static_assert(sizeof(TrivialMessage) == TrivialMessage::kIntendedMessageSize,
               "The TrivialMessage is of wrong size");
 
 bool ShouldRecordSubsampledHistograms() {
-  return base::ShouldRecordSubsampledMetric(0.001);
+  return base::ShouldRecordSubsampledMetric(
+      Channel::kMetricSubsamplingProbability);
 }
 
 }  // namespace
@@ -1096,9 +1097,7 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
                                read_buffer_->num_occupied_bytes())),
         next_read_size_hint);
     if (result == DispatchResult::kOK) {
-      if (ShouldRecordSubsampledHistograms()) {
-        RecordReceivedMessageProcessType();
-      }
+      RecordReceivedMessageProcessTypeSubsampled();
       read_buffer_->Discard(*next_read_size_hint);
       *next_read_size_hint = 0;
 
@@ -1324,7 +1323,7 @@ MOJO_SYSTEM_IMPL_EXPORT void Channel::OfferChannelUpgrade() {
 }
 #endif
 
-void Channel::RecordSentMessageMetrics(size_t payload_size) {
+void Channel::RecordSentMessageMetricsSubsampled(size_t payload_size) {
   if (ShouldRecordSubsampledHistograms()) {
     UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize", payload_size);
     RecordSentMessageProcessType();
@@ -1380,6 +1379,12 @@ void Channel::DelayMessage(uint32_t channel_sequence_number,
   delayed_message.envelope = std::move(envelope);
   delayed_messages_.emplace(channel_sequence_number,
                             std::move(delayed_message));
+}
+
+void Channel::RecordReceivedMessageProcessTypeSubsampled() {
+  if (ShouldRecordSubsampledHistograms()) {
+    RecordReceivedMessageProcessType();
+  }
 }
 
 // static

@@ -87,7 +87,7 @@ class ChannelMac : public Channel,
   }
 
   void Write(MessagePtr message) override {
-    RecordSentMessageMetrics(message->data_num_bytes());
+    RecordSentMessageMetricsSubsampled(message->data_num_bytes());
 
     base::AutoLock lock(write_lock_);
     if (reject_writes_) {

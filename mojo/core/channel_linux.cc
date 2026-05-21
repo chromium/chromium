@@ -35,6 +35,7 @@
 #include "base/memory/shared_memory_security_policy.h"
 #include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -570,11 +571,20 @@ ChannelLinux::~ChannelLinux() = default;
 
 void ChannelLinux::Write(MessagePtr message) {
   bool needs_fallback = true;
+  size_t payload_size = message->data_num_bytes();
+
+  bool record_latency = base::ShouldRecordSubsampledMetric(
+      Channel::kMetricSubsamplingProbability);
+  base::TimeTicks start_time;
+  if (record_latency) {
+    start_time = base::TimeTicks::Now();
+  }
+
   {
     base::AutoLock lock(memfd_write_lock_);
     if (shared_mem_writer_ && !message->has_handles() && !reject_writes_) {
       SharedBuffer::Error write_result =
-          write_buffer_->TryWrite(message->data(), message->data_num_bytes());
+          write_buffer_->TryWrite(message->data(), payload_size);
       if (write_result != SharedBuffer::Error::kGeneralError) {
         needs_fallback = false;
         if (write_result != SharedBuffer::Error::kControlCorruption) {
@@ -596,7 +606,16 @@ void ChannelLinux::Write(MessagePtr message) {
       }
     }
   }
-  if (needs_fallback) {
+
+  if (!needs_fallback) {
+    RecordSentMessageMetricsSubsampled(payload_size);
+    if (record_latency) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Mojo.ChannelLinux.SharedMemoryWriteLatencyUs",
+          base::TimeTicks::Now() - start_time, base::Microseconds(1),
+          base::Seconds(1), 100);
+    }
+  } else {
     // Fall back to ChannelPosix outside of the memfd_write_lock_.
     ChannelPosix::Write(std::move(message));
   }
@@ -767,7 +786,7 @@ void ChannelLinux::SharedMemReadReady() {
         // We cannot have a message parse failure, we KNOW that we wrote a
         // full message if we get one something has gone horribly wrong.
         if (result != DispatchResult::kOK) {
-          LOG(ERROR) << "Recevied a bad message via shared memory";
+          LOG(ERROR) << "Received a bad message via shared memory";
           read_fail = true;
           OnError(Error::kReceivedMalformedData);
           break;

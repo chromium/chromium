@@ -50,6 +50,8 @@ constexpr bool IsAlignedForChannelMessage(size_t n) {
 class MOJO_SYSTEM_IMPL_EXPORT Channel
     : public base::RefCountedThreadSafe<Channel> {
  public:
+  static constexpr double kMetricSubsamplingProbability = 0.001;
+
   enum class HandlePolicy {
     // If a Channel is constructed in this mode, it will accept messages with
     // platform handle attachements.
@@ -579,7 +581,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                 std::vector<PlatformHandle> handles);
 
  protected:
-  void RecordSentMessageMetrics(size_t payload_size);
+  void RecordSentMessageMetricsSubsampled(size_t payload_size);
+
+  void RecordReceivedMessageProcessTypeSubsampled();
 
   // Take delayed messages with increasing message count one by one and dispatch
   // them until there is a new gap.
