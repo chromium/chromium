@@ -964,16 +964,16 @@ as required builders.
   * Experiment percentage: 5.0
 
 * [chromeos-betty-chrome-gtest](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest""))
-  * Experiment percentage: 50.0
+  * Experiment percentage: 100.0
 
 * [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest-and-cqtast""))
-  * Experiment percentage: 50.0
+  * Experiment percentage: 100.0
 
   This builder is only run when the CL owner is in the group:
   * [`google/chromeos-pa@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
 
 * [chromeos-betty-chrome-noop](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-noop) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-noop""))
-  * Experiment percentage: 50.0
+  * Experiment percentage: 100.0
 
 * [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
   * Experiment percentage: 100.0
