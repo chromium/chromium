@@ -1,0 +1,2 @@
+CONSOLE ERROR: Blocked script execution in 'page_with_css_and_js_ie.mht' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
+CONSOLE ERROR: Blocked script execution in 'page_with_css_and_js_ie.mht' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.

@@ -1,0 +1,1 @@
+CONSOLE ERROR: Blocked script execution in 'page_with_javascript.mht' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.

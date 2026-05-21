@@ -37,9 +37,7 @@
       'Content-Location: ',
     ];
     let cleanData = '';
-    for (const line of
-      data.replace(/<script src=3D"cid:js-[^"]*@mhtml.blink">/ms,
-        '<script src=3D"injected">').split('\n')) {
+    for (const line of data.split('\n')) {
       let cleanLine = line;
       for (const prefix of ignoredPrefixes) {
         if (line.trim().startsWith(prefix)) {
