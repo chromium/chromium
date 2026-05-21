@@ -78,13 +78,17 @@ source_set("signin") {
 
   if (is_android) {
     public += [
+      "android/cross_device_signin_flow_navigation_throttle.h",
       "android/signin_bridge.h",
       "android/signin_bridge_factory.h",
       "android/signin_manager_android.h",
       "android/web_signin_bridge.h",
       "signin_manager_android_factory.h",
     ]
-    public_deps += [ "//components/signin/public/browser" ]
+    public_deps += [
+      "//components/signin/public/base:signin_deep_link_parser",
+      "//components/signin/public/browser",
+    ]
   }
 
   if (!is_android) {
@@ -293,6 +297,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "android/cross_device_signin_flow_navigation_throttle.cc",
       "android/signin_bridge.cc",
       "android/signin_bridge_factory.cc",
       "android/signin_manager_android.cc",

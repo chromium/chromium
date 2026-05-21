@@ -83,6 +83,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/features/dev_ui/buildflags.h"
+#include "chrome/browser/signin/android/cross_device_signin_flow_navigation_throttle.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 
 #if BUILDFLAG(DFMIFY_DEV_UI)
@@ -298,6 +299,10 @@ void CreateAndAddChromeThrottlesForNavigation(
             GeolocationNavigationThrottle::MaybeCreateThrottleFor(registry)) {
       registry.AddThrottle(std::move(throttle));
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    CrossDeviceSigninFlowNavigationThrottle::MaybeCreateAndAdd(registry);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   DSEPrewarmNavigationThrottle::MaybeCreateAndAdd(registry);
