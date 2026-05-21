@@ -186,6 +186,7 @@ if (is_android) {
       "//chrome/browser/ui/browser_window/public/android:java",
       "//components/cached_flags:java",
       "//third_party/android_deps:com_airbnb_android_lottie_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [ ":glic_pref_names_srcjar" ]

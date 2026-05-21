@@ -146,6 +146,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
@@ -1149,7 +1150,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             Callback<Boolean> glicClickHandler =
                     (preventClose) ->
-                            ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleGlic(preventClose);
+                            ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                                    .toggleGlic(
+                                            preventClose, GlicInvocationSource.TOP_CHROME_BUTTON);
 
             mLayoutManager =
                     new LayoutManagerChromeTablet(

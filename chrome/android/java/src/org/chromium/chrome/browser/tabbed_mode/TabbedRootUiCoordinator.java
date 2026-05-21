@@ -111,6 +111,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
 import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicPromoCoordinator;
@@ -1274,7 +1275,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mTabModelSelectorSupplier,
                 // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
                 (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier,
-                (preventClose) -> toggleGlic(preventClose),
+                (preventClose) -> toggleGlic(preventClose, GlicInvocationSource.TOP_CHROME_BUTTON),
                 mChromeAndroidTaskSupplier,
                 mBrowserControlsManager);
     }
@@ -2502,7 +2503,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActivity.finishAndRemoveTask();
             return true;
         } else if (id == R.id.glic_menu_id) {
-            return toggleGlic(false);
+            return toggleGlic(false, GlicInvocationSource.THREE_DOTS_MENU);
         }
         return false;
     }
@@ -2511,10 +2512,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * Toggles the Glic UI.
      *
      * @param preventClose whether to prevent closing the Glic UI if it's already open.
+     * @param invocationSource How the UI was triggered.
      * @return whether the UI was successfully toggled.
      */
     @Override
-    public boolean toggleGlic(boolean preventClose) {
+    public boolean toggleGlic(boolean preventClose, @GlicInvocationSource int invocationSource) {
         // TODO(crbug.com/489548570): Remove this entry point into SidePanelDevFeature.
         if (mSidePanelDevFeature != null) {
             mSidePanelDevFeature.toggle();
@@ -2531,7 +2533,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         assert profile != null;
 
         return GlicKeyedServiceHandler.toggleGlic(
-                profile, mChromeAndroidTaskSupplier.get(), preventClose);
+                profile, mChromeAndroidTaskSupplier.get(), preventClose, invocationSource);
     }
 
     /* package */ KeyboardFocusRowManager getKeyboardFocusRowManagerForTesting() {

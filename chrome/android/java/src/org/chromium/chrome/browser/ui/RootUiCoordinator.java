@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.handoff.HandoffController;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
@@ -897,6 +898,17 @@ public class RootUiCoordinator
      * @return whether the UI was successfully toggled.
      */
     public boolean toggleGlic(boolean preventClose) {
+        return toggleGlic(preventClose, GlicInvocationSource.UNSUPPORTED);
+    }
+
+    /**
+     * Toggles the Glic UI.
+     *
+     * @param preventClose whether to prevent closing the Glic UI if it's already open.
+     * @param invocationSource How the UI was triggered.
+     * @return whether the UI was successfully toggled.
+     */
+    public boolean toggleGlic(boolean preventClose, @GlicInvocationSource int invocationSource) {
         return false;
     }
 
@@ -2091,7 +2103,9 @@ public class RootUiCoordinator
                             mOmniboxChipManager,
                             mBottomBarHostManager,
                             mActionRegistry,
-                            this::toggleGlic);
+                            (preventClose) ->
+                                    toggleGlic(
+                                            preventClose, GlicInvocationSource.TOP_CHROME_BUTTON));
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
