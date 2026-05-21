@@ -102,6 +102,13 @@ const spdy::SpdyStreamId kLastStreamId = 0x7fffffff;
 // attacker from growing this queue unboundedly.
 const int kSpdySessionMaxQueuedCappedFrames = 10000;
 
+// Default minimum time the connection must be idle before a "Preface Ping"
+// is sent upon subsequent write activity.
+// A "Preface Ping" is a PING frame proactively sent by the SPDY session
+// prior to enqueuing a DATA or HEADERS frame when the connection has been
+// idle, to verify that the network path is still alive.
+const int kSpdyDefaultConnectionAtRiskOfLossSeconds = 10;
+
 // Default time to delay sending small receive window updates (can be
 // configured through SetTimeToBufferSmallWindowUpdates()). Usually window
 // updates are sent when half of the receive window has been processed by
