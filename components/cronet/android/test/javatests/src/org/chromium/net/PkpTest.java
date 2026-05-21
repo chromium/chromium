@@ -613,11 +613,8 @@ public class PkpTest {
                     INCLUDE_SUBDOMAINS,
                     DISTANT_FUTURE);
         } catch (IllegalArgumentException ex) {
-            fail(
-                    "Host name "
-                            + hostName
-                            + " should be valid but the exception was thrown: "
-                            + ex.toString());
+            throw new AssertionError(
+                    "Host name " + hostName + " should be valid but an exception was thrown", ex);
         }
     }
 
