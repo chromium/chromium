@@ -571,6 +571,14 @@ AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
       CHECK(is_hidden_);
       return TriggerSource::kOnHidden;
     }
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAnnotatedPageContentExtractionOnHideFix) &&
+             on_hide) {
+    // Ignore visibility events when not configured to trigger on hide, or if
+    // the page is a PDF (which skips on-hidden triggers). This prevents
+    // triggering on hide when observers register after load is complete and the
+    // page is stable.
+    return std::nullopt;
   }
 
   if (lifecycle_ != Lifecycle::kNavigated) {
@@ -584,9 +592,9 @@ AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
           features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
 
   if (trigger_on_load || !on_demand_callbacks_.empty()) {
-    // TODO(b/490161242): Investigate why this check can fail and then consider
-    // re-enabling it.
-    // CHECK(!on_hide);
+    CHECK(!base::FeatureList::IsEnabled(
+              features::kAnnotatedPageContentExtractionOnHideFix) ||
+          !on_hide);
     if (!on_demand_callbacks_.empty()) {
       return TriggerSource::kOnDemand;
     }

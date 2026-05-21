@@ -1366,6 +1366,61 @@ TEST_P(AnnotatePageContentRequestTest, AboutBlankNavigation_NoExtraction) {
   EXPECT_EQ(extraction_service().extraction_count(), 0);
 }
 
+class ExampleObserver : public PageContentExtractionService::Observer {
+ public:
+  void OnPageContentExtracted(content::Page& page,
+                              PageContent page_content) override {}
+};
+
+TEST_P(AnnotatePageContentRequestTest, OnHideFix_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAnnotatedPageContentExtractionOnHideFix);
+
+  // 1. Simulate page load while service is disabled (no feature flag, no
+  // observers).
+  SimulatePageLoad();
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // 2. Dynamically add an observer after load completes. Service is now
+  // enabled.
+  ExampleObserver example_observer;
+  extraction_service().AddObserver(&example_observer);
+
+  // 3. Hide the tab. With the fix enabled, the on_hide event is ignored.
+  web_contents()->WasHidden();
+  task_environment()->FastForwardBy(
+      features::GetAnnotatedPageContentCaptureDelay());
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  extraction_service().RemoveObserver(&example_observer);
+}
+
+TEST_P(AnnotatePageContentRequestTest, OnHideFix_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAnnotatedPageContentExtractionOnHideFix);
+
+  // 1. Simulate page load while service is disabled (no feature flag, no
+  // observers).
+  SimulatePageLoad();
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // 2. Dynamically add an observer after load completes. Service is now
+  // enabled.
+  ExampleObserver example_observer;
+  extraction_service().AddObserver(&example_observer);
+
+  // 3. Hide the tab. When fix is disabled, it falls through to on_load block.
+  // The kill switch prevents a CHECK crash, and instead schedules an
+  // extraction.
+  web_contents()->WasHidden();
+  WaitForExtraction();
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+
+  extraction_service().RemoveObserver(&example_observer);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AnnotatePageContentRequestTest,
                          ::testing::Combine(::testing::Bool(),

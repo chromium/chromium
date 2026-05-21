@@ -28,6 +28,12 @@ BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentExtraction);
 
+// Fixes an issue where visibility changes trigger extraction on hide, even when
+// not configured to do so, when an observer is added after load is complete and
+// the page is stable.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentExtractionOnHideFix);
+
 // When enabled, extractions initiated by the PageContentExtractionService will
 // apply non-salient content filtering based on the feature parameters.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
