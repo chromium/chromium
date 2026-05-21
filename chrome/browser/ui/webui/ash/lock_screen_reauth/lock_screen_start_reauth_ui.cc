@@ -10,7 +10,6 @@
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,8 +33,7 @@ namespace ash {
 
 bool LockScreenStartReauthUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::ProfileHelper::IsLockScreenProfile(
-      Profile::FromBrowserContext(browser_context));
+  return IsLockScreenBrowserContext(browser_context);
 }
 
 LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
