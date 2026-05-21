@@ -88,7 +88,6 @@ import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -513,12 +512,8 @@ public class LocationBarCoordinator
 
     @VisibleForTesting
     void initializeBoundsEllipsis(LocationBarDataProvider dataProvider) {
-        // TODO(crbug.com/507471408): Revisit logic to guard it more strictly.
         int pageClassification = dataProvider.getPageClassification(/* prefetch= */ false);
-        boolean enableBoundsEllipsis =
-                pageClassification != PageClassification.ANDROID_HUB_VALUE
-                        && pageClassification != PageClassification.OTHER_ON_CCT_VALUE
-                        && pageClassification != PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
+        boolean enableBoundsEllipsis = OmniboxViewUtil.isRegularTabContext(pageClassification);
         mDefaultBoundsEllipsis = enableBoundsEllipsis;
         mUrlCoordinator.setBoundsEllipsisEnabled(enableBoundsEllipsis);
     }

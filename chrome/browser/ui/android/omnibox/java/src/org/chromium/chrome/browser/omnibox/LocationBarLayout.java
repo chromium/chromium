@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -49,6 +50,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mInstallButton;
     protected final @Nullable View mNavigateButton;
     protected UrlBar mUrlBar;
+    protected final View mLocationBarStatusView;
 
     protected UrlBarCoordinator mUrlCoordinator;
     protected AutocompleteCoordinator mAutocompleteCoordinator;
@@ -63,7 +65,8 @@ public class LocationBarLayout extends ConstraintLayout {
 
     protected @Nullable CompositeTouchDelegate mCompositeTouchDelegate;
     protected @Nullable SearchEngineUtils mSearchEngineUtils;
-    private boolean mUrlBarLaidOutAtFocusedWidth;
+    protected boolean mUrlBarLaidOutAtFocusedWidth;
+    protected boolean mIsCenteringApplied;
     private int mUrlActionContainerEndMargin;
 
     private boolean mHidingActionContainerForNarrowWindow;
@@ -91,16 +94,19 @@ public class LocationBarLayout extends ConstraintLayout {
 
         mDeleteButton = findViewById(R.id.delete_button);
         mUrlBar = findViewById(R.id.url_bar);
+        mLocationBarStatusView = findViewById(R.id.location_bar_status);
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
         mZoomButton = findViewById(R.id.zoom_button);
         mInstallButton = findViewById(R.id.install_button);
         mNavigateButton = findViewById(R.id.navigate_button);
         mMarginSpacer = findViewById(R.id.margin_spacer);
+
+        Resources res = getResources();
         mUrlActionContainerEndMargin =
-                getResources().getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
+                res.getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
         mLocationBarIconStartingPadding =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_icon_starting_padding);
+                res.getDimensionPixelSize(R.dimen.location_bar_icon_starting_padding);
     }
 
     /** Called when activity is being destroyed. */
@@ -124,7 +130,10 @@ public class LocationBarLayout extends ConstraintLayout {
         statusView.setCompositeTouchDelegate(mCompositeTouchDelegate);
         statusView
                 .getIsVisibleSupplier()
-                .addSyncObserverAndCallIfNonNull((visible) -> updateStartPadding());
+                .addSyncObserverAndCallIfNonNull(
+                        (visible) -> {
+                            updateStartPadding();
+                        });
     }
 
     @Override
@@ -132,6 +141,12 @@ public class LocationBarLayout extends ConstraintLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         checkUrlContainerWidth();
     }
+
+    /**
+     * Hook for subclasses to update the centering state of the URL and status view. Called during
+     * focus changes to ensure correct layout constraints are applied.
+     */
+    protected void updateCenteringUrlAndStatusState() {}
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -355,6 +370,8 @@ public class LocationBarLayout extends ConstraintLayout {
             boolean isUrlFocusChangeInProgress) {
         float urlFocusPercentage = Math.max(ntpSearchBoxScrollFraction, urlFocusChangeFraction);
         mUrlBarLaidOutAtFocusedWidth = urlFocusPercentage > 0.0f || mUrlBar.hasFocus();
+        // Update centering state immediately to avoid race conditions in animations.
+        updateCenteringUrlAndStatusState();
 
         setStatusViewRightMarginPercent(
                 ntpSearchBoxScrollFraction, urlFocusChangeFraction, isUrlFocusChangeInProgress);
@@ -374,6 +391,7 @@ public class LocationBarLayout extends ConstraintLayout {
             float ntpSearchBoxScrollFraction,
             float urlFocusChangeFraction,
             boolean isUrlFocusChangeInProgress) {
+        if (mIsCenteringApplied) return;
         float translationX = 0;
         if (mUrlBarLaidOutAtFocusedWidth) {
             translationX =

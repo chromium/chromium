@@ -2025,6 +2025,10 @@ public class ToolbarPhone extends ToolbarLayout
                 new VisibleUrlText(
                         urlBarData.displayText, mLocationBar.getOmniboxVisibleTextPrefixHint());
         assumeNonNull(getTint());
+
+        View urlBar =
+                mLocationBar.getPhoneCoordinator().getViewForDrawing().findViewById(R.id.url_bar);
+
         return new PhoneCaptureStateToken(
                 getTint().getDefaultColor(),
                 mTabCountSupplier == null ? 0 : mTabCountSupplier.get(),
@@ -2038,7 +2042,8 @@ public class ToolbarPhone extends ToolbarLayout
                 getToolbarDataProvider().isPaintPreview(),
                 getProgressBar().getProgress(),
                 mUnfocusedLocationBarLayoutWidth,
-                mBrowserControlsStateProvider.getControlsPosition());
+                mBrowserControlsStateProvider.getControlsPosition(),
+                urlBar.getWidth());
     }
 
     @Override

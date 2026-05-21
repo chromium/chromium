@@ -38,8 +38,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -49,6 +51,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /** Unit tests for {@link LocationBarLayout}. */
@@ -58,6 +61,9 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 public class LocationBarLayoutTest {
     private static final String SEARCH_TERMS = "machine learning";
     private static final String SEARCH_TERMS_URL = "testing.com";
+    // Tolerance in pixels for filling space checks to account for accumulated rounding errors
+    // from two independent view boundaries (StatusView and Barrier).
+    private static final int LAYOUT_ROUNDING_TOLERANCE_PX = 2;
 
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -304,5 +310,231 @@ public class LocationBarLayoutTest {
                                     .getDimensionPixelSize(R.dimen.status_view_width_wide);
                     assertEquals(focusedWidth, statusView.getMinimumWidth());
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testPhoneUrlBarCentering_EnabledAndUnfocused() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View statusView = locationBar.findViewById(R.id.location_bar_status);
+                    View urlBar = getUrlBar();
+
+                    boolean isStatusVisible = statusView.getVisibility() == View.VISIBLE;
+
+                    int leftSpace = isStatusVisible ? statusView.getLeft() : urlBar.getLeft();
+                    int rightSpace = locationBar.getWidth() - urlBar.getRight();
+
+                    return Math.abs(leftSpace - rightSpace) <= LAYOUT_ROUNDING_TOLERANCE_PX;
+                },
+                "URL bar failed to center");
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testPhoneUrlBarCentering_FeatureDisabled() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View statusView = locationBar.findViewById(R.id.location_bar_status);
+                    View urlBar = getUrlBar();
+                    View actionButtonsSegment =
+                            locationBar.findViewById(R.id.action_buttons_segment);
+                    if (actionButtonsSegment == null) return false;
+
+                    int availableSpace = actionButtonsSegment.getLeft() - statusView.getRight();
+
+                    return Math.abs(urlBar.getWidth() - availableSpace)
+                            <= LAYOUT_ROUNDING_TOLERANCE_PX;
+                },
+                "URL bar should not center when feature is disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testPhoneUrlBarCentering_Focused() {
+        LocationBarMediator mediator = getLocationBarMediator();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mediator.beginInput(
+                            new AutocompleteInput().setFocusReason(OmniboxFocusReason.OMNIBOX_TAP));
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View statusView = locationBar.findViewById(R.id.location_bar_status);
+                    View urlBar = getUrlBar();
+                    View actionButtonsSegment =
+                            locationBar.findViewById(R.id.action_buttons_segment);
+                    if (actionButtonsSegment == null) return false;
+
+                    int availableSpace = actionButtonsSegment.getLeft() - statusView.getRight();
+
+                    return Math.abs(urlBar.getWidth() - availableSpace)
+                            <= LAYOUT_ROUNDING_TOLERANCE_PX;
+                },
+                "URL bar should not center when focused");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mediator.endInput();
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testPhoneUrlBarCentering_LongUrlCapping() {
+        UrlBar urlBar = getUrlBar();
+
+        // Wait for initial centering to apply
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View statusView = locationBar.findViewById(R.id.location_bar_status);
+
+                    boolean isStatusVisible = statusView.getVisibility() == View.VISIBLE;
+
+                    int leftSpace = isStatusVisible ? statusView.getLeft() : urlBar.getLeft();
+                    int rightSpace = locationBar.getWidth() - urlBar.getRight();
+
+                    return Math.abs(leftSpace - rightSpace) <= LAYOUT_ROUNDING_TOLERANCE_PX;
+                },
+                "URL bar failed to center initially");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StringBuilder sb = new StringBuilder("https://www.google.com/search?q=");
+                    for (int i = 0; i < 200; i++) {
+                        sb.append("verylong");
+                    }
+                    urlBar.setText(sb.toString());
+                    ViewUtils.requestLayout(
+                            getLocationBar(),
+                            "LocationBarLayoutTest.testPhoneUrlBarCentering_LongUrlCapping");
+                });
+
+        // Verify that the width is capped and does not exceed available space
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    int centeringSpace =
+                            locationBar
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.location_bar_url_centering_edge_space);
+                    int maxComponentWidth = locationBar.getWidth() - 2 * centeringSpace;
+
+                    return urlBar.getWidth() <= maxComponentWidth;
+                },
+                "URL bar width should be capped for long URLs");
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testPhoneUrlBarCentering_StatusViewToggle() {
+        View urlBar = getUrlBar();
+        View statusView = getLocationBar().findViewById(R.id.location_bar_status);
+
+        // Wait for initial centering to apply
+        CriteriaHelper.pollUiThread(() -> urlBar.getLeft() != 0, "URL bar failed to layout");
+
+        int initialLeft = urlBar.getLeft();
+
+        // Hide status view
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    statusView.setVisibility(View.GONE);
+                });
+
+        // Wait for position to change
+        CriteriaHelper.pollUiThread(
+                () -> urlBar.getLeft() != initialLeft,
+                "Position should change when status view is hidden");
+
+        // Restore visibility for other tests
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    statusView.setVisibility(View.VISIBLE);
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testPhoneUrlBarCentering_UrlChange() {
+        UrlBar urlBar = getUrlBar();
+        LocationBarLayout locationBar = getLocationBar();
+
+        // 1. Set short URL
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    urlBar.setText("google.com");
+                    ViewUtils.requestLayout(
+                            locationBar,
+                            "LocationBarLayoutTest.testPhoneUrlBarCentering_UrlChange");
+                });
+
+        // Wait for centering
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View statusView = locationBar.findViewById(R.id.location_bar_status);
+                    boolean isStatusVisible = statusView.getVisibility() == View.VISIBLE;
+                    int leftSpace = isStatusVisible ? statusView.getLeft() : urlBar.getLeft();
+                    int rightSpace = locationBar.getWidth() - urlBar.getRight();
+                    return Math.abs(leftSpace - rightSpace) <= LAYOUT_ROUNDING_TOLERANCE_PX;
+                },
+                "URL bar failed to center for short URL");
+
+        int initialLeft = urlBar.getLeft();
+
+        // 2. Set long URL to force expansion/shifting
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StringBuilder sb = new StringBuilder("https://www.google.com/search?q=");
+                    for (int i = 0; i < 100; i++) {
+                        sb.append("long");
+                    }
+                    urlBar.setText(sb.toString());
+                    ViewUtils.requestLayout(
+                            locationBar,
+                            "LocationBarLayoutTest.testPhoneUrlBarCentering_UrlChange");
+                });
+
+        // Wait for position to change
+        CriteriaHelper.pollUiThread(
+                () -> urlBar.getLeft() != initialLeft, "Position should change for long URL");
+
+        // 3. Set short URL again
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    urlBar.setText("google.com");
+                    ViewUtils.requestLayout(
+                            locationBar,
+                            "LocationBarLayoutTest.testPhoneUrlBarCentering_UrlChange");
+                });
+
+        // Wait for centering again
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View statusView = locationBar.findViewById(R.id.location_bar_status);
+                    boolean isStatusVisible = statusView.getVisibility() == View.VISIBLE;
+                    int leftSpace = isStatusVisible ? statusView.getLeft() : urlBar.getLeft();
+                    int rightSpace = locationBar.getWidth() - urlBar.getRight();
+                    return Math.abs(leftSpace - rightSpace) <= LAYOUT_ROUNDING_TOLERANCE_PX;
+                },
+                "URL bar failed to center again after URL change");
     }
 }
