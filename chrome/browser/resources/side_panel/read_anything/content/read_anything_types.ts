@@ -163,7 +163,6 @@ export interface SettingsPrefs {
   speechRate: number;
   font: string;
   highlightGranularity: number;
-  lineFocus: number;
   linksEnabled: boolean;
   imagesEnabled: boolean;
 }
@@ -174,7 +173,6 @@ export const DEFAULT_SETTINGS: SettingsPrefs = {
   speechRate: 0,
   font: '',
   highlightGranularity: 0,
-  lineFocus: 0,
   linksEnabled: false,
   imagesEnabled: false,
 };

@@ -207,7 +207,9 @@ class ReadAnythingUntrustedPageHandler :
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnHighlightGranularityChanged(
       read_anything::mojom::HighlightGranularity granularity) override;
-  void OnLineFocusChanged(read_anything::mojom::LineFocus line_focus) override;
+  void OnLineFocusChanged(
+      read_anything::mojom::LineFocus current_line_focus,
+      read_anything::mojom::LineFocus last_non_disabled_line_focus) override;
   void GetVoicePackInfo(const std::string& language) override;
   void InstallVoicePack(const std::string& language) override;
   void UninstallVoice(const std::string& language) override;

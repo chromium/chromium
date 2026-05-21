@@ -335,7 +335,8 @@ class ReadAnythingAppController
   void OnLanguagePrefChange(const std::string& lang, bool enabled);
   bool RequiresDistillation();
   void OnHighlightGranularityChanged(int granularity);
-  void OnLineFocusChanged(int line_focus);
+  void OnLineFocusChanged(int current_line_focus,
+                          int last_non_disabled_line_focus);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts();

@@ -9,7 +9,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {DEFAULT_SETTINGS, getLineFocusValues, LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
@@ -117,10 +117,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('settingsPrefs')) {
-      this.restoreFromPrefs_();
-    }
-
     if (changedProperties.has('lineFocusStyle') &&
         this.lineFocusStyle !== null) {
       this.updateOptionsForStyle_(this.lineFocusStyle);
@@ -144,19 +140,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   close() {
     this.$.menu.close();
-  }
-
-  private restoreFromPrefs_(): void {
-    const lineFocusValues = getLineFocusValues();
-    const lineFocus = lineFocusValues[this.settingsPrefs['lineFocus']];
-    if (lineFocus) {
-      this.updateOptionsForStyle_(lineFocus.style);
-      this.updateOptionsForMovement_(lineFocus.movement);
-      this.options_ = [
-        ...this.styleOptions_,
-        ...this.movementOptions_,
-      ];
-    }
   }
 
   protected onLineFocusStyleChange_() {

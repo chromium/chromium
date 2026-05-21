@@ -938,15 +938,14 @@ void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
 }
 
 void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
-    read_anything::mojom::LineFocus line_focus) {
+    read_anything::mojom::LineFocus current_line_focus,
+    read_anything::mojom::LineFocus last_non_disabled_line_focus) {
   if (features::IsReadAnythingLineFocusEnabled()) {
     profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
-                                     static_cast<size_t>(line_focus));
-    if (line_focus != read_anything::mojom::LineFocus::kOff) {
-      profile_->GetPrefs()->SetInteger(
-          prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
-          static_cast<size_t>(line_focus));
-    }
+                                     static_cast<size_t>(current_line_focus));
+    profile_->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
+        static_cast<size_t>(last_non_disabled_line_focus));
   }
 }
 

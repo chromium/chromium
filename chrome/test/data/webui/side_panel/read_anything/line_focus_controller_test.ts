@@ -27,7 +27,7 @@ suite('LineFocusController', () => {
   let metrics: TestMetricsBrowserProxy;
   let keyboardLines: number;
   let speechLines: number;
-  let lineFocusToggled: boolean;
+  let lineFocusModesChanged: boolean;
 
   function createShortContainer(): HTMLElement {
     const container = document.createElement('p');
@@ -82,15 +82,15 @@ suite('LineFocusController', () => {
     model = new LineFocusModel();
     lineFocusController = new LineFocusController(model);
     lineFocusMoved = false;
-    lineFocusToggled = false;
+    lineFocusModesChanged = false;
     lineFocusListener = {
       onLineFocusMove() {
         lineFocusMoved = true;
       },
       onNeedScrollForLineFocus() {},
       onNeedScrollToTop() {},
-      onLineFocusToggled() {
-        lineFocusToggled = true;
+      onLineFocusModesChanged() {
+        lineFocusModesChanged = true;
       },
       onScrollBufferForLineFocusChange() {},
     };
@@ -411,6 +411,16 @@ suite('LineFocusController', () => {
         lineFocusController.getCurrentLineFocusMovement());
   });
 
+  test('restoreFromPrefs notifies of mode change', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    lineFocusController.restoreFromPrefs(
+        chrome.readingMode.lineFocusLargeCursorWindow, /*isOn=*/ false,
+        defaultContainer, defaultHeight);
+
+    assertTrue(lineFocusModesChanged);
+  });
+
   test('onScrollEnd initiated by line focus, recalculates window', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const height = 50;
@@ -454,7 +464,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
 
-    assertTrue(lineFocusToggled);
+    assertTrue(lineFocusModesChanged);
     assertEquals(
         LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
   });
@@ -467,7 +477,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
 
-    assertTrue(lineFocusToggled);
+    assertTrue(lineFocusModesChanged);
     assertEquals(
         LineFocusStyle.defaultValue(),
         lineFocusController.getCurrentLineFocusStyle());
@@ -486,7 +496,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
 
-    assertTrue(lineFocusToggled);
+    assertTrue(lineFocusModesChanged);
     assertEquals(
         previousMode.type, lineFocusController.getCurrentLineFocusType());
   });

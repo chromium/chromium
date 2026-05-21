@@ -214,7 +214,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
-      lineFocus: chrome.readingMode.lastNonDisabledLineFocus,
       linksEnabled: chrome.readingMode.linksEnabled,
       imagesEnabled: chrome.readingMode.imagesEnabled,
     };
@@ -521,7 +520,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.$.containerScroller.scrollTo({top: 0, behavior: 'smooth'});
   }
 
-  onLineFocusToggled(): void {
+  onLineFocusModesChanged(): void {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
@@ -658,9 +657,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private restoreSettingsFromPrefs_() {
     this.voiceLanguageController_.restoreFromPrefs();
-    const lineFocus = chrome.readingMode.isLineFocusOn ?
-        chrome.readingMode.lastNonDisabledLineFocus :
-        chrome.readingMode.lineFocusOff;
     this.settingsPrefs_ = {
       letterSpacing: chrome.readingMode.letterSpacing,
       lineSpacing: chrome.readingMode.lineSpacing,
@@ -668,7 +664,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
-      lineFocus,
       linksEnabled: chrome.readingMode.linksEnabled,
       imagesEnabled: chrome.readingMode.imagesEnabled,
     };

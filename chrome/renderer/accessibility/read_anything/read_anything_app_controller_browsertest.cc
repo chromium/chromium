@@ -128,7 +128,8 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void,
               OnLineFocusChanged,
-              (read_anything::mojom::LineFocus line_focus),
+              (read_anything::mojom::LineFocus current_line_focus,
+               read_anything::mojom::LineFocus last_non_disabled_line_focus),
               (override));
   MOCK_METHOD(void,
               OnImageDataRequested,
@@ -2931,9 +2932,11 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
 TEST_F(ReadAnythingAppControllerTest, OnLineFocusChanged_SetsLineFocus) {
   EnableLineFocus();
   auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
-  EXPECT_CALL(page_handler_, OnLineFocusChanged(line_focus)).Times(1);
+  EXPECT_CALL(page_handler_, OnLineFocusChanged(line_focus, line_focus))
+      .Times(1);
 
-  controller().OnLineFocusChanged(static_cast<int>(line_focus));
+  controller().OnLineFocusChanged(static_cast<int>(line_focus),
+                                  static_cast<int>(line_focus));
 
   ASSERT_EQ(line_focus, model().last_non_disabled_line_focus());
   ASSERT_TRUE(controller().IsLineFocusOn());
@@ -2944,10 +2947,10 @@ TEST_F(ReadAnythingAppControllerTest,
   EnableLineFocus();
   auto line_focus_off = read_anything::mojom::LineFocus::kOff;
   auto line_focus = read_anything::mojom::LineFocus::kLineStatic;
-  EXPECT_CALL(page_handler_, OnLineFocusChanged).Times(2);
+  EXPECT_CALL(page_handler_, OnLineFocusChanged).Times(1);
 
-  controller().OnLineFocusChanged(static_cast<int>(line_focus));
-  controller().OnLineFocusChanged(static_cast<int>(line_focus_off));
+  controller().OnLineFocusChanged(static_cast<int>(line_focus_off),
+                                  static_cast<int>(line_focus));
 
   ASSERT_EQ(line_focus, model().last_non_disabled_line_focus());
   ASSERT_FALSE(controller().IsLineFocusOn());

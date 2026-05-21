@@ -302,7 +302,8 @@ declare namespace chrome {
     function onHighlightGranularityChanged(value: number): void;
 
     // Called when the line focus mode is changed via the webui toolbar.
-    function onLineFocusChanged(value: number): void;
+    function onLineFocusChanged(
+        currentValue: number, lastNonDisabledLineFocus: number): void;
 
     // Called when a language is enabled/disabled for Read Aloud
     // via the webui language menu.

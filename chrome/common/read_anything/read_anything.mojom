@@ -261,9 +261,11 @@ interface UntrustedPageHandler {
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
 
-  // Informs the browser controller that the user updated the granularity of
-  // the highlight that follows along with speech via the webui toolbar.
-  OnLineFocusChanged(read_anything.mojom.LineFocus granularity);
+  // Informs the browser controller that the user updated the line focus mode
+  // via the webui toolbar. If the new line focus mode is "off", then
+  // last_non_disabled_line_focus is different from current_line_focus.
+  OnLineFocusChanged(read_anything.mojom.LineFocus current_line_focus,
+                     read_anything.mojom.LineFocus last_non_disabled_line_focus);
 
   // Informs the browser controller whether audio for read aloud is currently
   // playing.

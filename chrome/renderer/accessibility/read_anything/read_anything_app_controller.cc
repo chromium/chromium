@@ -2377,20 +2377,24 @@ void ReadAnythingAppController::OnHighlightGranularityChanged(
   read_aloud_model_.set_highlight_granularity(granularity);
 }
 
-void ReadAnythingAppController::OnLineFocusChanged(int line_focus) {
+void ReadAnythingAppController::OnLineFocusChanged(
+    int current_line_focus,
+    int last_non_disabled_line_focus) {
   if (!IsLineFocusEnabled()) {
     return;
   }
 
-  if (const auto maybe_enum =
-          ToEnum<read_anything::mojom::LineFocus>(line_focus)) {
-    page_handler_->OnLineFocusChanged(maybe_enum.value());
+  const auto maybe_current =
+      ToEnum<read_anything::mojom::LineFocus>(current_line_focus);
+  const auto maybe_last =
+      ToEnum<read_anything::mojom::LineFocus>(last_non_disabled_line_focus);
+  if (maybe_current && maybe_last) {
+    page_handler_->OnLineFocusChanged(maybe_current.value(),
+                                      maybe_last.value());
     bool line_focus_on =
-        maybe_enum.value() != read_anything::mojom::LineFocus::kOff;
+        maybe_current.value() != read_anything::mojom::LineFocus::kOff;
     model_.set_line_focus_enabled(line_focus_on);
-    if (line_focus_on) {
-      model_.set_last_non_disabled_line_focus(maybe_enum.value());
-    }
+    model_.set_last_non_disabled_line_focus(maybe_last.value());
   }
 }
 
