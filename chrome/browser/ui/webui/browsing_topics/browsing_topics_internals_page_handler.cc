@@ -31,8 +31,6 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
       base::FeatureList::IsEnabled(network::features::kBrowsingTopics),
       base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride),
       base::FeatureList::IsEnabled(
-          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
-      base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck),
       base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsDocumentAPI),
       browsing_topics::CurrentConfigVersion(),

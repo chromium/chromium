@@ -9,6 +9,7 @@
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -20,6 +21,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -156,9 +158,7 @@ class InspectUISharedStorageTest : public InspectUITest {
   InspectUISharedStorageTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{network::features::kSharedStorageAPI,
-                              features::kPrivacySandboxAdsAPIsOverride,
-                              privacy_sandbox::
-                                  kOverridePrivacySandboxSettingsLocalTesting},
+                              features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
   }
 
@@ -171,6 +171,9 @@ class InspectUISharedStorageTest : public InspectUITest {
     ASSERT_TRUE(https_server_.Start());
 
     InspectUITest::SetUpOnMainThread();
+
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+        ->SetAllPrivacySandboxAllowedForTesting();
   }
 
  protected:

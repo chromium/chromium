@@ -73,8 +73,6 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings4ShowSampleDataForTesting;
 
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting);
 
 // Disables any Privacy Sandbox related prompts. Should only be used for testing
 // purposes. This feature is used to support external automated testing using

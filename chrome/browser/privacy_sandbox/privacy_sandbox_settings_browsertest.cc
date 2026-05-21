@@ -284,6 +284,11 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
  public:
   PrivacySandboxSettingsAttestationsBrowserTestBase() = default;
 
+  void SetUpOnMainThread() override {
+    PrivacySandboxSettingsBrowserTest::SetUpOnMainThread();
+    privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  }
+
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
@@ -879,8 +884,7 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeBiddingAndAuctionServer,
          blink::features::kFencedFrames,
-         blink::features::kFencedFramesAPIChanges,
-         privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting},
+         blink::features::kFencedFramesAPIChanges},
         /*disabled_features=*/{});
   }
 

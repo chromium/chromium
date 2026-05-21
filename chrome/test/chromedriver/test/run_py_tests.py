@@ -10071,12 +10071,12 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
       <body>
       <script>
         async function doJoin() {
-          navigator.joinAdInterestGroup({
+          return navigator.joinAdInterestGroup({
             'owner': 'https://owner.test/',
             'name': 'testing',
             'biddingLogicURL': 'https://owner.test/generateBid.js',
             'ads': [{renderURL: 'https://ad.example.com/ad.html'}],
-            }, 3600000)
+            }, 3600000);
         }
       </script>
       </body>
@@ -10105,14 +10105,24 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.chrome_switches = ['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
             'privacy-sandbox-enrollment-overrides=https://owner.test/',
             'force-reporting-destination-attested',  # needed for headless shell
-            'enable-features=OverridePrivacySandboxSettingsLocalTesting']
+            'disable-features=PrivacySandboxAdPrivacyUxDeprecation']
     self._driver = self.CreateDriver(
         accept_insecure_certs=True,
-        chrome_switches=self.chrome_switches)
+        chrome_switches=self.chrome_switches,
+        logging_prefs={'browser': 'ALL'},
+        experimental_options={'prefs': {
+            'privacy_sandbox.m1.fledge_enabled': True,
+            'privacy_sandbox.m1.topics_enabled': True,
+            'privacy_sandbox.m1.ad_measurement_enabled': True,
+            'privacy_sandbox.m1.consent_decision_made': True,
+            'privacy_sandbox.m1.eea_notice_acknowledged': True,
+            'privacy_sandbox.m1.row_notice_acknowledged': True,
+            'privacy_sandbox.m1.restricted_notice_acknowledged': True,
+        }})
 
   def testSetProtectedAudienceKAnonymity(self):
     self._driver.Load('https://owner.test/join.html')
-    self._driver.ExecuteScript('doJoin()')
+    self._driver.ExecuteScript('return doJoin()')
 
     bid_key = ('AdBid\nhttps://owner.test/\nhttps://owner.test/generateBid.js'
                '\nhttps://ad.example.com/ad.html')

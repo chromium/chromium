@@ -381,9 +381,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{network::features::kSharedStorageAPI,
-                              features::kPrivacySandboxAdsAPIsOverride,
-                              privacy_sandbox::
-                                  kOverridePrivacySandboxSettingsLocalTesting},
+                              features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
   }
 
@@ -4820,7 +4818,6 @@ class SharedStorageExtensionBrowserTest
         /*enabled_features=*/
         {network::features::kSharedStorageAPI,
          features::kPrivacySandboxAdsAPIsOverride,
-         privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting,
          blink::features::kFencedFrames,
          blink::features::kFencedFramesAPIChanges,
          privacy_sandbox::kEnforcePrivacySandboxAttestations},

@@ -900,13 +900,6 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
     return status;
   }
 
-  // For Measurement and Relevance APIs, we explicitly do not require the
-  // underlying pref to be enabled if there is a local flag enabling the APIs to
-  // allow for local testing.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
-    return Status::kAllowed;
-  }
 
   status = (pref_service_->GetBoolean(pref_name)) ? Status::kAllowed
                                                   : Status::kApisDisabled;

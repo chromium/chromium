@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -67,6 +68,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -1767,15 +1769,12 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest,
 class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
                                               public InstantTestBase {
  public:
-  AutomaticBeaconCredentialsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting);
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+        ->SetAllPrivacySandboxAllowedForTesting();
   }
 
  protected:
@@ -1791,7 +1790,6 @@ class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutomaticBeaconCredentialsBrowserTest,
