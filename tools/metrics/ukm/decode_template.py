@@ -77,6 +77,6 @@ const DecodeMap& GetDecodeMap() {{
 """)
 
 
-def WriteFiles(outdir, relpath, data):
-  HEADER.WriteFile(outdir, relpath, data)
-  IMPL.WriteFile(outdir, relpath, data)
+def write_files(outdir, relpath, data):
+  HEADER.write_file(outdir, relpath, data)
+  IMPL.write_file(outdir, relpath, data)

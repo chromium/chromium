@@ -26,7 +26,7 @@ class EventBasedXmlValidation(xml_validations.UkmXmlValidation):
     super().__init__(config_xml)
     self.config_type = config_type
 
-  def checkMetricTypeIsSpecified(self):
+  def check_metric_type_is_specified(self):
     """Checks each metric is either specified with an enum or a unit."""
     errors = []
 

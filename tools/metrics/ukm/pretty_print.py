@@ -38,7 +38,7 @@ def main():
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 
   presubmit_util.DoPresubmitMain(sys.argv, 'ukm.xml', 'ukm.old.xml',
-                                 ukm_model.PrettifyXmlAndTrimObsolete)
+                                 ukm_model.prettify_xml_and_trim_obsolete)
 
 
 if __name__ == '__main__':

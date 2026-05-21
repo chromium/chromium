@@ -26,14 +26,14 @@ parser.add_argument('--output', help='Path to generated files.')
 
 def main(argv):
   args = parser.parse_args()
-  data = ReadFilteredData(args.input)
+  data = read_filtered_data(args.input)
   relpath = 'services/metrics/public/cpp/'
-  builders_template.WriteFiles(args.output, relpath, data)
-  decode_template.WriteFiles(args.output, relpath, data)
+  builders_template.write_files(args.output, relpath, data)
+  decode_template.write_files(args.output, relpath, data)
   return 0
 
 
-def ReadFilteredData(path):
+def read_filtered_data(path):
   """Reads data from path and filters out any obsolete metrics.
 
   Parses data from given path and removes all nodes that contain an
@@ -50,10 +50,10 @@ def ReadFilteredData(path):
     data = ukm_model.UKM_XML_TYPE.Parse(ukm_file.read())
     event_tag = ukm_model._EVENT_TYPE.tag
     metric_tag = ukm_model._METRIC_TYPE.tag
-    data[event_tag] = list(filter(ukm_model.IsNotObsolete, data[event_tag]))
+    data[event_tag] = list(filter(ukm_model.is_not_obsolete, data[event_tag]))
     for event in data[event_tag]:
       event[metric_tag] = list(
-          filter(ukm_model.IsNotObsolete, event[metric_tag]))
+          filter(ukm_model.is_not_obsolete, event[metric_tag]))
     return data
 
 

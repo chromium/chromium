@@ -11,13 +11,13 @@ import chromium_src.tools.metrics.ukm.xml_validations as xml_validations
 
 class UkmXmlValidationTest(unittest.TestCase):
 
-  def toUkmConfig(self, xml_string):
+  def to_ukm_config(self, xml_string):
     dom = minidom.parseString(xml_string)
     [ukm_config] = dom.getElementsByTagName('ukm-configuration')
     return ukm_config
 
-  def testEventsHaveOwners(self):
-    ukm_config = self.toUkmConfig("""
+  def test_events_have_owners(self):
+    ukm_config = self.to_ukm_config("""
         <ukm-configuration>
           <event name="Event1">
             <owner>dev@chromium.org</owner>
@@ -25,12 +25,12 @@ class UkmXmlValidationTest(unittest.TestCase):
         </ukm-configuration>
         """.strip())
     validator = xml_validations.UkmXmlValidation(ukm_config)
-    success, errors = validator.checkEventsHaveOwners()
+    success, errors = validator.check_events_have_owners()
     self.assertTrue(success)
     self.assertListEqual([], errors)
 
-  def testEventsMissingOwners(self):
-    ukm_config = self.toUkmConfig("""
+  def test_events_missing_owners(self):
+    ukm_config = self.to_ukm_config("""
         <ukm-configuration>
           <event name="Event1"/>
           <event name="Event2">
@@ -49,12 +49,12 @@ class UkmXmlValidationTest(unittest.TestCase):
     ]
 
     validator = xml_validations.UkmXmlValidation(ukm_config)
-    success, errors = validator.checkEventsHaveOwners()
+    success, errors = validator.check_events_have_owners()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)
 
-  def testMetricHasUndefinedEnum(self):
-    ukm_config = self.toUkmConfig("""
+  def test_metric_has_undefined_enum(self):
+    ukm_config = self.to_ukm_config("""
         <ukm-configuration>
           <event name="Event1">
             <metric name="Metric2" enum="FeatureObserver"/>
@@ -77,13 +77,13 @@ class UkmXmlValidationTest(unittest.TestCase):
     ]
 
     validator = xml_validations.UkmXmlValidation(ukm_config)
-    success, errors, warnings = validator.checkMetricTypeIsSpecified()
+    success, errors, warnings = validator.check_metric_type_is_specified()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)
     self.assertListEqual(expected_warnings, warnings)
 
-  def testCheckLocalMetricIsAggregated(self):
-    bad_ukm_config = self.toUkmConfig("""
+  def test_check_local_metric_is_aggregated(self):
+    bad_ukm_config = self.to_ukm_config("""
         <ukm-configuration>
           <event name="Event">
             <metric name="M1" enum="Enum1"/>
@@ -120,14 +120,14 @@ class UkmXmlValidationTest(unittest.TestCase):
         {'event':'Event', 'metric':'M3', 'invalid_metrics':'M1, M4'}),
     ]
     validator = xml_validations.UkmXmlValidation(bad_ukm_config)
-    success, errors = validator.checkLocalMetricIsAggregated()
+    success, errors = validator.check_local_metric_is_aggregated()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)
 
     # Add aggregation definitions to M1 and M4 to make it valid. Note the
     # export="False" that prevents M1 and M4 from being aggregated, and only
     # useful as an index field.
-    good_ukm_config = self.toUkmConfig("""
+    good_ukm_config = self.to_ukm_config("""
         <ukm-configuration>
           <event name="Event">
             <metric name="M1" enum="Enum1">
@@ -173,7 +173,7 @@ class UkmXmlValidationTest(unittest.TestCase):
         """.strip())
 
     validator = xml_validations.UkmXmlValidation(good_ukm_config)
-    success, errors = validator.checkLocalMetricIsAggregated()
+    success, errors = validator.check_local_metric_is_aggregated()
     self.assertTrue(success)
     self.assertListEqual([], errors)
 
@@ -284,13 +284,14 @@ class UkmXmlValidationTest(unittest.TestCase):
           ])
   ]
 
-  def testStatisticsNonEmptyValid(self):
-    '''Validate passed parameters against checkStatisticsNonEmptyValid.'''
+  def test_statistics_non_empty_valid(self):
+    """Validates passed parameters against check_statistics_non_empty_valid."""
     for config, ex_success, ex_error in self.parameters_test_statistics:
-      ukm_config = self.toUkmConfig(config)
+      ukm_config = self.to_ukm_config(config)
       validator = xml_validations.UkmXmlValidation(ukm_config)
 
-      result_success, result_error = validator.checkStatisticsNonEmptyValid()
+      result_success, result_error = (
+          validator.check_statistics_non_empty_valid())
       self.assertTrue(result_success) if ex_success else self.assertFalse(
           result_success)
       self.assertListEqual(ex_error, result_error)

@@ -1,7 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-# """Model objects for ukm.xml contents."""
+"""Model objects for ukm.xml contents."""
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -59,12 +59,12 @@ _AGGREGATION_TYPE =  models.ObjectNodeType(
         models.ChildType(_HISTORY_TYPE.tag, _HISTORY_TYPE, multiple=False),
     ])
 
-_METRIC_TYPE =  models.ObjectNodeType(
+_METRIC_TYPE = models.ObjectNodeType(
     'metric',
     attributes=[
-      ('name', str, r'^[A-Za-z][A-Za-z0-9_.]*$'),
-      ('semantic_type', str, None),
-      ('enum', str, None),
+        ('name', str, r'^[A-Za-z][A-Za-z0-9_.]*$'),
+        ('semantic_type', str, None),
+        ('enum', str, None),
     ],
     alphabetization=[
         (model_shared._OBSOLETE_TYPE.tag, model_shared._KEEP_ORDER),
@@ -73,18 +73,18 @@ _METRIC_TYPE =  models.ObjectNodeType(
         (_AGGREGATION_TYPE.tag, model_shared._KEEP_ORDER),
     ],
     children=[
-        models.ChildType(
-          model_shared._OBSOLETE_TYPE.tag, model_shared._OBSOLETE_TYPE, \
-            multiple=False),
-        models.ChildType(
-          model_shared._OWNER_TYPE.tag, model_shared._OWNER_TYPE, \
-            multiple=True),
-        models.ChildType(
-          model_shared._SUMMARY_TYPE.tag, model_shared._SUMMARY_TYPE, \
-            multiple=False),
-        models.ChildType(
-          _AGGREGATION_TYPE.tag, _AGGREGATION_TYPE, \
-            multiple=True),
+        models.ChildType(model_shared._OBSOLETE_TYPE.tag,
+                         model_shared._OBSOLETE_TYPE,
+                         multiple=False),
+        models.ChildType(model_shared._OWNER_TYPE.tag,
+                         model_shared._OWNER_TYPE,
+                         multiple=True),
+        models.ChildType(model_shared._SUMMARY_TYPE.tag,
+                         model_shared._SUMMARY_TYPE,
+                         multiple=False),
+        models.ChildType(_AGGREGATION_TYPE.tag,
+                         _AGGREGATION_TYPE,
+                         multiple=True),
     ])
 
 _EVENT_TYPE = models.ObjectNodeType(
@@ -104,18 +104,16 @@ _EVENT_TYPE = models.ObjectNodeType(
     ],
     extra_newlines=(1, 1, 1),
     children=[
-        models.ChildType(
-          model_shared._OBSOLETE_TYPE.tag, model_shared._OBSOLETE_TYPE, \
-            multiple=False),
-        models.ChildType(
-          model_shared._OWNER_TYPE.tag, model_shared._OWNER_TYPE, \
-            multiple=True),
-        models.ChildType(
-          model_shared._SUMMARY_TYPE.tag, model_shared._SUMMARY_TYPE, \
-            multiple=False),
-        models.ChildType(
-          _METRIC_TYPE.tag, _METRIC_TYPE, \
-            multiple=True),
+        models.ChildType(model_shared._OBSOLETE_TYPE.tag,
+                         model_shared._OBSOLETE_TYPE,
+                         multiple=False),
+        models.ChildType(model_shared._OWNER_TYPE.tag,
+                         model_shared._OWNER_TYPE,
+                         multiple=True),
+        models.ChildType(model_shared._SUMMARY_TYPE.tag,
+                         model_shared._SUMMARY_TYPE,
+                         multiple=False),
+        models.ChildType(_METRIC_TYPE.tag, _METRIC_TYPE, multiple=True),
     ])
 
 _UKM_CONFIGURATION_TYPE = models.ObjectNodeType(
@@ -130,7 +128,7 @@ _UKM_CONFIGURATION_TYPE = models.ObjectNodeType(
 UKM_XML_TYPE = models.DocumentType(_UKM_CONFIGURATION_TYPE)
 
 
-def PrettifyXmlAndTrimObsolete(original_xml: str) -> str:
+def prettify_xml_and_trim_obsolete(original_xml: str) -> str:
   """Parses the original XML and returns a pretty-printed version.
 
   This also removes any events and metrics tagged as <obsolete>, and prints
@@ -146,7 +144,7 @@ def PrettifyXmlAndTrimObsolete(original_xml: str) -> str:
   event_tag = _EVENT_TYPE.tag
   metric_tag = _METRIC_TYPE.tag
   all_event_names = {event['name'] for event in config[event_tag]}
-  config[event_tag] = list(filter(IsNotObsolete, config[event_tag]))
+  config[event_tag] = list(filter(is_not_obsolete, config[event_tag]))
   non_obsolete_event_names = {event['name'] for event in config[event_tag]}
   if all_event_names != non_obsolete_event_names:
     print(f'Events {str(all_event_names - non_obsolete_event_names)} are'
@@ -154,7 +152,7 @@ def PrettifyXmlAndTrimObsolete(original_xml: str) -> str:
           ' go/ukm-api#obsolete-events.\n')
   for event in config[event_tag]:
     all_metrics_names = {metric['name'] for metric in event[metric_tag]}
-    event[metric_tag] = list(filter(IsNotObsolete, event[metric_tag]))
+    event[metric_tag] = list(filter(is_not_obsolete, event[metric_tag]))
     non_obsolete_metrics_names = {
         metric['name']
         for metric in event[metric_tag]
@@ -169,6 +167,6 @@ def PrettifyXmlAndTrimObsolete(original_xml: str) -> str:
   return UKM_XML_TYPE.PrettyPrint(config)
 
 
-def IsNotObsolete(node):
+def is_not_obsolete(node):
   """Checks if the given node contains a child <obsolete> node."""
   return model_shared._OBSOLETE_TYPE.tag not in node

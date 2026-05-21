@@ -12,13 +12,13 @@ import chromium_src.tools.metrics.private_metrics.private_metrics_validations as
 
 class EventBasedXmlValidationTest(unittest.TestCase):
 
-  def parseConfig(self, xml_string: str) -> xml.dom.minidom.Element:
+  def parse_config(self, xml_string: str) -> xml.dom.minidom.Element:
     dom = xml.dom.minidom.parseString(xml_string)
     [dwa_config] = dom.getElementsByTagName('test-configuration')
     return dwa_config
 
-  def testEventsHaveOwners(self) -> None:
-    dwa_config = self.parseConfig("""
+  def test_events_have_owners(self) -> None:
+    dwa_config = self.parse_config("""
         <test-configuration>
           <event name="Event1">
             <owner>dev@chromium.org</owner>
@@ -27,12 +27,12 @@ class EventBasedXmlValidationTest(unittest.TestCase):
         """.strip())
     validator = private_metrics_validations.EventBasedXmlValidation(
         dwa_config, "test")
-    success, errors = validator.checkEventsHaveOwners()
+    success, errors = validator.check_events_have_owners()
     self.assertTrue(success)
     self.assertListEqual([], errors)
 
-  def testEventsMissingOwners(self) -> None:
-    dwa_config = self.parseConfig("""
+  def test_events_missing_owners(self) -> None:
+    dwa_config = self.parse_config("""
         <test-configuration>
           <event name="Event1"/>
           <event name="Event2">
@@ -52,12 +52,12 @@ class EventBasedXmlValidationTest(unittest.TestCase):
 
     validator = private_metrics_validations.EventBasedXmlValidation(
         dwa_config, "test")
-    success, errors = validator.checkEventsHaveOwners()
+    success, errors = validator.check_events_have_owners()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)
 
-  def testMetricHasUndefinedEnum(self) -> None:
-    config_xml = self.parseConfig("""
+  def test_metric_has_undefined_enum(self) -> None:
+    config_xml = self.parse_config("""
         <test-configuration>
           <event name="Event1">
             <metric name="Metric2" enum="FeatureObserver"/>
@@ -76,7 +76,7 @@ class EventBasedXmlValidationTest(unittest.TestCase):
 
     validator = private_metrics_validations.EventBasedXmlValidation(
         config_xml, "test")
-    success, errors = validator.checkMetricTypeIsSpecified()
+    success, errors = validator.check_metric_type_is_specified()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)
 
