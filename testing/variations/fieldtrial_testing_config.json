@@ -4875,6 +4875,21 @@
             ]
         }
     ],
+    "CbcmAndroidPackageNameIdentifier": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CbcmAndroidPackageNameIdentifier"
+                    ]
+                }
+            ]
+        }
+    ],
     "CctClientDataHeader": [
         {
             "platforms": [

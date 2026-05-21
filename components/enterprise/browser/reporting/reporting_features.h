@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kGeminiInChromeUsageReporting);
 // such as the exact command line switches used at startup.
 BASE_DECLARE_FEATURE(kBrowserLaunchMetadataReporting);
 
+// Controls whether the browser on Android should use its package name as the
+// executable path identifier in CBCM reports.
+BASE_DECLARE_FEATURE(kCbcmAndroidPackageNameIdentifier);
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORTING_FEATURES_H_
