@@ -9,6 +9,15 @@ found in the LICENSE file.
     <item name="cornerFamily">rounded</item>
     <item name="cornerSize">@dimen/ntp_customization_theme_collections_icon_outer_radius</item>
   </style>
+  <style name="TopRoundedCorners" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSizeTopLeft">@dimen/ntp_customization_list_item_background_large_radius</item>
+    <item name="cornerSizeTopRight">@dimen/ntp_customization_list_item_background_large_radius</item>
+  </style>
+  <style name="CircleShapeOverlay" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">50%</item>
+  </style>
   <style name="TextAppearance.PreviewDialogText"
     parent="TextAppearance.TextMediumThick">
     <item name="android:textColor">@color/ntp_upload_image_preview_dialog_color_list</item>

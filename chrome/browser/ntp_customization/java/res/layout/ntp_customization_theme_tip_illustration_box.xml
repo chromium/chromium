@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/illustration_box"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- PNG Image Background -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/zoom_bloom_barbet"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/TopRoundedCorners"
+        android:importantForAccessibility="no"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- The drag handle is drawn at the top of the PNG image background -->
+    <include layout="@layout/ntp_customization_drag_handle_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Circles Background Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/circles_background"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/ntp_customization_theme_tip_sheet_circles_bg_height"
+        android:layout_marginHorizontal="@dimen/ntp_customization_chrome_colors_grid_lateral_margin"
+        android:layout_marginVertical="@dimen/ntp_customization_ntp_cards_title_margin"
+        app:layout_constraintWidth_max="@dimen/ntp_customization_theme_tip_sheet_circles_bg_max_width"
+        android:background="@drawable/home_surface_ui_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Wallpaper Circle Indicator -->
+        <View
+            android:id="@+id/wallpaper_circle_indicator"
+            android:layout_width="@dimen/ntp_customization_chrome_colors_selector_size"
+            android:layout_height="@dimen/ntp_customization_chrome_colors_selector_size"
+            android:background="@drawable/chrome_color_icon_selected_background"
+            app:layout_constraintTop_toTopOf="@id/wallpaper_circle"
+            app:layout_constraintBottom_toBottomOf="@id/wallpaper_circle"
+            app:layout_constraintStart_toStartOf="@id/wallpaper_circle"
+            app:layout_constraintEnd_toEndOf="@id/wallpaper_circle" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/wallpaper_circle"
+            android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
+            android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
+            android:layout_marginVertical="@dimen/ntp_customization_theme_tip_sheet_circles_margin_vertical"
+            android:src="@drawable/zoom_bloom_barbet"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/CircleShapeOverlay"
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pink_circle" />
+
+        <View
+            android:id="@+id/pink_circle"
+            android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
+            android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
+            android:background="@drawable/pink_color_palette"
+            app:layout_constraintTop_toTopOf="@id/wallpaper_circle"
+            app:layout_constraintStart_toEndOf="@id/wallpaper_circle"
+            app:layout_constraintEnd_toStartOf="@id/viridian_circle" />
+
+        <View
+            android:id="@+id/viridian_circle"
+            android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
+            android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
+            android:background="@drawable/viridian_color_palette"
+            app:layout_constraintTop_toTopOf="@id/wallpaper_circle"
+            app:layout_constraintStart_toEndOf="@id/pink_circle"
+            app:layout_constraintEnd_toStartOf="@id/blue_circle" />
+
+        <View
+            android:id="@+id/blue_circle"
+            android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
+            android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
+            android:background="@drawable/blue_color_palette"
+            app:layout_constraintTop_toTopOf="@id/wallpaper_circle"
+            app:layout_constraintStart_toEndOf="@id/viridian_circle"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
