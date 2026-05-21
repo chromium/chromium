@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -49,6 +50,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/usage_stats_permissions.h"
+#include "chrome/updater/util/path_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -297,6 +299,19 @@ std::string OperatingSystemVersion() {
 #endif
 }
 
+std::optional<base::FilePath> GetUpdaterTempDir() {
+  base::FilePath temp_dir;
+#if BUILDFLAG(IS_WIN)
+  const bool get_temp_success = base::GetSecureTempDirectory(&temp_dir);
+#else
+  const bool get_temp_success = base::GetTempDir(&temp_dir);
+#endif
+  if (!get_temp_success) {
+    return std::nullopt;
+  }
+  return temp_dir;
+}
+
 base::CommandLine::StringType GetCommandLineString() {
 #if BUILDFLAG(IS_WIN)
   // Gets the raw command line on Windows, because
@@ -349,6 +364,13 @@ int UpdaterMain(int argc, const char* const* argv) {
   InitHistoryLogging(updater_scope);
   const base::ProcessId parent_pid =
       base::GetParentProcessId(base::GetCurrentProcessHandle());
+  const std::optional<base::FilePath> install_dir =
+      GetInstallDirectory(updater_scope);
+  const std::optional<base::FilePath> temp_dir = GetUpdaterTempDir();
+  const std::optional<base::SysInfo::DiskSpaceInfo> install_dir_space =
+      install_dir.and_then(base::SysInfo::AmountOfDiskSpace);
+  const std::optional<base::SysInfo::DiskSpaceInfo> temp_dir_space =
+      temp_dir.and_then(base::SysInfo::AmountOfDiskSpace);
   VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "
           << base::SysInfo::ProcessCPUArchitecture()
           << ", command line: " << GetCommandLineString();
@@ -357,6 +379,13 @@ int UpdaterMain(int argc, const char* const* argv) {
           << ", System uptime (seconds): "
           << base::SysInfo::Uptime().InSeconds()
           << ", parent pid: " << parent_pid;
+  VLOG_IF(1, install_dir_space)
+      << "Available disk space in install directory (" << install_dir
+      << "): " << install_dir_space->available << " / "
+      << install_dir_space->total;
+  VLOG_IF(1, temp_dir_space)
+      << "Available disk space in temporary directory (" << temp_dir
+      << "): " << temp_dir_space->available << " / " << temp_dir_space->total;
 
 #if BUILDFLAG(IS_WIN)
   const HResultOr<std::wstring> cmd_line = GetCommandLineForPid(parent_pid);
