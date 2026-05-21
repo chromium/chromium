@@ -1189,13 +1189,13 @@ GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
   if (tracker) {
-    config.geminiLiveIPHShouldShow = tracker->ShouldTriggerHelpUI(
+    config.shouldShowGeminiLiveIPH = tracker->ShouldTriggerHelpUI(
         feature_engagement::kIPHiOSGeminiLiveIPHFeature);
-    config.geminiLiveNewBadgeShouldShow = tracker->ShouldTriggerHelpUI(
+    config.shouldShowGeminiLiveNewBadge = tracker->ShouldTriggerHelpUI(
         feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
   } else {
-    config.geminiLiveIPHShouldShow = NO;
-    config.geminiLiveNewBadgeShouldShow = NO;
+    config.shouldShowGeminiLiveIPH = NO;
+    config.shouldShowGeminiLiveNewBadge = NO;
   }
 
   config.geminiLocationPermissionState =
