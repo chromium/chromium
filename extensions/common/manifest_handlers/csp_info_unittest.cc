@@ -528,4 +528,87 @@ TEST_F(CSPInfoUnitTest, UserScriptStrictCSP) {
             CSPInfo::GetMinimumCSPToAppend(*extension, "page.html", false));
 }
 
+TEST_F(CSPInfoUnitTest, ValidateDefaultMV3ExtensionPagesCSP) {
+  static const char kDefaultMV3CSP[] = "script-src 'self';";
+
+  static constexpr char kManifestV3[] =
+      R"({
+           "name": "Test MV3 Extension",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+
+  ManifestData manifest_data_mv3(base::test::ParseJsonDict(kManifestV3));
+  scoped_refptr<const Extension> extension_mv3 =
+      LoadAndExpectSuccess(manifest_data_mv3);
+  EXPECT_EQ(3, extension_mv3.get()->manifest_version());
+  EXPECT_EQ(Manifest::Type::kExtension, extension_mv3.get()->GetType());
+  EXPECT_EQ(kDefaultMV3CSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                extension_mv3.get(), "/test"));
+}
+
+TEST_F(CSPInfoUnitTest, ValidateDefaultMV2ExtensionPagesCSP) {
+  const char kDefaultMV2CSP[] =
+      "script-src 'self' blob: filesystem:; "
+      "object-src 'self' blob: filesystem:;";
+
+  static constexpr char kManifestV2[] =
+      R"({
+           "name": "Test MV2 Extension",
+           "manifest_version": 2,
+           "version": "0.1"
+         })";
+
+  ManifestData manifest_data_mv2(base::test::ParseJsonDict(kManifestV2));
+  scoped_refptr<const Extension> extension_mv2 =
+      LoadAndExpectSuccess(manifest_data_mv2);
+  EXPECT_EQ(2, extension_mv2.get()->manifest_version());
+  EXPECT_EQ(Manifest::Type::kExtension, extension_mv2.get()->GetType());
+  EXPECT_EQ(kDefaultMV2CSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                extension_mv2.get(), "/test"));
+}
+
+TEST_F(CSPInfoUnitTest, ValidateDefaultMV2PlatformAppPagesCSP) {
+#define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
+
+  // clang-format off
+const char kDefaultPlatformAppContentSecurityPolicy[] =
+    "default-src 'self' blob: filesystem:;"
+    " connect-src * data: blob: filesystem:;"
+    " style-src " PLATFORM_APP_LOCAL_CSP_SOURCES " 'unsafe-inline';"
+    " img-src " PLATFORM_APP_LOCAL_CSP_SOURCES ";"
+    " frame-src " PLATFORM_APP_LOCAL_CSP_SOURCES ";"
+    " font-src " PLATFORM_APP_LOCAL_CSP_SOURCES ";"
+    " media-src * data: blob: filesystem:;"
+    " script-src 'self' blob: filesystem: 'wasm-unsafe-eval';";
+  // clang-format on
+
+#undef PLATFORM_APP_LOCAL_CSP_SOURCES
+
+  static constexpr char kManifestV2PlatformApp[] =
+      R"({
+           "name": "Test MV2 Platform App",
+           "manifest_version": 2,
+           "version": "0.1",
+           "app": {
+             "background": {
+               "scripts": [
+                 "script.js"
+               ]
+             }
+           }
+         })";
+
+  ManifestData manifest_data_mv2_platform_app(
+      base::test::ParseJsonDict(kManifestV2PlatformApp));
+  scoped_refptr<const Extension> extension_mv2_platform_app =
+      LoadAndExpectSuccess(manifest_data_mv2_platform_app);
+  EXPECT_EQ(2, extension_mv2_platform_app.get()->manifest_version());
+  EXPECT_EQ(Manifest::Type::kPlatformApp,
+            extension_mv2_platform_app.get()->GetType());
+  EXPECT_EQ(kDefaultPlatformAppContentSecurityPolicy,
+            CSPInfo::GetResourceContentSecurityPolicy(
+                extension_mv2_platform_app.get(), "/test"));
+}
+
 }  // namespace extensions

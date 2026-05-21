@@ -92,7 +92,10 @@ const char kDefaultPlatformAppContentSecurityPolicy[] =
     " script-src 'self' blob: filesystem: 'wasm-unsafe-eval';";
 // clang-format on
 
+#undef PLATFORM_APP_LOCAL_CSP_SOURCES
+
 int GetValidatorOptions(const Extension& extension) {
+  CHECK_LE(extension.manifest_version(), 2);
   int options = csp_validator::OPTIONS_NONE;
 
   // crbug.com/40275793
@@ -104,11 +107,7 @@ int GetValidatorOptions(const Extension& extension) {
   // Component extensions can specify an insecure object-src directive. This
   // should be safe because non-NPAPI plugins should load in a sandboxed process
   // and only allow communication via postMessage.
-  // Manifest V3 extensions don't need to specify an object-src, which for the
-  // CSPValidator is considered "insecure". The provided values are later
-  // checked in DoesCSPDisallowRemoteCode() for MV3 extensions.
-  if (extensions::Manifest::IsComponentLocation(extension.location()) ||
-      extension.manifest_version() >= 3) {
+  if (extensions::Manifest::IsComponentLocation(extension.location())) {
     options |= csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
   }
 
