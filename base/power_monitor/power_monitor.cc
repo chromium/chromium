@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "power_observer.h"
@@ -198,6 +199,7 @@ void PowerMonitor::NotifySuspend() {
   DCHECK(IsInitialized());
   DVLOG(1) << "Power Suspending";
   if (emit_global_event_) {
+    base::trace_event::EmitNamedTrigger("power-suspend");
     TRACE_EVENT_INSTANT("base.power", "PowerMonitor::NotifySuspend",
                         suspend_track_);
   }
@@ -219,6 +221,7 @@ void PowerMonitor::NotifyResume() {
   DCHECK(IsInitialized());
   DVLOG(1) << "Power Resuming";
   if (emit_global_event_) {
+    base::trace_event::EmitNamedTrigger("power-resume");
     TRACE_EVENT_INSTANT("base.power", "PowerMonitor::NotifyResume",
                         suspend_track_);
   }
