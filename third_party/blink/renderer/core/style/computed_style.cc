@@ -2639,11 +2639,20 @@ blink::Color ComputedStyle::VisitedDependentContextPaint(
   if (!context_visited_paint.HasColor()) {
     return unvisited_color;
   }
+  blink::Color visited_color;
   if (ShouldForceColor(context_visited_paint.GetColor())) {
-    return GetInternalForcedVisitedCurrentColor(nullptr);
+    visited_color = GetInternalForcedVisitedCurrentColor(nullptr);
+  } else {
+    visited_color = context_visited_paint.GetColor().Resolve(
+        GetInternalVisitedCurrentColor(), UsedColorScheme(), nullptr);
   }
-  return context_visited_paint.GetColor().Resolve(
-      GetInternalVisitedCurrentColor(), UsedColorScheme(), nullptr);
+  // Take the RGB from the visited color, but clamp alpha to the unvisited
+  // color's alpha. This prevents :visited from changing transparency, which
+  // would allow history sniffing via pixel-based side channels.
+  return Color::FromColorSpace(visited_color.GetColorSpace(),
+                               visited_color.Param0(), visited_color.Param1(),
+                               visited_color.Param2(),
+                               unvisited_color.Alpha());
 }
 
 blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,

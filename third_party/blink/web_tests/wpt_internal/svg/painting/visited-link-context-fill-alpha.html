@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>:visited cannot change alpha of SVG context-fill</title>
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#link">
+<link rel="help" href="https://svgwg.org/svg2-draft/painting.html#SpecifyingPaint">
+<link rel="match" href="visited-link-context-alpha-ref.html">
+<!--
+Test that :visited styles cannot change the alpha of SVG context-fill.
+The :visited privacy mitigation requires that the alpha channel of a
+resolved :visited color is clamped to the unvisited alpha.
+
+If this test passes, one should see a 100x100 green square.
+
+If the bug is present, the square would be transparent (showing the
+white background) because the visited alpha (0) leaked through context-fill.
+-->
+<style>body { margin: 0; }</style>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+  <style>
+    a .ctx { fill: rgba(0, 128, 0, 1); }
+    a:visited .ctx { fill: rgba(0, 128, 0, 0); }
+  </style>
+  <defs>
+    <symbol id="sq">
+      <rect width="100" height="100" fill="context-fill"/>
+    </symbol>
+  </defs>
+  <a href="">
+    <use class="ctx" href="#sq"/>
+  </a>
+</svg>
