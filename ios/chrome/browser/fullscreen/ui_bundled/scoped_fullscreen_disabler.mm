@@ -24,7 +24,13 @@ ScopedFullscreenDisabler::~ScopedFullscreenDisabler() {
   if (controller_) {
     controller_->DecrementDisabledCounter();
   }
-  [handler_ reenableFullscreen];
+  // During browser shutdown, FullscreenCoordinator may be stopped and
+  // unregistered from the CommandDispatcher before this disabler is destroyed.
+  // Check if the handler still responds to the selector to avoid unrecognized
+  // selector crashes during teardown.
+  if ([(id)handler_ respondsToSelector:@selector(reenableFullscreen)]) {
+    [handler_ reenableFullscreen];
+  }
 }
 
 void ScopedFullscreenDisabler::FullscreenControllerWillShutDown(
