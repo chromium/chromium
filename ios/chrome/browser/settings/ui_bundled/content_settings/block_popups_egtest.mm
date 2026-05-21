@@ -136,9 +136,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleBlockPopupsRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testSettingsPageWithExceptions)]) {
-    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
-  }
 
   return config;
 }

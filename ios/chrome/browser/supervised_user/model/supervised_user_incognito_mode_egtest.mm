@@ -56,9 +56,6 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testIncognitoTabsDestroyedOnSignin)]) {
-    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
-  }
   return config;
 }
 

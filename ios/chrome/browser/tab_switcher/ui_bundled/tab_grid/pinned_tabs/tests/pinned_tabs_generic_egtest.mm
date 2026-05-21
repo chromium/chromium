@@ -99,11 +99,6 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testCloseAllRegularThenPinnedTabs)] ||
-      [self isRunningTest:@selector(testCloseAllPinnedThenRegularTabs)]) {
-    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
-  }
-
   return config;
 }
 

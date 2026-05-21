@@ -127,10 +127,6 @@ id<GREYMatcher> IncognitoNewTabButton() {
                                  static_cast<int>(availability)]);
   config.additional_args.push_back(incognito_availability_arg);
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  if ([self
-          isRunningTest:@selector(testIncognitoTabGridWhenIncognitoDisabled)]) {
-    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
-  }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

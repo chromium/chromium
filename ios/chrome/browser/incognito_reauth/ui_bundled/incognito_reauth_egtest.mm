@@ -39,9 +39,6 @@ using chrome_test_util::TabGroupCreationView;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testTabGridButton)]) {
-    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
-  }
 
   return config;
 }

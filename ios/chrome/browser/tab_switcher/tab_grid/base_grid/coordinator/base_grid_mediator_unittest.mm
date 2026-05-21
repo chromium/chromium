@@ -731,25 +731,15 @@ TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
 TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
   EXPECT_EQ(3UL, consumer_.items.size());
   [mediator_ closeAllButtonTapped:nil];
-
-  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    // Simulate closing all items if the Overflow Menu is enabled. This is
-    // needed because the Overflow Menu presents a confirmation dialog instead
-    // of immediately closing all items when the Close All button is tapped.
-    [mediator_ closeAllItems];
-  }
+  // Simulate closing all items. This is needed because the Overflow Menu
+  // presents a confirmation dialog instead of immediately closing all items
+  [mediator_ closeAllItems];
 
   TabGridToolbarsConfiguration* configuration =
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.newTabButton);
   EXPECT_TRUE(configuration.searchButton);
-  if (GetParam() == TEST_REGULAR_MEDIATOR &&
-      !base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    // Undo is only available in regular when the edit button is enabled.
-    EXPECT_TRUE(configuration.undoButton);
-  } else {
-    EXPECT_FALSE(configuration.undoButton);
-  }
+  EXPECT_FALSE(configuration.undoButton);
 
   EXPECT_FALSE(configuration.selectAllButton);
   EXPECT_FALSE(configuration.doneButton);
