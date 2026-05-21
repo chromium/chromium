@@ -243,6 +243,7 @@ void ImmersiveFullscreenController::OnViewBoundsChanged(
 void ImmersiveFullscreenController::OnViewIsDeleting(
     views::View* observed_view) {
   CHECK_EQ(observed_view, top_container_);
+  top_container_observation_.Reset();
   top_container_ = nullptr;
 }
 
@@ -343,17 +344,14 @@ ImmersiveFullscreenController* ImmersiveFullscreenController::Get(
 
 void ImmersiveFullscreenController::EnableWindowObservers(bool enable) {
   if (enable) {
-    top_container_->AddObserver(this);
-    widget_->GetNativeWindow()->AddObserver(this);
+    top_container_observation_.Observe(top_container_.get());
+    window_observation_.Observe(widget_->GetNativeWindow());
   } else {
-    if (top_container_) {
-      top_container_->RemoveObserver(this);
-      top_container_ = nullptr;
-    }
-    if (widget_) {
-      widget_->GetNativeWindow()->RemoveObserver(this);
-      widget_ = nullptr;
-    }
+    top_container_observation_.Reset();
+    top_container_ = nullptr;
+
+    window_observation_.Reset();
+    widget_ = nullptr;
 
     animation_.reset();
     animation_notifier_.reset();

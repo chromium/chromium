@@ -277,6 +277,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      top_container_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   // True if the observers have been enabled.
   bool event_observers_enabled_ = false;
