@@ -34,8 +34,10 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface GeminiFirstRunCoordinator () <UISheetPresentationControllerDelegate,
                                          GeminiFirstRunMediatorDelegate>
@@ -266,16 +268,19 @@
 // microphone.
 - (void)showMicrophoneSettingsAlert {
   UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:@"Lorem Ipsum"
-                       message:@"Lorem ipsum dolor sit amet, consectetur "
-                               @"adipiscing elit, sed do eiusmod."
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_TITLE)
+                       message:l10n_util::GetNSString(
+                                   IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_DETAIL)
                 preferredStyle:UIAlertControllerStyleAlert];
 
   __weak __typeof(self) weakSelf = self;
   [alert
       addAction:
           [UIAlertAction
-              actionWithTitle:@"Lorem Settings"
+              actionWithTitle:
+                  l10n_util::GetNSString(
+                      IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_GO_TO_SETTINGS)
                         style:UIAlertActionStyleDefault
                       handler:^(UIAlertAction* action) {
                         NSURL* settingsURL = [NSURL
@@ -291,7 +296,9 @@
                       }]];
 
   [alert addAction:[UIAlertAction
-                       actionWithTitle:@"Lorem Cancel"
+                       actionWithTitle:
+                           l10n_util::GetNSString(
+                               IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_NO_THANKS)
                                  style:UIAlertActionStyleCancel
                                handler:^(UIAlertAction* action) {
                                  __strong __typeof(weakSelf) strongSelf =
