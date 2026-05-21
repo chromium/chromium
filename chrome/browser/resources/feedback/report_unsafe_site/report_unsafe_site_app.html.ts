@@ -14,7 +14,9 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
   $i18nRaw{reportUnsafeSiteDialogDescription}
   <label class="url-input-container">
     $i18n{reportUnsafeSiteDialogUrlLabel}
-    <cr-input type="text" .value="${this.pageUrl_}" readonly>
+    <cr-input type="text" .value="${this.pageUrl_}" readonly
+        aria-label="$i18n{reportUnsafeSiteDialogUrlLabel}">
+    </cr-input>
   </label>
   <div class="two-cols">
     ${this.includeScreenshot_ ? html`
