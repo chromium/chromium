@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service_impl.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_service_impl.h"
 
 #include <utility>
 
@@ -12,19 +12,18 @@
 #include "components/prefs/pref_service.h"
 
 namespace accessibility_annotator {
-AccessibilityAnnotatorFirstRunServiceImpl::
-    AccessibilityAnnotatorFirstRunServiceImpl(
-        std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client,
-        personal_context::PersonalContextEnablementService* enablement_service,
-        PrefService* pref_service)
+PersonalContextFirstRunServiceImpl::PersonalContextFirstRunServiceImpl(
+    std::unique_ptr<PersonalContextFirstRunClient> client,
+    personal_context::PersonalContextEnablementService* enablement_service,
+    PrefService* pref_service)
     : client_(std::move(client)),
       enablement_service_(enablement_service),
       pref_service_(pref_service) {}
 
-AccessibilityAnnotatorFirstRunServiceImpl::
-    ~AccessibilityAnnotatorFirstRunServiceImpl() = default;
+PersonalContextFirstRunServiceImpl::~PersonalContextFirstRunServiceImpl() =
+    default;
 
-void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
+void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
     content::WebContents* web_contents,
     FirstRunInvocationSource invocation_source,
     base::OnceCallback<void(FirstRunTriggerResult)> callback) {
@@ -45,9 +44,9 @@ void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
     return;
   }
 
-  auto wrapped_callback = base::BindOnce(
-      &AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto wrapped_callback =
+      base::BindOnce(&PersonalContextFirstRunServiceImpl::OnInfoDialogCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   switch (state) {
     case personal_context::PersonalContextEnablementState::kDisabledPendingInfo:
@@ -59,7 +58,7 @@ void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
   }
 }
 
-void AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted(
+void PersonalContextFirstRunServiceImpl::OnInfoDialogCompleted(
     base::OnceCallback<void(FirstRunTriggerResult)> callback,
     InfoResult result) {
   if (result == InfoResult::kAcknowledged) {

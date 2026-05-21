@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/accessibility_annotator/core/url_constants.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"

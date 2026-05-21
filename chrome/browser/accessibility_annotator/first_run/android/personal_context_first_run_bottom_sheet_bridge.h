@@ -10,7 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
 
 namespace content {
 class WebContents;

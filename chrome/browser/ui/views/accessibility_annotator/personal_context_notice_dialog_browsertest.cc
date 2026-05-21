@@ -17,7 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/accessibility_annotator/core/url_constants.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

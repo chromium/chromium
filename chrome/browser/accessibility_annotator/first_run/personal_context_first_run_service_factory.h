@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace accessibility_annotator {
-class AccessibilityAnnotatorFirstRunService;
+class PersonalContextFirstRunService;
 }
 
 namespace content {
@@ -21,8 +21,8 @@ class Profile;
 class PersonalContextFirstRunServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
-  static accessibility_annotator::AccessibilityAnnotatorFirstRunService*
-  GetForProfile(Profile* profile);
+  static accessibility_annotator::PersonalContextFirstRunService* GetForProfile(
+      Profile* profile);
   static PersonalContextFirstRunServiceFactory* GetInstance();
 
   PersonalContextFirstRunServiceFactory(

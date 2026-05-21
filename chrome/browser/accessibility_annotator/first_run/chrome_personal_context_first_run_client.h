@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_client.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_client.h"
 
 namespace content {
 class WebContents;
@@ -22,7 +22,7 @@ class PersonalContextFirstRunBottomSheetBridge;
 #endif
 
 class ChromePersonalContextFirstRunClient
-    : public accessibility_annotator::AccessibilityAnnotatorFirstRunClient {
+    : public accessibility_annotator::PersonalContextFirstRunClient {
  public:
   ChromePersonalContextFirstRunClient();
   ChromePersonalContextFirstRunClient(

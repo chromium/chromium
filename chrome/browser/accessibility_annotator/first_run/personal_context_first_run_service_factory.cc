@@ -13,13 +13,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service_impl.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_service_impl.h"
 
 // static
-accessibility_annotator::AccessibilityAnnotatorFirstRunService*
+accessibility_annotator::PersonalContextFirstRunService*
 PersonalContextFirstRunServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<
-      accessibility_annotator::AccessibilityAnnotatorFirstRunService*>(
+  return static_cast<accessibility_annotator::PersonalContextFirstRunService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -32,7 +31,7 @@ PersonalContextFirstRunServiceFactory::GetInstance() {
 
 PersonalContextFirstRunServiceFactory::PersonalContextFirstRunServiceFactory()
     : ProfileKeyedServiceFactory(
-          "AccessibilityAnnotatorFirstRunService",
+          "PersonalContextFirstRunService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
@@ -50,10 +49,10 @@ PersonalContextFirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<accessibility_annotator::AccessibilityAnnotatorFirstRunClient>
+  std::unique_ptr<accessibility_annotator::PersonalContextFirstRunClient>
       client = std::make_unique<ChromePersonalContextFirstRunClient>();
   return std::make_unique<
-      accessibility_annotator::AccessibilityAnnotatorFirstRunServiceImpl>(
+      accessibility_annotator::PersonalContextFirstRunServiceImpl>(
       std::move(client),
       PersonalContextEnablementServiceFactory::GetForProfile(profile),
       profile->GetPrefs());

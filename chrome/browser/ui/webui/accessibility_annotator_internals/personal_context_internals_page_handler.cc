@@ -6,7 +6,7 @@
 
 #include "chrome/browser/accessibility_annotator/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_service.h"
 
 PersonalContextInternalsPageHandler::PersonalContextInternalsPageHandler(
     mojo::PendingReceiver<

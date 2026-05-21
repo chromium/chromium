@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service_impl.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_service_impl.h"
 
 #include <memory>
 
@@ -25,7 +25,7 @@ using ::testing::_;
 using ::testing::Return;
 
 class MockAccessibilityAnnotatorFirstRunClient
-    : public AccessibilityAnnotatorFirstRunClient {
+    : public PersonalContextFirstRunClient {
  public:
   MOCK_METHOD(void,
               ShowRemoteAnnotatorInfo,
@@ -54,7 +54,7 @@ class AccessibilityAnnotatorFirstRunServiceImplTest : public testing::Test {
     auto client = std::make_unique<MockAccessibilityAnnotatorFirstRunClient>();
     client_ = client.get();
 
-    service_ = std::make_unique<AccessibilityAnnotatorFirstRunServiceImpl>(
+    service_ = std::make_unique<PersonalContextFirstRunServiceImpl>(
         std::move(client), &enablement_service_, &pref_service_);
   }
 
@@ -66,15 +66,13 @@ class AccessibilityAnnotatorFirstRunServiceImplTest : public testing::Test {
     return &enablement_service_;
   }
 
-  AccessibilityAnnotatorFirstRunServiceImpl* service() {
-    return service_.get();
-  }
+  PersonalContextFirstRunServiceImpl* service() { return service_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   MockPersonalContextEnablementService enablement_service_;
-  std::unique_ptr<AccessibilityAnnotatorFirstRunServiceImpl> service_;
+  std::unique_ptr<PersonalContextFirstRunServiceImpl> service_;
   raw_ptr<MockAccessibilityAnnotatorFirstRunClient> client_ = nullptr;
 };
 

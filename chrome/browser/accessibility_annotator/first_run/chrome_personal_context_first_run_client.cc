@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 

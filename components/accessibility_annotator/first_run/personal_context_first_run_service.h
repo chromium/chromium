@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_SERVICE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_SERVICE_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_client.h"
-#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_client.h"
+#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -23,12 +23,12 @@ namespace accessibility_annotator {
 // Annotator. It tracks the enablement state of the remote annotator feature and
 // provides methods to trigger the first run flow. Clients can observe changes
 // to the enablement state.
-class AccessibilityAnnotatorFirstRunService : public KeyedService {
+class PersonalContextFirstRunService : public KeyedService {
  public:
   using FirstRunTriggerCallback =
       base::OnceCallback<void(FirstRunTriggerResult)>;
 
-  ~AccessibilityAnnotatorFirstRunService() override = default;
+  ~PersonalContextFirstRunService() override = default;
 
   // Triggers the first-run experience if the current profile is eligible but
   // has not completed it yet. The `callback` is invoked with the result of
@@ -41,4 +41,4 @@ class AccessibilityAnnotatorFirstRunService : public KeyedService {
 
 }  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_SERVICE_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
