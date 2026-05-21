@@ -7,6 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace contextual_cueing {
 
@@ -25,7 +29,24 @@ std::string InteractionTypeToString(ContextualCueingInteraction interaction) {
   }
 }
 
+int BucketTabCount(int raw_count) {
+  return ukm::GetExponentialBucketMin(raw_count, 1.5);
+}
+
 }  // namespace
+
+void RecordCueShownMetrics(ukm::SourceId source_id,
+                           std::string_view cuj,
+                           const CueTabMetrics& tab_metrics) {
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::ContextualCueing_CueShown(source_id)
+      .SetSuggestedCujCategory(base::HashMetricName(cuj))
+      .SetMatchedTabCount(BucketTabCount(tab_metrics.matched_count))
+      .SetMissingTabCount(BucketTabCount(tab_metrics.missing_count))
+      .SetNavigatedAwayTabCount(
+          BucketTabCount(tab_metrics.navigated_away_count))
+      .Record(ukm_recorder);
+}
 
 void RecordContextualCueingInteraction(
     ContextualCueingInteraction contextual_cueing_interaction,

@@ -56,6 +56,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/actions/actions.h"
 #include "ui/menus/simple_menu_model.h"
@@ -540,13 +541,20 @@ void ContextualCueingController::ShowCue(
     CueTargetType cue_type,
     const CueTarget& target,
     optimization_guide::proto::ContextualCueingResponse response) {
+  CueTabMetrics tab_metrics;
+  CueActionData action_data =
+      target.CueActionDataFromResponse(response, tab_metrics);
+
+  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
+  CHECK(tab);
+
+  RecordCueShownMetrics(
+      tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      response.suggested_cuj(), tab_metrics);
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
       << "Contextual cueing anchored message UI is not implemented for Android";
 #else
-  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
-  CHECK(tab);
-
   auto* action = actions::ActionManager::Get().FindAction(
       kActionAnchoredContextualCue, browser_window_interface_->GetFeatures()
                                         .browser_actions()
@@ -558,7 +566,7 @@ void ContextualCueingController::ShowCue(
   action->SetImage(target.GetOmniboxChipIcon());
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
-      cue_type, target.CueActionDataFromResponse(response)));
+      cue_type, action_data));
 
   page_actions::PageActionController* page_action_controller =
       tab->GetTabFeatures()->page_action_controller();
@@ -578,7 +586,7 @@ void ContextualCueingController::ShowCue(
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
-      cue_type, target.CueActionDataFromResponse(response));
+      cue_type, action_data);
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,

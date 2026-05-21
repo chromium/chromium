@@ -8285,6 +8285,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ContextualCueing.CueShown" singular="true">
+  <owner>iwells@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Metrics recorded when the v2 cue is shown to the user.
+  </summary>
+  <metric name="MatchedTabCount">
+    <summary>
+      Number of background tabs suggested by the model that are still valid and
+      relevant (e.g. not navigated away or closed). Exponentially bucketed.
+    </summary>
+  </metric>
+  <metric name="MissingTabCount">
+    <summary>
+      Number of background tabs suggested by the model that weren’t valid by the
+      time the model response was received. Exponentially bucketed.
+    </summary>
+  </metric>
+  <metric name="NavigatedAwayTabCount">
+    <summary>
+      Number of background tabs suggested by the model that are no longer
+      relevant because they navigated to another URL before the model response
+      was received. Exponentially bucketed.
+    </summary>
+  </metric>
+  <metric name="SuggestedCujCategory">
+    <summary>
+      Hash of the name of the critical user journey category output by the
+      model.
+    </summary>
+  </metric>
+</event>
+
 <event name="ContextualCueing.NudgeDecision">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>

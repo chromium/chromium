@@ -18,6 +18,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -45,11 +46,15 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "pdf/buildflags.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
@@ -338,13 +343,30 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::HistogramTester histogram_tester;
 
-  SeedExecutionResult(MakeCompleteResponse());
+  auto response = MakeCompleteResponse();
+  response.set_suggested_cuj("TestCUJ");
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
+
+  // Add a valid tab to the response.
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_web_contents);
+  auto* valid_tab =
+      response.mutable_gemini_in_chrome_surface()->add_tabs_to_share();
+  valid_tab->set_tab_id(active_tab_id.id());
+
+  // Add an invalid tab to the response.
+  auto* invalid_tab =
+      response.mutable_gemini_in_chrome_surface()->add_tabs_to_share();
+  invalid_tab->set_tab_id(9999);
+
+  SeedExecutionResult(response);
+
   contextual_cueing_controller()->OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(
           active_web_contents->GetController()
@@ -369,6 +391,25 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // skipped.
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.NumRequestedBackgroundTabs", 1, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_CueShown::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0].get();
+
+  ukm::SourceId expected_source_id =
+      active_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  EXPECT_EQ(expected_source_id, entry->source_id);
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::ContextualCueing_CueShown::kSuggestedCujCategoryName,
+      base::HashMetricName("TestCUJ"));
+
+  // One valid tab in the response.
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_CueShown::kMatchedTabCountName,
+      ukm::GetExponentialBucketMin(1, 1.5));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
 
+#include "base/logging.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 
 namespace contextual_cueing {
@@ -36,9 +38,20 @@ ui::ImageModel TestCueTarget::GetOmniboxChipIcon() const {
 }
 
 CueActionData TestCueTarget::CueActionDataFromResponse(
-    const optimization_guide::proto::ContextualCueingResponse& response) const {
+    const optimization_guide::proto::ContextualCueingResponse& response,
+    CueTabMetrics& tab_metrics) const {
   GlicCueActionData data;
   data.prompt = response.gemini_in_chrome_surface().prompt();
+
+  for (const auto& tab : response.gemini_in_chrome_surface().tabs_to_share()) {
+    // Tests may set tab_id to 9999 to simulate an invalid or missing tab.
+    if (tab.tab_id() == 9999) {
+      tab_metrics.missing_count++;
+    } else {
+      tab_metrics.matched_count++;
+    }
+  }
+
   return data;
 }
 

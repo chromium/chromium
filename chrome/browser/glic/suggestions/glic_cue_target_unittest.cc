@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -309,8 +310,9 @@ TEST_F(GlicCueTargetTest, CueActionDataFromResponse) {
   SessionID session_id_b = CreateTab();
   surface->add_tabs_to_share()->set_tab_id(session_id_b.id());
 
+  contextual_cueing::CueTabMetrics tab_metrics;
   contextual_cueing::CueActionData data =
-      target.CueActionDataFromResponse(response);
+      target.CueActionDataFromResponse(response, tab_metrics);
   ASSERT_TRUE(
       std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
@@ -318,6 +320,9 @@ TEST_F(GlicCueTargetTest, CueActionDataFromResponse) {
   EXPECT_EQ(2ul, glic_data.tabs_to_share.size());
   EXPECT_EQ(GetTabHandle(session_id_a), glic_data.tabs_to_share[0]);
   EXPECT_EQ(GetTabHandle(session_id_b), glic_data.tabs_to_share[1]);
+  EXPECT_EQ(2, tab_metrics.matched_count);
+  EXPECT_EQ(0, tab_metrics.missing_count);
+  EXPECT_EQ(0, tab_metrics.navigated_away_count);
 #endif
 }
 
@@ -334,14 +339,18 @@ TEST_F(GlicCueTargetTest, CueActionDataFromResponse_InvalidTabs) {
   surface->add_tabs_to_share()->set_tab_id(-1);
   surface->add_tabs_to_share()->set_tab_id(12345);
 
+  contextual_cueing::CueTabMetrics tab_metrics;
   contextual_cueing::CueActionData data =
-      target.CueActionDataFromResponse(response);
+      target.CueActionDataFromResponse(response, tab_metrics);
   ASSERT_TRUE(
       std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
   EXPECT_EQ("response prompt", glic_data.prompt);
   // No valid tabs to share.
   EXPECT_TRUE(glic_data.tabs_to_share.empty());
+  EXPECT_EQ(0, tab_metrics.matched_count);
+  EXPECT_EQ(2, tab_metrics.missing_count);
+  EXPECT_EQ(0, tab_metrics.navigated_away_count);
 }
 
 TEST_F(GlicCueTargetTest, CueActionDataFromResponse_DefaultTabContextDisabled) {
@@ -365,14 +374,18 @@ TEST_F(GlicCueTargetTest, CueActionDataFromResponse_DefaultTabContextDisabled) {
   // User turns off default tab context sharing.
   profile_->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, false);
 
+  contextual_cueing::CueTabMetrics tab_metrics;
   contextual_cueing::CueActionData data =
-      target.CueActionDataFromResponse(response);
+      target.CueActionDataFromResponse(response, tab_metrics);
   ASSERT_TRUE(
       std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
   EXPECT_EQ("response prompt", glic_data.prompt);
   // No tabs shared.
   EXPECT_EQ(0ul, glic_data.tabs_to_share.size());
+  EXPECT_EQ(0, tab_metrics.matched_count);
+  EXPECT_EQ(0, tab_metrics.missing_count);
+  EXPECT_EQ(0, tab_metrics.navigated_away_count);
 #endif
 }
 

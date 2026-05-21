@@ -16,6 +16,8 @@
 
 namespace contextual_cueing {
 
+struct CueTabMetrics;
+
 // Identifier for features that show cues. Each feature that implements
 // CueTarget should have a value in this enum.
 enum class CueTargetType { kGlic = 0, kMaxValue = kGlic };
@@ -59,8 +61,8 @@ class CueTarget {
 
   // Extract this feature's click data from a contextual cueing response.
   virtual CueActionData CueActionDataFromResponse(
-      const optimization_guide::proto::ContextualCueingResponse& response)
-      const = 0;
+      const optimization_guide::proto::ContextualCueingResponse& response,
+      CueTabMetrics& tab_metrics) const = 0;
 
   virtual optimization_guide::proto::ContextualCueingSurface GetSurface()
       const = 0;

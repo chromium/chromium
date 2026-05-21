@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -135,7 +136,8 @@ ui::ImageModel GlicCueTarget::GetOmniboxChipIcon() const {
 }
 
 contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
-    const optimization_guide::proto::ContextualCueingResponse& response) const {
+    const optimization_guide::proto::ContextualCueingResponse& response,
+    contextual_cueing::CueTabMetrics& tab_metrics) const {
   contextual_cueing::GlicCueActionData data;
   if (!response.has_gemini_in_chrome_surface()) {
     CUEING_LOG("Missing Gemini surface data.");
@@ -153,6 +155,7 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
       SessionID session_id = SessionID::FromSerializedValue(
           static_cast<SessionID::id_type>(tab.tab_id()));
       if (!session_id.is_valid()) {
+        ++tab_metrics.missing_count;
         continue;
       }
 
@@ -162,7 +165,12 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
       if (handle.Get() && handle.Get()->GetBrowserWindowInterface() ==
                               &browser_window_interface_.get()) {
         data.tabs_to_share.push_back(handle);
+        ++tab_metrics.matched_count;
+      } else {
+        ++tab_metrics.missing_count;
       }
+      // TODO(crbug.com/515073198): Check whether tabs' current URLs match those
+      // from the response, and skip adding them if they do not match.
     }
 
     CUEING_LOG(
