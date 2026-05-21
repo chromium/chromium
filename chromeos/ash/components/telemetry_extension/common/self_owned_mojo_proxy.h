@@ -141,14 +141,6 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
   base::WeakPtrFactory<SelfOwnedMojoProxy> weak_ptr_factory_{this};
 };
 
-// Comparator for `base::WeakPtr<SelfOwnedMojoProxyInterface>`.
-struct SelfOwnedMojoProxyInterfaceWeakPtrComparator {
-  bool operator()(const base::WeakPtr<SelfOwnedMojoProxyInterface>& a,
-                  const base::WeakPtr<SelfOwnedMojoProxyInterface>& b) const {
-    return a.get() < b.get();
-  }
-};
-
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TELEMETRY_EXTENSION_COMMON_SELF_OWNED_MOJO_PROXY_H_

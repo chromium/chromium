@@ -75,9 +75,9 @@ void TelemetryEventServiceAsh::AddEventObserver(
       ->AddEventObserver(converters::events::Convert(category),
                          pending_receiver.InitWithNewPipeAndPassRemote());
 
-  observers_.insert(EventObserverProxy::Create(std::move(pending_receiver),
-                                               std::move(observer),
-                                               std::move(cb), category));
+  observers_.push_back(EventObserverProxy::Create(std::move(pending_receiver),
+                                                  std::move(observer),
+                                                  std::move(cb), category));
 }
 
 void TelemetryEventServiceAsh::IsEventSupported(
@@ -98,7 +98,9 @@ void TelemetryEventServiceAsh::IsEventSupported(
 
 void TelemetryEventServiceAsh::OnConnectionClosed(
     base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection) {
-  observers_.erase(closed_connection);
+  std::erase_if(observers_, [&closed_connection](const auto& ptr) {
+    return ptr.get() == closed_connection.get();
+  });
 }
 
 }  // namespace ash

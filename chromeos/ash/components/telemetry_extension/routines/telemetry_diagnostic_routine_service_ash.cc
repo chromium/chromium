@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -102,7 +103,7 @@ void TelemetryDiagnosticsRoutineServiceAsh::CreateRoutine(
   auto routine_control = RoutineControlProxy::Create(
       std::move(routine_receiver), std::move(cros_healthd_remote),
       std::move(control_delete_cb));
-  routine_controls_and_observers_.insert(std::move(routine_control));
+  routine_controls_and_observers_.push_back(std::move(routine_control));
 
   // Setup the RoutineObserver.
   mojo::PendingRemote<healthd::RoutineObserver> cros_healthd_observer;
@@ -115,7 +116,7 @@ void TelemetryDiagnosticsRoutineServiceAsh::CreateRoutine(
     auto routine_observer = RoutineObserverProxy::Create(
         cros_healthd_observer.InitWithNewPipeAndPassReceiver(),
         std::move(observer), std::move(observer_delete_cb));
-    routine_controls_and_observers_.insert(std::move(routine_observer));
+    routine_controls_and_observers_.push_back(std::move(routine_observer));
   }
 
   // Register the two objects with cros_healthd.
@@ -128,7 +129,10 @@ void TelemetryDiagnosticsRoutineServiceAsh::CreateRoutine(
 
 void TelemetryDiagnosticsRoutineServiceAsh::OnConnectionClosed(
     base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection) {
-  routine_controls_and_observers_.erase(closed_connection);
+  std::erase_if(routine_controls_and_observers_,
+                [&closed_connection](const auto& ptr) {
+                  return ptr.get() == closed_connection.get();
+                });
 }
 
 }  // namespace ash

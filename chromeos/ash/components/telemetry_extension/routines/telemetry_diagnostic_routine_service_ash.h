@@ -6,8 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_TELEMETRY_EXTENSION_ROUTINES_TELEMETRY_DIAGNOSTIC_ROUTINE_SERVICE_ASH_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
@@ -71,8 +71,7 @@ class TelemetryDiagnosticsRoutineServiceAsh
       base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection);
 
   // The routine controls and observers created for each running routine.
-  std::set<base::WeakPtr<SelfOwnedMojoProxyInterface>,
-           SelfOwnedMojoProxyInterfaceWeakPtrComparator>
+  std::vector<base::WeakPtr<SelfOwnedMojoProxyInterface>>
       routine_controls_and_observers_;
 
   // Support any number of connections.

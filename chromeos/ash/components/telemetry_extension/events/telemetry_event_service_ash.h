@@ -60,9 +60,7 @@ class TelemetryEventServiceAsh : public crosapi::mojom::TelemetryEventService {
 
  private:
   // Currently open connections.
-  std::set<base::WeakPtr<SelfOwnedMojoProxyInterface>,
-           SelfOwnedMojoProxyInterfaceWeakPtrComparator>
-      observers_;
+  std::vector<base::WeakPtr<SelfOwnedMojoProxyInterface>> observers_;
 
   // Support any number of connections.
   mojo::ReceiverSet<crosapi::mojom::TelemetryEventService> receivers_;
