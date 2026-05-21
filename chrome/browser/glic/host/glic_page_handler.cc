@@ -1056,7 +1056,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (auto* web_contents = tab->GetContents()) {
       if (auto* selection_overlay_controller =
               SelectionOverlayController::FromTabWebContents(web_contents)) {
-        selection_overlay_controller->DeleteRegion(id);
+        selection_overlay_controller->DeleteRegion(id,
+                                                   /*is_using_keyboard=*/false);
       }
     }
 #else

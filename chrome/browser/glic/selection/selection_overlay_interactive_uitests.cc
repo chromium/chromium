@@ -75,11 +75,10 @@ class SelectionOverlayInteractiveTestWithPolyline
 };
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
+      OpenGlic(),
       // captureRegionBtn of the test client calls `captureRegion()` on the glic
       // API.
       ClickMockGlicElement({"#captureRegionBtn"}),
@@ -94,7 +93,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, MultiRegionSelection) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
@@ -106,8 +104,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, MultiRegionSelection) {
                                    "post-selection-renderer", ".static-region"};
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -160,7 +157,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, MultiRegionSelection) {
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteActiveRegion) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
@@ -175,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteActiveRegion) {
                                    "post-selection-renderer", ".static-region"};
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -236,7 +231,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteActiveRegion) {
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        DeleteLastRegionClosesUI) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
   const DeepQuery kRenderer = {"selection-overlay-app",
@@ -247,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                                   "post-selection-renderer", ".close-button"};
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -302,12 +295,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, OverlayDismissedOnEsc) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -322,12 +313,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, OverlayDismissedOnEsc) {
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        EscDismissesOverlayFirst) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -386,15 +375,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        FocusBackToGlicAfterSelection) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kGlicHasFocus);
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -420,12 +407,66 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       WaitForState(kGlicHasFocus, true));
 }
 
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       NoFocusToGlicAfterKeyboardSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
+                                                    "glic-selection-overlay"}),
+      CheckResult(
+          [this]() {
+            auto* instance = GetGlicInstanceImpl();
+            return instance && instance->HasFocus();
+          },
+          false),
+      // Trigger the selection from the WebUI mimicking keyboard slider change.
+      InAnyContext(WithElement(
+          kOverlayWebContentsId,
+          [](ui::TrackedElement* el) {
+            content::WebContents* overlay_contents =
+                InteractiveBrowserTest::AsInstrumentedWebContents(el)
+                    ->web_contents();
+
+            static constexpr std::string_view kJs =
+                "(async () => {"
+                "  const { RegionSource } = await import("
+                "      '/lens/selection_overlay_base_handler.js');"
+                "  const app = document.querySelector('selection-overlay-app');"
+                "  const renderer = app.shadowRoot"
+                "      .querySelector('glic-selection-overlay')"
+                "      .shadowRoot.querySelector('post-selection-renderer');"
+                "  renderer.baseHandler.adjustRegionSelected("
+                "      {x: 0.1, y: 0.1, width: 0.2, height: 0.2},"
+                "      RegionSource.KEYBOARD);"
+                "  return true;"
+                "})();";
+
+            ASSERT_TRUE(content::ExecJs(overlay_contents, kJs));
+          })),
+      // Wait deterministically for the selection to be processed and rendered.
+      WaitForJsResultAt(kOverlayWebContentsId,
+                        {"selection-overlay-app", "glic-selection-overlay",
+                         "post-selection-renderer"},
+                        "el => el.selectedRegions.length === 1"),
+      // Verify that glic still does not have focus.
+      CheckResult(
+          [this]() {
+            auto* instance = GetGlicInstanceImpl();
+            return instance && instance->HasFocus();
+          },
+          false));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       WaitForShow(kLensPreselectionBubbleElementId),
       WaitForShow(lens::LensPreselectionBubble::kCancelButtonElementId),
@@ -452,11 +493,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       WaitForShow(kLensPreselectionBubbleElementId),
       WaitForShow(lens::LensPreselectionBubble::kCancelButtonElementId),
@@ -465,11 +503,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       WaitForShow(kLensPreselectionBubbleElementId),
       CheckView(kLensPreselectionBubbleElementId, [](views::View* view) {
@@ -490,8 +525,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        SelectionDisabledWithTaskActingOnTab) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
       ui::test::PollingStateObserver<
           std::optional<actor::mojom::ActionResultCode>>,
@@ -499,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
   std::optional<actor::mojom::ActionResultCode> add_tab_result;
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
+      OpenGlic(),
       // Start a task on the current tab.
       Do([this, &add_tab_result]() {
         auto* actor_service =
@@ -590,11 +623,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayHotkeyInteractiveTest,
     GTEST_SKIP() << "Hotkey not supported on the platform";
   }
 
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
+      OpenGlic(),
       // SimulateAcceleratorPress() did not work.
       Do([]() {
         GlicBackgroundModeManager* const manager =
@@ -644,7 +676,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPolyline,
                        SelectionPolylineWebUI) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
   const DeepQuery kRenderer = {"selection-overlay-app",
@@ -652,8 +683,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPolyline,
                                "post-selection-renderer"};
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(),
-      ClickMockGlicElement({"#captureRegionBtn"}),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -668,16 +698,21 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPolyline,
                 InteractiveBrowserTest::AsInstrumentedWebContents(el)
                     ->web_contents();
 
-            static constexpr std::string_view kJs = R"(
-              const app = document.querySelector('selection-overlay-app');
-              const renderer = app.shadowRoot.querySelector(
-                  'glic-selection-overlay').shadowRoot.querySelector(
-                  'post-selection-renderer');
-              renderer.baseHandler.adjustPolylineSelected(
-                  [{x: 0.1, y: 0.1}, {x: 0.2, y: 0.2}, {x: 0.3, y: 0.1}], 1);
-            )";
+            static constexpr std::string_view kJs =
+                "(async () => {"
+                "  const { RegionSource } = await import("
+                "      '/lens/selection_overlay_base_handler.js');"
+                "  const app = document.querySelector('selection-overlay-app');"
+                "  const renderer = app.shadowRoot"
+                "      .querySelector('glic-selection-overlay')"
+                "      .shadowRoot.querySelector('post-selection-renderer');"
+                "  renderer.baseHandler.adjustPolylineSelected("
+                "      [{x: 0.1, y: 0.1}, {x: 0.2, y: 0.2}, {x: 0.3, y: 0.1}],"
+                "      RegionSource.SELECTION);"
+                "  return true;"
+                "})();";
 
-            EXPECT_TRUE(content::ExecJs(overlay_contents, kJs));
+            ASSERT_TRUE(content::ExecJs(overlay_contents, kJs));
           })),
 
       // Verify that the region contains the polyline points.
@@ -692,12 +727,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPolyline,
                                  Math.abs(p[1].y - 0.2) < 0.001 &&
                                  Math.abs(p[2].x - 0.3) < 0.001 &&
                                  Math.abs(p[2].y - 0.1) < 0.001;
-                        })"),
-
-      Do([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        SelectionOverlayController::FromTabWebContents(web_contents)->Close();
-      }));
+                        })"));
 }
 }  // namespace glic

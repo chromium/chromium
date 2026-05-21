@@ -448,7 +448,8 @@ void SelectionOverlayController::DismissOverlay(
 }
 
 void SelectionOverlayController::AdjustRegion(
-    selection::SelectedRegionPtr target) {
+    selection::SelectedRegionPtr target,
+    bool is_using_keyboard) {
   auto it = selected_regions_.find(target->id);
   if (it != selected_regions_.end()) {
     it->second = std::move(target);
@@ -456,17 +457,17 @@ void SelectionOverlayController::AdjustRegion(
     selected_regions_[target->id] = std::move(target);
   }
 
-  RenderRegions();
+  RenderRegions(!is_using_keyboard);
 }
 
-void SelectionOverlayController::DeleteRegion(
-    const base::UnguessableToken& id) {
+void SelectionOverlayController::DeleteRegion(const base::UnguessableToken& id,
+                                              bool is_using_keyboard) {
   if (selected_regions_.erase(id)) {
     if (selected_regions_.empty()) {
       CloseUI();
       return;
     }
-    RenderRegions();
+    RenderRegions(!is_using_keyboard);
   }
 }
 
@@ -494,7 +495,7 @@ void SelectionOverlayController::Reset() {
   options_.reset();
 }
 
-void SelectionOverlayController::RenderRegions() {
+void SelectionOverlayController::RenderRegions(bool should_focus_panel) {
   if (redacted_screenshot_.empty()) {
     return;
   }
@@ -567,7 +568,11 @@ void SelectionOverlayController::RenderRegions() {
     instance->SendAdditionalContext(std::move(additional_context));
     instance->OnSelectionAreasChanged(selected_regions_.size());
     instance->OnPolylinePointsChanged(polyline_counts);
-    instance->FocusIfActive();
+    // If the event that triggered this was initiated via keyboard, do not
+    // focus the panel to avoid stealing focus away from the selection pane.
+    if (should_focus_panel) {
+      instance->FocusIfActive();
+    }
   }
 }
 

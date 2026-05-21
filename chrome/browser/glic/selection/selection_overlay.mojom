@@ -47,10 +47,12 @@ interface SelectionOverlayPageHandler {
 
   // The user adjusts a selected region. A new region is cached on the browser
   // if `adjusted.id` does not match; else, the existing region is updated.
-  AdjustRegion(SelectedRegion target);
+  // If `is_using_keyboard`, focus will not be shifted to the panel.
+  AdjustRegion(SelectedRegion target, bool is_using_keyboard);
 
   // The user deletes a selected region. No-op if `id` does not match.
-  DeleteRegion(mojo_base.mojom.UnguessableToken id);
+  // If `is_using_keyboard`, focus will not be shifted to the panel.
+  DeleteRegion(mojo_base.mojom.UnguessableToken id, bool is_using_keyboard);
 
   // When called, the C++ coordinator closes the preselection toast bubble.
   ClosePreselectionBubble();

@@ -57,7 +57,7 @@ export abstract class SelectionOverlayBaseHandler {
       void;
   abstract adjustPolylineSelected(
       points: PointF[], source: RegionSource, id?: string): void;
-  abstract deleteRegion(id: string): void;
+  abstract deleteRegion(id: string, source: RegionSource): void;
   abstract closePreselectionBubble(): void;
   abstract notifyOverlayInitialized(): void;
   abstract setLiveBlur(enabled: boolean): void;

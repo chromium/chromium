@@ -29,12 +29,10 @@ class SelectionOverlayBrowserTest : public NonInteractiveGlicTest {
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
                        SelectionUsedFromController) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
-      InstrumentTab(kActiveTab), OpenGlic(), CheckGlicInstanceIsShowing(),
-      Do([this]() {
+      OpenGlic(), CheckGlicInstanceIsShowing(), Do([this]() {
         content::WebContents* web_contents =
             browser()->tab_strip_model()->GetActiveWebContents();
         auto* controller =
@@ -60,9 +58,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
         auto* controller =
             SelectionOverlayController::FromTabWebContents(web_contents);
         static_cast<selection::SelectionOverlayPageHandler*>(controller)
-            ->AdjustRegion(selection::SelectedRegion::New(
-                base::UnguessableToken::Create(),
-                selection::RegionShape::NewRect(gfx::RectF(10, 10, 10, 10))));
+            ->AdjustRegion(
+                selection::SelectedRegion::New(base::UnguessableToken::Create(),
+                                               selection::RegionShape::NewRect(
+                                                   gfx::RectF(10, 10, 10, 10))),
+                /*is_using_keyboard=*/false);
       }),
       Do([this, &histogram_tester]() {
         auto* host = GetHost();

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {RegionSource, SelectedRegion} from '/lens/selection_overlay_base_handler.js';
-import {SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
+import type {SelectedRegion} from '/lens/selection_overlay_base_handler.js';
+import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {SelectedRegionMojoType} from './selection_overlay.mojom-webui.js';
@@ -118,27 +118,31 @@ export class SelectionOverlayBaseHandlerImpl extends
   }
 
   adjustRegionSelected(
-      rect: RectF, _source: RegionSource,
+      rect: RectF, source: RegionSource,
       id: string = this.activeRegionId || generateRandomHexId()): void {
     const proxy = BrowserProxyImpl.getInstance();
-    proxy.handler.adjustRegion({
-      id: id,
-      shape: {rect: rect},
-    });
+    proxy.handler.adjustRegion(
+        {
+          id: id,
+          shape: {rect: rect},
+        },
+        source === RegionSource.KEYBOARD);
   }
 
   adjustPolylineSelected(
-      points: PointF[], _source: RegionSource,
+      points: PointF[], source: RegionSource,
       id: string = this.activeRegionId || generateRandomHexId()): void {
     const proxy = BrowserProxyImpl.getInstance();
-    proxy.handler.adjustRegion({
-      id: id,
-      shape: {polyline: points},
-    });
+    proxy.handler.adjustRegion(
+        {
+          id: id,
+          shape: {polyline: points},
+        },
+        source === RegionSource.KEYBOARD);
   }
 
-  deleteRegion(id: string): void {
+  deleteRegion(id: string, source: RegionSource): void {
     const proxy = BrowserProxyImpl.getInstance();
-    proxy.handler.deleteRegion(id);
+    proxy.handler.deleteRegion(id, source === RegionSource.KEYBOARD);
   }
 }

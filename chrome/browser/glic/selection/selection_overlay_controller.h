@@ -77,7 +77,8 @@ class SelectionOverlayController
   void Close();
 
   // `selection::SelectionOverlayPageHandler`:
-  void DeleteRegion(const base::UnguessableToken& id) override;
+  void DeleteRegion(const base::UnguessableToken& id,
+                    bool is_using_keyboard) override;
 
  private:
   void WillDiscardContents(tabs::TabInterface* tab,
@@ -116,7 +117,8 @@ class SelectionOverlayController
 
   // `selection::SelectionOverlayPageHandler`:
   void DismissOverlay(selection::DismissOverlayReason reason) override;
-  void AdjustRegion(selection::SelectedRegionPtr target) override;
+  void AdjustRegion(selection::SelectedRegionPtr target,
+                    bool is_using_keyboard) override;
   void ClosePreselectionBubble() override;
   void AddBackgroundBlur() override;
   void SetLiveBlur(bool enabled) override;
@@ -132,7 +134,7 @@ class SelectionOverlayController
   void SetScreenshot(const SkBitmap& screenshot, SkBitmap rgb_screenshot);
 
   // Render all the `selected_regions_` on top of `redacted_screenshot_`.
-  void RenderRegions();
+  void RenderRegions(bool should_focus_panel);
 
   void Reset();
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(

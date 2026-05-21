@@ -92,7 +92,7 @@ class SelectionOverlayBaseHandlerImpl extends SelectionOverlayBaseHandler {
     return -1;
   }
 
-  deleteRegion(_id: string): void {
+  deleteRegion(_id: string, _source: RegionSource): void {
     // Lens doesn't support deleting a specific region.
   }
 

@@ -332,9 +332,8 @@ export class PostSelectionRendererElement extends
       return;
     }
 
-    const elements =
-        this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY) as
-        HTMLElement[];
+    const elements = this.shadowRoot!.elementsFromPoint(
+                         event.clientX, event.clientY) as HTMLElement[];
 
     // If we're hovering over the active region's controls (close button, corners),
     // don't switch focus.
@@ -378,7 +377,11 @@ export class PostSelectionRendererElement extends
 
   private onCloseActiveButtonClick(event: Event) {
     if (this.activeRegionId) {
-      this.baseHandler.deleteRegion(this.activeRegionId);
+      const source =
+          (event instanceof PointerEvent && event.pointerType === '') ?
+          RegionSource.KEYBOARD :
+          RegionSource.CLICK;
+      this.baseHandler.deleteRegion(this.activeRegionId, source);
     }
     event.stopPropagation();
   }
@@ -580,12 +583,12 @@ export class PostSelectionRendererElement extends
     this.rerender();
   }
 
-  handleGestureEnd() {
+  handleGestureEnd(source: RegionSource = RegionSource.SELECTION_CHANGE) {
     if (this.areBoundsChanging()) {
       // Issue Lens request for new bounds
       this.baseHandler.adjustRegionSelected(
-          this.getNormalizedCenterRotatedBox().box,
-          RegionSource.SELECTION_CHANGE, this.activeRegionId);
+          this.getNormalizedCenterRotatedBox().box, source,
+          this.activeRegionId);
 
       // Check for selectable text
       this.dispatchEvent(new CustomEvent('detect-text-in-region', {
@@ -708,7 +711,7 @@ export class PostSelectionRendererElement extends
     }
     this.sliderChangedTimeoutID = setTimeout(() => {
       this.sliderChangedTimeoutID = -1;
-      this.handleGestureEnd();
+      this.handleGestureEnd(RegionSource.KEYBOARD);
     }, this.sliderChangedTimeout);
   }
 
