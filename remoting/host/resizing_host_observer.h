@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -104,6 +105,8 @@ class ResizingHostObserver : public ScreenControls {
   // State to manage rate-limiting of desktop resizes.
   std::map<webrtc::ScreenId, RateLimitState> rate_limiters_;
   raw_ptr<const base::TickClock> clock_;
+
+  base::CallbackListSubscription display_info_subscription_;
 
   base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};
 };

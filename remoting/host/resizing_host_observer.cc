@@ -138,7 +138,7 @@ ResizingHostObserver::~ResizingHostObserver() {
 void ResizingHostObserver::RegisterForDisplayChanges(
     DesktopDisplayInfoMonitor& monitor) {
   display_info_monitor_ = &monitor;
-  monitor.AddCallback(base::BindRepeating(
+  display_info_subscription_ = monitor.AddCallback(base::BindRepeating(
       &ResizingHostObserver::OnDisplayInfoChanged, weak_factory_.GetWeakPtr()));
 }
 

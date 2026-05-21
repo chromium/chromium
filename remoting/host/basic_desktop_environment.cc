@@ -108,7 +108,8 @@ DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
           video_layout_callback.Run(info->GetVideoLayoutProto());
         },
         display_info_monitor_.get(), std::move(video_layout_callback));
-    display_info_monitor_->AddCallback(std::move(callback));
+    display_info_subscription_ =
+        display_info_monitor_->AddCallback(std::move(callback));
   }
   return display_info_monitor_.get();
 }

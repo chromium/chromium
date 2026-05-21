@@ -46,11 +46,11 @@ const DesktopDisplayInfo* GnomeDesktopDisplayInfoMonitor::GetLatestDisplayInfo()
   return desktop_display_info_ ? &desktop_display_info_.value() : nullptr;
 }
 
-void GnomeDesktopDisplayInfoMonitor::AddCallback(
+base::CallbackListSubscription GnomeDesktopDisplayInfoMonitor::AddCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  callback_list_.AddUnsafe(std::move(callback));
+  return callback_list_.Add(std::move(callback));
 }
 
 void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(

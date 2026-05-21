@@ -30,7 +30,8 @@ class DelegatingDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
   void Start() override;
   bool IsStarted() const override;
   const DesktopDisplayInfo* GetLatestDisplayInfo() const override;
-  void AddCallback(base::RepeatingClosure callback) override;
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override;
 
  private:
   void OnUnderlyingDisplayInfoChanged();
@@ -41,6 +42,8 @@ class DelegatingDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   base::RepeatingClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::CallbackListSubscription underlying_subscription_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtrFactory<DelegatingDesktopDisplayInfoMonitor> weak_ptr_factory_{
       this};
 };

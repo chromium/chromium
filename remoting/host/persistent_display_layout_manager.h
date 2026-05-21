@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -58,6 +59,8 @@ class PersistentDisplayLayoutManager {
   base::FilePath display_layout_file_path_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::CallbackListSubscription display_info_subscription_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtr<DesktopResizer> desktop_resizer_
       GUARDED_BY_CONTEXT(sequence_checker_);

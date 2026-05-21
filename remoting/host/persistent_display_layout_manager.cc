@@ -105,9 +105,10 @@ void PersistentDisplayLayoutManager::OnDisplayLayoutFileLoaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ApplyDisplayLayout(load_file_result);
-  display_info_monitor_->AddCallback(base::BindRepeating(
-      &PersistentDisplayLayoutManager::OnDisplayInfoReceived,
-      weak_ptr_factory_.GetWeakPtr()));
+  display_info_subscription_ =
+      display_info_monitor_->AddCallback(base::BindRepeating(
+          &PersistentDisplayLayoutManager::OnDisplayInfoReceived,
+          weak_ptr_factory_.GetWeakPtr()));
   display_info_monitor_->Start();
   std::move(on_done).Run();
 }

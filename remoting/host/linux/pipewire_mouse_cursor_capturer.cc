@@ -34,8 +34,9 @@ PipewireMouseCursorCapturer::PipewireMouseCursorCapturer(
     base::WeakPtr<CaptureStreamManager> stream_manager)
     : display_info_monitor_(std::move(display_info_monitor)) {
   if (display_info_monitor_) {
-    display_info_monitor_->AddCallback(base::BindRepeating(
-        &PipewireMouseCursorCapturer::OnDisplayInfo, GetWeakPtr()));
+    display_info_subscription_ =
+        display_info_monitor_->AddCallback(base::BindRepeating(
+            &PipewireMouseCursorCapturer::OnDisplayInfo, GetWeakPtr()));
     display_info_monitor_->Start();
   }
   if (stream_manager) {

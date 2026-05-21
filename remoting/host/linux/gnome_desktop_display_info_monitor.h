@@ -30,7 +30,8 @@ class GnomeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
   void Start() override;
   bool IsStarted() const override;
   const DesktopDisplayInfo* GetLatestDisplayInfo() const override;
-  void AddCallback(base::RepeatingClosure callback) override;
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override;
 
  private:
   void OnGnomeDisplayConfigReceived(const GnomeDisplayConfig& config);

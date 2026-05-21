@@ -53,8 +53,9 @@ class FakeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
     return info_.get();
   }
 
-  void AddCallback(base::RepeatingClosure callback) override {
-    callbacks_.AddUnsafe(std::move(callback));
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override {
+    return callbacks_.Add(std::move(callback));
   }
 
   void SetDisplayInfo(std::unique_ptr<DesktopDisplayInfo> info) {

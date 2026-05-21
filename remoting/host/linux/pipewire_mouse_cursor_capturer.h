@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -102,6 +103,8 @@ class PipewireMouseCursorCapturer : public CaptureStreamManager::Observer,
   std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_
       GUARDED_BY_CONTEXT(sequence_checker_);
   CaptureStreamManager::Observer::Subscription stream_manager_subscription_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::CallbackListSubscription display_info_subscription_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_map<webrtc::ScreenId, CaptureStream::CursorObserver::Subscription>
       stream_subscriptions_ GUARDED_BY_CONTEXT(sequence_checker_);

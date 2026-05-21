@@ -35,8 +35,9 @@ class FakeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
     return info ? &info.value() : nullptr;
   }
 
-  void AddCallback(base::RepeatingClosure callback) override {
-    callbacks.AddUnsafe(std::move(callback));
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override {
+    return callbacks.Add(std::move(callback));
   }
 
   void NotifyChange() { callbacks.Notify(); }
@@ -74,10 +75,11 @@ class DelegatingDesktopDisplayInfoMonitorTest : public testing::Test {
   FakeDesktopDisplayInfoMonitor underlying_monitor_;
   DelegatingDesktopDisplayInfoMonitor monitor_{
       underlying_monitor_.GetWeakPtr()};
+  base::CallbackListSubscription subscription_;
 };
 
 void DelegatingDesktopDisplayInfoMonitorTest::AddCallback() {
-  monitor_.AddCallback(base::BindRepeating(
+  subscription_ = monitor_.AddCallback(base::BindRepeating(
       &DelegatingDesktopDisplayInfoMonitorTest::OnDisplayInfoChanged,
       base::Unretained(this)));
 }

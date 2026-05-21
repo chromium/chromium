@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/test/task_environment.h"
@@ -59,7 +60,10 @@ class FakeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
   const DesktopDisplayInfo* GetLatestDisplayInfo() const override {
     return &info_;
   }
-  void AddCallback(base::RepeatingClosure callback) override {}
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override {
+    return base::CallbackListSubscription();
+  }
 
  private:
   DesktopDisplayInfo info_;

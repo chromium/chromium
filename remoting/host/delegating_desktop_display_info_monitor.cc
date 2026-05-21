@@ -29,7 +29,7 @@ void DelegatingDesktopDisplayInfoMonitor::Start() {
   }
 
   started_ = true;
-  underlying_->AddCallback(base::BindRepeating(
+  underlying_subscription_ = underlying_->AddCallback(base::BindRepeating(
       &DelegatingDesktopDisplayInfoMonitor::OnUnderlyingDisplayInfoChanged,
       base::Unretained(this)));
   if (underlying_->IsStarted()) {
@@ -60,10 +60,10 @@ DelegatingDesktopDisplayInfoMonitor::GetLatestDisplayInfo() const {
   return underlying_->GetLatestDisplayInfo();
 }
 
-void DelegatingDesktopDisplayInfoMonitor::AddCallback(
+base::CallbackListSubscription DelegatingDesktopDisplayInfoMonitor::AddCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callbacks_.AddUnsafe(std::move(callback));
+  return callbacks_.Add(std::move(callback));
 }
 
 void DelegatingDesktopDisplayInfoMonitor::OnUnderlyingDisplayInfoChanged() {

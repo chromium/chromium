@@ -72,11 +72,11 @@ PollingDesktopDisplayInfoMonitor::GetLatestDisplayInfo() const {
   return desktop_display_info_ ? &desktop_display_info_.value() : nullptr;
 }
 
-void PollingDesktopDisplayInfoMonitor::AddCallback(
+base::CallbackListSubscription PollingDesktopDisplayInfoMonitor::AddCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  callback_list_.AddUnsafe(std::move(callback));
+  return callback_list_.Add(std::move(callback));
 }
 
 base::WeakPtr<PollingDesktopDisplayInfoMonitor>

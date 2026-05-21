@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -111,6 +112,7 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
   std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
+  base::CallbackListSubscription display_info_subscription_;
 
   DesktopEnvironmentOptions options_;
 };

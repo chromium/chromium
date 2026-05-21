@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_DESKTOP_DISPLAY_INFO_MONITOR_H_
 #define REMOTING_HOST_DESKTOP_DISPLAY_INFO_MONITOR_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "remoting/host/desktop_display_info.h"
 
@@ -30,10 +31,10 @@ class DesktopDisplayInfoMonitor {
 
   // Adds a callback to be notified of display-info changes or the first
   // available display info after Start() is called. Callbacks added after
-  // calling Start() will NOT be called until it changes. Implementations do not
-  // return a base::CallbackListSubscription, so |callback| must either outlive
-  // this object, or be bound to a suitable WeakPtr.
-  virtual void AddCallback(base::RepeatingClosure callback) = 0;
+  // calling Start() will NOT be called until it changes. The returned
+  // subscription must be kept alive to keep the callback registered.
+  virtual base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) = 0;
 };
 
 }  // namespace remoting

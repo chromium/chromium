@@ -47,7 +47,8 @@ class PollingDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
   void Start() override;
   bool IsStarted() const override;
   const DesktopDisplayInfo* GetLatestDisplayInfo() const override;
-  void AddCallback(base::RepeatingClosure callback) override;
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override;
 
   base::WeakPtr<PollingDesktopDisplayInfoMonitor> GetWeakPtr();
 

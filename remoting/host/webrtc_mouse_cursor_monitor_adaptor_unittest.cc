@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -69,7 +70,10 @@ class FakeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
     return info ? &info.value() : nullptr;
   }
 
-  void AddCallback(base::RepeatingClosure callback) override { NOTREACHED(); }
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingClosure callback) override {
+    NOTREACHED();
+  }
 
   bool started = false;
   std::optional<DesktopDisplayInfo> info;
