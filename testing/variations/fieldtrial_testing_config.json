@@ -3074,52 +3074,6 @@
             ]
         }
     ],
-    "AutofillImprovePhoneNumberDetection": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillImprovePhoneFieldParser",
-                        "AutofillImprovePhoneNumberRationalization",
-                        "AutofillNewAugmentedPhoneCountryCodeRegex",
-                        "AutofillNewRegexForPhoneCountryCode",
-                        "AutofillPreferPhoneCountryCodeTypeOverCountryHtmlType"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillImproveSubmissionDetectionV3": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_All",
-                    "enable_features": [
-                        "AutofillFixFormTracking",
-                        "AutofillReplaceCachedWebElementsByRendererIds"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillIntroduceGlobalEmptyValueRewriterRules": [
         {
             "platforms": [
