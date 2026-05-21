@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -432,7 +434,7 @@ public class GlicToolbarButtonControllerTest {
         when(task.getTitle()).thenReturn("Test Task");
         when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
         when(mTab.getId()).thenReturn(1);
-        when(mActorService.getActiveTaskIdOnTab(1)).thenReturn(null);
+        when(mActorService.getActiveTaskIdOnTab(eq(1), anyBoolean())).thenReturn(null);
 
         // Set up show hook.
         Runnable showHook = mock(Runnable.class);
@@ -457,7 +459,8 @@ public class GlicToolbarButtonControllerTest {
 
         // Set active tab as acting tab.
         when(mTab.getId()).thenReturn(1);
-        when(mActorService.getActiveTaskIdOnTab(1)).thenReturn(123); // Some task ID.
+        when(mActorService.getActiveTaskIdOnTab(eq(1), anyBoolean()))
+                .thenReturn(123); // Some task ID.
 
         // Set up show hook.
         Runnable showHook = mock(Runnable.class);

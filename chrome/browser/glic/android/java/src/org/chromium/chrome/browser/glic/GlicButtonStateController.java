@@ -253,8 +253,19 @@ public class GlicButtonStateController
      * @return The active task ID, or null if none.
      */
     public @Nullable Integer getActiveTaskIdOnTab(int tabId) {
+        return getActiveTaskIdOnTab(tabId, /* includePaused= */ false);
+    }
+
+    /**
+     * Returns the active task ID on the given tab.
+     *
+     * @param tabId The tab ID to check.
+     * @param includePaused Whether to include paused tasks.
+     * @return The active task ID, or null if none.
+     */
+    public @Nullable Integer getActiveTaskIdOnTab(int tabId, boolean includePaused) {
         return mCurrentActorService != null
-                ? mCurrentActorService.getActiveTaskIdOnTab(tabId)
+                ? mCurrentActorService.getActiveTaskIdOnTab(tabId, includePaused)
                 : null;
     }
 

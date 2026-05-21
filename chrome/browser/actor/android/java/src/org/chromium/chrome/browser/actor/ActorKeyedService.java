@@ -96,10 +96,19 @@ public class ActorKeyedService {
      * @return the task ID that is currently acting on the given tab, or null if none.
      */
     public @Nullable @ActorTaskId Integer getActiveTaskIdOnTab(int tabId) {
+        return getActiveTaskIdOnTab(tabId, /* includePaused= */ false);
+    }
+
+    /**
+     * @param tabId The tab ID to get a task on.
+     * @param includePaused Whether to include tasks that are paused.
+     * @return the task ID that is currently acting on the given tab, or null if none.
+     */
+    public @Nullable @ActorTaskId Integer getActiveTaskIdOnTab(int tabId, boolean includePaused) {
         if (mNativePtr == 0) return null;
         List<ActorTask> tasks = getActiveTasks();
         for (ActorTask task : tasks) {
-            if (task.isActingOnTab(tabId)) {
+            if (includePaused ? task.getTabs().contains(tabId) : task.isActingOnTab(tabId)) {
                 return task.getId();
             }
         }

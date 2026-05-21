@@ -39,7 +39,7 @@ public class ActorServiceTabUtils {
         for (Tab tab : tabs) {
             @Nullable
             @ActorTaskId
-            Integer taskId = service.getActiveTaskIdOnTab(tab.getId());
+            Integer taskId = service.getActiveTaskIdOnTab(tab.getId(), /* includePaused= */ true);
             if (taskId != null) {
                 taskIds.add(taskId);
             }

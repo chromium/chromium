@@ -167,7 +167,7 @@ public class TabRemoverImplUnitTest {
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
-        when(mActorKeyedService.getActiveTaskIdOnTab(0)).thenReturn(123);
+        when(mActorKeyedService.getActiveTaskIdOnTab(0, true)).thenReturn(123);
 
         List<Integer> taskIds = handler.getOngoingActorTasks();
         assertEquals(1, taskIds.size());
@@ -588,7 +588,7 @@ public class TabRemoverImplUnitTest {
         TabClosureParams params = TabClosureParams.closeTab(tab0).build();
 
         // Setup ongoing task.
-        when(mActorKeyedService.getActiveTaskIdOnTab(0)).thenReturn(123);
+        when(mActorKeyedService.getActiveTaskIdOnTab(0, true)).thenReturn(123);
 
         realTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
 
