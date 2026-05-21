@@ -20,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -80,6 +81,12 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchCompletionEvent(
                                           std::move(finished_closure));
       return;
     case blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI:
+      if (base::FeatureList::IsEnabled(
+              blink::features::kBackgroundFetchAbortSuppression)) {
+        std::move(finished_closure).Run();
+        return;
+      }
+      [[fallthrough]];
     case blink::mojom::BackgroundFetchFailureReason::CANCELLED_BY_DEVELOPER:
       DCHECK_EQ(registration->registration_data->result,
                 blink::mojom::BackgroundFetchResult::FAILURE);

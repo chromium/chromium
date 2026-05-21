@@ -56,6 +56,10 @@ class BackgroundFetchTestServiceWorker : public FakeServiceWorker {
     return last_registration_->registration_data;
   }
 
+  bool has_last_registration_for_testing() const {
+    return !!last_registration_;
+  }
+
  protected:
   // FakeServiceWorker overrides:
   void DispatchBackgroundFetchAbortEvent(
