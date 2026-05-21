@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.ui.bottombar.BottomBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_bar_container"
     android:layout_width="match_parent"
@@ -72,6 +73,8 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:focusable="true"
+            app:menuMaxWidth="@dimen/tab_switcher_menu_width"
+            app:menuVerticalOverlapAnchor="false"
             tools:ignore="ContentDescription" />
     </org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer>
 
