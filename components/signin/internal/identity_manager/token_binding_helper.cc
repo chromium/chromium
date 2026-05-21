@@ -25,6 +25,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "components/signin/public/base/binding_key_registration_token_helper.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
@@ -103,6 +105,38 @@ bool TokenBindingHelper::HasBindingKey(const CoreAccountId& account_id) const {
 
 void TokenBindingHelper::ClearAllKeys() {
   binding_keys_.clear();
+}
+
+void TokenBindingHelper::GenerateBindingKeyRegistrationToken(
+    std::string_view supported_algorithms,
+    std::string_view auth_code,
+    base::OnceCallback<void(
+        std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {
+  if (!registration_token_helper_) {
+    std::vector<uint8_t> wrapped_binding_key_to_reuse;
+    if (!binding_keys_.empty()) {
+      // All bound tokens are supposed to use the same key, so we're taking an
+      // arbitrary key.
+      wrapped_binding_key_to_reuse = binding_keys_.begin()->second.wrapped_key;
+    }
+    if (!wrapped_binding_key_to_reuse.empty()) {
+      // Ignore the value of `supported_algorithms` in favor of an existing
+      // binding key.
+      registration_token_helper_ =
+          std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
+              *unexportable_key_service_,
+              std::move(wrapped_binding_key_to_reuse));
+    } else {
+      registration_token_helper_ =
+          std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
+              *unexportable_key_service_,
+              signin::ParseSignatureAlgorithmList(supported_algorithms));
+    }
+  }
+
+  registration_token_helper_->GenerateForTokenBinding(
+      GaiaUrls::GetInstance()->oauth2_chrome_client_id(), auth_code,
+      GURL("https://accounts.google.com/accountmanager"), std::move(callback));
 }
 
 void TokenBindingHelper::GenerateBindingKeyAssertion(

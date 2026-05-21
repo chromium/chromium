@@ -39,20 +39,6 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 
 }  // namespace
 
-BindingKeyRegistrationTokenHelper::Result::Result(
-    unexportable_keys::UnexportableKeyId in_binding_key_id,
-    std::vector<uint8_t> in_wrapped_binding_key,
-    std::string in_registration_token)
-    : binding_key_id(in_binding_key_id),
-      wrapped_binding_key(std::move(in_wrapped_binding_key)),
-      registration_token(std::move(in_registration_token)) {}
-
-BindingKeyRegistrationTokenHelper::Result::Result(Result&& other) = default;
-BindingKeyRegistrationTokenHelper::Result&
-BindingKeyRegistrationTokenHelper::Result::operator=(Result&& other) = default;
-
-BindingKeyRegistrationTokenHelper::Result::~Result() = default;
-
 BindingKeyRegistrationTokenHelper::BindingKeyRegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     KeyInitParam key_init_param)

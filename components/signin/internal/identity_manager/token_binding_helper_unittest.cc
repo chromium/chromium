@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
@@ -337,4 +338,67 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
       "Crypto.UnexportableKeys.GarbageCollection.RefreshTokenBinding."
       "ObsoleteKeyDeletionCount",
       2, 1);
+}
+
+TEST_F(TokenBindingHelperTest,
+       GenerateBindingKeyRegistrationTokenNoExistingKey) {
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future;
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code",
+                                               future.GetCallback());
+  RunBackgroundTasks();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const signin::BindingKeyRegistrationTokenResult& result = *future.Get();
+  EXPECT_FALSE(result.registration_token.empty());
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      result.registration_token,
+      *unexportable_key_service().GetAlgorithm(result.binding_key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(
+          result.binding_key_id)));
+}
+
+TEST_F(TokenBindingHelperTest,
+       GenerateBindingKeyRegistrationTokenReuseExistingKey) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
+  helper().SetBindingKey(account_id, wrapped_key);
+
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future;
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code",
+                                               future.GetCallback());
+  RunBackgroundTasks();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const signin::BindingKeyRegistrationTokenResult& result = *future.Get();
+  EXPECT_EQ(result.wrapped_binding_key, wrapped_key);
+  EXPECT_FALSE(result.registration_token.empty());
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      result.registration_token,
+      *unexportable_key_service().GetAlgorithm(result.binding_key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(
+          result.binding_key_id)));
+}
+
+TEST_F(TokenBindingHelperTest,
+       GenerateBindingKeyRegistrationTokenHelperAlreadyExists) {
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_1;
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_2;
+
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_1",
+                                               future_1.GetCallback());
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_2",
+                                               future_2.GetCallback());
+  RunBackgroundTasks();
+
+  ASSERT_TRUE(future_1.Get().has_value());
+  ASSERT_TRUE(future_2.Get().has_value());
+  EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
 }

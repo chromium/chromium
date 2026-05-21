@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
@@ -51,23 +52,7 @@ class BindingKeyRegistrationTokenHelper {
       // Wrapped binding key to reuse an existing binding key.
       std::vector<uint8_t>>;
 
-  // The result of the registration token generation.
-  struct Result {
-    unexportable_keys::UnexportableKeyId binding_key_id;
-    std::vector<uint8_t> wrapped_binding_key;
-    std::string registration_token;
-
-    Result(unexportable_keys::UnexportableKeyId binding_key_id,
-           std::vector<uint8_t> wrapped_binding_key,
-           std::string registration_token);
-
-    Result(const Result&) = delete;
-    Result& operator=(const Result&) = delete;
-    Result(Result&& other);
-    Result& operator=(Result&& other);
-
-    ~Result();
-  };
+  using Result = BindingKeyRegistrationTokenResult;
 
   // Public for testing.
   // These values are persisted to logs. Entries should not be renumbered and

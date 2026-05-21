@@ -97,6 +97,8 @@ static_library("base") {
     sources += [
       "binding_key_registration_token_helper.cc",
       "binding_key_registration_token_helper.h",
+      "binding_key_registration_token_result.cc",
+      "binding_key_registration_token_result.h",
     ]
     public_deps += [ "//components/unexportable_keys" ]
   }
