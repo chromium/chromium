@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <head>
-  <title>drawElementImage paints CSS backdrop filter in DOM content within bounds</title>
+  <title>drawElementImage paints CSS backdrop filter with mask image</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="author" href="mailto:schenney@chromium.org">
-  <link rel="match" href="css-backdrop-filter-on-div-ref.html">
-  <meta name="assert" value="A div with a CSS backdrop-filter over a parent div paints with the filter in the correct area.">
-  <script src="/common/reftest-wait.js"></script>
-  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+  <link rel="match" href="css-backdrop-filter-and-mask-ref.html">
+  <meta name="assert" value="A div with a CSS backdrop-filter and mask paints correctly.">
+  <meta name=fuzzy content="1;0-3900">
+<script src="/common/reftest-wait.js"></script>
+  <script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
   <style>
     canvas {
       background: red;
@@ -15,21 +16,20 @@
     div {
       width: 100px;
       height: 100px;
-      background: green;
+      background: red;
     }
     div > div {
-      width: 50px;
-      height: 50px;
       background: transparent;
       backdrop-filter: grayscale();
-      border: 1px solid black;
+      mask-image: linear-gradient(black, transparent);
     }
   </style>
 </head>
 <body>
   <canvas id=canvas width="100" height="100" layoutsubtree>
     <div id="child">
-      <div id="filtered"><p>Hello</p></div>
+      <div id="filtered">
+      </div>
     </div>
   </canvas>
 

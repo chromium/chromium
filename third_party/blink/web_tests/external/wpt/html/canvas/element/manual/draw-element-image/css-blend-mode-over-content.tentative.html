@@ -1,24 +1,19 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <head>
-  <title>drawElementImage applies CSS blend-mode correctly over canvas and dom content</title>
+  <title>drawElementImage applies CSS blend-mode correctly pver canvas content</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="author" href="mailto:schenney@chromium.org">
-  <link rel="match" href="css-blend-mode-over-both-ref.html">
-  <meta name="assert" value="CSS blend-mode is applied correctly over canvas and dom contentnt.">
+  <link rel="match" href="css-blend-mode-ref.html">
+  <meta name="assert" value="CSS blend-mode is applied correctl over canvas content.">
   <script src="/common/reftest-wait.js"></script>
-  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+  <script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
   <style>
     canvas {
       background: red;
       border: 1px black solid;
     }
-    #child1 {
-      width: 50px;
-      height: 50px;
-      background: blue;
-    }
-    #child2 {
+    div {
       width: 80px;
       height: 80px;
       background: green;
@@ -28,9 +23,7 @@
 </head>
 <body>
   <canvas id=canvas width="100" height="100" layoutsubtree>
-    <div id="child1">
-    </div>
-    <div id="child2">
+    <div id="child">
     </div>
   </canvas>
 
@@ -40,8 +33,7 @@
       var context = canvas.getContext("2d");
       context.fillStyle = 'white';
       context.fillRect(0, 0, 100, 100);
-      context.drawElementImage(child1, 0, 0);
-      context.drawElementImage(child2, 10, 10);
+      context.drawElementImage(child, 10, 10);
       takeScreenshot();
     };
   </script>
