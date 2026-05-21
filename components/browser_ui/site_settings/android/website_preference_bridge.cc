@@ -121,6 +121,9 @@ namespace {
 const char kHttpPortSuffix[] = ":80";
 const char kHttpsPortSuffix[] = ":443";
 const char kExtensionSlashSuffix[] = "/";
+constexpr char kHttpsPrefix[] = "https://";
+constexpr char kHttpPrefix[] = "http://";
+constexpr char kExtensionPrefix[] = "chrome-extension://";
 
 BrowserContext* unwrap(const JavaRef<jobject>& jbrowser_context_handle) {
   return content::BrowserContextFromJavaHandle(jbrowser_context_handle);
@@ -169,19 +172,19 @@ ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
   // HostContentSettingsMap: once to get all the 'interesting' hosts, and once
   // (on SingleWebsitePreferences) to find permission patterns which match
   // each of these hosts.
-  if (base::StartsWith(origin, url::kHttpsScheme,
+  if (base::StartsWith(origin, kHttpsPrefix,
                        base::CompareCase::INSENSITIVE_ASCII) &&
       base::EndsWith(origin, kHttpsPortSuffix,
                      base::CompareCase::INSENSITIVE_ASCII)) {
     return ConvertUTF8ToJavaString(
         env, origin.substr(0, origin.size() - strlen(kHttpsPortSuffix)));
-  } else if (base::StartsWith(origin, url::kHttpScheme,
+  } else if (base::StartsWith(origin, kHttpPrefix,
                               base::CompareCase::INSENSITIVE_ASCII) &&
              base::EndsWith(origin, kHttpPortSuffix,
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return ConvertUTF8ToJavaString(
         env, origin.substr(0, origin.size() - strlen(kHttpPortSuffix)));
-  } else if (base::StartsWith(origin, content_settings::kExtensionScheme,
+  } else if (base::StartsWith(origin, kExtensionPrefix,
                               base::CompareCase::INSENSITIVE_ASCII) &&
              base::EndsWith(origin, kExtensionSlashSuffix,
                             base::CompareCase::INSENSITIVE_ASCII)) {
