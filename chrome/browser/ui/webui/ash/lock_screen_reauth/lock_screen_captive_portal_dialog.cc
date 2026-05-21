@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_captive_portal_dialog.h"
 
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -22,7 +22,7 @@ LockScreenCaptivePortalDialog::LockScreenCaptivePortalDialog()
 LockScreenCaptivePortalDialog::~LockScreenCaptivePortalDialog() = default;
 
 void LockScreenCaptivePortalDialog::Show(Profile& profile) {
-  DCHECK(ProfileHelper::IsLockScreenProfile(&profile));
+  DCHECK(IsLockScreenBrowserContext(&profile));
   if (!is_running_) {
     ShowSystemDialogForBrowserContext(&profile);
     is_running_ = true;
