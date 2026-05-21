@@ -78,6 +78,7 @@ class MockRenderWidgetHostDelegate
 
   //  RenderWidgetHostInputEventRouter::Delegate
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
+  void CancelAutoscroll(input::RenderWidgetHostViewInput* view) override;
 
  private:
   std::unique_ptr<input::NativeWebKeyboardEvent> last_event_;

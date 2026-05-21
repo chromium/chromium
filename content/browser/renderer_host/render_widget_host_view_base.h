@@ -156,6 +156,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
                            const ui::LatencyInfo& latency) override;
   RenderWidgetHostViewBase* GetRootView() override;
   void OnAutoscrollStart() override;
+  void OnAutoscrollTargetResolved(bool success) override;
   const viz::DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
 
   float GetDeviceScaleFactor() const final;
