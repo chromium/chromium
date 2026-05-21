@@ -1067,6 +1067,7 @@ source_set("unit_tests") {
     "api/idle/idle_api_unittest.cc",
     "api/power/power_api_unittest.cc",
     "api/runtime/restart_after_delay_api_unittest.cc",
+    "api/runtime/runtime_api_unittest.cc",
     "api/storage/session_storage_manager_unittest.cc",
     "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
