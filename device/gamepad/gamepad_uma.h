@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"
 
@@ -57,6 +58,36 @@ enum class XboxMacOutcome {
   kMaxValue = kAlreadyConnected,
 };
 // LINT.ThenChange(//tools/metrics/histograms/others/enums.xml:XboxMacOutcome)
+
+#if BUILDFLAG(IS_WIN)
+
+// Outcome of GameInput API initialization in the GameInput data fetcher.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GameInputInitializationResult)
+enum class GameInputInitializationResult {
+  kSuccess = 0,
+  kGetProcAddressFailed = 1,
+  kCreateGameInputFailed = 2,
+  kDeviceEnumerationFailed = 3,
+  kGuideButtonCallbackRegistrationFailed = 4,
+  kMaxValue = kGuideButtonCallbackRegistrationFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:GameInputInitializationResult)
+
+// Outcome of a gamepad added event in the GameInput data fetcher.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GameInputGamepadAddedResult)
+enum class GameInputGamepadAddedResult {
+  kSuccess = 0,
+  kNoSlotAvailable = 1,
+  kGetDeviceInfoFailed = 2,
+  kMaxValue = kGetDeviceInfoFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:GameInputGamepadAddedResult)
+
+#endif  // BUILDFLAG(IS_WIN)
 
 // Compare the |gamepad_id| of a connected USB or Bluetooth device against a
 // list of known gaming peripherals. If a match is found, record the GamepadId

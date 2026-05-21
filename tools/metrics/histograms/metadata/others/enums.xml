@@ -110,6 +110,34 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:GameControllerMacOutcome) -->
 
+<!-- LINT.IfChange(GameInputGamepadAddedResult) -->
+
+<enum name="GameInputGamepadAddedResult">
+  <summary>
+    The outcome of a gamepad added event in the GameInput data fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="No slot available"/>
+  <int value="2" label="GetDeviceInfo failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:GameInputGamepadAddedResult) -->
+
+<!-- LINT.IfChange(GameInputInitializationResult) -->
+
+<enum name="GameInputInitializationResult">
+  <summary>
+    The outcome of GameInput API initialization in the GameInput data fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="GetProcAddress failed"/>
+  <int value="2" label="GameInputCreate failed"/>
+  <int value="3" label="Device enumeration failed"/>
+  <int value="4" label="Guide button callback registration failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:GameInputInitializationResult) -->
+
 <!-- LINT.IfChange(GamepadPlatformMacOutcome) -->
 
 <enum name="GamepadPlatformMacOutcome">

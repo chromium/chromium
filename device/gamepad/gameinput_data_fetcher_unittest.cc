@@ -12,6 +12,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -23,6 +24,7 @@
 #include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/gamepad_provider.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
+#include "device/gamepad/gamepad_uma.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
@@ -125,6 +127,7 @@ class GameInputDataFetcherTest : public DeviceServiceTestBase {
 
 TEST_F(GameInputDataFetcherTest, AddAndRemoveGameInputGamepad) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
 
   // Check initial number of connected gamepad and initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
@@ -147,6 +150,11 @@ TEST_F(GameInputDataFetcherTest, AddAndRemoveGameInputGamepad) {
   // Assert that the gamepads have been added to the DataFetcher.
   ASSERT_EQ(gamepads.size(), 2u);
 
+  histogram_tester.ExpectBucketCount("Gamepad.Win.GameInput.GamepadAddedResult",
+                                     GameInputGamepadAddedResult::kSuccess, 2);
+  histogram_tester.ExpectBucketCount(
+      "Gamepad.Win.GameInput.HasTriggerRumbleSupport", false, 2);
+
   // Simulate the gamepad remove
   mock_gameinput()->InvokeDeviceCallback(fake_gamepad1.Get(),
                                          GameInputDeviceNoStatus);
@@ -161,6 +169,7 @@ TEST_F(GameInputDataFetcherTest, AddAndRemoveGameInputGamepad) {
 
 TEST_F(GameInputDataFetcherTest, VerifyGamepadReading) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
 
   // Check initial number of connected gamepad and initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
@@ -283,6 +292,13 @@ TEST_F(GameInputDataFetcherTest, VerifyGamepadReading) {
   EXPECT_NEAR(output.items[0].axes[AXIS_INDEX_RIGHT_STICK_Y], 0,
               kErrorTolerance);
 
+  // Verify histogram recordings. The guide button was pressed once and released
+  // once; only presses are recorded.
+  histogram_tester.ExpectBucketCount("Gamepad.Win.GameInput.GuideButtonPressed",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount("Gamepad.Win.GameInput.GamepadAddedResult",
+                                     GameInputGamepadAddedResult::kSuccess, 1);
+
   // Simulate the gamepad remove
   mock_gameinput()->InvokeDeviceCallback(fake_gamepad.Get(),
                                          GameInputDeviceNoStatus);
@@ -375,18 +391,23 @@ TEST_F(GameInputDataFetcherTest, VerifyControllerIdNames) {
 struct InitializationFailureParam {
   GameInputTestErrorCode error_code;
   GameInputDataFetcher::InitializationState expected_state;
+  GameInputInitializationResult expected_histogram_result;
 };
 
 const InitializationFailureParam kInitializationFailures[] = {
     {GameInputTestErrorCode::kGetProcAddressFailed,
-     GameInputDataFetcher::InitializationState::kGetProcAddressFailed},
+     GameInputDataFetcher::InitializationState::kGetProcAddressFailed,
+     GameInputInitializationResult::kGetProcAddressFailed},
     {GameInputTestErrorCode::kGameInputCreateFailed,
-     GameInputDataFetcher::InitializationState::kCreateGameInputFailed},
+     GameInputDataFetcher::InitializationState::kCreateGameInputFailed,
+     GameInputInitializationResult::kCreateGameInputFailed},
     {GameInputTestErrorCode::kDeviceCallbackRegistrationFailed,
-     GameInputDataFetcher::InitializationState::kFailedDeviceEnumeration},
+     GameInputDataFetcher::InitializationState::kFailedDeviceEnumeration,
+     GameInputInitializationResult::kDeviceEnumerationFailed},
     {GameInputTestErrorCode::kGuideButtonCallbackRegistrationFailed,
      GameInputDataFetcher::InitializationState::
-         kFailedGuideButtonCallbackRegistration},
+         kFailedGuideButtonCallbackRegistration,
+     GameInputInitializationResult::kGuideButtonCallbackRegistrationFailed},
 };
 
 class GameInputInitializationFailureTest
@@ -394,6 +415,7 @@ class GameInputInitializationFailureTest
       public testing::WithParamInterface<InitializationFailureParam> {};
 
 TEST_P(GameInputInitializationFailureTest, VerifyInitializationFailure) {
+  base::HistogramTester histogram_tester;
   const auto& param = GetParam();
   fake_gameinput_env_ =
       std::make_unique<FakeGameInputEnvironment>(param.error_code);
@@ -403,6 +425,10 @@ TEST_P(GameInputInitializationFailureTest, VerifyInitializationFailure) {
   }
   SetUpTestEnvCommon(std::move(create_fn));
   EXPECT_EQ(fetcher().GetInitializationState(), param.expected_state);
+
+  histogram_tester.ExpectBucketCount(
+      "Gamepad.Win.GameInput.InitializationResult",
+      param.expected_histogram_result, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(GameInputInitializationFailures,
@@ -413,6 +439,7 @@ INSTANTIATE_TEST_SUITE_P(GameInputInitializationFailures,
 // trigger-rumble support.
 TEST_F(GameInputDataFetcherTest, GamepadShouldHaveTriggerRumbleSupport) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
   const auto [vendor_id, product_id] =
       GamepadIdList::Get().GetDeviceIdsFromGamepadId(
           GamepadId::kMicrosoftProduct0b20);
@@ -433,11 +460,15 @@ TEST_F(GameInputDataFetcherTest, GamepadShouldHaveTriggerRumbleSupport) {
   EXPECT_TRUE(pad_state->data.vibration_actuator.not_null);
   EXPECT_EQ(pad_state->data.vibration_actuator.type,
             GamepadHapticActuatorType::kTriggerRumble);
+
+  histogram_tester.ExpectBucketCount(
+      "Gamepad.Win.GameInput.HasTriggerRumbleSupport", true, 1);
 }
 
 // Test that a gamepad without trigger-rumble motors falls back to dual-rumble.
 TEST_F(GameInputDataFetcherTest, GamepadShouldHaveDualRumbleSupport) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
   const auto [vendor_id, product_id] =
       GamepadIdList::Get().GetDeviceIdsFromGamepadId(
           GamepadId::kMicrosoftProduct0b20);
@@ -456,6 +487,9 @@ TEST_F(GameInputDataFetcherTest, GamepadShouldHaveDualRumbleSupport) {
   EXPECT_TRUE(pad_state->data.vibration_actuator.not_null);
   EXPECT_EQ(pad_state->data.vibration_actuator.type,
             GamepadHapticActuatorType::kDualRumble);
+
+  histogram_tester.ExpectBucketCount(
+      "Gamepad.Win.GameInput.HasTriggerRumbleSupport", false, 1);
 }
 
 TEST_F(GameInputDataFetcherTest, ShouldNotEnumerateGamepads) {
@@ -475,6 +509,7 @@ TEST_F(GameInputDataFetcherTest, ShouldNotEnumerateGamepads) {
   };
 
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
   const auto& gamepads = fetcher().GetGamepadsForTesting();
 
   for (const GamepadId& gamepad_id : kShouldNotEnumerateGamepads) {
@@ -489,12 +524,16 @@ TEST_F(GameInputDataFetcherTest, ShouldNotEnumerateGamepads) {
 
     EXPECT_EQ(gamepads.size(), 0u);
   }
+
+  histogram_tester.ExpectTotalCount("Gamepad.Win.GameInput.GamepadAddedResult",
+                                    0);
 }
 
 // Test that if we can't obtain the gamepad's device info from with GameInput,
 // the gamepad won't be enumerated.
 TEST_F(GameInputDataFetcherTest, NoDeviceInfoGamepadNotEnumerated) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(fetcher().GetInitializationState(),
             GameInputDataFetcher::InitializationState::kInitialized);
 
@@ -509,6 +548,10 @@ TEST_F(GameInputDataFetcherTest, NoDeviceInfoGamepadNotEnumerated) {
   FlushPollingThread();
 
   EXPECT_EQ(gamepads.size(), 0u);
+
+  histogram_tester.ExpectBucketCount(
+      "Gamepad.Win.GameInput.GamepadAddedResult",
+      GameInputGamepadAddedResult::kGetDeviceInfoFailed, 1);
 }
 
 enum class HapticsType { kDualRumble, kTriggerRumble };

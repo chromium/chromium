@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
@@ -21,6 +22,7 @@
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
+#include "device/gamepad/gamepad_uma.h"
 #include "device/gamepad/nintendo_controller.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 
@@ -94,6 +96,38 @@ bool HasTriggerRumbleSupport(const GameInputDeviceInfo* device_info) {
           GameInputRumbleMotors::GameInputRumbleRightTrigger);
 }
 
+// Record the outcome of GameInput API initialization.
+void RecordGameInputInitializationResult(GameInputInitializationResult result) {
+  base::UmaHistogramEnumeration("Gamepad.Win.GameInput.InitializationResult",
+                                result);
+}
+
+// Record a GetCurrentReading error in the GameInput data fetcher. Uses a
+// boolean histogram as a counter (always records true).
+void RecordGameInputGetCurrentReadingError() {
+  base::UmaHistogramBoolean("Gamepad.Win.GameInput.GetCurrentReadingError",
+                            true);
+}
+
+// Record the outcome of a gamepad added event in the GameInput data fetcher.
+void RecordGameInputGamepadAddedResult(GameInputGamepadAddedResult result) {
+  base::UmaHistogramEnumeration("Gamepad.Win.GameInput.GamepadAddedResult",
+                                result);
+}
+
+// Record whether an added gamepad supports trigger rumble in the GameInput
+// data fetcher.
+void RecordGameInputTriggerRumbleSupport(bool has_trigger_rumble) {
+  base::UmaHistogramBoolean("Gamepad.Win.GameInput.HasTriggerRumbleSupport",
+                            has_trigger_rumble);
+}
+
+// Record a guide button press in the GameInput data fetcher. Uses a boolean
+// histogram as a counter (always records true).
+void RecordGameInputGuideButtonPress() {
+  base::UmaHistogramBoolean("Gamepad.Win.GameInput.GuideButtonPressed", true);
+}
+
 }  // namespace
 
 GameInputDataFetcher::GameInputDataFetcher() {
@@ -134,12 +168,16 @@ void GameInputDataFetcher::OnAddedToProvider() {
 
   if (create_gameinput_function.is_null()) {
     initialization_state_ = InitializationState::kGetProcAddressFailed;
+    RecordGameInputInitializationResult(
+        GameInputInitializationResult::kGetProcAddressFailed);
     return;
   }
 
   if (!gameinput_) {
     if (FAILED(create_gameinput_function.Run(&gameinput_))) {
       initialization_state_ = InitializationState::kCreateGameInputFailed;
+      RecordGameInputInitializationResult(
+          GameInputInitializationResult::kCreateGameInputFailed);
       return;
     }
   }
@@ -161,6 +199,8 @@ void GameInputDataFetcher::OnAddedToProvider() {
           &device_callback_token_)))          // Generated token
   {
     initialization_state_ = InitializationState::kFailedDeviceEnumeration;
+    RecordGameInputInitializationResult(
+        GameInputInitializationResult::kDeviceEnumerationFailed);
     return;
   }
 
@@ -178,10 +218,13 @@ void GameInputDataFetcher::OnAddedToProvider() {
           &guide_button_callback_token_))) {
     initialization_state_ =
         InitializationState::kFailedGuideButtonCallbackRegistration;
+    RecordGameInputInitializationResult(
+        GameInputInitializationResult::kGuideButtonCallbackRegistrationFailed);
     return;
   }
 
   initialization_state_ = InitializationState::kInitialized;
+  RecordGameInputInitializationResult(GameInputInitializationResult::kSuccess);
 }
 
 void GameInputDataFetcher::OnDeviceEnumerated(
@@ -211,6 +254,8 @@ void GameInputDataFetcher::OnGamepadAdded(IGameInputDevice* device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const GameInputDeviceInfo* device_info = device->GetDeviceInfo();
   if (!device_info) {
+    RecordGameInputGamepadAddedResult(
+        GameInputGamepadAddedResult::kGetDeviceInfoFailed);
     return;
   }
 
@@ -224,6 +269,8 @@ void GameInputDataFetcher::OnGamepadAdded(IGameInputDevice* device) {
   PadState* state =
       GetPadState(source_id, /*new_pad_recognized=*/true, product_identifier);
   if (!state) {
+    RecordGameInputGamepadAddedResult(
+        GameInputGamepadAddedResult::kNoSlotAvailable);
     return;
   }
 
@@ -245,16 +292,20 @@ void GameInputDataFetcher::OnGamepadAdded(IGameInputDevice* device) {
     pad.SetID(std::u16string(kKnownXInputDeviceId));
   }
 
-  if (HasTriggerRumbleSupport(device_info)) {
+  bool has_trigger_rumble = HasTriggerRumbleSupport(device_info);
+  if (has_trigger_rumble) {
     pad.vibration_actuator.type = GamepadHapticActuatorType::kTriggerRumble;
   } else {
     pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
   }
+  RecordGameInputTriggerRumbleSupport(has_trigger_rumble);
 
   pad.vibration_actuator.not_null = true;
   pad.mapping = GamepadMapping::kStandard;
   devices_[source_id] = std::make_unique<GameInputGamepadDevice>(
       device, std::move(product_identifier));
+
+  RecordGameInputGamepadAddedResult(GameInputGamepadAddedResult::kSuccess);
 }
 
 void GameInputDataFetcher::OnGamepadRemoved(IGameInputDevice* device) {
@@ -298,6 +349,7 @@ void GameInputDataFetcher::OnGuideButtonChangedSequenced(
     if (current_buttons & GameInputSystemButtons::GameInputSystemButtonGuide) {
       state->data.buttons[BUTTON_INDEX_META].pressed = true;
       state->data.buttons[BUTTON_INDEX_META].value = 1.f;
+      RecordGameInputGuideButtonPress();
     } else {
       state->data.buttons[BUTTON_INDEX_META].pressed = false;
       state->data.buttons[BUTTON_INDEX_META].value = 0.f;
@@ -325,6 +377,7 @@ void GameInputDataFetcher::GetGamepadData(bool devices_changed_hint) {
     if (FAILED(gameinput_->GetCurrentReading(GameInputKindGamepad,
                                              gamepad_device->GetGamepad().Get(),
                                              &reading))) {
+      RecordGameInputGetCurrentReadingError();
       continue;
     }
 
