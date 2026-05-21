@@ -102,6 +102,21 @@ static_library("base") {
   }
 }
 
+if (is_android || is_ios) {
+  source_set("signin_deep_link_parser") {
+    sources = [
+      "signin_deep_link_parser.cc",
+      "signin_deep_link_parser.h",
+    ]
+    deps = [
+      ":signin_switches",
+      "//base",
+      "//net",
+    ]
+    public_deps = [ "//url" ]
+  }
+}
+
 if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
     sources = [ "signin_metrics.h" ]
@@ -175,6 +190,11 @@ source_set("unit_tests") {
       "//components/unexportable_keys:test_support",
       "//crypto:test_support",
     ]
+  }
+
+  if (is_android || is_ios) {
+    sources += [ "signin_deep_link_parser_unittest.cc" ]
+    deps += [ ":signin_deep_link_parser" ]
   }
 }
 
