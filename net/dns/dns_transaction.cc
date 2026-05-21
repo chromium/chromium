@@ -412,7 +412,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     if (!callback_.is_null()) {
       net_log_.EndEventWithNetErrorCode(NetLogEventType::DNS_TRANSACTION,
                                         ERR_ABORTED);
-      RecordHttpsLookupResult(ERR_ABORTED);
+      RecordLookupResult(ERR_ABORTED);
     }  // otherwise logged in DoCallback or Start
   }
 
@@ -556,7 +556,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     net_log_.EndEventWithNetErrorCode(NetLogEventType::DNS_TRANSACTION,
                                       result.rv);
 
-    RecordHttpsLookupResult(result.rv);
+    RecordLookupResult(result.rv);
 
     std::move(callback_).Run(result.rv, response);
   }
@@ -566,32 +566,41 @@ class DnsTransactionImpl final : public DnsTransaction {
                               attempt_type);
   }
 
-  void RecordHttpsLookupResult(int net_error) {
+  void RecordLookupResult(int net_error) {
     CHECK_NE(ERR_IO_PENDING, net_error);
-    if (qtype_ != dns_protocol::kTypeHttps) {
-      return;
+    std::string_view histogram_base;
+    switch (qtype_) {
+      case dns_protocol::kTypeA:
+        histogram_base = "Net.DNS.DnsTransaction.A.LookupResult";
+        break;
+      case dns_protocol::kTypeAAAA:
+        histogram_base = "Net.DNS.DnsTransaction.AAAA.LookupResult";
+        break;
+      case dns_protocol::kTypeHttps:
+        histogram_base = "Net.DNS.DnsTransaction.HTTPS.LookupResult";
+        break;
+      default:
+        // We currently only record results for A, AAAA, and HTTPS queries.
+        return;
     }
-
-    constexpr std::string_view kHistogramBase =
-        "Net.DNS.DnsTransaction.HttpsLookupResult";
     net_error = -net_error;
-    base::UmaHistogramSparse(kHistogramBase, net_error);
+    base::UmaHistogramSparse(histogram_base, net_error);
     switch (attempt_mode_) {
       case DnsTransactionFactory::AttemptMode::kClassic:
-        base::UmaHistogramSparse(base::StrCat({kHistogramBase, ".Classic"}),
+        base::UmaHistogramSparse(base::StrCat({histogram_base, ".Classic"}),
                                  net_error);
         if (had_tcp_retry_) {
           base::UmaHistogramSparse(
-              base::StrCat({kHistogramBase, ".ClassicTruncatedAndTcpRetried"}),
+              base::StrCat({histogram_base, ".ClassicTruncatedAndTcpRetried"}),
               net_error);
         }
         break;
       case DnsTransactionFactory::AttemptMode::kHttp:
-        base::UmaHistogramSparse(base::StrCat({kHistogramBase, ".DoH"}),
+        base::UmaHistogramSparse(base::StrCat({histogram_base, ".DoH"}),
                                  net_error);
         break;
       case DnsTransactionFactory::AttemptMode::kPlatform:
-        base::UmaHistogramSparse(base::StrCat({kHistogramBase, ".Platform"}),
+        base::UmaHistogramSparse(base::StrCat({histogram_base, ".Platform"}),
                                  net_error);
         break;
     }

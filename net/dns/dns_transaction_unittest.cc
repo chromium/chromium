@@ -4469,90 +4469,118 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(DnsTransactionTest, HttpsLookupMetricSuccess) {
+struct DnsTransactionLookupMetricTestParams {
+  uint16_t qtype;
+  std::string histogram_prefix;
+};
+
+class DnsTransactionLookupMetricTest
+    : public DnsTransactionTest,
+      public ::testing::WithParamInterface<
+          DnsTransactionLookupMetricTestParams> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    DnsTransactionLookupMetric,
+    DnsTransactionLookupMetricTest,
+    ::testing::ValuesIn(std::vector<DnsTransactionLookupMetricTestParams>{
+        {dns_protocol::kTypeA, "A"},
+        {dns_protocol::kTypeAAAA, "AAAA"},
+        {dns_protocol::kTypeHttps, "HTTPS"},
+    }));
+
+TEST_P(DnsTransactionLookupMetricTest, Success) {
   base::HistogramTester histogram_tester;
-  DnsResponse response = BuildTestDnsResponse(
-      kT0HostName, dns_protocol::kTypeHttps, /*answers=*/{});
-  AddQueryAndResponse(0 /* id */, kT0HostName, dns_protocol::kTypeHttps,
+  uint16_t qtype = GetParam().qtype;
+  std::string prefix = GetParam().histogram_prefix;
+  std::string histogram_name =
+      "Net.DNS.DnsTransaction." + prefix + ".LookupResult";
+
+  DnsResponse response =
+      BuildTestDnsResponse(kT0HostName, qtype, /*answers=*/{});
+  AddQueryAndResponse(0 /* id */, kT0HostName, qtype,
                       response.io_buffer()->span(), ASYNC, Transport::UDP);
 
   TransactionHelper helper(0 /* expected_answer_count */);
-  helper.StartTransaction(
-      transaction_factory_.get(), kT0HostName, dns_protocol::kTypeHttps,
-      DnsTransactionFactory::AttemptMode::kClassic, resolve_context_.get());
+  helper.StartTransaction(transaction_factory_.get(), kT0HostName, qtype,
+                          DnsTransactionFactory::AttemptMode::kClassic,
+                          resolve_context_.get());
   helper.RunUntilComplete();
 
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult", std::abs(OK), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult.Classic", std::abs(OK), 1);
+  histogram_tester.ExpectUniqueSample(histogram_name, std::abs(OK), 1);
+  histogram_tester.ExpectUniqueSample(histogram_name + ".Classic", std::abs(OK),
+                                      1);
   histogram_tester.ExpectTotalCount(
-      "Net.DNS.DnsTransaction.HttpsLookupResult."
-      "ClassicTruncatedAndTcpRetried",
-      0);
+      histogram_name + ".ClassicTruncatedAndTcpRetried", 0);
 }
 
-TEST_F(DnsTransactionTest, HttpsLookupMetricFailure) {
+TEST_P(DnsTransactionLookupMetricTest, Failure) {
   base::HistogramTester histogram_tester;
-  AddAsyncQueryAndRcode(kT0HostName, dns_protocol::kTypeHttps,
-                        dns_protocol::kRcodeNXDOMAIN);
+  uint16_t qtype = GetParam().qtype;
+  std::string prefix = GetParam().histogram_prefix;
+  std::string histogram_name =
+      "Net.DNS.DnsTransaction." + prefix + ".LookupResult";
+
+  AddAsyncQueryAndRcode(kT0HostName, qtype, dns_protocol::kRcodeNXDOMAIN);
 
   TransactionHelper helper(ERR_NAME_NOT_RESOLVED);
-  helper.StartTransaction(
-      transaction_factory_.get(), kT0HostName, dns_protocol::kTypeHttps,
-      DnsTransactionFactory::AttemptMode::kClassic, resolve_context_.get());
+  helper.StartTransaction(transaction_factory_.get(), kT0HostName, qtype,
+                          DnsTransactionFactory::AttemptMode::kClassic,
+                          resolve_context_.get());
   helper.RunUntilComplete();
 
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult",
-      std::abs(ERR_NAME_NOT_RESOLVED), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult.Classic",
-      std::abs(ERR_NAME_NOT_RESOLVED), 1);
+  histogram_tester.ExpectUniqueSample(histogram_name,
+                                      std::abs(ERR_NAME_NOT_RESOLVED), 1);
+  histogram_tester.ExpectUniqueSample(histogram_name + ".Classic",
+                                      std::abs(ERR_NAME_NOT_RESOLVED), 1);
 }
 
-TEST_F(DnsTransactionTest, HttpsLookupMetricAborted) {
+TEST_P(DnsTransactionLookupMetricTest, Aborted) {
   base::HistogramTester histogram_tester;
-  AddQueryAndResponseNoWrite(0 /* id */, kT0HostName, dns_protocol::kTypeHttps,
-                             ASYNC, Transport::UDP, nullptr);
+  uint16_t qtype = GetParam().qtype;
+  std::string prefix = GetParam().histogram_prefix;
+  std::string histogram_name =
+      "Net.DNS.DnsTransaction." + prefix + ".LookupResult";
+
+  AddQueryAndResponseNoWrite(0 /* id */, kT0HostName, qtype, ASYNC,
+                             Transport::UDP, nullptr);
 
   TransactionHelper helper(0);
-  helper.StartTransaction(
-      transaction_factory_.get(), kT0HostName, dns_protocol::kTypeHttps,
-      DnsTransactionFactory::AttemptMode::kClassic, resolve_context_.get());
+  helper.StartTransaction(transaction_factory_.get(), kT0HostName, qtype,
+                          DnsTransactionFactory::AttemptMode::kClassic,
+                          resolve_context_.get());
   helper.Cancel();
 
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult", std::abs(ERR_ABORTED), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult.Classic", std::abs(ERR_ABORTED),
-      1);
+  histogram_tester.ExpectUniqueSample(histogram_name, std::abs(ERR_ABORTED), 1);
+  histogram_tester.ExpectUniqueSample(histogram_name + ".Classic",
+                                      std::abs(ERR_ABORTED), 1);
 }
 
-TEST_F(DnsTransactionTest, HttpsLookupMetricTruncatedAndTcpRetried) {
+TEST_P(DnsTransactionLookupMetricTest, TruncatedAndTcpRetried) {
   base::HistogramTester histogram_tester;
-  AddAsyncQueryAndRcode(kT0HostName, dns_protocol::kTypeHttps,
+  uint16_t qtype = GetParam().qtype;
+  std::string prefix = GetParam().histogram_prefix;
+  std::string histogram_name =
+      "Net.DNS.DnsTransaction." + prefix + ".LookupResult";
+
+  AddAsyncQueryAndRcode(kT0HostName, qtype,
                         dns_protocol::kRcodeNOERROR | dns_protocol::kFlagTC);
 
-  DnsResponse response = BuildTestDnsResponse(
-      kT0HostName, dns_protocol::kTypeHttps, /*answers=*/{});
-  AddQueryAndResponse(0 /* id */, kT0HostName, dns_protocol::kTypeHttps,
+  DnsResponse response =
+      BuildTestDnsResponse(kT0HostName, qtype, /*answers=*/{});
+  AddQueryAndResponse(0 /* id */, kT0HostName, qtype,
                       response.io_buffer()->span(), ASYNC, Transport::TCP);
 
   TransactionHelper helper(0);
-  helper.StartTransaction(
-      transaction_factory_.get(), kT0HostName, dns_protocol::kTypeHttps,
-      DnsTransactionFactory::AttemptMode::kClassic, resolve_context_.get());
+  helper.StartTransaction(transaction_factory_.get(), kT0HostName, qtype,
+                          DnsTransactionFactory::AttemptMode::kClassic,
+                          resolve_context_.get());
   helper.RunUntilComplete();
 
+  histogram_tester.ExpectUniqueSample(histogram_name, std::abs(OK), 1);
+  histogram_tester.ExpectUniqueSample(histogram_name + ".Classic", std::abs(OK),
+                                      1);
   histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult", std::abs(OK), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult.Classic", std::abs(OK), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.DnsTransaction.HttpsLookupResult."
-      "ClassicTruncatedAndTcpRetried",
-      std::abs(OK), 1);
+      histogram_name + ".ClassicTruncatedAndTcpRetried", std::abs(OK), 1);
 }
 
 }  // namespace
