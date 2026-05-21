@@ -1436,25 +1436,20 @@ void WindowPerformance::AddContainerTiming(
 void WindowPerformance::TryReportAsFirstInputTiming(
     PerformanceEventTiming* event_timing_entry) {
   CHECK(event_timing_entry);
+  CHECK(event_timing_entry->HasInteractionId());
 
   // If we have already emitted, bail out.
   if (first_input_timing_) {
     return;
   }
-
-  PerformanceEventTiming* new_first_input_entry = nullptr;
-
-  CHECK(event_timing_entry->HasKnownInteractionID());
-  if (event_timing_entry->interactionId() != 0) {
-    new_first_input_entry =
-        PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
-  }
-
-  if (!new_first_input_entry) {
+  if (!event_timing_entry->IsInteraction()) {
     return;
   }
 
+  PerformanceEventTiming* new_first_input_entry =
+      PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
   CHECK_EQ("first-input", new_first_input_entry->entryType());
+
   if (HasObserverFor(PerformanceEntry::kFirstInput)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kEventTimingExplicitlyRequested);

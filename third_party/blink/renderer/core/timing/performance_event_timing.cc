@@ -141,7 +141,7 @@ uint64_t PerformanceEventTiming::interactionId() const {
   if (reporting_info_.prevent_counting_as_interaction) {
     return 0u;
   }
-  CHECK(HasKnownInteractionID());
+  CHECK(HasInteractionId());
   return interaction_id_->id;
 }
 
@@ -154,7 +154,7 @@ UserInteractionType PerformanceEventTiming::InteractionType() const {
              : UserInteractionType::kKeyboard;
 }
 
-bool PerformanceEventTiming::HasKnownInteractionID() const {
+bool PerformanceEventTiming::HasInteractionId() const {
   return interaction_id_.has_value();
 }
 
@@ -169,7 +169,7 @@ bool PerformanceEventTiming::HasKnownEndTime() const {
 
 bool PerformanceEventTiming::IsReadyForReporting() const {
   return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime() &&
-         HasKnownInteractionID();
+         HasInteractionId();
 }
 
 

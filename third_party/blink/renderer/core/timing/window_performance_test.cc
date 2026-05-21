@@ -63,7 +63,7 @@ namespace {
 MATCHER(IsInteraction, "") {
   ::testing::StaticAssertTypeEq<PerformanceEventTiming*,
                                 std::decay_t<arg_type>>();
-  return arg->interactionId() > 0u;
+  return arg->IsInteraction();
 }
 
 MATCHER_P(SameInteractionAs, other, "") {
@@ -71,7 +71,7 @@ MATCHER_P(SameInteractionAs, other, "") {
                                 std::decay_t<arg_type>>();
   ::testing::StaticAssertTypeEq<PerformanceEventTiming*,
                                 std::decay_t<other_type>>();
-  return arg->interactionId() > 0u && other->interactionId() > 0u &&
+  return arg->IsInteraction() && other->IsInteraction() &&
          arg->interactionId() == other->interactionId();
 }
 
@@ -80,7 +80,7 @@ MATCHER_P(DifferentInteractionFrom, other, "") {
                                 std::decay_t<arg_type>>();
   ::testing::StaticAssertTypeEq<PerformanceEventTiming*,
                                 std::decay_t<other_type>>();
-  return arg->interactionId() > 0u && other->interactionId() > 0u &&
+  return arg->IsInteraction() && other->IsInteraction() &&
          arg->interactionId() != other->interactionId();
 }
 
@@ -342,7 +342,7 @@ class WindowPerformanceTest : public testing::Test,
 
     std::vector<std::pair<int, UserInteractionType>> expected_ukm_pairs;
     for (const auto& entry : entries_list) {
-      if (entry->IsKnownToBeAnInteraction()) {
+      if (entry->IsInteraction()) {
         int duration =
             static_cast<int>(entry->GetExactDuration().InMilliseconds());
         expected_ukm_pairs.emplace_back(duration, entry->InteractionType());
@@ -2217,7 +2217,7 @@ TEST_P(InteractionIdTest, ContextMenu) {
       SimulateEventDispatch(*pointerdown_event, base::Milliseconds(1));
 
   // pointerdown is pending and should not have an interactionId yet.
-  EXPECT_FALSE(pointerdown_entry->HasKnownInteractionID());
+  EXPECT_FALSE(pointerdown_entry->HasInteractionId());
   EXPECT_FALSE(pointerdown_entry->HasKnownEndTime());
 
   // 2. Contextmenu
@@ -2237,7 +2237,7 @@ TEST_P(InteractionIdTest, ContextMenu) {
 
   // Contextmenu itself should not have an interactionId, but should have a
   // duration and fallback.
-  EXPECT_TRUE(contextmenu_entry->HasKnownInteractionID());
+  EXPECT_TRUE(contextmenu_entry->HasInteractionId());
   EXPECT_THAT(contextmenu_entry, testing::Not(IsInteraction()));
   EXPECT_TRUE(contextmenu_entry->HasKnownEndTime());
   EXPECT_EQ(contextmenu_entry->GetEventTimingReportingInfo()->fallback_reason,
@@ -2249,7 +2249,7 @@ TEST_P(InteractionIdTest, ContextMenu) {
 
   // ...And finally, after presentation time arrives, we should have an
   // interactionId.
-  EXPECT_TRUE(pointerdown_entry->HasKnownInteractionID());
+  EXPECT_TRUE(pointerdown_entry->HasInteractionId());
   EXPECT_THAT(pointerdown_entry, IsInteraction());
 
   // 3. Pointerup

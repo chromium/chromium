@@ -31,7 +31,7 @@ SoftNavigationContext::SoftNavigationContext(
           this)),
       initial_event_timing_(initial_event_timing) {
   CHECK(initial_event_timing_);
-  CHECK(initial_event_timing_->IsKnownToBeAnInteraction());
+  CHECK(initial_event_timing_->IsInteraction());
 
   TRACE_EVENT_BEGIN("loading", "SoftNavigation",
                     perfetto::Track::FromPointer(this), TimeOrigin());

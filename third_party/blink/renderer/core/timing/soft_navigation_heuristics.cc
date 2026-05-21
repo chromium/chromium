@@ -611,7 +611,7 @@ std::optional<scheduler::TaskAttributionTracker::TaskScope>
 SoftNavigationHeuristics::MaybeCreateTaskScopeForEvent(
     PerformanceEventTiming* entry) {
   CHECK(entry);
-  if (!entry->IsKnownToBeAnInteraction()) {
+  if (!entry->IsInteraction()) {
     return std::nullopt;
   }
   PerformanceTimelineEntryIdInfo interaction_id =
