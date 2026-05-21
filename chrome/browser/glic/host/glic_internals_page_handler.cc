@@ -50,24 +50,23 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
       GlicEnabling::EnablementForProfile(profile);
 
   auto result = mojom::ProfileEnablement::New();
-  result->feature_disabled = enablement.feature_disabled;
-  result->not_regular_profile = enablement.not_regular_profile;
-  result->not_rolled_out = enablement.not_rolled_out;
-  result->primary_account_not_capable = enablement.primary_account_not_capable;
-  result->primary_account_not_fully_signed_in =
-      enablement.primary_account_not_fully_signed_in;
-  result->disallowed_by_chrome_policy = enablement.disallowed_by_chrome_policy;
-  result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
-  result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
-  result->not_consented = !enablement.consented;
-  result->disallowed_by_country_filter =
-      enablement.disallowed_by_country_filter;
-  result->disallowed_by_locale_filter = enablement.disallowed_by_locale_filter;
-  result->live_disallowed = enablement.live_disallowed;
-  result->share_image_disallowed = enablement.share_image_disallowed;
+  result->feature_enabled = enablement.feature_enabled;
+  result->is_regular_profile = enablement.is_regular_profile;
+  result->is_rolled_out = enablement.is_rolled_out;
+  result->primary_account_is_capable = enablement.primary_account_is_capable;
+  result->primary_account_is_fully_signed_in =
+      enablement.primary_account_is_fully_signed_in;
+  result->allowed_by_chrome_policy = enablement.allowed_by_chrome_policy;
+  result->allowed_by_remote_admin = enablement.allowed_by_remote_admin;
+  result->allowed_by_remote_other = enablement.allowed_by_remote_other;
+  result->fre_is_consented = enablement.fre_is_consented;
+  result->allowed_by_country_filter = enablement.allowed_by_country_filter;
+  result->allowed_by_locale_filter = enablement.allowed_by_locale_filter;
+  result->live_allowed = enablement.live_allowed;
+  result->share_image_allowed = enablement.share_image_allowed;
   auto* service = GlicKeyedService::Get(profile);
-  result->actuation_not_consented =
-      !(service && service->enabling().GetUserEnabledActuationOnWeb());
+  result->actuation_is_consented =
+      (service && service->enabling().GetUserEnabledActuationOnWeb());
 
   using CannotActReason = ::glic::CannotActReason;
   if (actor_policy_checker) {

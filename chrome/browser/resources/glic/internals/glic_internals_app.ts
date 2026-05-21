@@ -197,52 +197,52 @@ export class GlicInternalsAppElement extends CrLitElement {
     return [
       {
         label: 'Enabled by Chrome Flags',
-        value: !this.data_.enablement.featureDisabled,
+        value: this.data_.enablement.featureEnabled,
       },
       {
         label: 'Regular profile',
-        value: !this.data_.enablement.notRegularProfile,
+        value: this.data_.enablement.isRegularProfile,
       },
       {
         label: 'Pref or flag based rollout (flag or pref) applies',
-        value: !this.data_.enablement.notRolledOut,
+        value: this.data_.enablement.isRolledOut,
       },
       {
         label: 'Account exists and has the Gemini in Chrome capability',
-        value: !this.data_.enablement.primaryAccountNotCapable,
+        value: this.data_.enablement.primaryAccountIsCapable,
       },
       {
         label: 'Account exists and is fully signed-in',
-        value: !this.data_.enablement.primaryAccountNotFullySignedIn,
+        value: this.data_.enablement.primaryAccountIsFullySignedIn,
       },
       {
         label:
             'Chrome Enterprise policy allows this feature (or doesn\'t apply)',
-        value: !this.data_.enablement.disallowedByChromePolicy,
+        value: this.data_.enablement.allowedByChromePolicy,
       },
       {
         label: 'Server side admin allows this feature',
-        value: !this.data_.enablement.disallowedByRemoteAdmin,
+        value: this.data_.enablement.allowedByRemoteAdmin,
       },
       {
         label: 'Server side allows this feature (Not admin policy)',
-        value: !this.data_.enablement.disallowedByRemoteOther,
+        value: this.data_.enablement.allowedByRemoteOther,
       },
       {
         label: 'User did pass the FRE',
-        value: !this.data_.enablement.notConsented,
+        value: this.data_.enablement.freIsConsented,
       },
       {
         label: 'User accepted actuation consent',
-        value: !this.data_.enablement.actuationNotConsented,
+        value: this.data_.enablement.actuationIsConsented,
       },
       {
         label: 'Passed country filter',
-        value: !this.data_.enablement.disallowedByCountryFilter,
+        value: this.data_.enablement.allowedByCountryFilter,
       },
       {
         label: 'Passed locale filter',
-        value: !this.data_.enablement.disallowedByLocaleFilter,
+        value: this.data_.enablement.allowedByLocaleFilter,
       },
     ];
   }

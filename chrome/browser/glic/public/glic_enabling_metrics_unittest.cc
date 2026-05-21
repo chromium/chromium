@@ -27,7 +27,7 @@ TEST(GlicProfileEnablementTest,
                                 false, 1);
   histograms.ExpectBucketCount(
       "Glic.ProfileEnablement.DisabledReason.Startup",
-      GlicEnabling::ProfileEnablement::Reason::kFeatureDisabled, 1);
+      GlicEnabling::ProfileEnablement::DisabledReason::kFeatureDisabled, 1);
 }
 
 TEST(GlicProfileEnablementTest,
@@ -45,7 +45,7 @@ TEST(GlicProfileEnablementTest,
                                 false, 1);
   histograms.ExpectBucketCount(
       "Glic.ProfileEnablement.DisabledReason.Startup",
-      GlicEnabling::ProfileEnablement::Reason::kNotRegularProfile, 1);
+      GlicEnabling::ProfileEnablement::DisabledReason::kNotRegularProfile, 1);
 }
 
 TEST(GlicProfileEnablementTest, RecordMetrics) {
@@ -66,11 +66,11 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
                               0);
 
   // Set some reasons for disablement
-  enablement.feature_disabled = true;
-  enablement.not_rolled_out = true;
-  enablement.consented = false;
-  enablement.live_disallowed = true;
-  enablement.primary_account_not_fully_signed_in = true;
+  enablement.feature_enabled = false;
+  enablement.is_rolled_out = false;
+  enablement.fre_is_consented = false;
+  enablement.live_allowed = false;
+  enablement.primary_account_is_fully_signed_in = false;
 
   enablement.RecordSteadyStateMetrics();
 
@@ -78,10 +78,10 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
                                 false, 1);
   histograms.ExpectBucketCount(
       "Glic.ProfileEnablement.DisabledReason.SteadyState",
-      GlicEnabling::ProfileEnablement::Reason::kFeatureDisabled, 1);
+      GlicEnabling::ProfileEnablement::DisabledReason::kFeatureDisabled, 1);
   histograms.ExpectBucketCount(
       "Glic.ProfileEnablement.DisabledReason.SteadyState",
-      GlicEnabling::ProfileEnablement::Reason::kNotRolledOut, 1);
+      GlicEnabling::ProfileEnablement::DisabledReason::kNotRolledOut, 1);
   histograms.ExpectTotalCount(
       "Glic.ProfileEnablement.DisabledReason.SteadyState", 2);
 
@@ -101,11 +101,11 @@ TEST(GlicProfileEnablementTest, RecordFeatureDisabledReason) {
   base::HistogramTester histograms;
   GlicEnabling::ProfileEnablement enablement;
 
-  enablement.feature_disabled = true;
-  enablement.feature_flag_disabled = true;
-  enablement.disallowed_by_country_filter = true;
-  enablement.disallowed_by_locale_filter = true;
-  enablement.system_requirement_not_met = true;
+  enablement.feature_enabled = false;
+  enablement.feature_flag_enabled = false;
+  enablement.allowed_by_country_filter = false;
+  enablement.allowed_by_locale_filter = false;
+  enablement.system_requirement_met = false;
 
   enablement.RecordStartupMetrics();
 

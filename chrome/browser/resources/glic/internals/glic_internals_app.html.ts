@@ -44,14 +44,14 @@ export function getHtml(this: GlicInternalsAppElement) {
         </tr>
         <tr>
           <td>Account is eligible for Live</td>
-          <td class="status-${!this.data_.enablement.liveDisallowed}">
-            ${!this.data_.enablement.liveDisallowed ? '✅' : '🚫'}
+          <td class="status-${this.data_.enablement.liveAllowed}">
+            ${this.data_.enablement.liveAllowed ? '✅' : '🚫'}
           </td>
         </tr>
         <tr>
           <td>Account is eligible for 'Create Image with Gemini'</td>
-          <td class="status-${!this.data_.enablement.shareImageDisallowed}">
-            ${!this.data_.enablement.shareImageDisallowed ? '✅' : '🚫'}
+          <td class="status-${this.data_.enablement.shareImageAllowed}">
+            ${this.data_.enablement.shareImageAllowed ? '✅' : '🚫'}
           </td>
         </tr>
         <tr>

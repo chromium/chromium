@@ -233,6 +233,53 @@ bool GetLocaleEnablement(GlicGlobalEnabling::Delegate& delegate) {
 
 bool g_bypass_enablement_checks_for_testing = false;
 
+using DisabledReason = GlicEnabling::ProfileEnablement::DisabledReason;
+using FeatureDisabledReason =
+    GlicEnabling::ProfileEnablement::FeatureDisabledReason;
+
+void RecordDisabledReasonsWith(
+    const GlicEnabling::ProfileEnablement& enablement,
+    base::FunctionRef<void(DisabledReason)> record_reason) {
+  if (!enablement.feature_enabled) {
+    record_reason(DisabledReason::kFeatureDisabled);
+  }
+  if (!enablement.is_regular_profile) {
+    record_reason(DisabledReason::kNotRegularProfile);
+  }
+  if (!enablement.is_rolled_out) {
+    record_reason(DisabledReason::kNotRolledOut);
+  }
+  if (!enablement.primary_account_is_capable) {
+    record_reason(DisabledReason::kPrimaryAccountNotCapable);
+  }
+  if (!enablement.allowed_by_chrome_policy) {
+    record_reason(DisabledReason::kDisallowedByChromePolicy);
+  }
+  if (!enablement.allowed_by_remote_admin) {
+    record_reason(DisabledReason::kDisallowedByRemoteAdmin);
+  }
+  if (!enablement.allowed_by_remote_other) {
+    record_reason(DisabledReason::kDisallowedByRemoteOther);
+  }
+}
+
+void RecordFeatureDisabledReasonsWith(
+    const GlicEnabling::ProfileEnablement& enablement,
+    base::FunctionRef<void(FeatureDisabledReason)> record_reason) {
+  if (!enablement.feature_flag_enabled) {
+    record_reason(FeatureDisabledReason::kFeatureFlagDisabled);
+  }
+  if (!enablement.allowed_by_country_filter) {
+    record_reason(FeatureDisabledReason::kCountryDisabled);
+  }
+  if (!enablement.allowed_by_locale_filter) {
+    record_reason(FeatureDisabledReason::kLocaleDisabled);
+  }
+  if (!enablement.system_requirement_met) {
+    record_reason(FeatureDisabledReason::kSystemRequirementNotMet);
+  }
+}
+
 }  // namespace
 
 // static
@@ -266,57 +313,6 @@ std::string GlicGlobalEnabling::Delegate::GetLocale() {
       startup_data->chrome_feature_list_creator()->actual_locale());
 }
 
-namespace {
-
-using Reason = GlicEnabling::ProfileEnablement::Reason;
-using FeatureDisabledReason =
-    GlicEnabling::ProfileEnablement::FeatureDisabledReason;
-
-void RecordDisabledReasonsWith(
-    const GlicEnabling::ProfileEnablement& enablement,
-    base::FunctionRef<void(Reason)> record_reason) {
-  if (enablement.feature_disabled) {
-    record_reason(Reason::kFeatureDisabled);
-  }
-  if (enablement.not_regular_profile) {
-    record_reason(Reason::kNotRegularProfile);
-  }
-  if (enablement.not_rolled_out) {
-    record_reason(Reason::kNotRolledOut);
-  }
-  if (enablement.primary_account_not_capable) {
-    record_reason(Reason::kPrimaryAccountNotCapable);
-  }
-  if (enablement.disallowed_by_chrome_policy) {
-    record_reason(Reason::kDisallowedByChromePolicy);
-  }
-  if (enablement.disallowed_by_remote_admin) {
-    record_reason(Reason::kDisallowedByRemoteAdmin);
-  }
-  if (enablement.disallowed_by_remote_other) {
-    record_reason(Reason::kDisallowedByRemoteOther);
-  }
-}
-
-void RecordFeatureDisabledReasonsWith(
-    const GlicEnabling::ProfileEnablement& enablement,
-    base::FunctionRef<void(FeatureDisabledReason)> record_reason) {
-  if (enablement.feature_flag_disabled) {
-    record_reason(FeatureDisabledReason::kFeatureFlagDisabled);
-  }
-  if (enablement.disallowed_by_country_filter) {
-    record_reason(FeatureDisabledReason::kCountryDisabled);
-  }
-  if (enablement.disallowed_by_locale_filter) {
-    record_reason(FeatureDisabledReason::kLocaleDisabled);
-  }
-  if (enablement.system_requirement_not_met) {
-    record_reason(FeatureDisabledReason::kSystemRequirementNotMet);
-  }
-}
-
-}  // namespace
-
 GlicEnabling::ProfileEnablement::ProfileEnablement() = default;
 GlicEnabling::ProfileEnablement::ProfileEnablement(ProfileEnablement&&) =
     default;
@@ -327,26 +323,27 @@ void GlicEnabling::ProfileEnablement::RecordMetrics(
   base::UmaHistogramBoolean(
       base::StrCat({"Glic.ProfileEnablement.IsEnabled.", suffix}), IsEnabled());
 
-  auto record_reason = [&](Reason reason) {
+  auto record_reason = [&](DisabledReason reason) {
     base::UmaHistogramEnumeration(
         base::StrCat({"Glic.ProfileEnablement.DisabledReason.", suffix}),
         reason);
   };
 
   RecordDisabledReasonsWith(*this, record_reason);
-  if (feature_disabled) {
+  if (!feature_enabled) {
     RecordFeatureDisabledReason(suffix);
   }
 
   base::UmaHistogramBoolean(
-      base::StrCat({"Glic.ProfileEnablement.IsConsented.", suffix}), consented);
+      base::StrCat({"Glic.ProfileEnablement.IsConsented.", suffix}),
+      fre_is_consented);
   base::UmaHistogramBoolean(
       base::StrCat({"Glic.ProfileEnablement.EligibleForLive.", suffix}),
       EligibleForLive());
   base::UmaHistogramBoolean(
       base::StrCat(
           {"Glic.ProfileEnablement.IsPrimaryAccountFullySignedIn.", suffix}),
-      !primary_account_not_fully_signed_in);
+      primary_account_is_fully_signed_in);
 
   if (suffix == "Startup" && anchor_entrypoint_override_active) {
     auto record_disabled_reason = [&](FeatureDisabledReason reason) {
@@ -372,6 +369,7 @@ void GlicEnabling::ProfileEnablement::RecordFeatureDisabledReason(
   RecordFeatureDisabledReasonsWith(*this, record_reason);
 }
 
+// static
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
   ProfileEnablement result;
@@ -383,24 +381,24 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   GlicGlobalEnabling& global_enabling =
       g_browser_process->GetFeatures()->glic_global_enabling();
 
-  result.feature_flag_disabled = !base::FeatureList::IsEnabled(features::kGlic);
-  result.disallowed_by_country_filter = !global_enabling.IsCountryEnabled();
-  result.disallowed_by_locale_filter = !global_enabling.IsLocaleEnabled();
-  result.system_requirement_not_met = !global_enabling.IsSystemRequirementMet();
-  result.consented = HasConsentedForProfile(profile);
+  result.feature_flag_enabled = base::FeatureList::IsEnabled(features::kGlic);
+  result.allowed_by_country_filter = global_enabling.IsCountryEnabled();
+  result.allowed_by_locale_filter = global_enabling.IsLocaleEnabled();
+  result.system_requirement_met = global_enabling.IsSystemRequirementMet();
+  result.fre_is_consented = HasConsentedForProfile(profile);
 
   bool global_criteria_met = global_enabling.IsEnabledByGlobalCriteria();
   if (!global_criteria_met) {
     result.anchor_entrypoint_override_active =
-        IsAnchoredButIneligible(global_criteria_met, result.consented);
+        IsAnchoredButIneligible(global_criteria_met, result.fre_is_consented);
     if (!result.anchor_entrypoint_override_active) {
-      result.feature_disabled = true;
+      result.feature_enabled = false;
       return result;
     }
   }
 
   if (!profile || !profile->IsRegularProfile()) {
-    result.not_regular_profile = true;
+    result.is_regular_profile = false;
     return result;
   }
 
@@ -409,7 +407,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   if (!command_line->HasSwitch(::switches::kGlicDev)) {
     if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
         !IsEligibleForGlicTieredRollout(profile)) {
-      result.not_rolled_out = true;
+      result.is_rolled_out = false;
     }
 
     signin::IdentityManager* identity_manager =
@@ -423,12 +421,12 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     // Not having a primary account is considered ineligible, as is kUnknown
     // for the required account capability (checked further below).
     if (primary_account.IsEmpty()) {
-      result.primary_account_not_capable = true;
+      result.primary_account_is_capable = false;
     } else {
       // Check if the profile is currently paused.
       if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
               primary_account.account_id)) {
-        result.primary_account_not_fully_signed_in = true;
+        result.primary_account_is_fully_signed_in = false;
       }
     }
 
@@ -445,8 +443,8 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
          signin::Tribool::kUnknown)) {
       capability_value = CanUseGeminiInChrome(primary_account.capabilities);
     }
-    result.primary_account_not_capable =
-        (capability_value != signin::Tribool::kTrue);
+    result.primary_account_is_capable =
+        (capability_value == signin::Tribool::kTrue);
 
     // If the feature is overridden by a field trial, and the user's eligibility
     // is known and different for the two capabilities, add them to a synthetic
@@ -467,18 +465,18 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
               field_trial->GetGroupNameWithoutActivation());
     }
 
-    result.live_disallowed =
-        primary_account.capabilities.can_use_model_execution_features() !=
+    result.live_allowed =
+        primary_account.capabilities.can_use_model_execution_features() ==
         signin::Tribool::kTrue;
 
-    result.share_image_disallowed =
-        primary_account.capabilities.can_use_model_execution_features() !=
+    result.share_image_allowed =
+        primary_account.capabilities.can_use_model_execution_features() ==
         signin::Tribool::kTrue;
   }
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled)) {
-    result.disallowed_by_chrome_policy = true;
+    result.allowed_by_chrome_policy = false;
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
@@ -487,10 +485,10 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
         cached_user_status.has_value()) {
       switch (cached_user_status->user_status_code) {
         case UserStatusCode::DISABLED_BY_ADMIN:
-          result.disallowed_by_remote_admin = true;
+          result.allowed_by_remote_admin = false;
           break;
         case UserStatusCode::DISABLED_OTHER:
-          result.disallowed_by_remote_other = true;
+          result.allowed_by_remote_other = false;
           break;
         case UserStatusCode::ENABLED:
           break;
@@ -550,12 +548,14 @@ bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {
   return is_enabled && IsSystemRequirementMet();
 }
 
+// static
 bool GlicEnabling::IsEnabledByGlobalCriteria() {
   return g_browser_process->GetFeatures()
       ->glic_global_enabling()
       .IsEnabledByGlobalCriteria();
 }
 
+// static
 bool GlicEnabling::IsProfileEligible(Profile* profile) {
   if (g_bypass_enablement_checks_for_testing) {
     return true;
@@ -590,6 +590,7 @@ bool GlicEnabling::IsAnchoredButIneligible(bool global_criteria_met,
              features::kGlicAnchorEntryPointForOnboardedUsers);
 }
 
+// static
 void GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(
     Profile* profile) {
   if (g_bypass_enablement_checks_for_testing) {
@@ -607,7 +608,7 @@ void GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(
   if (!IsEnabledByGlobalCriteria()) {
     base::UmaHistogramEnumeration(
         "Glic.ProfileEnablement.DisabledReason.Startup",
-        ProfileEnablement::Reason::kFeatureDisabled);
+        DisabledReason::kFeatureDisabled);
   }
   // Aside from flag enablement, `profile` can also be ineligible if it is not
   // a regular profile, or it fails ChromeOS-specific checks in
@@ -625,30 +626,36 @@ void GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(
   if (not_regular_profile) {
     base::UmaHistogramEnumeration(
         "Glic.ProfileEnablement.DisabledReason.Startup",
-        ProfileEnablement::Reason::kNotRegularProfile);
+        DisabledReason::kNotRegularProfile);
   }
 }
 
+// static
 bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
   return EnablementForProfile(profile).IsEnabled();
 }
 
+// static
 bool GlicEnabling::HasConsentedForProfile(Profile* profile) {
   return profile && GetCompletedFre(profile) == prefs::FreStatus::kCompleted;
 }
 
+// static
 bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
   return EnablementForProfile(profile).IsEnabledAndConsented();
 }
 
+// static
 bool GlicEnabling::DidDismissForProfile(Profile* profile) {
   return profile && GetCompletedFre(profile) == prefs::FreStatus::kIncomplete;
 }
 
+// static
 bool GlicEnabling::IsReadyForProfile(Profile* profile) {
   return GetProfileReadyState(profile) == mojom::ProfileReadyState::kReady;
 }
 
+// static
 mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   // The order of these checks is important. Higher priority states (like admin
   // disablement or sign-in requirements) should be returned first.
@@ -662,7 +669,7 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
     return mojom::ProfileReadyState::kDisabledByAdmin;
   }
 
-  if (enablement.primary_account_not_fully_signed_in) {
+  if (!enablement.primary_account_is_fully_signed_in) {
     return mojom::ProfileReadyState::kSignInRequired;
   }
 
@@ -670,7 +677,7 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   // state if the entry point is "anchored" (i.e. the user has onboarded
   // previously and we want to show the button in an error state instead of
   // hiding it).
-  if (enablement.primary_account_not_capable) {
+  if (!enablement.primary_account_is_capable) {
     if (enablement.anchor_entrypoint_override_active) {
       return mojom::ProfileReadyState::kIneligibleAccount;
     } else {
@@ -680,7 +687,7 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
 
   // Similar to account capability, for country filtering we only show a
   // specific mismatch error if the entry point is anchored.
-  if (enablement.disallowed_by_country_filter) {
+  if (!enablement.allowed_by_country_filter) {
     if (enablement.anchor_entrypoint_override_active) {
       return mojom::ProfileReadyState::kLocationMismatch;
     } else {
@@ -704,6 +711,7 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   return mojom::ProfileReadyState::kReady;
 }
 
+// static
 bool GlicEnabling::IsEligibleForGlicTieredRollout(Profile* profile) {
   if (base::FeatureList::IsEnabled(features::kGlicTieredRollout) &&
       profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility)) {
@@ -721,11 +729,13 @@ bool GlicEnabling::IsEligibleForGlicTieredRollout(Profile* profile) {
              subscription_eligibility_service->GetAiSubscriptionTier());
 }
 
+// static
 bool GlicEnabling::IsInternalsWebUIEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kGlic) &&
          profile->IsRegularProfile();
 }
 
+// static
 bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
   return EnablementForProfile(profile).ShouldShowSettingsPage();
 }
@@ -772,6 +782,7 @@ bool GlicEnabling::IsChromeOSProfileEligible(Profile* profile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// static
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
   if (!base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
     return false;
@@ -784,6 +795,7 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
   return features::kAutoOpenGlicForPdfWithOnboarding.Get();
 }
 
+// static
 bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
   bool enabled = IsEnabledForProfile(profile) &&
                  base::FeatureList::IsEnabled(features::kGlicContextMenu);
@@ -791,16 +803,19 @@ bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
   return enabled;
 }
 
+// static
 bool GlicEnabling::IsSelectionPromptEnabledForProfile(Profile* profile) {
   return IsEnabledForProfile(profile) &&
          base::FeatureList::IsEnabled(features::kGlicSelectionPrompt);
 }
 
+// static
 bool GlicEnabling::IsLiveAndFloatyEnabledByFlags() {
   // Despite the name, when off, this disables live mode and floaty.
   return base::FeatureList::IsEnabled(features::kGlicLiveMode);
 }
 
+// static
 bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
   auto enablement = EnablementForProfile(profile);
   return enablement.IsEnabled() && enablement.EligibleForShareImage() &&
