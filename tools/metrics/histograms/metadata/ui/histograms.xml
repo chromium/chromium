@@ -79,9 +79,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserEntrypointType) -->
 
+<!-- LINT.IfChange(DefaultBrowserSetterType) -->
+
 <variants name="DefaultBrowserSetterType">
   <variant name="ShellIntegration" summary="the shell integration setter"/>
+  <variant name="VisualGuide" summary="the visual guide setter"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_setter.h:DefaultBrowserSetterType) -->
 
 <variants name="ExistingWindow">
   <variant name="WithExistingWindow"

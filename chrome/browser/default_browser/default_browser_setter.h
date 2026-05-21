@@ -15,6 +15,7 @@ using DefaultBrowserState = shell_integration::DefaultWebClientState;
 using DefaultBrowserSetterCompletionCallback =
     base::OnceCallback<void(DefaultBrowserState)>;
 
+// LINT.IfChange(DefaultBrowserSetterType)
 enum class DefaultBrowserSetterType {
   // This setter utilizes `shell_integration` to set the Default Browser
   // directly (Mac and Linux) or by opening the Settings Panel UI and navigating
@@ -27,6 +28,7 @@ enum class DefaultBrowserSetterType {
   kVisualGuide = 1,
   kMaxValue = kVisualGuide,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:DefaultBrowserSetterType)
 
 class DefaultBrowserSetter {
  public:
