@@ -108,6 +108,7 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
       turl_service->GetDefaultSearchProvider()->url_ref();
   TemplateURLRef::SearchTermsArgs search_term_args =
       TemplateURLRef::SearchTermsArgs(query_text);
+  search_term_args.append_extra_query_params_from_command_line = true;
   GURL result_url = GURL(url_ref.ReplaceSearchTerms(
       search_term_args, turl_service->search_terms_data()));
 
