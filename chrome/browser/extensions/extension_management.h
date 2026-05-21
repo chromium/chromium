@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -26,6 +25,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -296,7 +296,7 @@ class ExtensionManagement : public KeyedService,
   // A set of extension IDs whose parsing of settings and insertion into
   // `settings_by_id_` has been deferred until needed. We keep track of this to
   // avoid scanning the prefs repeatedly for entries that don't have a setting.
-  base::flat_set<std::string> deferred_ids_;
+  absl::flat_hash_set<std::string> deferred_ids_;
 
   // Similar to `settings_by_id_`, but contains the settings for a group of
   // extensions with same update URL. The update url itself is used as index
