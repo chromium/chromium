@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/values.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 
@@ -48,6 +49,18 @@ class PrivateVerificationTokensIssuerConfig {
   // issuers list.
   static std::unique_ptr<PrivateVerificationTokensIssuerConfig> Create(
       base::DictValue config);
+
+  // Loads and parses the config from the config file at `path`. The config file
+  // is obtained through component updater. Returns nullptr if file reading or
+  // parsing fails which should not happen in theory since the component
+  // updater will have its own check on the server side to verify the file
+  // before serving.
+  //
+  // NOTE: This function performs blocking I/O and must be called on a
+  // sequence that allows blocking (e.g., using base::ThreadPool with
+  // base::MayBlock()).
+  static std::unique_ptr<PrivateVerificationTokensIssuerConfig> LoadFromFile(
+      const base::FilePath& path);
 
   PrivateVerificationTokensIssuerConfig(
       const PrivateVerificationTokensIssuerConfig&) = delete;

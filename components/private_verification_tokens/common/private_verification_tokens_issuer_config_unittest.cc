@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -495,6 +497,77 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   const auto& config2 = config->config().at("b.com");
   EXPECT_EQ(config2.batch_size, 5);
   EXPECT_EQ(config2.public_key, expected_pk2);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_EmptyPath) {
+  auto result =
+      PrivateVerificationTokensIssuerConfig::LoadFromFile(base::FilePath());
+  EXPECT_FALSE(result);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_FileNotFound) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("test_config.json"));
+  auto result = PrivateVerificationTokensIssuerConfig::LoadFromFile(path);
+  EXPECT_FALSE(result);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_InvalidJson) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("test_config.json"));
+  ASSERT_TRUE(base::WriteFile(path, "invalid json"));
+  auto result = PrivateVerificationTokensIssuerConfig::LoadFromFile(path);
+  EXPECT_FALSE(result);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_EmptyFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("test_config.json"));
+  ASSERT_TRUE(base::WriteFile(path, ""));
+  auto result = PrivateVerificationTokensIssuerConfig::LoadFromFile(path);
+  EXPECT_FALSE(result);
+}
+
+TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_ValidJson) {
+  const std::vector<uint8_t> serialized_public_key = {3, 6, 8, 12, 14};
+  const std::string encoded_public_key =
+      base::Base64Encode(serialized_public_key);
+  const std::string json_str = base::StringPrintf(
+      R"({
+    "issuers": [
+      {
+        "domain": "example.com",
+        "version": 1,
+        "key_id": 3,
+        "public_key": "%s",
+        "batch_size": 3,
+        "expiration": "12"
+      }
+    ]
+  })",
+      encoded_public_key.c_str());
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("test_config.json"));
+  ASSERT_TRUE(base::WriteFile(path, json_str));
+  auto result = PrivateVerificationTokensIssuerConfig::LoadFromFile(path);
+  EXPECT_TRUE(result);
+  EXPECT_THAT(result->config(), testing::SizeIs(1));
+  EXPECT_TRUE(result->config().contains("example.com"));
+
+  EXPECT_EQ(result->config().at("example.com").batch_size, 3);
+
+  const PrivateVerificationTokensPublicKey expected_public_key{
+      "example.com", serialized_public_key, 3,
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(12)), 1};
+  EXPECT_EQ(result->config().at("example.com").public_key, expected_public_key);
 }
 
 }  // namespace private_verification_tokens

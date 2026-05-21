@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -176,6 +178,24 @@ PrivateVerificationTokensIssuerConfig::PrivateVerificationTokensIssuerConfig(
 
 PrivateVerificationTokensIssuerConfig::
     ~PrivateVerificationTokensIssuerConfig() = default;
+
+// static
+std::unique_ptr<PrivateVerificationTokensIssuerConfig>
+PrivateVerificationTokensIssuerConfig::LoadFromFile(
+    const base::FilePath& path) {
+  if (path.empty()) {
+    return nullptr;
+  }
+  std::string content;
+  if (!base::ReadFileToString(path, &content)) {
+    return nullptr;
+  }
+  std::optional<base::Value> value = base::JSONReader::Read(content, 0);
+  if (!value || !value->is_dict()) {
+    return nullptr;
+  }
+  return Create(std::move(*value).TakeDict());
+}
 
 const std::map<std::string, IssuerConfig>&
 PrivateVerificationTokensIssuerConfig::config() const {
