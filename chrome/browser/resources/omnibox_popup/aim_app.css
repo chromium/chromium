@@ -161,23 +161,24 @@
   height: 40px;
 }
 
-cr-composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
+#composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
   bottom: 10px;
 }
 
-:host([energy-effect-enabled_]) cr-composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
+:host([energy-effect-enabled_])
+    #composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
   inset-inline-end: 8px;
 }
 
 /* Only set min height/width if it exists;
  * otherwise use existing min height/width.
  */
-cr-composebox.has-embedded-permission-prompt::part(composebox) {
+#composebox.has-embedded-permission-prompt::part(composebox) {
   min-height: var(--cr_composebox_minimum_height);
   min-width: var(--cr_composebox_minimum_width);
 }
 
-cr-composebox::part(voice-icon) {
+#composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
 
@@ -191,11 +192,12 @@ cr-composebox::part(voice-icon) {
   inset-inline-end: 14px;
 }
 
-cr-composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
+#composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
   bottom: 6px;
 }
 
-:host([energy-effect-enabled_]) cr-composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
+:host([energy-effect-enabled_])
+    #composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
   bottom: 10px;
   inset-inline-end: 8px;
 }
