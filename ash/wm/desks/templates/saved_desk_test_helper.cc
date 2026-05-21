@@ -8,14 +8,64 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/desks_storage/core/admin_template_service.h"
+#include "components/desks_storage/core/desk_model.h"
+#include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 
 namespace ash {
+namespace {
+
+class DeskModelsReadyWaiter : public desks_storage::DeskModelObserver {
+ public:
+  DeskModelsReadyWaiter(
+      desks_storage::DeskModel* saved_desk_model,
+      desks_storage::AdminTemplateService* admin_template_service)
+      : saved_desk_model_(saved_desk_model),
+        admin_template_service_(admin_template_service) {
+    observations_.AddObservation(saved_desk_model_);
+    observations_.AddObservation(admin_template_service_->GetFullDeskModel());
+  }
+
+  DeskModelsReadyWaiter(const DeskModelsReadyWaiter&) = delete;
+  DeskModelsReadyWaiter& operator=(const DeskModelsReadyWaiter&) = delete;
+
+  ~DeskModelsReadyWaiter() override = default;
+
+  void Wait() {
+    if (AreDeskModelsReady()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  // desks_storage::DeskModelObserver:
+  void DeskModelLoaded() override {
+    if (AreDeskModelsReady()) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  bool AreDeskModelsReady() const {
+    return saved_desk_model_->IsReady() && admin_template_service_->IsReady();
+  }
+
+  raw_ptr<desks_storage::DeskModel> saved_desk_model_;
+  raw_ptr<desks_storage::AdminTemplateService> admin_template_service_;
+  base::RunLoop run_loop_;
+  base::ScopedMultiSourceObservation<desks_storage::DeskModel,
+                                     desks_storage::DeskModelObserver>
+      observations_{this};
+};
+
+}  // namespace
 
 SavedDeskTestHelper::SavedDeskTestHelper() {
   CHECK(desk_model_data_dir_.CreateUniqueTempDir());
@@ -108,11 +158,8 @@ void SavedDeskTestHelper::AddAppIdToAppRegistryCache(
 }
 
 void SavedDeskTestHelper::WaitForDeskModels() {
-  while (
-      !(saved_desk_model_->IsReady() && admin_template_service_->IsReady())) {
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
-  }
+  DeskModelsReadyWaiter(saved_desk_model_.get(), admin_template_service_.get())
+      .Wait();
 }
 
 }  // namespace ash
