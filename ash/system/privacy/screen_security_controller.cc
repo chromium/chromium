@@ -43,10 +43,12 @@ ScreenSecurityController::~ScreenSecurityController() {
 }
 
 void ScreenSecurityController::StopAllSessions(bool is_screen_access) {
-  message_center::MessageCenter::Get()->RemoveNotification(
-      is_screen_access ? kScreenAccessNotificationId
-                       : kRemotingScreenShareNotificationId,
-      /*by_user=*/false);
+  if (!features::IsVideoConferenceEnabled() || !is_screen_access) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        is_screen_access ? kScreenAccessNotificationId
+                         : kRemotingScreenShareNotificationId,
+        /*by_user=*/false);
+  }
 
   std::vector<base::OnceClosure> callbacks;
   std::swap(callbacks, is_screen_access ? screen_access_stop_callbacks_
@@ -155,11 +157,12 @@ void ScreenSecurityController::OnScreenAccessStart(
 }
 
 void ScreenSecurityController::OnScreenAccessStop() {
+  StopAllSessions(/*is_screen_access=*/true);
+
   if (features::IsVideoConferenceEnabled()) {
     return;
   }
 
-  StopAllSessions(/*is_screen_access=*/true);
   UpdatePrivacyIndicatorsScreenShareStatus(
       /*is_screen_sharing=*/false,
       /*is_remote_screen_sharing_notification=*/false);
