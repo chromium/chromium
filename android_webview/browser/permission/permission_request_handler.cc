@@ -52,11 +52,11 @@ void PermissionRequestHandler::SendRequest(
     return;
   }
 
-  base::WeakPtr<AwPermissionRequest> weak_request;
-  base::android::ScopedJavaLocalRef<jobject> java_peer =
-      AwPermissionRequest::Create(std::move(request), &weak_request);
-  requests_.push_back(weak_request);
-  client_->OnPermissionRequest(java_peer, weak_request.get());
+  base::WeakPtr<AwPermissionRequest> weak_request =
+      client_->OnPermissionRequest(std::move(request));
+  if (weak_request) {
+    requests_.push_back(weak_request);
+  }
   PruneRequests();
 }
 
