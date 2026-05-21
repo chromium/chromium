@@ -536,6 +536,15 @@ void XMLDocumentParserRs::EndElementNs(rust::Str local_name,
   ContainerNode* n = current_node_;
   auto* element = DynamicTo<Element>(n);
   if (!element) {
+    // Check if the current node is the DocumentFragment for an
+    // HTMLTemplateElement that is ancestor_resetting_namespace_.
+    if (auto* resetting_template = DynamicTo<HTMLTemplateElement>(
+            ancestor_resetting_namespace_.Get())) {
+      if (resetting_template->content() == current_node_) {
+        ancestor_resetting_namespace_ = nullptr;
+      }
+    }
+
     PopCurrentNode();
     return;
   }
