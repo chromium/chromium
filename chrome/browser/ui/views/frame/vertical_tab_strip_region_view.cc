@@ -119,6 +119,9 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   SetPaintToLayer();
   // Because corners may be transparent, this must be set to false.
   layer()->SetFillsBoundsOpaquely(false);
+  // Because tab icons may render outside of the bounds, this must be set to
+  // true.
+  layer()->SetMasksToBounds(true);
 
   const int region_horizontal_padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
