@@ -248,9 +248,10 @@ TEST_F(PasswordFormFillingTest, Autofill) {
       /*suggestion_banned_fields=*/{});
 
   // On Android, Mac and Win authentication will prevent autofilling credentials
-  // on page load. On iOS Reauth is always required.
+  // on page load. On iOS Reauth is always required. On Linux
+  // kFillOnAccountSelect feature is enabled.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
   EXPECT_TRUE(fill_data.wait_for_username);
 #else
@@ -339,8 +340,9 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     if (test_case.current_password_present) {
       // On Android, Mac and Win authentication will prevent autofilling
       // credentials on page load. On iOS Reauth is always required.
+      // On Linux kFillOnAccountSelect feature is enabled.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
       EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 #else
       EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
@@ -533,6 +535,9 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadWithCrossOriginAncestor) {
 }
 
 TEST_F(PasswordFormFillingTest, NoFillOnPageloadForSingleUsernameForm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kFillOnAccountSelect);
   base::HistogramTester histogram_tester;
   // Remove the password element from the observed form.
   observed_form_.password_element_renderer_id = FieldRendererId();
@@ -551,6 +556,9 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadForSingleUsernameForm) {
 }
 
 TEST_F(PasswordFormFillingTest, NoFillOnPageLoadWhileActorTaskIsActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kFillOnAccountSelect);
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> best_matches = {saved_match_};
   const std::vector<PasswordForm> federated_matches = {};
@@ -567,6 +575,9 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageLoadWhileActorTaskIsActive) {
 }
 
 TEST_F(PasswordFormFillingTest, NoFillOnPageLoadWhileChangingPassword) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kFillOnAccountSelect);
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> best_matches = {saved_match_};
   const std::vector<PasswordForm> federated_matches = {};
@@ -586,6 +597,9 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageLoadWhileChangingPassword) {
 }
 
 TEST_F(PasswordFormFillingTest, NoFillOnPageLoadForLeakedPassword) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kFillOnAccountSelect);
   base::HistogramTester histogram_tester;
   saved_match_.change_password_url =
       GURL("https://example.com/.well-known/change-password/");

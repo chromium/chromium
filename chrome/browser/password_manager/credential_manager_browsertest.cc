@@ -976,7 +976,21 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
               MatchesFormExceptStore(stored[signin_form.signon_realm][0]));
 }
 
-IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, CredentialsAutofilled) {
+class CredentialManagerAutofillBrowserTest
+    : public CredentialManagerBrowserTest {
+ public:
+  CredentialManagerAutofillBrowserTest() {
+    // TODO(504600482): Remove this and update tests when the bug is closed.
+    scoped_feature_list_.InitAndDisableFeature(
+        password_manager::features::kFillOnAccountSelect);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CredentialManagerAutofillBrowserTest,
+                       CredentialsAutofilled) {
   NavigateToFile("/password/password_form.html");
 
   ASSERT_TRUE(content::ExecJs(

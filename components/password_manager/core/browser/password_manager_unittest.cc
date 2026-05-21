@@ -3504,7 +3504,8 @@ TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
   EXPECT_EQ(android_form.password_value,
             form_data.preferred_login.password_value);
   // On Android Touch To Fill will prevent autofilling credentials on page load.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Linux kFillOnAccountSelect feature is enabled.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(form_data.wait_for_username);
 #else
   EXPECT_FALSE(form_data.wait_for_username);
