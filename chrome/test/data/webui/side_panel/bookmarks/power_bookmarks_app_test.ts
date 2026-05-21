@@ -178,6 +178,8 @@ suite('General', () => {
               .getElementsForTesting()
               .map((el: HTMLElement) => el.id));
 
+      const navigationElementsRebuilt = eventToPromise(
+          'rebuild-navigation-elements', powerBookmarksApp.$.bookmarksList);
       bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
         id: '999',
         title: 'New bookmark of current url',
@@ -189,10 +191,7 @@ suite('General', () => {
         dateLastUsed: null,
         unmodifiable: false,
       });
-      await microtasksFinished();
-      await flushTasks();
-      powerBookmarksApp.$.bookmarksList
-          .flushNavigationElementsDebouncerForTesting();
+      await navigationElementsRebuilt;
 
       assertArrayEquals(
           [
@@ -208,8 +207,7 @@ suite('General', () => {
               .map((el: HTMLElement) => el.id));
     });
 
-    // TODO(crbug.com/489813344): Flaky test.
-    test.skip('RebuildsKeyboardNavigationOnRemoved', async () => {
+    test('RebuildsKeyboardNavigationOnRemoved', async () => {
       assertArrayEquals(
           [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
@@ -222,11 +220,10 @@ suite('General', () => {
               .getElementsForTesting()
               .map((el: HTMLElement) => el.id));
 
+      const navigationElementsRebuilt = eventToPromise(
+          'rebuild-navigation-elements', powerBookmarksApp.$.bookmarksList);
       bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['4']);
-      await flushTasks();
-      await waitAfterNextRender(powerBookmarksApp);
-      powerBookmarksApp.$.bookmarksList
-          .flushNavigationElementsDebouncerForTesting();
+      await navigationElementsRebuilt;
 
       assertArrayEquals(
           [
@@ -280,6 +277,8 @@ suite('General', () => {
               .getElementsForTesting()
               .map((el: HTMLElement) => el.id));
 
+      const navigationElementsRebuilt = eventToPromise(
+          'rebuild-navigation-elements', powerBookmarksApp.$.bookmarksList);
       const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
       assertTrue(!!movedBookmark);
       bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
@@ -289,10 +288,7 @@ suite('General', () => {
           /*parentId=*/ FOLDERS[1]!.id,  // Moving to other bookmarks.
           /*index=*/ 0,
       );
-      await microtasksFinished();
-      await flushTasks();
-      powerBookmarksApp.$.bookmarksList
-          .flushNavigationElementsDebouncerForTesting();
+      await navigationElementsRebuilt;
 
       assertArrayEquals(
           [

@@ -348,17 +348,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   onBookmarkRemoved(bookmark: BookmarksTreeNode) {
+    getAnnouncerInstance().announce(
+        loadTimeData.getStringF('bookmarkDeleted', getBookmarkName(bookmark)));
+
     const scrollTop = this.$.scroller.scrollTop;
-    this.updateDisplayLists_();
-    const isShown = this.bookmarkIsShowing_(bookmark);
-    if (isShown) {
-      this.removeNodeFromDisplayLists_(bookmark.id);
-      getAnnouncerInstance().announce(loadTimeData.getStringF(
-          'bookmarkDeleted', getBookmarkName(bookmark)));
-      afterNextRender(this, () => {
-        this.$.scroller.scrollTop = scrollTop;
-      });
-    }
+    afterNextRender(this, () => {
+      this.$.scroller.scrollTop = scrollTop;
+    });
 
     if (this.shoppingCollectionFolderId_ === bookmark.id) {
       this.shoppingCollectionFolderId_ = '';
@@ -368,7 +364,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
     // If the parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(bookmark.parentId, 'children');
-    this.rebuildNavigationElements_();
   }
 
   /** PowerBookmarksDragDelegate */
@@ -612,6 +607,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.rebuildNavigationElementsDebouncer_ = Debouncer.debounce(
         this.rebuildNavigationElementsDebouncer_, timeOut.after(1), () => {
           this.keyArrowNavigationService_.rebuildNavigationElements();
+          this.dispatchEvent(new CustomEvent('rebuild-navigation-elements'));
           if (this.recordCountMetricsOnNextUpdate_) {
             this.recordBookmarkCountMetricsInternal_();
             this.recordCountMetricsOnNextUpdate_ = false;
