@@ -22,10 +22,10 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/binding_key_registration_token_helper.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -119,7 +119,7 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
     bool mtls_token_binding,
     SigninClient* signin_client,
     AccountReconcilor* account_reconcilor,
-    base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
+    base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
                    TokenBindingOutcome> registration_token_helper_or_error,
     DiceSigninSession* session)
     : gaia_id_(gaia_id),
@@ -207,7 +207,7 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
 }
 
 void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
-    BindingKeyRegistrationTokenHelper& registration_token_helper) {
+    signin::BindingKeyRegistrationTokenHelper& registration_token_helper) {
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   // `base::Unretained()` is safe because `DiceResponseHandler` guarantees that
@@ -220,7 +220,7 @@ void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
 }
 
 void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
-    std::optional<BindingKeyRegistrationTokenHelper::Result> result) {
+    std::optional<signin::BindingKeyRegistrationTokenHelper::Result> result) {
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   if (result.has_value()) {
@@ -305,7 +305,7 @@ void DiceResponseHandler::DiceSigninSession::FetchTokenForAccount(
     return;
   }
 
-  base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
+  base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
                  TokenBindingOutcome>
       registration_token_helper_or_error =
           handler_->MaybeGetBindingRegistrationTokenHelper(
@@ -647,7 +647,7 @@ void DiceResponseHandler::DeleteSession(DiceSigninSession* session) {
   }
 }
 
-base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
+base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
                DiceResponseHandler::TokenBindingOutcome>
 DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
     std::string_view supported_algorithms) {
@@ -691,6 +691,6 @@ DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
   // list may mismatch `supported_algorithms`. We ignore this because it's more
   // important to reuse the same key.
   CHECK(registration_token_helper_);
-  return raw_ref<BindingKeyRegistrationTokenHelper>(
+  return raw_ref<signin::BindingKeyRegistrationTokenHelper>(
       *registration_token_helper_);
 }

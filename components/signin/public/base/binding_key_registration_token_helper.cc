@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/binding_key_registration_token_helper.h"
+#include "components/signin/public/base/binding_key_registration_token_helper.h"
 
 #include <optional>
 #include <string_view>
@@ -22,6 +22,8 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+
+namespace signin {
 
 namespace {
 
@@ -57,7 +59,8 @@ BindingKeyRegistrationTokenHelper::BindingKeyRegistrationTokenHelper(
     : unexportable_key_service_(unexportable_key_service),
       key_init_param_(std::move(key_init_param)) {}
 
-BindingKeyRegistrationTokenHelper::~BindingKeyRegistrationTokenHelper() = default;
+BindingKeyRegistrationTokenHelper::~BindingKeyRegistrationTokenHelper() =
+    default;
 
 void BindingKeyRegistrationTokenHelper::GenerateForSessionBinding(
     std::string_view challenge,
@@ -67,14 +70,12 @@ void BindingKeyRegistrationTokenHelper::GenerateForSessionBinding(
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForSessionBinding,
       std::string(challenge), registration_url);
-  key_loader_->InvokeCallbackAfterKeyLoaded(
-      base::BindOnce(&BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(header_and_payload_generator),
-                     base::BindOnce(&BindingKeyRegistrationTokenHelper::
-                                        RecordResultAndInvokeCallback,
-                                    kSessionBindingResultHistogram,
-                                    std::move(callback))));
+  key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
+      &BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
+      weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
+      base::BindOnce(
+          &BindingKeyRegistrationTokenHelper::RecordResultAndInvokeCallback,
+          kSessionBindingResultHistogram, std::move(callback))));
 }
 void BindingKeyRegistrationTokenHelper::GenerateForTokenBinding(
     std::string_view client_id,
@@ -85,14 +86,12 @@ void BindingKeyRegistrationTokenHelper::GenerateForTokenBinding(
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForTokenBinding,
       std::string(client_id), std::string(auth_code), registration_url);
-  key_loader_->InvokeCallbackAfterKeyLoaded(
-      base::BindOnce(&BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(header_and_payload_generator),
-                     base::BindOnce(&BindingKeyRegistrationTokenHelper::
-                                        RecordResultAndInvokeCallback,
-                                    kTokenBindingResultHistogram,
-                                    std::move(callback))));
+  key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
+      &BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
+      weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
+      base::BindOnce(
+          &BindingKeyRegistrationTokenHelper::RecordResultAndInvokeCallback,
+          kTokenBindingResultHistogram, std::move(callback))));
 }
 
 void BindingKeyRegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
@@ -188,14 +187,14 @@ void BindingKeyRegistrationTokenHelper::CreateRegistrationToken(
 
 void BindingKeyRegistrationTokenHelper::RecordResultAndInvokeCallback(
     std::string_view result_histogram_name,
-    base::OnceCallback<
-        void(std::optional<BindingKeyRegistrationTokenHelper::Result>)>
-        callback,
+    base::OnceCallback<void(
+        std::optional<BindingKeyRegistrationTokenHelper::Result>)> callback,
     base::expected<BindingKeyRegistrationTokenHelper::Result,
-                   BindingKeyRegistrationTokenHelper::Error>
-        result_or_error) {
+                   BindingKeyRegistrationTokenHelper::Error> result_or_error) {
   base::UmaHistogramEnumeration(result_histogram_name,
                                 result_or_error.error_or(Error::kNone));
   std::move(callback).Run(
       base::OptionalFromExpected(std::move(result_or_error)));
 }
+
+}  // namespace signin

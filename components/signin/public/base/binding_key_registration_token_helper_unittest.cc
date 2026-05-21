@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/binding_key_registration_token_helper.h"
+#include "components/signin/public/base/binding_key_registration_token_helper.h"
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -21,6 +21,8 @@
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace signin {
 
 using ::testing::AtLeast;
 using ::testing::NiceMock;
@@ -47,16 +49,15 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
-  void VerifyResult(
-      const BindingKeyRegistrationTokenHelper::Result& result) {
+  void VerifyResult(const BindingKeyRegistrationTokenHelper::Result& result) {
     crypto::SignatureVerifier::SignatureAlgorithm algorithm =
         *unexportable_key_service().GetAlgorithm(result.binding_key_id);
     std::vector<uint8_t> pubkey =
         *unexportable_key_service().GetSubjectPublicKeyInfo(
             result.binding_key_id);
 
-    EXPECT_TRUE(signin::VerifyJwtSignature(result.registration_token, algorithm,
-                                           pubkey));
+    EXPECT_TRUE(
+        VerifyJwtSignature(result.registration_token, algorithm, pubkey));
     EXPECT_EQ(result.wrapped_binding_key,
               unexportable_key_service().GetWrappedKey(result.binding_key_id));
   }
@@ -103,8 +104,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SuccessForTokenBinding) {
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future;
-  BindingKeyRegistrationTokenHelper helper(unexportable_key_service(),
-                                           base::ToVector(kAcceptableAlgorithms));
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
                                  GURL("https://accounts.google.com/Register"),
                                  future.GetCallback());
@@ -144,11 +145,11 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SuccessForSessionBinding) {
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future;
-  BindingKeyRegistrationTokenHelper helper(unexportable_key_service(),
-                                           base::ToVector(kAcceptableAlgorithms));
-  helper.GenerateForSessionBinding(
-      "test_challenge", GURL("https://accounts.google.com/Register"),
-      future.GetCallback());
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
+  helper.GenerateForSessionBinding("test_challenge",
+                                   GURL("https://accounts.google.com/Register"),
+                                   future.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
   VerifyResult(future.Get().value());
@@ -166,8 +167,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, DoubleRegistration) {
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future_2;
-  BindingKeyRegistrationTokenHelper helper(unexportable_key_service(),
-                                           base::ToVector(kAcceptableAlgorithms));
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("client_id_1", "auth_code_1",
                                  GURL("https://accounts.google.com/Register1"),
                                  future_1.GetCallback());
@@ -193,8 +194,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, Failure) {
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future;
-  BindingKeyRegistrationTokenHelper helper(unexportable_key_service(),
-                                           base::ToVector(kAcceptableAlgorithms));
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
                                  GURL("https://accounts.google.com/Register"),
                                  future.GetCallback());
@@ -261,8 +262,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future;
-  BindingKeyRegistrationTokenHelper helper(unexportable_key_service(),
-                                           base::ToVector(kAcceptableAlgorithms));
+  BindingKeyRegistrationTokenHelper helper(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
                                  GURL("https://accounts.google.com/Register"),
                                  future.GetCallback());
@@ -273,3 +274,5 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
       BindingKeyRegistrationTokenHelper::Error::kSignAssertionFailure,
       /*expected_bucket_count=*/1);
 }
+
+}  // namespace signin

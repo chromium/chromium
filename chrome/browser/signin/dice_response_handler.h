@@ -19,11 +19,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/binding_key_registration_token_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
@@ -91,9 +91,10 @@ enum class PrimaryAccountSettingGaiaIntegrationState {
 // Processes the Dice responses from Gaia.
 class DiceResponseHandler : public KeyedService {
  public:
-  using RegistrationTokenHelperFactory =
-      base::RepeatingCallback<std::unique_ptr<BindingKeyRegistrationTokenHelper>(
-          BindingKeyRegistrationTokenHelper::KeyInitParam key_init_param)>;
+  using RegistrationTokenHelperFactory = base::RepeatingCallback<
+      std::unique_ptr<signin::BindingKeyRegistrationTokenHelper>(
+          signin::BindingKeyRegistrationTokenHelper::KeyInitParam
+              key_init_param)>;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -152,7 +153,7 @@ class DiceResponseHandler : public KeyedService {
         bool mtls_token_binding,
         SigninClient* signin_client,
         AccountReconcilor* account_reconcilor,
-        base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
+        base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
                        TokenBindingOutcome> registration_token_helper_or_error,
         DiceSigninSession* session);
 
@@ -184,9 +185,10 @@ class DiceResponseHandler : public KeyedService {
     void StartTokenFetch();
 
     void StartBindingKeyGeneration(
-        BindingKeyRegistrationTokenHelper& registration_token_helper);
+        signin::BindingKeyRegistrationTokenHelper& registration_token_helper);
     void OnRegistrationTokenGenerated(
-        std::optional<BindingKeyRegistrationTokenHelper::Result> result);
+        std::optional<signin::BindingKeyRegistrationTokenHelper::Result>
+            result);
 
     // Lock the account reconcilor while tokens are being fetched.
     std::unique_ptr<AccountReconcilor::Lock> account_reconcilor_lock_;
@@ -288,9 +290,9 @@ class DiceResponseHandler : public KeyedService {
   // reason for why the refresh token wasn't bound.
   // Returned `BindingKeyRegistrationTokenHelper` is owned by `this`. See
   // `registration_token_helper_` for the description of its lifetime.
-  base::expected<raw_ref<BindingKeyRegistrationTokenHelper>, TokenBindingOutcome>
-  MaybeGetBindingRegistrationTokenHelper(
-      std::string_view supported_algorithms);
+  base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
+                 TokenBindingOutcome>
+  MaybeGetBindingRegistrationTokenHelper(std::string_view supported_algorithms);
 
   const raw_ptr<SigninClient> signin_client_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -298,7 +300,7 @@ class DiceResponseHandler : public KeyedService {
   const raw_ptr<AboutSigninInternals> about_signin_internals_;
   // Shared between all fetches in `token_fetchers_` and must outlive them.
   // Must be cleaned up as soon as `token_fetchers_` becomes empty.
-  std::unique_ptr<BindingKeyRegistrationTokenHelper>
+  std::unique_ptr<signin::BindingKeyRegistrationTokenHelper>
       registration_token_helper_;
   std::vector<std::unique_ptr<DiceSigninSession>> sessions_;
   // Lock the account reconcilor for kLockAccountReconcilorTimeoutHours
