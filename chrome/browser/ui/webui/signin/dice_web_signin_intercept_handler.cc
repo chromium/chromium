@@ -291,6 +291,11 @@ DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
                  color_utils::SkColorToRgbaString(
                      GetProfileHighlightColor(Profile::FromWebUI(web_ui()))));
   parameters.Set("useV2Design", GetShouldUseV2Design());
+  parameters.Set(
+      "useV2ProfileSwitchDesign",
+      base::FeatureList::IsEnabled(switches::kSigninInterceptGraphicUpdate) &&
+          bubble_parameters_.interception_type ==
+              WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   parameters.Set("showManagedDisclaimer",
                  bubble_parameters_.show_managed_disclaimer);
 

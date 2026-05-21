@@ -84,6 +84,8 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       {"images/split_header.svg",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_IMAGES_SPLIT_HEADER_SVG},
+      {"images/v2_profile_switch.svg",
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_IMAGES_V2_PROFILE_SWITCH_SVG},
       // Resources for testing.
       {"test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS},
       {"test_loader_util.js", IDR_WEBUI_JS_TEST_LOADER_UTIL_JS},

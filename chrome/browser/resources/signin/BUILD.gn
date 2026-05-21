@@ -53,6 +53,7 @@ build_webui("build") {
       "dice_web_signin_intercept/chrome_signin/chrome_signin.html",
       "dice_web_signin_intercept/dice_web_signin_intercept.html",
       "dice_web_signin_intercept/images/split_header.svg",
+      "dice_web_signin_intercept/images/v2_profile_switch.svg",
     ]
   }
 

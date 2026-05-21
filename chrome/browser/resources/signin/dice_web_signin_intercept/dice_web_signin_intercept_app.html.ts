@@ -11,7 +11,25 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
   return html`<!--_html_template_start_-->
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
      aria-describedby="contents">
-  ${this.interceptionParameters_.useV2Design ? html`
+  ${this.interceptionParameters_.useV2ProfileSwitchDesign ? html`
+    <div id="headerV2">
+      <svg>
+        <use href="images/v2_profile_switch.svg#EXPORT_v2_profile_switch"
+            id="headerImageIntercepted">
+        </use>
+      </svg>
+      <div id="avatarContainerSwitchProfile" class="avatar-container-v2">
+        <img class="avatar" alt=""
+            src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
+        <div class="work-badge"
+            ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
+          <cr-icon class="icon" aria-hidden="true"
+              icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
+          </cr-icon>
+        </div>
+      </div>
+    </div>
+  ` : this.interceptionParameters_.useV2Design ? html`
     <div id="headerV2">
       <svg>
         <use href="images/split_header.svg#EXPORT_primary"

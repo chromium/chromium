@@ -89,6 +89,11 @@
   --split-header-image-theme-color-fill: var(--primary-profile-color);
 }
 
+#avatarContainerSwitchProfile {
+  left: calc(50% - var(--avatar-size)/2);
+  top: calc(50% - 16px);
+}
+
 #headerImageIntercepted {
   --split-header-image-theme-color-fill: var(--intercepted-profile-color);
 }
@@ -140,7 +145,8 @@
   inset-inline-end: -9px;
 }
 
-#headerV2 #avatarIntercepted .work-badge {
+#headerV2 #avatarIntercepted .work-badge,
+#headerV2 #avatarContainerSwitchProfile .work-badge {
   background-color: var(--intercepted-profile-color);
 }
 
@@ -148,7 +154,8 @@
   background-color: var(--primary-profile-color);
 }
 
-#headerV2 #avatarIntercepted .work-badge > cr-icon {
+#headerV2 #avatarIntercepted .work-badge > cr-icon,
+#headerV2 #avatarContainerSwitchProfile .work-badge > cr-icon {
   color: var(--intercepted-profile-avatar-badge-color);
 }
 

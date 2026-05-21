@@ -34,6 +34,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
           {pictureUrl: '', avatarBadge: '', userBadgeAltText: ''},
       primaryAccount: {pictureUrl: '', avatarBadge: '', userBadgeAltText: ''},
       useV2Design: false,
+      useV2ProfileSwitchDesign: false,
       showManagedDisclaimer: false,
       interceptedProfileBadgeColor: '',
       primaryProfileBadgeColor: '',

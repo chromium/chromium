@@ -32,6 +32,7 @@ const BASE_PARAMETERS: InterceptionParameters = {
   primaryAccount:
       {pictureUrl: AVATAR_URL_2, avatarBadge: '', userBadgeAltText: ''},
   useV2Design: false,
+  useV2ProfileSwitchDesign: false,
   showManagedDisclaimer: false,
   interceptedProfileBadgeColor: 'rgba(255, 255, 1, 1)',
   primaryProfileBadgeColor: 'rgba(255, 1, 255, 1)',
@@ -308,5 +309,93 @@ suite('DiceWebSigninInterceptTestV2', function() {
     assertTrue(isVisible(managedDisclaimerElement));
     assertEquals(
         'managed_disclaimer', managedDisclaimerElement.textContent.trim());
+  });
+});
+
+suite('DiceWebSigninInterceptTestV2ProfileSwitch', function() {
+  let app: DiceWebSigninInterceptAppElement;
+  let browserProxy: TestDiceWebSigninInterceptBrowserProxy;
+
+  const PARAMETERS: InterceptionParameters = {
+    ...BASE_PARAMETERS,
+    useV2ProfileSwitchDesign: true,
+  };
+
+  setup(async function() {
+    browserProxy = new TestDiceWebSigninInterceptBrowserProxy();
+    browserProxy.setInterceptionParameters(PARAMETERS);
+    DiceWebSigninInterceptBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('dice-web-signin-intercept-app');
+    document.body.append(app);
+    return browserProxy.whenCalled('pageLoaded');
+  });
+
+  test('Layout', async function() {
+    fireParametersChanged(PARAMETERS);
+    await microtasksFinished();
+    // V1 and V2 headers should not be visible.
+    assertFalse(isChildVisible(app, '#header'));
+    assertFalse(isChildVisible(app, '#avatarIntercepted'));
+    assertFalse(isChildVisible(app, '#avatarPrimary'));
+
+    // V2 Profile Switch header should be visible.
+    assertTrue(isChildVisible(app, '#headerV2'));
+    assertTrue(isChildVisible(app, '#avatarContainerSwitchProfile'));
+
+    // Avatar should be visible.
+    const avatarSelector = '#avatarContainerSwitchProfile>img';
+    assertTrue(isChildVisible(app, avatarSelector));
+    const img = app.shadowRoot.querySelector<HTMLImageElement>(avatarSelector)!;
+    assertEquals(AVATAR_URL_1, img.src);
+  });
+
+  // Tests that clicking the accept button disables action buttons to prevent
+  // double-clicks and shows a loading spinner while the operation processes.
+  test('ClickAccept', async function() {
+    assertTrue(isChildVisible(app, '#acceptButton'));
+    const acceptButton = app.$.acceptButton;
+    const cancelButton = app.$.cancelButton;
+    assertFalse(!!app.shadowRoot.querySelector('.spinner'));
+    assertFalse(acceptButton.disabled);
+    assertFalse(cancelButton.disabled);
+
+    acceptButton.click();
+    await microtasksFinished();
+
+    assertTrue(acceptButton.disabled);
+    assertTrue(cancelButton.disabled);
+    assertTrue(!!app.shadowRoot.querySelector('.spinner'));
+    return browserProxy.whenCalled('accept');
+  });
+
+  test('ClickCancel', function() {
+    assertTrue(isChildVisible(app, '#cancelButton'));
+    app.$.cancelButton.click();
+    return browserProxy.whenCalled('cancel');
+  });
+
+  test('TextValues', function() {
+    const titleElement = app.shadowRoot.querySelector('#title')!;
+    assertEquals(PARAMETERS.bodyTitle, titleElement.textContent);
+    const contentsElement = app.shadowRoot.querySelector('#contents')!;
+    assertEquals(PARAMETERS.bodyText, contentsElement.textContent);
+  });
+
+  // Tests that the enterprise badge is correctly rendered on top of the avatar
+  // when the intercepted account is managed by an organization.
+  test('EnterpriseBadge', async function() {
+    const parameters = {
+      ...PARAMETERS,
+      interceptedAccount: {
+        ...PARAMETERS.interceptedAccount,
+        avatarBadge: 'cr:domain',
+      },
+    };
+    fireParametersChanged(parameters);
+    await microtasksFinished();
+
+    assertTrue(
+        isChildVisible(app, '#avatarContainerSwitchProfile .work-badge'));
   });
 });

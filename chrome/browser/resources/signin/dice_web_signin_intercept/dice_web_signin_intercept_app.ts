@@ -64,6 +64,7 @@ export class DiceWebSigninInterceptAppElement extends
     interceptedAccount: {pictureUrl: '', avatarBadge: '', userBadgeAltText: ''},
     primaryAccount: {pictureUrl: '', avatarBadge: '', userBadgeAltText: ''},
     useV2Design: false,
+    useV2ProfileSwitchDesign: false,
     showManagedDisclaimer: false,
     interceptedProfileBadgeColor: '',
     primaryProfileBadgeColor: '',

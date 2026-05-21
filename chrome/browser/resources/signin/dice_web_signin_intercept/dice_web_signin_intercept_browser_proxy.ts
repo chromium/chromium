@@ -31,6 +31,7 @@ export interface InterceptionParameters {
   interceptedAccount: AccountInfo;
   primaryAccount: AccountInfo;
   useV2Design: boolean;
+  useV2ProfileSwitchDesign: boolean;
   showManagedDisclaimer: boolean;
   interceptedProfileBadgeColor: string;
   primaryProfileBadgeColor: string;

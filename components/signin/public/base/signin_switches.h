@@ -560,6 +560,14 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kRestrictDeviceManagementServiceOAuthScope);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Enables the new visual design for the profile switch interception bubble,
+// aligning it with the V2 style used for new profiles. Used in
+// dice_web_signin_intercept_handler.cc.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninInterceptGraphicUpdate);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if BUILDFLAG(IS_ANDROID)
 // Experiment replacing signed out avatar with signin button on Android, see
 // crbug.com/475816843.
