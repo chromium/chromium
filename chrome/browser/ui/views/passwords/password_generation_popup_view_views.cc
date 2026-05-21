@@ -41,6 +41,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -365,11 +366,19 @@ void PasswordGenerationPopupViewViews::ButtonSelectionUpdated() {
 
   auto* nudge_password_buttons =
       static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_);
+  views::ViewTracker nudge_buttons_tracker(nudge_password_buttons);
+
   if (controller_->accept_button_selected()) {
     NotifyAXSelection(*nudge_password_buttons->GetAcceptButton());
   } else if (controller_->cancel_button_selected()) {
     NotifyAXSelection(*nudge_password_buttons->GetCancelButton());
   }
+
+  // Ensure the buttons were not destroyed during the NotifyAXSelection call.
+  if (!nudge_buttons_tracker.view()) {
+    return;
+  }
+
   nudge_password_buttons->UpdateFocus(controller_->accept_button_selected());
 }
 
