@@ -601,6 +601,9 @@ inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
 // Policy manager constants.
+// Policy source strings below are persisted to event history logs (see
+// //docs/updater/history_log.md) and serialized in GetPoliciesJson Mojo
+// responses. Changing the values is a backwards-incompatible change.
 inline constexpr char kSourceDMPolicyManager[] = "Device Management";
 inline constexpr char kSourceDefaultValuesPolicyManager[] = "Default";
 inline constexpr char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
