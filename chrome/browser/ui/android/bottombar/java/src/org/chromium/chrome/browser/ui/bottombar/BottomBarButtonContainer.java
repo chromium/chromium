@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
@@ -46,7 +47,7 @@ public class BottomBarButtonContainer extends FrameLayout implements DelegatingA
     }
 
     /** Inflates the child ViewStub. */
-    public void inflateStub() {
+    /*package*/ void inflateStub() {
         View child = getChildAt(0);
         if (child instanceof ViewStub stub) {
             mTargetView = stub.inflate();
@@ -59,9 +60,24 @@ public class BottomBarButtonContainer extends FrameLayout implements DelegatingA
      *
      * @param tint The color state list to apply.
      */
-    public void setIconTint(ColorStateList tint) {
+    /*package*/ void setIconTint(ColorStateList tint) {
         if (mTargetView instanceof ImageView imageView) {
             imageView.setImageTintList(tint);
         }
+    }
+
+    /** Returns whether the target view is set/inflated. */
+    /*package*/ boolean hasTargetView() {
+        return mTargetView != null;
+    }
+
+    /**
+     * Sets the background drawable of the target view.
+     *
+     * @param drawable The drawable to set as background.
+     */
+    /*package*/ void setTargetBackground(Drawable drawable) {
+        assert mTargetView != null;
+        mTargetView.setBackground(drawable);
     }
 }
