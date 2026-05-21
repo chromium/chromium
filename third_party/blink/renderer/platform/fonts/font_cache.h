@@ -108,9 +108,6 @@ class PLATFORM_EXPORT FontCache final {
       const SimpleFontData* font_data_to_substitute,
       FontFallbackPriority = FontFallbackPriority::kText);
 
-  // Also implemented by the platform.
-  void PlatformInit();
-
   const SimpleFontData* GetFontData(
       const FontDescription&,
       const AtomicString&,
@@ -315,7 +312,6 @@ class PLATFORM_EXPORT FontCache final {
   static float device_scale_factor_;
 #endif
 
-  bool platform_init_ = false;
   HeapHashSet<WeakMember<FontCacheClient>> font_cache_clients_;
   FontPlatformDataCache font_platform_data_cache_;
 

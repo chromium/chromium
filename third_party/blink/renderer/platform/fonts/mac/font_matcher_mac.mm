@@ -84,6 +84,12 @@ const NSFontTraitMask IMPORTANT_FONT_TRAITS =
      NSItalicFontMask | NSNarrowFontMask | NSPosterFontMask |
      NSSmallCapsFontMask);
 
+ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
+    CFStringRef family_name,
+    CTFontSymbolicTraits desired_traits,
+    int desired_weight,
+    float size);
+
 BOOL AcceptableChoice(NSFontTraitMask desired_traits,
                       NSFontTraitMask candidate_traits) {
   desired_traits &= ~SYNTHESIZED_FONT_TRAITS;
@@ -278,6 +284,10 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
 // Unlike `BestStyleMatchForFamily` where we create returned font from the best
 // matched font's descriptor, here we are creating the return font from matched
 // font's postscript name.
+// If availableMembersOfFontFamily returns an empty list, we fall back to
+// `BestStyleMatchForFamily`. This can be useful when a font is activated or
+// deactivated, as NSFontManager does not seem to refresh its list of fonts in
+// sandboxed environments until the font manager is recreated.
 ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
     CFStringRef family_name,
     CTFontSymbolicTraits desired_traits,
@@ -287,6 +297,11 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
   NSFontManager* font_manager = NSFontManager.sharedFontManager;
   NSArray<NSArray*>* fonts =
       [font_manager availableMembersOfFontFamily:CFToNSPtrCast(family_name)];
+
+  if (!fonts || fonts.count == 0) {
+    return BestStyleMatchForFamily(family_name, desired_traits, desired_weight,
+                                   size);
+  }
 
   NSString* matched_font_name;
   CTFontSymbolicTraits chosen_traits;
@@ -331,7 +346,6 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
     CTFontSymbolicTraits desired_traits,
     int desired_weight,
     float size) {
-  DCHECK(RuntimeEnabledFeatures::FontFamilyStyleMatchingCTMigrationEnabled());
   // We need the order of the fonts in the family be same as in
   // `availableMembersOfFontFamily` so that the matching results are the same.
   // That's why we don't pass kCTFontCollectionRemoveDuplicatesOption, it might

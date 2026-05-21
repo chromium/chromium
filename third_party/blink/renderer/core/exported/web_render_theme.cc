@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_default.h"
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
@@ -61,6 +62,12 @@ void SetSelectionColors(unsigned active_background_color,
 
 void SystemColorsChanged() {
   LayoutTheme::GetTheme().PlatformColorsDidChange();
+}
+
+void RegisteredFontsChanged() {
+#if BUILDFLAG(IS_MAC)
+  FontCache::InvalidateFromAnyThread();
+#endif
 }
 
 void ColorSchemeChanged() {

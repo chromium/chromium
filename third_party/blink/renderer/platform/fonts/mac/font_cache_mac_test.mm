@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
@@ -15,7 +17,9 @@ const FontSelectionValue Weights[] = {
     kNormalWeightValue, kMediumWeightValue,     kSemiBoldWeightValue,
     kBoldWeightValue,   kExtraBoldWeightValue,  kBlackWeightValue};
 
-class FontCacheMacTest : public testing::TestWithParam<FontSelectionValue> {
+class FontCacheMacTest
+    : public FontTestBase,
+      public testing::WithParamInterface<FontSelectionValue> {
  protected:
   FontDescription CreateFontDescriptionWithFontSynthesisNone(
       FontSelectionValue weight,
@@ -53,6 +57,10 @@ class FontCacheMacTest : public testing::TestWithParam<FontSelectionValue> {
       EXPECT_FALSE(font_platform_data->SyntheticBold());
     }
   }
+
+  size_t PlatformDataCacheSize() {
+    return FontCache::Get().font_platform_data_cache_.map_.size();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(SystemUISyntheticBold,
@@ -61,6 +69,23 @@ INSTANTIATE_TEST_SUITE_P(SystemUISyntheticBold,
 
 TEST_P(FontCacheMacTest, SystemUISyntheticBoldCoreText) {
   TestSystemUISyntheticBold();
+}
+
+TEST_F(FontCacheMacTest, InvalidateOnRegisteredFontsChanged) {
+  FontCache& font_cache = FontCache::Get();
+  FontDescription font_description;
+  font_description.SetFamily(
+      FontFamily(AtomicString("Arial"), FontFamily::Type::kFamilyName));
+
+  // Populate the cache.
+  font_cache.GetFontData(font_description, AtomicString("Arial"));
+  EXPECT_GT(PlatformDataCacheSize(), 0u);
+
+  // Trigger invalidation.
+  RegisteredFontsChanged();
+
+  // Verify the cache is cleared.
+  EXPECT_EQ(PlatformDataCacheSize(), 0u);
 }
 
 }  // namespace blink
