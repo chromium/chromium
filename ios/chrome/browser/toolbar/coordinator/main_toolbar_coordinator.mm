@@ -15,6 +15,9 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
@@ -50,6 +54,8 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
@@ -1292,12 +1298,22 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
         agentFromApp:browser->GetSceneState().profileState.appState];
   }
 
+  ProfileIOS* profile = self.profile;
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  GeminiService* geminiService = GeminiServiceFactory::GetForProfile(profile);
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(browser);
+
   ToolbarMediator* toolbarMediator = [[ToolbarMediator alloc]
               initWithWebStateList:browser->GetWebStateList()
                      actionFactory:actionFactory
               fullscreenController:FullscreenController::FromBrowser(browser)
                        topPosition:topPosition
-      defaultBrowserBannerAppAgent:agent];
+      defaultBrowserBannerAppAgent:agent
+             authenticationService:authService
+                     geminiService:geminiService
+                geminiBrowserAgent:geminiBrowserAgent];
   toolbarMediator.incognito = isIncognito;
   toolbarMediator.navigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(browser);
@@ -1307,6 +1323,11 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   }
   toolbarMediator.settingsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+  toolbarMediator.geminiHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
+  toolbarMediator.baseViewController = self.baseViewController;
+  toolbarMediator.sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
 
   return toolbarMediator;
 }

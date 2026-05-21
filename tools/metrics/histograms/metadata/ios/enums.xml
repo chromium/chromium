@@ -828,6 +828,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Direct Omnibox Badge"/>
   <int value="10" label="AI Hub Sign-in Sheet"/>
   <int value="11" label="External App Store Event"/>
+  <int value="12" label="Toolbar"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:EntryPoint) -->

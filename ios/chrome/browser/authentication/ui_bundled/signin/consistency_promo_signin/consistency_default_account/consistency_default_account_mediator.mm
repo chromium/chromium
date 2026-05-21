@@ -98,6 +98,7 @@ NSString* GetPromoLabelString(
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CHOOSE_FROM_DRIVE);
     case signin_metrics::AccessPoint::kIosPageActionMenu:
     case signin_metrics::AccessPoint::kIosAppBar:
+    case signin_metrics::AccessPoint::kIosGeminiButtonToolbar:
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_GEMINI);
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:

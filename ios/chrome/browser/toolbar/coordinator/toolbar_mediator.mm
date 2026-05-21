@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -18,10 +22,14 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
@@ -36,6 +44,7 @@
 @interface ToolbarMediator () <BooleanObserver,
                                CRWWebStateObserver,
                                DefaultBrowserBannerAppAgentObserver,
+                               GeminiBrowserAgentObserving,
                                ToolbarButtonMenuFactoryDelegate,
                                WebStateListObserving>
 @end
@@ -57,6 +66,9 @@
   BOOL _locationBarIndicatorActive;
   // The default browser banner app agent.
   DefaultBrowserBannerPromoAppAgent* _defaultBrowserBannerAppAgent;
+  raw_ptr<GeminiService> _geminiService;
+  raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
+  std::unique_ptr<GeminiBrowserAgentObserverBridge> _geminiObserver;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -64,7 +76,11 @@
                 fullscreenController:(FullscreenController*)fullscreenController
                          topPosition:(BOOL)topPosition
         defaultBrowserBannerAppAgent:
-            (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent {
+            (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
+               authenticationService:
+                   (AuthenticationService*)authenticationService
+                       geminiService:(GeminiService*)geminiService
+                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -86,6 +102,14 @@
     _fullscreenController = fullscreenController;
     _topPosition = topPosition;
     _locationBarIndicatorActive = NO;
+
+    _geminiService = geminiService;
+    _geminiBrowserAgent = geminiBrowserAgent;
+
+    if (_geminiBrowserAgent) {
+      _geminiObserver = std::make_unique<GeminiBrowserAgentObserverBridge>(
+          self, _geminiBrowserAgent);
+    }
 
     if (_topPosition && defaultBrowserBannerAppAgent) {
       _defaultBrowserBannerAppAgent = defaultBrowserBannerAppAgent;
@@ -146,6 +170,7 @@
   [self.consumer setMenu:[_buttonMenuFactory menuForTabGridButton]
            forButtonType:ToolbarButtonTypeTabGrid];
   [self updateConsumerTabCountAndGroupState];
+  [self updateAssistantButton];
 }
 
 - (void)disconnect {
@@ -157,6 +182,9 @@
   _webStateList = nullptr;
   _buttonMenuFactory = nil;
   _fullscreenController = nullptr;
+  _geminiObserver.reset();
+  _geminiService = nil;
+  _geminiBrowserAgent = nil;
 }
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
@@ -356,6 +384,16 @@
   [self constraintToKeyboard:NO withNotification:notification];
 }
 
+#pragma mark - GeminiBrowserAgentObserverBridge
+
+- (void)geminiFloatyInvokedChanged:(BOOL)isInvoked {
+  [self updateAssistantButton];
+}
+
+- (void)geminiAvailabilityChanged:(BOOL)available {
+  [self updateAssistantButton];
+}
+
 #pragma mark - Private
 
 // Updates the position of the toolbar by updating its visibility.
@@ -445,6 +483,29 @@
     [self.consumer updateTabCount:0];
     [self.consumer setInTabGroup:NO];
   }
+}
+
+// Updates the consumer with the latest assistant button state.
+- (void)updateAssistantButton {
+  BOOL visible = _geminiBrowserAgent &&
+                 _geminiBrowserAgent->IsGeminiAvailableForActiveWebState();
+  BOOL enabled = visible;
+
+  [self.consumer setAssistantButtonVisible:visible enabled:enabled];
+}
+
+#pragma mark - ToolbarMutator
+
+- (void)assistantButtonTapped {
+  GeminiStartupState* startupState = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::Toolbar];
+  [self.geminiHandler
+      startGeminiEntryFlowWithStartupState:startupState
+                        baseViewController:self.baseViewController
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kIosGeminiButtonToolbar
+                  showSnackbarOnCompletion:YES
+                                completion:nil];
 }
 
 @end

@@ -62,6 +62,9 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 // Sets whether the active web state is inside a tab group.
 - (void)setInTabGroup:(BOOL)inTabGroup;
 
+// Sets the state of the assistant button.
+- (void)setAssistantButtonVisible:(BOOL)visible enabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_CONSUMER_H_

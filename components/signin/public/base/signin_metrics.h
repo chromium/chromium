@@ -347,10 +347,12 @@ enum class AccessPoint : int {
   // From the AgeMismatchSignout screen after the user is forced sign-out. iOS
   // only.
   kAgeMismatchSignout = 103,
+  // Sign in via the iOS assistant button toolbar button on iPad.
+  kIosGeminiButtonToolbar = 104,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kAgeMismatchSignout,  // This must be last.
+  kMaxValue = kIosGeminiButtonToolbar,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

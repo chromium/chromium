@@ -51,6 +51,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kEnterpriseDialogAfterSigninInterception,
     AccessPoint::kCredentialExchangeImport,
     AccessPoint::kIosPageActionMenu,
+    AccessPoint::kIosGeminiButtonToolbar,
     AccessPoint::kSettingsAutofillAndPasswords,
 };
 
@@ -80,6 +81,7 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kAddressBubble,
     AccessPoint::kEnterpriseDialogAfterSigninInterception,
     AccessPoint::kCredentialExchangeImport,
+    AccessPoint::kIosGeminiButtonToolbar,
     AccessPoint::kSettingsAutofillAndPasswords,
 };
 
@@ -243,6 +245,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SearchAIModeBubble";
       case AccessPoint::kIosAppBar:
         return "IOSAppBar";
+      case AccessPoint::kIosGeminiButtonToolbar:
+        return "IOSGeminiButtonToolbar";
       case AccessPoint::kIosPageActionMenu:
         return "PageActionMenu";
       case AccessPoint::kSettingsAutofillAndPasswords:

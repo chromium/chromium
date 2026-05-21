@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
@@ -57,17 +58,12 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
 
-@interface AppBarMediator () <IncognitoStateObserver,
+@interface AppBarMediator () <GeminiBrowserAgentObserving,
+                              IncognitoStateObserver,
                               SearchEngineObserving,
                               TabGridStateObserver,
                               ToolbarButtonMenuFactoryDelegate,
                               WebStateListObserving>
-
-// Called when the Gemini floaty invocation state changes.
-- (void)geminiFloatyInvokedChanged:(BOOL)isInvoked;
-
-// Called when the Gemini availability changes for a page.
-- (void)geminiAvailabilityChanged:(BOOL)isAvailable;
 
 // The web state list currently observed by this mediator.
 @property(nonatomic, assign) WebStateList* currentWebStateList;
@@ -76,26 +72,6 @@
 @property(nonatomic, assign) const TabGroup* currentTabGroup;
 
 @end
-
-namespace {
-
-// Bridge for GeminiBrowserAgent::Observer.
-class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
- public:
-  GeminiBrowserAgentObserverBridge(AppBarMediator* mediator)
-      : mediator_(mediator) {}
-  void OnFloatyInvokedChanged(bool is_invoked) override {
-    [mediator_ geminiFloatyInvokedChanged:is_invoked];
-  }
-  void OnGeminiAvailabilityChanged(bool available) override {
-    [mediator_ geminiAvailabilityChanged:available];
-  }
-
- private:
-  __weak AppBarMediator* mediator_;
-};
-
-}  // namespace
 
 @implementation AppBarMediator {
   std::unique_ptr<WebStateListObserverBridge> _observerBridge;
@@ -173,9 +149,8 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
     _geminiService = geminiService;
     _geminiBrowserAgent = geminiBrowserAgent;
     if (_geminiBrowserAgent) {
-      _geminiObserver =
-          std::make_unique<GeminiBrowserAgentObserverBridge>(self);
-      _geminiBrowserAgent->AddObserver(_geminiObserver.get());
+      _geminiObserver = std::make_unique<GeminiBrowserAgentObserverBridge>(
+          self, _geminiBrowserAgent);
     }
 
     _tabGridState = tabGridState;
@@ -320,9 +295,6 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
   _templateURLService = nullptr;
   _authenticationService = nullptr;
   _geminiService = nullptr;
-  if (_geminiBrowserAgent && _geminiObserver) {
-    _geminiBrowserAgent->RemoveObserver(_geminiObserver.get());
-  }
   _geminiBrowserAgent = nullptr;
   _geminiObserver.reset();
   _URLLoader = nullptr;
@@ -557,6 +529,16 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
   NOTREACHED();
 }
 
+#pragma mark - GeminiBrowserAgentObserverBridge
+
+- (void)geminiFloatyInvokedChanged:(BOOL)isInvoked {
+  [self updateAssistantButton];
+}
+
+- (void)geminiAvailabilityChanged:(BOOL)available {
+  [self updateAssistantButton];
+}
+
 #pragma mark - Properties
 
 - (void)setCurrentWebStateList:(WebStateList*)currentWebStateList {
@@ -682,16 +664,6 @@ class GeminiBrowserAgentObserverBridge : public GeminiBrowserAgent::Observer {
   [self.consumer setAssistantButtonState:state
                              highlighted:highlighted
                                  enabled:enabled];
-}
-
-// Called when the Gemini floaty invocation state changes.
-- (void)geminiFloatyInvokedChanged:(BOOL)isInvoked {
-  [self updateAssistantButton];
-}
-
-// Called when the Gemini availability changes.
-- (void)geminiAvailabilityChanged:(BOOL)available {
-  [self updateAssistantButton];
 }
 
 // Updates for `incognito` being visible.

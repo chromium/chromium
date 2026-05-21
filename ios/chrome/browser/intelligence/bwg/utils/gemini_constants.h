@@ -37,7 +37,9 @@ enum class EntryPoint {
   AIHubSignInSheet = 10,
   // Gemini was opened via an external App Store event.
   ExternalAppStoreEvent = 11,
-  kMaxValue = ExternalAppStoreEvent,
+  // Gemini was opened from the Toolbar.
+  Toolbar = 12,
+  kMaxValue = Toolbar,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 

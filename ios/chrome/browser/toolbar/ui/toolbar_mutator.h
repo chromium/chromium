@@ -26,6 +26,9 @@
 // Called when the tab group indicator visibility is updated.
 - (void)tabGroupIndicatorVisibilityUpdated:(BOOL)visible;
 
+// Called when the assistant button is tapped.
+- (void)assistantButtonTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_MUTATOR_H_

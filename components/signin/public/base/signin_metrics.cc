@@ -143,6 +143,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kAvatarPillExpandPromo:
     case AccessPoint::kSearchAIModeBubble:
     case AccessPoint::kIosAppBar:
+    case AccessPoint::kIosGeminiButtonToolbar:
     case AccessPoint::kIosPageActionMenu:
     case AccessPoint::kSettingsAutofillAndPasswords:
     case AccessPoint::kDeepLinkDefault:
@@ -735,6 +736,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromIOSAppBar"));
       break;
+    case AccessPoint::kIosGeminiButtonToolbar:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromIOSGeminiButtonToolbar"));
+      break;
     case AccessPoint::kIosPageActionMenu:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromPageActionMenu"));
@@ -874,6 +879,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kIosAppBar:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromIOSAppBar"));
+      break;
+    case AccessPoint::kIosGeminiButtonToolbar:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromIOSGeminiButtonToolbar"));
       break;
     case AccessPoint::kSettingsAutofillAndPasswords:
       base::RecordAction(base::UserMetricsAction(

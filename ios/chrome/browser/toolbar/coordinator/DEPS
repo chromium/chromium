@@ -5,6 +5,8 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h",
   "+ios/chrome/browser/menu/ui_bundled/browser_action_factory.h",
@@ -15,6 +17,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public/overlay_presentation_context.h",
   "+ios/chrome/browser/prerender/model/prerender_browser_agent.h",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
   # keep-sorted end
 ]

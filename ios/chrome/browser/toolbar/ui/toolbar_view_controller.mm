@@ -392,6 +392,11 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 
 #pragma mark - ToolbarConsumer
 
+- (void)setAssistantButtonVisible:(BOOL)visible enabled:(BOOL)enabled {
+  _assistantButton.forceHidden = !visible;
+  _assistantButton.enabled = enabled;
+}
+
 - (void)setCanGoBack:(BOOL)canGoBack {
   _backButton.enabled = canGoBack;
 }
@@ -1371,8 +1376,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 
 // Handles assistant button tap.
 - (void)assistantButtonTapped {
-  /// TODO(crbug.com/493956100): Implement this button (iPad).
-  NOTIMPLEMENTED();
+  [self.mutator assistantButtonTapped];
 }
 
 // Handles tools menu button tap.

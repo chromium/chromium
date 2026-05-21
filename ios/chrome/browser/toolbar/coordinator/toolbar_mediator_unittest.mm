@@ -8,12 +8,14 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/banner_promo/model/fake_default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -87,7 +90,10 @@ class ToolbarMediatorTest : public PlatformTest,
                 fullscreenController:TestFullscreenController::FromBrowser(
                                          browser_.get())
                          topPosition:GetParam()
-        defaultBrowserBannerAppAgent:GetParam() ? mock_app_agent_ : nil];
+        defaultBrowserBannerAppAgent:GetParam() ? mock_app_agent_ : nil
+               authenticationService:nil
+                       geminiService:nil
+                  geminiBrowserAgent:nil];
     mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
     mediator_.settingsHandler = settings_handler_;
@@ -381,7 +387,10 @@ TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
                        topPosition:GetParam()
-      defaultBrowserBannerAppAgent:fake_app_agent];
+      defaultBrowserBannerAppAgent:fake_app_agent
+             authenticationService:nil
+                     geminiService:nil
+                geminiBrowserAgent:nil];
 
   id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
   [local_mediator setConsumer:local_consumer];
@@ -413,7 +422,10 @@ TEST_P(ToolbarMediatorTest, TestHidePromo) {
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
                        topPosition:GetParam()
-      defaultBrowserBannerAppAgent:fake_app_agent];
+      defaultBrowserBannerAppAgent:fake_app_agent
+             authenticationService:nil
+                     geminiService:nil
+                geminiBrowserAgent:nil];
 
   id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
   [local_mediator setConsumer:local_consumer];
@@ -471,6 +483,24 @@ TEST_P(ToolbarMediatorTest, TestTabGroupIndicatorVisibilityUpdated) {
   OCMExpect([mock_app_agent_ setUICurrentlySupportsPromo:YES]);
   [mediator_ tabGroupIndicatorVisibilityUpdated:NO];
   EXPECT_OCMOCK_VERIFY(mock_app_agent_);
+}
+
+// Tests that assistantButtonTapped: calls geminiHandler to start entry flow.
+TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
+  id mock_gemini_handler = OCMProtocolMock(@protocol(BWGCommands));
+  mediator_.geminiHandler = mock_gemini_handler;
+
+  OCMExpect([mock_gemini_handler
+      startGeminiEntryFlowWithStartupState:[OCMArg any]
+                        baseViewController:nil
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kIosGeminiButtonToolbar
+                  showSnackbarOnCompletion:YES
+                                completion:nil]);
+
+  [mediator_ assistantButtonTapped];
+
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler);
 }
 
 INSTANTIATE_TEST_SUITE_P(ToolbarMediatorTest,
