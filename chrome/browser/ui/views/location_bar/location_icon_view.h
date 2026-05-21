@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/security_state/core/security_state.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/lottie/animation.h"
 
 namespace content {
 class WebContents;
@@ -120,12 +121,18 @@ class LocationIconView : public IconLabelBubbleView {
   // - the current page has a special scheme (chrome://, extension, file://).
   bool GetShowText() const;
 
+  // For animating the page info icon when the bubble shows and closes.
+  void MaybeAnimateIcon(bool show);
+
   const views::InkDrop* get_ink_drop_for_testing();
 
  protected:
   // IconLabelBubbleView:
   bool IsTriggerableEvent(const ui::Event& event) override;
   void UpdateBorder() override;
+
+  // gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
   friend class ToolbarViewTest;
@@ -162,6 +169,10 @@ class LocationIconView : public IconLabelBubbleView {
   // Set the rounded rect background with the given color.
   void SetBackgroundColor(SkColor color);
 
+  // Sets the icon to a frame of the |page_info_open_animation_|
+  // corresponding to the given |value|.
+  void SetAnimatedPageInfoIcon(float value);
+
   // The security level when the location icon was last updated. Used to decide
   // whether to animate security level transitions.
   security_state::SecurityLevel last_update_security_level_ =
@@ -175,6 +186,9 @@ class LocationIconView : public IconLabelBubbleView {
   bool was_editing_or_empty_ = false;
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_;
+
+  std::unique_ptr<gfx::SlideAnimation> slide_animation_;
+  std::unique_ptr<lottie::Animation> page_info_open_animation_;
 
   // Used to scope the lifetime of asynchronous icon fetch callbacks to the
   // lifetime of the object. Weak pointers issued by this factory are

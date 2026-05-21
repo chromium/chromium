@@ -1762,6 +1762,8 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
 void LocationBarView::OnPageInfoBubbleClosed(
     views::Widget::ClosedReason closed_reason,
     bool reload_prompt) {
+  location_icon_view_->MaybeAnimateIcon(false);
+
   // If we're closing the bubble because the user pressed ESC or because the
   // user clicked Close (rather than the user clicking directly on something
   // else), we should refocus the location bar. This lets the user tab into the
