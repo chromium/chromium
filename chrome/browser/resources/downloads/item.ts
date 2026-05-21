@@ -25,6 +25,7 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import type {SubstitutedStringPiece} from 'chrome://resources/js/load_time_data.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
@@ -1206,7 +1207,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return;
     }
     if (copied) {
-      let pieces;
+      type Piece = SubstitutedStringPiece&{collapsible: boolean};
+
+      let pieces: Piece[];
       if (this.data.url.startsWith('data:')) {
         pieces = [{
           collapsible: false,
@@ -1216,8 +1219,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       } else {
         pieces = loadTimeData.getSubstitutedStringPieces(
                      loadTimeData.getString('toastCopiedDownloadLink'),
-                     this.data.url) as unknown as
-            Array<{collapsible: boolean, value: string, arg: string}>;
+                     this.data.url) as unknown as Piece[];
       }
       pieces.forEach(p => {
         p.collapsible = !!p.arg;
@@ -1234,6 +1236,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private displayRemovedToast_(canUndo: boolean, e: Event) {
+    type Piece = SubstitutedStringPiece&{collapsible: boolean};
     const templateStringId =
         (this.displayType_ === DisplayType.NORMAL && this.completelyOnDisk_) ?
         'toastDeletedFromHistoryStillOnDevice' :
@@ -1241,7 +1244,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     const filename = this.data ? this.data.fileName : '';
     const pieces = loadTimeData.getSubstitutedStringPieces(
                        loadTimeData.getString(templateStringId), filename) as
-        unknown as Array<{collapsible: boolean, value: string, arg?: string}>;
+        unknown as Piece[];
 
     pieces.forEach(p => {
       // Make the file name collapsible.

@@ -20,6 +20,11 @@ export interface LoadTimeDataRaw {
   [key: string]: any;
 }
 
+export interface SubstitutedStringPiece {
+  value: string;
+  arg: string|null;
+}
+
 class LoadTimeData {
   private data_: LoadTimeDataRaw|null = null;
 
@@ -118,7 +123,7 @@ class LoadTimeData {
    * @return The formatted string pieces.
    */
   getSubstitutedStringPieces(label: string, ...args: Array<string|number>):
-      Array<{value: string, arg: (string|null)}> {
+      SubstitutedStringPiece[] {
     // Split the string by separately matching all occurrences of $1-9 and of
     // non $1-9 pieces.
     const pieces = (label.match(/(\$[1-9])|(([^$]|\$([^1-9]|$))+)/g) ||
