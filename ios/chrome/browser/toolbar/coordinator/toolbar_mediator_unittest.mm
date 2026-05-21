@@ -6,11 +6,9 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
-#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
@@ -20,7 +18,6 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -38,17 +35,14 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace {
@@ -93,7 +87,6 @@ class ToolbarMediatorTest : public PlatformTest,
     mediator_ = [[ToolbarMediator alloc]
                 initWithWebStateList:browser_->GetWebStateList()
                        actionFactory:action_factory_
-                         prefService:profile_->GetTestingPrefService()
                 fullscreenController:TestFullscreenController::FromBrowser(
                                          browser_.get())
                          topPosition:GetParam()
@@ -391,7 +384,6 @@ TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
   ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
               initWithWebStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
-                       prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
                        topPosition:GetParam()
@@ -427,7 +419,6 @@ TEST_P(ToolbarMediatorTest, TestHidePromo) {
   ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
               initWithWebStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
-                       prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
                        topPosition:GetParam()
@@ -510,62 +501,6 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
   [mediator_ assistantButtonTapped];
 
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler);
-}
-
-// Tests that the TabGrid button menu's "New Incognito Tab" action is disabled
-// when incognito mode is disabled by policy.
-TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
-  // Disable incognito by policy.
-  profile_->GetTestingPrefService()->SetManagedPref(
-      policy::policy_prefs::kIncognitoModeAvailability,
-      std::make_unique<base::Value>(
-          static_cast<int>(IncognitoModePrefs::kDisabled)));
-
-  // Create a mediator.
-  BrowserActionFactory* action_factory =
-      [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
-                                           scenario:kTestMenuScenario];
-  ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
-              initWithWebStateList:browser_->GetWebStateList()
-                     actionFactory:action_factory
-                       prefService:profile_->GetTestingPrefService()
-              fullscreenController:TestFullscreenController::FromBrowser(
-                                       browser_.get())
-                       topPosition:GetParam()
-      defaultBrowserBannerAppAgent:nil
-             authenticationService:nil
-                     geminiService:nil
-                geminiBrowserAgent:nil];
-
-  // We need an active web state for updateConsumerWithWebState to do anything.
-  browser_->GetWebStateList()->InsertWebState(
-      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
-
-  id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
-
-  __block UIMenu* capturedMenu = nil;
-  OCMExpect([local_consumer setMenu:[OCMArg checkWithBlock:^BOOL(id obj) {
-                              capturedMenu = obj;
-                              return YES;
-                            }]
-                      forButtonType:ToolbarButtonTypeTabGrid]);
-
-  [local_mediator setConsumer:local_consumer];
-
-  EXPECT_OCMOCK_VERIFY(local_consumer);
-  ASSERT_NE(nil, capturedMenu);
-
-  // Verify the menu items.
-  // The menu should have "New Incognito Tab" (disabled) and "Close Current
-  // Tab".
-  ASSERT_EQ(2U, capturedMenu.children.count);
-
-  UIAction* openNewTabAction = (UIAction*)capturedMenu.children[0];
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB),
-              openNewTabAction.title);
-  EXPECT_EQ(UIMenuElementAttributesDisabled, openNewTabAction.attributes);
-
-  [local_mediator disconnect];
 }
 
 INSTANTIATE_TEST_SUITE_P(ToolbarMediatorTest,

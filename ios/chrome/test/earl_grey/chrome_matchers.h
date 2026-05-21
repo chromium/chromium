@@ -220,9 +220,6 @@ id<GREYMatcher> LocationViewEmpty();
 // Returns a matcher for Tools menu button.
 id<GREYMatcher> ToolsMenuButton();
 
-// Returns a matcher for the Tools menu button on the NTP.
-id<GREYMatcher> ToolsMenuNTPButton();
-
 // Returns a matcher for the New Tab button, which can be long-pressed for a
 // menu.
 id<GREYMatcher> NewTabButton();

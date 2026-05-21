@@ -19,7 +19,6 @@ class FullscreenController;
 @class UIViewController;
 @protocol ToolbarConsumer;
 @protocol ToolbarHeightDelegate;
-class PrefService;
 class WebNavigationBrowserAgent;
 namespace web {
 class WebState;
@@ -64,7 +63,6 @@ class GeminiService;
 // Initializer.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        actionFactory:(BrowserActionFactory*)actionFactory
-                         prefService:(PrefService*)prefService
                 fullscreenController:(FullscreenController*)fullscreenController
                          topPosition:(BOOL)topPosition
         defaultBrowserBannerAppAgent:

@@ -40,10 +40,6 @@
 // calling this method.
 - (void)openToolsMenu;
 
-// Opens the tools menu on the NTP. If ChromeNextIa is enabled, it taps the NTP
-// tools menu button. Otherwise, it taps the regular tools menu button.
-- (void)openToolsMenuOnNTP;
-
 // Closes the tools menu by tapping on the Tools menu button, or tapping the
 // background scrim, depending on the current version of the tools menu.
 - (void)closeToolsMenu;

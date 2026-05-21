@@ -275,10 +275,6 @@ id<GREYMatcher> ToolsMenuButton() {
   return [ChromeMatchersAppInterface toolsMenuButton];
 }
 
-id<GREYMatcher> ToolsMenuNTPButton() {
-  return [ChromeMatchersAppInterface toolsMenuNTPButton];
-}
-
 id<GREYMatcher> NewTabButton() {
   return [ChromeMatchersAppInterface openNewTabButton];
 }

@@ -10,9 +10,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/policy/core/common/policy_pref_names.h"
-#import "components/prefs/ios/pref_observer_bridge.h"
-#import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -63,7 +60,6 @@
 
 @interface AppBarMediator () <GeminiBrowserAgentObserving,
                               IncognitoStateObserver,
-                              PrefObserverDelegate,
                               SearchEngineObserving,
                               TabGridStateObserver,
                               ToolbarButtonMenuFactoryDelegate,
@@ -105,8 +101,6 @@
   IncognitoState* _incognitoState;
   ToolbarButtonMenuFactory* _regularButtonMenuFactory;
   ToolbarButtonMenuFactory* _incognitoButtonMenuFactory;
-  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
 }
 
 - (instancetype)
@@ -180,14 +174,6 @@
                 templateURLService:_templateURLService
                       tabGridState:_tabGridState];
     _incognitoButtonMenuFactory.delegate = self;
-
-    CHECK(_prefService);
-    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-    _prefChangeRegistrar->Init(_prefService);
-    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-    _prefObserverBridge->ObserveChangesForPreference(
-        policy::policy_prefs::kIncognitoModeAvailability,
-        _prefChangeRegistrar.get());
 
     if (_tabGridState.tabGridVisible) {
       [self updateForTabGridPage:_tabGridState.currentPage];
@@ -305,8 +291,6 @@
   _regularWebStateList = nullptr;
   _incognitoWebStateList = nullptr;
   _prefService = nullptr;
-  _prefChangeRegistrar.reset();
-  _prefObserverBridge.reset();
   _searchEngineObserver.reset();
   _templateURLService = nullptr;
   _authenticationService = nullptr;
@@ -316,14 +300,6 @@
   _URLLoader = nullptr;
   _incognitoState = nil;
   _tabGridState = nil;
-}
-
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == policy::policy_prefs::kIncognitoModeAvailability) {
-    [self updateConsumer];
-  }
 }
 
 #pragma mark - WebStateListObserving

@@ -1309,7 +1309,6 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   ToolbarMediator* toolbarMediator = [[ToolbarMediator alloc]
               initWithWebStateList:browser->GetWebStateList()
                      actionFactory:actionFactory
-                       prefService:profile->GetPrefs()
               fullscreenController:FullscreenController::FromBrowser(browser)
                        topPosition:topPosition
       defaultBrowserBannerAppAgent:agent
