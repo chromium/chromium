@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -89,9 +90,14 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // Attempt to display an error toast
   void MaybeShowErrorToast(tabs::TabInterface* tab);
 
-  // Starts a process that will perform a paste policy check once the glic panel
-  // is ready.
-  void PerformPastePolicyCheckWhenReady();
+  // Opens the Glic UI and sets up state. Returns false if it failed.
+  bool OpenUI(tabs::TabInterface* tab);
+
+  // Starts a process that will perform a task once the glic panel is ready.
+  void PerformTaskWhenReady(base::OnceClosure callback);
+
+  // Polling function called by the timer.
+  void PerformTaskWhenReadyPolling();
 
   // Performs the paste policy check. This is called by
   // `PerformPastePolicyCheckWhenReady` once the client is ready.
@@ -168,6 +174,8 @@ class GlicShareImageHandler : public content::WebContentsObserver {
 
   base::OneShotTimer onboarding_timeout_timer_;
   base::CallbackListSubscription onboarding_subscription_;
+
+  base::OnceClosure on_client_ready_callback_;
 
   base::WeakPtrFactory<GlicShareImageHandler> weak_ptr_factory_{this};
 };

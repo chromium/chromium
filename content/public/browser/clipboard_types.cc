@@ -85,6 +85,12 @@ ClipboardEndpoint::ClipboardEndpoint(
 
 ClipboardEndpoint::ClipboardEndpoint(
     base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
+    base::RepeatingCallback<BrowserContext*()> browser_context_fetcher)
+    : data_transfer_endpoint_(data_transfer_endpoint.CopyAsOptional()),
+      browser_context_fetcher_(std::move(browser_context_fetcher)) {}
+
+ClipboardEndpoint::ClipboardEndpoint(
+    base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
     base::RepeatingCallback<BrowserContext*()> browser_context_fetcher,
     RenderFrameHost& rfh)
     : data_transfer_endpoint_(data_transfer_endpoint.CopyAsOptional()),

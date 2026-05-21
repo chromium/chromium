@@ -299,7 +299,10 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   auto source = SourceEndpoint();
   auto destination = content::ClipboardEndpoint(
-      ui::DataTransferEndpoint(GURL("https://destination.com")));
+      ui::DataTransferEndpoint(GURL("https://destination.com")),
+      base::BindRepeating(
+          [](Profile* profile) -> content::BrowserContext* { return profile; },
+          base::Unretained(profile_)));
   ui::ClipboardMetadata metadata = {.size = 1234};
   EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
   PasteIfAllowedByPolicy(source, destination, metadata,

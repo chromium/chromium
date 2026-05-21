@@ -136,8 +136,8 @@ class GlicShareImageHandlerTest : public testing::Test {
     handler_->is_share_in_progress_ = in_progress;
   }
 
-  void PerformPastePolicyCheckWhenReady() {
-    handler_->PerformPastePolicyCheckWhenReady();
+  void PerformTaskWhenReady(base::OnceClosure callback = base::DoNothing()) {
+    handler_->PerformTaskWhenReady(std::move(callback));
   }
 
   void ShareComplete(ShareImageResult result) {
@@ -177,7 +177,7 @@ TEST_F(GlicShareImageHandlerTest, TimeoutNoInstance) {
   EXPECT_CALL(*handler_, IsClientReady(_)).WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_service_, GetInstanceForTab(_))
       .WillRepeatedly(Return(nullptr));
-  PerformPastePolicyCheckWhenReady();
+  PerformTaskWhenReady();
   task_environment_.FastForwardBy(base::Seconds(kBeyondShareTimeoutSeconds));
 
   histogram_tester_.ExpectBucketCount(
@@ -201,7 +201,7 @@ TEST_F(GlicShareImageHandlerTest, TimeoutNoWebClient) {
   EXPECT_CALL(mock_host, IsWebClientConnected()).WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_service_, GetInstanceForTab(_))
       .WillRepeatedly(Return(&mock_instance));
-  PerformPastePolicyCheckWhenReady();
+  PerformTaskWhenReady();
   task_environment_.FastForwardBy(base::Seconds(kBeyondShareTimeoutSeconds));
 
   histogram_tester_.ExpectBucketCount(
@@ -225,7 +225,7 @@ TEST_F(GlicShareImageHandlerTest, TimeoutDidNotCompleteOnboarding) {
   EXPECT_CALL(mock_host, IsWebClientConnected()).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_service_, GetInstanceForTab(_))
       .WillRepeatedly(Return(&mock_instance));
-  PerformPastePolicyCheckWhenReady();
+  PerformTaskWhenReady();
   task_environment_.FastForwardBy(base::Seconds(kBeyondShareTimeoutSeconds));
 
   histogram_tester_.ExpectBucketCount(

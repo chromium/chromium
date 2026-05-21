@@ -746,10 +746,6 @@ void PasteIfAllowedByPolicy(
 bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
                                 const content::ClipboardEndpoint& destination,
                                 const ui::ClipboardMetadata& metadata) {
-  if (SkipDataControlOrContentAnalysisChecks(destination)) {
-    return false;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           data_controls::kEnableClipboardDataControlsAndroid)) {
