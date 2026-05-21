@@ -1,7 +1,7 @@
 monorail: {
-  component: "Internals>Storage"
+  component: "Internals>Storage>SQLite"
 }
 team_email: "storage-dev@chromium.org"
 buganizer_public: {
-  component_id: 1456246
+  component_id: 1456703
 }
