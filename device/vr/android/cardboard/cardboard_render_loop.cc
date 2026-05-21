@@ -461,16 +461,15 @@ void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
 
 void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
-    const std::vector<LayerId>& layer_ids,
-    const gpu::SyncToken& sync_token,
+    std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
     const std::vector<gpu::SyncToken>& camera_sync_tokens,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameDrawnIntoTexture",
                "frame", frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
 
-  // |layer_ids| is expected to contain only the base layer.
-  if (layer_ids.size() != 1) {
+  // |layer_updates| is expected to contain only the base layer.
+  if (layer_updates.size() != 1) {
     presentation_receiver_.ReportBadMessage(
         "Layers feature not enabled for this session");
     return;
@@ -482,9 +481,10 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
 
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.
-  webxr_->ProcessOrDefer(base::BindOnce(
-      &CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
-      weak_ptr_factory_.GetWeakPtr(), sync_token, camera_sync_tokens));
+  webxr_->ProcessOrDefer(
+      base::BindOnce(&CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     layer_updates[0]->sync_token, camera_sync_tokens));
 }
 
 void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(

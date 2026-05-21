@@ -83,6 +83,10 @@ XRWebGLFrameTransportDelegate::CopyImage(SharedImageHolder* image,
   return std::make_pair(std::move(gpu_memory_buffer_handle), sync_token);
 }
 
+bool XRWebGLFrameTransportDelegate::IsContextLost() {
+  return !context_provider_ || !context_provider_->ContextGL();
+}
+
 void XRWebGLFrameTransportDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(context_provider_);
   XRFrameTransportDelegate::Trace(visitor);

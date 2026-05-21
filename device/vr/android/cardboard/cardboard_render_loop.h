@@ -74,8 +74,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
                    base::TimeDelta time_waited) override;
   void SubmitFrameDrawnIntoTexture(
       int16_t frame_index,
-      const std::vector<LayerId>& layer_ids,
-      const gpu::SyncToken&,
+      std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
       const std::vector<gpu::SyncToken>& camera_sync_tokens,
       base::TimeDelta time_waited) override;
 

@@ -1187,6 +1187,12 @@ interface XRFrameDataProvider {
           environment_provider);
 };
 
+// Wrapper for layer id and the SyncToken associated with that layer.
+struct XRLayerUpdate {
+  LayerId layer_id;
+  gpu.mojom.SyncToken sync_token;
+};
+
 // Provides the necessary functionality for sending frames to a headset.
 // This interface is hosted in the Browser process, but will move to a sandboxed
 // utility process on Windows.  The render process communicates with it.
@@ -1217,13 +1223,12 @@ interface XRPresentationProvider {
                                gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod DRAW_INTO_TEXTURE_MAILBOX
-  // If layer_ids is empty, the base layer will be used.
-  // Only when WebXR Layers feature is enabled, layer_ids can be
+  // If layer_updates is empty, the base layer will be used.
+  // Only when WebXR Layers feature is enabled, layer_updates can be
   // non-empty. In such a case, the Open XR textures of the specified
   // layers will be updated.
   SubmitFrameDrawnIntoTexture(int16 frame_id,
-                              array<LayerId> layer_ids,
-                              gpu.mojom.SyncToken sync_token,
+                              array<XRLayerUpdate> layer_updates,
                               array<gpu.mojom.SyncToken> camera_sync_tokens,
                               mojo_base.mojom.TimeDelta time_waited);
 };

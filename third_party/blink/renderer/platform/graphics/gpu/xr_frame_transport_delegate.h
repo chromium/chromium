@@ -35,6 +35,7 @@ class PLATFORM_EXPORT XRFrameTransportDelegate
   virtual std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
       SharedImageHolder* image,
       bool last_transfer_succeeded) = 0;
+  virtual bool IsContextLost() = 0;
 
   // GarbageCollected override
   virtual void Trace(Visitor* visitor) const {}

@@ -84,6 +84,10 @@ XrGpuFrameTransportDelegate::CopyImage(SharedImageHolder* image,
   NOTREACHED();
 }
 
+bool XrGpuFrameTransportDelegate::IsContextLost() {
+  return !context_provider_ || !context_provider_->GetDawnControlClient();
+}
+
 void XrGpuFrameTransportDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(context_provider_);
   XRFrameTransportDelegate::Trace(visitor);

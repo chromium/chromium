@@ -58,6 +58,7 @@ class PLATFORM_EXPORT XRWebGLFrameTransportDelegate
   std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
       SharedImageHolder* image,
       bool last_transfer_succeeded) override;
+  bool IsContextLost() override;
 
   // GarbageCollected override
   void Trace(Visitor* visitor) const override;

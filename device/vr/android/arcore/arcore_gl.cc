@@ -1207,8 +1207,7 @@ void ArCoreGl::TransitionProcessingFrameToRendering() {
 
 void ArCoreGl::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
-    const std::vector<LayerId>& layer_ids,
-    const gpu::SyncToken& sync_token,
+    std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
     const std::vector<gpu::SyncToken>& camera_sync_tokens,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "ArCoreGl::SubmitFrameDrawnIntoTexture", "frame",
@@ -1216,8 +1215,8 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(
   DVLOG(2) << __func__ << ": frame=" << frame_index;
   DCHECK(ar_compositor_);
 
-  // |layer_ids| is expected to contain only the base layer.
-  if (layer_ids.size() != 1) {
+  // |layer_updates| is expected to contain only the base layer.
+  if (layer_updates.size() != 1) {
     presentation_receiver_.ReportBadMessage(
         "Layers feature not enabled for this session");
     return;
@@ -1236,7 +1235,8 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(
 
   // The previous sync token has been consumed by the renderer process, so we
   // need to set this one for use by the compositor.
-  webxr_->GetAnimatingFrame()->shared_buffer->sync_token = sync_token;
+  webxr_->GetAnimatingFrame()->shared_buffer->sync_token =
+      layer_updates[0]->sync_token;
   webxr_->GetAnimatingFrame()->camera_image_shared_buffer->sync_token =
       camera_sync_token;
 
