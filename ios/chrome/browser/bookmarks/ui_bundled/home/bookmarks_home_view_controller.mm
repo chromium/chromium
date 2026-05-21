@@ -290,10 +290,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   return self;
 }
 
-- (void)dealloc {
-  CHECK(_isShutDown, base::NotFatalUntil::M152);
-}
-
 - (void)shutdown {
   _isShutDown = YES;
   [self stopSigninCoordinator];
