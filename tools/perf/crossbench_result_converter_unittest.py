@@ -5,10 +5,15 @@
 import json
 import pathlib
 import tempfile
+import sys
 import unittest
 import unittest.mock
 
 import crossbench_result_converter
+
+tracing_dir = (pathlib.Path(__file__).absolute().parents[2] /
+               'third_party/catapult/tracing')
+sys.path.append(str(tracing_dir))
 
 
 class CrossbenchResultConverterTest(unittest.TestCase):
@@ -108,6 +113,54 @@ class CrossbenchResultConverterTest(unittest.TestCase):
                       'ms_smallerIsBetter', sample_size=50)
     self.check_result(result, 'Memory_bytes', 1024,
                       'sizeInBytes_smallerIsBetter', sample_size=50)
+
+  def test_loadline1_results(self):
+    csv_content = ('browser,metric1,metric2\n'
+                   'BrowserA,123.45,54.321 ± 0.574\n')
+    with tempfile.TemporaryDirectory() as temp_dir:
+      csv_path = pathlib.Path(temp_dir) / 'loadline1.csv'
+      with open(csv_path, 'w') as f:
+        f.write(csv_content)
+
+      # pylint: disable=protected-access
+      hist_set = crossbench_result_converter._loadline1_results(csv_path)
+      results = self.list_to_dict(hist_set.AsDicts())
+
+    self.assertEqual(len(results), 2)
+    self.check_result(results, 'metric1', 123.45, 'unitless_biggerIsBetter')
+    self.check_result(results, 'metric2', 54.321, 'unitless_biggerIsBetter')
+
+    # Check shared diagnostics
+    browser_diagnostic = None
+    for diag in hist_set.shared_diagnostics:
+      browser_diagnostic = diag.AsDict()['values']
+    self.assertIsNotNone(browser_diagnostic)
+    self.assertEqual(list(browser_diagnostic), ['BrowserA'])
+
+  def test_loadline2_results(self):
+    csv_content = ('Metric,BrowserA\n'
+                   'metric1,123.45 units\n'
+                   'metric2,54.321 ± 0.574 units\n'
+                   'metric3,\n')
+    with tempfile.TemporaryDirectory() as temp_dir:
+      csv_path = pathlib.Path(temp_dir) / 'loadline2.csv'
+      with open(csv_path, 'w') as f:
+        f.write(csv_content)
+
+      # pylint: disable=protected-access
+      hist_set = crossbench_result_converter._loadline2_results(csv_path)
+      results = self.list_to_dict(hist_set.AsDicts())
+
+    self.assertEqual(len(results), 2)
+    self.check_result(results, 'metric1', 123.45, 'unitless_biggerIsBetter')
+    self.check_result(results, 'metric2', 54.321, 'unitless_biggerIsBetter')
+
+    # Check shared diagnostics
+    browser_diagnostic = None
+    for diag in hist_set.shared_diagnostics:
+      browser_diagnostic = diag.AsDict()['values']
+    self.assertIsNotNone(browser_diagnostic)
+    self.assertEqual(list(browser_diagnostic), ['BrowserA'])
 
 
 if __name__ == '__main__':

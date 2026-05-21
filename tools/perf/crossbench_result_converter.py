@@ -158,8 +158,9 @@ def _loadline1_results(loadline_csv: pathlib.Path):
       results.AddSharedDiagnosticToAllHistograms(
           key, generic_set.GenericSet([value]))
     else:
+      value_float = float(value.split()[0])
       data_point = histogram.Histogram.Create(key, 'unitless_biggerIsBetter',
-                                              float(value))
+                                              value_float)
     if data_point:
       results.AddHistogram(data_point)
 
@@ -177,9 +178,13 @@ def _loadline2_results(loadline_csv: pathlib.Path):
     metric_key = csv_reader.fieldnames[0]
     value_key = csv_reader.fieldnames[1]
     for line in csv_reader:
+      value_str = line[value_key]
+      if not value_str:
+        continue
+      value_float = float(value_str.split()[0])
       data_point = histogram.Histogram.Create(line[metric_key],
                                               'unitless_biggerIsBetter',
-                                              float(line[value_key]))
+                                              value_float)
       if data_point:
         results.AddHistogram(data_point)
     results.AddSharedDiagnosticToAllHistograms(
