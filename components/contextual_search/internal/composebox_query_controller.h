@@ -215,6 +215,11 @@ class ComposeboxQueryController
     // use_separate_request_ids_for_viewport_images_ is true.
     std::unique_ptr<lens::LensOverlayRequestId> viewport_request_id_;
 
+    // Caches the latest search URL request ID generated for this file,
+    // allowing stateless recontextualization updates to maintain sequence
+    // monotonicity.
+    std::optional<lens::LensOverlayRequestId> request_id_for_updates;
+
     // The headers to attach to the request. Will be set asynchronously after
     // StartFileUploadFlow() is called.
     std::unique_ptr<std::vector<std::string>> request_headers_;

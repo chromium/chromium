@@ -1776,6 +1776,77 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequest_IncrementsRequestIdWithInteractions) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false);
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  int64_t context_id = 12345;
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+
+  WaitForClusterInfo();
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Capture the first request ID.
+  auto* first_file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(first_file_info);
+  auto first_request_id = first_file_info->GetRequestIdForTesting();
+  EXPECT_EQ(first_request_id->sequence_id(), 1);
+  EXPECT_EQ(first_request_id->context_id(), context_id);
+
+  // Act: Trigger an interaction query.
+  auto search_url_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->lens_overlay_selection_type =
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH;
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->client_logs = lens::LensOverlayClientLogs();
+
+  base::RunLoop run_loop;
+  controller().AddEndpointFetcherCreatedCallback(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+  run_loop.Run();
+
+  // Act: Start the file upload flow again with the same context ID (re-upload).
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_2,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token_2, lens::MimeType::kPdf);
+
+  // Capture the second request ID.
+  auto* second_file_info = controller().GetFileInfoForTesting(file_token_2);
+  ASSERT_TRUE(second_file_info);
+  auto second_request_id = second_file_info->GetRequestIdForTesting();
+
+  // Verify that the request ID was incremented to 4 (not 2, because of
+  // interaction).
+  EXPECT_EQ(second_request_id->sequence_id(), 4);
+  EXPECT_EQ(second_request_id->context_id(), context_id);
+  EXPECT_EQ(second_request_id->uuid(), first_request_id->uuid());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        UploadPdfFileRequest_CorrectlySupercedesPreviousRequest) {
   CreateController(
       /*send_lns_surface=*/false,

@@ -759,6 +759,20 @@ void ComposeboxQueryController::CreateSearchUrl(
                           context_media_type);
           }
         }
+
+        // Cache the generated Search URL request ID and ensure it preserves
+        // the file's native media type (e.g. PDF/Webpage) instead of the
+        // query's DEFAULT_IMAGE.
+        if (request_id) {
+          auto* mutable_file =
+              GetMutableFileInfo(last_active_lens_file->file_token);
+          if (mutable_file) {
+            mutable_file->request_id_for_updates = *request_id;
+            mutable_file->request_id_for_updates->set_media_type(
+                last_active_lens_file->request_id->media_type());
+          }
+        }
+
         std::move(callback).Run(GetUrlForMultimodalSearch(
             template_url_service_, is_aim_search,
             search_url_request_info->aim_entry_point,
@@ -1052,7 +1066,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
         // Mark the previous request as superceded since the new request has the
         // same context id and is a newer request.
         info->is_superceded = true;
-        previous_request_id = info->request_id;
+        // Use request_id_for_updates if present, otherwise fall back to
+        // request_id.
+        previous_request_id = info->request_id_for_updates.has_value()
+                                  ? info->request_id_for_updates
+                                  : info->request_id;
         break;
       }
     }
