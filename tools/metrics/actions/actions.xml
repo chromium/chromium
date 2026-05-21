@@ -16749,6 +16749,20 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Indigo.Onboarding.Complete">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>User completed the onboarding process.</description>
+</action>
+
+<action name="Indigo.Onboarding.Trigger">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>User triggered the onboarding process.</description>
+</action>
+
 <action name="Indigo.PageAction.Click">
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>
@@ -16770,6 +16784,27 @@ should be able to be added at any place in this file.
   <description>
     The indigo page action was displayed as an anchored message.
   </description>
+</action>
+
+<action name="Indigo.Transformation.Failure" not_user_triggered="true">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>Indigo transformation failed.</description>
+</action>
+
+<action name="Indigo.Transformation.Success" not_user_triggered="true">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>Indigo transformation succeeded.</description>
+</action>
+
+<action name="Indigo.Transformation.Trigger">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>User triggered the transformation.</description>
 </action>
 
 <action name="InfobarModalCancelButtonTap">

@@ -133,6 +133,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/holding_space/enums.xml",
   "//tools/metrics/histograms/metadata/holding_space/histograms.xml",
   "//tools/metrics/histograms/metadata/image/histograms.xml",
+  "//tools/metrics/histograms/metadata/indigo/enums.xml",
+  "//tools/metrics/histograms/metadata/indigo/histograms.xml",
   "//tools/metrics/histograms/metadata/input/enums.xml",
   "//tools/metrics/histograms/metadata/input/histograms.xml",
   "//tools/metrics/histograms/metadata/installer/enums.xml",
