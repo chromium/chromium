@@ -29,6 +29,7 @@ std::optional<std::string> ToolTypeToToolDisplayString(ToolType tool) {
     case ToolType::kForward:
       return "Forwarding history";
     case ToolType::kWait:
+    case ToolType::kWaitZeroDuration:
       return "Waiting";
     case ToolType::kScrollTo:
       return "Scrolling";

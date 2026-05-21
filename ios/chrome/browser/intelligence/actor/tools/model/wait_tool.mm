@@ -62,6 +62,9 @@ base::WeakPtr<web::WebState> WaitTool::GetTargetWebState() const {
 }
 
 ToolType WaitTool::GetToolType() const {
+  if (wait_duration_ <= base::TimeDelta()) {
+    return ToolType::kWaitZeroDuration;
+  }
   return ToolType::kWait;
 }
 

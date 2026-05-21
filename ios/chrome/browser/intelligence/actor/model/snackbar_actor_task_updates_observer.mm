@@ -144,8 +144,8 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
              taskUpdate:(NSString*)taskUpdate
              onWebState:(web::WebStateID)webStateID {
   _lastTaskUpdate = [taskUpdate copy];
-  // Do not show wait as it is always the last action in the list.
-  if (toolType == actor::ToolType::kWait) {
+  // Do not show wait actions when they have zero duration.
+  if (toolType == actor::ToolType::kWaitZeroDuration) {
     return;
   }
   std::optional<std::string> toolNameOpt =

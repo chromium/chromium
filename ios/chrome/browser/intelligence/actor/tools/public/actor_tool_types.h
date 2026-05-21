@@ -32,8 +32,10 @@ enum class ToolType {
   kBack,
   // Tool for navigating forward in history.
   kForward,
-  // Tool for waiting for a specified period or event.
+  // Tool for waiting for a specified period.
   kWait,
+  // Tool for a zero duration wait period.
+  kWaitZeroDuration,
   // Tool for scrolling to a specific element or position.
   kScrollTo,
 };

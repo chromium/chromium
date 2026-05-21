@@ -196,6 +196,7 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestWillExecuteTool) {
                                currentState:actor::ActorTaskState::kActing
                                   webStates:@[]];
 
+  // 1. Test that kNavigate shows a snackbar.
   [[mock_snackbar_commands_ expect]
       showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
                                       SnackbarMessage* message) {
@@ -207,6 +208,29 @@ TEST_F(SnackbarActorTaskUpdatesObserverTest, TestWillExecuteTool) {
   [observer_ actorTaskWithID:task_id
              willExecuteTool:actor::ToolType::kNavigate
                   taskUpdate:@"Navigating..."
+                  onWebState:web_state_id];
+  [mock_snackbar_commands_ verify];
+
+  // 2. Test that kWait (non-zero duration) shows a snackbar.
+  [[mock_snackbar_commands_ expect]
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return
+            [message.title isEqualToString:@"Test Task"] &&
+            [message.subtitle isEqualToString:@"Waiting..."] &&
+            [message.secondarySubtitle isEqualToString:@"Executing: Waiting"];
+      }]];
+  [observer_ actorTaskWithID:task_id
+             willExecuteTool:actor::ToolType::kWait
+                  taskUpdate:@"Waiting..."
+                  onWebState:web_state_id];
+  [mock_snackbar_commands_ verify];
+
+  // 3. Test that kWaitZeroDuration is ignored and does NOT show a snackbar.
+  [[mock_snackbar_commands_ reject] showSnackbarMessage:[OCMArg any]];
+  [observer_ actorTaskWithID:task_id
+             willExecuteTool:actor::ToolType::kWaitZeroDuration
+                  taskUpdate:@"Waiting (zero duration)..."
                   onWebState:web_state_id];
   [mock_snackbar_commands_ verify];
 }
