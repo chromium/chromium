@@ -3641,9 +3641,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Checks opening the password manager with a failed reauthentication does not
 // show passwords and closes the Password Manager.
-//
-// TODO(crbug.com/468305089): This test is flaky.
-- (void)FLAKY_testOpenPasswordManagerWithFailedAuth {
+- (void)testOpenPasswordManagerWithFailedAuth {
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
   // Delay the auth result to be able to validate that the passwords are not
@@ -3659,8 +3657,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Failed auth should dismiss the Password Manager, the Settings menu is
   // displayed.
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
-  CheckVisibilityOfElement(/*matcher=*/SettingsCollectionView(),
-                           /*is_visible=*/true);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsCollectionView()];
 
   // Check password manager visit metric.
   CheckPasswordManagerVisitMetricCount(0);
