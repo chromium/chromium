@@ -55,7 +55,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   void ResetWindowControls() override;
   void OnThemeChanged() override;
   gfx::RoundedCornersF GetWindowRoundedCorners() const override;
-  gfx::Point GetKeyboardContextMenuLocation() override;
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;

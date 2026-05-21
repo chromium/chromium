@@ -148,12 +148,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
 #include "base/win/windows_version.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -808,21 +804,15 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
 #if BUILDFLAG(IS_WIN)
     case IDC_MOVE_WINDOW: {
-      HWND hwnd = BrowserView::GetBrowserViewForBrowser(browser_)
-                      ->GetWidget()
-                      ->GetNativeWindow()
-                      ->GetHost()
-                      ->GetAcceleratedWidget();
-      PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE, 0);
+      // TODO(crbug.com/509985102): Implement this with the Windows frame
+      // context menu changes.
+      NOTIMPLEMENTED();
       break;
     }
     case IDC_SIZE_WINDOW: {
-      HWND hwnd = BrowserView::GetBrowserViewForBrowser(browser_)
-                      ->GetWidget()
-                      ->GetNativeWindow()
-                      ->GetHost()
-                      ->GetAcceleratedWidget();
-      PostMessage(hwnd, WM_SYSCOMMAND, SC_SIZE, 0);
+      // TODO(crbug.com/509985102): Implement this with the Windows frame
+      // context menu changes.
+      NOTIMPLEMENTED();
       break;
     }
 #endif  // BUILDFLAG(IS_WIN)

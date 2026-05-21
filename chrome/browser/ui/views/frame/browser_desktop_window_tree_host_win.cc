@@ -43,12 +43,10 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/win/hwnd_metrics.h"
-#include "ui/display/screen.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/win/icon_util.h"
-#include "ui/gfx/win/msg_util.h"
 #include "ui/views/controls/menu/native_menu_win.h"
 #include "ui/views/view_utils.h"
 
@@ -280,16 +278,7 @@ BrowserDesktopWindowTreeHostWin::AsDesktopWindowTreeHost() {
 }
 
 bool BrowserDesktopWindowTreeHostWin::UsesNativeSystemMenu() const {
-  return !base::FeatureList::IsEnabled(features::kMenuSimplification);
-}
-
-void BrowserDesktopWindowTreeHostWin::ShowCustomSystemMenu(
-    const gfx::Point& screen_point) {
-  gfx::Point dip_point =
-      gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
-          gfx::PointF(screen_point)));
-  browser_widget_->non_client_view()->ShowContextMenu(
-      dip_point, ui::mojom::MenuSourceType::kMouse);
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -451,26 +440,8 @@ bool BrowserDesktopWindowTreeHostWin::PreHandleMSG(UINT message,
       chrome::SessionEnding();
       return true;
     case WM_INITMENUPOPUP:
-      if (UsesNativeSystemMenu()) {
-        GetSystemMenu()->UpdateStates();
-      }
+      GetSystemMenu()->UpdateStates();
       return true;
-    case WM_SYSCOMMAND:
-      if ((w_param & 0xFFF0) == SC_KEYMENU && l_param == ' ') {
-        if (!UsesNativeSystemMenu()) {
-          ShowViewsSystemMenuAtDefaultLocation();
-          *result = 0;
-          return true;
-        }
-      }
-      break;
-    case WM_SYSCHAR:
-      if (w_param == VK_SPACE && !UsesNativeSystemMenu()) {
-        ShowViewsSystemMenuAtDefaultLocation();
-        *result = 0;
-        return true;
-      }
-      break;
   }
   return DesktopWindowTreeHostWin::PreHandleMSG(message, w_param, l_param,
                                                 result);
@@ -675,14 +646,6 @@ void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
               reinterpret_cast<LPARAM>(icon_handle_.get()));
   SendMessage(GetHWND(), WM_SETICON, ICON_BIG,
               reinterpret_cast<LPARAM>(icon_handle_.get()));
-}
-
-void BrowserDesktopWindowTreeHostWin::ShowViewsSystemMenuAtDefaultLocation() {
-  gfx::Point point = browser_widget_->non_client_view()
-                         ->frame_view()
-                         ->GetKeyboardContextMenuLocation();
-  browser_widget_->non_client_view()->ShowContextMenu(
-      point, ui::mojom::MenuSourceType::kKeyboard);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

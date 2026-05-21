@@ -53,7 +53,6 @@ class BrowserDesktopWindowTreeHostWin
 
   // Overridden from BrowserDesktopWindowTreeHost:
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
-  void ShowCustomSystemMenu(const gfx::Point& screen_point) override;
   bool UsesNativeSystemMenu() const override;
 
   // Overridden from DesktopWindowTreeHostWin:
@@ -89,9 +88,6 @@ class BrowserDesktopWindowTreeHostWin
   void UpdateWorkspace();
 
   void SetWindowIcon(bool badged);
-
-  // Shows the custom Views system menu at the default location (top left).
-  void ShowViewsSystemMenuAtDefaultLocation();
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<BrowserWidget> browser_widget_;

@@ -490,12 +490,6 @@ gfx::RoundedCornersF BrowserFrameViewWin::GetWindowRoundedCorners() const {
   return gfx::RoundedCornersF();
 }
 
-gfx::Point BrowserFrameViewWin::GetKeyboardContextMenuLocation() {
-  gfx::Point point(0, 0);
-  ConvertPointToScreen(this, &point);
-  return point;
-}
-
 bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   if (!ShouldShowWindowIcon(TitlebarType::kCustom)) {
     return false;
