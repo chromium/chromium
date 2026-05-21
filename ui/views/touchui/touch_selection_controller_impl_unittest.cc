@@ -1141,6 +1141,9 @@ class TestTouchEditable : public ui::TouchEditable {
   }
   void OpenContextMenu(const gfx::Point& anchor) override { NOTREACHED(); }
   void DestroyTouchSelection() override { NOTREACHED(); }
+  bool IsCommandIdEnabled(int command_id, bool can_paste) const override {
+    NOTREACHED();
+  }
 
   // Overridden from ui::SimpleMenuModel::Delegate.
   bool IsCommandIdChecked(int command_id) const override { NOTREACHED(); }

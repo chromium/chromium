@@ -425,6 +425,7 @@ class VIEWS_EXPORT Textfield : public View,
   void ConvertPointFromScreen(gfx::Point* point) override;
   void OpenContextMenu(const gfx::Point& anchor) override;
   void DestroyTouchSelection() override;
+  bool IsCommandIdEnabled(int command_id, bool can_paste) const override;
 
   // ui::SimpleMenuModel::Delegate overrides:
   bool IsCommandIdChecked(int command_id) const override;
