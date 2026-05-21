@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
+#include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(RTC_USE_H265)
@@ -95,7 +96,9 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   class Impl;
 
   int32_t InitializeEncoder(
-      const media::VideoEncodeAccelerator::Config& vea_config);
+      const media::VideoEncodeAccelerator::Config& vea_config,
+      std::optional<webrtc::SimulcastToSvcConverter>
+          simulcast_to_svc_converter);
   void UpdateEncoderInfo(
       media::VideoEncoderInfo encoder_info,
       std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats);
