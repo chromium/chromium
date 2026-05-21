@@ -13,6 +13,8 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs/ios",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",

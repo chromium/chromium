@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -671,9 +672,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)toolsMenuButton {
-  return grey_allOf(
-      grey_accessibilityID(kLegacyToolbarToolsMenuButtonIdentifier),
-      grey_sufficientlyVisible(), nil);
+  NSString* toolsMenuID = IsChromeNextIaEnabled()
+                              ? kToolbarToolsMenuButtonIdentifier
+                              : kLegacyToolbarToolsMenuButtonIdentifier;
+  return grey_allOf(grey_accessibilityID(toolsMenuID),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)toolsMenuNTPButton {
+  CHECK(IsChromeNextIaEnabled());
+  return grey_allOf(grey_accessibilityID(kNTPToolsMenuButtonIdentifier),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)openNewTabButton {

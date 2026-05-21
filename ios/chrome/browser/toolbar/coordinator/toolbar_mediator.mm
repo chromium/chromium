@@ -6,6 +6,9 @@
 
 #import "base/notimplemented.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
@@ -45,6 +48,7 @@
                                CRWWebStateObserver,
                                DefaultBrowserBannerAppAgentObserver,
                                GeminiBrowserAgentObserving,
+                               PrefObserverDelegate,
                                ToolbarButtonMenuFactoryDelegate,
                                WebStateListObserving>
 @end
@@ -56,6 +60,8 @@
       _activeWebStateObservationForwarder;
   std::unique_ptr<web::WebStateObserverBridge> _activeWebStateObserver;
   ToolbarButtonMenuFactory* _buttonMenuFactory;
+  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Pref tracking if bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;
   // Whether this mediator is tracking a toolbar at the top position.
@@ -73,6 +79,7 @@
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        actionFactory:(BrowserActionFactory*)actionFactory
+                         prefService:(PrefService*)prefService
                 fullscreenController:(FullscreenController*)fullscreenController
                          topPosition:(BOOL)topPosition
         defaultBrowserBannerAppAgent:
@@ -98,6 +105,14 @@
                        webStateList:_webStateList
                       actionFactory:actionFactory];
     _buttonMenuFactory.delegate = self;
+
+    CHECK(prefService);
+    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+    _prefChangeRegistrar->Init(prefService);
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefObserverBridge->ObserveChangesForPreference(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        _prefChangeRegistrar.get());
 
     _fullscreenController = fullscreenController;
     _topPosition = topPosition;
@@ -187,6 +202,8 @@
   _geminiObserver.reset();
   _geminiService = nil;
   _geminiBrowserAgent = nil;
+  _prefChangeRegistrar.reset();
+  _prefObserverBridge.reset();
 }
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
@@ -395,6 +412,16 @@
 
 - (void)geminiAvailabilityChanged:(BOOL)available {
   [self updateAssistantButton];
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == policy::policy_prefs::kIncognitoModeAvailability) {
+    if (_webStateList && _webStateList->GetActiveWebState()) {
+      [self updateConsumerWithWebState:_webStateList->GetActiveWebState()];
+    }
+  }
 }
 
 #pragma mark - Private

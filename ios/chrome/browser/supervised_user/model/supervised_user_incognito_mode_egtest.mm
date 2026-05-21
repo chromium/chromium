@@ -56,6 +56,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -90,14 +91,14 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 - (void)testToolsMenuIncognito {
   [self signInWithSupervisedAccount];
 
-  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI openToolsMenuOnNTP];
   policy::AssertOverflowMenuElementEnabled(kToolsMenuNewTabId);
   policy::AssertOverflowMenuElementDisabled(kToolsMenuNewIncognitoTabId);
   [ChromeEarlGreyUI closeToolsMenu];
 
   [SigninEarlGrey signOut];
 
-  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI openToolsMenuOnNTP];
   policy::AssertOverflowMenuElementEnabled(kToolsMenuNewTabId);
   policy::AssertOverflowMenuElementEnabled(kToolsMenuNewIncognitoTabId);
 }
@@ -114,9 +115,10 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   policy::AssertButtonInCollectionDisabled(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 
-  // Dismiss the popup menu by tapping anywhere.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_tap()];
+  // Dismiss the popup menu.
+  [ChromeEarlGreyUI dismissContextMenuIfPresent];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_kindOfClassName(@"_UIContextMenuContainerView")];
 
   [SigninEarlGrey signOut];
 

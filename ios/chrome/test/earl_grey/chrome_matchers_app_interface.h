@@ -203,6 +203,10 @@
 // Matcher for Tools menu button.
 + (id<GREYMatcher>)toolsMenuButton;
 
+// Matcher for Tools menu button on NTP, only active when ChromeNextIA is
+// enabled.
++ (id<GREYMatcher>)toolsMenuNTPButton;
+
 // Matcher for the New Tab button, which can be long-pressed for a menu.
 // (This method can't be named +newTabButton, because starting a class method
 // with 'new' implicitly treats it as a constructor).
