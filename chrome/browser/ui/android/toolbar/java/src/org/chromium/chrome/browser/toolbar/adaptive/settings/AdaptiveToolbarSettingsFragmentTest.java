@@ -298,6 +298,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
     @SmallTest
     public void testTranslateOption_Disabled() {
         // Disable translate.
+        doReturn(true).when(mPrefService).isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED);
         doReturn(false).when(mPrefService).getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
 
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();

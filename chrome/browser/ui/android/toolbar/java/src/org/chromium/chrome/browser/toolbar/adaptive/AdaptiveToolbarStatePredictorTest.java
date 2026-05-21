@@ -76,6 +76,7 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 
         // Disable translate.
+        when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
 
         AdaptiveToolbarStatePredictor statePredictor =
@@ -100,6 +101,7 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 
         // Disable translate.
+        when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
 
         AdaptiveToolbarStatePredictor statePredictor =
