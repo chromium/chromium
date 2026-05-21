@@ -7917,6 +7917,8 @@ TEST_F(HttpStreamFactoryJobControllerWsOverH3Test,
 // With the feature flag enabled but no QUIC session in the pool,
 // `ws_over_h3_job_` is not created.
 TEST_F(HttpStreamFactoryJobControllerWsOverH3Test, NoJobWhenNoExistingSession) {
+  base::HistogramTester histogram_tester;
+
   EnableWebsocketsOverHttp3();
 
   HttpRequestInfo request_info = CreateWebSocketRequestInfo();
@@ -7929,6 +7931,9 @@ TEST_F(HttpStreamFactoryJobControllerWsOverH3Test, NoJobWhenNoExistingSession) {
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->ws_over_h3_job());
   EXPECT_EQ(HttpStreamFactory::MAIN, job_controller_->main_job()->job_type());
+  histogram_tester.ExpectUniqueSample(
+      "Net.WebSocket.Http3SessionReuseAvailable", false,
+      /*expected_bucket_count=*/1);
 
   request_.reset();
   should_check_data_consumed_ = false;
@@ -7967,6 +7972,8 @@ TEST_F(HttpStreamFactoryJobControllerWsOverH3Test, NoJobForNonWebSocket) {
 }
 
 TEST_F(HttpStreamFactoryJobControllerWsOverH3Test, NoJobWhenNoExtendedConnect) {
+  base::HistogramTester histogram_tester;
+
   HttpRequestInfo request_info = CreateWebSocketRequestInfo();
   SetUpWithQuicSession(request_info, /*enable_extended_connect=*/false);
 
@@ -7976,6 +7983,9 @@ TEST_F(HttpStreamFactoryJobControllerWsOverH3Test, NoJobWhenNoExtendedConnect) {
   // false, so `ws_over_h3_job_` is not created.
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_FALSE(job_controller_->ws_over_h3_job());
+  histogram_tester.ExpectUniqueSample(
+      "Net.WebSocket.Http3SessionReuseAvailable", false,
+      /*expected_bucket_count=*/1);
 
   request_.reset();
   should_check_data_consumed_ = false;
@@ -8012,6 +8022,8 @@ TEST_F(HttpStreamFactoryJobControllerWsOverH3Test, ForceQuicDoesNotCreateJob) {
 
 TEST_F(HttpStreamFactoryJobControllerWsOverH3Test,
        StreamCreatedWhenSessionHasExtendedConnect) {
+  base::HistogramTester histogram_tester;
+
   HttpRequestInfo request_info = CreateWebSocketRequestInfo();
   SetUpWithQuicSession(request_info, /*enable_extended_connect=*/true);
 
@@ -8029,6 +8041,9 @@ TEST_F(HttpStreamFactoryJobControllerWsOverH3Test,
   EXPECT_TRUE(JobControllerPeer::main_job_is_blocked(job_controller_));
   EXPECT_FALSE(job_controller_->alternative_job());
   EXPECT_FALSE(job_controller_->dns_alpn_h3_job());
+  histogram_tester.ExpectUniqueSample(
+      "Net.WebSocket.Http3SessionReuseAvailable", true,
+      /*expected_bucket_count=*/1);
 
   auto stream = request_delegate_->WaitForWebSocketStream();
   EXPECT_TRUE(stream);

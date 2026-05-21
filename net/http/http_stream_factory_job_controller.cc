@@ -994,8 +994,12 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
     quic::ParsedQuicVersion ws_quic_version =
         quic::ParsedQuicVersion::Unsupported();
-    if (session_->quic_session_pool()->CanUseExistingSessionForWebSocket(
-            ws_session_key, destination, &ws_quic_version)) {
+    const bool can_reuse_http3_session =
+        session_->quic_session_pool()->CanUseExistingSessionForWebSocket(
+            ws_session_key, destination, &ws_quic_version);
+    base::UmaHistogramBoolean("Net.WebSocket.Http3SessionReuseAvailable",
+                              can_reuse_http3_session);
+    if (can_reuse_http3_session) {
       ws_over_h3_job_ = job_factory_->CreateJob(
           this, WS_OVER_H3, session_, request_info_, priority_, proxy_info_,
           allowed_bad_certs_, destination, is_websocket_,
@@ -1009,8 +1013,6 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
             return base::DictValue().Set("destination",
                                          request_info_.url.spec());
           });
-      // TODO(crbug.com/40210995): Add histogram for WebSocket-over-HTTP/3 reuse
-      // rate.
     } else {
       net_log_.AddEvent(
           NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_WS_OVER_H3_SKIPPED, [&] {

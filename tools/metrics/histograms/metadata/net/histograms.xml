@@ -9472,6 +9472,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.WebSocket.Http3SessionReuseAvailable" enum="Boolean"
+    expires_after="2027-05-13">
+  <owner>ricea@chromium.org</owner>
+  <owner>patilmayur@microsoft.com</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Whether a WebSocket-over-HTTP/3 handshake can reuse an existing QUIC session
+    that supports Extended CONNECT. Recorded for WebSocket handshakes when QUIC
+    and WebSocket-over-HTTP/3 are enabled and the proxy is direct.
+  </summary>
+</histogram>
+
 <histogram name="Net.WebSocket.ProtocolHeaderSize" units="bytes"
     expires_after="2026-11-15">
   <owner>ricea@chromium.org</owner>
