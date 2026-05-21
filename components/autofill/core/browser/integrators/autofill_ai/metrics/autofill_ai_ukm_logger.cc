@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -76,43 +77,6 @@ optimization_guide::proto::FormatStringSource GetFormatStringSource(
       return optimization_guide::proto::FORMAT_STRING_SOURCE_ML_MODEL;
     case AutofillFormatStringSource::kServer:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_SERVER;
-  }
-  NOTREACHED();
-}
-
-optimization_guide::proto::FormControlType GetFormControlType(
-    FormControlType form_control_type) {
-  switch (form_control_type) {
-    case mojom::FormControlType::kContentEditable:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_CONTENT_EDITABLE;
-    case mojom::FormControlType::kInputCheckbox:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX;
-    case mojom::FormControlType::kInputEmail:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_EMAIL;
-    case mojom::FormControlType::kInputMonth:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_MONTH;
-    case mojom::FormControlType::kInputNumber:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_NUMBER;
-    case mojom::FormControlType::kInputPassword:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_PASSWORD;
-    case mojom::FormControlType::kInputRadio:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RADIO;
-    case mojom::FormControlType::kInputSearch:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_SEARCH;
-    case mojom::FormControlType::kInputTelephone:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TELEPHONE;
-    case mojom::FormControlType::kInputText:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT;
-    case mojom::FormControlType::kInputUrl:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_URL;
-    case mojom::FormControlType::kSelectOne:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
-    case mojom::FormControlType::kTextArea:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
-    case mojom::FormControlType::kInputDate:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
-    case mojom::FormControlType::kInputHiddenEmailVerification:
-      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_HIDDEN;
   }
   NOTREACHED();
 }
@@ -393,7 +357,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     mqls_field_event->set_format_string_source(
         GetFormatStringSource(field.format_string_source()));
     mqls_field_event->set_form_control_type(
-        GetFormControlType(field.form_control_type()));
+        ToFormControlTypeProto(field.form_control_type()));
     mqls_field_event->set_event_type(GetFieldEventType(event_type));
     mqls_field_event->set_entity_type(GetEntityType(entity_type));
     mqls_field_event->set_storage_type(GetStorageType(record_type));

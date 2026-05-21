@@ -20,6 +20,32 @@ namespace autofill {
 
 namespace {
 
+template <typename T>
+  requires(std::same_as<T, FormGlobalId> || std::same_as<T, FieldGlobalId>)
+optimization_guide::proto::AutofillGlobalId ToGlobalIdProto(T global_id) {
+  optimization_guide::proto::AutofillGlobalId proto;
+  proto.set_frame_token(global_id.frame_token.ToString());
+  proto.set_renderer_id(global_id.renderer_id.value());
+  return proto;
+}
+
+void PopulateExtensionAPISpecificFields(
+    const FormData& form_data,
+    optimization_guide::proto::FormData& form_proto) {
+  // Add additional form-level metadata.
+  *form_proto.mutable_global_id() = ToGlobalIdProto(form_data.global_id());
+  // Add additional field-level metadata.
+  CHECK_EQ(form_data.fields().size(),
+           static_cast<size_t>(form_proto.fields_size()));
+  for (size_t i = 0; i < form_data.fields().size(); ++i) {
+    const FormFieldData& field = form_data.fields()[i];
+    *form_proto.mutable_fields(i)->mutable_global_id() =
+        ToGlobalIdProto(field.global_id());
+  }
+}
+
+}  // namespace
+
 // Converts `form_control_type` to its corresponding proto enum.
 optimization_guide::proto::FormControlType ToFormControlTypeProto(
     FormControlType form_control_type) {
@@ -55,34 +81,8 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
     case FormControlType::kInputHiddenEmailVerification:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_HIDDEN;
   }
-  return optimization_guide::proto::FORM_CONTROL_TYPE_UNSPECIFIED;
+  NOTREACHED();
 }
-
-template <typename T>
-  requires(std::same_as<T, FormGlobalId> || std::same_as<T, FieldGlobalId>)
-optimization_guide::proto::AutofillGlobalId ToGlobalIdProto(T global_id) {
-  optimization_guide::proto::AutofillGlobalId proto;
-  proto.set_frame_token(global_id.frame_token.ToString());
-  proto.set_renderer_id(global_id.renderer_id.value());
-  return proto;
-}
-
-void PopulateExtensionAPISpecificFields(
-    const FormData& form_data,
-    optimization_guide::proto::FormData& form_proto) {
-  // Add additional form-level metadata.
-  *form_proto.mutable_global_id() = ToGlobalIdProto(form_data.global_id());
-  // Add additional field-level metadata.
-  CHECK_EQ(form_data.fields().size(),
-           static_cast<size_t>(form_proto.fields_size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    const FormFieldData& field = form_data.fields()[i];
-    *form_proto.mutable_fields(i)->mutable_global_id() =
-        ToGlobalIdProto(field.global_id());
-  }
-}
-
-}  // namespace
 
 optimization_guide::proto::FormData ToFormDataProto(
     const FormData& form_data,

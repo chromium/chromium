@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 
-
 namespace optimization_guide::proto {
+enum FormControlType : int;
 class FormData;
 }  // namespace optimization_guide::proto
 
 namespace autofill {
+
+namespace mojom {
+enum class FormControlType;
+}
 class FormData;
 
 // The same proto is used to make model requests and to collect data through the
@@ -20,6 +24,10 @@ enum class FormDataProtoConversionReason {
   kModelRequest = 0,
   kExtensionAPI = 1,
 };
+
+// Converts `form_control_type` to its corresponding proto enum.
+optimization_guide::proto::FormControlType ToFormControlTypeProto(
+    mojom::FormControlType form_control_type);
 
 // Converts `form_data` to its corresponding form data proto, populating all
 // fields necessary for the `conversion_reason`.
