@@ -1006,6 +1006,29 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
 }
 
+// Tests that removing the last manual/actionable Autocomplete suggestion will
+// successfully hide the popup, even if the remaining items in the list include
+// structural elements (like separators) and a promo button (which is not
+// standalone). The promo button and its separator alone should not be enough to
+// keep the popup open.
+TEST_F(AutofillPopupControllerImplTest,
+       RemoveLastAutocompleteSuggestion_HidesPopupEvenWithMemoryPromo) {
+  ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry,
+                              SuggestionType::kSeparator,
+                              SuggestionType::kAutocompleteAtMemoryButton});
+
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(
+                  Field(&Suggestion::type, SuggestionType::kAutocompleteEntry)))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(client().suggestion_controller(manager()),
+              Hide(SuggestionHidingReason::kNoSuggestions));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
+      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_AnnounceText) {
   ShowSuggestions(manager(), {Suggestion(u"main text",

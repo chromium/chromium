@@ -21,6 +21,15 @@ class AutofillSuggestionDelegate;
 struct SelectOption;
 struct Suggestion;
 
+enum class SuggestionSection {
+  kBody,
+  kFooter,
+  kStructure,
+};
+
+// Returns the target section (body, footer, or structure) of this `type`.
+SuggestionSection GetSuggestionSection(SuggestionType type);
+
 // Returns whether this `SuggestionType` can, in principle, be accepted. Note
 // that even if this is true, the suggestion itself may still not be acceptable.
 bool IsAcceptableSuggestionType(SuggestionType id);

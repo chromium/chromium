@@ -691,8 +691,8 @@ AutofillPopupControllerImpl::GetSuggestionTriggerSource() const {
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() const {
-  return !GetSuggestions().empty() &&
-         IsStandaloneSuggestionType(GetSuggestions()[0].type);
+  return std::ranges::any_of(GetSuggestions(), &IsStandaloneSuggestionType,
+                             &Suggestion::type);
 }
 
 void AutofillPopupControllerImpl::SetSuggestions(

@@ -710,8 +710,8 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
-  return !suggestions_.empty() &&
-         IsStandaloneSuggestionType(suggestions_[0].type);
+  return std::ranges::any_of(suggestions_, &IsStandaloneSuggestionType,
+                             &Suggestion::type);
 }
 
 // AutofillKeyboardAccessoryController implementation:
