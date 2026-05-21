@@ -57,6 +57,8 @@ class CORE_EXPORT StylePropertySerializer {
   String BorderRadiusValue() const;
   String CornerShapeValue() const;
   String CornersValue() const;
+  String SingleCornerShorthandValue(const StylePropertyShorthand&) const;
+  String CornerPairShorthandValue(const StylePropertyShorthand&) const;
   String GetLayeredShorthandValue(const StylePropertyShorthand&) const;
   String Get2Values(const StylePropertyShorthand&) const;
   String Get4Values(const StylePropertyShorthand&) const;

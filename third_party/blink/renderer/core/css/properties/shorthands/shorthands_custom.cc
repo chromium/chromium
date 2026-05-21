@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/parser/font_variant_ligatures_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_numeric_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -2120,11 +2121,10 @@ const CSSValue* Container::CSSValueFromComputedStyleInternal(
       style, layout_object, allow_visited_style, value_phase);
 }
 
-const CSSValue* Corner::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
+namespace {
+
+const CSSValue* CornerShorthandCSSValueFromComputedStyle(
+    const ComputedStyle& style) {
   std::array<std::pair<LengthSize, Superellipse>, 4> corners = {
       std::make_pair(style.BorderTopLeftRadius(), style.CornerTopLeftShape()),
       std::make_pair(style.BorderTopRightRadius(), style.CornerTopRightShape()),
@@ -2158,12 +2158,13 @@ const CSSValue* Corner::CSSValueFromComputedStyleInternal(
   return result;
 }
 
-bool Corner::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
+bool ParseCornerShorthand(CSSPropertyID shorthand_property_id,
+                          const StylePropertyShorthand& shorthand,
+                          bool important,
+                          CSSParserTokenStream& stream,
+                          const CSSParserContext& context,
+                          CSSParserLocalContext& local_context,
+                          HeapVector<CSSPropertyValue, 64>& properties) {
   std::array<CSSValue*, 4> radii = {nullptr, nullptr, nullptr, nullptr};
   std::array<CSSValue*, 4> shapes = {nullptr, nullptr, nullptr, nullptr};
   for (size_t i = 0; i < 4; ++i) {
@@ -2182,19 +2183,602 @@ bool Corner::ParseShorthand(
   css_parsing_utils::Complete4Sides(radii);
   css_parsing_utils::Complete4Sides(shapes);
   const StylePropertyShorthand::Properties& shorthand_properties =
-      cornerShorthand().properties();
+      shorthand.properties();
   DCHECK_EQ(shorthand_properties.size(), 8u);
   for (size_t i = 0; i < 4; ++i) {
     AddProperty(shorthand_properties[i * 2]->PropertyID(),
-                CSSPropertyID::kCorner, *radii[i], important,
+                shorthand_property_id, *radii[i], important,
                 css_parsing_utils::IsImplicitProperty::kNotImplicit,
                 properties);
     AddProperty(shorthand_properties[i * 2 + 1]->PropertyID(),
-                CSSPropertyID::kCorner, *shapes[i], important,
+                shorthand_property_id, *shapes[i], important,
                 css_parsing_utils::IsImplicitProperty::kNotImplicit,
                 properties);
   }
   return true;
+}
+
+const CSSValue* CornerValueFromComputedStyle(const LengthSize& radius,
+                                             Superellipse shape,
+                                             const ComputedStyle& style) {
+  if (radius.Width().IsZero() && radius.Height().IsZero() &&
+      shape == Superellipse::Round()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+  return MakeGarbageCollected<CSSValuePair>(
+      ComputedStyleUtils::ValueForBorderRadiusCorner(radius, style),
+      ComputedStyleUtils::ValueForCornerShape(shape),
+      CSSValuePair::kKeepIdenticalValues);
+}
+
+LengthSize RadiusForPhysicalCorner(const ComputedStyle& style,
+                                   CSSPropertyID property_id) {
+  switch (property_id) {
+    case CSSPropertyID::kBorderTopLeftRadius:
+      return style.BorderTopLeftRadius();
+    case CSSPropertyID::kBorderTopRightRadius:
+      return style.BorderTopRightRadius();
+    case CSSPropertyID::kBorderBottomRightRadius:
+      return style.BorderBottomRightRadius();
+    case CSSPropertyID::kBorderBottomLeftRadius:
+      return style.BorderBottomLeftRadius();
+    default:
+      NOTREACHED();
+  }
+}
+
+Superellipse ShapeForPhysicalCorner(const ComputedStyle& style,
+                                    CSSPropertyID property_id) {
+  switch (property_id) {
+    case CSSPropertyID::kCornerTopLeftShape:
+      return style.CornerTopLeftShape();
+    case CSSPropertyID::kCornerTopRightShape:
+      return style.CornerTopRightShape();
+    case CSSPropertyID::kCornerBottomRightShape:
+      return style.CornerBottomRightShape();
+    case CSSPropertyID::kCornerBottomLeftShape:
+      return style.CornerBottomLeftShape();
+    default:
+      NOTREACHED();
+  }
+}
+
+bool ParseSingleCornerShorthand(CSSPropertyID shorthand_property_id,
+                                const StylePropertyShorthand& shorthand,
+                                bool important,
+                                CSSParserTokenStream& stream,
+                                const CSSParserContext& context,
+                                CSSParserLocalContext& local_context,
+                                HeapVector<CSSPropertyValue, 64>& properties) {
+  CSSValue* radius = nullptr;
+  CSSValue* shape = nullptr;
+  if (!css_parsing_utils::ConsumeCorner(stream, context, local_context, radius,
+                                        shape)) {
+    return false;
+  }
+
+  CHECK(radius);
+  CHECK(shape);
+
+  const StylePropertyShorthand::Properties& shorthand_properties =
+      shorthand.properties();
+  DCHECK_EQ(shorthand_properties.size(), 2u);
+  AddProperty(shorthand_properties[0]->PropertyID(), shorthand_property_id,
+              *radius, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(shorthand_properties[1]->PropertyID(), shorthand_property_id,
+              *shape, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return true;
+}
+
+bool ParseCornerPairShorthand(CSSPropertyID shorthand_property_id,
+                              const StylePropertyShorthand& shorthand,
+                              bool important,
+                              CSSParserTokenStream& stream,
+                              const CSSParserContext& context,
+                              CSSParserLocalContext& local_context,
+                              HeapVector<CSSPropertyValue, 64>& properties) {
+  std::array<CSSValue*, 2> radii = {nullptr, nullptr};
+  std::array<CSSValue*, 2> shapes = {nullptr, nullptr};
+  for (size_t i = 0; i < 2; ++i) {
+    if (!css_parsing_utils::ConsumeCorner(stream, context, local_context,
+                                          radii[i], shapes[i])) {
+      return false;
+    }
+    if (i == 1 || !css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
+      break;
+    }
+  }
+
+  CHECK(radii[0]);
+  CHECK(shapes[0]);
+  if (!radii[1]) {
+    radii[1] = radii[0];
+  }
+  if (!shapes[1]) {
+    shapes[1] = shapes[0];
+  }
+
+  const StylePropertyShorthand::Properties& shorthand_properties =
+      shorthand.properties();
+  DCHECK_EQ(shorthand_properties.size(), 4u);
+  for (size_t i = 0; i < 2; ++i) {
+    AddProperty(shorthand_properties[i * 2]->PropertyID(),
+                shorthand_property_id, *radii[i], important,
+                css_parsing_utils::IsImplicitProperty::kNotImplicit,
+                properties);
+    AddProperty(shorthand_properties[i * 2 + 1]->PropertyID(),
+                shorthand_property_id, *shapes[i], important,
+                css_parsing_utils::IsImplicitProperty::kNotImplicit,
+                properties);
+  }
+  return true;
+}
+
+const CSSValue* CornerPairValueFromComputedStyle(
+    const LengthSize& first_radius,
+    Superellipse first_shape,
+    const LengthSize& second_radius,
+    Superellipse second_shape,
+    const ComputedStyle& style) {
+  CSSValueList* result = CSSValueList::CreateSlashSeparated();
+  result->Append(
+      *CornerValueFromComputedStyle(first_radius, first_shape, style));
+  if (first_radius != second_radius || first_shape != second_shape) {
+    result->Append(
+        *CornerValueFromComputedStyle(second_radius, second_shape, style));
+  }
+  return result;
+}
+
+}  // namespace
+
+const CSSValue* Corner::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerShorthandCSSValueFromComputedStyle(style);
+}
+
+bool Corner::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerShorthand(CSSPropertyID::kCorner, cornerShorthand(),
+                              important, stream, context, local_context,
+                              properties);
+}
+
+const CSSValue* CornerTopLeft::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerValueFromComputedStyle(style.BorderTopLeftRadius(),
+                                      style.CornerTopLeftShape(), style);
+}
+
+bool CornerTopLeft::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerTopLeft,
+                                    cornerTopLeftShorthand(), important, stream,
+                                    context, local_context, properties);
+}
+
+const CSSValue* CornerTopRight::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerValueFromComputedStyle(style.BorderTopRightRadius(),
+                                      style.CornerTopRightShape(), style);
+}
+
+bool CornerTopRight::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerTopRight,
+                                    cornerTopRightShorthand(), important,
+                                    stream, context, local_context, properties);
+}
+
+const CSSValue* CornerBottomLeft::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerValueFromComputedStyle(style.BorderBottomLeftRadius(),
+                                      style.CornerBottomLeftShape(), style);
+}
+
+bool CornerBottomLeft::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerBottomLeft,
+                                    cornerBottomLeftShorthand(), important,
+                                    stream, context, local_context, properties);
+}
+
+const CSSValue* CornerBottomRight::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerValueFromComputedStyle(style.BorderBottomRightRadius(),
+                                      style.CornerBottomRightShape(), style);
+}
+
+bool CornerBottomRight::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerBottomRight,
+                                    cornerBottomRightShorthand(), important,
+                                    stream, context, local_context, properties);
+}
+
+const CSSValue* CornerStartStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& radius_property =
+      CSSDirectionAwareResolver::ResolveStartStart(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& shape_property =
+      CSSDirectionAwareResolver::ResolveStartStart(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, radius_property.PropertyID()),
+      ShapeForPhysicalCorner(style, shape_property.PropertyID()), style);
+}
+
+bool CornerStartStart::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerStartStart,
+                                    cornerStartStartShorthand(), important,
+                                    stream, context, local_context, properties);
+}
+
+const CSSValue* CornerStartEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& radius_property =
+      CSSDirectionAwareResolver::ResolveStartEnd(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& shape_property =
+      CSSDirectionAwareResolver::ResolveStartEnd(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, radius_property.PropertyID()),
+      ShapeForPhysicalCorner(style, shape_property.PropertyID()), style);
+}
+
+bool CornerStartEnd::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerStartEnd,
+                                    cornerStartEndShorthand(), important,
+                                    stream, context, local_context, properties);
+}
+
+const CSSValue* CornerEndStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& radius_property =
+      CSSDirectionAwareResolver::ResolveEndStart(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& shape_property =
+      CSSDirectionAwareResolver::ResolveEndStart(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, radius_property.PropertyID()),
+      ShapeForPhysicalCorner(style, shape_property.PropertyID()), style);
+}
+
+bool CornerEndStart::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerEndStart,
+                                    cornerEndStartShorthand(), important,
+                                    stream, context, local_context, properties);
+}
+
+const CSSValue* CornerEndEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& radius_property = CSSDirectionAwareResolver::ResolveEndEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& shape_property = CSSDirectionAwareResolver::ResolveEndEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, radius_property.PropertyID()),
+      ShapeForPhysicalCorner(style, shape_property.PropertyID()), style);
+}
+
+bool CornerEndEnd::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseSingleCornerShorthand(CSSPropertyID::kCornerEndEnd,
+                                    cornerEndEndShorthand(), important, stream,
+                                    context, local_context, properties);
+}
+
+const CSSValue* CornerTop::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerPairValueFromComputedStyle(
+      style.BorderTopLeftRadius(), style.CornerTopLeftShape(),
+      style.BorderTopRightRadius(), style.CornerTopRightShape(), style);
+}
+
+bool CornerTop::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerTop,
+                                  cornerTopShorthand(), important, stream,
+                                  context, local_context, properties);
+}
+
+const CSSValue* CornerRight::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerPairValueFromComputedStyle(
+      style.BorderTopRightRadius(), style.CornerTopRightShape(),
+      style.BorderBottomRightRadius(), style.CornerBottomRightShape(), style);
+}
+
+bool CornerRight::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerRight,
+                                  cornerRightShorthand(), important, stream,
+                                  context, local_context, properties);
+}
+
+const CSSValue* CornerBottom::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerPairValueFromComputedStyle(
+      style.BorderBottomLeftRadius(), style.CornerBottomLeftShape(),
+      style.BorderBottomRightRadius(), style.CornerBottomRightShape(), style);
+}
+
+bool CornerBottom::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerBottom,
+                                  cornerBottomShorthand(), important, stream,
+                                  context, local_context, properties);
+}
+
+const CSSValue* CornerLeft::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CornerPairValueFromComputedStyle(
+      style.BorderTopLeftRadius(), style.CornerTopLeftShape(),
+      style.BorderBottomLeftRadius(), style.CornerBottomLeftShape(), style);
+}
+
+bool CornerLeft::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerLeft,
+                                  cornerLeftShorthand(), important, stream,
+                                  context, local_context, properties);
+}
+
+const CSSValue* CornerBlockStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& first_radius =
+      CSSDirectionAwareResolver::ResolveStartStart(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& first_shape = CSSDirectionAwareResolver::ResolveStartStart(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  const CSSProperty& second_radius = CSSDirectionAwareResolver::ResolveStartEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& second_shape = CSSDirectionAwareResolver::ResolveStartEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerPairValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, first_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, first_shape.PropertyID()),
+      RadiusForPhysicalCorner(style, second_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, second_shape.PropertyID()), style);
+}
+
+bool CornerBlockStart::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerBlockStart,
+                                  cornerBlockStartShorthand(), important,
+                                  stream, context, local_context, properties);
+}
+
+const CSSValue* CornerBlockEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& first_radius = CSSDirectionAwareResolver::ResolveEndStart(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& first_shape = CSSDirectionAwareResolver::ResolveEndStart(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  const CSSProperty& second_radius = CSSDirectionAwareResolver::ResolveEndEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& second_shape = CSSDirectionAwareResolver::ResolveEndEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerPairValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, first_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, first_shape.PropertyID()),
+      RadiusForPhysicalCorner(style, second_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, second_shape.PropertyID()), style);
+}
+
+bool CornerBlockEnd::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerBlockEnd,
+                                  cornerBlockEndShorthand(), important, stream,
+                                  context, local_context, properties);
+}
+
+const CSSValue* CornerInlineStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& first_radius =
+      CSSDirectionAwareResolver::ResolveStartStart(
+          writing_direction,
+          CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& first_shape = CSSDirectionAwareResolver::ResolveStartStart(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  const CSSProperty& second_radius = CSSDirectionAwareResolver::ResolveEndStart(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& second_shape = CSSDirectionAwareResolver::ResolveEndStart(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerPairValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, first_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, first_shape.PropertyID()),
+      RadiusForPhysicalCorner(style, second_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, second_shape.PropertyID()), style);
+}
+
+bool CornerInlineStart::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerInlineStart,
+                                  cornerInlineStartShorthand(), important,
+                                  stream, context, local_context, properties);
+}
+
+const CSSValue* CornerInlineEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const CSSProperty& first_radius = CSSDirectionAwareResolver::ResolveStartEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& first_shape = CSSDirectionAwareResolver::ResolveStartEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  const CSSProperty& second_radius = CSSDirectionAwareResolver::ResolveEndEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalBorderRadiusMapping());
+  const CSSProperty& second_shape = CSSDirectionAwareResolver::ResolveEndEnd(
+      writing_direction,
+      CSSDirectionAwareResolver::PhysicalCornerShapeMapping());
+  return CornerPairValueFromComputedStyle(
+      RadiusForPhysicalCorner(style, first_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, first_shape.PropertyID()),
+      RadiusForPhysicalCorner(style, second_radius.PropertyID()),
+      ShapeForPhysicalCorner(style, second_shape.PropertyID()), style);
+}
+
+bool CornerInlineEnd::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseCornerPairShorthand(CSSPropertyID::kCornerInlineEnd,
+                                  cornerInlineEndShorthand(), important, stream,
+                                  context, local_context, properties);
 }
 
 bool CornerShape::ParseShorthand(

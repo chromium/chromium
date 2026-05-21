@@ -114,6 +114,33 @@ String SerializeBorderValues(const std::array<String, 3>& values) {
   return result.ReleaseString();
 }
 
+bool ShouldSerializeCornerAsNormal(const CSSValuePair& value) {
+  const CSSValuePair& radius = To<CSSValuePair>(value.First());
+  const CSSValue& shape = value.Second();
+  if (!radius.First().IsNumericLiteralValue() ||
+      !radius.Second().IsNumericLiteralValue() ||
+      To<CSSNumericLiteralValue>(radius.First()).DoubleValue() != 0 ||
+      To<CSSNumericLiteralValue>(radius.Second()).DoubleValue() != 0) {
+    return false;
+  }
+  if (const CSSIdentifierValue* id_value =
+          DynamicTo<CSSIdentifierValue>(shape)) {
+    if (id_value->GetValueID() == CSSValueID::kRound) {
+      return true;
+    }
+  }
+  const CSSPrimitiveValue& param =
+      To<cssvalue::CSSSuperellipseValue>(shape).Param();
+  return param.IsNumericLiteralValue() &&
+         To<CSSNumericLiteralValue>(param).DoubleValue() ==
+             Superellipse::Round().Parameter();
+}
+
+String SerializeCornerValue(const CSSValuePair& value) {
+  return ShouldSerializeCornerAsNormal(value) ? String("normal")
+                                              : value.CssText();
+}
+
 }  // namespace
 
 StylePropertySerializer::CSSPropertyValueSetForSerializer::
@@ -810,6 +837,38 @@ String StylePropertySerializer::SerializeShorthand(
       return BorderRadiusValue();
     case CSSPropertyID::kCorner:
       return CornersValue();
+    case CSSPropertyID::kCornerTopLeft:
+      return SingleCornerShorthandValue(cornerTopLeftShorthand());
+    case CSSPropertyID::kCornerTopRight:
+      return SingleCornerShorthandValue(cornerTopRightShorthand());
+    case CSSPropertyID::kCornerBottomLeft:
+      return SingleCornerShorthandValue(cornerBottomLeftShorthand());
+    case CSSPropertyID::kCornerBottomRight:
+      return SingleCornerShorthandValue(cornerBottomRightShorthand());
+    case CSSPropertyID::kCornerStartStart:
+      return SingleCornerShorthandValue(cornerStartStartShorthand());
+    case CSSPropertyID::kCornerStartEnd:
+      return SingleCornerShorthandValue(cornerStartEndShorthand());
+    case CSSPropertyID::kCornerEndStart:
+      return SingleCornerShorthandValue(cornerEndStartShorthand());
+    case CSSPropertyID::kCornerEndEnd:
+      return SingleCornerShorthandValue(cornerEndEndShorthand());
+    case CSSPropertyID::kCornerTop:
+      return CornerPairShorthandValue(cornerTopShorthand());
+    case CSSPropertyID::kCornerRight:
+      return CornerPairShorthandValue(cornerRightShorthand());
+    case CSSPropertyID::kCornerBottom:
+      return CornerPairShorthandValue(cornerBottomShorthand());
+    case CSSPropertyID::kCornerLeft:
+      return CornerPairShorthandValue(cornerLeftShorthand());
+    case CSSPropertyID::kCornerBlockStart:
+      return CornerPairShorthandValue(cornerBlockStartShorthand());
+    case CSSPropertyID::kCornerBlockEnd:
+      return CornerPairShorthandValue(cornerBlockEndShorthand());
+    case CSSPropertyID::kCornerInlineStart:
+      return CornerPairShorthandValue(cornerInlineStartShorthand());
+    case CSSPropertyID::kCornerInlineEnd:
+      return CornerPairShorthandValue(cornerInlineEndShorthand());
     case CSSPropertyID::kCornerShape:
       return CornerShapeValue();
     case CSSPropertyID::kCornerTopShape:
@@ -3211,31 +3270,6 @@ String StylePropertySerializer::CornersValue() const {
   const bool show_bottom_right = show_bottom_left || (top_left != bottom_right);
   const bool show_top_right = show_bottom_right || (top_left != top_right);
 
-  auto ShouldSerializeAsNormal = [](const CSSValuePair& value) {
-    const CSSValuePair& radius = To<CSSValuePair>(value.First());
-    const CSSValue& shape = value.Second();
-    if (!radius.First().IsNumericLiteralValue() ||
-        !radius.Second().IsNumericLiteralValue() ||
-        To<CSSNumericLiteralValue>(radius.First()).DoubleValue() != 0 ||
-        To<CSSNumericLiteralValue>(radius.Second()).DoubleValue() != 0) {
-      return false;
-    }
-    if (const CSSIdentifierValue* id_value =
-            DynamicTo<CSSIdentifierValue>(shape)) {
-      if (id_value->GetValueID() == CSSValueID::kRound) {
-        return true;
-      }
-    }
-    const CSSPrimitiveValue& param =
-        To<cssvalue::CSSSuperellipseValue>(shape).Param();
-    return param.IsNumericLiteralValue() &&
-           To<CSSNumericLiteralValue>(param).DoubleValue() ==
-               Superellipse::Round().Parameter();
-  };
-  auto SerializeCornerValue = [&](const CSSValuePair& value) {
-    return ShouldSerializeAsNormal(value) ? "normal" : value.CssText();
-  };
-
   builder.Append(SerializeCornerValue(top_left));
   if (!show_top_right) {
     return builder.ReleaseString();
@@ -3254,6 +3288,52 @@ String StylePropertySerializer::CornersValue() const {
   builder.Append(SerializeCornerValue(bottom_left));
 
   return builder.ReleaseString();
+}
+
+String StylePropertySerializer::SingleCornerShorthandValue(
+    const StylePropertyShorthand& shorthand) const {
+  const StylePropertyShorthand::Properties& properties = shorthand.properties();
+  DCHECK_EQ(properties.size(), 2u);
+  const CSSValue* radius = property_set_.GetPropertyCSSValue(*properties[0]);
+  const CSSValue* shape = property_set_.GetPropertyCSSValue(*properties[1]);
+  if (!radius || !shape) {
+    return String();
+  }
+
+  const CSSValuePair& corner = *MakeGarbageCollected<CSSValuePair>(
+      radius, shape, CSSValuePair::kKeepIdenticalValues);
+
+  return SerializeCornerValue(corner);
+}
+
+String StylePropertySerializer::CornerPairShorthandValue(
+    const StylePropertyShorthand& shorthand) const {
+  const StylePropertyShorthand::Properties& properties = shorthand.properties();
+  DCHECK_EQ(properties.size(), 4u);
+
+  const CSSValue* first_radius =
+      property_set_.GetPropertyCSSValue(*properties[0]);
+  const CSSValue* first_shape =
+      property_set_.GetPropertyCSSValue(*properties[1]);
+  const CSSValue* second_radius =
+      property_set_.GetPropertyCSSValue(*properties[2]);
+  const CSSValue* second_shape =
+      property_set_.GetPropertyCSSValue(*properties[3]);
+  if (!first_radius || !first_shape || !second_radius || !second_shape) {
+    return String();
+  }
+
+  const CSSValuePair& first_corner = *MakeGarbageCollected<CSSValuePair>(
+      first_radius, first_shape, CSSValuePair::kKeepIdenticalValues);
+  const CSSValuePair& second_corner = *MakeGarbageCollected<CSSValuePair>(
+      second_radius, second_shape, CSSValuePair::kKeepIdenticalValues);
+
+  const String first_text = SerializeCornerValue(first_corner);
+  const String second_text = SerializeCornerValue(second_corner);
+  if (first_text == second_text) {
+    return first_text;
+  }
+  return first_text + " / " + second_text;
 }
 
 String StylePropertySerializer::PageBreakPropertyValue(

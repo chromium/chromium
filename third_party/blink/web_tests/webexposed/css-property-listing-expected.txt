@@ -696,24 +696,71 @@ All changes to this list should go through Blink's feature review process: http:
         corner-bottom-right-shape
         corner-top-left-shape
         corner-top-right-shape
+    corner-block-end
+        border-end-end-radius
+        border-end-start-radius
+        corner-end-end-shape
+        corner-end-start-shape
     corner-block-end-shape
         corner-end-end-shape
         corner-end-start-shape
+    corner-block-start
+        border-start-end-radius
+        border-start-start-radius
+        corner-start-end-shape
+        corner-start-start-shape
     corner-block-start-shape
         corner-start-end-shape
         corner-start-start-shape
+    corner-bottom
+        border-bottom-left-radius
+        border-bottom-right-radius
+        corner-bottom-left-shape
+        corner-bottom-right-shape
+    corner-bottom-left
+        border-bottom-left-radius
+        corner-bottom-left-shape
+    corner-bottom-right
+        border-bottom-right-radius
+        corner-bottom-right-shape
     corner-bottom-shape
         corner-bottom-left-shape
         corner-bottom-right-shape
+    corner-end-end
+        border-end-end-radius
+        corner-end-end-shape
+    corner-end-start
+        border-end-start-radius
+        corner-end-start-shape
+    corner-inline-end
+        border-end-end-radius
+        border-start-end-radius
+        corner-end-end-shape
+        corner-start-end-shape
     corner-inline-end-shape
         corner-end-end-shape
         corner-start-end-shape
+    corner-inline-start
+        border-end-start-radius
+        border-start-start-radius
+        corner-end-start-shape
+        corner-start-start-shape
     corner-inline-start-shape
         corner-end-start-shape
         corner-start-start-shape
+    corner-left
+        border-bottom-left-radius
+        border-top-left-radius
+        corner-bottom-left-shape
+        corner-top-left-shape
     corner-left-shape
         corner-bottom-left-shape
         corner-top-left-shape
+    corner-right
+        border-bottom-right-radius
+        border-top-right-radius
+        corner-bottom-right-shape
+        corner-top-right-shape
     corner-right-shape
         corner-bottom-right-shape
         corner-top-right-shape
@@ -721,6 +768,23 @@ All changes to this list should go through Blink's feature review process: http:
         corner-bottom-left-shape
         corner-bottom-right-shape
         corner-top-left-shape
+        corner-top-right-shape
+    corner-start-end
+        border-start-end-radius
+        corner-start-end-shape
+    corner-start-start
+        border-start-start-radius
+        corner-start-start-shape
+    corner-top
+        border-top-left-radius
+        border-top-right-radius
+        corner-top-left-shape
+        corner-top-right-shape
+    corner-top-left
+        border-top-left-radius
+        corner-top-left-shape
+    corner-top-right
+        border-top-right-radius
         corner-top-right-shape
     corner-top-shape
         corner-top-left-shape

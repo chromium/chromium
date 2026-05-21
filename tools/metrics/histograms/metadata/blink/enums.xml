@@ -8439,6 +8439,22 @@ Called by update_use_counter_css.py.-->
   <int value="943" label="text-decoration-skip-spaces"/>
   <int value="944" label="corner"/>
   <int value="945" label="scroll-axis-lock"/>
+  <int value="946" label="corner-top-left"/>
+  <int value="947" label="corner-top-right"/>
+  <int value="948" label="corner-bottom-left"/>
+  <int value="949" label="corner-bottom-right"/>
+  <int value="950" label="corner-start-start"/>
+  <int value="951" label="corner-start-end"/>
+  <int value="952" label="corner-end-start"/>
+  <int value="953" label="corner-end-end"/>
+  <int value="954" label="corner-top"/>
+  <int value="955" label="corner-right"/>
+  <int value="956" label="corner-bottom"/>
+  <int value="957" label="corner-left"/>
+  <int value="958" label="corner-block-start"/>
+  <int value="959" label="corner-block-end"/>
+  <int value="960" label="corner-inline-start"/>
+  <int value="961" label="corner-inline-end"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

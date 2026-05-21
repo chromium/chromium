@@ -1015,7 +1015,22 @@ enum CSSSampleId {
     kTextDecorationSkipSpaces = 943,
     kCorner = 944,
     kScrollAxisLock = 945,
-
+    kCornerTopLeft = 946,
+    kCornerTopRight = 947,
+    kCornerBottomLeft = 948,
+    kCornerBottomRight = 949,
+    kCornerStartStart = 950,
+    kCornerStartEnd = 951,
+    kCornerEndStart = 952,
+    kCornerEndEnd = 953,
+    kCornerTop = 954,
+    kCornerRight = 955,
+    kCornerBottom = 956,
+    kCornerLeft = 957,
+    kCornerBlockStart = 958,
+    kCornerBlockEnd = 959,
+    kCornerInlineStart = 960,
+    kCornerInlineEnd = 961,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

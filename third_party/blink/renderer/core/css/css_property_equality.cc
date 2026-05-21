@@ -1380,6 +1380,22 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kContainIntrinsicSize:
     case CSSPropertyID::kContainer:
     case CSSPropertyID::kCorner:
+    case CSSPropertyID::kCornerTopLeft:
+    case CSSPropertyID::kCornerTopRight:
+    case CSSPropertyID::kCornerBottomLeft:
+    case CSSPropertyID::kCornerBottomRight:
+    case CSSPropertyID::kCornerStartStart:
+    case CSSPropertyID::kCornerStartEnd:
+    case CSSPropertyID::kCornerEndStart:
+    case CSSPropertyID::kCornerEndEnd:
+    case CSSPropertyID::kCornerTop:
+    case CSSPropertyID::kCornerRight:
+    case CSSPropertyID::kCornerBottom:
+    case CSSPropertyID::kCornerLeft:
+    case CSSPropertyID::kCornerInlineStart:
+    case CSSPropertyID::kCornerInlineEnd:
+    case CSSPropertyID::kCornerBlockStart:
+    case CSSPropertyID::kCornerBlockEnd:
     case CSSPropertyID::kCornerShape:
     case CSSPropertyID::kCornerTopShape:
     case CSSPropertyID::kCornerRightShape:

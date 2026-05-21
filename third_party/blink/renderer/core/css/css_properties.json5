@@ -9251,6 +9251,174 @@
       valid_for_page_context: true,
     },
     {
+      name: "corner-top-left",
+      longhands: ["border-top-left-radius", "corner-top-left-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-top-right",
+      longhands: ["border-top-right-radius", "corner-top-right-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-bottom-left",
+      longhands: ["border-bottom-left-radius", "corner-bottom-left-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-bottom-right",
+      longhands: ["border-bottom-right-radius", "corner-bottom-right-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-start-start",
+      longhands: ["border-start-start-radius", "corner-start-start-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-start-end",
+      longhands: ["border-start-end-radius", "corner-start-end-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-end-start",
+      longhands: ["border-end-start-radius", "corner-end-start-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-end-end",
+      longhands: ["border-end-end-radius", "corner-end-end-shape"],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-top",
+      longhands: [
+        "border-top-left-radius", "corner-top-left-shape",
+        "border-top-right-radius", "corner-top-right-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-right",
+      longhands: [
+        "border-top-right-radius", "corner-top-right-shape",
+        "border-bottom-right-radius", "corner-bottom-right-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-bottom",
+      longhands: [
+        "border-bottom-left-radius", "corner-bottom-left-shape",
+        "border-bottom-right-radius", "corner-bottom-right-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-left",
+      longhands: [
+        "border-top-left-radius", "corner-top-left-shape",
+        "border-bottom-left-radius", "corner-bottom-left-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-block-start",
+      longhands: [
+        "border-start-start-radius", "corner-start-start-shape",
+        "border-start-end-radius", "corner-start-end-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-block-end",
+      longhands: [
+        "border-end-start-radius", "corner-end-start-shape",
+        "border-end-end-radius", "corner-end-end-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-inline-start",
+      longhands: [
+        "border-start-start-radius", "corner-start-start-shape",
+        "border-end-start-radius", "corner-end-start-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
+      name: "corner-inline-end",
+      longhands: [
+        "border-start-end-radius", "corner-start-end-shape",
+        "border-end-end-radius", "corner-end-end-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
       name: "corner",
       longhands: [
         "border-top-left-radius", "corner-top-left-shape",

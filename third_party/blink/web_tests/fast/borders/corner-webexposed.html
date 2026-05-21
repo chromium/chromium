@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>corner shorthand web exposure</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_true(CSS.supports('corner', '10px round'));
+}, 'corner shorthand is accepted by CSS.supports');
+
+test(() => {
+  assert_false(CSS.supports('corners', '10px round'));
+}, 'corners shorthand is not supported (renamed to corner)');
+
+test(() => {
+  assert_true(CSS.supports('corner-top-left', '10px round'));
+  assert_true(CSS.supports('corner-top', '10px round / 20px bevel'));
+  assert_true(CSS.supports('corner-block-start', '10px round / 20px bevel'));
+}, 'corner-* shorthands are accepted');
+
+test(() => {
+  const div = document.createElement('div');
+  div.style.corner = '10px round';
+  assert_not_equals(div.style.corner, '');
+}, 'style.corner accepts shorthand values');
+
+test(() => {
+  const div = document.createElement('div');
+  div.style.setProperty('corners', '10px round');
+  assert_equals(div.style.getPropertyValue('corners'), '');
+  assert_equals(div.style.cssText, '');
+}, 'corners is not a recognized CSS property');
+
+test(() => {
+  const div = document.createElement('div');
+  div.style.cornerTopLeft = '10px round';
+  div.style.cornerTop = '10px round / 20px bevel';
+  div.style.cornerBlockStart = '10px round / 20px bevel';
+  assert_not_equals(div.style.cornerTopLeft, '');
+  assert_not_equals(div.style.cornerTop, '');
+  assert_not_equals(div.style.cornerBlockStart, '');
+}, 'style.cornerTopLeft/style.cornerTop/style.cornerBlockStart accept values');
+</script>
