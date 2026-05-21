@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,7 +23,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
-#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -45,10 +44,8 @@ void ShowProjectorAccountReauthDialog(content::BrowserContext* browser_context,
                                       const std::string& email) {
   CHECK(browser_context);
 
-  base::UmaHistogramEnumeration(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kChromeOSProjectorAppReauth);
+  account_manager::RecordAccountAdditionSource(
+      account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth);
 
   crosapi::AccountManagerMojoService* account_manager_mojo_service =
       ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(

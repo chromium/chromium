@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -26,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -52,8 +52,6 @@ namespace {
 constexpr char kFamilyLink[] = "Family Link";
 constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
-constexpr char kAccountUpsertionResultStatus[] =
-    "AccountManager.AccountUpsertionResultStatus";
 
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
     const base::DictValue& dictionary) {
@@ -94,15 +92,14 @@ void ShowToast(const std::string& id,
   ToastManager::Get()->Show(ToastData(id, catalog_name, message));
 }
 
-void RecordAccountUpsertionResultStatus(
+void RecordMojoAccountUpsertionResultStatus(
     crosapi::mojom::AccountUpsertionResultPtr mojo_result) {
   const auto result =
       account_manager::FromMojoAccountUpsertionResult(mojo_result);
-  base::UmaHistogramEnumeration(kAccountUpsertionResultStatus,
-                                result.has_value()
-                                    ? result->status()
-                                    : account_manager::AccountUpsertionResult::
-                                          Status::kUnexpectedResponse);
+  account_manager::RecordAccountUpsertionResultStatus(
+      result.has_value() ? result->status()
+                         : account_manager::AccountUpsertionResult::Status::
+                               kUnexpectedResponse);
 }
 
 crosapi::AccountManagerMojoService& GetAccountManagerMojoServiceForSettings(
@@ -120,10 +117,8 @@ void ShowSettingsAddAccountDialog(content::BrowserContext* browser_context) {
   crosapi::AccountManagerMojoService& account_manager_mojo_service =
       GetAccountManagerMojoServiceForSettings(browser_context);
 
-  base::UmaHistogramEnumeration(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsAddAccountButton);
+  account_manager::RecordAccountAdditionSource(
+      account_manager::AccountAdditionSource::kSettingsAddAccountButton);
 
   crosapi::mojom::AccountAdditionOptionsPtr options =
       crosapi::mojom::AccountAdditionOptions::New();
@@ -133,7 +128,8 @@ void ShowSettingsAddAccountDialog(content::BrowserContext* browser_context) {
   // TODO(b/365741912, b/365902693): Route Settings add-account through the
   // replacement Account Manager dialog path once it exists.
   account_manager_mojo_service.ShowAddAccountDialog(
-      std::move(options), base::BindOnce(&RecordAccountUpsertionResultStatus));
+      std::move(options),
+      base::BindOnce(&RecordMojoAccountUpsertionResultStatus));
 }
 
 void ShowSettingsAccountReauthDialog(content::BrowserContext* browser_context,
@@ -141,15 +137,13 @@ void ShowSettingsAccountReauthDialog(content::BrowserContext* browser_context,
   crosapi::AccountManagerMojoService& account_manager_mojo_service =
       GetAccountManagerMojoServiceForSettings(browser_context);
 
-  base::UmaHistogramEnumeration(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsReauthAccountButton);
+  account_manager::RecordAccountAdditionSource(
+      account_manager::AccountAdditionSource::kSettingsReauthAccountButton);
 
   // TODO(b/365741912, b/365902693): Route Settings reauth through the
   // replacement Account Manager dialog path once it exists.
   account_manager_mojo_service.ShowReauthAccountDialog(
-      email, base::BindOnce(&RecordAccountUpsertionResultStatus));
+      email, base::BindOnce(&RecordMojoAccountUpsertionResultStatus));
 }
 
 class AccountBuilder {

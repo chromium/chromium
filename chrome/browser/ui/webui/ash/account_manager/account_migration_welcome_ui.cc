@@ -13,14 +13,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
-#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -39,9 +38,8 @@ void ShowMigrationWelcomeAccountReauthDialog(
     const std::string& email) {
   CHECK(browser_context);
 
-  base::UmaHistogramEnumeration(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
+  account_manager::RecordAccountAdditionSource(
+      account_manager::AccountAdditionSource::
           kAccountManagerMigrationWelcomeScreen);
 
   crosapi::AccountManagerMojoService* account_manager_mojo_service =

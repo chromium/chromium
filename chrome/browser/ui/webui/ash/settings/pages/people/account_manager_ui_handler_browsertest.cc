@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -54,8 +55,6 @@ constexpr char kSecondaryAccount1Email[] = "secondary1@example.com";
 constexpr char kSecondaryAccount2Email[] = "secondary2@example.com";
 constexpr char kGetAccountsMessage[] = "getAccounts";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
-constexpr char kAccountUpsertionResultStatus[] =
-    "AccountManager.AccountUpsertionResultStatus";
 constexpr char kAddAccountMessage[] = "addAccount";
 constexpr char kReauthAccountEmail[] = "settings-reauth@example.com";
 constexpr char kReauthenticateAccountMessage[] = "reauthenticateAccount";
@@ -427,15 +426,15 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   EXPECT_EQ(0,
             fake_account_manager_ui_ptr->show_manage_accounts_settings_calls());
   histogram_tester.ExpectUniqueSample(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsReauthAccountButton,
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kSettingsReauthAccountButton,
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(kAccountUpsertionResultStatus, 0);
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
   fake_account_manager_ui_ptr->CloseDialog();
   histogram_tester.ExpectUniqueSample(
-      kAccountUpsertionResultStatus,
+      account_manager::kAccountUpsertionResultStatusHistogramName,
       account_manager::AccountUpsertionResult::Status::kCancelledByUser,
       /*expected_count=*/1);
 }
@@ -470,15 +469,15 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   EXPECT_FALSE(fake_account_manager_ui_ptr->last_add_account_options()
                    ->show_arc_availability_picker);
   histogram_tester.ExpectUniqueSample(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsAddAccountButton,
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kSettingsAddAccountButton,
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(kAccountUpsertionResultStatus, 0);
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
   fake_account_manager_ui_ptr->CloseDialog();
   histogram_tester.ExpectUniqueSample(
-      kAccountUpsertionResultStatus,
+      account_manager::kAccountUpsertionResultStatusHistogramName,
       account_manager::AccountUpsertionResult::Status::kCancelledByUser,
       /*expected_count=*/1);
 }

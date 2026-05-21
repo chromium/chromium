@@ -5,20 +5,20 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_UI_CHROMEOS_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_UI_CHROMEOS_UTIL_H_
 
-#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_ui_util {
 
 // Converts `access_point` to a corresponding `AccountAdditionSource` for adding
 // a new account.
-account_manager::AccountManagerFacade::AccountAdditionSource
-GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point);
+account_manager::AccountAdditionSource GetAddAccountSourceFromAccessPoint(
+    signin_metrics::AccessPoint access_point);
 
 // Converts `access_point` to a corresponding `AccountAdditionSource` for
 // reauthenticating an existing new account.
-account_manager::AccountManagerFacade::AccountAdditionSource
-GetAccountReauthSourceFromAccessPoint(signin_metrics::AccessPoint access_point);
+account_manager::AccountAdditionSource GetAccountReauthSourceFromAccessPoint(
+    signin_metrics::AccessPoint access_point);
 
 }  // namespace signin_ui_util
 

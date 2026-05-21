@@ -16,6 +16,8 @@ component("account_manager_core") {
     "account_manager_facade.h",
     "account_manager_facade_impl.cc",
     "account_manager_facade_impl.h",
+    "account_manager_metrics.cc",
+    "account_manager_metrics.h",
     "account_manager_util.cc",
     "account_manager_util.h",
     "account_upsertion_result.cc",

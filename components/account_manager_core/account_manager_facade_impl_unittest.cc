@@ -22,6 +22,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/account_upsertion_result.h"
@@ -550,11 +551,10 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {
 
   // Check that UMA stats were sent.
   tester.ExpectUniqueSample(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::kAccountAdditionSourceHistogramName,
       /*sample=*/source, /*expected_count=*/1);
   tester.ExpectUniqueSample(
-      AccountManagerFacadeImpl::
-          GetAccountUpsertionResultStatusHistogramNameForTesting(),
+      account_manager::kAccountUpsertionResultStatusHistogramName,
       /*sample=*/result.status(), /*expected_count=*/1);
 }
 
@@ -626,7 +626,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
   account_manager_facade->FlushMojoForTesting();
 
   // Check that UMA stats were sent.
-  tester.ExpectUniqueSample(AccountManagerFacade::kAccountAdditionSource,
+  tester.ExpectUniqueSample(kAccountAdditionSourceHistogramName,
                             /*sample=*/source, /*expected_count=*/1);
 }
 

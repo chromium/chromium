@@ -135,7 +135,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
     kMaxValue = kVersionMismatch
   };
 
-  static std::string GetAccountUpsertionResultStatusHistogramNameForTesting();
   static std::string GetAccountsMojoStatusHistogramNameForTesting();
 
   // A utility class to fetch access tokens over Mojo.

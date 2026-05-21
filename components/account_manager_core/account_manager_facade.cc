@@ -6,10 +6,6 @@
 
 namespace account_manager {
 
-// static
-const char AccountManagerFacade::kAccountAdditionSource[] =
-    "AccountManager.AccountAdditionSource";
-
 AccountManagerFacade::Observer::Observer() = default;
 AccountManagerFacade::Observer::~Observer() = default;
 

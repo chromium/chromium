@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -36,8 +37,6 @@ namespace {
 using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
 
 // UMA histogram names.
-const char kAccountUpsertionResultStatus[] =
-    "AccountManager.AccountUpsertionResultStatus";
 const char kGetAccountsMojoStatus[] =
     "AccountManager.FacadeGetAccountsMojoStatus";
 const char kMojoDisconnectionsAccountManagerRemote[] =
@@ -81,48 +80,37 @@ void UnmarshalPersistentError(
 
 // Returns whether an account should be available in ARC after it's added
 // in-session.
-bool GetIsAvailableInArcBySource(
-    AccountManagerFacade::AccountAdditionSource source) {
+bool GetIsAvailableInArcBySource(AccountAdditionSource source) {
   switch (source) {
     // Accounts added from Ash should be available in ARC.
-    case AccountManagerFacade::AccountAdditionSource::kSettingsAddAccountButton:
-    case AccountManagerFacade::AccountAdditionSource::
-        kAccountManagerMigrationWelcomeScreen:
-    case AccountManagerFacade::AccountAdditionSource::kArc:
-    case AccountManagerFacade::AccountAdditionSource::kOnboarding:
+    case AccountAdditionSource::kSettingsAddAccountButton:
+    case AccountAdditionSource::kAccountManagerMigrationWelcomeScreen:
+    case AccountAdditionSource::kArc:
+    case AccountAdditionSource::kOnboarding:
       return true;
     // Accounts added from the browser should not be available in ARC.
-    case AccountManagerFacade::AccountAdditionSource::kChromeProfileCreation:
-    case AccountManagerFacade::AccountAdditionSource::kOgbAddAccount:
-    case AccountManagerFacade::AccountAdditionSource::
-        kAvatarBubbleTurnOnSyncAddAccount:
-    case AccountManagerFacade::AccountAdditionSource::
-        kChromeExtensionAddAccount:
-    case AccountManagerFacade::AccountAdditionSource::
-        kChromeSyncPromoAddAccount:
-    case AccountManagerFacade::AccountAdditionSource::
-        kChromeSettingsTurnOnSyncButton:
-    case AccountManagerFacade::AccountAdditionSource::kChromeMenuTurnOnSync:
-    case AccountManagerFacade::AccountAdditionSource::
-        kChromeSigninPromoAddAccount:
+    case AccountAdditionSource::kChromeProfileCreation:
+    case AccountAdditionSource::kOgbAddAccount:
+    case AccountAdditionSource::kAvatarBubbleTurnOnSyncAddAccount:
+    case AccountAdditionSource::kChromeExtensionAddAccount:
+    case AccountAdditionSource::kChromeSyncPromoAddAccount:
+    case AccountAdditionSource::kChromeSettingsTurnOnSyncButton:
+    case AccountAdditionSource::kChromeMenuTurnOnSync:
+    case AccountAdditionSource::kChromeSigninPromoAddAccount:
       return false;
     // These are reauthentication cases. ARC visibility shouldn't change for
     // reauthentication.
-    case AccountManagerFacade::AccountAdditionSource::kContentAreaReauth:
-    case AccountManagerFacade::AccountAdditionSource::
-        kSettingsReauthAccountButton:
-    case AccountManagerFacade::AccountAdditionSource::
-        kAvatarBubbleReauthAccountButton:
-    case AccountManagerFacade::AccountAdditionSource::kChromeExtensionReauth:
-    case AccountManagerFacade::AccountAdditionSource::kChromeSyncPromoReauth:
-    case AccountManagerFacade::AccountAdditionSource::
-        kChromeOSProjectorAppReauth:
-    case AccountManagerFacade::AccountAdditionSource::
-        kChromeSettingsReauthAccountButton:
-    case AccountManagerFacade::AccountAdditionSource::kGeminiInChromeReauth:
+    case AccountAdditionSource::kContentAreaReauth:
+    case AccountAdditionSource::kSettingsReauthAccountButton:
+    case AccountAdditionSource::kAvatarBubbleReauthAccountButton:
+    case AccountAdditionSource::kChromeExtensionReauth:
+    case AccountAdditionSource::kChromeSyncPromoReauth:
+    case AccountAdditionSource::kChromeOSProjectorAppReauth:
+    case AccountAdditionSource::kChromeSettingsReauthAccountButton:
+    case AccountAdditionSource::kGeminiInChromeReauth:
       NOTREACHED();
     // Unused enums that cannot be deleted.
-    case AccountManagerFacade::AccountAdditionSource::kPrintPreviewDialogUnused:
+    case AccountAdditionSource::kPrintPreviewDialogUnused:
       NOTREACHED();
   }
 }
@@ -404,13 +392,13 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
     return;
   }
 
-  base::UmaHistogramEnumeration(kAccountAdditionSource, source);
+  RecordAccountAdditionSource(source);
 
   crosapi::mojom::AccountAdditionOptionsPtr options =
       crosapi::mojom::AccountAdditionOptions::New();
   options->is_available_in_arc = GetIsAvailableInArcBySource(source);
   options->show_arc_availability_picker =
-      (source == AccountManagerFacade::AccountAdditionSource::kArc);
+      (source == AccountAdditionSource::kArc);
 
   account_manager_remote_->ShowAddAccountDialog(
       std::move(options),
@@ -443,7 +431,7 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     return;
   }
 
-  base::UmaHistogramEnumeration(kAccountAdditionSource, source);
+  RecordAccountAdditionSource(source);
 
   account_manager_remote_->ShowReauthAccountDialog(
       email,
@@ -517,12 +505,6 @@ void AccountManagerFacadeImpl::RemoveAccountForTesting(
 }
 
 // static
-std::string AccountManagerFacadeImpl::
-    GetAccountUpsertionResultStatusHistogramNameForTesting() {
-  return kAccountUpsertionResultStatus;
-}
-
-// static
 std::string
 AccountManagerFacadeImpl::GetAccountsMojoStatusHistogramNameForTesting() {
   return kGetAccountsMojoStatus;
@@ -562,7 +544,7 @@ void AccountManagerFacadeImpl::FinishUpsertAccount(
     base::OnceCallback<
         void(const account_manager::AccountUpsertionResult& result)> callback,
     const account_manager::AccountUpsertionResult& result) {
-  base::UmaHistogramEnumeration(kAccountUpsertionResultStatus, result.status());
+  RecordAccountUpsertionResultStatus(result.status());
   std::move(callback).Run(result);
 }
 

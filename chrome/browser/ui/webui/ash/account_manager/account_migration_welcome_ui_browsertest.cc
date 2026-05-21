@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
-#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "content/public/browser/web_contents.h"
@@ -94,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(AccountMigrationWelcomeUITest,
   EXPECT_EQ(0,
             fake_account_manager_ui_ptr->show_manage_accounts_settings_calls());
   histogram_tester.ExpectUniqueSample(
-      account_manager::AccountManagerFacade::kAccountAdditionSource,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::
           kAccountManagerMigrationWelcomeScreen,
       /*expected_count=*/1);
 
