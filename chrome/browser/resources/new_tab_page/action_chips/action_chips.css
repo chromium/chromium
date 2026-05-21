@@ -16,7 +16,6 @@
   --chip-slide-duration: 1000ms;
   --chip-fade-duration: 850ms;
   --chip-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
-  min-height: 96px;
 }
 
 @keyframes chips-slide {
@@ -246,18 +245,21 @@
 @media (min-width: 560px) {
   :host {
     --ntp-chips-container-width: 449px;
+    min-height: 236px;
   }
 }
 
 @media (min-width: 672px) {
   :host {
     --ntp-chips-container-width: 561px;
+    min-height: 166px;
   }
 }
 
 @media (min-width: 900px) {
   :host {
     --ntp-chips-container-width: 746px;
+    min-height: 96px;
   }
 }
 
