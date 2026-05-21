@@ -2181,6 +2181,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                             base::FeatureList::IsEnabled(
                                 blink::features::kDevToolsWebMCPSupport)));
 
+  response_dict.Set(
+      "devToolsPlusButton",
+      base::DictValue().Set(
+          "enabled",
+          base::FeatureList::IsEnabled(::features::kDevToolsPlusButton)));
+
   return response_dict;
 }
 
