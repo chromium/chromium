@@ -79,6 +79,9 @@ class RequiredComponentsController {
   // Called when all the requested components are ready.
   base::OnceClosure ready_callback_;
 
+  // Captured when the first required component is registered for update.
+  base::TimeTicks update_start_time_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RequiredComponentsController> weak_ptr_factory_{this};

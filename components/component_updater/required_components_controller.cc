@@ -49,6 +49,10 @@ bool RequiredComponentsController::RequestComponentUpdate(
     return false;
   }
 
+  if (update_start_time_.is_null()) {
+    update_start_time_ = base::TimeTicks::Now();
+  }
+
   requested_components_[component.app_id] = component.name;
 
   ready_ = false;
@@ -130,6 +134,12 @@ void RequiredComponentsController::EnsureRequiredComponentsReady(
 void RequiredComponentsController::CheckComponentsReady() {
   if (!requested_components_.empty() || ready_) {
     return;
+  }
+
+  if (!update_start_time_.is_null()) {
+    LOG(WARNING) << "Required components updated in "
+                 << (base::TimeTicks::Now() - update_start_time_);
+    update_start_time_ = base::TimeTicks();
   }
 
   ready_ = true;
