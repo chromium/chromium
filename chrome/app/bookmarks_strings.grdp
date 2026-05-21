@@ -33,9 +33,6 @@
     <message name="IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS" desc="Name shown in the context menu to hide/show the tab groups in the bookmark bar">
       Show tab groups
     </message>
-    <message name="IDS_BOOKMARK_BAR_SHOW_READING_LIST" desc="Name shown in the context menu to hide/show the reading list in the bookmark bar">
-      Show reading list
-    </message>
     <message name="IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME" desc="Name shown in the context menu to hide/show the managed bookmarks in the bookmark bar">
       Show managed bookmarks
     </message>
@@ -49,9 +46,6 @@
     </message>
     <message name="IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS" desc="Name shown in the context menu to hide/show the tab groups in the bookmark bar">
       Show Tab Groups
-    </message>
-    <message name="IDS_BOOKMARK_BAR_SHOW_READING_LIST" desc="In Title Case: Name shown in the context menu to hide/show the reading list in the bookmark bar">
-      Show Reading List
     </message>
     <message name="IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME" desc="In Title Case: Name shown in the context menu to hide/show the managed bookmarks in the bookmark bar">
       Show Managed Bookmarks
@@ -73,9 +67,6 @@
 
   <!-- Begin of Bookmarks Bar Context Menu strings. -->
   <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_BAR_OPEN_ALL" desc="Menu title for opening all urls in a bookmark folder">
-      &amp;Open all bookmarks
-    </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT" desc="Menu title for opening all urls in a bookmark folder">
         {COUNT, plural,
           =0 {&amp;Open all}
@@ -137,9 +128,6 @@
     </if>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_BAR_OPEN_ALL" desc="In Title Case: Menu title for opening all urls in a bookmark folder">
-        &amp;Open All Bookmarks
-    </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT" desc="In Title Case: Menu title for opening all urls in a bookmark folder">
         {COUNT, plural,
           =0 {&amp;Open All}
@@ -211,9 +199,6 @@
       <message name="IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE" desc="Title of the message box shown when user opens a bookmark folder as tab group if user already did that before">
         Replace or create new group?
       </message>
-      <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
-        Create new tab group
-      </message>
       <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
         Replace existing tab group
       </message>
@@ -221,9 +206,6 @@
     <if expr="use_titlecase">
       <message name="IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE" desc="In title case: Title of the message box shown when user opens a bookmark folder as tab group if user already did that before">
         Replace or Create New Group?
-      </message>
-      <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="In title case: Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
-        Create New Tab Group
       </message>
       <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="In title case: Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
         Replace Existing Tab Group
@@ -239,14 +221,8 @@
   <message name="IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK" desc="Title of the bubble when re-clicking on a bookmark">
     Edit bookmark
   </message>
-  <message name="IDS_BOOKMARK_BUBBLE_EDIT_BOOKMARK" desc="Title of the button for editing the bookmark">
-    Edit
-  </message>
   <message name="IDS_BOOKMARK_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked" meaning="Name of an inanimate object">
     Name
-  </message>
-  <message name="IDS_BOOKMARK_BUBBLE_SAVED_TO" desc="Text notifying a user which folder their bookmark was saved to.">
-    This page is saved to <ph name="BOOKMARK_FOLDER">$1<ex>All Bookmarks</ex></ph>
   </message>
   <message name="IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL" desc="Text preceding the title of the page that was bookmarked, read by spoken feedback">
     Bookmark name
@@ -254,21 +230,12 @@
   <message name="IDS_BOOKMARK_BUBBLE_FOLDER_LABEL" desc="Text preceding the folder selector">
     Folder
   </message>
-  <message name="IDS_BOOKMARK_AX_BUBBLE_FOLDER_LABEL" desc="Text preceding the folder selector">
-    Bookmark folder
-  </message>
   <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_BUBBLE_OPTIONS" desc="Title of the button the user can click to go to a more advanced bookmark editor">
-      More...
-    </message>
     <message name="IDS_BOOKMARK_BUBBLE_CHOOSER_ANOTHER_FOLDER" desc="Text in the combobox allowing the user to choose another folder (by bringing up the editor).">
       Choose another folder...
     </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_BUBBLE_OPTIONS" desc="In Title Case: Title of the button the user can click to go to a more advanced bookmark editor">
-      More...
-    </message>
     <message name="IDS_BOOKMARK_BUBBLE_CHOOSER_ANOTHER_FOLDER" desc="In Title Case: Text in the combobox allowing the user to choose another folder (by bringing up the editor).">
       Choose Another Folder...
     </message>
@@ -284,23 +251,6 @@
   </message>
   <!-- End of Bookmarks Promo strings for Desktop Identity Consistency. -->
 
-  <!-- Begin of Desktop to iOS Promo strings. -->
-  <if expr="is_win">
-    <message name="IDS_BOOKMARK_BUBBLE_DESKTOP_TO_IOS_PROMO_TITLE" desc="Title for Chrome iOS promotion appearing in the bookmark bubble after a bookmark is saved.">
-      Sync this bookmark to your iPhone
-    </message>
-    <message name="IDS_BOOKMARK_BUBBLE_DESKTOP_TO_IOS_PROMO_TITLE_V2" desc="Title for Chrome iOS promotion appearing in the bookmark bubble after a bookmark is saved.">
-      Get this bookmark on your iPhone
-    </message>
-    <message name="IDS_BOOKMARK_BUBBLE_DESKTOP_TO_IOS_PROMO_TITLE_V3" desc="Title for Chrome iOS promotion appearing in the bookmark bubble after a bookmark is saved.">
-      Share this bookmark with your iPhone
-    </message>
-    <message name="IDS_BOOKMARK_FOOTNOTE_DESKTOP_TO_IOS_PROMO_MESSAGE" desc="Text of the Chrome iOS promotion displayed at the bottom of the bookmark bubble.">
-      To get your bookmarks on your mobile device, <ph name="GET_IOS_APP_LINK">$1<ex>get the application on your iPhone</ex></ph>.
-    </message>
-  </if>
-  <!-- End of Desktop to iOS Promo strings. -->
-
   <!-- UNO Promo strings for bookmarks -->
   <message name="IDS_BOOKMARK_PROMO_TITLE" desc="This is the body text of a confirmation message and means that the bookmark was either saved locally, or to the user's pending account storage if their sign-in credentials have expired. It appears after a bookmark save if the user is not signed in to Chrome or their sign-in credentials have expired. If the user wants to save this data to their Google Account, they can click the button at the bottom of this message. The tone should be motivating.">
     Use bookmarks across devices
@@ -314,11 +264,6 @@
   <message name="IDS_BOOKMARK_AX_EDITOR_NAME_LABEL" desc="Spoken text for bookmark name text field in edit folder dialog">
     Bookmark name
   </message>
-  <if expr="is_macosx">
-    <message name="IDS_BOOKMARK_BAR_EDIT_FOLDER_LABEL" desc="Title of label before text field in edit folder dialog">
-      Name:
-    </message>
-  </if>
   <message name="IDS_BOOKMARK_AX_EDITOR_URL_LABEL" desc="Spoken text for bookmark URL text field in edit folder dialog.">
     Bookmark URL
   </message>
