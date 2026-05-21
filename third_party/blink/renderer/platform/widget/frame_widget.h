@@ -72,6 +72,7 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the compositors's AnimationTimeline for the widget.
   virtual cc::AnimationTimeline* ScrollAnimationTimeline() const = 0;
 
+  virtual void SendEarlyFinalBeginMainFrame() = 0;
   // Set the browser's behavior when overscroll happens, e.g. whether to glow
   // or navigate.
   virtual void SetOverscrollBehavior(

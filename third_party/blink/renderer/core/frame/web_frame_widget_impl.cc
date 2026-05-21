@@ -1585,6 +1585,10 @@ void WebFrameWidgetImpl::SetBackgroundColor(SkColor color) {
       SkColor4f::FromColor(color));
 }
 
+void WebFrameWidgetImpl::SendEarlyFinalBeginMainFrame() {
+  widget_base_->LayerTreeHost()->RequestImmediateBeginMainFrame();
+}
+
 void WebFrameWidgetImpl::SetOverscrollBehavior(
     const cc::OverscrollBehavior& overscroll_behavior) {
   if (!View()->does_composite())
