@@ -231,6 +231,7 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   collapsed_state_changed_subscription_ =
       state_controller->RegisterOnCollapseChanged(base::BindRepeating(
           &VerticalTabView::OnCollapseStateChanged, base::Unretained(this)));
+  close_button_observation_.Observe(close_button_);
 }
 
 VerticalTabView::~VerticalTabView() = default;
@@ -651,6 +652,7 @@ void VerticalTabView::OnFocus() {
   }
 
   UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kFocus);
+  InvalidateLayout();
 }
 
 void VerticalTabView::OnBlur() {
@@ -665,6 +667,7 @@ void VerticalTabView::OnBlur() {
       UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kFocus);
     }
   }
+  InvalidateLayout();
 }
 
 void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -675,6 +678,18 @@ void VerticalTabView::UpdateParentLayer() {
   views::View::UpdateParentLayer();
   if (layer()) {
     UpdateLayerRoundedCorners();
+  }
+}
+
+void VerticalTabView::OnViewFocused(views::View* observed_view) {
+  if (observed_view == close_button_) {
+    InvalidateLayout();
+  }
+}
+
+void VerticalTabView::OnViewBlurred(views::View* observed_view) {
+  if (observed_view == close_button_) {
+    InvalidateLayout();
   }
 }
 
@@ -760,10 +775,12 @@ bool VerticalTabView::IsChildVisible(const views::View* child_view,
     constexpr int kUncollapsedMinWidthThreshold = 3;
 
     if (width < UncollapsedMinWidth() - kUncollapsedMinWidthThreshold) {
-      return active_ && hovered_;
+      return active_ && (hovered_ || HasFocus() ||
+                         (close_button_ && close_button_->HasFocus()));
     }
 
-    return active_ || hovered_;
+    return active_ || hovered_ || HasFocus() ||
+           (close_button_ && close_button_->HasFocus());
   }
 
   NOTREACHED() << "Unknown tab child view";

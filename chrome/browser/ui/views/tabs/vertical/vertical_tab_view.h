@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -27,6 +28,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 class GlowHoverController;
 class TabCloseButton;
@@ -52,7 +54,8 @@ class VerticalTabView : public views::View,
                         public views::MaskedTargeterDelegate,
                         public AlertIndicatorButton::Delegate,
                         public views::ContextMenuController,
-                        public HoverCardAnchorTarget {
+                        public HoverCardAnchorTarget,
+                        public views::ViewObserver {
   METADATA_HEADER(VerticalTabView, views::View)
 
  public:
@@ -110,6 +113,10 @@ class VerticalTabView : public views::View,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
   void UpdateParentLayer() override;
+
+  // views::ViewObserver:
+  void OnViewFocused(views::View* observed_view) override;
+  void OnViewBlurred(views::View* observed_view) override;
 
   // Tab Painting Helpers
   void PaintTabBackgroundWithImages(gfx::Canvas* canvas,
@@ -247,6 +254,9 @@ class VerticalTabView : public views::View,
   std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 
   std::unique_ptr<tabs::TabDataObserver> tab_data_observer_;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      close_button_observation_{this};
 
   base::WeakPtrFactory<VerticalTabView> weak_ptr_factory_{this};
 };
