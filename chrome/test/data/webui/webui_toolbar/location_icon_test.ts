@@ -63,6 +63,10 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
     };
     await microtasksFinished();
 
@@ -92,6 +96,10 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: true,
       isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
     };
     await microtasksFinished();
 
@@ -114,6 +122,10 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
     };
     await microtasksFinished();
 
@@ -132,6 +144,10 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
     };
     await microtasksFinished();
 
@@ -147,6 +163,10 @@ suite('LocationIconTest', function() {
       isClickable: false,
       isTextDangerous: false,
       isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
     };
     await microtasksFinished();
 
@@ -168,6 +188,10 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      accessibilityState: {
+        label: '',
+        description: '',
+      },
     };
     await microtasksFinished();
 

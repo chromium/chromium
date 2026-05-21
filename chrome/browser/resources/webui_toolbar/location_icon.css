@@ -14,7 +14,14 @@
 /* The base layer of the chip, defining its shape, size, and base background
    color. */
 #container {
+  appearance: none;
+  background: none;
+  border: none;
+  box-sizing: content-box;
   display: inline-flex;
+  font: inherit;
+  margin: 0;
+  padding: 0;
   align-items: center;
   justify-content: center;
   height: var(--location-bar-leading-icon-size);
