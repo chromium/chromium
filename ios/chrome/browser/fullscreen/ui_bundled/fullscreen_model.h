@@ -10,6 +10,7 @@
 #include <cmath>
 
 #import "base/observer_list.h"
+#include "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -335,6 +336,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   bool manually_forced_ = false;
 
   friend class FullscreenModelTest;
+
+  base::WeakPtrFactory<FullscreenModel> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_MODEL_H_

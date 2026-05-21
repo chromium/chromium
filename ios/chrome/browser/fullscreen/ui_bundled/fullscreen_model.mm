@@ -68,8 +68,12 @@ void FullscreenModel::RemoveObserver(FullscreenModelObserver* observer) {
 void FullscreenModel::IncrementDisabledCounter() {
   if (++disabled_counter_ == 1U) {
     ScopedIncrementer disabled_incrementer(&observer_callback_count_);
+    base::WeakPtr<FullscreenModel> weak_this = weak_factory_.GetWeakPtr();
     for (auto& observer : observers_) {
       observer.FullscreenModelEnabledStateChanged(this);
+      if (!weak_this) {
+        return;
+      }
     }
     // Fullscreen observers are expected to show the toolbar when fullscreen is
     // disabled. Update the internal state to match this.
@@ -82,8 +86,12 @@ void FullscreenModel::DecrementDisabledCounter() {
   DCHECK_GT(disabled_counter_, 0U);
   if (!--disabled_counter_) {
     ScopedIncrementer enabled_incrementer(&observer_callback_count_);
+    base::WeakPtr<FullscreenModel> weak_this = weak_factory_.GetWeakPtr();
     for (auto& observer : observers_) {
       observer.FullscreenModelEnabledStateChanged(this);
+      if (!weak_this) {
+        return;
+      }
     }
   }
 }
@@ -146,8 +154,12 @@ void FullscreenModel::ToolbarsHeightDidChange() {
     base_offset_ = NAN;
   }
   ScopedIncrementer toolbar_height_incrementer(&observer_callback_count_);
+  base::WeakPtr<FullscreenModel> weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_) {
     observer.FullscreenModelToolbarHeightsUpdated(this);
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
@@ -243,8 +255,12 @@ void FullscreenModel::SetScrollViewIsScrolling(bool scrolling) {
     }
     // Notify observers that the scroll event has begun.
     ScopedIncrementer scroll_started_incrementer(&observer_callback_count_);
+    base::WeakPtr<FullscreenModel> weak_this = weak_factory_.GetWeakPtr();
     for (auto& observer : observers_) {
       observer.FullscreenModelScrollEventStarted(this);
+      if (!weak_this) {
+        return;
+      }
     }
   } else {
     if (is_scrolled_to_bottom() && !is_scrolling_time_recorded_ &&
@@ -260,8 +276,12 @@ void FullscreenModel::SetScrollViewIsScrolling(bool scrolling) {
     ignoring_current_scroll_ = false;
     // Notify observers that the scroll event has ended.
     ScopedIncrementer scroll_ended_incrementer(&observer_callback_count_);
+    base::WeakPtr<FullscreenModel> weak_this = weak_factory_.GetWeakPtr();
     for (auto& observer : observers_) {
       observer.FullscreenModelScrollEventEnded(this);
+      if (!weak_this) {
+        return;
+      }
     }
   }
 }
@@ -530,8 +550,12 @@ void FullscreenModel::SetProgress(CGFloat progress) {
   }
   setting_progress_ = true;
   ScopedIncrementer progress_incrementer(&observer_callback_count_);
+  base::WeakPtr<FullscreenModel> weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_) {
     observer.FullscreenModelProgressUpdated(this);
+    if (!weak_this) {
+      return;
+    }
   }
   setting_progress_ = false;
 }
