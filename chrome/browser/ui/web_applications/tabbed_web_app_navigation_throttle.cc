@@ -40,6 +40,12 @@ void TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
+  // Do not intercept programmatic home tab creation/restoration.
+  if (ui::PageTransitionCoreTypeIs(handle.GetPageTransition(),
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return;
+  }
+
   // Reloading the page should not cause the tab to change.
   if (handle.GetReloadType() != content::ReloadType::NONE) {
     return;
@@ -75,7 +81,7 @@ void TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
 
   // Only create the throttle for tabbed web apps that have a home tab.
-  if (WebAppTabHelper::GetAppId(web_contents) &&
+  if (WebAppTabHelper::FromWebContents(web_contents) &&
       provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id) &&
       home_tab_url.has_value()) {
     registry.AddThrottle(
@@ -111,8 +117,16 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   bool navigation_url_is_home_url =
       app_controller->IsUrlInHomeTabScope(navigation_handle()->GetURL());
 
+  DVLOG(1) << "TabbedWebAppNavigationThrottle::WillStartRequest GURL: "
+           << navigation_handle()->GetURL()
+           << ", navigating_from_home_tab: " << navigating_from_home_tab
+           << ", navigation_url_is_home_url: " << navigation_url_is_home_url
+           << ", web_contents: " << web_contents
+           << ", GetPinnedHomeTab: " << app_controller->GetPinnedHomeTab();
+
   // Navigations from the home tab to another URL should open in a new tab.
   if (navigating_from_home_tab && !navigation_url_is_home_url) {
+    DVLOG(1) << "TabbedWebAppNavigationThrottle: Redirecting to OpenInNewTab";
     return OpenInNewTab();
   }
 
@@ -122,16 +136,21 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
     // should close it.
     if (browser_window->GetTabStripModel()->count() > 1 &&
         !web_contents->GetLastCommittedURL().is_valid()) {
+      DVLOG(1) << "TabbedWebAppNavigationThrottle: Closing blank tab";
       web_contents->ClosePage();
     }
+    DVLOG(1) << "TabbedWebAppNavigationThrottle: Redirecting to FocusHomeTab";
     return FocusHomeTab(*app_controller, *browser_window->GetTabStripModel());
   }
 
+  DVLOG(1) << "TabbedWebAppNavigationThrottle: Proceeding";
   return content::NavigationThrottle::PROCEED;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::WillRedirectRequest() {
+  DVLOG(1) << "TabbedWebAppNavigationThrottle::WillRedirectRequest GURL: "
+           << navigation_handle()->GetURL();
   // TODO(crbug.com/400761084): Figure out how redirects should be handled.
   return content::NavigationThrottle::PROCEED;
 }

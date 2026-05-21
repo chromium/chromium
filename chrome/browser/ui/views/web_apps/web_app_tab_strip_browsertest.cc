@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -86,6 +88,60 @@ constexpr SkColor kAppBackgroundColor = SK_ColorBLUE;
 // The page shouldn't have a manifest so no updating will occur to override
 // our settings.
 constexpr char kAppPath[] = "/web_apps/no_manifest.html";
+
+class TabAddedAndRemovedWaiter : public TabStripModelObserver {
+ public:
+  explicit TabAddedAndRemovedWaiter(TabStripModel* tab_strip)
+      : tab_strip_(tab_strip) {
+    tab_strip_->AddObserver(this);
+  }
+  ~TabAddedAndRemovedWaiter() override {
+    if (tab_strip_) {
+      tab_strip_->RemoveObserver(this);
+    }
+  }
+
+  void Wait() {
+    if (added_ && removed_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kInserted) {
+      for (const auto& contents : change.GetInsert()->contents) {
+        if (!added_contents_) {
+          added_contents_ = contents.contents;
+          added_ = true;
+          break;
+        }
+      }
+    } else if (change.type() == TabStripModelChange::kRemoved) {
+      for (const auto& contents : change.GetRemove()->contents) {
+        if (added_contents_ && contents.contents == added_contents_) {
+          removed_ = true;
+          added_contents_ = nullptr;
+          if (added_ && removed_) {
+            run_loop_.Quit();
+          }
+          break;
+        }
+      }
+    }
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_;
+  raw_ptr<content::WebContents> added_contents_ = nullptr;
+  bool added_ = false;
+  bool removed_ = false;
+  base::RunLoop run_loop_;
+};
 
 }  // namespace
 namespace web_app {
@@ -691,8 +747,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, NavigationThrottle) {
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
 }
 
-// TODO(crbug.com/40257354): Enable this test.
-IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, DISABLED_TargetBlankLink) {
+IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, TargetBlankLink) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   webapps::AppId app_id = InstallTestWebApp(start_url);
@@ -705,16 +760,21 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, DISABLED_TargetBlankLink) {
   chrome::NewTab(app_browser);
   tab_strip->ActivateTabAt(0);
 
+  TabAddedAndRemovedWaiter added_removed_waiter(tab_strip);
+
   // Navigate to a home tab URL via a target=_blank link.
   content::TestNavigationObserver nav_observer(
       tab_strip->GetActiveWebContents(), 1);
   ASSERT_TRUE(ExecJs(
       tab_strip->GetActiveWebContents(),
       "document.getElementById('test-link-with-blank-target').click();"));
+
+  added_removed_waiter.Wait();
+
   nav_observer.Wait();
 
   // Expect no new tab was opened, and the home tab is focused.
-  EXPECT_EQ(tab_strip->count(), 3);
+  EXPECT_EQ(tab_strip->count(), 2);
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(),
             embedded_test_server()->GetURL(
