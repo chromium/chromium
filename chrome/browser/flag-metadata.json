@@ -2856,7 +2856,7 @@
   {
     "name": "enable-android-omnibox-autofocus-on-incognito-ntp",
     "owners": [ "jkudzia@google.com", "polonium@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "enable-android-physical-keyboard-autocorrect-underline",
@@ -2879,7 +2879,7 @@
   {
     "name": "enable-android-reporting-omnibox-autofocus-header",
     "owners": [ "jkudzia@google.com", "polonium@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "enable-android-side-panel",
