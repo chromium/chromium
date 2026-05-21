@@ -55,6 +55,19 @@ namespace contextual_search {
 struct FileInfo;
 }  // namespace contextual_search
 
+class OmniboxContextMenuController;
+
+// Child class to override custom font in submenu.
+class TabSimpleMenuModel : public ui::SimpleMenuModel {
+ public:
+  explicit TabSimpleMenuModel(OmniboxContextMenuController* controller);
+
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
+
+ private:
+  raw_ptr<OmniboxContextMenuController> controller_;
+};
+
 enum class OmniboxPopupState;
 
 // OmniboxContextMenuController creates and manages state for the context menu
@@ -72,6 +85,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
     std::u16string title;
     GURL url;
     base::TimeTicks last_active;
+    bool is_active_tab = false;
   };
 
   OmniboxContextMenuController(const OmniboxContextMenuController&) = delete;
@@ -110,6 +124,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   static OmniboxPopupUI* GetOmniboxPopupUI(content::WebContents* web_contents);
 
  private:
+  friend class TabSimpleMenuModel;
+
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            IsCommandIdEnabledHelper_InitialState);
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
@@ -211,8 +227,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   raw_ptr<OmniboxEditModel> GetEditModel();
   raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
 
-  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  std::unique_ptr<ui::SimpleMenuModel> shared_tabs_menu_model_;
+  std::unique_ptr<TabSimpleMenuModel> menu_model_;
+  std::unique_ptr<TabSimpleMenuModel> shared_tabs_menu_model_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<OmniboxEditModel> edit_model_;

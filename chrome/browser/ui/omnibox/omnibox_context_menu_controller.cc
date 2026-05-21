@@ -73,11 +73,34 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
 constexpr int kMinOmniboxContextMenuRecentTabsCommandId = 33000;
+
+}  // namespace
+
+TabSimpleMenuModel::TabSimpleMenuModel(OmniboxContextMenuController* controller)
+    : ui::SimpleMenuModel(controller), controller_(controller) {}
+
+const gfx::FontList* TabSimpleMenuModel::GetLabelFontListAt(
+    size_t index) const {
+  int command_id = GetCommandIdAt(index);
+  // Check if the command ID belongs to the recent tabs section. Tabs have
+  // commands starting at `kMinOmniboxContextMenuRecentTabsCommandId`.
+  if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
+      command_id < kMinOmniboxContextMenuRecentTabsCommandId +
+                       controller_->GetMaxTabSuggestions()) {
+    // Make the font smaller for "current tab" and 'tab name' minor text.
+    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
+        ui::ResourceBundle::SmallFont);
+  }
+  return ui::SimpleMenuModel::GetLabelFontListAt(index);
+}
+
+namespace {
 
 bool IsValidTab(GURL url) {
   // Skip tabs that are still loading, and skip webui.
@@ -181,7 +204,7 @@ OmniboxContextMenuController::OmniboxContextMenuController(
     content::WebContents* web_contents)
     : file_selector_(file_selector->GetWeakPtr()),
       web_contents_(web_contents->GetWeakPtr()) {
-  menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   auto* composebox_handler =
       GetOmniboxPopupUI() ? GetOmniboxPopupUI()->composebox_handler() : nullptr;
@@ -304,7 +327,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   if (include_tabs_submenu) {
     // Add shared tabs submenu to main menu and make submenu the tabs
     // `target_menu_model`.
-    shared_tabs_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+    shared_tabs_menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
     target_menu_model = shared_tabs_menu_model_.get();
     first_tab_index = 0;
   } else {
@@ -322,6 +345,11 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   for (const auto& tab : tabs) {
     target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
                                        favicon::GetDefaultFaviconModel());
+    if (tab.is_active_tab) {
+      target_menu_model->SetMinorText(
+          target_menu_model->GetItemCount() - 1,
+          l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
+    }
     AddTabFavicon(next_command_id_, tab.url, tab.title);
     input_type_for_command_id_[next_command_id_] =
         omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
@@ -521,6 +549,7 @@ OmniboxContextMenuController::GetRecentTabs() {
     tab_data.tab_id = tab->GetHandle().raw_value();
     tab_data.title = TabUIHelper::From(tab)->GetTitle();
     tab_data.url = last_committed_url;
+    tab_data.is_active_tab = (tab == tab_strip_model->GetActiveTab());
 
     tab_data.last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
