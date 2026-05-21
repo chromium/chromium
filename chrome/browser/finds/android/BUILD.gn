@@ -16,6 +16,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome"
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/finds/FindsFeatures.java",
     "java/src/org/chromium/chrome/browser/finds/FindsManager.java",
     "java/src/org/chromium/chrome/browser/finds/FindsMetrics.java",
     "java/src/org/chromium/chrome/browser/finds/FindsOptInBottomSheetContent.java",

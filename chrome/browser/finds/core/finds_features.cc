@@ -26,12 +26,14 @@ constexpr base::FeatureParam<int> kNotificationWindowTimeMinutes{
     &kChromeFinds, "finds_notification_schedule_window_time_minutes",
     /*default_value=*/120};
 
+// LINT.IfChange(OptInPromoParams)
 constexpr base::FeatureParam<int> kFindsOptInPromoMaxInteractedCount{
     &kChromeFinds, "finds_opt_in_promo_max_interacted_count",
     /*default_value=*/2};
 
 constexpr base::FeatureParam<int> kFindsOptInPromoCooldownInDays{
     &kChromeFinds, "finds_opt_in_promo_cooldown_in_days", /*default_value=*/7};
+// LINT.ThenChange(//chrome/browser/finds/android/java/src/org/chromium/chrome/browser/finds/FindsFeatures.java:OptInPromoParams)
 
 constexpr base::FeatureParam<int> kThemeUrlVisitCountForOptIn{
     &kChromeFinds, "finds_theme_url_visit_count_for_opt_in",

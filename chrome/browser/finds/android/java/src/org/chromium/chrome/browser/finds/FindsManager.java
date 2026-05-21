@@ -44,7 +44,7 @@ public class FindsManager implements FindsService.Observer {
         mFindsService.addObserver(this);
         mFindsService.maybeRescheduleNotifications();
 
-        if (FindsUtils.shouldAlwaysShowOptInPromo()) {
+        if (FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
             onOptInCriteriaFulfilled();
         }
     }

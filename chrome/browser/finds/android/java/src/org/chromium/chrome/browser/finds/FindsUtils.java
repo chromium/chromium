@@ -9,11 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -70,15 +67,6 @@ public class FindsUtils {
                                 callback.onResult(false);
                             }
                         });
-    }
-
-    /**
-     * @return Whether the opt-in promo should be always shown for debugging.
-     */
-    @VisibleForTesting
-    static boolean shouldAlwaysShowOptInPromo() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CHROME_FINDS, "always_show_opt_in_promo", false);
     }
 
     /**
