@@ -1022,27 +1022,27 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-compose",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-compose-android",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "slidingpanelayout",
