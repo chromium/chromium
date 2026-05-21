@@ -347,13 +347,11 @@ TEST_F(QueryContextualizerTest, Contextualize_ExtractsUrls) {
   {
     testing::InSequence s;
     EXPECT_CALL(*session_handle_,
-                StartUrlContextUploadFlow(testing::_, "https://example.com!"));
-    EXPECT_CALL(*session_handle_,
-                StartUrlContextUploadFlow(testing::_, "http://test.org,"));
-    EXPECT_CALL(*session_handle_, StartUrlContextUploadFlow(
-                                      testing::_, "http://www.google.com."));
-    EXPECT_CALL(*session_handle_,
                 StartUrlContextUploadFlow(testing::_, "https://example.com"));
+    EXPECT_CALL(*session_handle_,
+                StartUrlContextUploadFlow(testing::_, "http://test.org"));
+    EXPECT_CALL(*session_handle_,
+                StartUrlContextUploadFlow(testing::_, "http://www.google.com"));
   }
 
   // Expect GetPageContext call to NOT be called since the tab is not expired
@@ -427,6 +425,40 @@ TEST(QueryContextualizerStaticTest, ExtractUrlsFromQuery) {
       "https://example.com and https://example.com");
   ASSERT_EQ(urls.size(), 1u);
   EXPECT_EQ(urls[0], "https://example.com");
+
+  // Test trailing punctuation trimming.
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "Check out https://wikipedia.org, and www.example.com. Also see "
+      "http://test.com/path; is http://google.com? ok? What about "
+      "https://test.org!");
+  ASSERT_EQ(urls.size(), 5u);
+  EXPECT_EQ(urls[0], "https://wikipedia.org");
+  EXPECT_EQ(urls[1], "http://www.example.com");
+  EXPECT_EQ(urls[2], "http://test.com/path;");
+  EXPECT_EQ(urls[3], "http://google.com?");
+  EXPECT_EQ(urls[4], "https://test.org");
+
+  // Test trailing punctuation trimming with multiple trailing characters.
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "Check out https://wikipedia.org.,;?!");
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(urls[0], "https://wikipedia.org");
+
+  // Test that query parameters with non-trailing ? are preserved.
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "Check out https://wikipedia.org?query=1");
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(urls[0], "https://wikipedia.org?query=1");
+
+  // Test trailing punctuation preserving (valid URLs)
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "Check out https://example.com/path/ and "
+      "https://example.com/search?q=test! and "
+      "https://example.com/page#section.");
+  ASSERT_EQ(urls.size(), 3u);
+  EXPECT_EQ(urls[0], "https://example.com/path/");
+  EXPECT_EQ(urls[1], "https://example.com/search?q=test!");
+  EXPECT_EQ(urls[2], "https://example.com/page#section.");
 }
 
 TEST_F(QueryContextualizerTest,
