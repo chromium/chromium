@@ -407,8 +407,12 @@ BASE_EXPORT FilePath GetHomeDir();
 // NOTE: Exclusivity is unique to Windows. On Windows, the returned file
 // supports File::DeleteOnClose. On other platforms, the caller is responsible
 // for deleting the file `temp_file` points to, if appropriate.
+//
+// On Windows, `additional_flags` will be combined with the default flags when
+// opening the file.
 BASE_EXPORT File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
-                                                 FilePath* temp_file);
+                                                 FilePath* temp_file,
+                                                 uint32_t additional_flags = 0);
 
 // Creates a temporary file. The full path is placed in `path`, and the
 // function returns true if was successful in creating the file. The file will

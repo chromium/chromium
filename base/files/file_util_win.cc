@@ -779,15 +779,17 @@ FilePath GetHomeDir() {
   return FilePath(FILE_PATH_LITERAL("C:\\"));
 }
 
-File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
+File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
+                                     FilePath* temp_file,
+                                     uint32_t additional_flags) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   // Open the file with exclusive r/w/d access, and allow the caller to decide
   // to mark it for deletion upon close after the fact.
-  constexpr uint32_t kFlags = File::FLAG_CREATE | File::FLAG_READ |
-                              File::FLAG_WRITE | File::FLAG_WIN_EXCLUSIVE_READ |
-                              File::FLAG_WIN_EXCLUSIVE_WRITE |
-                              File::FLAG_CAN_DELETE_ON_CLOSE;
+  uint32_t flags = File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE |
+                   File::FLAG_WIN_EXCLUSIVE_READ |
+                   File::FLAG_WIN_EXCLUSIVE_WRITE |
+                   File::FLAG_CAN_DELETE_ON_CLOSE | additional_flags;
 
   // Use GUID instead of ::GetTempFileName() to generate unique file names.
   // "Due to the algorithm used to generate file names, GetTempFileName can
@@ -804,7 +806,7 @@ File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   for (int i = 0; i < 100; ++i) {
     temp_name = dir.Append(FormatTemporaryFileName(
         UTF8ToWide(Uuid::GenerateRandomV4().AsLowercaseString()), true));
-    file.Initialize(temp_name, kFlags);
+    file.Initialize(temp_name, flags);
     if (file.IsValid()) {
       break;
     }
