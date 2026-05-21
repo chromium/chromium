@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+web_idl_scripts_dir = "//third_party/blink/renderer/bindings/scripts/web_idl"
+
+web_idl_compiler_inputs = [
+  "$web_idl_scripts_dir/__init__.py",
+  "$web_idl_scripts_dir/argument.py",
+  "$web_idl_scripts_dir/ast_group.py",
+  "$web_idl_scripts_dir/async_iterator.py",
+  "$web_idl_scripts_dir/attribute.py",
+  "$web_idl_scripts_dir/callback_function.py",
+  "$web_idl_scripts_dir/callback_interface.py",
+  "$web_idl_scripts_dir/code_generator_info.py",
+  "$web_idl_scripts_dir/composition_parts.py",
+  "$web_idl_scripts_dir/constant.py",
+  "$web_idl_scripts_dir/constructor.py",
+  "$web_idl_scripts_dir/database.py",
+  "$web_idl_scripts_dir/database_builder.py",
+  "$web_idl_scripts_dir/dictionary.py",
+  "$web_idl_scripts_dir/enumeration.py",
+  "$web_idl_scripts_dir/exposure.py",
+  "$web_idl_scripts_dir/extended_attribute.py",
+  "$web_idl_scripts_dir/file_io.py",
+  "$web_idl_scripts_dir/function_like.py",
+  "$web_idl_scripts_dir/idl_compiler.py",
+  "$web_idl_scripts_dir/idl_type.py",
+  "$web_idl_scripts_dir/includes.py",
+  "$web_idl_scripts_dir/interface.py",
+  "$web_idl_scripts_dir/ir_builder.py",
+  "$web_idl_scripts_dir/ir_map.py",
+  "$web_idl_scripts_dir/literal_constant.py",
+  "$web_idl_scripts_dir/make_copy.py",
+  "$web_idl_scripts_dir/namespace.py",
+  "$web_idl_scripts_dir/observable_array.py",
+  "$web_idl_scripts_dir/operation.py",
+  "$web_idl_scripts_dir/reference.py",
+  "$web_idl_scripts_dir/runtime_enabled_features.py",
+  "$web_idl_scripts_dir/sync_iterator.py",
+  "$web_idl_scripts_dir/typedef.py",
+  "$web_idl_scripts_dir/union.py",
+  "$web_idl_scripts_dir/user_defined_type.py",
+]

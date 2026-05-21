@@ -15,6 +15,7 @@ import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
+import("//third_party/blink/renderer/bindings/scripts/web_idl/web_idl.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/accessibility/build.gni")
@@ -1437,10 +1438,21 @@ target(core_generated_target_type, "core_generated") {
 action("generate_eventhandler_names") {
   script = "//third_party/blink/renderer/build/scripts/run_with_pythonpath.py"
   real_script = "trustedtypes/generate_eventhandler_names.py"
-  inputs = [
-    web_idl_database_filepath,
-    real_script,
-  ]
+  inputs = web_idl_compiler_inputs + [
+             "//third_party/blink/renderer/build/scripts/run_with_pythonpath.py",
+             "//third_party/pyjson5/src/json5/__init__.py",
+             "//third_party/pyjson5/src/json5/lib.py",
+             "//third_party/pyjson5/src/json5/parser.py",
+             "//third_party/pyjson5/src/json5/version.py",
+             "//third_party/blink/renderer/build/scripts/blinkbuild/__init__.py",
+             "//third_party/blink/renderer/build/scripts/blinkbuild/name_style_converter.py",
+             "//tools/idl_parser/__init__.py",
+             "//tools/idl_parser/idl_lexer.py",
+             "//tools/idl_parser/idl_node.py",
+             "//tools/idl_parser/idl_parser.py",
+             web_idl_database_filepath,
+             real_script,
+           ]
   outputs = [ "$target_gen_dir/trustedtypes/event_handler_names.h" ]
   deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
   args = [
@@ -1449,7 +1461,7 @@ action("generate_eventhandler_names") {
                 root_build_dir),
     rebase_path(real_script, root_build_dir),
     "--webidl",
-    rebase_path(inputs[0], root_build_dir),
+    rebase_path(web_idl_database_filepath, root_build_dir),
     "--out",
     rebase_path(outputs[0], root_build_dir),
   ]
@@ -1938,8 +1950,14 @@ action_foreach("element_locator_test_protobuf") {
   sources = rebase_path([ "lcp_image_id.asciipb" ], "", source_dir)
   sources += rebase_path([ "lcp_image_id_b.asciipb" ], "", source_dir)
 
+  inputs = [
+    "//components/resources/protobufs/binary_proto_generator.py",
+    "${proto_python_root}/third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator_pb2.py",
+  ]
+
   deps = [
     ":element_locator_proto",
+    ":element_locator_proto_gen",
     "//third_party/protobuf:py_proto",
   ]
 

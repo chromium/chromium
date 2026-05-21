@@ -4,6 +4,7 @@
 
 import("//build/nocompile.gni")
 import("//third_party/blink/renderer/core/core.gni")
+import("//third_party/jinja2/jinja2.gni")
 
 template("probe_generator") {
   assert(defined(invoker.probe_set))
@@ -15,13 +16,16 @@ template("probe_generator") {
   action(generated_target_name) {
     script = "../../build/scripts/make_instrumenting_probes.py"
 
-    inputs = [
-      "${invoker.probe_set}.pidl",
-      "${invoker.probe_set}.json5",
-      "../../build/scripts/templates/instrumenting_probes_impl.cc.tmpl",
-      "../../build/scripts/templates/instrumenting_probes_inl.h.tmpl",
-      "../../build/scripts/templates/probe_sink.h.tmpl",
-    ]
+    inputs =
+        jinja2_sources + [
+          "${invoker.probe_set}.pidl",
+          "${invoker.probe_set}.json5",
+          "../../build/scripts/templates/instrumenting_probes_impl.cc.tmpl",
+          "../../build/scripts/templates/instrumenting_probes_inl.h.tmpl",
+          "../../build/scripts/templates/probe_sink.h.tmpl",
+          "../../build/scripts/templates/macros.tmpl",
+          "../../build/scripts/blinkbuild/name_style_converter.py",
+        ]
 
     outputs = [
       "${invoker.output}/${invoker.probe_set}_inl.h",
@@ -30,7 +34,7 @@ template("probe_generator") {
     ]
 
     args = [
-      rebase_path(inputs[0], root_build_dir),
+      rebase_path("${invoker.probe_set}.pidl", root_build_dir),
       "--config",
       rebase_path("${invoker.probe_set}.json5", root_build_dir),
       "--output_dir",

@@ -45,11 +45,11 @@ def __step_config(ctx, step_config):
         "testing/libfuzzer/research/domatolpm/generator.py",
         "testing/libfuzzer/research/fuzzilli_idl_fuzzing/generator.py",
         "testing/scripts/rust/generate_script.py",
-        "third_party/blink/renderer/bindings/scripts/check_generated_file_list.py",
+        # Dynamically walks and loads 160+ translated grd files (xtb) and requires
+        # full grit python libraries. Too many dynamic dependencies to track.
         "third_party/blink/renderer/build/scripts/generate_permission_element_grd.py",
-        "third_party/blink/renderer/build/scripts/make_instrumenting_probes.py",
-        "third_party/blink/renderer/build/scripts/run_with_pythonpath.py",
-        "third_party/blink/renderer/core/lcp_critical_path_predictor/generate_element_locator_binary_proto.py",
+        # Dynamically walks and reads multiple test image files under
+        # web_tests/images/resources/ directory, making input tracking too complex.
         "third_party/blink/renderer/modules/webcodecs/fuzzer_seed_corpus/generate_image_corpus.py",
         "third_party/cast_core/public/src/build/chromium/cast_core_grpc_generator_wrapper.py",
         "third_party/catapult/tracing/bin/generate_about_tracing_contents",
