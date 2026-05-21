@@ -209,6 +209,8 @@ public class ImeAdapterImpl
 
     private @Nullable AutocorrectManager mAutocorrectManager;
 
+    private @Nullable ImeRenderWidgetHostImpl mBoundImeRenderWidgetHost;
+
     /**
      * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
      * editable node at the right timing, which is after input method window shows up.
@@ -260,7 +262,9 @@ public class ImeAdapterImpl
         public void onConnectionError(MojoException e) {}
 
         @Override
-        public void close() {}
+        public void close() {
+            mHandle.close();
+        }
     }
 
     /**
@@ -1085,6 +1089,11 @@ public class ImeAdapterImpl
             mWebContents.getStylusWritingHandler().onImeAdapterDestroyed();
         }
 
+        if (mBoundImeRenderWidgetHost != null) {
+            mBoundImeRenderWidgetHost.close();
+            mBoundImeRenderWidgetHost = null;
+        }
+
         WeakReference<ImeAdapterImpl> oldValue = sNativeHelperMap.remove(mNativeImeAdapterAndroid);
         assert oldValue != null;
         assert oldValue.get() == this;
@@ -1804,9 +1813,13 @@ public class ImeAdapterImpl
      */
     @CalledByNative
     private void bindImeRenderHost(long nativeHandle) {
+        if (mBoundImeRenderWidgetHost != null) {
+            mBoundImeRenderWidgetHost.close();
+            mBoundImeRenderWidgetHost = null;
+        }
         MessagePipeHandle handle =
                 CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle();
-        new ImeRenderWidgetHostImpl(this, handle);
+        mBoundImeRenderWidgetHost = new ImeRenderWidgetHostImpl(this, handle);
     }
 
     /**
