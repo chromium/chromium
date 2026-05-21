@@ -87,6 +87,10 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   UpdatePickerViewBounds();
 
+  // Explicitly request focus on the newly shown picker view to immediately
+  // capture keyboard focus and prevent browser shortcuts from leaking.
+  view_ptr->RequestFocus();
+
   // Ensure the hosted WebContents is transparent. This allows the WebUI to
   // render its own semi-transparent scrim or floating dialog while the
   // browser window remains partially visible underneath.

@@ -64,6 +64,17 @@ gfx::Size DrivePickerHostView::CalculatePreferredSize(
   return browser_window_interface_->GetWindow()->GetBounds().size();
 }
 
+void DrivePickerHostView::RequestFocus() {
+  views::WebView* web_view =
+      views::AsViewClass<views::WebView>(view_tracker_.view());
+  if (web_view) {
+    web_view->RequestFocus();
+    if (web_view->GetWebContents()) {
+      web_view->GetWebContents()->Focus();
+    }
+  }
+}
+
 void DrivePickerHostView::TriggerDrivePickerHostUi(
     std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
   if (!view_tracker_.view()) {

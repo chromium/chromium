@@ -64,6 +64,7 @@ class DrivePickerHostView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  void RequestFocus() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, Initialization);

@@ -65,6 +65,8 @@ class DrivePickerHostController : public content::WebContentsObserver,
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostControllerTest,
                            ShowDrivePickerHostCreatesView);
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostControllerTest,
+                           ShowDrivePickerHostRequestsFocus);
+  FRIEND_TEST_ALL_PREFIXES(DrivePickerHostControllerTest,
                            ResetControllerStateClearsView);
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostControllerTest,
                            PickerCoversBrowserContents);

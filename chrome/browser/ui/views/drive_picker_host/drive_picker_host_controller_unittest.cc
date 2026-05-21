@@ -41,6 +41,30 @@ class DrivePickerHostControllerTest : public TestWithBrowserView {
   std::unique_ptr<DrivePickerHostController> controller_;
 };
 
+TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostRequestsFocus) {
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  controller_->ShowDrivePickerHost(std::move(request));
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(controller_->picker_widget_);
+  DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
+      controller_->picker_widget_->GetContentsView());
+  ASSERT_TRUE(view);
+
+  // The view should have requested focus.
+  views::FocusManager* focus_manager = view->GetWidget()->GetFocusManager();
+  views::View* focused_view = focus_manager->GetFocusedView();
+  if (!focused_view) {
+    focused_view = focus_manager->GetStoredFocusView();
+  }
+  ASSERT_TRUE(focused_view);
+  EXPECT_TRUE(view->Contains(focused_view));
+}
+
 TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostCreatesView) {
   auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
       drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
