@@ -4016,6 +4016,10 @@ TEST_P(GLES2DecoderTest, CopySubTextureCHROMIUMTwiceClearsUnclearedTexture) {
              0 /* y */, 2 /* width */, 1 /* height */,
              false /* unpack_flip_y */, false /* unpack_premultiply_alpha */,
              false /* unpack_unmultiply_alpha */);
+    EXPECT_CALL(*gl_, GetError())
+        .WillOnce(Return(GL_NO_ERROR))
+        .WillOnce(Return(GL_NO_ERROR))
+        .RetiresOnSaturation();
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   }
 

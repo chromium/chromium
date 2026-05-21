@@ -13354,6 +13354,7 @@ error::Error GLES2DecoderImpl::DoCompressedTexSubImage(
   if (image_size > 0 && !state_.bound_pixel_unpack_buffer && !data)
     return error::kInvalidArguments;
 
+  bool should_set_level_cleared = false;
   if (!texture->IsLevelCleared(target, level)) {
     // This can only happen if the compressed texture was allocated
     // using TexStorage{2|3}D.
@@ -13366,13 +13367,16 @@ error::Error GLES2DecoderImpl::DoCompressedTexSubImage(
         yoffset == 0 && height == level_height &&
         zoffset == 0 && depth == level_depth) {
       // We can skip the clear if we're uploading the entire level.
-      texture_manager()->SetLevelCleared(texture_ref, target, level, true);
+      should_set_level_cleared = true;
     } else {
       texture_manager()->ClearTextureLevel(this, texture_ref, target, level);
+      DCHECK(texture->IsLevelCleared(target, level));
     }
-    DCHECK(texture->IsLevelCleared(target, level));
   }
 
+  if (should_set_level_cleared) {
+    LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(func_name);
+  }
   const CompressedFormatInfo* format_info =
       GetCompressedFormatInfo(internal_format);
   if (format_info != nullptr && !format_info->support_check(*feature_info_)) {
@@ -13403,6 +13407,12 @@ error::Error GLES2DecoderImpl::DoCompressedTexSubImage(
       api()->glCompressedTexSubImage3DFn(target, level, xoffset, yoffset,
                                          zoffset, width, height, depth, format,
                                          image_size, data);
+    }
+  }
+
+  if (should_set_level_cleared) {
+    if (LOCAL_PEEK_GL_ERROR(func_name) == GL_NO_ERROR) {
+      texture_manager()->SetLevelCleared(texture_ref, target, level, true);
     }
   }
 
@@ -15737,14 +15747,13 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
       return;
     }
 
-    texture_manager()->SetLevelInfo(dest_texture_ref, dest_target, dest_level,
-                                    internal_format, source_width,
-                                    source_height, 1, 0, format, dest_type,
-                                    gfx::Rect(source_width, source_height));
+    texture_manager()->SetLevelInfo(
+        dest_texture_ref, dest_target, dest_level, internal_format,
+        source_width, source_height, 1, 0, format, dest_type, gfx::Rect());
     dest_texture->ApplyFormatWorkarounds(feature_info_.get());
   } else {
     texture_manager()->SetLevelCleared(dest_texture_ref, dest_target,
-                                       dest_level, true);
+                                       dest_level, false);
   }
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
@@ -15753,12 +15762,18 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE);
 
+  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(kFunctionName);
   copy_texture_chromium_->DoCopyTexture(
       this, source_target, source_texture->service_id(), source_level,
       source_internal_format, dest_target, dest_texture->service_id(),
       dest_level, internal_format, source_width, source_height,
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE, method, copy_tex_image_blit_.get());
+
+  if (LOCAL_PEEK_GL_ERROR(kFunctionName) == GL_NO_ERROR) {
+    texture_manager()->SetLevelCleared(dest_texture_ref, dest_target,
+                                       dest_level, true);
+  }
 }
 
 void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
@@ -15874,6 +15889,10 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
   bool ok = dest_texture->GetLevelSize(dest_target, dest_level, &dest_width,
                                        &dest_height, nullptr);
   DCHECK(ok);
+  bool should_set_level_cleared_rect = false;
+  gfx::Rect pending_cleared_rect;
+  bool should_set_level_cleared = false;
+
   if (xoffset != 0 || yoffset != 0 || width != dest_width ||
       height != dest_height) {
     gfx::Rect cleared_rect;
@@ -15884,8 +15903,8 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
                 dest_texture->GetLevelClearedRect(dest_target, dest_level)
                     .size()
                     .GetArea());
-      texture_manager()->SetLevelClearedRect(dest_texture_ref, dest_target,
-                                             dest_level, cleared_rect);
+      should_set_level_cleared_rect = true;
+      pending_cleared_rect = cleared_rect;
     } else {
       // Otherwise clear part of texture level that is not already cleared.
       if (!texture_manager()->ClearTextureLevel(this, dest_texture_ref,
@@ -15897,7 +15916,8 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
     }
   } else {
     texture_manager()->SetLevelCleared(dest_texture_ref, dest_target,
-                                       dest_level, true);
+                                       dest_level, false);
+    should_set_level_cleared = true;
   }
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
@@ -15912,6 +15932,9 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
     method = CopyTextureMethod::DIRECT_DRAW;
   }
 
+  if (should_set_level_cleared || should_set_level_cleared_rect) {
+    LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(function_name);
+  }
   copy_texture_chromium_->DoCopySubTexture(
       this, source_target, source_texture->service_id(), source_level,
       source_internal_format, dest_target, dest_texture->service_id(),
@@ -15919,6 +15942,18 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
       dest_width, dest_height, source_width, source_height,
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE, method, copy_tex_image_blit_.get());
+
+  if (should_set_level_cleared || should_set_level_cleared_rect) {
+    if (LOCAL_PEEK_GL_ERROR(function_name) == GL_NO_ERROR) {
+      if (should_set_level_cleared) {
+        texture_manager()->SetLevelCleared(dest_texture_ref, dest_target,
+                                           dest_level, true);
+      } else if (should_set_level_cleared_rect) {
+        texture_manager()->SetLevelClearedRect(
+            dest_texture_ref, dest_target, dest_level, pending_cleared_rect);
+      }
+    }
+  }
 }
 
 void GLES2DecoderImpl::DoCopySubTextureCHROMIUM(
