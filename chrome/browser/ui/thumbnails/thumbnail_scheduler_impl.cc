@@ -78,7 +78,7 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
         // deschedule discarded tabs when their priority transitions to kNone.
         // This should be corrected once WebContentsDiscard lands and the old
         // discarding code path is cleaned up.
-        NOTREACHED(base::NotFatalUntil::M142);
+        NOTREACHED(base::NotFatalUntil::M154);
         return;
       case TabCapturePriority::kLow:
         lo_prio_capture_count_ -= 1;
