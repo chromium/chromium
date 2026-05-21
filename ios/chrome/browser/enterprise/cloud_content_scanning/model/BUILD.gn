@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "download_protection_metrics.h",
+    "download_protection_metrics.mm",
     "files_request_handler_ios.h",
     "files_request_handler_ios.mm",
     "ios_cloud_binary_upload_service.h",

@@ -721,6 +721,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="File download"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseDownloadProtectionEventResult) -->
+
+<enum name="EnterpriseDownloadProtectionEventResult">
+  <summary>Type of event result for a download protection scan.</summary>
+  <int value="0" label="Warn"/>
+  <int value="1" label="Block"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/enterprise/cloud_content_scanning/model/download_protection_metrics.h:EnterpriseDownloadProtectionEventResult) -->
+
 <!-- LINT.IfChange(EnterpriseEnrollmentType) -->
 
 <enum name="EnterpriseEnrollmentType">

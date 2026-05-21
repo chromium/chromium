@@ -7,6 +7,7 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/json/json_reader.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
@@ -16,6 +17,7 @@
 #import "components/enterprise/connectors/core/content_analysis_info_base.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/download_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -136,6 +138,7 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
   MockContentAnalysisInfoBase content_analysis_info_;
   MockBinaryUploadService upload_service_;
   AnalysisSettings settings_;
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -284,6 +287,12 @@ TEST_F(FilesRequestHandlerIOSTest, ReportWarningBypass) {
 
   delegate->UpdateRequestHandlerResult(0, request_result, response);
   handler.ReportWarningBypass(u"justification");
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSDownloadProtectionScanTriggeredEventResultHistogram,
+      EnterpriseDownloadProtectionEventResult::kWarn, 1);
+  histogram_tester_.ExpectBucketCount(
+      kIOSDownloadProtectionScanTriggeredWarningBypassedHistogram, 1, 1);
 }
 
 }  // namespace enterprise_connectors

@@ -2833,6 +2833,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.IOS.DownloadProtection.ScanTriggered.EventResult"
+    enum="EnterpriseDownloadProtectionEventResult" expires_after="2026-09-15">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the event result of a download protection scan triggered by
+    enterprise users when trying to download files according to policy settings.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.IOS.DownloadProtection.ScanTriggered.WarningBypassed"
+    units="bypasses" expires_after="2026-09-15">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records whenever a user sees a warning and chooses to ignore/bypass the
+    warning and decides to download the file anyway.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.IOS.WebState.DataControls.Clipboard.{Action}.Verdict"
     enum="EnterpriseDlpPolicyLevel" expires_after="2026-09-20">
