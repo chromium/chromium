@@ -360,6 +360,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
 
 BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
 
+BASE_DECLARE_FEATURE(kToolbarAppMenuLabelResizing);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_
