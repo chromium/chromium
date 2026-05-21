@@ -251,6 +251,82 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     }
 
     @Test
+    @Config(sdk = 30)
+    public void testRestoreWindows_skipsCachedBoundsMatchingHostBounds() {
+        // Setup: One other visible window (windowId=1).
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0);
+        // Set cached bounds for windowId=1 to match HOST_BOUNDS.
+        mCrashedWindows.set(1, new CrashRecoveryWindowInfo(1, HOST_BOUNDS, /* isVisible= */ true));
+
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
+        mDelegate.initiateCrashRecovery(
+                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+
+        // Mock host activity bounds.
+        var windowManager = mock(android.view.WindowManager.class);
+        var windowMetrics = mock(android.view.WindowMetrics.class);
+        when(mHostActivity.getWindowManager()).thenReturn(windowManager);
+        when(windowManager.getCurrentWindowMetrics()).thenReturn(windowMetrics);
+        when(windowMetrics.getBounds()).thenReturn(HOST_BOUNDS);
+
+        // Act.
+        mDelegate.restoreWindows(mHostActivity);
+
+        // Verify: Window is restored WITHOUT launch bounds because its cached bounds match the
+        // host window's bounds.
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mHostActivity).startActivity(intentCaptor.capture(), eq(null));
+        Intent intent = intentCaptor.getValue();
+        assertNotNull(intent);
+        assertEquals(1, intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testRestoreWindows_usesCachedBoundsDifferentFromHostBounds() {
+        // Setup: One other visible window (windowId=1).
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0);
+        // Set cached bounds for windowId=1 to be different from HOST_BOUNDS.
+        Rect differentBounds =
+                new Rect(
+                        HOST_BOUNDS.left + 5,
+                        HOST_BOUNDS.top + 5,
+                        HOST_BOUNDS.right + 5,
+                        HOST_BOUNDS.bottom + 5);
+        mCrashedWindows.set(
+                1, new CrashRecoveryWindowInfo(1, differentBounds, /* isVisible= */ true));
+
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
+        mDelegate.initiateCrashRecovery(
+                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+
+        // Mock host activity bounds.
+        var windowManager = mock(android.view.WindowManager.class);
+        var windowMetrics = mock(android.view.WindowMetrics.class);
+        when(mHostActivity.getWindowManager()).thenReturn(windowManager);
+        when(windowManager.getCurrentWindowMetrics()).thenReturn(windowMetrics);
+        when(windowMetrics.getBounds()).thenReturn(HOST_BOUNDS);
+
+        // Act.
+        mDelegate.restoreWindows(mHostActivity);
+
+        // Verify: Window is restored WITH launch bounds because its cached bounds are different
+        // from the host window's bounds (strict equality).
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mHostActivity).startActivity(intentCaptor.capture(), bundleCaptor.capture());
+        Bundle bundle = bundleCaptor.getValue();
+        assertNotNull(bundle);
+        assertEquals(differentBounds, ActivityOptions.fromBundle(bundle).getLaunchBounds());
+    }
+
+    @Test
     public void testRestoreWindows_restoresNonVisibleWindowInNewTask() {
         // Setup.
         setupOtherCrashedWindows(
