@@ -535,7 +535,7 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync(
 
 std::optional<AnnotatedPageContentRequest::TriggerSource>
 AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
-  if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
+  if (!ShouldAllowPageContentExtraction()) {
     return std::nullopt;
   }
 
@@ -789,8 +789,18 @@ bool AnnotatedPageContentRequest::IsPdf() const {
   return web_contents()->GetContentsMimeType() == pdf::kPDFMimeType;
 }
 
+bool AnnotatedPageContentRequest::ShouldAllowPageContentExtraction() const {
+  // Setting `is_on_demand` to true when there are pending callbacks does not
+  // risk allowing automatic extractions unnecessarily because concurrent
+  // extractions are prevented by the lifecycle state machine
+  // (kScheduled/kRunning checks), and `on_demand_callbacks_` is cleared
+  // whenever an extraction completes or is cancelled.
+  return page_content_extraction_service_->ShouldEnablePageContentExtraction(
+      /*is_on_demand=*/!on_demand_callbacks_.empty());
+}
+
 bool AnnotatedPageContentRequest::ShouldAsyncWaitForExtraction() const {
-  if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
+  if (!ShouldAllowPageContentExtraction()) {
     return false;
   }
 
@@ -846,7 +856,15 @@ void AnnotatedPageContentRequest::GetServerUploadEligibilityAsync(
 void AnnotatedPageContentRequest::
     RefreshExtractedPageContentAndEligibilityForPage(
         GetExtractedPageContentAndEligibilityCallback callback) {
-  if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
+  PageContentExtractionEnablementReason enablement_source =
+      page_content_extraction_service_
+          ->GetPageContentExtractionEnablementReason(/*is_on_demand=*/true);
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentExtraction.OnDemand.EnabledReason",
+      enablement_source);
+
+  if (enablement_source == PageContentExtractionEnablementReason::kDisabled) {
     std::move(callback).Run(std::nullopt);
     return;
   }

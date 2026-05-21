@@ -172,12 +172,29 @@ void PageContentExtractionService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool PageContentExtractionService::ShouldEnablePageContentExtraction() const {
+PageContentExtractionEnablementReason
+PageContentExtractionService::GetPageContentExtractionEnablementReason(
+    bool is_on_demand) const {
   if (base::FeatureList::IsEnabled(page_content_annotations::features::
                                        kAnnotatedPageContentExtraction)) {
-    return true;
+    return PageContentExtractionEnablementReason::
+        kAutomaticExtractionFeatureEnabled;
   }
-  return !observers_.empty();
+  if (!observers_.empty()) {
+    return PageContentExtractionEnablementReason::kObserverRegistered;
+  }
+  if (is_on_demand &&
+      base::FeatureList::IsEnabled(
+          features::kPageContentExtractionAllowOnDemandWithoutObservers)) {
+    return PageContentExtractionEnablementReason::kBypassedObservers;
+  }
+  return PageContentExtractionEnablementReason::kDisabled;
+}
+
+bool PageContentExtractionService::ShouldEnablePageContentExtraction(
+    bool is_on_demand) const {
+  return GetPageContentExtractionEnablementReason(is_on_demand) !=
+         PageContentExtractionEnablementReason::kDisabled;
 }
 
 void PageContentExtractionService::OnPageContentExtracted(

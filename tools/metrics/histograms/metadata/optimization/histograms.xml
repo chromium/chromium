@@ -2322,6 +2322,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PageContentExtraction.OnDemand.EnabledReason"
+    enum="PageContentExtractionEnablementReason" expires_after="2026-09-16">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the on-demand page content extraction request was allowed,
+    and the reason if it was. Recorded once per on-demand page content
+    extraction request.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.OnDemand.IsPDF"
     enum="Boolean" expires_after="2026-09-16">
   <owner>alexmt@chromium.org</owner>

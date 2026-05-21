@@ -121,6 +121,9 @@ BASE_FEATURE(kAnnotatedPageContentExtraction,
 BASE_FEATURE(kAnnotatedPageContentExtractionOnHideFix,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageContentExtractionAllowOnDemandWithoutObservers,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAnnotatedPageContentNonSalientFiltering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

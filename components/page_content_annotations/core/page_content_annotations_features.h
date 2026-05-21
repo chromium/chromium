@@ -34,6 +34,11 @@ BASE_DECLARE_FEATURE(kAnnotatedPageContentExtraction);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentExtractionOnHideFix);
 
+// Allows on-demand extraction requests to bypass observer registration
+// requirement.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageContentExtractionAllowOnDemandWithoutObservers);
+
 // When enabled, extractions initiated by the PageContentExtractionService will
 // apply non-salient content filtering based on the feature parameters.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)

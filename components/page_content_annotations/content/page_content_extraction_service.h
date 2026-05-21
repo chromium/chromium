@@ -75,6 +75,18 @@ RefCountedAnnotatedPageContentPtr GetAnnotatedPageContentPtrFromPageContent(
 RefCountedPDFTextPtr GetPDFTextPtrFromPageContent(const PageContent& content);
 RefCountedPDFTextPtr GetPDFTextPtrFromPageContent(PageContent&& content);
 
+// LINT.IfChange(PageContentExtractionEnablementReason)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PageContentExtractionEnablementReason {
+  kAutomaticExtractionFeatureEnabled = 0,
+  kObserverRegistered = 1,
+  kBypassedObservers = 2,
+  kDisabled = 3,
+  kMaxValue = kDisabled,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:PageContentExtractionEnablementReason)
+
 class AnnotatedPageContentRequest;
 struct ExtractedPageContentResult;
 class PageContentCache;
@@ -112,10 +124,14 @@ class PageContentExtractionService : public KeyedService,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns whether page content extraction should be enabled. It should be
-  // enabled based on features, or when some observer has registered for page
-  // content.
-  bool ShouldEnablePageContentExtraction() const;
+  // Returns the reason why page content extraction is enabled. If
+  // `is_on_demand` is true, also considers the on-demand observer-bypass
+  // feature flag.
+  PageContentExtractionEnablementReason
+  GetPageContentExtractionEnablementReason(bool is_on_demand) const;
+
+  // Returns whether page content extraction should be enabled.
+  bool ShouldEnablePageContentExtraction(bool is_on_demand) const;
 
   // TODO(b/490161242): Improve the behavior in these functions: allow for
   // constructing an AnnotatedPageContentRequest if one doesn't already exist,
