@@ -43,7 +43,7 @@ BASE_FEATURE(kCheckDocumentSequenceNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 // navigations. This prevents stale "no swap" reasons from persisting and
 // causing inconsistencies on future BFCache restores.
 BASE_FEATURE(kResetBrowsingInstanceSwapResultOnSameDocument,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
