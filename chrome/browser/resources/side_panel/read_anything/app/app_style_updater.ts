@@ -254,12 +254,20 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--audio-player-icon-color',
         this.getAudioPlayerIconColor_(colorSuffix));
+    const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
+    const isLineFocusWindow = lineFocusBg === LINE_FOCUS_BG_WINDOW;
+    if (!isLineFocusWindow) {
+      this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
+    }
 
     // When line focus window mode is enabled, the toolbar icons are on top of
     // a dark scrim, so they should not change color when the theme changes.
+    // Therefore, only update the toolbar icon colors when line focus is
+    // disabled (via flag), off, or in line mode.
     const lineFocusDisplay =
         this.app_.style.getPropertyValue('--line-focus-display');
-    if (!chrome.readingMode.isLineFocusEnabled || lineFocusDisplay === 'none') {
+    if (!chrome.readingMode.isLineFocusEnabled || lineFocusDisplay === 'none' ||
+        !isLineFocusWindow) {
       this.setStyle_(
           '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
     }
@@ -278,10 +286,6 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--color-read-anything-full-page-scrollbar',
         this.getFullPageScrollbarColor_(colorSuffix));
-    const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
-    if (lineFocusBg !== LINE_FOCUS_BG_WINDOW) {
-      this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
-    }
 
     document.documentElement.style.setProperty(
         '--selection-color', this.getSelectionColor_(colorSuffix));

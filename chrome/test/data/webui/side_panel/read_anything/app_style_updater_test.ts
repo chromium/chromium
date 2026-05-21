@@ -878,18 +878,17 @@ suite('AppStyleUpdater', () => {
 
   test(
       'setTheme does not update toolbar icon color if line focus is enabled ' +
-          'and visible',
+          'and a visible window',
       () => {
         chrome.readingMode.isLineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'block');
-
+        app.style.setProperty('--line-focus-bg', 'none');
         const initialColor = 'rgb(255, 0, 0)';
         app.style.setProperty('--toolbar-icon-color', initialColor);
 
         chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
         updater.setTheme();
 
-        // Should not change
         assertEquals(initialColor, computeStyle('--toolbar-icon-color'));
       });
 
@@ -899,7 +898,9 @@ suite('AppStyleUpdater', () => {
       () => {
         chrome.readingMode.isLineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'none');
-
+        app.style.setProperty('--line-focus-bg', 'none');
+        const initialColor = 'rgb(255, 0, 0)';
+        app.style.setProperty('--toolbar-icon-color', initialColor);
         const expectedDarkToolbarIcon = 'rgb(3, 3, 3)';
         updateStyles({
           '--color-read-anything-toolbar-icon-dark': expectedDarkToolbarIcon,
@@ -908,7 +909,28 @@ suite('AppStyleUpdater', () => {
         chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
         updater.setTheme();
 
-        // Should change
+        assertEquals(
+            expectedDarkToolbarIcon, computeStyle('--toolbar-icon-color'));
+      });
+
+  test(
+      'setTheme updates toolbar icon color if line focus is enabled and a ' +
+          'a visible line',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        app.style.setProperty('--line-focus-display', 'none');
+        app.style.setProperty(
+            '--line-focus-bg', 'var(--color-read-anything-line-focus-dark)');
+        const initialColor = 'rgb(255, 0, 0)';
+        app.style.setProperty('--toolbar-icon-color', initialColor);
+        const expectedDarkToolbarIcon = 'rgb(3, 3, 3)';
+        updateStyles({
+          '--color-read-anything-toolbar-icon-dark': expectedDarkToolbarIcon,
+        });
+
+        chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+        updater.setTheme();
+
         assertEquals(
             expectedDarkToolbarIcon, computeStyle('--toolbar-icon-color'));
       });
