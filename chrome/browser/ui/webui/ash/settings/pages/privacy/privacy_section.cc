@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -665,6 +666,10 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("showSecureDnsSetting", true);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
+  html_source->AddBoolean(
+      "shouldUseMetricsConsentRestructure",
+      metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure(g_browser_process->local_state()));
 
   ::settings::AddSecureDnsStrings(html_source);
   AddChromeOsSecureDnsStrings(html_source);

@@ -69,6 +69,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         },
       },
 
+      shouldUseMetricsConsentRestructure_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('shouldUseMetricsConsentRestructure');
+        },
+      },
+
       locationSubLabel_: {
         type: String,
         computed: 'computeLocationRowSubtext_(' +
@@ -157,6 +165,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
   private browserProxy_: PrivacyHubBrowserProxy;
   private showPrivacyHubLocationControl_: boolean;
+  private shouldUseMetricsConsentRestructure_: boolean;
   private locationSubLabel_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;

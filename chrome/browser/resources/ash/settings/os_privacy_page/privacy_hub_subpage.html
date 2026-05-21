@@ -102,12 +102,15 @@
 </template>
 
 <if expr="_google_chrome">
-  <div class="hr"></div>
-  <settings-metrics-consent-toggle-button
-      id="metricsConsentToggle"
-      deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-      prefs="{{prefs}}">
-  </settings-metrics-consent-toggle-button>
+  <!-- TODO(b/483043192): Add UI for new Metrics Consent settings. -->
+  <template is="dom-if" if="[[!shouldUseMetricsConsentRestructure_]]">
+    <div class="hr"></div>
+    <settings-metrics-consent-toggle-button
+        id="metricsConsentToggle"
+        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+        prefs="{{prefs}}">
+    </settings-metrics-consent-toggle-button>
+  </template>
 </if>
 
 <div class="hr"></div>
