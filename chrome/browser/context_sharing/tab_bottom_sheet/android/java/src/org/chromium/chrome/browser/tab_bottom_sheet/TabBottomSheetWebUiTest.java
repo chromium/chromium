@@ -193,12 +193,13 @@ public class TabBottomSheetWebUiTest {
         EventForwarder mockEventForwarder = mock(EventForwarder.class);
         Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
 
+        mWebUi.setWebContents(nonNullWebContents);
+
         Activity mockActivity = mock(Activity.class);
         when(mockActivity.isDestroyed()).thenReturn(true);
         WeakReference<Activity> weakActivity = new WeakReference<>(mockActivity);
         when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
 
-        mWebUi.setWebContents(nonNullWebContents);
         // Reset verification state of mThinWebView
         Mockito.reset(mThinWebView);
 
@@ -216,10 +217,11 @@ public class TabBottomSheetWebUiTest {
         EventForwarder mockEventForwarder = mock(EventForwarder.class);
         Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
 
+        mWebUi.setWebContents(nonNullWebContents);
+
         WeakReference<Activity> weakActivity = new WeakReference<>(null);
         when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
 
-        mWebUi.setWebContents(nonNullWebContents);
         // Reset verification state of mThinWebView
         Mockito.reset(mThinWebView);
 

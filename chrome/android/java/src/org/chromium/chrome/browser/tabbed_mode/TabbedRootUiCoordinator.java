@@ -1818,7 +1818,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initiateTabBottomSheetManagers() {
-        if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
+        if (TabBottomSheetUtils.isTabBottomSheetEnabled()
+                || AndroidSidePanelEnabledFn.isEnabled()) {
             View contentView =
                     mActivity.getLayoutInflater().inflate(R.layout.search_activity, null);
             ContextualTasksFuseboxConfig fuseboxConfig =
@@ -1849,6 +1850,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     return ZoomController.zoomOut(webContents);
                                 }
                             });
+        }
+        if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabBottomSheetManager =
                     new TabBottomSheetManagerImpl(
                             mActivity,
