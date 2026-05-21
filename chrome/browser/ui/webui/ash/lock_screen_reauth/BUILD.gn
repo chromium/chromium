@@ -70,6 +70,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
     "//chromeos/strings",

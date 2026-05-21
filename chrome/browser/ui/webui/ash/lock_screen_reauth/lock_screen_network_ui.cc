@@ -13,15 +13,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -39,8 +38,7 @@ namespace ash {
 
 bool LockScreenNetworkUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::ProfileHelper::IsLockScreenProfile(
-      Profile::FromBrowserContext(browser_context));
+  return IsLockScreenBrowserContext(browser_context);
 }
 
 // static
