@@ -2937,4 +2937,23 @@ public class LocationBarMediatorTest {
         assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
         verify(mLocationBarLayout, atLeastOnce()).setDeleteButtonVisibility(false);
     }
+
+    @Test
+    public void testIsKeyboardSuppressed() {
+        SettableNonNullObservableSupplier<Integer> popupStateSupplier =
+                ObservableSuppliers.createNonNull(FuseboxCoordinator.PopupState.HIDDEN);
+        doReturn(popupStateSupplier).when(mFuseboxCoordinator).getPopupStateSupplier();
+
+        // 1. Popup state is HIDDEN -> not suppressed
+        popupStateSupplier.set(FuseboxCoordinator.PopupState.HIDDEN);
+        assertFalse(mMediator.isKeyboardSuppressed());
+
+        // 2. Popup state is FLOATING -> not suppressed
+        popupStateSupplier.set(FuseboxCoordinator.PopupState.FLOATING);
+        assertFalse(mMediator.isKeyboardSuppressed());
+
+        // 3. Popup state is BOTTOM -> suppressed
+        popupStateSupplier.set(FuseboxCoordinator.PopupState.BOTTOM);
+        assertTrue(mMediator.isKeyboardSuppressed());
+    }
 }

@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.Fu
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -2507,6 +2508,12 @@ class LocationBarMediator
     @Override
     public boolean allowKeyboardLearning() {
         return !mLocationBarDataProvider.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isKeyboardSuppressed() {
+        // Suppress the keyboard while the fusebox popup is showing as a bottom sheet.
+        return mFuseboxCoordinator.getPopupStateSupplier().get() == PopupState.BOTTOM;
     }
 
     // Traditional way to intercept keycode_back, which is deprecated from T.

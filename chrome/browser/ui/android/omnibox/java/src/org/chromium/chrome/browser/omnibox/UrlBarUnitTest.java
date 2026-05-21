@@ -61,6 +61,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
@@ -71,6 +72,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -1305,5 +1307,33 @@ public class UrlBarUnitTest {
         // Selection should be collapsed to the end of the previous selection (4).
         assertEquals(4, mUrlBar.getSelectionStart());
         assertEquals(4, mUrlBar.getSelectionEnd());
+    }
+
+    @Test
+    public void testWindowFocusChanged_keyboardSuppressed() {
+        KeyboardVisibilityDelegate keyboardVisibilityDelegate =
+                mock(KeyboardVisibilityDelegate.class);
+        KeyboardVisibilityDelegate.setInstanceForTesting(keyboardVisibilityDelegate);
+
+        doReturn(true).when(mUrlBar).isFocused();
+        doReturn(true).when(mUrlBarDelegate).isKeyboardSuppressed();
+
+        mUrlBar.onWindowFocusChanged(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(keyboardVisibilityDelegate, never()).showKeyboard(any());
+    }
+
+    @Test
+    public void testWindowFocusChanged_keyboardNotSuppressed() {
+        KeyboardVisibilityDelegate keyboardVisibilityDelegate =
+                mock(KeyboardVisibilityDelegate.class);
+        KeyboardVisibilityDelegate.setInstanceForTesting(keyboardVisibilityDelegate);
+
+        doReturn(true).when(mUrlBar).isFocused();
+        doReturn(false).when(mUrlBarDelegate).isKeyboardSuppressed();
+
+        mUrlBar.onWindowFocusChanged(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(keyboardVisibilityDelegate).showKeyboard(mUrlBar);
     }
 }

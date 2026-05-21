@@ -196,6 +196,11 @@ public class UrlBar extends AutocompleteEditText {
          * @param actionCode The action code performed.
          */
         default void onEditorAction(int actionCode) {}
+
+        /** Returns whether showing the keyboard should be suppressed. */
+        default boolean isKeyboardSuppressed() {
+            return false;
+        }
     }
 
     /** Delegate that provides the additional functionality to the textual context menus. */
@@ -474,20 +479,13 @@ public class UrlBar extends AutocompleteEditText {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         if (DEBUG) Log.i(TAG, "onWindowFocusChanged: " + hasWindowFocus);
-        if (hasWindowFocus) {
-            if (isFocused()) {
-                // Without the call to post(..), the keyboard was not getting shown when the
-                // window regained focus despite this being the final call in the view system
-                // flow.
-                post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                KeyboardVisibilityDelegate.getInstance().showKeyboard(UrlBar.this);
-                            }
-                        });
-            }
-        }
+        if (!hasWindowFocus || !isFocused()) return;
+        if (mUrlBarDelegate != null && mUrlBarDelegate.isKeyboardSuppressed()) return;
+
+        // Without the call to post(..), the keyboard was not getting shown when the
+        // window regained focus despite this being the final call in the view system
+        // flow.
+        post(() -> KeyboardVisibilityDelegate.getInstance().showKeyboard(UrlBar.this));
     }
 
     @Override
