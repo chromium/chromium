@@ -324,6 +324,14 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
   ScriptState* script_state =
       update_dom_callback_ ? update_dom_callback_->CallbackRelevantScriptState()
                            : ToScriptStateForMainWorld(execution_context_);
+  if (!script_state || !script_state->ContextIsValid()) {
+    HandlePromise(ViewTransition::PromiseResponse::kRejectAbort,
+                  dom_updated_promise_property_);
+    HandlePromise(ViewTransition::PromiseResponse::kRejectAbort,
+                  finished_promise_property_);
+    view_transition_->NotifyInvokeDOMChangeCallback();
+    return;
+  }
   ScriptState::Scope scope(script_state);
 
   if (update_dom_callback_) {
@@ -409,7 +417,7 @@ void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
   ScriptState* main_world_script_state =
       ToScriptStateForMainWorld(execution_context_);
 
-  if (!main_world_script_state) {
+  if (!main_world_script_state || !main_world_script_state->ContextIsValid()) {
     return;
   }
 
