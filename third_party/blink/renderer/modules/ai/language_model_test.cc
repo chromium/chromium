@@ -14,14 +14,21 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
@@ -71,12 +78,16 @@ class MockAILanguageModel : public mojom::blink::AILanguageModel {
 
 class LanguageModelTest : public testing::Test {
  public:
-  LanguageModel* CreateLanguageModel(ExecutionContext* context) {
+  LanguageModel* CreateLanguageModel(
+      ExecutionContext* context,
+      mojom::blink::AILanguageModelInstanceInfoPtr info = nullptr) {
     mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote;
     mock_remote_ = std::make_unique<MockAILanguageModel>(
         pending_remote.InitWithNewPipeAndPassReceiver());
 
-    auto info = mojom::blink::AILanguageModelInstanceInfo::New();
+    if (!info) {
+      info = mojom::blink::AILanguageModelInstanceInfo::New();
+    }
     return MakeGarbageCollected<LanguageModel>(
         context, std::move(pending_remote),
         context->GetTaskRunner(TaskType::kInternalDefault), std::move(info));
@@ -89,6 +100,25 @@ class LanguageModelTest : public testing::Test {
 
   V8LanguageModelPrompt* CreateStringPrompt(const String& prompt) {
     return MakeGarbageCollected<V8LanguageModelPrompt>(prompt);
+  }
+
+  V8LanguageModelPrompt* CreateImagePrompt(V8LanguageModelMessageValue* value) {
+    auto* content = MakeGarbageCollected<LanguageModelMessageContent>();
+    content->setType(
+        V8LanguageModelMessageType(V8LanguageModelMessageType::Enum::kImage));
+    content->setValue(value);
+    HeapVector<Member<LanguageModelMessageContent>> content_sequence;
+    content_sequence.push_back(content);
+
+    auto* message = MakeGarbageCollected<LanguageModelMessage>();
+    message->setRole(
+        V8LanguageModelMessageRole(V8LanguageModelMessageRole::Enum::kUser));
+    message->setContent(MakeGarbageCollected<
+                        V8UnionLanguageModelMessageContentSequenceOrString>(
+        content_sequence));
+    HeapVector<Member<LanguageModelMessage>> messages;
+    messages.push_back(message);
+    return MakeGarbageCollected<V8LanguageModelPrompt>(messages);
   }
 
  protected:
@@ -291,6 +321,67 @@ TEST_F(LanguageModelTest, MojoDisconnectClone) {
   // Check that the promise will be rejected
   EXPECT_EQ(GetRejectedExceptionCode(script_state, promise),
             DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(LanguageModelTest, PromptStreamingWithFaultyImage) {
+  V8TestingScope scope;
+  ScopedAIPromptAPIMultimodalInputForTest scoped_multimodal(true);
+  auto info = mojom::blink::AILanguageModelInstanceInfo::New();
+  info->input_types = Vector<mojom::blink::AILanguageModelPromptType>{
+      mojom::blink::AILanguageModelPromptType::kImage};
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext(), std::move(info));
+
+  // HTMLImageElement has no source loaded, so it fails CheckUsability().
+  auto* image_element =
+      MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
+  auto* message_value =
+      MakeGarbageCollected<V8LanguageModelMessageValue>(image_element);
+  V8LanguageModelPrompt* input = CreateImagePrompt(message_value);
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  ReadableStream* stream = language_model->promptStreaming(
+      script_state, input, LanguageModelPromptOptions::Create(),
+      exception_state);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetRejectedExceptionCode(script_state, read_promise),
+            DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(LanguageModelTest, PromptStreamingWithTaintedImage) {
+  V8TestingScope scope;
+  ScopedAIPromptAPIMultimodalInputForTest scoped_multimodal(true);
+  auto info = mojom::blink::AILanguageModelInstanceInfo::New();
+  info->input_types = Vector<mojom::blink::AILanguageModelPromptType>{
+      mojom::blink::AILanguageModelPromptType::kImage};
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext(), std::move(info));
+
+  SkImageInfo image_info = SkImageInfo::MakeN32Premul(10, 10);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(image_info);
+  auto image =
+      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+  image->SetOriginClean(false);
+  auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(image);
+  auto* message_value =
+      MakeGarbageCollected<V8LanguageModelMessageValue>(image_bitmap);
+  V8LanguageModelPrompt* input = CreateImagePrompt(message_value);
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  ReadableStream* stream = language_model->promptStreaming(
+      script_state, input, LanguageModelPromptOptions::Create(),
+      exception_state);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetRejectedExceptionCode(script_state, read_promise),
+            DOMExceptionCode::kSecurityError);
 }
 
 }  // namespace blink
