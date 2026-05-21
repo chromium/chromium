@@ -32,7 +32,8 @@ ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
-  auto resolution_result = ResolveTab(action.tab_id(), profile);
+  base::expected<TabResolutionResult, ToolExecutionResult> resolution_result =
+      ResolveTab(action.tab_id(), profile);
   if (!resolution_result.has_value()) {
     return base::unexpected(resolution_result.error());
   }
@@ -43,7 +44,7 @@ ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
   }
 
   if (action.has_target()) {
-    const auto& target = action.target();
+    const optimization_guide::proto::ActionTarget& target = action.target();
     // Callers must either target by coordinate or (document_identifier,
     // node_id).
     if (target.has_content_node_id() && !target.has_document_identifier()) {
@@ -85,7 +86,7 @@ void ScrollTool::Execute(ToolExecutionCallback callback) {
   // This follows the behavior of Desktop's ScrollTool, see
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/actor/actor_proto_conversion.cc;l=264-277;drc=4a530ad3251da1da3fbde56051d440a7df0a60bd
   if (!action_.has_target()) {
-    auto* target = action_.mutable_target();
+    optimization_guide::proto::ActionTarget* target = action_.mutable_target();
     target->set_content_node_id(kRootElementDomNodeId);
     target->mutable_document_identifier()->set_serialized_token(
         frames_manager->GetMainWebFrame()->GetFrameId());

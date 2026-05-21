@@ -88,7 +88,8 @@ FindNodeResult FindNodeWithPredicate(
   if (predicate(node)) {
     return {&node, parent, frame_token};
   }
-  for (const auto& child : node.children_nodes()) {
+  for (const optimization_guide::proto::ContentNode& child :
+       node.children_nodes()) {
     FindNodeResult result =
         FindNodeWithPredicate(child, predicate, frame_token, &node);
     if (result.node) {

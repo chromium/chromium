@@ -144,7 +144,8 @@ TEST_F(TypeToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   action.mutable_type()->set_mode(
       optimization_guide::proto::TypeAction::APPEND);
 
-  auto* target = action.mutable_type()->mutable_target();
+  optimization_guide::proto::ActionTarget* target =
+      action.mutable_type()->mutable_target();
   target->set_content_node_id(123);
   // Omit document_identifier
 
@@ -169,7 +170,8 @@ TEST_F(TypeToolTest, Create_BothTargetingTypes_Invalid) {
   action.mutable_type()->set_mode(
       optimization_guide::proto::TypeAction::APPEND);
 
-  auto* target = action.mutable_type()->mutable_target();
+  optimization_guide::proto::ActionTarget* target =
+      action.mutable_type()->mutable_target();
   target->mutable_coordinate()->set_x(50);
   target->mutable_coordinate()->set_y(50);
   target->set_content_node_id(123);
@@ -191,7 +193,7 @@ TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* type_action = action.mutable_type();
+  optimization_guide::proto::TypeAction* type_action = action.mutable_type();
   type_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   type_action->mutable_target()->mutable_coordinate()->set_x(50);
@@ -199,7 +201,8 @@ TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
   type_action->set_text("test");
   type_action->set_mode(optimization_guide::proto::TypeAction::APPEND);
 
-  auto create_result = TypeTool::Create(action.type(), profile_.get());
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> create_result =
+      TypeTool::Create(action.type(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<TypeTool> tool = std::move(create_result.value());
 
@@ -226,7 +229,7 @@ TEST_F(TypeToolTest, Execute_NoWebFramesManager_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* type_action = action.mutable_type();
+  optimization_guide::proto::TypeAction* type_action = action.mutable_type();
   type_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   type_action->mutable_target()->mutable_coordinate()->set_x(50);
@@ -234,7 +237,8 @@ TEST_F(TypeToolTest, Execute_NoWebFramesManager_ReturnsError) {
   type_action->set_text("test");
   type_action->set_mode(optimization_guide::proto::TypeAction::APPEND);
 
-  auto create_result = TypeTool::Create(action.type(), profile_.get());
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> create_result =
+      TypeTool::Create(action.type(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<TypeTool> tool = std::move(create_result.value());
 
@@ -268,7 +272,7 @@ TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* type_action = action.mutable_type();
+  optimization_guide::proto::TypeAction* type_action = action.mutable_type();
   type_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   type_action->mutable_target()->mutable_coordinate()->set_x(50);
@@ -276,7 +280,8 @@ TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
   type_action->set_text("test");
   type_action->set_mode(optimization_guide::proto::TypeAction::APPEND);
 
-  auto create_result = TypeTool::Create(action.type(), profile_.get());
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> create_result =
+      TypeTool::Create(action.type(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<TypeTool> tool = std::move(create_result.value());
 

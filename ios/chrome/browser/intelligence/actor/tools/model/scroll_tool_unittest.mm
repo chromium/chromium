@@ -125,7 +125,8 @@ TEST_F(ScrollToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
       optimization_guide::proto::ScrollAction::DOWN);
   action.mutable_scroll()->set_distance(100);
 
-  auto* target = action.mutable_scroll()->mutable_target();
+  optimization_guide::proto::ActionTarget* target =
+      action.mutable_scroll()->mutable_target();
   target->set_content_node_id(123);
   // Omit document_identifier
 
@@ -170,7 +171,8 @@ TEST_F(ScrollToolTest, Create_BothTargetingTypes_Invalid) {
       optimization_guide::proto::ScrollAction::DOWN);
   action.mutable_scroll()->set_distance(100);
 
-  auto* target = action.mutable_scroll()->mutable_target();
+  optimization_guide::proto::ActionTarget* target =
+      action.mutable_scroll()->mutable_target();
   target->mutable_coordinate()->set_x(50);
   target->mutable_coordinate()->set_y(50);
   target->set_content_node_id(123);
@@ -192,7 +194,8 @@ TEST_F(ScrollToolTest, Execute_WebStateDestroyed_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* scroll_action = action.mutable_scroll();
+  optimization_guide::proto::ScrollAction* scroll_action =
+      action.mutable_scroll();
   scroll_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   scroll_action->mutable_target()->mutable_coordinate()->set_x(50);
@@ -200,7 +203,8 @@ TEST_F(ScrollToolTest, Execute_WebStateDestroyed_ReturnsError) {
   scroll_action->set_direction(optimization_guide::proto::ScrollAction::DOWN);
   scroll_action->set_distance(100);
 
-  auto create_result = ScrollTool::Create(action.scroll(), profile_.get());
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
+      create_result = ScrollTool::Create(action.scroll(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollTool> tool = std::move(create_result.value());
 
@@ -227,7 +231,8 @@ TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* scroll_action = action.mutable_scroll();
+  optimization_guide::proto::ScrollAction* scroll_action =
+      action.mutable_scroll();
   scroll_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   scroll_action->mutable_target()->mutable_coordinate()->set_x(50);
@@ -235,7 +240,8 @@ TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
   scroll_action->set_direction(optimization_guide::proto::ScrollAction::DOWN);
   scroll_action->set_distance(100);
 
-  auto create_result = ScrollTool::Create(action.scroll(), profile_.get());
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
+      create_result = ScrollTool::Create(action.scroll(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollTool> tool = std::move(create_result.value());
 
@@ -269,7 +275,8 @@ TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* scroll_action = action.mutable_scroll();
+  optimization_guide::proto::ScrollAction* scroll_action =
+      action.mutable_scroll();
   scroll_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   scroll_action->mutable_target()->mutable_coordinate()->set_x(50);
@@ -277,7 +284,8 @@ TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
   scroll_action->set_direction(optimization_guide::proto::ScrollAction::DOWN);
   scroll_action->set_distance(100);
 
-  auto create_result = ScrollTool::Create(action.scroll(), profile_.get());
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
+      create_result = ScrollTool::Create(action.scroll(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollTool> tool = std::move(create_result.value());
 

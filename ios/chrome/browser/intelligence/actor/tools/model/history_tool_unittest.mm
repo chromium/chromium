@@ -211,7 +211,8 @@ TEST_F(HistoryToolTest, GetToolType) {
   {
     optimization_guide::proto::Action action;
     action.mutable_back()->set_tab_id(tab_id);
-    auto maybe_tool = HistoryTool::Create(action.back(), profile_.get());
+    base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
+        maybe_tool = HistoryTool::Create(action.back(), profile_.get());
     ASSERT_TRUE(maybe_tool.has_value());
     EXPECT_EQ(maybe_tool.value()->GetToolType(), ToolType::kBack);
   }
@@ -219,7 +220,8 @@ TEST_F(HistoryToolTest, GetToolType) {
   {
     optimization_guide::proto::Action action;
     action.mutable_forward()->set_tab_id(tab_id);
-    auto maybe_tool = HistoryTool::Create(action.forward(), profile_.get());
+    base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
+        maybe_tool = HistoryTool::Create(action.forward(), profile_.get());
     ASSERT_TRUE(maybe_tool.has_value());
     EXPECT_EQ(maybe_tool.value()->GetToolType(), ToolType::kForward);
   }

@@ -72,7 +72,8 @@ ActorToolFactory::GetSupportedCapabilities() const {
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 
   std::vector<optimization_guide::proto::Action::ActionCase> capabilities;
-  for (const auto tool : kCandidates) {
+  for (const optimization_guide::proto::Action::ActionCase& tool :
+       kCandidates) {
     if (!IsToolDisabled(tool)) {
       capabilities.push_back(tool);
     }

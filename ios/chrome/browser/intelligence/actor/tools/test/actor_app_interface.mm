@@ -100,7 +100,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
     return;
   }
 
-  const auto& result = results[0];
+  const actor::ActionResult& result = results[0];
   if (result.tool_result.IsOk()) {
     completion(nil);
   } else {

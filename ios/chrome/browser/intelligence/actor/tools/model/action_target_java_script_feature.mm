@@ -126,8 +126,9 @@ void ActionTargetJavaScriptFeature::GetTargetFrameByDocumentIdentifier(
     web::WebState* web_state,
     const optimization_guide::proto::ActionTarget& target,
     TargetFrameCallback callback) {
-  auto target_frame = GetWebFrameByRemoteFrameToken(
-      web_state, target.document_identifier().serialized_token());
+  base::expected<web::WebFrame*, ToolExecutionResult> target_frame =
+      GetWebFrameByRemoteFrameToken(
+          web_state, target.document_identifier().serialized_token());
 
   if (!target_frame.has_value()) {
     std::move(callback).Run(base::unexpected(target_frame.error()));
@@ -195,8 +196,9 @@ void ActionTargetJavaScriptFeature::OnTargetIframeResolved(
   }
 
   ChildFrameData child_data = parsed_result->value();
-  auto target_frame = GetWebFrameByRemoteFrameToken(
-      web_state.get(), child_data.remote_frame_token);
+  base::expected<web::WebFrame*, ToolExecutionResult> target_frame =
+      GetWebFrameByRemoteFrameToken(web_state.get(),
+                                    child_data.remote_frame_token);
 
   if (!target_frame.has_value()) {
     std::move(callback).Run(base::unexpected(target_frame.error()));

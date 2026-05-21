@@ -137,7 +137,8 @@ TEST_F(ClickToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   action.mutable_click()->set_click_type(
       optimization_guide::proto::ClickAction::LEFT);
 
-  auto* target = action.mutable_click()->mutable_target();
+  optimization_guide::proto::ActionTarget* target =
+      action.mutable_click()->mutable_target();
   target->set_content_node_id(123);
   // Omit document_identifier
 
@@ -163,7 +164,8 @@ TEST_F(ClickToolTest, Create_BothTargetingTypes_Invalid) {
   action.mutable_click()->set_click_type(
       optimization_guide::proto::ClickAction::LEFT);
 
-  auto* target = action.mutable_click()->mutable_target();
+  optimization_guide::proto::ActionTarget* target =
+      action.mutable_click()->mutable_target();
   target->mutable_coordinate()->set_x(50);
   target->mutable_coordinate()->set_y(50);
   target->set_content_node_id(123);
@@ -185,14 +187,15 @@ TEST_F(ClickToolTest, Execute_WebStateDestroyed_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* click_action = action.mutable_click();
+  optimization_guide::proto::ClickAction* click_action = action.mutable_click();
   click_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   click_action->mutable_target()->mutable_coordinate()->set_x(50);
   click_action->mutable_target()->mutable_coordinate()->set_y(50);
   click_action->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   click_action->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
-  auto create_result = ClickTool::Create(action.click(), profile_.get());
+  base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult>
+      create_result = ClickTool::Create(action.click(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ClickTool> tool = std::move(create_result.value());
 
@@ -219,14 +222,15 @@ TEST_F(ClickToolTest, Execute_NoWebFramesManager_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* click_action = action.mutable_click();
+  optimization_guide::proto::ClickAction* click_action = action.mutable_click();
   click_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   click_action->mutable_target()->mutable_coordinate()->set_x(50);
   click_action->mutable_target()->mutable_coordinate()->set_y(50);
   click_action->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   click_action->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
-  auto create_result = ClickTool::Create(action.click(), profile_.get());
+  base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult>
+      create_result = ClickTool::Create(action.click(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ClickTool> tool = std::move(create_result.value());
 
@@ -260,14 +264,15 @@ TEST_F(ClickToolTest, Execute_NoMainFrame_ReturnsError) {
       browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
   optimization_guide::proto::Action action;
-  auto* click_action = action.mutable_click();
+  optimization_guide::proto::ClickAction* click_action = action.mutable_click();
   click_action->set_tab_id(
       inserted_web_state->GetUniqueIdentifier().identifier());
   click_action->mutable_target()->mutable_coordinate()->set_x(50);
   click_action->mutable_target()->mutable_coordinate()->set_y(50);
   click_action->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   click_action->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
-  auto create_result = ClickTool::Create(action.click(), profile_.get());
+  base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult>
+      create_result = ClickTool::Create(action.click(), profile_.get());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ClickTool> tool = std::move(create_result.value());
 

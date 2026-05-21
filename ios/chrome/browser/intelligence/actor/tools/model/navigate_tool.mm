@@ -29,7 +29,8 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
         InternalToolErrorCode::kCreationMissingRequiredFields));
   }
 
-  auto resolution_result = ResolveTab(action.tab_id(), profile);
+  base::expected<TabResolutionResult, ToolExecutionResult> resolution_result =
+      ResolveTab(action.tab_id(), profile);
   if (!resolution_result.has_value()) {
     return base::unexpected(resolution_result.error());
   }
