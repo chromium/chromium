@@ -70,6 +70,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
   void OnFillOrPreviewForm(
       autofill::AutofillManager& manager,
       autofill::FormGlobalId form_id,
+      autofill::FieldGlobalId trigger_field_id,
       autofill::mojom::ActionPersistence action_persistence,
       const base::flat_set<autofill::FieldGlobalId>& filled_field_ids,
       const autofill::FillingPayload& filling_payload) override;

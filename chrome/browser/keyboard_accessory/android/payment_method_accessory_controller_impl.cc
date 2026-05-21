@@ -651,6 +651,7 @@ void PaymentMethodAccessoryControllerImpl::OnValuablesDataChanged() {
 void PaymentMethodAccessoryControllerImpl::OnFillOrPreviewForm(
     AutofillManager& autofill_manager,
     FormGlobalId,
+    FieldGlobalId trigger_field_id,
     mojom::ActionPersistence action_persistence,
     const base::flat_set<FieldGlobalId>&,
     const FillingPayload& filling_payload) {

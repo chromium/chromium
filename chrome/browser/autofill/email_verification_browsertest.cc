@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   // The token is now in renderer's memory but not in DOM.
   base::flat_set<FieldGlobalId> filled_field_ids = {field_id};
   manager->NotifyObservers(&AutofillManager::Observer::OnFillOrPreviewForm,
-                           form_id, mojom::ActionPersistence::kFill,
+                           form_id, field_id, mojom::ActionPersistence::kFill,
                            filled_field_ids, &profile);
 
   // 4. Submit the form.

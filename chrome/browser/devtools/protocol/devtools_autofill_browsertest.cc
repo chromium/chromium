@@ -481,6 +481,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   SendCommandSync("Autofill.enable");
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewForm, form_id(),
+      filled_fields_by_autofill[0].global_id(),
       autofill::mojom::ActionPersistence::kFill,
       base::MakeFlatSet<FieldGlobalId>(filled_fields_by_autofill, {},
                                        &FormFieldData::global_id),
@@ -639,8 +640,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
       {form.fields()[0].global_id(), form.fields()[1].global_id()}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewForm,
-      form.global_id(), autofill::mojom::ActionPersistence::kFill,
-      filled_fields_by_autofill, &profile);
+      form.global_id(), *filled_fields_by_autofill.begin(),
+      autofill::mojom::ActionPersistence::kFill, filled_fields_by_autofill,
+      &profile);
 
   base::DictValue notification = WaitForNotification(
       "Autofill.addressFormFilled", /*allow_existing=*/true);
@@ -671,8 +673,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
       {form_a.fields()[0].global_id(), form_a.fields()[1].global_id()}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewForm,
-      form_a.global_id(), autofill::mojom::ActionPersistence::kFill,
-      filled_fields_by_autofill_a, &profile_a);
+      form_a.global_id(), *filled_fields_by_autofill_a.begin(),
+      autofill::mojom::ActionPersistence::kFill, filled_fields_by_autofill_a,
+      &profile_a);
 
   WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
 
@@ -690,8 +693,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
       {form_b.fields()[0].global_id(), form_b.fields()[1].global_id()}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewForm,
-      form_b.global_id(), autofill::mojom::ActionPersistence::kFill,
-      filled_fields_by_autofill_b, &profile_b);
+      form_b.global_id(), *filled_fields_by_autofill_b.begin(),
+      autofill::mojom::ActionPersistence::kFill, filled_fields_by_autofill_b,
+      &profile_b);
   WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
 }
 

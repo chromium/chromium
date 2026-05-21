@@ -38,6 +38,7 @@ class AccountNameEmailStrikeManager : AutofillManager::Observer {
   void OnFillOrPreviewForm(
       AutofillManager& manager,
       FormGlobalId form_id,
+      FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload& filling_payload) override;

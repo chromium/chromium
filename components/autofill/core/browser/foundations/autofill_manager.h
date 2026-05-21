@@ -55,8 +55,6 @@ namespace autofill {
 
 struct AutofillServerPrediction;
 class AutofillField;
-class AutofillProfile;
-class CreditCard;
 class CreditCardAccessManager;
 class FormData;
 class FormFieldData;
@@ -219,12 +217,13 @@ class AutofillManager
     virtual void OnSuggestionsHidden(AutofillManager& manager,
                                      SuggestionHidingReason reason) {}
 
-    // Fired when a form is filled or previewed with a AutofillProfile or
-    // CreditCard.
-    // `filled_fields` represents the fields that were sent to the renderer to
-    // be filled: each `FormFieldData::value` contains the filled or previewed
-    // value; the corresponding `AutofillField` contains the field type
-    // information. The field values come from `filling_payload`.
+    // Fired when an autofill of `filling_payload` is previewed or filled.
+    // This is not fired for autocomplete operations.
+    // `filled_field_ids` represents the IDs of the fields that were sent to the
+    // renderer to be filled: each corresponding `AutofillField` contains the
+    // field type information.
+    // `trigger_field_id` is the ID of the field that initiated/triggered the
+    // autofill action.
     // TODO(crbug.com/40280003): Consider removing the event in favor of
     // OnAfterDidAutofillForm(), which is fired by the renderer.
     // TODO(crbug.com/40227071): Consider removing `action_persistence` as the
@@ -232,6 +231,7 @@ class AutofillManager
     virtual void OnFillOrPreviewForm(
         AutofillManager& manager,
         FormGlobalId form_id,
+        FieldGlobalId trigger_field_id,
         mojom::ActionPersistence action_persistence,
         const base::flat_set<FieldGlobalId>& filled_field_ids,
         const FillingPayload& filling_payload) {}

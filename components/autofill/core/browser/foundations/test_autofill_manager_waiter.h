@@ -571,11 +571,13 @@ class TestAutofillManagerSingleEventWaiter::Impl
   void OnFillOrPreviewForm(
       AutofillManager& manager,
       FormGlobalId form_id,
+      FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload& filling_payload) override {
     MaybeQuit(&Observer::OnFillOrPreviewForm, manager, form_id,
-              action_persistence, filled_field_ids, filling_payload);
+              trigger_field_id, action_persistence, filled_field_ids,
+              filling_payload);
   }
   void OnBeforeFormSubmitted(AutofillManager& manager,
                              const FormData& form) override {

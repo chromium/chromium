@@ -2730,7 +2730,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   const auto safe_filled_field_ids = base::MakeFlatSet<FieldGlobalId>(
       safe_filled_fields, /*comp=*/{}, &FormFieldData::global_id);
   NotifyObservers(&Observer::OnFillOrPreviewForm, form.global_id(),
-                  action_persistence, safe_filled_field_ids, filling_payload);
+                  trigger_field.global_id(), action_persistence,
+                  safe_filled_field_ids, filling_payload);
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     return;
   }

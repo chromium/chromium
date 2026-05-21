@@ -67,6 +67,7 @@ EmailVerifierDelegate::~EmailVerifierDelegate() = default;
 void EmailVerifierDelegate::OnFillOrPreviewForm(
     AutofillManager& manager,
     FormGlobalId form_id,
+    FieldGlobalId trigger_field_id,
     mojom::ActionPersistence action_persistence,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const FillingPayload& filling_payload) {
@@ -90,17 +91,17 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
     return;
   }
 
-  const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
-  const AutofillField* email_field =
-      FindField(fields, [&](const AutofillField& field) {
-        return field.autofilled_type() == EMAIL_ADDRESS &&
-               filled_field_ids.contains(field.global_id());
-      });
-
-  if (!email_field) {
+  // Only trigger verification if the email field itself was the trigger for the
+  // autofill action, rather than as a side-effect of autofilling another field
+  // (e.g. a name field).
+  const AutofillField* triggering_email_field =
+      form->GetFieldById(trigger_field_id);
+  if (!triggering_email_field ||
+      triggering_email_field->autofilled_type() != EMAIL_ADDRESS) {
     return;
   }
 
+  const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
   const AutofillField* challenge_field =
       FindField(fields, [](const AutofillField& field) {
         return field.parsed_autocomplete() &&
@@ -112,8 +113,8 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
     return;
   }
 
-  content::webid::EmailVerifier* verifier =
-      GetOrCreateEmailVerifier(manager.client(), email_field->host_frame());
+  content::webid::EmailVerifier* verifier = GetOrCreateEmailVerifier(
+      manager.client(), triggering_email_field->host_frame());
   if (!verifier) {
     return;
   }

@@ -148,6 +148,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               OnFillOrPreviewForm,
               (AutofillManager&,
                FormGlobalId,
+               FieldGlobalId,
                mojom::ActionPersistence,
                (const base::flat_set<FieldGlobalId>&),
                (const FillingPayload&)),

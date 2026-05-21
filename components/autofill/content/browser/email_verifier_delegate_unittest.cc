@@ -172,9 +172,9 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kFill,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
 // Verifies that if the feature is disabled, no verification is triggered.
@@ -195,9 +195,9 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
   AutofillProfile profile = test::GetFullProfile();
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kFill,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
 // Verifies that if the action is not "fill", no verification is triggered.
@@ -219,9 +219,9 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kPreview,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kPreview, filled_field_ids, &profile);
 }
 
 // Verifies that if the form isn't comformant (no nonce), no verification is
@@ -252,9 +252,9 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kFill,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
 // Verifies that if the filled field is not an email field, no verification is
@@ -284,9 +284,9 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kFill,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
 // Verifies that if the verification fails, no event is dispatched to the
@@ -313,9 +313,9 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kFill,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
 // Verifies that even if the base feature is enabled, no verification is
@@ -352,9 +352,39 @@ TEST_F(EmailVerifierDelegateTest, OriginTrialNotEnabled) {
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
-                                 mojom::ActionPersistence::kFill,
-                                 filled_field_ids, &profile);
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+}
+
+// Verifies that if the trigger field is NOT the email field, no verification is
+// triggered.
+TEST_F(EmailVerifierDelegateTest, NotEmailTriggerField) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormData form_data = ValidForm();
+
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
+  FormStructure* form =
+      test_api(manager()).FindCachedFormById(form_data.global_id());
+  ASSERT_TRUE(form);
+  form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
+
+  // Since the trigger field is form->field(1) (which is NOT the email field),
+  // Verify and SendEmailVerificationToken should not be called.
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id(), form->field(1)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(1)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
 }  // namespace autofill

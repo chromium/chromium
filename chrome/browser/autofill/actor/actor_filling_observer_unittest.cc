@@ -102,7 +102,7 @@ TEST_F(ActorFillingObserverTest, SingleFieldFill) {
 
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      mojom::ActionPersistence::kFill, field_ids, AddProfile());
+      field_ids[0], mojom::ActionPersistence::kFill, field_ids, AddProfile());
 
   EXPECT_THAT(future.Get(), HasValue());
 }
@@ -119,7 +119,8 @@ TEST_F(ActorFillingObserverTest, SingleFieldPreview) {
 
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      mojom::ActionPersistence::kPreview, field_ids, AddProfile());
+      field_ids[0], mojom::ActionPersistence::kPreview, field_ids,
+      AddProfile());
   observer.reset();
 
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
@@ -138,12 +139,12 @@ TEST_F(ActorFillingObserverTest, MultiFieldFill) {
 
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      mojom::ActionPersistence::kFill, std::vector({field_ids[0]}),
-      AddProfile());
+      field_ids[0], mojom::ActionPersistence::kFill,
+      std::vector({field_ids[0]}), AddProfile());
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      mojom::ActionPersistence::kFill, std::vector({field_ids[1]}),
-      AddProfile());
+      field_ids[1], mojom::ActionPersistence::kFill,
+      std::vector({field_ids[1]}), AddProfile());
 
   EXPECT_THAT(future.Get(), HasValue());
 }
@@ -162,8 +163,8 @@ TEST_F(ActorFillingObserverTest, IncompleteMultiFieldFill) {
 
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      mojom::ActionPersistence::kFill, std::vector({field_ids[0]}),
-      AddProfile());
+      field_ids[0], mojom::ActionPersistence::kFill,
+      std::vector({field_ids[0]}), AddProfile());
   observer.reset();
 
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
