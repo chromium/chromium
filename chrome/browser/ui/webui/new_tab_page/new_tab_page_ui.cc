@@ -802,10 +802,22 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   // Action Chips LoadTimeData
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  bool action_chips_eligible =
-      aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
-      (aim_eligibility_service->IsDeepSearchEligible() ||
-       aim_eligibility_service->IsCreateImagesEligible());
+  int num_tools_eligible = 0;
+  if (aim_eligibility_service) {
+    if (aim_eligibility_service->IsDeepSearchEligible()) {
+      num_tools_eligible++;
+    }
+    if (aim_eligibility_service->IsCreateImagesEligible()) {
+      num_tools_eligible++;
+    }
+    if (base::FeatureList::IsEnabled(ntp_features::kNtpNextCanvasChip) &&
+        aim_eligibility_service->IsCanvasEligible()) {
+      num_tools_eligible++;
+    }
+  }
+  bool action_chips_eligible = aim_eligibility_service &&
+                               aim_eligibility_service->IsAimEligible() &&
+                               num_tools_eligible >= 2;
   bool show_action_chips =
       action_chips_eligible &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);

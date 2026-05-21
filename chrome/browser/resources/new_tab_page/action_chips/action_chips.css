@@ -16,6 +16,7 @@
   --chip-slide-duration: 1000ms;
   --chip-fade-duration: 850ms;
   --chip-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
+  min-height: 96px;
 }
 
 @keyframes chips-slide {
