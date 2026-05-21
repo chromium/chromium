@@ -35,6 +35,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker_manager.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -53,6 +54,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/logger.h"
@@ -388,6 +390,9 @@ void ContextualTasksUiService::OnOAuthTokenReceived(
 
 void ContextualTasksUiService::ShowOauthErrorDialogForWebContents(
     base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
   content::WebUI* webui = web_contents->GetWebUI();
   if (webui && webui->GetController() && webui->GetController()->GetType()) {
     auto* ui_controller = webui->GetController()->GetAs<ContextualTasksUI>();
@@ -412,6 +417,14 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
   if (token.empty()) {
     for (const auto& callback_pair : callbacks) {
       if (callback_pair.second) {
+        content::WebContents* const wc = callback_pair.second.get();
+        const bool is_tab = wc && tabs::TabInterface::MaybeGetFromContents(wc);
+        if (lens::features::IsLensSidePanelUnificationEnabled() && !is_tab &&
+            !IsSignedInToBrowserWithValidCredentials()) {
+          // Bypass the OAuth error dialog for signed-out users under
+          // unification in side panel mode.
+          continue;
+        }
         OMNIBOX_LOG("nav_trace")
             << "ContextualTasks navigation trace: "
                "RunPendingAccessTokenCallbacks showing oauth error dialog";

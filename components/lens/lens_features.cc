@@ -588,6 +588,9 @@ const base::FeatureParam<LensAimSuggestionsType> kLensAimSuggestionsType(
 const base::FeatureParam<int> kLensOverlayNonBlockingPrivacyNoticeImpressionCap{
     &kLensOverlayNonBlockingPrivacyNotice, "impression-cap", 0};
 
+const base::FeatureParam<bool> kLensSidePanelUnificationAllowSignedOut{
+    &kLensSidePanelUnification, "allow-signed-out", true};
+
 std::string_view LensAimSuggestionModeToString(
     LensAimSuggestionsType type) {
   switch (type) {
@@ -935,6 +938,15 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
 
 bool IsLensOverlaySidePanelOpenInNewTabEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlaySidePanelOpenInNewTab);
+}
+
+bool IsLensSidePanelUnificationEnabled() {
+  return base::FeatureList::IsEnabled(kLensSidePanelUnification);
+}
+
+bool IsLensSidePanelUnificationAllowSignedOut() {
+  return IsLensSidePanelUnificationEnabled() &&
+         kLensSidePanelUnificationAllowSignedOut.Get();
 }
 
 bool IsLensOverlayClusterInfoOptimizationEnabled() {

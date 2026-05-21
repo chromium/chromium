@@ -705,6 +705,14 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySidePanelOpenInNewTabEnabled();
 
+// Whether to enable the unified side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSidePanelUnificationEnabled();
+
+// Whether to allow routing signed out users to the unified side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSidePanelUnificationAllowSignedOut();
+
 // Returns whether to use the new optimized request flow which makes a request
 // to get the cluster info prior to uploading any image or page content bytes.
 // This also decouples sending the images and page content bytes in the same
