@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -119,7 +118,6 @@ public class ChromeCachedFlags {
         FirstRunUtils.cacheFirstRunPrefs();
 
         CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_FULL_BROWSER);
-        cacheAdditionalNativeFlags();
 
         tryToCatchMissingParameters();
         CachedFlagUtils.cacheFeatureParams(LISTS_OF_FEATURE_PARAMS_FULL_BROWSER);
@@ -167,18 +165,6 @@ public class ChromeCachedFlags {
         cacheMinimalBrowserFlagsTimeFromNativeTime();
         CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER);
         CachedFlagUtils.cacheFeatureParams(LISTS_OF_FEATURE_PARAMS_MINIMAL_BROWSER);
-    }
-
-    /**
-     * Caches a predetermined list of flags that must take effect on startup but are set via native
-     * code.
-     *
-     * <p>Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
-     */
-    public static void cacheAdditionalNativeFlags() {
-        // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
-        ApplicationStatus.setCachingEnabled(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
     }
 
     @VisibleForTesting

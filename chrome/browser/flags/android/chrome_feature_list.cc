@@ -310,7 +310,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResetTimeoutEnabled,
     &kCCTResizableForThirdParties,
     &kCCTTabModalDialog,
-    &kCacheActivityTaskID,
     &kCacheDeprecatedSystemLocationSetting,
     &kCacheIsMultiInstanceApi31Enabled,
     &kCastDeviceFilter,
@@ -665,7 +664,6 @@ BASE_FEATURE(kCCTResetTimeoutAllowed, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTResetTimeoutEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTResizableForThirdParties, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTTabModalDialog, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCacheActivityTaskID, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheIsMultiInstanceApi31Enabled, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in downstream code.

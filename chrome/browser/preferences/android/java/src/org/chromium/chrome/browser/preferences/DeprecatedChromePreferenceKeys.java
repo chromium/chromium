@@ -124,6 +124,7 @@ public class DeprecatedChromePreferenceKeys {
                 "bookmark_search_history",
                 "bottom_toolbar_enabled",
                 "bottom_toolbar_variation",
+                "cache_activity_taskid_enabled",
                 "cellular_experiment",
                 "chrome_home_enabled_date",
                 "chrome_home_info_promo_shown",

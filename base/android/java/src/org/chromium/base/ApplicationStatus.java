@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.view.Window;
 
 import androidx.annotation.AnyThread;
@@ -104,9 +103,6 @@ public class ApplicationStatus {
     /** A map to cache TaskId for each {@link Activity}. */
     public static final Map<Activity, Integer> sActivityTaskId =
             Collections.synchronizedMap(new HashMap<Activity, Integer>());
-
-    // Shared preferences key for TaskId caching of an activity.
-    private static final String CACHE_ACTIVITY_TASKID_KEY = "cache_activity_taskid_enabled";
 
     @SuppressLint("SupportAnnotationUsage")
     @ApplicationState
@@ -231,21 +227,7 @@ public class ApplicationStatus {
         sTaskVisibilityListeners.removeObserver(listener);
     }
 
-    public static void setCachingEnabled(boolean enabled) {
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
-        editor.putBoolean(CACHE_ACTIVITY_TASKID_KEY, enabled).apply();
-    }
-
-    public static boolean isCachingEnabled() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getAppSharedPreferences()
-                    .getBoolean(CACHE_ACTIVITY_TASKID_KEY, false);
-        }
-    }
-
     public static int getTaskId(Activity activity) {
-        if (!isCachingEnabled()) return activity.getTaskId();
-
         if (!sActivityTaskId.containsKey(activity)) {
             synchronized (sActivityTaskId) {
                 sActivityTaskId.put(activity, activity.getTaskId());
