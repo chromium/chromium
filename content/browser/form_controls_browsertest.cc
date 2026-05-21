@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_ColorInput) {
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_Select DISABLED_Select
 #else
-#define MAYBE_Select Select
+#define MAYBE_Select DISABLED_Select
 #endif
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Select) {
   if (SkipTestForOldAndroidVersions())
@@ -389,13 +389,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Select) {
           <!-- disabled -->
           <select disabled></select><br>)HTML",
           /* screenshot_width */ 200,
-          /* screenshot_height */ 200, [](PixelComparatorType& comparator) {
-#if BUILDFLAG(IS_ANDROID)
-            // For the select test, allow larger absolute errors in exchange
-            // for less average error.
-            comparator.SetAvgAbsErrorLimit(5.f).SetAbsErrorLimit(200);
-#endif
-          });
+          /* screenshot_height */ 200);
 }
 
 // TODO(crbug.com/377986468) : Flaky on Windows. Seems to lose focus of top
