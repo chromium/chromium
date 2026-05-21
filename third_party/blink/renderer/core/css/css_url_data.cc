@@ -185,9 +185,20 @@ const CSSUrlData* CSSUrlData::MakeResolved(const KURL& base_url,
         relative_url_, resolved_url, Referrer(),
         is_from_origin_clean_style_sheet_, is_ad_related_, modifiers_);
   }
+  // If the original (or freshly resolved) URL was flagged as potentially
+  // dangling markup, keep the *raw* relative spelling so that CssText() –
+  // which feeds var()/@function substitution – round-trips a string that
+  // re-derives PotentiallyDanglingMarkup() on the consuming side. Using the
+  // canonicalized serialization here would launder away the newline/'<'
+  // characters and let the substituted value bypass the subresource block in
+  // BaseFetchContext::CanRequestInternal().
+  const bool dangling =
+      potentially_dangling_markup_ || resolved_url.PotentiallyDanglingMarkup();
+  AtomicString resolved_string(resolved_url.GetString());
   return MakeGarbageCollected<CSSUrlData>(
-      AtomicString(resolved_url.GetString()), resolved_url, Referrer(),
-      is_from_origin_clean_style_sheet_, is_ad_related_, modifiers_);
+      base::PassKey<CSSUrlData>(), dangling ? relative_url_ : resolved_string,
+      resolved_string, Referrer(), is_from_origin_clean_style_sheet_,
+      is_ad_related_, is_local_, dangling, modifiers_);
 }
 
 const CSSUrlData* CSSUrlData::MakeResolvedIfDanglingMarkup(

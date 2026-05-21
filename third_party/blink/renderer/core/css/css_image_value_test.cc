@@ -103,4 +103,50 @@ TEST_F(CSSImageValueTest, PreserveDanglingMarkupFlagInTypedOM) {
   EXPECT_TRUE(target_image->ErrorOccurred());
 }
 
+// Ensure that routing a dangling-markup URL through a registered custom
+// property with syntax "<url>" does not launder away the
+// potentially_dangling_markup flag via canonicalization in MakeResolved().
+TEST_F(CSSImageValueTest, RegisteredPropertyDoesNotLaunderDanglingMarkup) {
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+
+  LoadURL("https://example.com/index.html");
+
+  // The URL contains a newline and a '<', which triggers the dangling
+  // markup mitigation.  In CSS, \a is the hex escape for U+000A (newline);
+  // the trailing space is consumed as part of the escape.  Routing through
+  // @property --m with syntax "<url>" would previously canonicalize the
+  // string and strip those characters, bypassing the block.
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @property --m {
+        syntax: "<url>";
+        inherits: false;
+        initial-value: url(about:blank);
+      }
+      #target {
+        --m: url('/exfil?\a <secret');
+        background-image: var(--m);
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  test::RunPendingTasks();
+  GetDocument().UpdateStyleAndLayoutTree();
+  Compositor().BeginFrame();
+
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  const StyleImage* image =
+      target->ComputedStyleRef().BackgroundLayers().GetImage();
+  // The fetch should be blocked due to dangling markup, resulting in either
+  // no image or an error.
+  if (image) {
+    EXPECT_TRUE(image->ErrorOccurred());
+  }
+}
+
 }  // namespace blink
