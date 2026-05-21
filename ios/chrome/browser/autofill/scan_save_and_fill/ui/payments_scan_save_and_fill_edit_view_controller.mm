@@ -141,7 +141,8 @@ NSString* const kDateSeparator = @"/";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   // Set title and cancel button.
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
@@ -152,6 +153,8 @@ NSString* const kDateSeparator = @"/";
 
   _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:ChromeTableViewStyle()];
+  _tableView.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   _tableView.delegate = self;
   _tableView.tableHeaderView = [self createHeaderView];
   _tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -552,7 +555,7 @@ NSString* const kDateSeparator = @"/";
   _bottomContainerView.layoutMarginsRelativeArrangement = YES;
   _bottomContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   _bottomContainerView.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   [self.view addSubview:_tableView];
   [self.view addSubview:_bottomContainerView];
