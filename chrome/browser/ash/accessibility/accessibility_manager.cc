@@ -3101,9 +3101,11 @@ void AccessibilityManager::OnPumpkinError(std::string_view error) {
 
 void AccessibilityManager::InstallTenji(InstallTenjiCallback callback) {
   CHECK(!callback.is_null());
-  CHECK(::features::IsAccessibilityChromeVoxJapaneseBrailleEnabled())
-      << "InstallTenji should not be called if "
-         "AccessibilityChromeVoxJapaneseBraille feature is disabled.";
+  if (!::features::IsAccessibilityChromeVoxJapaneseBrailleEnabled()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   install_tenji_callback_ = std::move(callback);
   dlc_installer_->MaybeInstall(
       AccessibilityDlcInstaller::DlcType::kTenji,
