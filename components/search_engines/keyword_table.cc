@@ -161,10 +161,12 @@ const std::string ColumnsForVersion(int version, bool concatenated) {
 
 void UpdateAllKeywordHashes(sql::Database* db,
                             const os_crypt_async::Encryptor* encryptor,
-                            std::string_view histogram_name) {
+                            std::optional<std::string_view> histogram_name) {
   bool all_rows_migrated = true;
   absl::Cleanup record_histogram = [&all_rows_migrated, histogram_name] {
-    base::UmaHistogramBoolean(histogram_name, all_rows_migrated);
+    if (histogram_name) {
+      base::UmaHistogramBoolean(*histogram_name, all_rows_migrated);
+    }
   };
 
   // See the comment in `GetKeywordDataFromStatement` as to why this code is
@@ -582,8 +584,7 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
     return false;
   }
 
-  UpdateAllKeywordHashes(db(), encryptor(),
-                         "Search.KeywordTable.MigrationSuccess.V137");
+  UpdateAllKeywordHashes(db(), encryptor(), /*histogram_name=*/std::nullopt);
 
   return transaction.Commit();
 }

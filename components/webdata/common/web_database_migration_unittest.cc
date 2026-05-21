@@ -1546,12 +1546,7 @@ TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
          ",'Test','", kTestKeyword, "','','", kTestUrl,
          "',1,'',0,0,'','',0,0,0,'','[]','','','','','',0,0,1,2,0,0);"})));
   }
-  {
-    base::HistogramTester histograms;
-    DoMigration();
-    histograms.ExpectUniqueSample("Search.KeywordTable.MigrationSuccess.V137",
-                                  true, 1);
-  }
+  DoMigration();
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
@@ -1612,12 +1607,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrentBadUrl) {
          ",'Test','@test','','", /*url=*/"",
          "',1,'',0,0,'','',0,0,0,'','[]','','','','','',0,0,1,2,0,0);"})));
   }
-  {
-    base::HistogramTester histograms;
-    DoMigration();
-    histograms.ExpectUniqueSample("Search.KeywordTable.MigrationSuccess.V137",
-                                  false, 1);
-  }
+  DoMigration();
 }
 #else
 // On non-Windows the 136 to 137 migration does nothing except update add the
