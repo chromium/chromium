@@ -63,6 +63,7 @@ class ContextualTasksCookieSynchronizer;
 class ContextualTasksService;
 class ContextualTasksUIInterface;
 class ContextualTasksWindowTracker;
+class ContextualTasksWindowTrackerManager;
 
 // A service used to coordinate all of the side panel instances showing an AI
 // thread. Events like tab switching and Intercepted navigations from both the
@@ -191,6 +192,10 @@ class ContextualTasksUiService : public KeyedService {
 
   // Returns the URL for the default AI page for a given task.
   virtual GURL GetDefaultAiPageUrlForTask(const base::Uuid& task_id);
+
+  // Returns whether the provided WebContents is a tracked window for any task.
+  virtual bool IsTrackedWindow(content::WebContents* web_contents);
+
   // either in a full tab or in the side panel. If |task_id| is invalid, the
   // UI is in a zero-state that is waiting for user to create a new task.
   virtual void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
@@ -343,9 +348,7 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
   const std::vector<std::unique_ptr<ContextualTasksWindowTracker>>&
-  window_trackers_for_testing() const {
-    return window_trackers_;
-  }
+  window_trackers_for_testing() const;
 
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -452,7 +455,7 @@ class ContextualTasksUiService : public KeyedService {
   std::string GetHostForTask(const base::Uuid& task_id);
 
   // Removes a window tracker from the list of trackers.
-  void RemoveWindowTracker(ContextualTasksWindowTracker* tracker);
+  void RemoveWindowTracker(base::WeakPtr<ContextualTasksWindowTracker> tracker);
 
  private:
   base::ObserverList<Observer> observers_;
@@ -514,8 +517,9 @@ class ContextualTasksUiService : public KeyedService {
   std::map<base::Uuid, base::OnceCallback<void(const GURL&)>>
       tasks_waiting_for_url_;
 
-  // List of window trackers that are actively tracking windows for tasks.
-  std::vector<std::unique_ptr<ContextualTasksWindowTracker>> window_trackers_;
+  // Manager for window trackers. Class responsible for creating and destroying
+  // trackers and matching them to URLs and WebContents.
+  std::unique_ptr<ContextualTasksWindowTrackerManager> tracker_manager_;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };

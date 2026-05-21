@@ -34,6 +34,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -197,7 +198,9 @@ ContextualTasksUiService::ContextualTasksUiService(
       request_access_token_backoff_(
           &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy),
       cookie_synchronizer_(std::move(cookie_synchronizer)),
-      eligibility_manager_(std::move(eligibility_manager)) {
+      eligibility_manager_(std::move(eligibility_manager)),
+      tracker_manager_(
+          std::make_unique<ContextualTasksWindowTrackerManager>()) {
   if (eligibility_manager_ && contextual_tasks::ShouldEnableCookiePrefetch()) {
     eligibility_subscription_ =
         eligibility_manager_->RegisterEligibilityChangedCallback(
@@ -653,6 +656,9 @@ void ContextualTasksUiService::OnThreadLinkClicked(
           active_tab_index + 1, std::move(new_contents),
           /*should_pin=*/false,
           /*group=*/active_tab ? active_tab->GetGroup() : std::nullopt);
+
+      // Set the opener relationship so that if the new tab is closed, focus
+      // returns to the active tab.
       if (active_tab) {
         tab_list->SetOpenerForTab(new_tab->GetHandle(),
                                   active_tab->GetHandle());
@@ -706,7 +712,10 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 
   AssociateWebContentsToTask(new_contents_ptr, task_id);
 
-  DCHECK(new_tab);
+  // Set the opener relationship so that if the new tab is closed, focus
+  // returns to the source tab.
+  tab_list->SetOpenerForTab(new_tab->GetHandle(), tab->GetHandle());
+
   tab_list->ActivateTab(new_tab->GetHandle());
   CHECK(new_contents_ptr == tab_list->GetActiveTab()->GetContents());
 
@@ -1127,6 +1136,15 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // that is using the URL. From here on out, the navigation can be intercepted.
   bool is_nav_to_sign_in = IsSignInDomain(url_params.url);
 
+  // When a guest page calls window.open(), it happens in two steps:
+  // 1. CanCreateWindow is called and allowed to open naturally.
+  // 2. HandleNavigation is called for the navigation in the new window.
+  // Match the second call with the tracker created in the first call.
+  if (!from_can_create_window) {
+    tracker_manager_->MatchAndAssociatePendingTracker(url_params.url,
+                                                      source_contents);
+  }
+
   BrowserWindowInterface* browser =
       tab ? tab->GetBrowserWindowInterface()
           : webui::GetBrowserWindowInterface(source_contents);
@@ -1253,12 +1271,27 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "allowing natural opening for new tab";
+
+      // Create a tracker to associate this navigation with the task.
+      // Store the initiator_contents (source_contents) to prevent matching
+      // different contents if they navigate to the same URL.
       auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-          browser ? TabListInterface::From(browser) : nullptr, task_id,
-          url_params.url,
+          task_id, url_params.url, source_contents->GetWeakPtr(),
           base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
                          weak_ptr_factory_.GetWeakPtr()));
-      window_trackers_.push_back(std::move(tracker));
+      tracker_manager_->AddTracker(std::move(tracker));
+      tabs::TabInterface* source_tab =
+          tabs::TabInterface::MaybeGetFromContents(source_contents);
+      if (source_tab) {
+        BrowserWindowInterface* current_browser =
+            source_tab->GetBrowserWindowInterface();
+        if (current_browser) {
+          TabListInterface* tab_list = TabListInterface::From(current_browser);
+          if (tab_list) {
+            tracker_manager_->ObserveTabList(tab_list);
+          }
+        }
+      }
       return false;
     }
 
@@ -1479,6 +1512,14 @@ std::string ContextualTasksUiService::GetHostForTask(
   return "";
 }
 
+void ContextualTasksUiService::RemoveWindowTracker(
+    base::WeakPtr<ContextualTasksWindowTracker> tracker) {
+  if (!tracker) {
+    return;
+  }
+  tracker_manager_->RemoveTracker(tracker.get());
+}
+
 bool ContextualTasksUiService::IsTrustedHost(const std::string& host) {
   if (base::EndsWith(host, ".corp.google.com") ||
       base::EndsWith(host, ".c.googlers.com") ||
@@ -1563,6 +1604,21 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
   return AppendAimEntryPointParams(url, entry_point);
+}
+
+bool ContextualTasksUiService::IsTrackedWindow(
+    content::WebContents* web_contents) {
+  if (tracker_manager_->IsTrackedWindow(web_contents)) {
+    return true;
+  }
+
+  // Also considered tracked if the opener is a guest (e.g. in a webview).
+  content::WebContents* opener_wc =
+      web_contents->GetOpener()
+          ? content::WebContents::FromRenderFrameHost(web_contents->GetOpener())
+          : nullptr;
+  return opener_wc && opener_wc != opener_wc->GetResponsibleWebContents() &&
+         IsContextualTasksUrl(opener_wc->GetLastCommittedURL());
 }
 
 void ContextualTasksUiService::OnTaskChanged(
@@ -2012,10 +2068,9 @@ void ContextualTasksUiService::AssociateWebContentsToTask(
   }
 }
 
-void ContextualTasksUiService::RemoveWindowTracker(
-    ContextualTasksWindowTracker* tracker) {
-  std::erase_if(window_trackers_,
-                [tracker](const auto& ptr) { return ptr.get() == tracker; });
+const std::vector<std::unique_ptr<ContextualTasksWindowTracker>>&
+ContextualTasksUiService::window_trackers_for_testing() const {
+  return tracker_manager_->window_trackers_for_testing();  // IN-TEST
 }
 
 void ContextualTasksUiService::OnTabClickedFromSourcesMenu(

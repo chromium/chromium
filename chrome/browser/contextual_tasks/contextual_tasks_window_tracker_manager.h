@@ -1,0 +1,75 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_MANAGER_H_
+#define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_MANAGER_H_
+
+#include <memory>
+#include <set>
+#include <vector>
+
+#include "base/uuid.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "url/gurl.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace contextual_tasks {
+
+class ContextualTasksWindowTracker;
+
+// Centralized class to track all window trackers for Contextual Tasks.
+class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
+ public:
+  ContextualTasksWindowTrackerManager();
+  ~ContextualTasksWindowTrackerManager() override;
+
+  // TabListInterfaceObserver:
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
+
+  // Starts observing the given tab list.
+  void ObserveTabList(TabListInterface* tab_list);
+
+  ContextualTasksWindowTrackerManager(
+      const ContextualTasksWindowTrackerManager&) = delete;
+  ContextualTasksWindowTrackerManager& operator=(
+      const ContextualTasksWindowTrackerManager&) = delete;
+
+  // Adds a tracker to be managed.
+  void AddTracker(std::unique_ptr<ContextualTasksWindowTracker> tracker);
+
+  // Removes a tracker.
+  void RemoveTracker(ContextualTasksWindowTracker* tracker);
+
+  // Returns true if the web_contents is tracked.
+  bool IsTrackedWindow(content::WebContents* web_contents) const;
+
+  // Matches a pending tracker for the given URL and associates it with the
+  // source_contents. Returns the matched tracker, or nullptr if no match.
+  ContextualTasksWindowTracker* MatchAndAssociatePendingTracker(
+      const GURL& url,
+      content::WebContents* source_contents);
+
+  // For testing.
+  const std::vector<std::unique_ptr<ContextualTasksWindowTracker>>&
+  window_trackers_for_testing() const {
+    return window_trackers_;
+  }
+
+ private:
+  // A vector is used as a type of FIFO queue. The trackers are assigned based
+  // on the first tracker that matches the navigation.
+  std::vector<std::unique_ptr<ContextualTasksWindowTracker>> window_trackers_;
+
+  std::set<TabListInterface*> observed_tab_lists_;
+};
+
+}  // namespace contextual_tasks
+
+#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_MANAGER_H_
