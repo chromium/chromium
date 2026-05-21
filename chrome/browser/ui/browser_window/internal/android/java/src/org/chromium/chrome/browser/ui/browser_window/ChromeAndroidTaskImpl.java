@@ -905,7 +905,7 @@ final class ChromeAndroidTaskImpl
             return isMaximizedFuture;
         }
 
-        return isMaximizedInternal();
+        return mWindowStateManager.getWindowState() == WindowState.MAXIMIZED;
     }
 
     @Override
@@ -915,7 +915,7 @@ final class ChromeAndroidTaskImpl
         if (isVisibleFuture != null) {
             return !isVisibleFuture;
         }
-        return isMinimizedInternal();
+        return mWindowStateManager.getWindowState() == WindowState.MINIMIZED;
     }
 
     @Override
@@ -925,12 +925,7 @@ final class ChromeAndroidTaskImpl
             return false;
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            Log.w(TAG, "isFullscreen() requires Android R+; returning false");
-            return false;
-        }
-
-        return isFullscreenInternal();
+        return mWindowStateManager.getWindowState() == WindowState.FULLSCREEN;
     }
 
     @Override
@@ -998,7 +993,7 @@ final class ChromeAndroidTaskImpl
         Boolean isVisible = mPendingActionManager.isVisibleFuture(mState);
         if (isVisible != null) return isVisible;
 
-        return useActivity(unused -> !isMinimizedInternal(), /* defaultValue= */ false);
+        return mWindowStateManager.getWindowState() != WindowState.MINIMIZED;
     }
 
     @Override
@@ -1040,7 +1035,9 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        useActivity(this::closeInternal);
+        useActivity(
+                topActivityScopedObjects ->
+                        topActivityScopedObjects.mActivity.finishAndRemoveTask());
     }
 
     @Override
@@ -1148,7 +1145,11 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        useActivity(this::restoreInternal);
+        useActivity(
+                topActivityScopedObjects ->
+                        restoreInternal(
+                                topActivityScopedObjects,
+                                mWindowStateManager.getRestoredBoundsInPx()));
     }
 
     @Override
@@ -1530,7 +1531,7 @@ final class ChromeAndroidTaskImpl
                     ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
                     break;
                 case PendingAction.CLOSE:
-                    closeInternal(topActivityScopedObjects);
+                    topActivityScopedObjects.mActivity.finishAndRemoveTask();
                     break;
                 case PendingAction.ACTIVATE:
                     activateInternal(topActivityScopedObjects);
@@ -1700,20 +1701,6 @@ final class ChromeAndroidTaskImpl
         return topActivityScopedObjects.mActivityWindowAndroid.isTopResumedActivity();
     }
 
-    @RequiresApi(api = VERSION_CODES.R)
-    private boolean isMaximizedInternal() {
-        return mWindowStateManager.getWindowState() == WindowState.MAXIMIZED;
-    }
-
-    private boolean isMinimizedInternal() {
-        return mWindowStateManager.getWindowState() == WindowState.MINIMIZED;
-    }
-
-    @RequiresApi(api = VERSION_CODES.R)
-    private boolean isFullscreenInternal() {
-        return mWindowStateManager.getWindowState() == WindowState.FULLSCREEN;
-    }
-
     private void setBoundsInPx(TopActivityScopedObjects topActivityScopedObjects, Rect boundsInPx) {
         var activity = topActivityScopedObjects.mActivity;
         int displayId = topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayId();
@@ -1745,16 +1732,12 @@ final class ChromeAndroidTaskImpl
         if (isActiveInternal(topActivityScopedObjects)) return;
 
         // Activate the Task if it's already visible.
-        if (!isMinimizedInternal()) {
+        if (mWindowStateManager.getWindowState() != WindowState.MINIMIZED) {
             var activity = topActivityScopedObjects.mActivity;
             mPendingActionManager.requestAction(PendingAction.SHOW);
             mState = State.PENDING_UPDATE;
             ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
         }
-    }
-
-    private void closeInternal(TopActivityScopedObjects topActivityScopedObjects) {
-        topActivityScopedObjects.mActivity.finishAndRemoveTask();
     }
 
     private void activateInternal(TopActivityScopedObjects topActivityScopedObjects) {
@@ -1771,7 +1754,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (isMinimizedInternal()) {
+        if (mWindowStateManager.getWindowState() == WindowState.MINIMIZED) {
             activateInternal(topActivityScopedObjects);
         }
 
@@ -1785,18 +1768,13 @@ final class ChromeAndroidTaskImpl
 
     @RequiresApi(api = VERSION_CODES.R)
     private void minimizeInternal(TopActivityScopedObjects topActivityScopedObjects) {
-        if (isMinimizedInternal()) {
+        if (mWindowStateManager.getWindowState() == WindowState.MINIMIZED) {
             return;
         }
 
         mPendingActionManager.requestAction(PendingAction.MINIMIZE);
         mState = State.PENDING_UPDATE;
         topActivityScopedObjects.mActivity.moveTaskToBack(/* nonRoot= */ true);
-    }
-
-    @RequiresApi(api = VERSION_CODES.R)
-    private void restoreInternal(TopActivityScopedObjects topActivityScopedObjects) {
-        restoreInternal(topActivityScopedObjects, mWindowStateManager.getRestoredBoundsInPx());
     }
 
     @RequiresApi(api = VERSION_CODES.R)
@@ -1818,7 +1796,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (isMinimizedInternal()) {
+        if (mWindowStateManager.getWindowState() == WindowState.MINIMIZED) {
             activateInternal(topActivityScopedObjects);
         }
 
