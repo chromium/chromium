@@ -45,6 +45,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   }
 
   ServiceWorkerContextCore* context() { return helper_->context(); }
+  void ShutdownContext() { helper_->ShutdownContext(); }
 
   // Runs until |registration| has an active version and it is activated.
   void RunUntilActivatedVersion(ServiceWorkerRegistration* registration) {
@@ -305,6 +306,39 @@ TEST_F(ServiceWorkerContextCoreTest,
   // DeleteForStorageKey must abort pending jobs.
   register_job_loop.Run();
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, register_job_status);
+}
+
+// A regression test for crashes due to reentrancy of ServiceWorkerClient
+// destruction during ServiceWorkerContextCore shutdown.
+// See crbug.com/495673737.
+TEST_F(ServiceWorkerContextCoreTest,
+       ScopedClientDestructionDuringClientOwnerShutdown) {
+  auto scoped_service_worker_client1 =
+      std::make_unique<ScopedServiceWorkerClient>(
+          CreateServiceWorkerClient(context()));
+  auto scoped_service_worker_client2 =
+      std::make_unique<ScopedServiceWorkerClient>(
+          CreateServiceWorkerClient(context()));
+  base::WeakPtr<ServiceWorkerClient> service_worker_client1 =
+      scoped_service_worker_client1->AsWeakPtr();
+  base::WeakPtr<ServiceWorkerClient> service_worker_client2 =
+      scoped_service_worker_client2->AsWeakPtr();
+  ASSERT_TRUE(service_worker_client1);
+  ASSERT_TRUE(service_worker_client2);
+
+  service_worker_client1->SetDestructionCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&] { scoped_service_worker_client2.reset(); }));
+  service_worker_client2->SetDestructionCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&] { scoped_service_worker_client1.reset(); }));
+
+  ShutdownContext();
+
+  EXPECT_FALSE(service_worker_client1);
+  EXPECT_FALSE(service_worker_client2);
+  EXPECT_FALSE(scoped_service_worker_client1);
+  EXPECT_FALSE(scoped_service_worker_client2);
 }
 
 // Tests that DeleteForStorageKey() doesn't get stuck forever even upon an error

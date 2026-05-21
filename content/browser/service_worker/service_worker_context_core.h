@@ -264,6 +264,10 @@ class CONTENT_EXPORT ServiceWorkerClientOwner final {
   // `DeleteAndStartOver` but is still always valid and non-null.
   raw_ref<ServiceWorkerContextCore> context_;
 
+  // Whether this owner has started destruction. Used to avoid mutating
+  // `service_worker_clients_by_uuid_` reentrantly while it is being destroyed.
+  bool in_dtor_ = false;
+
   // Owns `ServiceWorkerContainerForClient` (via `ServiceWorkerClient`).
   // `ServiceWorkerContainerForServiceWorker`s are owned by `ServiceWorkerHost`.
   ServiceWorkerClientByClientUUIDMap service_worker_clients_by_uuid_;

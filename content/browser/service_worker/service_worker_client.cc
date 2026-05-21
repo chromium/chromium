@@ -178,6 +178,11 @@ ServiceWorkerClient::ServiceWorkerClient(
 ServiceWorkerClient::~ServiceWorkerClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (destruction_callback_for_testing_) {
+    CHECK_IS_TEST();
+    std::move(destruction_callback_for_testing_).Run();
+  }
+
   if (IsContainerForWindowClient()) {
     auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
     if (rfh) {
@@ -787,6 +792,11 @@ bool ServiceWorkerClient::is_execution_ready() const {
     case ClientPhase::kExecutionReady:
       return true;
   }
+}
+
+void ServiceWorkerClient::SetDestructionCallbackForTesting(
+    base::OnceClosure callback) {
+  destruction_callback_for_testing_ = std::move(callback);
 }
 
 GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {

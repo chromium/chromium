@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -368,6 +369,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   void EnterBackForwardCacheForTesting() { is_in_back_forward_cache_ = true; }
   void LeaveBackForwardCacheForTesting() { is_in_back_forward_cache_ = false; }
   bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
+  void SetDestructionCallbackForTesting(base::OnceClosure callback);
 
   // For service worker clients. Returns the URL that is used for scope matching
   // algorithm. This can be different from url() in the case of blob URL
@@ -560,6 +562,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // Callbacks to run upon transition to kExecutionReady.
   std::vector<ExecutionReadyCallback> execution_ready_callbacks_;
+
+  base::OnceClosure destruction_callback_for_testing_;
 
   // The controller service worker (i.e., ServiceWorkerContainer#controller) and
   // its registration. The controller is typically the same as the

@@ -299,7 +299,9 @@ ServiceWorkerClientOwner::ServiceWorkerClientOwner(
       base::Unretained(this)));
 }
 
-ServiceWorkerClientOwner::~ServiceWorkerClientOwner() = default;
+ServiceWorkerClientOwner::~ServiceWorkerClientOwner() {
+  in_dtor_ = true;
+}
 
 void ServiceWorkerClientOwner::ResetContext(
     ServiceWorkerContextCore& new_context) {
@@ -534,7 +536,10 @@ void ServiceWorkerContextCore::OnClientDestroyed(
 
 void ServiceWorkerClientOwner::DestroyServiceWorkerClient(
     base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-  if (!service_worker_client) {
+  if (!service_worker_client || in_dtor_) {
+    // During `ServiceWorkerClientOwner` destruction, remaining clients are
+    // already owned by `service_worker_clients_by_uuid_` and will be destroyed
+    // as that map is torn down.
     return;
   }
 
