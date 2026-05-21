@@ -396,8 +396,10 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::BubbleAnchor anchor_element,
   } else if (views::View* anchor_view = anchor_element.GetIfView()) {
     anchor_view_.SetView(anchor_view);
   }
-  views::InkDrop::Get(anchor_view_.view())
-      ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+  if (views::View* view = anchor_view_.view()) {
+    views::InkDrop::Get(view)->AnimateToState(views::InkDropState::ACTIVATED,
+                                              nullptr);
+  }
 
   SetEnableArrowKeyTraversal(true);
 
@@ -826,8 +828,10 @@ void ProfileMenuViewBase::OnWindowClosing() {
     return;
   }
 
-  views::InkDrop::Get(anchor_view_.view())
-      ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
+  if (views::View* view = anchor_view_.view()) {
+    views::InkDrop::Get(view)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                              nullptr);
+  }
 }
 
 bool ProfileMenuViewBase::HandleContextMenu(
