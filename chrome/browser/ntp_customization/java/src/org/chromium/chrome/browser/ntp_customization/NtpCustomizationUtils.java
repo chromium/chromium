@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.app.Activity;
@@ -267,10 +268,29 @@ public class NtpCustomizationUtils {
         }
     }
 
-    /** Returns whether custom Ntp's background theme is enabled. */
+    /** Returns whether custom Ntp's background theme is enabled by flag and policy. */
     public static boolean isNtpThemeCustomizationEnabled() {
         return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
                 && NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled();
+    }
+
+    /**
+     * Returns whether custom Ntp's background theme is enabled.
+     *
+     * @param windowAndroid The instance of {@link WindowAndroid}
+     * @param isTablet Whether the current device is a tablet.
+     */
+    public static boolean isNtpThemeCustomizationEnabled(
+            WindowAndroid windowAndroid, boolean isTablet) {
+        if (!isNtpThemeCustomizationEnabled()) {
+            return false;
+        }
+
+        if (isTablet) return true;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
+
+        return EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
     }
 
     /** Returns whether the NTP simplification is enabled on desktop. */
@@ -847,6 +867,30 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readBoolean(
                 NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false);
+    }
+
+    /**
+     * Sets the timestamp when the theme tip bottom sheet has been shown to the SharedPreference.
+     */
+    public static void setThemeTipBottomSheetShownTimestampToSharedPreference(long timestamp) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeLong(
+                NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS, timestamp);
+    }
+
+    /**
+     * Gets the timestamp when the theme tip bottom sheet has been shown from the SharedPreference.
+     */
+    public static long getThemeTipBottomSheetShownTimestampFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readLong(
+                NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS, 0);
+    }
+
+    /** Returns whether the theme tip bottom sheet has been shown before. */
+    public static boolean isThemeTipBottomSheetShownFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.contains(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
     }
 
     /**
@@ -1500,6 +1544,7 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO);
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
         prefsManager.removeKey(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_COLOR_ID);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);

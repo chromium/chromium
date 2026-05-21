@@ -236,6 +236,10 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED =
             "Chrome.NtpCustomization.ChromeColorDailyRefreshEnabled";
 
+    /** The timestamp of when the theme tip bottom sheet has been shown. */
+    public static final String NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS =
+            "Chrome.NtpCustomization.ThemeTipBottomSheetShownTimestampMs";
+
     /**
      * The timestamp of the last time when a daily refreshed theme color or background image is set.
      */
@@ -1166,6 +1170,7 @@ public final class ChromePreferenceKeys {
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO,
                 NTP_CUSTOMIZATION_BACKGROUND_INFO,
                 NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED,
+                NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS,
                 NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP,
                 NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH,
                 NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH,

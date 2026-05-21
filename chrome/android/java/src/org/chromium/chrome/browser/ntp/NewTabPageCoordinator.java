@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchBoxHintTextObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
@@ -110,6 +112,8 @@ import java.util.function.Supplier;
 @NullMarked
 public class NewTabPageCoordinator implements ModuleDelegateHost {
     private static final String TAG = "NewTabPageLayout";
+    // Counts of the number of NTPs have been visible to users.
+    private static int sCount;
 
     private final NewTabPageManager mManager;
     private final Activity mActivity;
@@ -149,6 +153,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private @Nullable ViewGroup mHomeModulesContainer;
     private SetupListManager.@Nullable Observer mSetupListObserver;
     private @Nullable Point mContextMenuStartPosition;
+    private @Nullable NtpCustomizationCoordinator mNtpCustomizationCoordinator;
 
     /**
      * Whether the tiles shown in the layout have finished loading. With {@link #mHasShownView},
@@ -287,6 +292,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                     }
                 };
         mModel.set(NewTabPageLayoutProperties.DELEGATE, mLayoutDelegate);
+        sCount++;
     }
 
     /**
@@ -960,6 +966,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (!mHasShownView) {
             mHasShownView = true;
             onInitializationProgressChanged();
+            if (canTriggerCustomizationBottomSheet()) {
+                triggerCustomizationBottomSheet();
+            }
             TraceEvent.instant("NewTabPageSearchAvailable");
         }
     }
@@ -1172,6 +1181,44 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
     }
 
+    /** Returns whether to trigger the NTP theme tip bottom sheet showing. */
+    boolean canTriggerCustomizationBottomSheet() {
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled(mWindowAndroid, mIsTablet)) {
+            return false;
+        }
+
+        if (!ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue()
+                || (NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                        != NtpBackgroundType.DEFAULT)) {
+            return false;
+        }
+
+        if (ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue()) {
+            return true;
+        }
+
+        // Triggers the bottom sheet if this bottom sheet hasn't been shown before and this isn't
+        // the first time that a NTP is open. The bottom sheet is shown once per lifetime.
+        return sCount > 1
+                && !NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference();
+    }
+
+    /** Shows the NTP theme tip bottom sheet. */
+    void triggerCustomizationBottomSheet() {
+        mNtpCustomizationCoordinator =
+                NtpCustomizationCoordinatorFactory.getInstance()
+                        .create(
+                                mActivity,
+                                mBottomSheetController,
+                                mTab::getProfile,
+                                NtpCustomizationCoordinator.BottomSheetType.THEME_TIP,
+                                mWindowAndroid,
+                                mModuleRegistrySupplier.get());
+        mNtpCustomizationCoordinator.showBottomSheet();
+        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(
+                TimeUtils.uptimeMillis());
+    }
+
     // ModuleDelegateHost implementation
 
     @Override
@@ -1239,6 +1286,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     @SuppressWarnings("NullAway")
     public void destroy() {
+        if (mNtpCustomizationCoordinator != null) {
+            mNtpCustomizationCoordinator.destroy();
+            mNtpCustomizationCoordinator = null;
+        }
+
         mMostRecentTabSupplier.set(null);
 
         if (mSearchBoxHintTextObserver != null) {
@@ -1470,5 +1522,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     public @Nullable ViewGroup getHomeModulesContainerForTesting() {
         return mHomeModulesContainer;
+    }
+
+    public static void setCountForTesting(int count) {
+        sCount = count;
     }
 }

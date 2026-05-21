@@ -39,7 +39,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.View;
-import android.view.Window;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -56,7 +55,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -124,22 +122,7 @@ public class NtpCustomizationMediatorUnitTest {
         when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
         NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
 
-        // Creates a data container so the Edge-to-Edge provider can be registered on the mocked
-        // WindowAndroid.
-        UnownedUserDataHost windowUserDataHost = new UnownedUserDataHost();
-        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(windowUserDataHost);
-
-        // Mocks the DecorView to avoid a NullPointerException by providing a non-null DecorView for
-        // WindowCompat to use when toggling edge-to-edge mode.
-        Window window = mock(Window.class);
-        View decorView = mock(View.class);
-        when(window.getDecorView()).thenReturn(decorView);
-
-        // Initialize the provider and acquire a token to force the Edge-to-Edge state to "enabled"
-        // for the tests.
-        mE2EProvider = new EdgeToEdgeStateProvider(window);
-        mE2EProvider.attach(mWindowAndroid);
-        mE2EProvider.acquireSetDecorFitsSystemWindowToken();
+        mE2EProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
 
         mMediator =
                 new NtpCustomizationMediator(
@@ -339,12 +322,16 @@ public class NtpCustomizationMediatorUnitTest {
         List<Integer> listItems = mListDelegate.getListItems();
         assertFalse(listItems.isEmpty());
 
+        mMediator.setCurrentBottomSheetForTesting(BottomSheetType.MAIN);
+        assertEquals(MAIN, (int) mMediator.getCurrentBottomSheetType());
+
         mMediator.destroy();
 
         assertEquals(0, mViewFlipperMap.size());
         assertEquals(0, typeToListenerMap.size());
         assertTrue(listItems.isEmpty());
         verify(mContainerPropertyModel).set(eq(LIST_CONTAINER_VIEW_DELEGATE), eq(null));
+        assertNull(mMediator.getCurrentBottomSheetType());
     }
 
     @Test

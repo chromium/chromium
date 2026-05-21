@@ -950,6 +950,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/browser/composeplate/android:java",
+      "//chrome/browser/ntp_customization:ntp_customization_test_support_java",
       "//chrome/browser/segmentation_platform:client_util_java",
       "//third_party/android_deps:com_airbnb_android_lottie_java",
     ]

@@ -2676,7 +2676,14 @@ const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_EnableLogs[] = {
     {"enable_logs", "true"}};
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowPromo[] = {
     {"show_promo", "true"},
+    {"show_tip_bottom_sheet", "true"},
     {"show_logo_and_search_box", "true"}};
+const FeatureEntry::FeatureParam
+    kNewTabPageCustomizationV2_ForceShowTipBottomSheet[] = {
+        {"force_show_tip_bottom_sheet", "true"},
+        {"show_promo", "true"},
+        {"show_tip_bottom_sheet", "true"},
+        {"show_logo_and_search_box", "true"}};
 
 const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
     {"Show color picker", kNewTabPageCustomizationV2_ShowColorPicker, nullptr},
@@ -2685,8 +2692,10 @@ const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
     {"Show logo and search box in the preview dialog",
      kNewTabPageCustomizationV2_ShowLogoAndSearchBox, nullptr},
     {"Enable logs", kNewTabPageCustomizationV2_EnableLogs, nullptr},
-    {"Show promo and logo/search box in the preview dialog",
-     kNewTabPageCustomizationV2_ShowPromo, nullptr}};
+    {"Show promo and tip bottom sheet", kNewTabPageCustomizationV2_ShowPromo,
+     nullptr},
+    {"Force to show theme tip bottom sheet",
+     kNewTabPageCustomizationV2_ForceShowTipBottomSheet, nullptr}};
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {

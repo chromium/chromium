@@ -66,6 +66,7 @@ public class NtpCustomizationCoordinator {
     private @Nullable NtpThemeCoordinator mNtpThemeCoordinator;
     private @Nullable NtpThemeTipCoordinator mNtpThemeTipCoordinator;
     private ViewFlipper mViewFlipperView;
+    private boolean mIsDestroyed;
 
     /**
      * New Tab Page Customization bottom sheet type.
@@ -382,6 +383,9 @@ public class NtpCustomizationCoordinator {
      * Clears all views inside the view flipper as well as destroys the mediator and coordinators.
      */
     public void destroy() {
+        if (mIsDestroyed) return;
+
+        mIsDestroyed = true;
         mViewFlipperView.removeAllViews();
         mMediator.destroy();
         NtpCustomizationCoordinatorFactory.getInstance()

@@ -1732,6 +1732,15 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_logo_and_search_box", false);
 
+    public static final BooleanCachedFeatureParam
+            sNewTabPageCustomizationV2ForceShowTipBottomSheet =
+                    newBooleanCachedFeatureParam(
+                            NEW_TAB_PAGE_CUSTOMIZATION_V2, "force_show_tip_bottom_sheet", false);
+
+    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowTipBottomSheet =
+            newBooleanCachedFeatureParam(
+                    NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_tip_bottom_sheet", false);
+
     /** The time duration limit to refresh NTP's background. */
     public static final IntCachedFeatureParam sNewTabPageCustomizationV2DailyRefreshThresholdMs =
             newIntCachedFeatureParam(
@@ -1967,8 +1976,10 @@ public abstract class ChromeFeatureList {
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
                     sNewTabPageCustomizationV2DailyRefreshThresholdMs,
                     sNewTabPageCustomizationV2EnableLogs,
+                    sNewTabPageCustomizationV2ForceShowTipBottomSheet,
                     sNewTabPageCustomizationV2ShowColorPicker,
                     sNewTabPageCustomizationV2ShowLogoAndSearchBox,
+                    sNewTabPageCustomizationV2ShowTipBottomSheet,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,

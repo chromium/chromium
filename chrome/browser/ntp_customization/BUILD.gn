@@ -252,6 +252,18 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("ntp_customization_test_support_java") {
+  testonly = true
+  sources = [ "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationTestHelper.java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/edge_to_edge:java",
+  ]
+}
+
 robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ntp_customization"
@@ -321,6 +333,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":ntp_customization_test_support_java",
     ":public_java",
     "//base:base_java",
     "//base:base_java_test_support",

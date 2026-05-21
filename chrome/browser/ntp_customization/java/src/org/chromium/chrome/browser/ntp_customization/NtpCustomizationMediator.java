@@ -321,13 +321,9 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
             content.add(FEED);
         }
 
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
-            boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-            if (isTablet
-                    || NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
-                            mWindowAndroid, isTablet)) {
-                content.add(THEME);
-            }
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                mWindowAndroid, DeviceFormFactor.isNonMultiDisplayContextOnTablet(context))) {
+            content.add(THEME);
         }
         return content;
     }
@@ -343,6 +339,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         mViewFlipperMap.clear();
         mTypeToListenersMap.clear();
         mListContent.clear();
+        mCurrentBottomSheet = null;
     }
 
     /**
