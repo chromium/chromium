@@ -7,7 +7,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 
 SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate(
     Profile& profile)

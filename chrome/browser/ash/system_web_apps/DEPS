@@ -32,7 +32,6 @@ include_rules = [
   "+chrome/browser/renderer_context_menu",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/browser/ui/navigator/browser_navigator_params.h",
