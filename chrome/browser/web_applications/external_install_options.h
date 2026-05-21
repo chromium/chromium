@@ -75,6 +75,9 @@ struct ExternalInstallOptions {
   // URL of an icon that replaces the app's real icons.
   std::optional<GURL> override_icon_url;
 
+  // SHA256 hash of an icon that replaces the app's real icons.
+  std::optional<std::string> override_icon_hash;
+
   // If true, a shortcut is added to the Applications folder on macOS, and Start
   // Menu on Linux and Windows and launcher on Chrome OS. If false, we skip
   // adding a shortcut to desktop as well, regardless of the value of

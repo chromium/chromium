@@ -17,6 +17,8 @@ extern const char kFallbackAppNameKey[];
 extern const char kCustomNameKey[];
 extern const char kCustomIconKey[];
 extern const char kCustomIconURLKey[];
+// Stores the SHA256 hash of the icon to be downloaded from the value for
+// `kCustomIconURLKey`.
 extern const char kCustomIconHashKey[];
 extern const char kInstallAsShortcut[];
 extern const char kUninstallAndReplaceKey[];

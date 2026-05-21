@@ -35,6 +35,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -114,7 +115,8 @@ class InstallPlaceholderJobWrapperCommand
 
 class InstallPlaceholderJobTest : public WebAppTest {
  public:
-  static constexpr int kIconSize = 96;
+  InstallPlaceholderJobTest()
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {}
   const GURL kInstallUrl = GURL("https://example.com");
 
   void SetUp() override {
@@ -156,39 +158,26 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
 }
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
+  data_decoder::test::InProcessDataDecoder data_decoder;
   ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   const GURL icon_url("https://somedifferentoriginexample.com/test.png");
   options.override_icon_url = icon_url;
   base::test::TestFuture<webapps::InstallResultCode, webapps::AppId> future;
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
   auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
-
-  SkBitmap bitmap;
-  std::vector<gfx::Size> icon_sizes(1, gfx::Size(kIconSize, kIconSize));
-  bitmap.allocN32Pixels(kIconSize, kIconSize);
-  bitmap.eraseColor(SK_ColorRED);
-  IconsMap icons = {{icon_url, {bitmap}}};
-  const IconUrlWithSize icon_metadata =
-      IconUrlWithSize::CreateForUnspecifiedSize(icon_url);
-  DownloadedIconsHttpResults http_result = {
-      {icon_metadata, net::HttpStatusCode::HTTP_OK}};
-  EXPECT_CALL(
-      *data_retriever,
-      GetIcons(testing::_, testing::ElementsAre(icon_metadata),
-               /*download_page_favicons=*/false, /*fail_all_if_any_fail=*/false,
-               base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<4>(
-          IconsDownloadedResult::kCompleted, std::move(icons), http_result));
   url_loader->SetNextLoadUrlResult(kInstallUrl,
                                    webapps::WebAppUrlLoaderResult::kUrlLoaded);
-  url_loader->SetNextLoadUrlResult(icon_url,
-                                   webapps::WebAppUrlLoaderResult::kUrlLoaded);
+
+  std::string png_bytes =
+      "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00"
+      "\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90\x77\x53\xDE\x00\x00\x00"
+      "\x0C\x49\x44\x41\x54\x78\x9C\x63\xF8\xCF\xC0\x00\x00\x03\x01\x01\x00\x18"
+      "\xDD\x8D\xB0\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
+  profile_url_loader_factory().AddResponse(icon_url.spec(), png_bytes);
 
   auto command = std::make_unique<InstallPlaceholderJobWrapperCommand>(
-      profile(), options, future.GetCallback(), std::move(data_retriever),
+      profile(), options, future.GetCallback(), /*data_retriever=*/nullptr,
       std::move(url_loader));
   provider()->command_manager().ScheduleCommand(std::move(command));
 

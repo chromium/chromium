@@ -72,7 +72,8 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   static constexpr char kDefaultAppName[] = "Simple web app";
   static constexpr char kDefaultCustomName[] = "Custom name";
-  static constexpr char kDefaultCustomIconHash[] = "abcdef";
+  static constexpr char kDefaultCustomIconHash[] =
+      "7b1d9c8e582971ec50be86f32c7753cb6532a066bd1f9ab222c30a0a3fee429f";
 
   static constexpr char kInstallUrlSuffix[] =
       "/web_apps/install_url/install_url.html";
@@ -482,8 +483,19 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
 
   EXPECT_EQ(kDefaultCustomName,
             base::UTF16ToASCII(manifest->name.value_or(std::u16string())));
-  ASSERT_EQ(1u, manifest->icons.size());
-  EXPECT_TRUE(manifest->icons[0].src.spec().ends_with(kCustomIconUrlSuffix));
+  ASSERT_EQ(2u, manifest->icons.size());
+  EXPECT_TRUE(manifest->icons[0].src.spec().ends_with("basic-48.png"));
+  EXPECT_TRUE(manifest->icons[1].src.spec().ends_with("basic-192.png"));
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> disk_bitmaps;
+  provider().icon_manager().ReadAllIcons(GetAppId(),
+                                         disk_bitmaps.GetCallback());
+  ASSERT_TRUE(disk_bitmaps.Wait());
+  const OrderedSizeToBitmap& any_icons = disk_bitmaps.Get().trusted_icons.any;
+  ASSERT_THAT(any_icons, testing::Contains(testing::Pair(192, testing::_)));
+  EXPECT_THAT(
+      any_icons.at(192),
+      gfx::test::EqualsBitmap(gfx::test::CreateBitmap(192, SK_ColorBLUE)));
 }
 
 // This test suite verifies the WebAppInstallByUserEnabled policy behavior when

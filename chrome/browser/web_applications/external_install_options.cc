@@ -89,7 +89,9 @@ bool ExternalInstallOptions::operator==(
         options.handles_file_open_intents,
         options.expected_app_id,
         options.install_without_os_integration,
-        options.only_uninstall_and_replace_when_compatible_
+        options.only_uninstall_and_replace_when_compatible_,
+        options.override_icon_url,
+        options.override_icon_hash
         // clang-format on
     );
   };
@@ -129,6 +131,11 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("expected_app_id", ConvertOptional(expected_app_id));
   root.Set("handles_file_open_intents", handles_file_open_intents);
   root.Set("fallback_app_name", ConvertOptional(fallback_app_name));
+  root.Set("override_name", ConvertOptional(override_name));
+  root.Set("override_icon_url", override_icon_url
+                                    ? base::Value(override_icon_url->spec())
+                                    : base::Value());
+  root.Set("override_icon_sha256_hash", ConvertOptional(override_icon_hash));
   root.Set("force_reinstall", force_reinstall);
   root.Set("force_reinstall_for_milestone",
            ConvertOptional(force_reinstall_for_milestone));

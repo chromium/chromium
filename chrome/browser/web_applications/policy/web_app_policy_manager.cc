@@ -709,8 +709,10 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
       GURL icon_gurl = GURL(*icon_url);
       if (icon_gurl.SchemeIs(url::kHttpsScheme)) {
         install_options.override_icon_url = icon_gurl;
-        if (install_gurl.is_valid()) {
-          custom_manifest_values_by_url_[install_gurl].SetIcon(icon_gurl);
+        const std::string* icon_hash =
+            custom_icon->FindString(kCustomIconHashKey);
+        if (icon_hash) {
+          install_options.override_icon_hash = *icon_hash;
         }
       } else {
         LOG(WARNING) << "Policy-installed web app " << *install_url

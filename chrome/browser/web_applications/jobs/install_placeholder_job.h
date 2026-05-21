@@ -28,6 +28,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
+class CustomIconFetcher;
 class FinalizeInstallJob;
 class SharedWebContentsWithAppLock;
 class WebAppDataRetriever;
@@ -60,15 +61,11 @@ class InstallPlaceholderJob {
   void MaybeRetryFetchCustomIcon(const GURL& url, int retries_left);
 
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult load_url_result);
-  void OnIconNavigationCompleted(
-      const GURL& url,
-      int retries_left,
-      webapps::WebAppUrlLoaderResult load_url_result);
-  void OnCustomIconFetched(const GURL& image_url,
+  // Asynchronous callback for custom icon downloading and out-of-process
+  // decoding.
+  void OnCustomIconDecoded(const GURL& url,
                            int retries_left,
-                           IconsDownloadedResult result,
-                           IconsMap icons_map,
-                           DownloadedIconsHttpResults icons_http_results);
+                           std::optional<SkBitmap> bitmap);
 
   void FinalizeInstall(
       std::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
@@ -93,6 +90,12 @@ class InstallPlaceholderJob {
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   std::unique_ptr<FinalizeInstallJob> install_job_;
+
+  // Caches the downloaded custom icon bitmaps to be passed to the installer.
+  std::vector<SkBitmap> custom_icon_bitmaps_;
+  // Handles downloading the custom icon securely via SimpleURLLoader and
+  // decoding it out-of-process via ImageDecoder.
+  std::unique_ptr<CustomIconFetcher> custom_icon_fetcher_;
 
   base::WeakPtrFactory<InstallPlaceholderJob> weak_factory_{this};
 };

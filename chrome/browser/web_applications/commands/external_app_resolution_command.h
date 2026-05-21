@@ -45,6 +45,7 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
+class CustomIconFetcher;
 class FinalizeInstallJob;
 class InstallPlaceholderJob;
 class WebAppDataRetriever;
@@ -122,6 +123,8 @@ class ExternalAppResolutionCommand
       DownloadedIconsHttpResults icons_http_results);
 
   void UpdateInfoWithParamsAndUpgradeLock(bool icon_download_failed);
+  void OnCustomIconDecodedPopulateBitmaps(std::optional<SkBitmap> bitmap);
+  void ContinueUpdateInfoWithParamsAndUpgradeLock(bool icon_download_failed);
 
   void OnLockUpgradedFinalizeInstall(bool icon_download_failed);
   void OnInstallFinalized(const webapps::AppId& app_id,
@@ -196,6 +199,7 @@ class ExternalAppResolutionCommand
   std::optional<InstallFromInfoJob> install_from_info_job_;
   std::optional<RemoveInstallSourceJob> remove_placeholder_job_;
   std::optional<FinalizeInstallJob> install_job_;
+  std::unique_ptr<CustomIconFetcher> custom_icon_fetcher_;
 
   base::OnceClosure on_lock_upgraded_callback_for_testing_;
 

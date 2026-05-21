@@ -121,7 +121,8 @@ constexpr char kNoContainerUrl[] = "https://no-container.example/";
 const char kDefaultCustomAppName[] = "custom app name";
 constexpr char kDefaultCustomIconUrl[] = "https://windowed.example/icon.png";
 constexpr char kUnsecureIconUrl[] = "http://windowed.example/icon.png";
-constexpr char kDefaultCustomIconHash[] = "abcdef";
+constexpr char kDefaultCustomIconHash[] =
+    "567e3611094b537115a14c3a314014e8dfcb2b6e993ede8b2da85be93f200849";
 
 base::DictValue GetWindowedItem() {
   return base::DictValue()
@@ -182,15 +183,18 @@ base::DictValue GetCustomAppNameItem(std::string name) {
       .Set(kCustomNameKey, std::move(name));
 }
 
-base::DictValue GetCustomAppIconItem(bool secure = true) {
+base::DictValue GetCustomAppIconItem(bool secure = true,
+                                     bool include_hash = true) {
+  base::DictValue custom_icon;
+  custom_icon.Set(kCustomIconURLKey,
+                  secure ? kDefaultCustomIconUrl : kUnsecureIconUrl);
+  if (include_hash) {
+    custom_icon.Set(kCustomIconHashKey, kDefaultCustomIconHash);
+  }
   return base::DictValue()
       .Set(kUrlKey, kWindowedUrl)
       .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
-      .Set(kCustomIconKey,
-           base::DictValue()
-               .Set(kCustomIconURLKey,
-                    secure ? kDefaultCustomIconUrl : kUnsecureIconUrl)
-               .Set(kCustomIconHashKey, kDefaultCustomIconHash));
+      .Set(kCustomIconKey, std::move(custom_icon));
 }
 
 void SetWebAppSettingsListPref(Profile* profile, std::string_view pref) {
@@ -215,7 +219,8 @@ void SetWebAppInstallForceListPref(Profile* profile, std::string_view pref) {
 
 class WebAppPolicyManagerTestBase : public WebAppTest {
  public:
-  WebAppPolicyManagerTestBase() = default;
+  WebAppPolicyManagerTestBase()
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {}
   WebAppPolicyManagerTestBase(const WebAppPolicyManagerTestBase&) = delete;
   WebAppPolicyManagerTestBase& operator=(const WebAppPolicyManagerTestBase&) =
       delete;
@@ -607,8 +612,32 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
 }
 
 TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
+  std::string png_bytes =
+      "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00"
+      "\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90\x77\x53\xDE\x00\x00\x00"
+      "\x0C\x49\x44\x41\x54\x78\x9C\x63\xF8\xCF\xC0\x00\x00\x03\x01\x01\x00\x18"
+      "\xDD\x8D\xB0\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
+  profile_url_loader_factory().AddResponse(kDefaultCustomIconUrl, png_bytes);
+
   base::ListValue list;
   list.Append(GetCustomAppIconItem());
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
+
+  WaitForAppsToSynchronize();
+  EXPECT_NE(GetPolicyInstalledWindowedApp(), nullptr);
+}
+
+TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIconNoHash) {
+  std::string png_bytes =
+      "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00"
+      "\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90\x77\x53\xDE\x00\x00\x00"
+      "\x0C\x49\x44\x41\x54\x78\x9C\x63\xF8\xCF\xC0\x00\x00\x03\x01\x01\x00\x18"
+      "\xDD\x8D\xB0\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
+  profile_url_loader_factory().AddResponse(kDefaultCustomIconUrl, png_bytes);
+
+  base::ListValue list;
+  list.Append(GetCustomAppIconItem(/*secure=*/true, /*include_hash=*/false));
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 

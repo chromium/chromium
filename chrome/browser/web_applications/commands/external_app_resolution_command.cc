@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/custom_icon_fetcher.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
@@ -436,6 +437,52 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
 
 void ExternalAppResolutionCommand::UpdateInfoWithParamsAndUpgradeLock(
     bool icon_download_failed) {
+  if (install_options_.override_icon_url) {
+    custom_icon_fetcher_ = std::make_unique<CustomIconFetcher>(
+        &profile_.get(), install_options_.override_icon_url.value(),
+        install_options_.override_icon_hash);
+    custom_icon_fetcher_->StartRequest(base::BindOnce(
+        &ExternalAppResolutionCommand::OnCustomIconDecodedPopulateBitmaps,
+        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  ContinueUpdateInfoWithParamsAndUpgradeLock(icon_download_failed);
+}
+
+void ExternalAppResolutionCommand::OnCustomIconDecodedPopulateBitmaps(
+    std::optional<SkBitmap> bitmap) {
+  custom_icon_fetcher_.reset();
+  bool icon_download_failed = true;
+
+  // Populate the manifest and trusted icons from the downloaded custom icon
+  // urls.
+  if (bitmap) {
+    CHECK(!bitmap->drawsNothing());
+    web_app_info_->icon_bitmaps.any.clear();
+    web_app_info_->icon_bitmaps.maskable.clear();
+    web_app_info_->icon_bitmaps.monochrome.clear();
+    web_app_info_->trusted_icon_bitmaps.any.clear();
+    web_app_info_->trusted_icon_bitmaps.maskable.clear();
+    web_app_info_->trusted_icon_bitmaps.monochrome.clear();
+
+    IconsMap icons_map;
+    icons_map.emplace(install_options_.override_icon_url.value(),
+                      std::vector<SkBitmap>{bitmap.value()});
+    PopulateProductIcons(web_app_info_.get(), &icons_map);
+
+    apps::IconInfo trusted_bitmap;
+    trusted_bitmap.url = install_options_.override_icon_url.value();
+    web_app_info_->trusted_icons = {trusted_bitmap};
+    PopulateTrustedIconBitmaps(*web_app_info_.get(), icons_map);
+    icon_download_failed = false;
+  }
+
+  ContinueUpdateInfoWithParamsAndUpgradeLock(icon_download_failed);
+}
+
+void ExternalAppResolutionCommand::ContinueUpdateInfoWithParamsAndUpgradeLock(
+    bool icon_download_failed) {
   // TODO(b/300878868): Reject installation if the manifest id provided in the
   // WebAppInstallForceList does not match the final manifest id.
   app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id());
@@ -476,8 +523,8 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
   finalize_options.add_to_desktop = install_params_->add_to_desktop;
   finalize_options.add_to_quick_launch_bar =
       install_params_->add_to_quick_launch_bar;
-  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
-  // different more restrictive filter should likely be used instead.
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check,
+  // and different more restrictive filter should likely be used instead.
   if (apps_lock_->registrar().AppMatches(
           app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
     // If an installation is triggered for the same app but with a
@@ -650,17 +697,17 @@ void ExternalAppResolutionCommand::OnLaunch(
 
 void ExternalAppResolutionCommand::OnPlaceHolderAppLockAcquired() {
   CHECK(apps_lock_);
-  // This is the entry point for the placeholder installation path. It is called
-  // after the initial URL load has failed and we have acquired a lock for the
-  // placeholder app ID.
+  // This is the entry point for the placeholder installation path. It is
+  // called after the initial URL load has failed and we have acquired a lock
+  // for the placeholder app ID.
   CHECK(apps_lock_->IsGranted());
   if (on_lock_upgraded_callback_for_testing_) {
     std::move(on_lock_upgraded_callback_for_testing_).Run();
   }
 
   // TODO(b/300878868): Use the manifest id specified in the
-  // `WebAppInstallForceList` to generate the placeholder app id. This is needed
-  // to make sure an in-place installation can be done.
+  // `WebAppInstallForceList` to generate the placeholder app id. This is
+  // needed to make sure an in-place installation can be done.
   install_placeholder_job_.emplace(
       &profile_.get(),
       *GetMutableDebugValue().EnsureDict("install_placeholder_job"),
@@ -693,8 +740,8 @@ void ExternalAppResolutionCommand::OnPlaceHolderInstalled(
 
 void ExternalAppResolutionCommand::InstallFromInfo() {
   // This is the entry point for the offline installation path. It is called
-  // when the initial URL load fails and we are not installing a placeholder, or
-  // when `only_use_app_info_factory` is true.
+  // when the initial URL load fails and we are not installing a placeholder,
+  // or when `only_use_app_info_factory` is true.
   install_params_ = ConvertExternalInstallOptionsToParams(install_options_);
   CHECK(install_params_.has_value());
 
@@ -719,8 +766,8 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
                std::move(install_params_->additional_search_terms));
   web_app_info_->install_url = install_params_->install_url;
 
-  // External installs are considered trusted, all manifest icons can be used as
-  // trusted ones.
+  // External installs are considered trusted, all manifest icons can be used
+  // as trusted ones.
   web_app_info_->trusted_icons = web_app_info_->manifest_icons;
   web_app_info_->trusted_icon_bitmaps = web_app_info_->icon_bitmaps;
 
