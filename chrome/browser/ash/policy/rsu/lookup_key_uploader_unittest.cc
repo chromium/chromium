@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -47,7 +47,7 @@ class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
   void SetUp() override {
     ash::DeviceSettingsTestBase::SetUp();
     pref_service_.registry()->RegisterStringPref(
-        prefs::kLastRsuDeviceIdUploaded, std::string());
+        ash::prefs::kLastRsuDeviceIdUploaded, std::string());
     lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
         nullptr, &pref_service_, &certificate_uploader_);
     lookup_key_uploader_->SetClock(&clock_);
@@ -58,7 +58,8 @@ class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
   void TearDown() override { ash::DeviceSettingsTestBase::TearDown(); }
 
   void ExpectSavedIdToBe(const std::string& key) {
-    EXPECT_EQ(pref_service_.GetString(prefs::kLastRsuDeviceIdUploaded), key);
+    EXPECT_EQ(pref_service_.GetString(ash::prefs::kLastRsuDeviceIdUploaded),
+              key);
   }
   bool NeedsUpload() { return lookup_key_uploader_->needs_upload_; }
 
@@ -98,7 +99,7 @@ TEST_F(LookupKeyUploaderTest, ReuploadsOnFail) {
 }
 
 TEST_F(LookupKeyUploaderTest, DoesntUploadTwice) {
-  pref_service_.SetString(prefs::kLastRsuDeviceIdUploaded,
+  pref_service_.SetString(ash::prefs::kLastRsuDeviceIdUploaded,
                           kValidRsuDeviceIdEncoded);
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();

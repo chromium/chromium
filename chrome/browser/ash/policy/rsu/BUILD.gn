@@ -13,6 +13,7 @@ static_library("rsu") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
@@ -29,6 +30,7 @@ source_set("unit_tests") {
   sources = [ "lookup_key_uploader_unittest.cc" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/attestation:test_support",

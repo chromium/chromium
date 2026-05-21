@@ -3920,6 +3920,17 @@ inline constexpr char kUsageTimeLimit[] = "screen_time.limit";
 //-----------------------------------------------------------------------------
 
 // A boolean pref which determines whether a remote admin can start a CRD
+// connection through the 'start crd session' remote command when no local user
+// is present at the device.
+inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
+    "device_allow_enterprise_remote_access_connections";
+
+// String containing last RSU (Remote service unlock) lookup key uploaded.
+// Empty until first upload.
+inline constexpr char kLastRsuDeviceIdUploaded[] =
+    "rsu.last_rsu_device_id_uploaded";
+
+// A boolean pref which determines whether a remote admin can start a CRD
 // connection through the 'start crd session' remote command.
 inline constexpr char
     kRemoteAccessHostAllowEnterpriseRemoteSupportConnections[] =
@@ -3934,12 +3945,6 @@ inline constexpr char kRemoteAdminWasPresent[] = "remote_admin_was_present";
 // with removing the users while at the login screen.
 inline constexpr char kRemoveUsersRemoteCommand[] =
     "remove_users_remote_command";
-
-// A boolean pref which determines whether a remote admin can start a CRD
-// connection through the 'start crd session' remote command when no local user
-// is present at the device.
-inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
-    "device_allow_enterprise_remote_access_connections";
 
 //-----------------------------------------------------------------------------
 // SkyVault related Prefs

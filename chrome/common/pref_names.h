@@ -575,10 +575,6 @@ inline constexpr char kStartupBrowserWindowLaunchSuppressed[] =
 inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
     "extensions_api.login.data_for_next_login_attempt";
 
-// String containing last RSU lookup key uploaded. Empty until first upload.
-inline constexpr char kLastRsuDeviceIdUploaded[] =
-    "rsu.last_rsu_device_id_uploaded";
-
 // Int64 pref indicating the time in microseconds since Windows epoch when the
 // timer for update required which will block user session was started. If the
 // timer is not started the pref holds the default value base::Time().

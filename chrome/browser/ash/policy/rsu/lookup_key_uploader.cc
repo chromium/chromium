@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -46,7 +46,7 @@ void LookupKeyUploader::OnStoreLoaded(CloudPolicyStore* store) {
   if (policy_data && policy_data->has_client_action_required() &&
       policy_data->client_action_required().enrollment_certificate_needed()) {
     // We clear it in the case when this lookup key was uploaded earlier.
-    prefs_->SetString(prefs::kLastRsuDeviceIdUploaded, std::string());
+    prefs_->SetString(ash::prefs::kLastRsuDeviceIdUploaded, std::string());
     needs_upload_ = true;
   }
   if (!needs_upload_)
@@ -90,8 +90,10 @@ void LookupKeyUploader::OnRsuDeviceIdReceived(
   std::string encoded_rsu_device_id = base::Base64Encode(rsu_device_id);
 
   // If this ID was uploaded previously -- we are not uploading it.
-  if (rsu_device_id == prefs_->GetString(prefs::kLastRsuDeviceIdUploaded))
+  if (rsu_device_id ==
+      prefs_->GetString(ash::prefs::kLastRsuDeviceIdUploaded)) {
     return;
+  }
   certificate_uploader_->ObtainAndUploadCertificate(
       base::BindOnce(&LookupKeyUploader::OnEnrollmentCertificateUploaded,
                      weak_factory_.GetWeakPtr(), encoded_rsu_device_id));
@@ -110,7 +112,8 @@ void LookupKeyUploader::Result(const std::string& encoded_uploaded_key,
                                bool success) {
   last_upload_time_ = clock_->Now();
   if (success) {
-    prefs_->SetString(prefs::kLastRsuDeviceIdUploaded, encoded_uploaded_key);
+    prefs_->SetString(ash::prefs::kLastRsuDeviceIdUploaded,
+                      encoded_uploaded_key);
     return;
   }
   // Reschedule upload on fail.
