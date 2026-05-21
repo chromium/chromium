@@ -84,6 +84,7 @@ TEST_F(TouchEventTest,
   TouchEvent* event = EventWithDispatchType(
       WebInputEvent::DispatchType::kListenersNonBlockingPassive);
   event->SetHandlingPassive(Event::PassiveMode::kPassiveForcedDocumentLevel);
+  event->SetTrusted(true);
 
   EXPECT_THAT(Messages(), ElementsAre());
   event->preventDefault();

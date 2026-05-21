@@ -110,6 +110,12 @@ bool TouchEvent::IsTouchEvent() const {
 void TouchEvent::preventDefault() {
   UIEventWithKeyState::preventDefault();
 
+  if (!IsFullyTrusted()) {
+    // The messages below should only be sent for implementation-created
+    // events, not for script-created ones.
+    return;
+  }
+
   // A common developer error is to wait too long before attempting to stop
   // scrolling by consuming a touchmove event. Generate an error if this
   // event is uncancelable.

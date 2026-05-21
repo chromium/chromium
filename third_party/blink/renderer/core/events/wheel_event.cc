@@ -146,6 +146,12 @@ bool WheelEvent::IsWheelEvent() const {
 void WheelEvent::preventDefault() {
   MouseEvent::preventDefault();
 
+  if (!IsFullyTrusted()) {
+    // The messages below should only be sent for implementation-created
+    // events, not for script-created ones.
+    return;
+  }
+
   PassiveMode passive_mode = HandlingPassive();
   if (passive_mode == PassiveMode::kPassiveForcedDocumentLevel) {
     String id = "PreventDefaultPassive";
