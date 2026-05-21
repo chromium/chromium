@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_LOCATION_BAR_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_LOCATION_BAR_H_
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -16,6 +19,7 @@
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/mouse_constants.h"
 
@@ -44,7 +48,8 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::OmniboxViewStatePtr update) override;
 
   // Called from WebUIToolbarWebView:
-  void OnOmniboxAction(toolbar_ui_api::mojom::OmniboxActionPtr action);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
+      toolbar_ui_api::mojom::OmniboxActionPtr action);
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,
@@ -131,11 +136,6 @@ class WebUILocationBar : public LocationBar,
   bool ShouldShowAddContextButton();
 
   void OnMovedOrShown(ui::TrackedElement* element);
-  void OnOmniboxFocusChange(
-      const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);
-  void OnOmniboxTextInput(
-      const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input);
-  void OnOmniboxKey(const toolbar_ui_api::mojom::OmniboxActionKey& key);
 
   void UpdateLocationBarFlagsState();
 

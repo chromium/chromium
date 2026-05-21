@@ -13,6 +13,7 @@
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/events/event_constants.h"
 
 class MetricsReporter;
 
@@ -43,17 +44,22 @@ class BrowserControlsService
   // browser_controls_api::mojom::BrowserControlsService:
   ReloadFromClickResult ReloadFromClick(
       bool bypass_cache,
-      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
+      const std::vector<mojom::EventDispositionFlag>& click_flags) override;
   StopLoadResult StopLoad() override;
   BackResult Back(
-      const std::vector<mojom::ClickDispositionFlag>& flags) override;
+      const std::vector<mojom::EventDispositionFlag>& flags) override;
   ForwardResult Forward(
-      const std::vector<mojom::ClickDispositionFlag>& flags) override;
+      const std::vector<mojom::EventDispositionFlag>& flags) override;
   BackButtonHoveredResult BackButtonHovered() override;
   SplitActiveTabResult SplitActiveTab() override;
   NavigateHomeResult NavigateHome(
-      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
+      const std::vector<mojom::EventDispositionFlag>& click_flags) override;
   NavigateResult Navigate(const GURL& url) override;
+
+  static base::expected<ui::EventFlags, mojo_base::mojom::ErrorPtr>
+  ToUiEventFlags(
+      const std::vector<browser_controls_api::mojom::EventDispositionFlag>&
+          flags);
 
  private:
   // Callback for `MetricsReporter::Measure()`. Records the resulting

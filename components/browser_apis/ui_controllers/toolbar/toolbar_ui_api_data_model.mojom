@@ -4,6 +4,7 @@
 
 module toolbar_ui_api.mojom;
 
+import "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -122,12 +123,16 @@ struct OmniboxActionTextInput {
 };
 
 struct OmniboxActionKey {
-  // For now this is just key down, but will likely be more in the future.
+  // True if this is a key down event, false if it's key up.
+  bool is_key_down = true;
 
   // KeyboardEvent.key of the event; nothing else should be stored in this
   // field.
   string key;
   gfx.mojom.Range selection;
+
+  // Modifier keys held during event.
+  array<browser_controls_api.mojom.EventDispositionFlag> modifiers;
 };
 
 union OmniboxAction {

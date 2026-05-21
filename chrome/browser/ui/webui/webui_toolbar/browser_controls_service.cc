@@ -32,45 +32,50 @@ constexpr char kInputToStopMouseReleaseHistogram[] =
 using Code = mojo_base::mojom::Code;
 using Error = mojo_base::mojom::Error;
 
-// TODO: this should be moved to a helper class so that we can unit test it.
-base::expected<int, mojo_base::mojom::ErrorPtr> ToUIEventFlags(
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+}  // namespace
+
+namespace browser_controls_api {
+
+// static
+base::expected<ui::EventFlags, mojo_base::mojom::ErrorPtr>
+BrowserControlsService::ToUiEventFlags(
+    const std::vector<browser_controls_api::mojom::EventDispositionFlag>&
         flags) {
-  using browser_controls_api::mojom::ClickDispositionFlag;
-  int event_flags = 0;
+  using browser_controls_api::mojom::EventDispositionFlag;
+  ui::EventFlags event_flags = 0;
   for (auto& flag : flags) {
     switch (flag) {
-      case ClickDispositionFlag::kMiddleMouseButton: {
+      case EventDispositionFlag::kMiddleMouseButton: {
         event_flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
         break;
       }
-      case ClickDispositionFlag::kAltKeyDown: {
+      case EventDispositionFlag::kAltKeyDown: {
         event_flags |= ui::EF_ALT_DOWN;
         break;
       }
-      case ClickDispositionFlag::kMetaKeyDown: {
+      case EventDispositionFlag::kMetaKeyDown: {
         event_flags |= ui::EF_COMMAND_DOWN;
         break;
       }
-      case ClickDispositionFlag::kShiftKeyDown: {
+      case EventDispositionFlag::kShiftKeyDown: {
         event_flags |= ui::EF_SHIFT_DOWN;
         break;
       }
-      case ClickDispositionFlag::kControlKeyDown: {
+      case EventDispositionFlag::kControlKeyDown: {
         event_flags |= ui::EF_CONTROL_DOWN;
         break;
       }
-      case ClickDispositionFlag::kUnspecified:
+      case EventDispositionFlag::kAltGrKeyDown: {
+        event_flags |= ui::EF_ALTGR_DOWN;
+        break;
+      }
+      case EventDispositionFlag::kUnspecified:
         return base::unexpected(Error::New(
-            Code::kInvalidArgument, "invalid click disposition flag received"));
+            Code::kInvalidArgument, "invalid event disposition flag received"));
     }
   }
   return event_flags;
 }
-
-}  // namespace
-
-namespace browser_controls_api {
 
 BrowserControlsService::BrowserControlsService(
     mojo::PendingReceiver<mojom::BrowserControlsService> service,
@@ -89,7 +94,7 @@ BrowserControlsService::~BrowserControlsService() = default;
 BrowserControlsService::ReloadFromClickResult
 BrowserControlsService::ReloadFromClick(
     bool bypass_cache,
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+    const std::vector<browser_controls_api::mojom::EventDispositionFlag>&
         click_flags) {
   // This is called in order to signal that external protocol dialogs are
   // allowed to show due to a user action, which are likely to happen on the
@@ -102,7 +107,7 @@ BrowserControlsService::ReloadFromClick(
     delegate_->PermitLaunchUrl();
   }
 
-  ASSIGN_OR_RETURN(auto converted, ToUIEventFlags(click_flags));
+  ASSIGN_OR_RETURN(auto converted, ToUiEventFlags(click_flags));
 
   browser_adapter_->Reload(bypass_cache,
                            ui::DispositionFromEventFlags(converted));
@@ -137,17 +142,17 @@ BrowserControlsService::StopLoadResult BrowserControlsService::StopLoad() {
 }
 
 BrowserControlsService::BackResult BrowserControlsService::Back(
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+    const std::vector<browser_controls_api::mojom::EventDispositionFlag>&
         flags) {
-  ASSIGN_OR_RETURN(auto converted, ToUIEventFlags(flags));
+  ASSIGN_OR_RETURN(auto converted, ToUiEventFlags(flags));
   browser_adapter_->Back(ui::DispositionFromEventFlags(converted));
   return std::monostate();
 }
 
 BrowserControlsService::ForwardResult BrowserControlsService::Forward(
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+    const std::vector<browser_controls_api::mojom::EventDispositionFlag>&
         flags) {
-  ASSIGN_OR_RETURN(auto converted, ToUIEventFlags(flags));
+  ASSIGN_OR_RETURN(auto converted, ToUiEventFlags(flags));
   browser_adapter_->Forward(ui::DispositionFromEventFlags(converted));
   return std::monostate();
 }
@@ -167,9 +172,9 @@ BrowserControlsService::SplitActiveTab() {
 }
 
 BrowserControlsService::NavigateHomeResult BrowserControlsService::NavigateHome(
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+    const std::vector<browser_controls_api::mojom::EventDispositionFlag>&
         click_flags) {
-  ASSIGN_OR_RETURN(auto converted, ToUIEventFlags(click_flags));
+  ASSIGN_OR_RETURN(auto converted, ToUiEventFlags(click_flags));
   browser_adapter_->NavigateHome(ui::DispositionFromEventFlags(converted));
   return std::monostate();
 }

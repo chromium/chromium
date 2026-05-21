@@ -32,7 +32,10 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return new Promise<never>(() => {});
   }
   showContextMenu() {}
-  onOmniboxAction() {}
+  onOmniboxAction() {
+    return new Promise<never>(() => {});
+  }
+
   onPageInitialized() {}
   showContentSettingsBubble() {
     return new Promise<never>(() => {});

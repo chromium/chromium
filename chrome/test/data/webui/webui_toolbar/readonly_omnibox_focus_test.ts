@@ -4,12 +4,12 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
-import {type OmniboxAction} from 'chrome://webui-toolbar.top-chrome/app.js';
-import {type ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/readonly_omnibox.js';
+import {BrowserProxyImpl, EventDispositionFlag, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {OmniboxAction} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/readonly_omnibox.js';
 
 class MockToolbarUiHandler extends TestBrowserProxy {
   constructor() {
@@ -169,13 +169,15 @@ suite('ReadOnlyOmniboxFocus', function() {
     assertTrue(!!args[1].key);
     assertEquals(1, args[1].key.selection.start);
     assertEquals(5, args[1].key.selection.end);
+    assertEquals(true, args[1].key.isKeyDown);
     assertEquals('Escape', args[1].key.key);
+    assertArrayEquals([], args[1].key.modifiers);
 
     // Synthetic input will report the current actual state.
     omnibox.$.textInput.value = 'abcdefgh';
     omnibox.$.textInput.setSelectionRange(2, 3, 'backward');
     const inputEvent = new InputEvent('input', {
-      data: 'Does not work like this',
+      data: 'Does not look at it',
       bubbles: true,
     });
     omnibox.$.textInput.dispatchEvent(inputEvent);
@@ -188,13 +190,30 @@ suite('ReadOnlyOmniboxFocus', function() {
     assertEquals('abcdefgh', args[2].textInput.text);
     assertEquals('', args[2].textInput.inlineAutocompletion);
 
-    // Now blur.
-    other.focus();
+    const controlUp = new KeyboardEvent('keyup', {
+      key: 'Control',
+      bubbles: true,
+      shiftKey: true,
+    });
+    omnibox.$.textInput.dispatchEvent(controlUp);
+    await microtasksFinished();
     assertEquals(4, uiHandler.getCallCount('onOmniboxAction'));
     args = uiHandler.getArgs('onOmniboxAction');
-    assertTrue(!!args[3].focusChange);
-    assertFalse(args[3].focusChange.hasFocus);
-    assertEquals(3, args[3].focusChange.selection.start);
-    assertEquals(2, args[3].focusChange.selection.end);
+    assertTrue(!!args[3].key);
+    assertEquals(3, args[3].key.selection.start);
+    assertEquals(2, args[3].key.selection.end);
+    assertEquals(false, args[3].key.isKeyDown);
+    assertEquals('Control', args[3].key.key);
+    assertArrayEquals(
+        [EventDispositionFlag.kShiftKeyDown], args[3].key.modifiers);
+
+    // Now blur.
+    other.focus();
+    assertEquals(5, uiHandler.getCallCount('onOmniboxAction'));
+    args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[4].focusChange);
+    assertFalse(args[4].focusChange.hasFocus);
+    assertEquals(3, args[4].focusChange.selection.start);
+    assertEquals(2, args[4].focusChange.selection.end);
   });
 });

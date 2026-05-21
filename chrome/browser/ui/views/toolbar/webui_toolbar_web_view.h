@@ -168,7 +168,8 @@ class WebUIToolbarWebView
   void OnHomeButtonDropUrl(const GURL& url) override;
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
-  void OnOmniboxAction(toolbar_ui_api::mojom::OmniboxActionPtr action) override;
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
+      toolbar_ui_api::mojom::OmniboxActionPtr action) override;
   void ShowAvatarMenu() override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
@@ -319,6 +320,8 @@ class WebUIToolbarWebView
   WebUISplitTabsControl split_tabs_control_;
   WebUIHomeControl home_control_;
   WebUIAvatarToolbarButton avatar_control_;
+  // This is null if WebUILocationBar is off, or the window is in one of the
+  // modes (e.g. popup) that don't use it yet.
   std::unique_ptr<WebUILocationBar> location_bar_;
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;

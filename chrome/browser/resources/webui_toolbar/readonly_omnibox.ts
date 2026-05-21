@@ -12,6 +12,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './readonly_omnibox.css.js';
 import {getHtml} from './readonly_omnibox.html.js';
+import {getEventDispositionFlags} from './toolbar_button.js';
 import type {OmniboxTextPortion} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -65,6 +66,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('blur', this.onInputBlur.bind(this));
     textInput.addEventListener('input', this.onInputInput.bind(this));
     textInput.addEventListener('keydown', this.onInputKeyDown.bind(this));
+    textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
   }
 
   override updated(changedProperties: PropertyValues<this>): void {
@@ -220,9 +222,27 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       key: {
         key: event.key,
+        isKeyDown: true,
         selection: this.getSelection(),
+        modifiers: getEventDispositionFlags(event),
       },
     });
+  }
+
+  private onInputKeyUp(event: KeyboardEvent): void {
+    // OmniboxEditModel keeps track of state of control key separately, and
+    // needs to be notified of its releases. Everything else is handled on
+    // keydown.
+    if (event.key === 'Control') {
+      this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+        key: {
+          key: event.key,
+          isKeyDown: false,
+          selection: this.getSelection(),
+          modifiers: getEventDispositionFlags(event),
+        },
+      });
+    }
   }
 
   private getSelection(): MojomRange {

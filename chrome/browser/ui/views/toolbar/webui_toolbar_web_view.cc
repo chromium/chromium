@@ -445,7 +445,7 @@ void WebUIToolbarWebView::HandleContextMenu(
       pinned_toolbar_actions_.HandleContextMenu(menu_type, screen_rect, source);
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kUnspecified:
-      NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
+      NOTREACHED() << "Unexpected ContextMenuType::kUnspecified.";
   }
 }
 
@@ -485,10 +485,15 @@ void WebUIToolbarWebView::InvokePinnedToolbarAction(
   pinned_toolbar_actions_.Invoke(action_id);
 }
 
-void WebUIToolbarWebView::OnOmniboxAction(
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+WebUIToolbarWebView::OnOmniboxAction(
     toolbar_ui_api::mojom::OmniboxActionPtr action) {
   if (location_bar_) {
-    location_bar_->OnOmniboxAction(std::move(action));
+    return location_bar_->OnOmniboxAction(std::move(action));
+  } else {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        Code::kFailedPrecondition,
+        "WebUIToolbarWebView: null location_bar_ for OnOmniboxAction"));
   }
 }
 

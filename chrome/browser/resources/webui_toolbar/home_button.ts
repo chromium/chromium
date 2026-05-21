@@ -13,7 +13,7 @@ import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './home_button.css.js';
 import {getHtml} from './home_button.html.js';
-import {getClickDispositionFlags, getContextMenuPosition, PressHandler} from './toolbar_button.js';
+import {getContextMenuPosition, getEventDispositionFlags, PressHandler} from './toolbar_button.js';
 import type {HomeControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class HomeButtonElement extends CrLitElement {
@@ -58,7 +58,7 @@ export class HomeButtonElement extends CrLitElement {
   }
 
   private onShortPress_(e: MouseEvent) {
-    const flags = getClickDispositionFlags(e);
+    const flags = getEventDispositionFlags(e);
     this.browserProxy_.browserControlsHandler.navigateHome(flags);
   }
 

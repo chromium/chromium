@@ -5,7 +5,7 @@
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 
-import {ClickDispositionFlag} from './browser_proxy.js';
+import {EventDispositionFlag} from './browser_proxy.js';
 import {TimerHelper} from './timer_helper.js';
 
 export const BUTTON_LEFT = 0;
@@ -13,7 +13,7 @@ export const BUTTON_MIDDLE = 1;
 export const BUTTON_RIGHT = 2;
 
 
-export interface GetClickDispositionFlagsOptions {
+export interface GetEventDispositionFlagsOptions {
   ignoreCtrlKey?: boolean;
   ignoreShiftKey?: boolean;
 }
@@ -304,24 +304,29 @@ export function getContextMenuSourceType(e: Event): MenuSourceType {
   return MenuSourceType.kMouse;
 }
 
-export function getClickDispositionFlags(
-    e: MouseEvent,
-    options: GetClickDispositionFlagsOptions = {}): ClickDispositionFlag[] {
-  const flags: ClickDispositionFlag[] = [];
-  if (e.button === BUTTON_MIDDLE) {
-    flags.push(ClickDispositionFlag.kMiddleMouseButton);
+export function getEventDispositionFlags(
+    e: MouseEvent|KeyboardEvent,
+    options: GetEventDispositionFlagsOptions = {}): EventDispositionFlag[] {
+  const flags: EventDispositionFlag[] = [];
+  if (e instanceof MouseEvent) {
+    if (e.button === BUTTON_MIDDLE) {
+      flags.push(EventDispositionFlag.kMiddleMouseButton);
+    }
   }
   if (e.altKey) {
-    flags.push(ClickDispositionFlag.kAltKeyDown);
+    flags.push(EventDispositionFlag.kAltKeyDown);
   }
   if (e.ctrlKey && !options.ignoreCtrlKey) {
-    flags.push(ClickDispositionFlag.kControlKeyDown);
+    flags.push(EventDispositionFlag.kControlKeyDown);
   }
   if (e.metaKey) {
-    flags.push(ClickDispositionFlag.kMetaKeyDown);
+    flags.push(EventDispositionFlag.kMetaKeyDown);
   }
   if (e.shiftKey && !options.ignoreShiftKey) {
-    flags.push(ClickDispositionFlag.kShiftKeyDown);
+    flags.push(EventDispositionFlag.kShiftKeyDown);
+  }
+  if (e.getModifierState('AltGraph')) {
+    flags.push(EventDispositionFlag.kAltGrKeyDown);
   }
   return flags;
 }

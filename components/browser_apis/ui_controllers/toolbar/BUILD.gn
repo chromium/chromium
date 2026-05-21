@@ -24,6 +24,7 @@ mojom("mojom_data_model") {
 
   # Dependencies on other mojom targets.
   public_deps = [
+    "//components/browser_apis/browser_controls:mojom_data_model",
     "//components/content_settings/core/common:content_settings_types",
     "//mojo/public/mojom/base",
     "//ui/gfx/range/mojom",

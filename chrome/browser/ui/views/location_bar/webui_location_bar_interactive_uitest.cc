@@ -35,6 +35,7 @@
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClassicPopupWebViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 
@@ -156,17 +157,26 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
 
   auto FakeKeyDownAt(ui::ElementIdentifier webcontents_id,
                      const WebContentsInteractionTestUtil::DeepQuery& where,
-                     std::string_view key) {
+                     std::string_view key,
+                     bool shift = false,
+                     bool control = false,
+                     bool alt = false,
+                     bool command = false) {
     const char kTemplate[] = R"(
       (el) => {
         const ev = new KeyboardEvent('keydown', {
-          key: $1
+          key: $1,
+          shiftKey: $2,
+          ctrlKey: $3,
+          altKey: $4,
+          metaKey: $5,
         });
         el.dispatchEvent(ev);
       }
     )";
-    return ExecuteJsAt(webcontents_id, where,
-                       content::JsReplace(kTemplate, key));
+    return ExecuteJsAt(
+        webcontents_id, where,
+        content::JsReplace(kTemplate, key, shift, control, alt, command));
   }
 
   auto WaitTillOmniboxViewText(std::string_view expected_text) {
@@ -404,4 +414,31 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, InlineSuggestion) {
 
       // Removing the focus should hide the popup.
       RemoveFocusFromPopup());
+}
+
+// Use Ctrl-Alt-Enter to append www. and .com to URL and open it in new tab.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, Modifiers) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      // Shouldn't have a popup visible yet.
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Type some text, it should show up. We include the schema to make
+      // sure we always end up with https://.
+      EnterText(kOmniboxElementId, u"https://google"),
+      WaitForClassicPopupReady(), WaitTillOmniboxViewText("https://google"),
+      // Omnibox needs to see Ctrl pressed down, not just as modifier, to
+      // append stuff around it.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "Control"),
+      InstrumentNextTab(kSecondTabId),
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "Enter",
+                    /*shift=*/false, /*control=*/true,
+                    /*alt=*/true, /*command=*/false),
+      WaitForWebContentsNavigation(kSecondTabId,
+                                   GURL("https://www.google.com")));
 }

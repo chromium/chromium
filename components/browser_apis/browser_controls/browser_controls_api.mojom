@@ -28,25 +28,25 @@ interface BrowserControlsService {
   // whether the reload is a bypass_cache reload, and will not be passed via
   // `click_flags`.
   ReloadFromClick(
-      bool bypass_cache, array<ClickDispositionFlag> click_flags)
+      bool bypass_cache, array<EventDispositionFlag> click_flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Enters split view mode for the active tab. Only called when not in split.
   SplitActiveTab() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates back.
-  Back(array<ClickDispositionFlag> flags)
+  Back(array<EventDispositionFlag> flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates forward.
-  Forward(array<ClickDispositionFlag> flags)
+  Forward(array<EventDispositionFlag> flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Notifies that the back button was hovered.
   BackButtonHovered() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates to the user's home page.
-  NavigateHome(array<ClickDispositionFlag> click_flags)
+  NavigateHome(array<EventDispositionFlag> click_flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates the current tab to `url`.

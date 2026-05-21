@@ -19,7 +19,7 @@ import {MetricsRecorder} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
 import {TimerHelper} from './timer_helper.js';
-import {BUTTON_LEFT, BUTTON_RIGHT, getClickDispositionFlags, getContextMenuPosition, PressHandler} from './toolbar_button.js';
+import {BUTTON_LEFT, BUTTON_RIGHT, getContextMenuPosition, getEventDispositionFlags, PressHandler} from './toolbar_button.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';
@@ -135,7 +135,7 @@ export class ReloadButtonElement extends CrLitElement {
       // bypassed.
       this.browserProxy_.browserControlsHandler.reloadFromClick(
           /*bypass_cache=*/ e.shiftKey || e.ctrlKey,
-          getClickDispositionFlags(
+          getEventDispositionFlags(
               e, {ignoreCtrlKey: true, ignoreShiftKey: true}));
     }
 

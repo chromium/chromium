@@ -13,7 +13,7 @@ import {getCss} from './back_forward_button.css.js';
 import {getHtml} from './back_forward_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BackForwardButtonState, BrowserProxy} from './browser_proxy.js';
-import {getClickDispositionFlags, getContextMenuPosition, PressHandler} from './toolbar_button.js';
+import {getContextMenuPosition, getEventDispositionFlags, PressHandler} from './toolbar_button.js';
 
 export class BackForwardButtonElement extends CrLitElement {
   static get is() {
@@ -59,7 +59,7 @@ export class BackForwardButtonElement extends CrLitElement {
   }
 
   private onShortPress_(e: MouseEvent) {
-    const flags = getClickDispositionFlags(e);
+    const flags = getEventDispositionFlags(e);
     if (this.direction === 'back') {
       this.browserProxy_.browserControlsHandler.back(flags);
     } else {

@@ -50,11 +50,11 @@ constexpr char kInputToStopMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
 #if BUILDFLAG(IS_MAC)
-constexpr mojom::ClickDispositionFlag control_or_meta_disposition =
-    browser_controls_api::mojom::ClickDispositionFlag::kMetaKeyDown;
+constexpr mojom::EventDispositionFlag control_or_meta_disposition =
+    browser_controls_api::mojom::EventDispositionFlag::kMetaKeyDown;
 #else
-constexpr mojom::ClickDispositionFlag control_or_meta_disposition =
-    browser_controls_api::mojom::ClickDispositionFlag::kControlKeyDown;
+constexpr mojom::EventDispositionFlag control_or_meta_disposition =
+    browser_controls_api::mojom::EventDispositionFlag::kControlKeyDown;
 #endif  // BUILDFLAG(IS_MAC)
 
 class MockBrowserControlsServiceDelegate
@@ -132,7 +132,7 @@ TEST_F(BrowserControlsServiceReloadTest, ReloadWithMiddleMouseButton) {
 
   std::ignore = service().ReloadFromClick(
       /*bypass_cache=*/false,
-      /*click_flags=*/{mojom::ClickDispositionFlag::kMiddleMouseButton});
+      /*click_flags=*/{mojom::EventDispositionFlag::kMiddleMouseButton});
 
   EXPECT_EQ(IDC_RELOAD, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
@@ -185,7 +185,7 @@ TEST_F(BrowserControlsServiceTest, Back_CurrentTab) {
 // command with NEW_BACKGROUND_TAB.
 TEST_F(BrowserControlsServiceTest, Back_MiddleClick) {
   std::ignore = service().Back(
-      {browser_controls_api::mojom::ClickDispositionFlag::kMiddleMouseButton});
+      {browser_controls_api::mojom::EventDispositionFlag::kMiddleMouseButton});
   EXPECT_EQ(IDC_BACK, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
             toy_browser().received_commands().back().disposition);
@@ -205,7 +205,7 @@ TEST_F(BrowserControlsServiceTest, Back_MetaOrCtrlClick) {
 // with NEW_WINDOW.
 TEST_F(BrowserControlsServiceTest, Back_ShiftClick) {
   std::ignore = service().Back(
-      {browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown});
+      {browser_controls_api::mojom::EventDispositionFlag::kShiftKeyDown});
   EXPECT_EQ(IDC_BACK, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW,
             toy_browser().received_commands().back().disposition);
@@ -224,7 +224,7 @@ TEST_F(BrowserControlsServiceTest, Forward_CurrentTab) {
 // command with NEW_BACKGROUND_TAB.
 TEST_F(BrowserControlsServiceTest, Forward_MiddleClick) {
   std::ignore = service().Forward(
-      {browser_controls_api::mojom::ClickDispositionFlag::kMiddleMouseButton});
+      {browser_controls_api::mojom::EventDispositionFlag::kMiddleMouseButton});
   EXPECT_EQ(IDC_FORWARD, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
             toy_browser().received_commands().back().disposition);
@@ -244,7 +244,7 @@ TEST_F(BrowserControlsServiceTest, Forward_MetaOrCtrlClick) {
 // command with NEW_WINDOW.
 TEST_F(BrowserControlsServiceTest, Forward_ShiftClick) {
   std::ignore = service().Forward(
-      {browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown});
+      {browser_controls_api::mojom::EventDispositionFlag::kShiftKeyDown});
   EXPECT_EQ(IDC_FORWARD, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW,
             toy_browser().received_commands().back().disposition);
@@ -270,7 +270,7 @@ TEST_F(BrowserControlsServiceTest, NavigateHome_CurrentTab) {
 // IDC_HOME command with NEW_BACKGROUND_TAB.
 TEST_F(BrowserControlsServiceTest, NavigateHome_MiddleClick) {
   std::ignore = service().NavigateHome(
-      {browser_controls_api::mojom::ClickDispositionFlag::kMiddleMouseButton});
+      {browser_controls_api::mojom::EventDispositionFlag::kMiddleMouseButton});
   EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
             toy_browser().received_commands().back().disposition);
@@ -290,7 +290,7 @@ TEST_F(BrowserControlsServiceTest, NavigateHome_MetaOrCtrlClick) {
 // and the Shift key executes the IDC_HOME command with NEW_FOREGROUND_TAB.
 TEST_F(BrowserControlsServiceTest, NavigateHome_MetaOrCtrlShiftClick) {
   std::ignore = service().NavigateHome({
-      browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown,
+      browser_controls_api::mojom::EventDispositionFlag::kShiftKeyDown,
       control_or_meta_disposition,
   });
   EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
@@ -302,7 +302,7 @@ TEST_F(BrowserControlsServiceTest, NavigateHome_MetaOrCtrlShiftClick) {
 // command with NEW_WINDOW.
 TEST_F(BrowserControlsServiceTest, NavigateHome_ShiftClick) {
   std::ignore = service().NavigateHome(
-      {browser_controls_api::mojom::ClickDispositionFlag::kShiftKeyDown});
+      {browser_controls_api::mojom::EventDispositionFlag::kShiftKeyDown});
   EXPECT_EQ(IDC_HOME, toy_browser().received_commands().back().command_id);
   EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW,
             toy_browser().received_commands().back().disposition);
@@ -314,6 +314,52 @@ TEST_F(BrowserControlsServiceTest, Navigate) {
   std::ignore = service().Navigate(test_url);
   EXPECT_EQ(1ul, toy_browser().received_urls().size());
   EXPECT_EQ(test_url, toy_browser().received_urls().back());
+}
+
+TEST_F(BrowserControlsServiceTest, EventFlagsConversion) {
+  using browser_controls_api::mojom::EventDispositionFlag;
+  constexpr auto kTests = std::to_array<std::pair<EventDispositionFlag, int>>(
+      {{EventDispositionFlag::kMiddleMouseButton, ui::EF_MIDDLE_MOUSE_BUTTON},
+       {EventDispositionFlag::kAltKeyDown, ui::EF_ALT_DOWN},
+       {EventDispositionFlag::kMetaKeyDown, ui::EF_COMMAND_DOWN},
+       {EventDispositionFlag::kShiftKeyDown, ui::EF_SHIFT_DOWN},
+       {EventDispositionFlag::kControlKeyDown, ui::EF_CONTROL_DOWN},
+       {EventDispositionFlag::kAltGrKeyDown, ui::EF_ALTGR_DOWN}});
+
+  for (const auto& testcase : kTests) {
+    SCOPED_TRACE(testcase.first);
+    // Test individual flag.
+    {
+      auto result = BrowserControlsService::ToUiEventFlags({testcase.first});
+      ASSERT_TRUE(result.has_value());
+      EXPECT_EQ(*result, testcase.second);
+    }
+
+    // Also in combinations.
+    {
+      auto result = BrowserControlsService::ToUiEventFlags(
+          {testcase.first, EventDispositionFlag::kAltKeyDown});
+      ASSERT_TRUE(result.has_value());
+      EXPECT_EQ(*result, testcase.second | ui::EF_ALT_DOWN);
+    }
+
+    {
+      auto result = BrowserControlsService::ToUiEventFlags(
+          {testcase.first, EventDispositionFlag::kAltKeyDown,
+           EventDispositionFlag::kMiddleMouseButton});
+      ASSERT_TRUE(result.has_value());
+      EXPECT_EQ(*result,
+                testcase.second | ui::EF_ALT_DOWN | ui::EF_MIDDLE_MOUSE_BUTTON);
+    }
+
+    // Now throw in kUnspecified.
+    {
+      auto result = BrowserControlsService::ToUiEventFlags(
+          {testcase.first, EventDispositionFlag::kUnspecified});
+      ASSERT_FALSE(result.has_value());
+      EXPECT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+    }
+  }
 }
 
 }  // namespace

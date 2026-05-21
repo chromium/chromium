@@ -201,28 +201,6 @@ void LogOmniboxFocusToCutOrCopyAllTextTime(
   }
 }
 
-const char kOpenMatchWithKeyboardModifiersMetricName[] =
-    "Omnibox.OpenMatchWithKeyboardModifiers";
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(OpenMatchWithKeyboardModifiers)
-enum class OpenMatchWithKeyboardModifiers {
-  kNoModifier = 0,
-  kCtrl = 1,
-  kAlt = 2,
-  kCtrlAlt = 3,
-  kShiftCommand = 4,
-  kCtrlShiftCommand = 5,
-  kAltShift = 6,
-  kCtrlAltShift = 7,
-  kCommand = 8,
-  kCtrlCommand = 9,
-  kShift = 10,
-  kCtrlShift = 11,
-  kMaxValue = kCtrlShift,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OpenMatchWithKeyboardModifiers)
-
 }  // namespace
 
 // OmniboxState ---------------------------------------------------------------
@@ -2110,35 +2088,10 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
           return true;
         }
       }
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
-      OpenMatchWithKeyboardModifiers metric_value;
-      if (alt && !shift) {
-        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAlt
-                               : OpenMatchWithKeyboardModifiers::kAlt;
-        disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      } else if (shift && command) {
-        metric_value = control
-                           ? OpenMatchWithKeyboardModifiers::kCtrlShiftCommand
-                           : OpenMatchWithKeyboardModifiers::kShiftCommand;
-        disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      } else if (alt && shift) {
-        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAltShift
-                               : OpenMatchWithKeyboardModifiers::kAltShift;
-        disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-      } else if (command && !shift) {
-        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlCommand
-                               : OpenMatchWithKeyboardModifiers::kCommand;
-        disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-      } else if (shift && !alt) {
-        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlShift
-                               : OpenMatchWithKeyboardModifiers::kShift;
-        disposition = WindowOpenDisposition::NEW_WINDOW;
-      } else {
-        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrl
-                               : OpenMatchWithKeyboardModifiers::kNoModifier;
-      }
-      base::UmaHistogramEnumeration(kOpenMatchWithKeyboardModifiersMetricName,
-                                    metric_value);
+
+      WindowOpenDisposition disposition =
+          ComputeOpenDispositionFromModifiersAndLogToUma(shift, control, alt,
+                                                         command);
       if (controller()->IsPopupOpen() && !control) {
         // Normal case of pressing <return> when the popup is open.
         controller()->edit_model()->OpenCurrentSelection(event.time_stamp(),

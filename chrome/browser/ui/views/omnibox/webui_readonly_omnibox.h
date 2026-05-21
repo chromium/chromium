@@ -11,14 +11,17 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/range/range.h"
 
@@ -50,6 +53,8 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   void SaveStateToTab(content::WebContents* tab);
   void OnTabChanged(const content::WebContents* web_contents);
   void ResetTabState(content::WebContents* web_contents);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
+      toolbar_ui_api::mojom::OmniboxActionPtr action);
 
   // Updates the state of the display stored in `this` OmniboxView. Doesn't
   // notify the OmniboxEditModel or the WebUI end.
@@ -97,6 +102,13 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
  private:
   void RequestUpdateWebUI();
   void ResetFormatting();
+
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnFocusChange(
+      const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnTextInput(
+      const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnKey(
+      const toolbar_ui_api::mojom::OmniboxActionKey& key);
 
   raw_ref<UpdatePropagator> update_propagator_;
 

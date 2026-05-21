@@ -121,63 +121,12 @@ void WebUILocationBar::PropagateOmniboxUpdate(
   toolbar_delegate_->OnOmniboxViewStateChanged(std::move(omnibox_state));
 }
 
-void WebUILocationBar::OnOmniboxAction(
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+WebUILocationBar::OnOmniboxAction(
     toolbar_ui_api::mojom::OmniboxActionPtr action) {
-  switch (action->which()) {
-    case toolbar_ui_api::mojom::OmniboxAction::Tag::kFocusChange:
-      OnOmniboxFocusChange(*action->get_focus_change());
-      break;
-    case toolbar_ui_api::mojom::OmniboxAction::Tag::kTextInput:
-      OnOmniboxTextInput(*action->get_text_input());
-      break;
-    case toolbar_ui_api::mojom::OmniboxAction::Tag::kKey:
-      OnOmniboxKey(*action->get_key());
-      break;
-  }
-
+  auto result = omnibox_view_->OnOmniboxAction(std::move(action));
   UpdateLocationBarFlagsState();
-}
-
-void WebUILocationBar::OnOmniboxFocusChange(
-    const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
-  if (focus_change.has_focus) {
-    // TODO(crbug.com/500653057): Key state, though Views impl doesn't have it.
-    omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
-  } else {
-    omnibox_controller_->edit_model()->OnKillFocus();
-    if (auto* popup_closer =
-            omnibox_controller_->client()->GetOmniboxPopupCloser()) {
-      popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
-    }
-  }
-}
-
-void WebUILocationBar::OnOmniboxTextInput(
-    const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input) {
-  omnibox_view_->OnBeforePossibleChange();
-  omnibox_view_->SetTextAndSelectedRange(text_input.text,
-                                         text_input.inline_autocompletion,
-                                         gfx::Range(text_input.text.size()));
-  omnibox_view_->OnAfterPossibleChange(/*allow_keyword_ui_change=*/true);
-}
-
-void WebUILocationBar::OnOmniboxKey(
-    const toolbar_ui_api::mojom::OmniboxActionKey& key) {
-  // TODO(crbug.com/500653057): Handle modifier keys.
-  // TODO(crbug.com/500653057): Convert to DomKey (with some caching
-  // since the converter is slow) once the JS end is more selective about
-  // what it sends.
-  if (key.key == "Enter") {
-    omnibox_controller_->edit_model()->OpenCurrentSelection(
-        base::TimeTicks::Now(), WindowOpenDisposition::CURRENT_TAB,
-        /*via_keyboard=*/true);
-  } else if (key.key == "Escape") {
-    omnibox_controller_->edit_model()->OnEscapeKeyPressed();
-  } else if (key.key == "ArrowUp") {
-    omnibox_controller_->edit_model()->OnUpOrDownPressed(false, false);
-  } else if (key.key == "ArrowDown") {
-    omnibox_controller_->edit_model()->OnUpOrDownPressed(true, false);
-  }
+  return result;
 }
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
@@ -190,7 +139,8 @@ void WebUILocationBar::FocusSearch() {
 }
 
 void WebUILocationBar::UpdateFocusBehavior(bool toolbar_visible) {
-  NOTIMPLEMENTED();
+  // It doesn't seem like we need to do any adjustment, if the toolbar is
+  // invisible the right thing should happen already.
 }
 
 void WebUILocationBar::UpdateContentSettingsIcons() {
