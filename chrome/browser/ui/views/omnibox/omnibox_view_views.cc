@@ -159,10 +159,6 @@ bool IsClipboardDataMarkedAsConfidential() {
       ->IsMarkedByOriginatorAsConfidential();
 }
 
-bool IsMenuSimplificationEnabled() {
-  return base::FeatureList::IsEnabled(features::kMenuSimplification);
-}
-
 // This function provides a logging implementation that aligns with the original
 // definition of the `DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES()` macro, which is
 // currently being used to log the `FocusToOpenTimeAnyPopupState3` Omnibox
@@ -1882,20 +1878,20 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
 }
 
 bool OmniboxViewViews::SupportsEmoji() const {
-  return !IsMenuSimplificationEnabled();
+  return !features::IsMenuSimplificationEnabled();
 }
 
 #if BUILDFLAG(IS_MAC)
 bool OmniboxViewViews::SupportsEditableContextMenuItems() const {
-  return !IsMenuSimplificationEnabled();
+  return !features::IsMenuSimplificationEnabled();
 }
 
 bool OmniboxViewViews::SupportsLookUp() const {
-  return !IsMenuSimplificationEnabled();
+  return !features::IsMenuSimplificationEnabled();
 }
 
 bool OmniboxViewViews::SupportsAutoFill() const {
-  return !IsMenuSimplificationEnabled();
+  return !features::IsMenuSimplificationEnabled();
 }
 #endif  // BUILDFLAG(IS_MAC)
 
