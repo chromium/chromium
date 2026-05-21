@@ -815,7 +815,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
 }
 
 // TODO(crbug.com/469210106): Re-enable this test on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/515495117): Fix and re-enable this test on Mac.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_testCreateTabByClickingOnLink \
   DISABLED_testCreateTabByClickingOnLink
 #else
