@@ -8,7 +8,7 @@ import os
 import urllib.request
 import sys
 
-_METADATA_URL = 'https://fonts.google.com/metadata/icons?lod=MINIMAL'
+_METADATA_URL = 'https://fonts.google.com/metadata/icons/Material%20Symbols?lod=MINIMAL'
 
 
 def main():
