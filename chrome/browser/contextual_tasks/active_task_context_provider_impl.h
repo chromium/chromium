@@ -44,6 +44,9 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   void SetContextualTasksPanelController(
       ContextualTasksPanelController* contextual_tasks_panel_controller)
       override;
+  void AddLocalTabUnderline(tabs::TabHandle tab_handle) override;
+  void RemoveLocalTabUnderline(tabs::TabHandle tab_handle) override;
+  void ClearAllLocalTabUnderlines() override;
   void AddObserver(ActiveTaskContextProvider::Observer* observer) override;
   void RemoveObserver(ActiveTaskContextProvider::Observer* observer) override;
 
@@ -70,10 +73,13 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
                            std::unique_ptr<ContextualTaskContext> context);
 
   void ResetStateAndNotifyObservers();
+  void NotifyObservers();
 
   raw_ptr<BrowserWindowInterface> browser_window_;
   raw_ptr<ContextualTasksService> contextual_tasks_service_;
   raw_ptr<ContextualTasksPanelController> contextual_tasks_panel_controller_;
+  std::set<tabs::TabHandle> local_tab_underlines_;
+  std::set<tabs::TabHandle> backend_context_tabs_;
 
   // The task associated with the currently active tab.
   std::optional<base::Uuid> active_task_id_;

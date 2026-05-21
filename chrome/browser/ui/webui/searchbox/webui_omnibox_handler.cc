@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
@@ -56,6 +57,7 @@
 #include "components/omnibox/browser/searchbox.mojom-shared.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -225,8 +227,20 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
 
   searchbox_context_data->SetPendingContext(std::move(context));
 
+  auto context_token = base::UnguessableToken::Create();
+  // When a tab is selected from the NTP context menu, immediately underline
+  // it on the tabstrip (before the popup opens and before any async context
+  // uploads begin) so the user gets immediate visual feedback.
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    selected_tabs[context_token] = tab_id;
+    if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
+      active_task_context_provider->AddLocalTabUnderline(
+          tabs::TabHandle(tab_id));
+    }
+  }
+
   edit_model()->OpenAiMode(false, /*via_context_menu=*/false);
-  std::move(callback).Run(base::ok(base::UnguessableToken::Create()));
+  std::move(callback).Run(base::ok(context_token));
 }
 void WebuiOmniboxHandler::StepSelection(
     OmniboxPopupSelection::Direction direction,

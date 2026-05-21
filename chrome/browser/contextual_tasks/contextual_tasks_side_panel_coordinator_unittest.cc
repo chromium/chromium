@@ -92,6 +92,9 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
               SetContextualTasksPanelController,
               (ContextualTasksPanelController*),
               (override));
+  MOCK_METHOD(void, AddLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void, RemoveLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
 };
 
 }  // namespace

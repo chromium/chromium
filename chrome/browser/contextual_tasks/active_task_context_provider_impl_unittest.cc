@@ -338,4 +338,58 @@ TEST_F(ActiveTaskContextProviderImplTest, PrimaryPageChanged) {
   provider_->PrimaryPageChanged(tab->GetContents()->GetPrimaryPage());
 }
 
+TEST_F(ActiveTaskContextProviderImplTest, LocalTabUnderlines) {
+  tabs::TabInterface* tab1 = CreateMockTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+
+  // Add a tab and expect `onContextTabsChanged` to be called once.
+  std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  provider_->AddLocalTabUnderline(tab1->GetHandle());
+
+  // Add another tab and expect `onContextTabsChanged` to be called again.
+  expected_tabs = {tab1->GetHandle(), tab2->GetHandle()};
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  provider_->AddLocalTabUnderline(tab2->GetHandle());
+
+  // Remove one tab and expect `onContextTabsChanged` to be called again.
+  expected_tabs = {tab2->GetHandle()};
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  provider_->RemoveLocalTabUnderline(tab1->GetHandle());
+
+  // Clear all local underlines and expect that `onContextTabsChanged` to be
+  // called again.
+  EXPECT_CALL(observer_, OnContextTabsChanged(std::set<tabs::TabHandle>()))
+      .Times(1);
+  provider_->ClearAllLocalTabUnderlines();
+}
+
+TEST_F(ActiveTaskContextProviderImplTest,
+       PrimaryPageChangedClearsLocalUnderlines) {
+  tabs::TabInterface* tab = CreateMockTab();
+
+  // Mock panel controller to return nullopt session to avoid context fetching
+  // for side panel that is not being used in the test.
+  EXPECT_CALL(*contextual_tasks_panel_controller_,
+              GetSessionHandleForActiveTabOrPanel())
+      .WillRepeatedly(Return(std::make_pair(std::nullopt, nullptr)));
+
+  // Add local tab underline and expect `onContextTabsChanged` to be called.
+  std::set<tabs::TabHandle> expected_tabs = {tab->GetHandle()};
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  provider_->AddLocalTabUnderline(tab->GetHandle());
+
+  // Simulate active tab change, which should trigger `onContextTabsChanged`.
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  for (auto& observer : tab_list_observers_) {
+    observer.OnActiveTabChanged(*tab_list_, tab);
+  }
+
+  // Simulate primary page change on the active tab (navigating away from AIM to
+  // normal URL). This should clear local underlines and notify observers.
+  EXPECT_CALL(observer_, OnContextTabsChanged(std::set<tabs::TabHandle>()))
+      .Times(1);
+  provider_->PrimaryPageChanged(tab->GetContents()->GetPrimaryPage());
+}
+
 }  // namespace contextual_tasks

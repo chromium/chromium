@@ -99,6 +99,26 @@ void ActiveTaskContextProviderImpl::SetContextualTasksPanelController(
   }
 }
 
+// Local tab underlines are manual tab strip underlines that are explicitly
+// requested by clients (e.g., NTP realbox or omnibox popup searchbox handlers)
+// before a backend task has been created or is active.
+void ActiveTaskContextProviderImpl::AddLocalTabUnderline(
+    tabs::TabHandle tab_handle) {
+  local_tab_underlines_.insert(tab_handle);
+  NotifyObservers();
+}
+
+void ActiveTaskContextProviderImpl::RemoveLocalTabUnderline(
+    tabs::TabHandle tab_handle) {
+  local_tab_underlines_.erase(tab_handle);
+  NotifyObservers();
+}
+
+void ActiveTaskContextProviderImpl::ClearAllLocalTabUnderlines() {
+  local_tab_underlines_.clear();
+  NotifyObservers();
+}
+
 ActiveTaskContextProviderImpl::~ActiveTaskContextProviderImpl() {
   if (auto* tab_list_interface = TabListInterface::From(browser_window_)) {
     tab_list_interface->RemoveTabListInterfaceObserver(this);
@@ -134,6 +154,7 @@ void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
       url.host() == chrome::kChromeUIContextualTasksHost;
 
   if (!is_contextual_tasks_webui) {
+    local_tab_underlines_.clear();
     auto* helper =
         ContextualSearchWebContentsHelper::FromWebContents(web_contents());
     if (helper && helper->task_id()) {
@@ -219,12 +240,29 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
     return;
   }
 
-  if (!context) {
-    return;
+  if (context) {
+    backend_context_tabs_ = GetTabsFromContext(*context, browser_window_);
+  } else {
+    backend_context_tabs_.clear();
   }
 
-  std::set<tabs::TabHandle> tabs_to_underline =
-      GetTabsFromContext(*context, browser_window_);
+  NotifyObservers();
+}
+
+void ActiveTaskContextProviderImpl::ResetStateAndNotifyObservers() {
+  active_task_id_ = std::nullopt;
+  backend_context_tabs_.clear();
+  NotifyObservers();
+}
+
+void ActiveTaskContextProviderImpl::NotifyObservers() {
+  // Combine both the backend task context tab underlines and the local manual
+  // underlines.
+  std::set<tabs::TabHandle> tabs_to_underline = backend_context_tabs_;
+
+  for (auto handle : local_tab_underlines_) {
+    tabs_to_underline.insert(handle);
+  }
 
   // Add auto-suggested tab if chip is showing.
   if (contextual_tasks_panel_controller_ &&
@@ -238,13 +276,6 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
 
   for (auto& obs : observers_) {
     obs.OnContextTabsChanged(tabs_to_underline);
-  }
-}
-
-void ActiveTaskContextProviderImpl::ResetStateAndNotifyObservers() {
-  active_task_id_ = std::nullopt;
-  for (auto& observer : observers_) {
-    observer.OnContextTabsChanged({});
   }
 }
 
