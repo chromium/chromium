@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/media/remoting_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
 #include "media/mojo/mojom/remoting.mojom.h"
@@ -22,7 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
-class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -87,7 +87,8 @@ class MediaRemotingDialogCoordinator {
 // reference for how CastRemotingConnector and a MediaRemoter interact to
 // start/execute/stop remoting sessions.
 class CastRemotingConnector final : public base::SupportsUserData::Data,
-                                    public media::mojom::RemotingSource {
+                                    public media::mojom::RemotingSource,
+                                    public RemotingBridge::Client {
  public:
   CastRemotingConnector(const CastRemotingConnector&) = delete;
   CastRemotingConnector& operator=(const CastRemotingConnector&) = delete;
@@ -99,13 +100,6 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // |source_contents| doesn't have a valid tab ID.
   static CastRemotingConnector* Get(content::WebContents* source_contents);
 
-  // Used by ChromeContentBrowserClient to request a binding to a new
-  // Remoter for each new source in a render frame.
-  static void CreateMediaRemoter(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingRemote<media::mojom::RemotingSource> source,
-      mojo::PendingReceiver<media::mojom::Remoter> receiver);
-
   // Called at the start of mirroring to reset the permission.
   void ResetRemotingPermission();
 
@@ -115,17 +109,10 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
       mojo::PendingReceiver<media::mojom::RemotingSource> receiver);
 
  private:
-  // Allow unit tests access to the private constructor and CreateBridge()
-  // method, since unit tests don't have a complete browser (i.e., with a
-  // WebContents and RenderFrameHost) to work with.
+  // Allow unit tests access to the private constructor, since unit tests don't
+  // have a complete browser (i.e., with a WebContents and RenderFrameHost) to
+  // work with.
   friend class CastRemotingConnectorTest;
-
-  // Implementation of the media::mojom::Remoter service for a single source in
-  // a render frame. This is just a "lightweight bridge" that delegates calls
-  // back-and-forth between a CastRemotingConnector and a
-  // media::mojom::RemotingSource. An instance of this class is owned by its
-  // mojo message pipe.
-  class RemotingBridge;
 
   // Main constructor. |tab_id| refers to any remoted content managed
   // by this instance (i.e., any remoted content from one tab/WebContents).
@@ -134,17 +121,32 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
       SessionID tab_id,
       std::unique_ptr<MediaRemotingDialogCoordinator> dialog_coordinator);
 
-  // Creates a RemotingBridge that implements the requested Remoter service, and
-  // binds it to the interface |receiver|.
-  void CreateBridge(mojo::PendingRemote<media::mojom::RemotingSource> source,
-                    mojo::PendingReceiver<media::mojom::Remoter> receiver);
-
-  // Called by the RemotingBridge constructor/destructor to register/deregister
-  // an instance. This allows this connector to broadcast notifications to all
-  // active sources.
-  void RegisterBridge(RemotingBridge* bridge);
+  // RemotingBridge::Client implementation.
+  // These methods are called by RemotingBridge to forward media::mojom::Remoter
+  // calls from a source through to this connector. They ensure that only one
+  // source is allowed to be in a remoting session at a time, and that no source
+  // may interfere with any other.
+  void RegisterBridge(RemotingBridge* bridge) override;
   void DeregisterBridge(RemotingBridge* bridge,
-                        media::mojom::RemotingStopReason reason);
+                        media::mojom::RemotingStopReason reason) override;
+  void StartRemoting(RemotingBridge* bridge) override;
+  void StartWithPermissionAlreadyGranted(RemotingBridge* bridge) override;
+  void StartRemotingDataStreams(
+      RemotingBridge* bridge,
+      mojo::ScopedDataPipeConsumerHandle audio_pipe,
+      mojo::ScopedDataPipeConsumerHandle video_pipe,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          audio_sender,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          video_sender) override;
+  void StopRemoting(RemotingBridge* bridge,
+                    media::mojom::RemotingStopReason reason,
+                    bool is_initiated_by_source) override;
+  void SendMessageToSink(RemotingBridge* bridge,
+                         const std::vector<uint8_t>& message) override;
+  void EstimateTransmissionCapacity(
+      media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
+      override;
 
   // media::mojom::MirrorServiceRemotingSource implementation.
   // media::mojom::RemotingSource implementation.
@@ -157,28 +159,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   void OnStarted() override;
   void OnStartFailed(media::mojom::RemotingStartFailReason reason) override;
 
-  // These methods are called by RemotingBridge to forward media::mojom::Remoter
-  // calls from a source through to this connector. They ensure that only one
-  // source is allowed to be in a remoting session at a time, and that no source
-  // may interfere with any other.
-  void StartRemoting(RemotingBridge* bridge);
-  void StartWithPermissionAlreadyGranted(RemotingBridge* bridge);
   bool StartRemotingCommon(RemotingBridge* bridge);
-  void StartRemotingDataStreams(
-      RemotingBridge* bridge,
-      mojo::ScopedDataPipeConsumerHandle audio_pipe,
-      mojo::ScopedDataPipeConsumerHandle video_pipe,
-      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-          audio_sender,
-      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-          video_sender);
-  void StopRemoting(RemotingBridge* bridge,
-                    media::mojom::RemotingStopReason reason,
-                    bool is_initiated_by_source);
-  void SendMessageToSink(RemotingBridge* bridge,
-                         const std::vector<uint8_t>& message);
-  void EstimateTransmissionCapacity(
-      media::mojom::Remoter::EstimateTransmissionCapacityCallback callback);
 
   // Called by the permission dialog when it closes, to signal whether
   // permission is allowed.

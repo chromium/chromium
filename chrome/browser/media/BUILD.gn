@@ -176,7 +176,10 @@ source_set("media") {
   }
 
   if (enable_media_remoting) {
-    public += [ "cast_remoting_connector.h" ]
+    public += [
+      "cast_remoting_connector.h",
+      "remoting_bridge.h",
+    ]
     public_deps += [
       "//components/prefs",
       "//components/sessions:session_id",
@@ -319,7 +322,10 @@ source_set("impl") {
   }
 
   if (enable_media_remoting) {
-    sources += [ "cast_remoting_connector.cc" ]
+    sources += [
+      "cast_remoting_connector.cc",
+      "remoting_bridge.cc",
+    ]
     deps += [
       "//chrome/browser/media/router:media_router_feature",
       "//media/mojo/mojom:remoting",
