@@ -261,6 +261,16 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
         return sMetricsMap.get(type);
     }
 
+    /**
+     * Returns the maximum value for BackPressConsumer histograms. This includes deprecated values
+     * to ensure historical consistency.
+     *
+     * @return The maximum value of the metrics.
+     */
+    public static int getMetricsMaxValue() {
+        return sMetricsMaxValue;
+    }
+
     private static void recordFailure(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 FAILURE_HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);

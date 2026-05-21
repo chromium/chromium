@@ -143,7 +143,9 @@ public class BackPressMetrics {
                         ? INTERCEPT_FROM_LEFT_HISTOGRAM
                         : INTERCEPT_FROM_RIGHT_HISTOGRAM;
         RecordHistogram.recordEnumeratedHistogram(
-                histogram, BackPressManager.getHistogramValue(type), Type.NUM_TYPES);
+                histogram,
+                BackPressManager.getHistogramValue(type),
+                BackPressManager.getMetricsMaxValue());
     }
 
     /**
