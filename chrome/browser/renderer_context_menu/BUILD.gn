@@ -173,7 +173,6 @@ source_set("impl") {
     public += [ "read_write_card_observer.h" ]
     sources += [ "read_write_card_observer.cc" ]
     deps += [
-      "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/intent_helper",
       "//chrome/browser/ash/boca/on_task",
@@ -184,6 +183,7 @@ source_set("impl") {
       "//chrome/browser/ui/ash/read_write_cards:read_write_cards_manager",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
+      "//chromeos/ash/components/system_web_apps:system_web_app_type",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//components/session_manager/core",
     ]

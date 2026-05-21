@@ -4028,7 +4028,6 @@ static_library("browser") {
       "//ash/webui/shortcut_customization_ui/mojom",
       "//ash/webui/status_area_internals",
       "//ash/webui/status_area_internals/mojom",
-      "//ash/webui/system_apps/public:system_web_app_type",
       "//ash/webui/vc_background_ui",
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -4293,6 +4292,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
       "//chrome/browser/extensions/api/document_scan",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
+      "//chromeos/ash/components/system_web_apps:system_web_app_type",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/browser_process_platform_part_ash.h gets modularized.

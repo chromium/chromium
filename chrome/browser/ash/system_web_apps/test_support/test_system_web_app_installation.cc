@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"

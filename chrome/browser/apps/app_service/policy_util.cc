@@ -20,11 +20,11 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/id_constants.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps_util {

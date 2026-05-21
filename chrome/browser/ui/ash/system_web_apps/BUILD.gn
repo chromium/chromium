@@ -15,9 +15,9 @@ source_set("system_web_apps") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/ash/browser_delegate",
+    "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//components/services/app_service",
     "//components/webapps/common",
   ]
@@ -84,7 +84,6 @@ source_set("impl") {
     ":system_web_apps",
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/shortcut_customization_ui:url_constants",
-    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/browser_delegate:impl",
@@ -98,6 +97,7 @@ source_set("impl") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//components/services/app_service",
     "//components/webapps/common",

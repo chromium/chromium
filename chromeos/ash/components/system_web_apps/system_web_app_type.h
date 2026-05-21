@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
-#define ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_TYPE_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_TYPE_H_
 
 #include "build/build_config.h"
 
@@ -188,4 +188,4 @@ enum class SystemWebAppType {
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_TYPE_H_

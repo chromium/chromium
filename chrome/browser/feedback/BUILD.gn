@@ -156,7 +156,6 @@ source_set("feedback_impl") {
       "//ash",
       "//ash/constants",
       "//ash/webui/os_feedback_ui:url_constants",
-      "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/policy",
@@ -172,6 +171,7 @@ source_set("feedback_impl") {
       "//chromeos/ash/components/login/auth",
       "//chromeos/ash/components/settings",
       "//chromeos/ash/components/system",
+      "//chromeos/ash/components/system_web_apps:system_web_app_type",
       "//chromeos/components/kiosk",
       "//chromeos/version",
     ]

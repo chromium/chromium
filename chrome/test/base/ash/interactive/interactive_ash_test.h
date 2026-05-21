@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"

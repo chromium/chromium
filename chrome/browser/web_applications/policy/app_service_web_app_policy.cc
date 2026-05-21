@@ -8,9 +8,9 @@
 #include <string_view>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 
 namespace web_app {
 

@@ -30,7 +30,6 @@ static_library("files") {
 
   deps = [
     "//ash/constants",
-    "//ash/webui/system_apps/public:system_web_app_type",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
@@ -42,6 +41,7 @@ static_library("files") {
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",

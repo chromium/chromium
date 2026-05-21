@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 namespace ash {

@@ -9,8 +9,8 @@
 #include <string>
 #include <string_view>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/untrusted_web_ui_controller.h"

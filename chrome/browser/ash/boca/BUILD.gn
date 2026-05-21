@@ -22,7 +22,6 @@ static_library("boca") {
 
   deps = [
     "//ash/constants",
-    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/boca/babelorca",
@@ -47,6 +46,7 @@ static_library("boca") {
     "//chromeos/ash/components/boca/receiver",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//components/gcm_driver",
     "//components/live_caption",
     "//components/live_caption:live_translate",

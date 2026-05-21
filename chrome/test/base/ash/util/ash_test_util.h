@@ -8,10 +8,10 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/events/event_constants.h"
 

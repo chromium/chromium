@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "components/webapps/common/web_app_id.h"
 

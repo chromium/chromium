@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DATA_H_
 #define CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DATA_H_
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/values.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 
 namespace ash {
 

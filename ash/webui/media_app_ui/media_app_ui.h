@@ -10,8 +10,8 @@
 #include "ash/webui/media_app_ui/media_app_ui.mojom.h"
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "ash/webui/media_app_ui/url_constants.h"
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 

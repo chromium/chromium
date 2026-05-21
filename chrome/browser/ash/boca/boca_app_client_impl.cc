@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/boca/shared_crd_session_wrapper_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session_provider.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/components/boca/shared_crd_session_wrapper.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::boca {

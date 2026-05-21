@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/float/float_test_api.h"
 #include "ash/wm/window_state.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
