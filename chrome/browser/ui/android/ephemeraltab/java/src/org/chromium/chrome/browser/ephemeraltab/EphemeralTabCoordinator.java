@@ -274,7 +274,10 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             assumeNonNull(mSheetContent);
             mBottomSheetController.hideContent(
                     mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
-            var params = new LoadUrlParams(mFullPageUrl != null ? mFullPageUrl : mUrl);
+            if (mFullPageUrl == null) {
+                mFullPageUrl = assumeNonNull(mWebContents).getLastCommittedUrl();
+            }
+            var params = new LoadUrlParams(mFullPageUrl);
             mTabCreator.get().createNewTab(params, TabLaunchType.FROM_LINK, mTabProvider.get());
         }
     }
