@@ -197,8 +197,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     /* ConfigurationChangedObserver implementation. */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        // TODO(crbug.com/515150822): Investigate to see whether this logic also needs to be
+        //  triggered by #onSizeChanged().
         mMediator.onConfigurationChanged();
-        mUiConfig.updateDisplayStyle();
     }
 
     public void setMediatorForTesting(MostVisitedTilesMediator mediator) {

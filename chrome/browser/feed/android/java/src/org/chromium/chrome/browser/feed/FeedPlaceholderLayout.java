@@ -96,6 +96,8 @@ public class FeedPlaceholderLayout extends LinearLayout {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        // TODO(crbug.com/515150822): Investigate to see whether this logic also needs to be
+        //  triggered by #onSizeChanged().
         mUiConfig.updateDisplayStyle();
     }
 

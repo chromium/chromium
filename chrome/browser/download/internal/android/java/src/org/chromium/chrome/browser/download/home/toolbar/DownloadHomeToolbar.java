@@ -48,6 +48,12 @@ public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
         if (mUiConfig != null) mUiConfig.updateDisplayStyle();
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (mUiConfig != null) mUiConfig.updateDisplayStyle();
+    }
+
     /**
      * Removes a menu item from the toolbar.
      *

@@ -103,6 +103,12 @@ class DateOrderedListView {
                         mView.invalidateItemDecorations();
                         mOnConfigurationChangedCallback.run();
                     }
+
+                    @Override
+                    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+                        super.onSizeChanged(w, h, oldw, oldh);
+                        if (mUiConfig != null) mUiConfig.updateDisplayStyle();
+                    }
                 };
         mView.setId(R.id.download_home_recycler_view);
         mView.setHasFixedSize(true);

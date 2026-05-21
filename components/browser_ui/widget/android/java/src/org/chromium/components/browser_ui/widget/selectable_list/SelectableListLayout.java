@@ -162,11 +162,17 @@ public class SelectableListLayout<E> extends FrameLayout
         if (mUiConfig != null) mUiConfig.updateDisplayStyle();
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (mUiConfig != null) mUiConfig.updateDisplayStyle();
+    }
+
     /**
      * Creates a RecyclerView for the given adapter.
      *
      * @param adapter The adapter that provides a binding from an app-specific data set to views
-     *                that are displayed within the RecyclerView.
+     *     that are displayed within the RecyclerView.
      * @return The RecyclerView itself.
      */
     public RecyclerView initializeRecyclerView(RecyclerView.Adapter adapter) {

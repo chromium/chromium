@@ -195,6 +195,7 @@ public class FeedSurfaceCoordinator
             if (mUseStaggeredLayout) {
                 updateNtpCustomizationButtonVisibility();
             }
+            if (mUiConfig != null) mUiConfig.updateDisplayStyle();
         }
 
         @Override
