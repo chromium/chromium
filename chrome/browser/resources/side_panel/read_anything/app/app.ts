@@ -844,6 +844,25 @@ export class AppElement extends AppElementBase implements SpeechListener,
     return this.isImmersiveMode() ? `${immersiveClass} full-page` :
                                     immersiveClass;
   }
+
+  protected getLineFocusClass_(): string {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return '';
+    }
+
+    const type = (this.contentState_.type === ContentType.HAS_CONTENT) ?
+        this.lineFocusController_.getCurrentLineFocusType() :
+        LineFocusType.NONE;
+
+    switch (type) {
+      case LineFocusType.WINDOW:
+        return 'window-mode';
+      case LineFocusType.LINE:
+        return 'line-mode';
+      default:
+        return '';
+    }
+  }
 }
 
 declare global {

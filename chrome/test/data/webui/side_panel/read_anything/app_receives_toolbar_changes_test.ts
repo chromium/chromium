@@ -290,6 +290,57 @@ suite('AppReceivesToolbarChanges', () => {
     assertLT(0, padding);
   });
 
+  test('line focus classes update line focus padding', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    app.updateContent();
+    await microtasksFinished();
+    const lineFocus = app.$.lineFocus;
+    assertTrue(!!lineFocus);
+
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+    assertTrue(lineFocus.classList.contains('line-mode'));
+    assertEquals('8px', window.getComputedStyle(lineFocus).left);
+    assertEquals('8px', window.getComputedStyle(lineFocus).right);
+
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.SMALL_WINDOW}});
+    await microtasksFinished();
+    assertTrue(lineFocus.classList.contains('window-mode'));
+    assertEquals('0px', window.getComputedStyle(lineFocus).left);
+    assertEquals('0px', window.getComputedStyle(lineFocus).right);
+  });
+
+  test('immersive view updates line focus padding', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    chrome.readingMode.isImmersiveEnabled = true;
+    app = await createApp();
+    app.isImmersiveMode = () => true;
+    app.updateContent();
+    await microtasksFinished();
+    const lineFocus = app.$.lineFocus;
+    assertTrue(!!lineFocus);
+
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+    assertTrue(lineFocus.classList.contains('line-mode'));
+    assertEquals('8px', window.getComputedStyle(lineFocus).left);
+    assertEquals('14px', window.getComputedStyle(lineFocus).right);
+
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.SMALL_WINDOW}});
+    await microtasksFinished();
+    assertTrue(lineFocus.classList.contains('window-mode'));
+    assertEquals('0px', window.getComputedStyle(lineFocus).left);
+    assertEquals('0px', window.getComputedStyle(lineFocus).right);
+  });
+
   test(
       'line focus movement change does nothing with line focus off',
       async () => {

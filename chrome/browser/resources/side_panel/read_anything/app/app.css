@@ -29,8 +29,8 @@
 #lineFocus {
   position: absolute;
   top: var(--line-focus-y);
-  left: var(--line-focus-side-padding);
-  right: var(--line-focus-side-padding);
+  left: var(--line-focus-left);
+  right: var(--line-focus-right);
   height: var(--line-focus-height);
   background-color: var(--line-focus-bg);
   display: var(--line-focus-display);
@@ -39,6 +39,21 @@
   box-shadow: var(--line-focus-shadow);
   pointer-events: none;
   z-index: 9997;
+}
+
+#lineFocus.line-mode {
+  --line-focus-left: var(--sp-card-block-padding);
+  --line-focus-right: var(--sp-card-block-padding);
+}
+
+#lineFocus.window-mode {
+  --line-focus-left: 0;
+  --line-focus-right: 0;
+}
+
+.immersive.full-page #lineFocus.line-mode {
+  --line-focus-left: var(--sp-card-block-padding);
+  --line-focus-right: var(--immersive-scrollbar-width);
 }
 
 #empty-state-container {

@@ -13,7 +13,10 @@ export function getHtml(this: AppElement) {
   <!-- Overlay to prevent cursor from interacting with background elements when
   the settings menu is open. -->
   <div id="settingsOverlay" class="settings-overlay"></div>
-  <div id="lineFocus" ?hidden="${!this.computeHasContent()}"></div>
+  <div id="lineFocus"
+      class="${this.getLineFocusClass_()}"
+      ?hidden="${!this.computeHasContent()}">
+  </div>
   <div id="toolbar-container">
     <read-anything-toolbar
         .presentationState="${this.presentationState_}"

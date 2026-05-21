@@ -17,10 +17,6 @@ suite('AppStyleUpdater', () => {
     return window.getComputedStyle(app.$.container).getPropertyValue(style);
   }
 
-  function computeLineFocusStyle(style: string) {
-    return window.getComputedStyle(app.$.lineFocus).getPropertyValue(style);
-  }
-
   function setAppFontSize(size: number) {
     app.style.fontSize = size + 'px';
   }
@@ -141,18 +137,6 @@ suite('AppStyleUpdater', () => {
         assertNotEquals(windowShadow, lineShadow);
         assertNotEquals(windowBg, lineBg);
       });
-
-  test('setLineFocusStyle sets different padding for different types', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-
-    updater.setLineFocusStyle(LineFocusType.WINDOW);
-    assertEquals('0px', computeLineFocusStyle('left'));
-    assertEquals('0px', computeLineFocusStyle('right'));
-
-    updater.setLineFocusStyle(LineFocusType.LINE);
-    assertNotEquals('0px', computeLineFocusStyle('left'));
-    assertNotEquals('0px', computeLineFocusStyle('right'));
-  });
 
   test(
       'setLineFocusStyle does not update toolbar colors if line focus is ' +
