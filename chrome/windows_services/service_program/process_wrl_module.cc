@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace {
 
@@ -27,14 +29,20 @@ class ModuleReleaseHelper {
   // Sets the callback to be run when the last reference to the module is
   // released.
   void SetModuleReleasedCallback(base::OnceClosure callback) {
+    base::AutoLock lock(lock_);
     callback_ = std::move(callback);
   }
 
   // A method invoked by the WRL::Module's release notifier. Runs the held
   // callback, if any.
   void OnModuleReleased() {
-    if (callback_) {
-      std::move(callback_).Run();
+    base::OnceClosure callback;
+    {
+      base::AutoLock lock(lock_);
+      callback = std::move(callback_);
+    }
+    if (callback) {
+      std::move(callback).Run();
     }
   }
 
@@ -43,7 +51,8 @@ class ModuleReleaseHelper {
 
   ModuleReleaseHelper() = default;
 
-  base::OnceClosure callback_;
+  base::Lock lock_;
+  base::OnceClosure callback_ GUARDED_BY(lock_);
 };
 
 }  // namespace
