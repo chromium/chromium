@@ -9,28 +9,29 @@
 <html>
   <body>
     <main aria-actions="id1"></main>
-    <!-- Different roles are used here to distinguish between the referenced elements in the expectations file -->
-    <p role="paragraph" id="id1">Paragraph</p>
-    <p role="article" id="id2">Article</p>
+    <!-- Different roles distinguish targets in the expectations file. Both
+         support accessible names so they satisfy Author MUSTs. -->
+    <div role="button" id="id1">Target A</div>
+    <div role="link" id="id2">Target B</div>
     <script>
       function switchReference() {
-        // Switch the IDs around. Now the relation points to the article.
-        document.querySelector("p[role=paragraph]").id = "id2";
-        document.querySelector("p[role=article]").id = "id1";
+        // Switch the IDs around. Now the relation points to the link.
+        document.querySelector("div[role=button]").id = "id2";
+        document.querySelector("div[role=link]").id = "id1";
         document.title = "switch-reference";
         return "switch-reference";
       }
 
       function removeReference() {
         // Remove the id on the relation target. Now the relation is empty.
-        document.querySelector("p[role=article]").removeAttribute('id');
+        document.querySelector("div[role=link]").removeAttribute('id');
         document.title = "remove-reference";
         return "remove-reference";
       }
 
       function restoreReference() {
-        // Restore the original relation pointing to the paragraph.
-        document.querySelector("p[role=paragraph]").id = "id1";
+        // Restore the original relation pointing to the button.
+        document.querySelector("div[role=button]").id = "id1";
         document.title = "restore-reference";
         return "restore-reference";
       }

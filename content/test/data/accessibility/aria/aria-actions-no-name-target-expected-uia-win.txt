@@ -1,0 +1,13 @@
+Document
+++Tab Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++TabItem Name='Document.pdf' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;selected=false;hasactions=true' SelectionItem.IsSelected=false
+++Button Name='Rename'
+++Button
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
+++++Text Name='File section'
+++Button Name='Archive'
+++Button
+++Group
+++++Text Name='Section with no valid actions'
+++Button
+++Button

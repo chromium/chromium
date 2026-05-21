@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tabList horizontal
+++++++++tab hasActions name='Document.pdf' nameFrom=contents selected=false actionsIds=button
+++++++++++staticText name='Document.pdf' nameFrom=contents
+++++++++++++inlineTextBox name='Document.pdf' nameFrom=contents
+++++++button name='Rename' nameFrom=contents
+++++++++staticText name='Rename' nameFrom=contents
+++++++++++inlineTextBox name='Rename' nameFrom=contents
+++++++button
+++++++group hasActions actionsIds=button
+++++++++staticText name='File section' nameFrom=contents
+++++++++++inlineTextBox name='File section' nameFrom=contents
+++++++button name='Archive' nameFrom=contents
+++++++++staticText name='Archive' nameFrom=contents
+++++++++++inlineTextBox name='Archive' nameFrom=contents
+++++++button
+++++++group
+++++++++staticText name='Section with no valid actions' nameFrom=contents
+++++++++++inlineTextBox name='Section with no valid actions' nameFrom=contents
+++++++button
+++++++button

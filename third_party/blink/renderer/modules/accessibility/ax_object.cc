@@ -229,6 +229,16 @@ void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
     node_data->AddIntListAttribute(attr, ids);
 }
 
+// Returns true if |target| satisfies the Author MUST requirements for
+// aria-actions targets per the spec PR
+// (https://github.com/w3c/aria/pull/1805) #aria-actions. The UA drops targets
+// that fail these checks. Currently validates accessible name;
+// follow-up CLs add click-handler and keyboard-access checks.
+bool IsValidAriaActionsTarget(const AXObject& target) {
+  String name = target.ComputedName();
+  return !name.StripWhiteSpace().empty();
+}
+
 // Max length for attributes such as aria-label.
 static constexpr uint32_t kMaxStringAttributeLength = 10000;
 // Max length for a static text name.
@@ -1447,8 +1457,9 @@ void AXObject::SerializeImplicitActions(ui::AXNodeData* node_data) const {
   auto actions_ids = node_data->GetIntListAttribute(
       ax::mojom::blink::IntListAttribute::kActionsIds);
   for (const auto& child : potential_actions) {
-    if (child->RoleValue() == ax::mojom::blink::Role::kButton ||
-        child->RoleValue() == ax::mojom::blink::Role::kLink) {
+    if ((child->RoleValue() == ax::mojom::blink::Role::kButton ||
+         child->RoleValue() == ax::mojom::blink::Role::kLink) &&
+        IsValidAriaActionsTarget(*child)) {
       actions_ids.push_back(child->AXObjectID());
     }
   }
@@ -2031,9 +2042,17 @@ void AXObject::SerializeRelationAttributes(ui::AXNodeData* node_data) const {
   }
 
   if (RuntimeEnabledFeatures::AriaActionsEnabled()) {
+    AXObjectVector action_targets =
+        RelationVectorFromAria(html_names::kAriaActionsAttr);
+    AXObjectVector valid_targets;
+    for (const auto& target : action_targets) {
+      if (IsValidAriaActionsTarget(*target)) {
+        valid_targets.push_back(target);
+      }
+    }
     AddIntListAttributeFromObjects(
-        ax::mojom::blink::IntListAttribute::kActionsIds,
-        RelationVectorFromAria(html_names::kAriaActionsAttr), node_data);
+        ax::mojom::blink::IntListAttribute::kActionsIds, valid_targets,
+        node_data);
   }
 
   AddIntListAttributeFromObjects(
@@ -2433,17 +2452,20 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
   }
 
-  // Check for presence of aria-actions. Even if the value is empty or the
-  // targets are hidden, we still want to expose that there could be actions.
-  if (RuntimeEnabledFeatures::AriaActionsEnabled() &&
-      HasAriaAttribute(html_names::kAriaActionsAttr)) {
-    node_data->AddState(ax::mojom::blink::State::kHasActions);
-  }
-
   // Author-defined actions should take precedence over implicit ones.
   if (RuntimeEnabledFeatures::AccessibilityImplicitActionsEnabled() &&
       !HasAriaAttribute(html_names::kAriaActionsAttr)) {
     SerializeImplicitActions(node_data);
+  }
+
+  // Expose kHasActions when at least one valid actions target was
+  // serialized. Targets without an accessible name are dropped per the
+  // spec PR (https://github.com/w3c/aria/pull/1805) #aria-actions; this
+  // gate covers both author-defined targets (aria-actions) and implicit
+  // targets derived from children of menuitem-like roles.
+  if (node_data->HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds)) {
+    node_data->AddState(ax::mojom::blink::State::kHasActions);
   }
 
   if (IsScrollableContainer())
