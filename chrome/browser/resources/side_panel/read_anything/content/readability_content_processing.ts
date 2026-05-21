@@ -15,6 +15,9 @@ const REMOVABLE_TAGS = [
   'ARTICLE', 'MAIN', 'NAV', 'FIGURE',  'FIGCAPTION', 'UL',     'OL',
   'LI',      'B',    'I',   'STRONG',  'EM',
 ];
+function hasImage(elt: HTMLElement): boolean {
+  return elt.querySelector('img, canvas, picture') !== null;
+}
 
 function shouldRemoveNode(elt: HTMLElement): boolean {
   // 1. Remove short accessibility announcements.
@@ -40,6 +43,9 @@ function shouldRemoveNode(elt: HTMLElement): boolean {
     const rect = elt.getBoundingClientRect();
     if (rect.width === 0 && rect.height === 0 &&
         textContent.trim().length === 0) {
+      if (hasImage(elt)) {
+        return false;
+      }
       return true;
     }
   }
