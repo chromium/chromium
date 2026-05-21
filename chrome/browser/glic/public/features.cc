@@ -153,7 +153,14 @@ BASE_FEATURE(kGlicOptInImpressionMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Killswitch that controls whether the WebContents visibility state is
 // set to hidden when the Glic panel is warming.
-BASE_FEATURE(kGlicContentsInitiallyHidden, base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(crbug.com/513620671) Investigate enabling on Windows.
+BASE_FEATURE(kGlicContentsInitiallyHidden,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
