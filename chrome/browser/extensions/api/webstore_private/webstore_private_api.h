@@ -34,8 +34,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
-
 namespace content {
 class GpuFeatureChecker;
 class WebContents;
@@ -62,11 +60,11 @@ class WebstorePrivateApi {
   // Sets a delegate for testing.
   static base::AutoReset<Delegate*> SetDelegateForTesting(Delegate* delegate);
 
-  // Gets the pending approval for the `extension_id` in `profile`. Pending
-  // approvals are held between the calls to beginInstallWithManifest and
-  // completeInstall. This should only be used for testing.
+  // Gets the pending approval for the `extension_id` in `browser_context`.
+  // Pending approvals are held between the calls to beginInstallWithManifest
+  // and completeInstall. This should only be used for testing.
   static std::unique_ptr<InstallApproval> PopApprovalForTesting(
-      Profile* profile,
+      content::BrowserContext* browser_context,
       const std::string& extension_id);
 
   // Clear the pending approvals. This should only be used for testing.
@@ -74,6 +72,8 @@ class WebstorePrivateApi {
 
   // Get the count of pending approvals. This should only be used for testing.
   static int GetPendingApprovalsCountForTesting();
+
+  static void EnsureAssociatedFactoryBuilt();
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
@@ -149,7 +149,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
       api::webstore_private::Result result,
       const std::string& error);
 
-  bool ShouldShowFrictionDialog(Profile* profile);
+  bool ShouldShowFrictionDialog(content::BrowserContext* browser_context);
   void ShowInstallFrictionDialog(content::WebContents* contents);
   void ShowInstallDialog(content::WebContents* contents);
 
@@ -171,7 +171,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   std::optional<Params> params_;
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
