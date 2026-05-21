@@ -418,6 +418,42 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 
 
 @pytest.mark.asyncio
+async def test_network_data_url_svg_completion(websocket, context_id):
+    await subscribe(websocket, ["network.responseCompleted"], [context_id])
+
+    import base64
+    padding = "x" * 10000
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+  <!-- unique:1 padding:{padding} -->
+  <rect width="100" height="100" fill="hsl(1,80%,50%)"/>
+</svg>"""
+    url = "data:image/svg+xml;base64," + base64.b64encode(
+        svg.encode('utf-8')).decode('utf-8')
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "none",
+                "context": context_id
+            }
+        })
+
+    resp = await wait_for_event(websocket, "network.responseCompleted")
+    assert resp == AnyExtending({
+        'type': 'event',
+        "method": "network.responseCompleted",
+        "params": {
+            "context": context_id,
+            "request": {
+                "url": url,
+            }
+        }
+    })
+
+
+@pytest.mark.asyncio
 async def test_network_sends_only_included_cookies(websocket, context_id,
                                                    url_example_another_origin,
                                                    url_secure_context):

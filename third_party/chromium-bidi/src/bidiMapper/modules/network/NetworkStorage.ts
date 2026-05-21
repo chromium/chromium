@@ -491,6 +491,7 @@ export class NetworkStorage {
   disposeRequest(id: Network.Request) {
     if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
+      this.#requests.get(id)?.disposeData();
       return;
     }
     // TODO: dispose Network data from Chromium once there is a CDP command for that.

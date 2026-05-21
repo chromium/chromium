@@ -75,6 +75,12 @@ export class NetworkRequest {
 
   #redirectCount: number;
 
+  #bodySize = 0;
+  // Tracked encoded data size while the response is loading.
+  #encodedResponseBodySize = 0;
+  // Tracked decoded data size while the response is loading.
+  #decodedResponseBodySize = 0;
+
   #request: {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
@@ -103,14 +109,7 @@ export class NetworkRequest {
     paused?: Protocol.Fetch.RequestPausedEvent;
     loadingFinished?: Protocol.Network.LoadingFinishedEvent;
     loadingFailed?: Protocol.Network.LoadingFailedEvent;
-    // Tracked decoded data size while the response is loading.
-    decodedSize: number;
-    // Tracked encoded data size while the response is loading.
-    encodedSize: number;
-  } = {
-    decodedSize: 0,
-    encodedSize: 0,
-  };
+  } = {};
 
   #eventManager: EventManager;
   #networkStorage: NetworkStorage;
@@ -277,22 +276,26 @@ export class NetworkRequest {
     return undefined;
   }
 
-  get bodySize() {
+  #updateBodySize() {
     if (typeof this.#requestOverrides?.bodySize === 'number') {
-      return this.#requestOverrides.bodySize;
+      this.#bodySize = this.#requestOverrides.bodySize;
+      return;
     }
     if (this.#request.info?.request.postDataEntries !== undefined) {
-      return bidiBodySizeFromCdpPostDataEntries(
+      this.#bodySize = bidiBodySizeFromCdpPostDataEntries(
         this.#request.info?.request.postDataEntries,
       );
+      return;
     }
 
-    // Try to guess the body size based on the `Content-Length` header.
-    return (
+    this.#bodySize =
       this.#getBodySizeFromHeaders(this.#request.info?.request.headers) ??
       this.#getBodySizeFromHeaders(this.#request.extraInfo?.headers) ??
-      0
-    );
+      0;
+  }
+
+  get bodySize() {
+    return this.#bodySize;
   }
 
   get #context(): string | null {
@@ -482,8 +485,8 @@ export class NetworkRequest {
     // TODO: use event.redirectResponse;
     // Temporary workaround to emit ResponseCompleted event for redirects
     this.#response.hasExtraInfo = false;
-    this.#response.decodedSize = 0;
-    this.#response.encodedSize = 0;
+    this.#decodedResponseBodySize = 0;
+    this.#encodedResponseBodySize = 0;
     this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady({
       wasRedirected: true,
@@ -567,6 +570,7 @@ export class NetworkRequest {
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
+    this.#updateBodySize();
     this.#networkStorage.collectIfNeeded(this, Network.DataType.Request);
     this.#emitEventsIfReady();
   }
@@ -575,6 +579,7 @@ export class NetworkRequest {
     event: Protocol.Network.RequestWillBeSentExtraInfoEvent,
   ) {
     this.#request.extraInfo = event;
+    this.#updateBodySize();
     this.#emitEventsIfReady();
   }
 
@@ -599,6 +604,7 @@ export class NetworkRequest {
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
+    this.#encodedResponseBodySize = event.response.encodedDataLength;
     this.#networkStorage.collectIfNeeded(this, Network.DataType.Response);
     this.#emitEventsIfReady();
   }
@@ -610,12 +616,13 @@ export class NetworkRequest {
 
   onLoadingFinishedEvent(event: Protocol.Network.LoadingFinishedEvent) {
     this.#response.loadingFinished = event;
+    this.#encodedResponseBodySize = event.encodedDataLength;
     this.#emitEventsIfReady();
   }
 
   onDataReceivedEvent(event: Protocol.Network.DataReceivedEvent) {
-    this.#response.decodedSize += event.dataLength;
-    this.#response.encodedSize += event.encodedDataLength;
+    this.#decodedResponseBodySize += event.dataLength;
+    this.#encodedResponseBodySize += event.encodedDataLength;
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
@@ -631,6 +638,7 @@ export class NetworkRequest {
         },
       };
     });
+    this.disposeData();
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
@@ -889,6 +897,13 @@ export class NetworkRequest {
     this.waitNextPhase.reject(new Error('waitNextPhase disposed'));
   }
 
+  disposeData() {
+    this.#request = {};
+    this.#response = {};
+    this.#requestOverrides = undefined;
+    this.#responseOverrides = undefined;
+  }
+
   async #continueWithAuth(
     authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse'],
   ) {
@@ -1004,7 +1019,7 @@ export class NetworkRequest {
       headersSize: computeHeadersSize(headers),
       bodySize: this.encodedResponseBodySize,
       content: {
-        size: this.#response.decodedSize ?? 0,
+        size: this.#decodedResponseBodySize,
       },
       ...(authChallenges ? {authChallenges} : {}),
     };
@@ -1016,12 +1031,11 @@ export class NetworkRequest {
   }
 
   get encodedResponseBodySize() {
-    return (
-      this.#response.loadingFinished?.encodedDataLength ??
-      this.#response.info?.encodedDataLength ??
-      this.#response.encodedSize ??
-      0
-    );
+    return this.#encodedResponseBodySize;
+  }
+
+  get decodedResponseBodySize() {
+    return this.#decodedResponseBodySize;
   }
 
   #getRequestData(): Network.RequestData {
