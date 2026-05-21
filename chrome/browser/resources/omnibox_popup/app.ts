@@ -202,6 +202,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.popupListenerIds_ = [
       this.browserProxy_.callbackRouter.onShow.addListener(
           this.onShow_.bind(this)),
+      this.browserProxy_.callbackRouter.onContextMenuClosed.addListener(
+          this.onContextMenuClosed_.bind(this)),
+
     ];
 
     this.listenerIds_ = [
@@ -585,7 +588,22 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       x: e.detail.x,
       y: e.detail.y,
     };
+
+    // Force the button to keep its hover background visually while
+    // the menu is open, even if the mouse doesn't move out of the button
+    // area after clicking.
+    const contextButton = this.getContextualEntrypointButton_();
+    if (contextButton) {
+      contextButton.classList.add('menu-open');
+    }
     this.browserProxy_.handler.showContextMenu(point);
+  }
+
+  private onContextMenuClosed_() {
+    const contextButton = this.getContextualEntrypointButton_();
+    if (contextButton) {
+      contextButton.classList.remove('menu-open');
+    }
   }
 
   protected async refreshRecentTabForChip_() {

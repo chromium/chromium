@@ -36,6 +36,9 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
   // Forwards an `OnShow()` call to the page.
   void OnShow();
 
+  // Forwards an `OnContextMenuClosed()` call to the page.
+  void OnContextMenuClosed();
+
  private:
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup::mojom::Page> page_;

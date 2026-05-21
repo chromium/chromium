@@ -21,10 +21,12 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace {
 
@@ -48,6 +50,10 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup,
                                     omnibox::internal::kWebUIOmniboxPopup},
                                    {});
+  }
+
+  void TriggerMenuClosed(OmniboxPopupWebUIBaseContent* content) {
+    content->OnMenuClosed();
   }
 
   void SetUpOnMainThread() override {
@@ -159,3 +165,32 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
   EXPECT_NE(base::UTF8ToUTF16(draft_text),
             location_bar()->GetOmniboxView()->GetText());
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       SynthesizesMouseLeaveEventOnMenuClosed) {
+  // 1. Setup: Ensure we are in AIM state and show the popup.
+  location_bar()->GetOmniboxController()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  presenter->Show();
+
+  auto* content =
+      static_cast<OmniboxAimPopupWebUIContent*>(presenter->GetWebUIContent());
+  ASSERT_TRUE(content);
+
+  auto* rwh = content->GetWebContents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // 2. Set up the mouse event monitor to spy on the RenderWidgetHost.
+  content::RenderWidgetHostMouseEventMonitor monitor(rwh);
+
+  // 3. Trigger menu close.
+  TriggerMenuClosed(content);
+
+  // 4. Verify the kMouseLeave event was successfully forwarded to the host.
+  EXPECT_TRUE(monitor.EventWasReceived());
+  EXPECT_EQ(monitor.event().GetType(), blink::WebInputEvent::Type::kMouseLeave);
+}
+

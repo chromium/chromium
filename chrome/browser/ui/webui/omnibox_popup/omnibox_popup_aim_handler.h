@@ -65,6 +65,9 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // Forwards a `FocusInput()` call to the page.
   void FocusInput();
 
+  // Forwards an `OnContextMenuClosed()` call to the page.
+  void OnContextMenuClosed();
+
  protected:
   virtual OmniboxAimPopupWebUIContent* GetAimPopupContent();
 

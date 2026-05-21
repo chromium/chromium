@@ -120,6 +120,7 @@ class MockOmniboxPopupPage : public omnibox_popup::mojom::Page {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   MOCK_METHOD(void, OnShow, (), (override));
+  MOCK_METHOD(void, OnContextMenuClosed, (), (override));
 };
 #endif
 

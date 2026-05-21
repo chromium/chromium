@@ -248,6 +248,28 @@ suite('AppTest', function() {
       assertTrue(!!description);
       assertEquals('Add tabs and more', description.textContent.trim());
     });
+
+    test('ContextMenuEntrypointMenuOpenWorkaround', async () => {
+      const contextualEntrypoint =
+          localApp.shadowRoot?.querySelector<HTMLElement>('#context');
+      assertTrue(!!contextualEntrypoint);
+
+      // Click fires event and applies workaround.
+      contextualEntrypoint.dispatchEvent(
+          new CustomEvent('context-menu-entrypoint-click', {
+            detail: {x: 10, y: 20},
+            bubbles: true,
+            composed: true,
+          }));
+
+      assertTrue(contextualEntrypoint.classList.contains('menu-open'));
+
+      // Mojom callback clears class.
+      callbackRouter.onContextMenuClosed();
+      await microtasksFinished();
+
+      assertFalse(contextualEntrypoint.classList.contains('menu-open'));
+    });
   });
 
   suite('AimEligibility', () => {

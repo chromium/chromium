@@ -354,13 +354,16 @@ cr-icon-button {
     --contextual-entrypoint-oblong-margin-inline-start, 0);
 }
 
+/* Overrides for the contextual entrypoint button for OB simplification */
 :host([apply-context-button-background]) #entrypoint {
   --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-background);
 }
 
+/* Overrides for the contextual entrypoint button for OB simplification */
 /* TODO: (crbug.com/510905121) - Move this override to css variables
  if needed once the design is finalized. */
-:host([apply-context-button-background]) #entrypoint:hover {
+:host([apply-context-button-background]) #entrypoint:hover,
+:host([apply-context-button-background].menu-open) #entrypoint {
   /* Override the background-color directly to avoid overrides to other
      components that share the compose box entrypoint button */
   background-color: color-mix(

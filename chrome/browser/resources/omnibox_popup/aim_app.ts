@@ -114,6 +114,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.callbackRouter_.clearPopup.addListener(this.clearPopup_.bind(this)),
       this.callbackRouter_.setPreserveContextOnClose.addListener(
           this.setPreserveContextOnClose_.bind(this)),
+      this.callbackRouter_.onContextMenuClosed.addListener(
+          this.onContextMenuClosed_.bind(this)),
     ];
 
     this.eventTracker_.add(
@@ -153,7 +155,22 @@ export class OmniboxAimAppElement extends CrLitElement {
       x: e.detail.x,
       y: e.detail.y,
     };
+    // Force the button to keep its hover background visually while
+    // the menu is open, even if the mouse doesn't move out of the button
+    // area after clicking.
+    const contextButton = this.$.composebox.getContextEntrypointElement();
+    if (contextButton) {
+      contextButton.classList.add('menu-open');
+    }
+
     this.pageHandler_.showContextMenu(point);
+  }
+
+  private onContextMenuClosed_() {
+    const contextButton = this.$.composebox.getContextEntrypointElement();
+    if (contextButton) {
+      contextButton.classList.remove('menu-open');
+    }
   }
 
   // Fired from voice search component in cr-composebox.

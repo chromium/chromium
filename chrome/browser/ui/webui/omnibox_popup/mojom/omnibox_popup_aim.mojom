@@ -53,4 +53,7 @@ interface Page {
   // `preserve_context_on_close` is reset to false when the popup is shown
   // again.
   SetPreserveContextOnClose(bool preserve_context_on_close);
+
+  // Called when the context menu is closed.
+  OnContextMenuClosed();
 };

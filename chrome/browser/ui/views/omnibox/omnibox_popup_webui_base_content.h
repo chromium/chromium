@@ -91,6 +91,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // Callback for cleaning up the `context_menu_` field.
   void OnMenuClosed();
 
+  virtual void OnContextMenuClosed() = 0;
+
   // Set up the WebUI content page and hook up the Omnibox handlers.
   void SetContentURL(std::string_view url);
 
@@ -151,6 +153,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // If the browser window is currently being resized. If so, ignore bouncer for
   // delay.
   bool is_window_resizing_ = false;
+
+  friend class OmniboxAimPopupBrowserTest;
 
   base::WeakPtrFactory<OmniboxPopupWebUIBaseContent> weak_factory_{this};
 };

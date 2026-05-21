@@ -59,6 +59,7 @@ suite('AimAppTest', function() {
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
       contextButtonShapeIsOblong: false,
       webuiOmniboxSimplificationEnabled: false,
+      contextualMenuUsePecApi: false,
     });
   });
 
@@ -66,6 +67,7 @@ suite('AimAppTest', function() {
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
+      contextualMenuUsePecApi: false,
     });
   });
   // TODO(crbug.com/479888362): Disabled by gardener due to failure without
@@ -209,6 +211,35 @@ suite('AimAppTest', function() {
     const result = await testProxy.handler.whenCalled('showContextMenu');
     assertEquals(point.x, result.x);
     assertEquals(point.y, result.y);
+  });
+
+  test('ContextMenuEntrypointMenuOpenWorkaround', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    // Enable the context menu so the real entrypoint button is rendered.
+    app.$.composebox.contextMenuEnabled = true;
+    await microtasksFinished();
+
+    const contextButton = app.$.composebox.getContextEntrypointElement();
+    assertTrue(!!contextButton);
+
+    // Click event triggers workaround.
+    app.$.composebox.dispatchEvent(
+        new CustomEvent('context-menu-entrypoint-click', {
+          detail: {x: 10, y: 20},
+          bubbles: true,
+          composed: true,
+        }));
+
+    assertTrue(contextButton.classList.contains('menu-open'));
+
+    // Mojom callback clears class.
+    testProxy.page.onContextMenuClosed();
+    await microtasksFinished();
+
+    assertFalse(contextButton.classList.contains('menu-open'));
   });
 
   test('UsesCompactLayoutInTallModeWhenNoAllowedInputs', async function() {

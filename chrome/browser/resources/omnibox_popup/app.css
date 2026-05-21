@@ -76,6 +76,19 @@
   --contextual-entrypoint-oblong-margin-inline-start: 2px;
 }
 
+/* Keeps the hover state color for entrypoint button when the menu is open. */
+#context.menu-open::part(entrypoint-button) {
+  background-color: var(
+    --color-composebox-context-entrypoint-hover-background);
+}
+
+#context[apply-context-button-background].menu-open::part(entrypoint-button) {
+  background-color: color-mix(
+      in srgb,
+      var(--color-composebox-context-entrypoint-hover-background),
+      var(--color-searchbox-results-foreground) 10%);
+}
+
 .context-menu-container {
   margin-top: var(--omnibox-context-menu-container-margin-top);
 }

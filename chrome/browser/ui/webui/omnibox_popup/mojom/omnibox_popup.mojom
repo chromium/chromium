@@ -23,4 +23,7 @@ interface PageHandler {
 interface Page {
   // Called when the popup is shown.
   OnShow();
+
+  // Called when the context menu is closed.
+  OnContextMenuClosed();
 };

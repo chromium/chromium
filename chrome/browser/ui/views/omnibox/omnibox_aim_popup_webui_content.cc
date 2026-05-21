@@ -57,6 +57,12 @@ void OmniboxAimPopupWebUIContent::Clear() {
   }
 }
 
+void OmniboxAimPopupWebUIContent::OnContextMenuClosed() {
+  if (auto* handler = popup_aim_handler()) {
+    handler->OnContextMenuClosed();
+  }
+}
+
 void OmniboxAimPopupWebUIContent::OnClearCallback(
     base::WeakPtr<content::WebContents> original_web_contents,
     const std::string& input) {

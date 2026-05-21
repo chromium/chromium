@@ -47,6 +47,7 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   //    c. OmniboxAimPopupWebUIContent::ApplyInputAndCleanup() (Resets the
   //       OmniboxView text).
   void Clear() override;
+  void OnContextMenuClosed() override;
 
   // Called from the browser after popup has already closed. `input` is
   // the possibly empty input that should replace the omnibox text.

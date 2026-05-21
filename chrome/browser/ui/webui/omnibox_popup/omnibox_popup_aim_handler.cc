@@ -87,6 +87,10 @@ void OmniboxPopupAimHandler::FocusInput() {
   page_->FocusInput();
 }
 
+void OmniboxPopupAimHandler::OnContextMenuClosed() {
+  page_->OnContextMenuClosed();
+}
+
 OmniboxAimPopupWebUIContent* OmniboxPopupAimHandler::GetAimPopupContent() {
   if (!embedder_) {
     return nullptr;

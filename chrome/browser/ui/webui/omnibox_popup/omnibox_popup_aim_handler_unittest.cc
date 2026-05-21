@@ -46,6 +46,7 @@ class MockOmniboxPopupAimPage : public omnibox_popup_aim::mojom::Page {
               SetPreserveContextOnClose,
               (bool preserve_context_on_close),
               (override));
+  MOCK_METHOD(void, OnContextMenuClosed, (), (override));
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
@@ -143,4 +144,10 @@ TEST_F(OmniboxPopupAimHandlerTest, ClearPopup) {
   base::test::TestFuture<const std::string&> future;
   handler_->ClearPopup(future.GetCallback());
   EXPECT_EQ("final input", future.Get());
+}
+
+TEST_F(OmniboxPopupAimHandlerTest, OnContextMenuClosed) {
+  EXPECT_CALL(page_, OnContextMenuClosed());
+  handler_->OnContextMenuClosed();
+  page_.FlushForTesting();
 }
