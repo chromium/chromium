@@ -48,13 +48,21 @@ void FullscreenBrowserAgent::RemoveObserver(
 }
 
 void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
+  if (!IsEnabled()) {
+    return;
+  }
+
   CGFloat pre_scroll_top_progress = top_progress_;
   CGFloat pre_scroll_bottom_progress = bottom_progress_;
 
   CGFloat top_delta = max_insets_.top - min_insets_.top;
   UpdateProgress(top_progress_, amount, top_delta);
   CGFloat bottom_delta = max_insets_.bottom - min_insets_.bottom;
-  UpdateProgress(bottom_progress_, amount, bottom_delta);
+  if (bottom_delta > 0) {
+    UpdateProgress(bottom_progress_, amount, bottom_delta);
+  } else {
+    bottom_progress_ = top_progress_;
+  }
 
   if (pre_scroll_top_progress == top_progress_ &&
       pre_scroll_bottom_progress == bottom_progress_) {
