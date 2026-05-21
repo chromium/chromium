@@ -69,7 +69,7 @@ bool RegionalCapabilitiesServiceFactory::
   CHECK(profile->IsSystemProfile());
   std::unique_ptr<RegionalCapabilitiesService::Client> client =
       CreateRegionalCapabilitiesServiceClient();
-  return RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+  return RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
       CHECK_DEREF(client));
 }
 #endif  // BUILDFLAG(IS_WINDOWS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

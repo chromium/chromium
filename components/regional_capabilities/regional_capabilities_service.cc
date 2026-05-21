@@ -406,8 +406,15 @@ bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {
   return GetChoiceScreenEligibilityConfig().has_value();
 }
 
+bool RegionalCapabilitiesService::IsInCurrentSearchEngineChoiceScreenRegion(
+    const country_codes::CountryId& tested_country_id) {
+  return IsInSearchEngineChoiceScreenRegion() &&
+         std::ranges::contains(GetActiveProgramSettings().associated_countries,
+                               tested_country_id);
+}
+
 // static
-bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+bool RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
     const country_codes::CountryId& tested_country_id) {
   return GetSettingsForProgram(CountryIdToProgram(tested_country_id))
       .choice_screen_eligibility_config.has_value();
@@ -415,11 +422,12 @@ bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static
-bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+bool RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
     Client& client) {
   const GetCountryIdResult country_id_result =
       GetCountryIdFromClient(client, Client::CountryIdCallback());
-  return IsInSearchEngineChoiceScreenRegion(country_id_result.country_id);
+  return GetSettingsForProgram(CountryIdToProgram(country_id_result.country_id))
+      .choice_screen_eligibility_config.has_value();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

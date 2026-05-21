@@ -469,7 +469,8 @@ enum class PendingDisplayStateStatus {
   kTimedOut = 1,
   kUploaded = 2,
   kStayPending = 3,
-  kMaxValue = kStayPending,
+  kProgramMismatch = 4,
+  kMaxValue = kProgramMismatch,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:PendingChoiceScreenDisplayStateStatus)
 
@@ -875,10 +876,13 @@ void SearchEngineChoiceService::RecordChoiceMade(
 
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     const ChoiceScreenDisplayState& display_state) {
-  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion(
-          display_state.country_id)) {
+  if (!regional_capabilities_service_
+           ->IsInCurrentSearchEngineChoiceScreenRegion(
+               display_state.country_id)) {
+    // The current choice screen declaring that it's for a different
+    // country / region than the current one is not expected to happen.
     // Tests or command line can force this, but we want to avoid polluting the
-    // histograms with unwanted country data.
+    // histograms with unwanted country data or unnecessary crashes, so no-op.
     return;
   }
 
@@ -890,8 +894,33 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   // the choice screen more than once, which is bad UX.
   // See crbug.com/390272573 for context and past debugging attempts.
   if (!has_recorded_display_state_) {
-    CHECK(!profile_prefs_->HasPrefPath(
-        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+    if (profile_prefs_->HasPrefPath(
+            prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState)) {
+      const base::DictValue& dict = profile_prefs_->GetDict(
+          prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+      std::optional<ChoiceScreenDisplayState> pending_display_state =
+          ChoiceScreenDisplayState::FromDict(dict);
+
+      if (pending_display_state.has_value() &&
+          regional_capabilities_service_
+              ->IsInCurrentSearchEngineChoiceScreenRegion(
+                  pending_display_state->country_id)) {
+        // TODO(crbug.com/513536289): Consider comparing the active programs
+        // instead. It would require to start putting it in the display state
+        // cache. If programs are compatible, we should NOT have reached this
+        // state. Re-entry for the same program is a bug. See
+        // crbug.com/390272573.
+        NOTREACHED(base::NotFatalUntil::M153);
+      }
+
+      // If we are recording a new display state because we changed programs,
+      // we should wipe any pending one from that previous session & program.
+      profile_prefs_->ClearPref(
+          prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+      base::UmaHistogramEnumeration(
+          "Search.ChoicePrefsCheck.PendingChoiceScreenDisplayStateStatus",
+          PendingDisplayStateStatus::kProgramMismatch);
+    }
     has_recorded_display_state_ = true;
   } else {
     // Re-entry, we just record a histogram and let the code otherwise
@@ -1002,6 +1031,8 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
     case PendingDisplayStateStatus::kStayPending:
       // Do nothing. Processing will be attempted again next time.
       return;
+    case PendingDisplayStateStatus::kProgramMismatch:
+      NOTREACHED();  // No expected to be returned here.
   }
   NOTREACHED();
 }

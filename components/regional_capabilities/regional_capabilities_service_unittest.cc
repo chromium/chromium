@@ -1056,44 +1056,55 @@ TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, IsInSearchEngineChoiceScreenRegion) {
-  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("DE")));
-  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("FR")));
-  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("VA")));
-  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("AX")));
-  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("YT")));
-  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("NC")));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("DE")));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("FR")));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("VA")));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("AX")));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("YT")));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("NC")));
 
 #if BUILDFLAG(IS_IOS)
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(switches::kTaiyakiAllSurfaces);
-    EXPECT_EQ(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-                  CountryId("JP")),
-              kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
+    EXPECT_EQ(
+        RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+            CountryId("JP")),
+        kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
   }
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(switches::kTaiyakiAllSurfaces);
-    EXPECT_EQ(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-                  CountryId("JP")),
-              kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
+    EXPECT_EQ(
+        RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+            CountryId("JP")),
+        kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
   }
 #else
-  EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("JP")));
+  EXPECT_FALSE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("JP")));
 #endif  // BUILDFLAG(IS_IOS)
 
-  EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId("US")));
-  EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
-      CountryId()));
+  EXPECT_FALSE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId("US")));
+  EXPECT_FALSE(
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          CountryId()));
 }
 
 TEST_F(RegionalCapabilitiesServiceTest,
@@ -1150,28 +1161,32 @@ TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FetchedCountryInRegion) {
   AsyncRegionalCapabilitiesServiceClient client;
   client.SetFetchedCountry(CountryId("FR"));
   EXPECT_TRUE(
-      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          client));
 }
 
 TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FetchedCountryNotInRegion) {
   AsyncRegionalCapabilitiesServiceClient client;
   client.SetFetchedCountry(CountryId("US"));
   EXPECT_FALSE(
-      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          client));
 }
 
 TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FallbackCountryInRegion) {
   AsyncRegionalCapabilitiesServiceClient client(
       /*fallback_country_id=*/CountryId("FR"));
   EXPECT_TRUE(
-      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          client));
 }
 
 TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FallbackCountryNotInRegion) {
   AsyncRegionalCapabilitiesServiceClient client(
       /*fallback_country_id=*/CountryId("US"));
   EXPECT_FALSE(
-      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+      RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+          client));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

@@ -112,9 +112,15 @@ class RegionalCapabilitiesService : public KeyedService {
   // show a search engine choice screen.
   bool IsInSearchEngineChoiceScreenRegion();
 
-  // Returns whether the tested country ID is associated with a region in which
-  // we can show a search engine choice screen.
-  static bool IsInSearchEngineChoiceScreenRegion(
+  // Returns `true` if the tested country ID is associated with the currently
+  // active program's region and if that's a region in which we can show a
+  // search engine choice screen.
+  bool IsInCurrentSearchEngineChoiceScreenRegion(
+      const country_codes::CountryId& tested_country_id);
+
+  // Static overload for unit tests testing country derivation without a service
+  // instance.
+  static bool IsInAnySearchEngineChoiceScreenRegion(
       const country_codes::CountryId& tested_country_id);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -123,9 +129,9 @@ class RegionalCapabilitiesService : public KeyedService {
   //
   // It doesn't take cached data into account. This has been introduced for
   // clients associated with system profiles (where the service is not
-  // available). Most clients should use `IsInSearchEngineChoiceScreenRegion()`
-  // instead.
-  static bool IsInSearchEngineChoiceScreenRegion(Client& client);
+  // available). Most clients should use
+  // `IsInCurrentSearchEngineChoiceScreenRegion()` instead.
+  static bool IsInAnySearchEngineChoiceScreenRegion(Client& client);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Returns true when the choice screen eligibility check against country

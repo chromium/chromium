@@ -331,6 +331,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="StayPending">
     Intermediate state, the pending data processing will be re-attempted later
   </int>
+  <int value="4" label="ProgramMismatch">
+    Terminal state, the program has changed and the pending data will be wiped
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/search_engines/search_engine_choice/search_engine_choice_service.cc:PendingDisplayStateStatus) -->
