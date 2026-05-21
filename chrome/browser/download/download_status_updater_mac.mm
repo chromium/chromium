@@ -7,12 +7,46 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/foundation_util.h"
-#include "base/memory/scoped_policy.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #import "chrome/browser/ui/cocoa/dock_icon.h"
 #include "components/download/public/common/download_item.h"
 #import "net/base/apple/url_conversions.h"
+
+@interface CrDownloadCanceller : NSObject
+- (instancetype)initWithDownloadItem:(download::DownloadItem*)download;
+- (void)cancel;
+- (void)invalidate;
+@end
+
+@implementation CrDownloadCanceller {
+  // `_download` is owned by the DownloadManager. It must not be captured by
+  // the NSProgress cancellationHandler, whose lifetime is controlled by the
+  // system. CrNSProgressUserData invalidates this pointer before the owning
+  // DownloadItem is destroyed.
+  RAW_PTR_EXCLUSION download::DownloadItem* _download;
+}
+
+- (instancetype)initWithDownloadItem:(download::DownloadItem*)download {
+  self = [super init];
+  if (self) {
+    _download = download;
+  }
+  return self;
+}
+
+- (void)cancel {
+  if (_download) {
+    _download->Cancel(/*user_cancel=*/true);
+  }
+}
+
+- (void)invalidate {
+  _download = nullptr;
+}
+
+@end
 
 namespace {
 
@@ -20,17 +54,27 @@ const char kCrNSProgressUserDataKey[] = "CrNSProgressUserData";
 
 class CrNSProgressUserData : public base::SupportsUserData::Data {
  public:
-  CrNSProgressUserData(NSProgress* progress, const base::FilePath& target)
+  CrNSProgressUserData(NSProgress* progress,
+                       CrDownloadCanceller* canceller,
+                       const base::FilePath& target)
       : target_(target) {
     progress_ = progress;
+    canceller_ = canceller;
   }
-  ~CrNSProgressUserData() override { [progress_ unpublish]; }
+  ~CrNSProgressUserData() override {
+    [canceller_ invalidate];
+    // Clear the handler to eagerly release the block. The __weak reference
+    // in the block already guarantees safety if the block outlives us.
+    progress_.cancellationHandler = nil;
+    [progress_ unpublish];
+  }
 
   NSProgress* progress() const { return progress_; }
   base::FilePath target() const { return target_; }
   void setTarget(const base::FilePath& target) { target_ = target; }
 
  private:
+  CrDownloadCanceller* __strong canceller_;
   NSProgress* __strong progress_;
   base::FilePath target_;
 };
@@ -65,24 +109,26 @@ CrNSProgressUserData* CreateOrGetNSProgress(download::DownloadItem* download) {
   // ship it.
   progress.pausable = NO;
 
-  // TODO(crbug.com/498376171): Mitigation for potential UAF by
-  // cancellationHandler below.
-  raw_ptr<download::DownloadItem> protected_download = download;
+  CrDownloadCanceller* __strong canceller =
+      [[CrDownloadCanceller alloc] initWithDownloadItem:download];
 
   // Do publish a cancellation handler. In icon view, the Finder provides a
   // little (X) button on the icon, and using it will cause this callback.
+  // Only capture the ObjC canceller weakly because NSProgress may be held by
+  // the system after DownloadItem is destroyed.
+  __weak CrDownloadCanceller* weak_canceller = canceller;
   progress.cancellable = YES;
   progress.cancellationHandler = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
-      protected_download->Cancel(/*user_cancel=*/true);
+      [weak_canceller cancel];
     });
   };
 
   [progress publish];
 
-  download->SetUserData(
-      &kCrNSProgressUserDataKey,
-      std::make_unique<CrNSProgressUserData>(progress, destination_path));
+  download->SetUserData(&kCrNSProgressUserDataKey,
+                        std::make_unique<CrNSProgressUserData>(
+                            progress, canceller, destination_path));
 
   return static_cast<CrNSProgressUserData*>(
       download->GetUserData(&kCrNSProgressUserDataKey));
