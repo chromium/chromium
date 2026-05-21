@@ -51,6 +51,22 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::VulkanYCbCrInfoDataView,
     out->suggested_xchroma_offset = data.suggested_xchroma_offset();
     out->suggested_ychroma_offset = data.suggested_ychroma_offset();
     out->format_features = data.format_features();
+
+    // Values from Vulkan definitions, because we can't easy depend on vulkan
+    // here.
+    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/vulkan-headers/src/include/vulkan/vulkan_core.h;drc=f6a6f7ab165cedbfa2a7d0c93fe27a2d01ce09c8;l=5438
+    const uint32_t VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020 = 4;
+    const uint32_t VK_CHROMA_LOCATION_MIDPOINT = 1;
+    const uint32_t VK_SAMPLER_YCBCR_RANGE_ITU_NARROW = 1;
+
+    if (out->suggested_ycbcr_model >
+            VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020 ||
+        out->suggested_ycbcr_range > VK_SAMPLER_YCBCR_RANGE_ITU_NARROW ||
+        out->suggested_xchroma_offset > VK_CHROMA_LOCATION_MIDPOINT ||
+        out->suggested_ychroma_offset > VK_CHROMA_LOCATION_MIDPOINT) {
+      return false;
+    }
+
     return true;
   }
 };
