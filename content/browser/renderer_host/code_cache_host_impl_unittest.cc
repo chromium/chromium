@@ -806,7 +806,9 @@ TEST_P(CodeCacheHostImplTest, PdfObliviousToOpenWeb) {
   // State for a PDF page that also loads the above resource on the same site.
   // Note that this requires setting is_pdf to true in the starting UrlInfo.
   const ChildProcessId kPdfProcessId(13);
-  UrlInfo url_info(UrlInfoInit(open_web_site).WithIsPdf(true));
+  UrlInfo url_info(
+      UrlInfoInit(open_web_site)
+          .WithEmbedderIsolationInfo(EmbedderIsolationInfo::CreateForPdf()));
   SetupRendererWithLock(kPdfProcessId, url_info);
 
   GeneratedCodeCacheContext::RunOrPostTask(

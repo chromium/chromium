@@ -1154,7 +1154,7 @@ bool IsDocumentLoadedWithoutUrlLoaderClient(
     bool is_same_document,
     bool is_mhtml_subframe) {
 #if BUILDFLAG(IS_ANDROID)
-  if (navigation_request->GetUrlInfo().is_pdf) {
+  if (navigation_request->GetUrlInfo().embedder_isolation_info.is_pdf()) {
     return true;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -11789,7 +11789,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     const url::Origin& origin,
     const GURL& url,
     bool is_same_document_navigation,
-    bool is_pdf,
+    const EmbedderIsolationInfo& embedder_isolation_info,
     bool is_sandboxed) {
   // Note that callers are responsible for avoiding this function in modes that
   // can bypass these rules, such as --disable-web-security or certain Android
@@ -11814,7 +11814,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
           .WithWebExposedIsolationInfo(
               GetSiteInstance()->GetWebExposedIsolationInfo())
           .WithSandbox(is_sandboxed)
-          .WithIsPdf(is_pdf));
+          .WithEmbedderIsolationInfo(embedder_isolation_info));
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
           this, url_info,
           /*is_renderer_initiated_check=*/true)) {
@@ -11982,17 +11982,21 @@ bool RenderFrameHostImpl::CanSubframeCommitOriginAndUrl(
 
   const GURL& dest_top_url = dest_nav_entry->GetURL();
 
-  // Assume the change in main frame FrameNavigationEntry won't affect whether
-  // the main frame is showing a PDF or a sandboxed document, since we don't
-  // track that in FrameNavigationEntry.
-  const bool is_top_pdf =
-      GetMainFrame()->GetSiteInstance()->GetSiteInfo().is_pdf();
+  // Assume the change in main frame FrameNavigationEntry won't affect the
+  // main frame's embedder-imposed isolation or sandbox status, since we
+  // don't track those in FrameNavigationEntry.
+  const EmbedderIsolationInfo& top_embedder_isolation_info =
+      GetMainFrame()
+          ->GetSiteInstance()
+          ->GetSiteInfo()
+          .embedder_isolation_info();
   const bool is_top_sandboxed =
       GetMainFrame()->GetSiteInstance()->GetSecurityPrincipal().IsSandboxed();
 
   return GetMainFrame()->CanCommitOriginAndUrl(
              dest_top_origin, dest_top_url,
-             true /* is_same_document_navigation */, is_top_pdf,
+             true /* is_same_document_navigation */,
+             top_embedder_isolation_info,
              is_top_sandboxed) == CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
 }
 
@@ -12891,7 +12895,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
 #if BUILDFLAG(IS_ANDROID)
     if (effective_scheme == url::kContentScheme &&
-        !navigation_request->GetUrlInfo().is_pdf) {
+        !navigation_request->GetUrlInfo().embedder_isolation_info.is_pdf()) {
       // Only non-PDF content:// URLs can load content:// subresources. PDF URIs
       // shouldn't load other content URIs.
       non_network_factories.emplace(url::kContentScheme,
@@ -15610,10 +15614,15 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
     }
   }
 
-  // Use the value of `is_pdf` from `navigation_request` (if provided). This may
-  // be needed to verify the process lock in `CanCommitOriginAndUrl()`, but
-  // cannot be derived from the URL and origin alone.
-  bool is_pdf = navigation_request && navigation_request->GetUrlInfo().is_pdf;
+  // Use the `embedder_isolation_info` from `navigation_request` (if
+  // provided). This carries the PDF / per-instance MIME-handler isolation
+  // mode that is needed to verify the process lock in
+  // `CanCommitOriginAndUrl()`, but cannot be derived from the URL and
+  // origin alone.
+  EmbedderIsolationInfo embedder_isolation_info =
+      navigation_request
+          ? navigation_request->GetUrlInfo().embedder_isolation_info
+          : EmbedderIsolationInfo::CreateNone();
   bool is_sandboxed =
       navigation_request && navigation_request->GetUrlInfo().is_sandboxed;
 
@@ -15621,7 +15630,7 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
   // than our FilterURL checks.  If a renderer violates this policy, it
   // should be killed.
   switch (CanCommitOriginAndUrl(origin, url, is_same_document_navigation,
-                                is_pdf, is_sandboxed)) {
+                                embedder_isolation_info, is_sandboxed)) {
     case CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL:
       // The origin and URL are safe to commit.
       break;

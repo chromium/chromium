@@ -7,6 +7,7 @@
 
 #include "base/unguessable_token.h"
 #include "content/browser/agent_cluster_key.h"
+#include "content/browser/embedder_isolation_info.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
@@ -161,7 +162,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
       bool does_site_request_dedicated_process_for_coop,
       bool requires_origin_keyed_process,
       bool is_sandboxed,
-      bool is_pdf,
+      const EmbedderIsolationInfo& embedder_isolation_info,
       bool cross_origin_isolated_through_dip);
 
   // Exposes functionality of `GetSiteForURLInternal so tests can do effective
@@ -202,9 +203,9 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
            bool does_site_request_dedicated_process_for_coop,
            bool is_jit_disabled,
            bool are_v8_optimizations_disabled,
-           bool is_pdf,
            bool is_fenced,
-           const base::UnguessableToken& browser_context_id);
+           const base::UnguessableToken& browser_context_id,
+           const EmbedderIsolationInfo& embedder_isolation_info);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
 
@@ -298,6 +299,12 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // the per-document grouping parameter.
   int unique_sandbox_id() const { return unique_sandbox_id_; }
 
+  // Returns the embedder-specified process isolation policy for this SiteInfo.
+  // See //content/browser/embedder_isolation_info.h.
+  const EmbedderIsolationInfo& embedder_isolation_info() const {
+    return embedder_isolation_info_;
+  }
+
   // Returns the web-exposed isolation mode of the BrowsingInstance hosting
   // SiteInstances with this SiteInfo. The level of isolation which a page
   // opts-into has implications for the set of other pages which can live in
@@ -324,7 +331,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   bool are_v8_optimizations_disabled() const {
     return are_v8_optimizations_disabled_;
   }
-  bool is_pdf() const { return is_pdf_; }
+  bool is_pdf() const { return embedder_isolation_info_.is_pdf(); }
   bool is_fenced() const { return is_fenced_; }
 
   // See comments on `does_site_request_dedicated_process_for_coop_` for more
@@ -517,9 +524,6 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // Indicates that v8 optimizations are disabled for this SiteInfo.
   bool are_v8_optimizations_disabled_ = false;
 
-  // Indicates that this SiteInfo is for PDF content.
-  bool is_pdf_ = false;
-
   // Indicates that this SiteInfo is for content inside a fenced frame. We use
   // just a bool as opposed to a GUID here in order to group same-origin fenced
   // frames together. See more details around fenced frame process isolation
@@ -530,6 +534,10 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // Unique id of the BrowserContext. SiteInfos associated with different
   // BrowserContexts should be considered distinct security principals.
   base::UnguessableToken browser_context_id_;
+
+  // Embedder-specified process isolation policy for this SiteInfo. See
+  // //content/browser/embedder_isolation_info.h.
+  EmbedderIsolationInfo embedder_isolation_info_;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

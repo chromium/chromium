@@ -187,7 +187,7 @@ SiteInfo SiteInfo::CreateForErrorPage(
       web_exposed_isolation_level, is_guest,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* are_v8_optimizations_disabled */,
-      false /* is_pdf */, is_fenced, browser_context_id);
+      is_fenced, browser_context_id, EmbedderIsolationInfo::CreateNone());
 }
 
 // static
@@ -228,8 +228,8 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
                   web_exposed_isolation_level, isolation_context.is_guest(),
                   /*does_site_request_dedicated_process_for_coop=*/false,
                   is_jit_disabled, are_v8_optimizations_disabled,
-                  /*is_pdf=*/false, isolation_context.is_fenced(),
-                  browser_context->UniqueToken());
+                  isolation_context.is_fenced(), browser_context->UniqueToken(),
+                  EmbedderIsolationInfo::CreateNone());
 }
 
 // static
@@ -252,7 +252,8 @@ SiteInfo SiteInfo::CreateForGuest(
       /*is_guest=*/true,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueToken());
+      /*is_fenced=*/false, browser_context->UniqueToken(),
+      EmbedderIsolationInfo::CreateNone());
 }
 
 // static
@@ -266,9 +267,12 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                                /*effective_url=*/std::nullopt);
   GURL site_url = agent_cluster_key.GetURL();
 
-  // PDF content should live in JIT-less processes because it is inherently less
-  // trusted.
-  bool is_jitless = url_info.is_pdf;
+  // PDF content should live in JIT-less processes because it is inherently
+  // less trusted.
+  // TODO(crbug.com/495538206): Consider extending JIT-less treatment to
+  // per-document MIME handler extension processes once the security and
+  // performance tradeoff for 3P extensions is decided.
+  bool is_jitless = url_info.embedder_isolation_info.is_pdf();
   bool are_v8_optimizations_disabled = false;
 
   std::optional<StoragePartitionConfig> storage_partition_config =
@@ -311,7 +315,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                   site_url, isolation_context, browser_context,
                   url_info.requests_coop_isolation(),
                   !url_info.oac_header_request.has_value(),
-                  url_info.is_sandboxed, url_info.is_pdf,
+                  url_info.is_sandboxed, url_info.embedder_isolation_info,
                   url_info.cross_origin_isolation_key.has_value() &&
                       url_info.cross_origin_isolation_key
                           ->cross_origin_isolated_through_dip)
@@ -368,9 +372,9 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                   web_exposed_isolation_info, web_exposed_isolation_level,
                   isolation_context.is_guest(),
                   does_site_request_dedicated_process_for_coop, is_jitless,
-                  are_v8_optimizations_disabled, url_info.is_pdf,
-                  isolation_context.is_fenced(),
-                  isolation_context.browser_context()->UniqueToken());
+                  are_v8_optimizations_disabled, isolation_context.is_fenced(),
+                  isolation_context.browser_context()->UniqueToken(),
+                  url_info.embedder_isolation_info);
 }
 
 // static
@@ -390,9 +394,9 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    bool does_site_request_dedicated_process_for_coop,
                    bool is_jit_disabled,
                    bool are_v8_optimizations_disabled,
-                   bool is_pdf,
                    bool is_fenced,
-                   const base::UnguessableToken& browser_context_id)
+                   const base::UnguessableToken& browser_context_id,
+                   const EmbedderIsolationInfo& embedder_isolation_info)
     : site_url_(site_url),
       agent_cluster_key_(agent_cluster_key),
       is_sandboxed_(is_sandboxed),
@@ -405,9 +409,9 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
           does_site_request_dedicated_process_for_coop),
       is_jit_disabled_(is_jit_disabled),
       are_v8_optimizations_disabled_(are_v8_optimizations_disabled),
-      is_pdf_(is_pdf),
       is_fenced_(is_fenced),
-      browser_context_id_(browser_context_id) {
+      browser_context_id_(browser_context_id),
+      embedder_isolation_info_(embedder_isolation_info) {
   DCHECK(is_sandboxed_ ||
          unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
   DCHECK((oac_status() != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
@@ -430,9 +434,9 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false,
-               /*is_pdf=*/false,
                /*is_fenced=*/false,
-               browser_context->UniqueToken()) {}
+               browser_context->UniqueToken(),
+               EmbedderIsolationInfo::CreateNone()) {}
 
 // static
 auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
@@ -448,8 +452,8 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
       site_info.web_exposed_isolation_info_,
       site_info.web_exposed_isolation_level_, site_info.is_guest_,
       site_info.is_jit_disabled_, site_info.are_v8_optimizations_disabled_,
-      site_info.is_pdf_, site_info.is_fenced_, site_info.agent_cluster_key_,
-      site_info.browser_context_id_);
+      site_info.is_fenced_, site_info.agent_cluster_key_,
+      site_info.browser_context_id_, site_info.embedder_isolation_info_);
 }
 
 const StoragePartitionConfig& SiteInfo::GetStoragePartitionConfig() const {
@@ -560,9 +564,10 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
           other.does_site_request_dedicated_process_for_coop_ &&
       is_jit_disabled_ == other.is_jit_disabled_ &&
       are_v8_optimizations_disabled_ == other.are_v8_optimizations_disabled_ &&
-      is_pdf_ == other.is_pdf_ && is_fenced_ == other.is_fenced_ &&
+      is_fenced_ == other.is_fenced_ &&
       agent_cluster_key_ == other.agent_cluster_key_ &&
-      browser_context_id_ == other.browser_context_id_;
+      browser_context_id_ == other.browser_context_id_ &&
+      embedder_isolation_info_ == other.embedder_isolation_info_;
 
   if (is_match) {
     // If all the fields match, then the "same principal" subset must also
@@ -584,10 +589,10 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   // leads to crashes in https://crbug.com/1279453.
   // TODO(ellyjones): Same as above, but about are_v8_optimizations_disabled_
   // (presumably).
-  return std::tie(is_sandboxed_, unique_sandbox_id_, is_pdf_, is_guest_,
+  return std::tie(is_sandboxed_, unique_sandbox_id_, is_guest_,
                   web_exposed_isolation_info_, web_exposed_isolation_level_,
                   storage_partition_config_, is_fenced_, agent_cluster_key_,
-                  browser_context_id_);
+                  browser_context_id_, embedder_isolation_info_);
 }
 
 int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
@@ -675,8 +680,9 @@ std::string SiteInfo::GetDebugString() const {
     debug_string += ", noopt";
   }
 
-  if (is_pdf_) {
-    debug_string += ", pdf";
+  if (!embedder_isolation_info_.is_none()) {
+    debug_string +=
+        ", embedder_isolation=" + embedder_isolation_info_.ToDebugString();
   }
 
   if (!storage_partition_config_.is_default()) {
@@ -724,7 +730,8 @@ bool SiteInfo::RequiresDedicatedProcess(
   return RequiresDedicatedProcessInternal(
       site_url_, isolation_context, browser_context,
       does_site_request_dedicated_process_for_coop_,
-      agent_cluster_key_.IsOriginKeyed(), is_sandboxed_, is_pdf_,
+      agent_cluster_key_.IsOriginKeyed(), is_sandboxed_,
+      embedder_isolation_info_,
       agent_cluster_key_.IsCrossOriginIsolated() &&
           agent_cluster_key_.GetCrossOriginIsolationKey()
               ->cross_origin_isolated_through_dip);
@@ -1225,7 +1232,7 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
     bool does_site_request_dedicated_process_for_coop,
     bool requires_origin_keyed_process,
     bool is_sandboxed,
-    bool is_pdf,
+    const EmbedderIsolationInfo& embedder_isolation_info,
     bool cross_origin_isolated_through_dip) {
   // If --site-per-process is enabled, site isolation is enabled everywhere.
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
@@ -1270,7 +1277,12 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
   }
 
   // Isolate PDF content.
-  if (is_pdf) {
+  if (embedder_isolation_info.is_pdf()) {
+    return true;
+  }
+
+  // Isolate MIME handler extension content into per-document processes.
+  if (embedder_isolation_info.is_unique_instance()) {
     return true;
   }
 

@@ -3662,7 +3662,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
              dest_url_info.url.SchemeIs(url::kDataScheme) &&
              !was_server_redirect && !frame_tree_node_->IsMainFrame() &&
              source_instance && !dest_url_info.is_sandboxed &&
-             !dest_url_info.is_pdf) {
+             !dest_url_info.embedder_isolation_info.is_pdf()) {
     // In the case a subframe data: URL (excluding server redirects, see
     // CanUseSourceSiteInstance), if it can't use the source SiteInstance, it
     // should have its own SiteInstance that shares a group with the initiator.
@@ -4169,7 +4169,7 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // PDF content should never share a SiteInstance with non-PDF content. In
   // practice, this prevents the PDF viewer extension from incorrectly sharing
   // a process with PDF content that was loaded from a data URL.
-  if (dest_url_info.is_pdf) {
+  if (dest_url_info.embedder_isolation_info.is_pdf()) {
     CHECK(!source_instance->GetProcess()->IsPdf());
     AppendReason(reason,
                  "CanUseSourceSiteInstance => false "

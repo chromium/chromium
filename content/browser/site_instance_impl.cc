@@ -1183,7 +1183,7 @@ bool SiteInstanceImpl::IsNavigationSameSite(
 
   // Similarly, do not consider PDF and non-PDF documents to be same-site; they
   // should never share a SiteInstance. See https://crbug.com/359345045.
-  if (IsPdf() != dest_url_info.is_pdf) {
+  if (IsPdf() != dest_url_info.embedder_isolation_info.is_pdf()) {
     return false;
   }
 

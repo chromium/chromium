@@ -4393,7 +4393,8 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   url_info_init.WithOACHeaderRequest(oac_header_request)
       .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-      .WithIsPdf(is_pdf_);
+      .WithEmbedderIsolationInfo(is_pdf_ ? EmbedderIsolationInfo::CreateForPdf()
+                                         : EmbedderIsolationInfo::CreateNone());
 
   // Compute the CrossOriginIsolationKey for the navigation.
   std::optional<AgentClusterKey::CrossOriginIsolationKey>

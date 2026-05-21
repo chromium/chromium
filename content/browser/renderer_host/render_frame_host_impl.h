@@ -279,6 +279,7 @@ class BrowsingContextState;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
 class CrossOriginOpenerPolicyAccessReportManager;
+class EmbedderIsolationInfo;
 class FeatureObserver;
 class FencedFrame;
 class FileSystemManagerImpl;
@@ -3743,11 +3744,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in cases where it is applicable. This is a more conservative check than
   // RenderProcessHost::FilterURL, since it will be used to kill processes that
   // commit unauthorized origins.
-  CanCommitStatus CanCommitOriginAndUrl(const url::Origin& origin,
-                                        const GURL& url,
-                                        bool is_same_document_navigation,
-                                        bool is_pdf,
-                                        bool is_sandboxed);
+  CanCommitStatus CanCommitOriginAndUrl(
+      const url::Origin& origin,
+      const GURL& url,
+      bool is_same_document_navigation,
+      const EmbedderIsolationInfo& embedder_isolation_info,
+      bool is_sandboxed);
 
   // Returns whether a subframe navigation request should be allowed to commit
   // to the current RenderFrameHost.

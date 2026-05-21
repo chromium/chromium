@@ -2422,7 +2422,8 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
                     actual_process_lock.GetStoragePartitionConfig())
                 .WithWebExposedIsolationInfo(
                     actual_process_lock.GetWebExposedIsolationInfo())
-                .WithIsPdf(actual_process_lock.is_pdf())
+                .WithEmbedderIsolationInfo(
+                    actual_process_lock.embedder_isolation_info())
                 .WithSandbox(actual_process_lock.is_sandboxed())
                 .WithUniqueSandboxId(actual_process_lock.unique_sandbox_id())
                 .WithCrossOriginIsolationKey(

@@ -30,7 +30,7 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       unique_sandbox_id(init.unique_sandbox_id_),
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
-      is_pdf(init.is_pdf_),
+      embedder_isolation_info(init.embedder_isolation_info_),
       cross_origin_isolation_key(init.cross_origin_isolation_key_),
       process_selection_user_data(init.process_selection_user_data_) {
   DCHECK(init.is_sandboxed_ ||
@@ -79,7 +79,7 @@ void UrlInfo::WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const {
     proto->set_origin(origin->GetDebugString());
   }
   proto->set_is_sandboxed(is_sandboxed);
-  proto->set_is_pdf(is_pdf);
+  proto->set_is_pdf(embedder_isolation_info.is_pdf());
   proto->set_is_coop_isolation_requested(is_coop_isolation_requested);
   int origin_isolation_request = 0;
   if (oac_header_request &&
@@ -120,7 +120,7 @@ UrlInfoInit::UrlInfoInit(const UrlInfo& base)
       unique_sandbox_id_(base.unique_sandbox_id),
       storage_partition_config_(base.storage_partition_config),
       web_exposed_isolation_info_(base.web_exposed_isolation_info),
-      is_pdf_(base.is_pdf),
+      embedder_isolation_info_(base.embedder_isolation_info),
       cross_origin_isolation_key_(base.cross_origin_isolation_key),
       process_selection_user_data_(base.process_selection_user_data) {}
 
@@ -170,8 +170,9 @@ UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
   return *this;
 }
 
-UrlInfoInit& UrlInfoInit::WithIsPdf(bool is_pdf) {
-  is_pdf_ = is_pdf;
+UrlInfoInit& UrlInfoInit::WithEmbedderIsolationInfo(
+    EmbedderIsolationInfo info) {
+  embedder_isolation_info_ = std::move(info);
   return *this;
 }
 

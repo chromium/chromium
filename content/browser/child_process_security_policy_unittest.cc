@@ -1771,7 +1771,9 @@ TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
 
   // Create a ProcessLock for a PDF renderer, and lock the kRendererID process
   // to it.
-  UrlInfo pdf_url_info(UrlInfoInit(GURL("https://foo.com")).WithIsPdf(true));
+  UrlInfo pdf_url_info(
+      UrlInfoInit(GURL("https://foo.com"))
+          .WithEmbedderIsolationInfo(EmbedderIsolationInfo::CreateForPdf()));
   scoped_refptr<SiteInstanceImpl> pdf_instance =
       SiteInstanceImpl::CreateForUrlInfo(&browser_context, pdf_url_info,
                                          /*is_guest=*/false,
