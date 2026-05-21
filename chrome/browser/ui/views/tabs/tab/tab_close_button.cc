@@ -214,7 +214,7 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
 }
 void TabCloseButton::UpdateIcon() {
   const auto& icon = features::IsRoundedIconsEnabled()
-                         ? kCloseSmallIcon
+                         ? kCloseIcon
                          : kCloseTabChromeRefreshOldIcon;
 
   SetImageModel(views::Button::STATE_NORMAL,

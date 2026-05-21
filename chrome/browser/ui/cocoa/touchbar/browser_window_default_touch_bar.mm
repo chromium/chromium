@@ -678,7 +678,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)navigateStopIcon {
   static __strong NSImage* navigateStopIcon = CreateNSImageFromIcon(
-      features::IsRoundedIconsEnabled() ? kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? kCloseIcon
                                         : kNavigateStopChromeRefreshOldIcon);
   return navigateStopIcon;
 }

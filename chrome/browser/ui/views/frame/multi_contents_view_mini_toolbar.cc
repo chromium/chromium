@@ -116,7 +116,7 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
                           base::Unretained(this)),
-      features::IsRoundedIconsEnabled() ? kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? kCloseIcon
                                         : kCloseTabChromeRefreshOldIcon,
       16, kColorMultiContentsViewMiniToolbarForeground));
   SetAccessibleNameAndTooltip(close_button_, IDS_SPLIT_TAB_CLOSE);

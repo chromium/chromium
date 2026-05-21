@@ -754,7 +754,7 @@ void ProfileSubMenuModel::BuildCloseProfileRow(Profile* profile) {
                                                    CountBrowsersFor(profile)),
                   ui::ImageModel::FromVectorIcon(
                       features::IsRoundedIconsEnabled()
-                          ? kCloseSmallIcon
+                          ? kCloseIcon
                           : vector_icons::kCloseChromeRefreshOldIcon,
                       ui::kColorMenuIcon, kDefaultIconSize));
 }

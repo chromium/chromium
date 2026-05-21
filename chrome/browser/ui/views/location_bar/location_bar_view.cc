@@ -1745,7 +1745,7 @@ void LocationBarView::RefreshClearAllButtonIcon() {
                                                ? omnibox::kBackspaceFilledIcon
                                                : omnibox::kClearOldIcon
                                 : features::IsRoundedIconsEnabled()
-                                    ? kCloseSmallIcon
+                                    ? kCloseIcon
                                     : kTabCloseNormalOldIcon;
   SetImageFromVectorIconWithColor(
       clear_all_button_, icon,

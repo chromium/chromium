@@ -70,10 +70,10 @@ ReloadButton::ReloadButton(
                              ? kRefreshIcon
                              : kReloadTouchOldIcon),
       stop_icon_(features::IsRoundedIconsEnabled()
-                     ? kCloseSmallIcon
+                     ? kCloseIcon
                      : kNavigateStopChromeRefreshOldIcon),
       stop_touch_icon_(features::IsRoundedIconsEnabled()
-                           ? kCloseSmallIcon
+                           ? kCloseIcon
                            : kNavigateStopTouchOldIcon),
       double_click_timer_delay_(views::GetDoubleClickInterval()),
       mode_switch_timer_delay_(base::Milliseconds(1350)),

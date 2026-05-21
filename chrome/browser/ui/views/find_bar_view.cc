@@ -315,19 +315,19 @@ FindBarView::FindBarView(FindBarHost* host) {
 
   views::SetImageFromVectorIconWithColor(
       close_button_,
-      features::IsRoundedIconsEnabled() ? kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? kCloseIcon
                                         : kCloseChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   close_button_->SetImageModel(
       views::Button::STATE_HOVERED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kCloseSmallIcon
+                                         ? kCloseIcon
                                          : kCloseChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   close_button_->SetImageModel(
       views::Button::STATE_PRESSED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kCloseSmallIcon
+                                         ? kCloseIcon
                                          : kCloseChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 
