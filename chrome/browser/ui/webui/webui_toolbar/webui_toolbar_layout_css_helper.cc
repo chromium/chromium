@@ -323,11 +323,16 @@ void WebUIToolbarLayoutCssHelper::AddFontVariables(
     std::string& out) {
   const gfx::FontList& font = typography_provider.GetFont(context, style);
   DCHECK_EQ(1u, font.GetFonts().size());
+  std::string_view font_family = font.GetPrimaryFont().GetFontName();
+  // Convert internal Mac font name back to CSS name.
+  if (font_family == ".AppleSystemUIFont") {
+    font_family = "system-ui";
+  }
   base::StrAppend(
       &out,
       // clang-format off
       {prefix, "-font-family:\"",
-       EscapeCssFontName(font.GetPrimaryFont().GetFontName()), "\";",
+       EscapeCssFontName(font_family), "\";",
        prefix, "-font-size:", base::NumberToString(font.GetFontSize()), "px;",
        prefix, "-font-weight:",
        base::NumberToString(static_cast<int>(font.GetFontWeight())), ";",
