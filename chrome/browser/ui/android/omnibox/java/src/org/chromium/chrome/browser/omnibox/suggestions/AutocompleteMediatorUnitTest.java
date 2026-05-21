@@ -1768,7 +1768,7 @@ public class AutocompleteMediatorUnitTest {
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        assertFalse(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
+        assertTrue(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         assertTrue(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
     }
 

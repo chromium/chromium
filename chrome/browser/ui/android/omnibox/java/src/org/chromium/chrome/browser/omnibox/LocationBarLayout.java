@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
@@ -535,4 +536,10 @@ public class LocationBarLayout extends ConstraintLayout {
      * @param verticalScrollOffset The current vertical scroll offset.
      */
     void onSuggestionsListScrollOffsetChanged(int verticalScrollOffset) {}
+
+    /**
+     * Set the fusebox layout mode, which describes how the fusebox should lay itself out w.r.t. the
+     * suggestions list. See {@link FuseboxLayoutMode}.
+     */
+    void setFuseboxLayoutMode(@FuseboxLayoutMode int layoutMode) {}
 }

@@ -1418,12 +1418,14 @@ class LocationBarMediator
      */
     @VisibleForTesting
     /* package */ void handleUrlFocusAnimation(boolean hasFocus) {
-        if (mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
-                        == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+        @FuseboxLayoutMode
+        int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
+        if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                 && hasFocus
                 && !isParentedToSuggestionsContainer()) {
             reparentToSuggestionsContainer();
         }
+        mLocationBarLayout.setFuseboxLayoutMode(layoutMode);
 
         if (hasFocus) {
             mUrlFocusedWithoutAnimations = false;

@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -127,15 +128,23 @@ class SuggestionListViewBinder {
     }
 
     private static void updateColorScheme(PropertyModel model, SuggestionListViewHolder holder) {
+        @FuseboxLayoutMode int layoutMode = model.get(SuggestionListProperties.FUSEBOX_LAYOUT_MODE);
         @ColorInt
         int backgroundColor =
                 OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
                         holder.dropdown.getContext(),
                         model.get(SuggestionListProperties.COLOR_SCHEME));
+        if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            backgroundColor =
+                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                            holder.dropdown.getContext(),
+                            model.get(SuggestionListProperties.COLOR_SCHEME));
+        }
 
         holder.dropdown.setBackgroundColor(backgroundColor);
 
-        if (model.get(SuggestionListProperties.IS_LARGE_SCREEN)) {
+        if (model.get(SuggestionListProperties.IS_LARGE_SCREEN)
+                && layoutMode != FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
             holder.container.setBackgroundColor(Color.TRANSPARENT);
         } else {
             holder.container.setBackgroundColor(backgroundColor);

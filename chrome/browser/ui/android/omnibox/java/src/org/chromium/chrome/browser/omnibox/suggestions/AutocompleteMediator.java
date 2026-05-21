@@ -384,6 +384,9 @@ class AutocompleteMediator
     void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         mDropdownViewInfoListManager.setBrandedColorScheme(brandedColorScheme);
         mListPropertyModel.set(SuggestionListProperties.COLOR_SCHEME, brandedColorScheme);
+        mListPropertyModel.set(
+                SuggestionListProperties.FUSEBOX_LAYOUT_MODE,
+                mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get());
         if (mOmniboxSuggestionsVisualStateObserver != null) {
             mOmniboxSuggestionsVisualStateObserver.onOmniboxSuggestionsBackgroundColorChanged(
                     OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
@@ -1292,7 +1295,8 @@ class AutocompleteMediator
         boolean fuseboxOnTablet = mEmbedder.isTablet() && fuseboxState != FuseboxState.DISABLED;
         boolean separatedFuseboxOnTablet =
                 fuseboxOnTablet && getFuseboxLayoutMode() == FuseboxLayoutMode.TOOLBAR;
-        mListPropertyModel.set(SuggestionListProperties.ROUND_TOP_CORNERS, !fuseboxOnTablet);
+        mListPropertyModel.set(
+                SuggestionListProperties.ROUND_TOP_CORNERS, !separatedFuseboxOnTablet);
         mListPropertyModel.set(
                 SuggestionListProperties.DRAW_OVER_ANCHOR, !separatedFuseboxOnTablet);
     }

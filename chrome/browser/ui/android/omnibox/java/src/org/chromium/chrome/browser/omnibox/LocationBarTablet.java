@@ -28,6 +28,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -48,6 +49,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private static final float OVERLAY_Z_TRANSLATION = 1.0f;
     private static final float NEUTRAL_Z_TRANSLATION = 0.0f;
     private final LayerDrawable mFocusedPopupDrawable;
+    private final GradientDrawable mOuterRect;
+    private final GradientDrawable mInnerRect;
     private LayerDrawable mUnfocusedDrawable;
     private final LayerDrawable mHoverDrawable;
 
@@ -89,6 +92,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     // us to reparent the LocationBar without needing to explicitly reposition other elements of the
     // toolbar.
     private View mHolder;
+    private @FuseboxLayoutMode int mLayoutMode;
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -109,6 +114,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                                         R.drawable
                                                 .modern_toolbar_tablet_text_box_background_focused_popup));
         mFocusedPopupDrawable.mutate();
+        mOuterRect =
+                (GradientDrawable)
+                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);
+        mInnerRect =
+                (GradientDrawable)
+                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_inner_bg);
         mGlifBorderDrawable = new GlifStrokeDrawable(context);
         mLocationBarTabletFuseboxPopupInset =
                 resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
@@ -432,31 +443,21 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     /* package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         super.updateVisualsForState(brandedColorScheme);
 
+        mBrandedColorScheme = brandedColorScheme;
         Context context = getContext();
-        GradientDrawable outerRect =
-                (GradientDrawable)
-                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);
-        if (outerRect != null) {
-            outerRect.setColor(
-                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                            context, brandedColorScheme));
-        }
-
-        GradientDrawable innerRect =
-                (GradientDrawable)
-                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_inner_bg);
-        if (innerRect != null) {
-            innerRect.setColor(
-                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                            context, brandedColorScheme));
-        }
+        mOuterRect.setColor(
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                        context, mBrandedColorScheme));
+        mInnerRect.setColor(
+                OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                        context, mBrandedColorScheme));
 
         GradientDrawable unfocusedRect =
                 (GradientDrawable) mUnfocusedDrawable.findDrawableByLayerId(R.id.unfocused_bg);
         if (unfocusedRect != null) {
             unfocusedRect.setColor(
                     OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
-                            context, brandedColorScheme));
+                            context, mBrandedColorScheme));
         }
     }
 
@@ -502,11 +503,25 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    void setFuseboxLayoutMode(@FuseboxLayoutMode int layoutMode) {
+        super.setFuseboxLayoutMode(layoutMode);
+        mLayoutMode = layoutMode;
+        // We don't expect that the layout mode will ever change back after becoming
+        // SUGGESTIONS_POPOVER (it depends only on flags set at build time and startup) and thus
+        // don't handle that case.
+        if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            mOuterRect.setColor(
+                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                            getContext(), mBrandedColorScheme));
+        }
+    }
+
+    @Override
     public void onFuseboxStateChanged(@FuseboxState int state) {
         super.onFuseboxStateChanged(state);
+        mFuseboxState = state;
         adjustVerticalTranslationForFuseboxState(state);
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
-        mFuseboxState = state;
         Resources resources = getResources();
         LinearLayout.LayoutParams parentParams =
                 (LinearLayout.LayoutParams) mHolder.getLayoutParams();
@@ -632,10 +647,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void adjustBackgroundForSuggestions() {
+        // In popover mode suggestions and the UrlBar live in the same parent container, so we can
+        // use ordinary padding to keep the vertical separation between the two consistent instead
+        // of manipulating the background like we do below.
+        if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) return;
+
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
-        GradientDrawable outerRect =
-                (GradientDrawable)
-                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);
 
         boolean suggestionsListScrolledDown =
                 mSuggestionsListScrollOffset > mLocationBarTabletFuseboxPopupInset;
@@ -648,7 +665,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         float bottomRadius = roundBottomCorners ? mOmniboxSuggestionDropdownRoundCornerRadius : 0f;
 
         layoutParams.bottomMargin = -bottomInset;
-        outerRect.setCornerRadii(
+        mOuterRect.setCornerRadii(
                 new float[] {
                     mOmniboxSuggestionDropdownRoundCornerRadius,
                             mOmniboxSuggestionDropdownRoundCornerRadius,

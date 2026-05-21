@@ -376,7 +376,7 @@
 	path = third_party/liblouis/src
 	url = https://chromium.googlesource.com/external/liblouis-github
 	gclient-condition = checkout_linux
-[submodule "third_party/libphonenumber/dist"]
+[submodule "third_party/libphonenumber/src"]
 	path = third_party/libphonenumber/src
 	url = https://chromium.googlesource.com/external/libphonenumber
 [submodule "third_party/libprotobuf-mutator/src"]
@@ -599,6 +599,10 @@
 [submodule "third_party/xnnpack/src"]
 	path = third_party/xnnpack/src
 	url = https://chromium.googlesource.com/external/github.com/google/XNNPACK
+[submodule "third_party/libei/src"]
+	path = third_party/libei/src
+	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/libinput/libei
+	gclient-condition = checkout_linux
 [submodule "third_party/zstd/src"]
 	path = third_party/zstd/src
 	url = https://chromium.googlesource.com/external/github.com/facebook/zstd
@@ -928,7 +932,3 @@
 	path = webkit/data/test_shell/plugins
 	url = https://chrome-internal.googlesource.com/chrome/data/webkit_plugin_tests
 	gclient-condition = checkout_src_internal
-[submodule "third_party/libei/src"]
-	path = third_party/libei/src
-	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/libinput/libei
-	gclient-condition = checkout_linux

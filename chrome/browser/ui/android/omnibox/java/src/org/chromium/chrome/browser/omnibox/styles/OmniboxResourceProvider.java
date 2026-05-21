@@ -426,10 +426,7 @@ public class OmniboxResourceProvider {
         return context.getColor(R.color.default_text_color_secondary_list);
     }
 
-    /**
-     * Returns the background color for suggestions in a "standard" (non-incognito) TabModel with
-     * the given context.
-     */
+    /** Returns the background color for suggestions in the given color scheme and context. */
     public static @ColorInt int getStandardSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
         return colorScheme == BrandedColorScheme.INCOGNITO
