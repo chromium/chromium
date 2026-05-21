@@ -14,6 +14,9 @@ namespace base {
 // Registers a callback that will be called whenever the
 // NSPasteboard.generalPasteboard has been changed by any process on the system
 // (including this one).
+//
+// This registration call must be made on the main thread, and the callback will
+// be done on the main thread.
 BASE_EXPORT CallbackListSubscription
 RegisterPasteboardChangedCallback(RepeatingClosure callback);
 

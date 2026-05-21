@@ -11,10 +11,11 @@
 #include <string_view>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 // There is no notification API on macOS for changes to the pasteboard (unlike
 // on iOS where there is UIPasteboardChangedNotification). However...
@@ -77,15 +78,17 @@ bool SwizzleInternalClass() {
 
   IMP new_imp =
       imp_implementationWithBlock(^(id object_self, int change_count) {
-        GetCallbackList().Notify();
+        // Hop to the main thread, as the cache is processed on an internal
+        // CFPasteboard dispatch queue.
+        base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
+            FROM_HERE, base::BindOnce([] {
+              GetCallbackList().Notify();
 
-        // Dirty the app's pasteboard cache to ensure an invalidation callback
-        // for the next pasteboard change that occurs in other apps. Hop to the
-        // main thread, as the cache is processed on an internal CFPasteboard
-        // dispatch queue.
-        dispatch_async(dispatch_get_main_queue(), ^{
-          std::ignore = NSPasteboard.generalPasteboard.changeCount;
-        });
+              // Dirty the app's pasteboard cache to ensure an invalidation
+              // callback for the next pasteboard change that occurs in other
+              // apps.
+              std::ignore = NSPasteboard.generalPasteboard.changeCount;
+            }));
 
         g_old_imp(object_self, selector, change_count);
       });
@@ -100,6 +103,9 @@ bool SwizzleInternalClass() {
 
 CallbackListSubscription RegisterPasteboardChangedCallback(
     RepeatingClosure callback) {
+  CHECK(base::SingleThreadTaskRunner::GetMainThreadDefault()
+            ->BelongsToCurrentThread());
+
   static bool swizzle_internal_class [[maybe_unused]] = SwizzleInternalClass();
   // Intentionally DCHECK so that in the field it doesn't rely on that specific
   // internal class (as listening for pasteboard changes isn't critical), but
@@ -107,8 +113,7 @@ CallbackListSubscription RegisterPasteboardChangedCallback(
   // ever change it will be noticed.
   DCHECK(swizzle_internal_class);
 
-  return GetCallbackList().Add(
-      base::BindPostTask(SequencedTaskRunner::GetCurrentDefault(), callback));
+  return GetCallbackList().Add(callback);
 }
 
 }  // namespace base
