@@ -103,10 +103,11 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
 
   const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
   const AutofillField* challenge_field =
-      FindField(fields, [](const AutofillField& field) {
+      FindField(fields, [&](const AutofillField& field) {
         return field.parsed_autocomplete() &&
                field.parsed_autocomplete()->email_verification_token &&
-               !field.challenge().empty();
+               !field.challenge().empty() &&
+               field.host_form_id() == email_field->host_form_id();
       });
 
   if (!challenge_field) {
