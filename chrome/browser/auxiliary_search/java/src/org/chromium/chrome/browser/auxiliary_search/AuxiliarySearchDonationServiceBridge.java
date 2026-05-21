@@ -25,6 +25,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * apps via AppSearch.
  */
 @NullMarked
-class AuxiliarySearchDonationServiceBridge {
+class AuxiliarySearchDonationServiceBridge implements Closeable {
     // Differs from `AuxiliarySearchDonor`, which uses the package name as both the database name
     // and namespace.
     @VisibleForTesting static final String DATABASE_NAME = "browsing_history";
@@ -69,6 +70,21 @@ class AuxiliarySearchDonationServiceBridge {
                                                 .addDocuments(pages)
                                                 .build()),
                         MoreExecutors.directExecutor());
+    }
+
+    @CalledByNative
+    @Override
+    public void close() {
+        if (mSessionFuture != null) {
+            var unused =
+                    Futures.transform(
+                            mSessionFuture,
+                            session -> {
+                                session.close();
+                                return null;
+                            },
+                            MoreExecutors.directExecutor());
+        }
     }
 
     @CalledByNative

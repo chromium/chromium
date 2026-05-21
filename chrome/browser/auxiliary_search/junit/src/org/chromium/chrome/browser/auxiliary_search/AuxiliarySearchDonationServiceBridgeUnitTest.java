@@ -181,4 +181,30 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
 
         verify(mMockSession, never()).putAsync(any());
     }
+
+    @Test
+    public void testClose() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFuture(mMockSession));
+        when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
+        var bridge = new AuxiliarySearchDonationServiceBridge();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.close();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockSession).close();
+    }
+
+    @Test
+    public void testClose_unsupportedAndroidVersion() {
+        // mMockFactory.createSearchSessionAsync returns null by default.
+        var bridge = new AuxiliarySearchDonationServiceBridge();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        bridge.close();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Should not crash.
+    }
 }

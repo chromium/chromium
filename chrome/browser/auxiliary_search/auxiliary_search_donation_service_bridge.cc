@@ -55,8 +55,11 @@ AuxiliarySearchDonationServiceBridge::CreateDonationCallback() {
 AuxiliarySearchDonationServiceBridge::AuxiliarySearchDonationServiceBridge()
     : bridge_(AuxiliarySearchDonationServiceBridgeJni::New(
           base::android::AttachCurrentThread())) {}
-AuxiliarySearchDonationServiceBridge::~AuxiliarySearchDonationServiceBridge() =
-    default;
+AuxiliarySearchDonationServiceBridge::~AuxiliarySearchDonationServiceBridge() {
+  if (bridge_) {
+    bridge_->close(base::android::AttachCurrentThread());
+  }
+}
 
 void AuxiliarySearchDonationServiceBridge::DonateHistoryEntries(
     std::vector<AuxiliarySearchDonationService::HistoryData> entries) const {
