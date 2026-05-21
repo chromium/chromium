@@ -768,7 +768,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   collectionView = [NewTabPageAppInterface collectionView];
   GREYAssertTrue(
       AreNumbersEqual(previousPosition, collectionView.contentOffset.y),
-      @"NTP is not at the same position as before tapping the omnibox");
+      @"NTP is not at the same position as before tapping the omnibox. "
+      @"Previous: %f, current: %f",
+      previousPosition, collectionView.contentOffset.y);
 }
 
 // Tests that when navigating back to the NTP while having the omnibox focused
