@@ -304,7 +304,8 @@ size_t VideoEncodeAccelerator::EstimateBitstreamBufferSize(
   const size_t kMaxAverageBitrate = 50000000;
   expected_bitrate =
       std::min(expected_bitrate, kMaxAverageBitrate) * kOvershootAllowance;
-  size_t expected_chunk_size = expected_bitrate / framerate / CHAR_BIT;
+  size_t expected_chunk_size =
+      expected_bitrate / std::max<uint32_t>(framerate, 1u) / CHAR_BIT;
 
   // Let's be conservative and take the maximum of both methods.
   return std::max(expected_chunk_size, raw_frame_size);

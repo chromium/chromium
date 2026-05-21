@@ -150,6 +150,12 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   }
 
   encoder_.reset();
+  if (config.framerate == 0) {
+    MEDIA_LOG(ERROR, media_log_.get()) << __func__ << " framerate must be > 0";
+    std::move(success_callback)
+        .Run({EncoderStatus::Codes::kEncoderInitializationError});
+    return;
+  }
   auto encoder_or_error =
       std::move(create_vea_callback_)
           .Run(config, this, gpu_preferences_, gpu_workarounds_, gpu_device_,

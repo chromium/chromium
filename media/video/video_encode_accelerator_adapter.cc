@@ -97,7 +97,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config = VideoEncodeAccelerator::Config(
       format, opts.frame_size, profile, bitrate,
-      opts.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate),
+      std::max<uint32_t>(1u, opts.framerate.value_or(
+                                 VideoEncodeAccelerator::kDefaultFramerate)),
       VideoEncodeAccelerator::Config::StorageType::kShmem,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
   config.gop_length = opts.keyframe_interval;
@@ -675,8 +676,9 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
 
   Bitrate bitrate =
       CreateBitrate(options.bitrate, options.frame_size, supported_rc_modes_);
-  uint32_t framerate = base::ClampRound<uint32_t>(
-      options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
+  uint32_t framerate = std::max<uint32_t>(
+      1u, base::ClampRound<uint32_t>(options.framerate.value_or(
+              VideoEncodeAccelerator::kDefaultFramerate)));
 
   // When frame size is changed, run |done_cb| in |RequireBitstreamBuffers|
   // after bitstream buffer is re-initialized. At that time, reconfigure is done

@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -367,6 +368,37 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, InitializeFailure) {
         ASSERT_FALSE(status.is_ok());
       }));
   base::RunLoop().RunUntilIdle();
+
+  mojo_vea_receiver->Close();
+}
+
+TEST_F(MojoVideoEncodeAcceleratorServiceTest,
+       InitializeWithZeroFramerateFails) {
+  CreateMojoVideoEncodeAccelerator();
+
+  mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient>
+      mojo_vea_client;
+  auto mojo_vea_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<MockMojoVideoEncodeAcceleratorClient>(),
+      mojo_vea_client.InitWithNewEndpointAndPassReceiver());
+
+  constexpr media::Bitrate kInitialBitrate =
+      media::Bitrate::ConstantBitrate(100000u);
+  const media::VideoEncodeAccelerator::Config config(
+      PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate,
+      0u,  // framerate = 0
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      VideoEncodeAccelerator::Config::ContentType::kCamera);
+  mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
+  auto media_log_pending_remote =
+      media_log_pending_receiver.InitWithNewPipeAndPassRemote();
+
+  base::test::TestFuture<const media::EncoderStatus&> status_future;
+  mojo_vea_service()->Initialize(config, std::move(mojo_vea_client),
+                                 std::move(media_log_pending_remote),
+                                 status_future.GetCallback());
+  EXPECT_EQ(status_future.Get().code(),
+            EncoderStatus::Codes::kEncoderInitializationError);
 
   mojo_vea_receiver->Close();
 }
