@@ -89,6 +89,37 @@ WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebTransportConnect(
   return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBTRANSPORT);
 }
 
+void WebDocumentSubresourceFilterImpl::GetDomainSelectors(
+    std::vector<std::string_view>& out_selectors) {
+  filter_.GetDomainSelectors(out_selectors);
+}
+
+bool WebDocumentSubresourceFilterImpl::MaybeHasStyleRule(uint32_t hash) {
+  return filter_.MaybeHasStyleRule(hash);
+}
+
+void WebDocumentSubresourceFilterImpl::GetSelectorsByClass(
+    std::string_view class_name,
+    uint32_t hash,
+    std::vector<std::string_view>& out_selectors) {
+  filter_.GetSelectorsByClass(class_name, hash, out_selectors);
+}
+
+void WebDocumentSubresourceFilterImpl::GetSelectorsById(
+    std::string_view id_name,
+    uint32_t hash,
+    std::vector<std::string_view>& out_selectors) {
+  filter_.GetSelectorsById(id_name, hash, out_selectors);
+}
+bool WebDocumentSubresourceFilterImpl::IsDryRun() {
+  return filter_.activation_state().activation_level ==
+         mojom::ActivationLevel::kDryRun;
+}
+
+uint64_t WebDocumentSubresourceFilterImpl::GetRulesetId() const {
+  return filter_.GetRulesetId();
+}
+
 void WebDocumentSubresourceFilterImpl::ReportDisallowedLoad() {
   if (!first_disallowed_load_callback_.is_null()) {
     std::move(first_disallowed_load_callback_).Run();

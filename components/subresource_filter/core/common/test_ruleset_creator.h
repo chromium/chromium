@@ -107,12 +107,12 @@ class TestRulesetCreator {
   // No file at |path| will be automatically created.
   void GetUniqueTemporaryPath(base::FilePath* path);
 
- private:
   // Writes the |ruleset_contents| to a temporary file, and initializes
   // |ruleset| to have the same |contents|, and the |path| to this file.
   void CreateTestRulesetFromContents(std::vector<uint8_t> ruleset_contents,
                                      TestRuleset* ruleset);
 
+ private:
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   int next_unique_file_suffix = 1;
 };

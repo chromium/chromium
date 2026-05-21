@@ -117,6 +117,47 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
   return result;
 }
 
+bool DocumentSubresourceFilter::MaybeHasStyleRule(uint32_t hash) const {
+  if (activation_state_.filtering_disabled_for_document) {
+    return false;
+  }
+  return ruleset_matcher_.MaybeHasStyleRule(hash);
+}
+
+void DocumentSubresourceFilter::GetDomainSelectors(
+    std::vector<std::string_view>& out_selectors) const {
+  if (activation_state_.filtering_disabled_for_document) {
+    return;
+  }
+  CHECK(document_origin_);
+  ruleset_matcher_.GetDomainSelectors(document_origin_->origin(),
+                                      out_selectors);
+}
+
+void DocumentSubresourceFilter::GetSelectorsByClass(
+    std::string_view class_name,
+    uint32_t hash,
+    std::vector<std::string_view>& out_selectors) const {
+  if (activation_state_.filtering_disabled_for_document) {
+    return;
+  }
+  CHECK(document_origin_);
+  ruleset_matcher_.GetSelectorsByClass(document_origin_->origin(), class_name,
+                                       hash, out_selectors);
+}
+
+void DocumentSubresourceFilter::GetSelectorsById(
+    std::string_view id_name,
+    uint32_t hash,
+    std::vector<std::string_view>& out_selectors) const {
+  if (activation_state_.filtering_disabled_for_document) {
+    return;
+  }
+  CHECK(document_origin_);
+  ruleset_matcher_.GetSelectorsById(document_origin_->origin(), id_name, hash,
+                                    out_selectors);
+}
+
 const url_pattern_index::flat::UrlRule*
 DocumentSubresourceFilter::FindMatchingUrlRule(
     const GURL& subresource_url,
@@ -131,6 +172,10 @@ DocumentSubresourceFilter::FindMatchingUrlRule(
   return ruleset_matcher_.MatchedUrlRule(
       subresource_url, *document_origin_, subresource_type,
       activation_state_.generic_blocking_rules_disabled);
+}
+
+uint64_t DocumentSubresourceFilter::GetRulesetId() const {
+  return ruleset_matcher_.ruleset_id();
 }
 
 }  // namespace subresource_filter

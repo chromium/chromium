@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 
+#include <limits>
 #include <string_view>
 #include <utility>
 
@@ -93,6 +94,17 @@ class SentinelFile {
   base::FilePath path_;
 };
 
+// Returns a random ruleset id. It avoids sentinels 0 and int max
+// so that the id can be used as keys in blink hash tables (which reserve
+// those special values for empty and deleted entries respectively).
+uint64_t GetValidRulesetId() {
+  uint64_t id = 0;
+  while (id == 0 || id == std::numeric_limits<uint64_t>::max()) {
+    id = base::RandUint64();
+  }
+  return id;
+}
+
 }  // namespace
 
 // IndexedRulesetLocator ------------------------------------------------------
@@ -175,7 +187,7 @@ decltype(&base::ReplaceFile) RulesetService::g_replace_file_func =
 
 // static
 decltype(&base::RandUint64) RulesetService::g_get_ruleset_id_func =
-    &base::RandUint64;
+    &GetValidRulesetId;
 
 // static
 std::unique_ptr<RulesetService> RulesetService::Create(

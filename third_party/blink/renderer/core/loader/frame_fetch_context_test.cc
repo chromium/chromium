@@ -170,6 +170,21 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
   LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) override {
     return policy_;
   }
+
+  void GetDomainSelectors(
+      std::vector<std::string_view>& out_selectors) override {}
+  bool MaybeHasStyleRule(uint32_t hash) override { return false; }
+  void GetSelectorsByClass(
+      std::string_view class_name,
+      uint32_t hash,
+      std::vector<std::string_view>& out_selectors) override {}
+  void GetSelectorsById(std::string_view id_name,
+                        uint32_t hash,
+                        std::vector<std::string_view>& out_selectors) override {
+  }
+  bool IsDryRun() override { return false; }
+  uint64_t GetRulesetId() const override { return 0; }
+
   void ReportDisallowedLoad() override { ++*filtered_load_counter_; }
 
   bool ShouldLogToConsole() override { return false; }

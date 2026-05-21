@@ -79,6 +79,18 @@ class WebDocumentSubresourceFilterImpl final
       const blink::WebURL& url) override;
   void ReportDisallowedLoad() override;
   bool ShouldLogToConsole() override;
+  void GetDomainSelectors(
+      std::vector<std::string_view>& out_selectors) override;
+  bool MaybeHasStyleRule(uint32_t hash) override;
+  void GetSelectorsByClass(
+      std::string_view class_name,
+      uint32_t hash,
+      std::vector<std::string_view>& out_selectors) override;
+  void GetSelectorsById(std::string_view id_name,
+                        uint32_t hash,
+                        std::vector<std::string_view>& out_selectors) override;
+  bool IsDryRun() override;
+  uint64_t GetRulesetId() const override;
 
   const mojom::ActivationState& activation_state() const {
     return filter_.activation_state();

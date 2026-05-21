@@ -201,4 +201,94 @@ TEST_F(DocumentSubresourceFilterTest, MatchingRuleEnabled) {
             filter.FindMatchingUrlRule(GURL(kTestBetaURL), kSubdocumentType));
 }
 
+TEST_F(DocumentSubresourceFilterTest, StyleRules) {
+  RulesetIndexer indexer(0x12345678);
+  {
+    proto::StyleRule rule;
+    rule.set_selector("#ad-div");
+    rule.add_domains()->set_domain("example.com");
+    rule.add_ids("ad-div");
+    indexer.AddStyleRuleFromProto(rule);
+  }
+  {
+    proto::StyleRule rule;
+    rule.set_selector(".ad-class");
+    rule.add_classes("ad-class");
+    indexer.AddStyleRuleFromProto(rule);
+  }
+  indexer.Finish();
+
+  testing::TestRuleset indexed_ruleset;
+  testing::TestRulesetCreator ruleset_creator;
+  ruleset_creator.CreateTestRulesetFromContents(
+      std::vector<uint8_t>(indexer.data().begin(), indexer.data().end()),
+      &indexed_ruleset);
+
+  scoped_refptr<const MemoryMappedRuleset> ruleset =
+      MemoryMappedRuleset::CreateAndInitialize(
+          testing::TestRuleset::Open(indexed_ruleset));
+  ASSERT_TRUE(ruleset);
+
+  // Test with filtering enabled.
+  mojom::ActivationState activation_state;
+  activation_state.activation_level = kEnabled;
+  DocumentSubresourceFilter filter(
+      url::Origin::Create(GURL("http://example.com")), activation_state,
+      ruleset.get(), kSafeBrowsingRulesetConfig.uma_tag);
+
+  // MaybeHasStyleRule: only global rules are added to the Bloom filter.
+  EXPECT_FALSE(filter.MaybeHasStyleRule(GetStyleRuleHash("ad-div")));
+  EXPECT_TRUE(filter.MaybeHasStyleRule(GetStyleRuleHash("ad-class")));
+  EXPECT_FALSE(filter.MaybeHasStyleRule(GetStyleRuleHash("nonexistent")));
+
+  // GetDomainSelectors: should retrieve site-specific rules for this domain.
+  std::vector<std::string_view> domain_selectors;
+  filter.GetDomainSelectors(domain_selectors);
+  ASSERT_EQ(1U, domain_selectors.size());
+  EXPECT_EQ("#ad-div", domain_selectors[0]);
+
+  // GetSelectorsByClass: should retrieve global class rules.
+  std::vector<std::string_view> class_selectors;
+  filter.GetSelectorsByClass("ad-class", GetStyleRuleHash("ad-class"),
+                             class_selectors);
+  ASSERT_EQ(1U, class_selectors.size());
+  EXPECT_EQ(".ad-class", class_selectors[0]);
+
+  // GetSelectorsById: should NOT retrieve site-specific ID rules (they are only
+  // in domain_map).
+  std::vector<std::string_view> id_selectors;
+  filter.GetSelectorsById("ad-div", GetStyleRuleHash("ad-div"), id_selectors);
+  EXPECT_TRUE(id_selectors.empty());
+
+  // GetRulesetId
+  EXPECT_EQ(0x12345678U, filter.GetRulesetId());
+
+  // Test with filtering disabled for document.
+  mojom::ActivationState disabled_state;
+  disabled_state.activation_level = kEnabled;
+  disabled_state.filtering_disabled_for_document = true;
+  DocumentSubresourceFilter disabled_filter(
+      url::Origin::Create(GURL("http://example.com")), disabled_state,
+      ruleset.get(), kSafeBrowsingRulesetConfig.uma_tag);
+
+  EXPECT_FALSE(disabled_filter.MaybeHasStyleRule(GetStyleRuleHash("ad-class")));
+
+  std::vector<std::string_view> disabled_domain_selectors;
+  disabled_filter.GetDomainSelectors(disabled_domain_selectors);
+  EXPECT_TRUE(disabled_domain_selectors.empty());
+
+  std::vector<std::string_view> disabled_class_selectors;
+  disabled_filter.GetSelectorsByClass("ad-class", GetStyleRuleHash("ad-class"),
+                                      disabled_class_selectors);
+  EXPECT_TRUE(disabled_class_selectors.empty());
+
+  std::vector<std::string_view> disabled_id_selectors;
+  disabled_filter.GetSelectorsById("ad-div", GetStyleRuleHash("ad-div"),
+                                   disabled_id_selectors);
+  EXPECT_TRUE(disabled_id_selectors.empty());
+
+  // Ruleset ID should still be available even if filtering is disabled.
+  EXPECT_EQ(0x12345678U, disabled_filter.GetRulesetId());
+}
+
 }  // namespace subresource_filter
