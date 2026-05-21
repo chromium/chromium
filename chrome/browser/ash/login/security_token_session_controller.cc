@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/containers/flat_map.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/security_token_restriction/security_token_session_restriction_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -61,8 +61,8 @@ namespace ash {
 namespace login {
 namespace {
 
-// Possible values of prefs::kSecurityTokenSessionBehavior. This needs to match
-// the values of the SecurityTokenSessionBehavior policy defined in
+// Possible values of ash::prefs::kSecurityTokenSessionBehavior. This needs to
+// match the values of the SecurityTokenSessionBehavior policy defined in
 // policy_templates.json.
 constexpr char kIgnorePrefValue[] = "IGNORE";
 constexpr char kLogoutPrefValue[] = "LOGOUT";
@@ -217,10 +217,11 @@ SecurityTokenSessionController::SecurityTokenSessionController(
       base::BindRepeating(
           &SecurityTokenSessionController::UpdateNotificationPref,
           weak_ptr_factory_.GetWeakPtr());
-  pref_change_registrar_.Add(prefs::kSecurityTokenSessionBehavior,
+  pref_change_registrar_.Add(ash::prefs::kSecurityTokenSessionBehavior,
                              behavior_pref_changed_callback);
-  pref_change_registrar_.Add(prefs::kSecurityTokenSessionNotificationSeconds,
-                             notification_pref_changed_callback);
+  pref_change_registrar_.Add(
+      ash::prefs::kSecurityTokenSessionNotificationSeconds,
+      notification_pref_changed_callback);
   certificate_provider_service_->AddObserver(this);
   extensions_tracker_.AddObserver(this);
 }
@@ -336,13 +337,13 @@ void SecurityTokenSessionController::RegisterLocalStatePrefs(
   // the values are available for the controller regardless of the profile it's
   // attached to (the policy stack has code to automatically copy the primary
   // profile's policies into the Local State).
-  registry->RegisterStringPref(prefs::kSecurityTokenSessionBehavior,
+  registry->RegisterStringPref(ash::prefs::kSecurityTokenSessionBehavior,
                                kIgnorePrefValue);
-  registry->RegisterIntegerPref(prefs::kSecurityTokenSessionNotificationSeconds,
-                                0);
+  registry->RegisterIntegerPref(
+      ash::prefs::kSecurityTokenSessionNotificationSeconds, 0);
   // Prefs that contain state that needs to be persisted across Chrome restarts.
   registry->RegisterStringPref(
-      prefs::kSecurityTokenSessionNotificationScheduledDomain, "");
+      ash::prefs::kSecurityTokenSessionNotificationScheduledDomain, "");
 }
 
 // static
@@ -350,7 +351,7 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification(
     PrefService& local_state) {
   const PrefService::Preference* scheduled_notification_domain =
       local_state.FindPreference(
-          prefs::kSecurityTokenSessionNotificationScheduledDomain);
+          ash::prefs::kSecurityTokenSessionNotificationScheduledDomain);
   if (!scheduled_notification_domain ||
       scheduled_notification_domain->IsDefaultValue() ||
       !scheduled_notification_domain->GetValue()->is_string()) {
@@ -361,7 +362,7 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification(
   // are not trusted.
   std::string domain = scheduled_notification_domain->GetValue()->GetString();
   local_state.ClearPref(
-      prefs::kSecurityTokenSessionNotificationScheduledDomain);
+      ash::prefs::kSecurityTokenSessionNotificationScheduledDomain);
   std::string sanitized_domain;
   if (!SanitizeDomain(domain, sanitized_domain)) {
     // The pref value is invalid.
@@ -388,7 +389,7 @@ void SecurityTokenSessionController::UpdateBehavior() {
 
 void SecurityTokenSessionController::UpdateNotificationPref() {
   notification_seconds_ = base::Seconds(local_state_->GetInteger(
-      prefs::kSecurityTokenSessionNotificationSeconds));
+      ash::prefs::kSecurityTokenSessionNotificationSeconds));
 }
 
 bool SecurityTokenSessionController::ShouldApplyPolicyInCurrentSessionState()
@@ -428,7 +429,7 @@ SecurityTokenSessionController::GetBehaviorFromPrefAndSessionState() const {
   // After passing the session state checks, use the policy value as the desired
   // behavior.
   return ParseBehaviorPrefValue(
-      local_state_->GetString(prefs::kSecurityTokenSessionBehavior));
+      local_state_->GetString(ash::prefs::kSecurityTokenSessionBehavior));
 }
 
 void SecurityTokenSessionController::TriggerAction() {
@@ -549,7 +550,7 @@ void SecurityTokenSessionController::ScheduleLogoutNotification() {
   SetNotificationDisplayedKnownUserFlag();
 
   local_state_->SetString(
-      prefs::kSecurityTokenSessionNotificationScheduledDomain,
+      ash::prefs::kSecurityTokenSessionNotificationScheduledDomain,
       enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail()));
 }
 

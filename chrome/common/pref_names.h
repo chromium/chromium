@@ -2850,24 +2850,6 @@ inline constexpr char kCaretBrowsingEnabled[] =
 inline constexpr char kShowCaretBrowsingDialog[] =
     "settings.a11y.caretbrowsing.show_dialog";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// String enum pref determining what should happen when a user who authenticates
-// via a security token is removing this token. "IGNORE" - nothing happens
-// (default). "LOGOUT" - The user is logged out. "LOCK" - The session is locked.
-inline constexpr char kSecurityTokenSessionBehavior[] =
-    "security_token_session_behavior";
-// When the above pref is set to "LOGOUT" or "LOCK", this integer pref
-// determines the duration of a notification that appears when the smart card is
-// removed. The action will only happen after the notification timed out. If
-// this pref is set to 0, the action happens immediately.
-inline constexpr char kSecurityTokenSessionNotificationSeconds[] =
-    "security_token_session_notification_seconds";
-// This string pref is set when the notification after the action mentioned
-// above is about to be displayed. It contains the domain that manages the user
-// who was logged out, to be used as part of the notification message.
-inline constexpr char kSecurityTokenSessionNotificationScheduledDomain[] =
-    "security_token_session_notification_scheduled";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Boolean pref controlling whether immersive AR sessions are enabled
