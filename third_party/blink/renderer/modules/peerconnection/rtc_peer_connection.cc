@@ -97,7 +97,6 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
@@ -610,6 +609,10 @@ RTCPeerConnection* RTCPeerConnection::Create(
         return nullptr;
       }
     }
+  }
+
+  if (RuntimeEnabledFeatures::WebRtcSctpSnapEnabled(context)) {
+    configuration.enable_sctp_snap = true;
   }
 
   RTCPeerConnection* peer_connection = MakeGarbageCollected<RTCPeerConnection>(
