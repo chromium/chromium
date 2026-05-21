@@ -90,7 +90,8 @@ std::string SwitchLanguageCodeForChinese(std::string_view language_code) {
     return "zh";
   }
   if (lower_code == "zh-tw" || lower_code == "zh-hant-tw" ||
-      lower_code == "cmn-hant-tw") {
+      lower_code == "cmn-hant-tw" || lower_code == "zh-hk" ||
+      lower_code == "zh-hant-hk" || lower_code == "cmn-hant-hk") {
     return "zh-Hant";
   }
   return std::string(language_code);
