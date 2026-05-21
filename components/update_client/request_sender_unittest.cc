@@ -60,7 +60,6 @@ class RequestSenderTest : public testing::Test,
 
   int error_ = 0;
   std::string response_;
-  int retry_after_sec_ = 0;
 
  private:
   base::OnceClosure quit_closure_;
@@ -116,7 +115,6 @@ void RequestSenderTest::RequestSenderComplete(int error,
                                               int retry_after_sec) {
   error_ = error;
   response_ = response;
-  retry_after_sec_ = retry_after_sec;
 
   Quit();
 }
@@ -126,8 +124,7 @@ void RequestSenderTest::RequestSenderComplete(int error,
 TEST_P(RequestSenderTest, RequestSendSuccess) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("test"),
-      GetTestFilePath("updatecheck_reply_1.json"),
-      {{"X-Retry-After", "6000"}}));
+      GetTestFilePath("updatecheck_reply_1.json")));
 
   const bool is_foreground = GetParam();
   request_sender_->Send(
@@ -159,9 +156,6 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
             is_foreground ? "fg" : "bg");
   EXPECT_EQ(extra_request_headers.GetHeader("Content-Type"),
             "application/json");
-
-  // Check the X-Retry-After header value was parsed and forwarded.
-  EXPECT_EQ(retry_after_sec_, 6000);
 }
 
 // Tests that the request succeeds using the second url after the first url
@@ -259,47 +253,6 @@ TEST_F(RequestSenderTest, RequestSendCupError) {
   EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
   EXPECT_EQ(-10000, error_);
   EXPECT_TRUE(response_.empty());
-}
-
-TEST_F(RequestSenderTest, RetryAfterSecClamped) {
-  EXPECT_TRUE(post_interceptor_->ExpectRequest(
-      std::make_unique<PartialMatch>("test"),
-      GetTestFilePath("updatecheck_reply_1.json"),
-      {{"X-Retry-After", "100000"}}));  // > 24 hours (86400)
-
-  const std::vector<GURL> urls = {GURL(kUrl1)};
-  request_sender_ =
-      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
-  request_sender_->Send(
-      urls, {}, "test", true,
-      base::BindOnce(&RequestSenderTest::RequestSenderComplete,
-                     base::Unretained(this)));
-  RunThreads();
-
-  ASSERT_EQ(-10000, error_);
-  EXPECT_EQ(retry_after_sec_, 86400);  // Clamped to 24 hours
-}
-
-TEST_F(RequestSenderTest, RetryAfterSecNotHonoredForHttp) {
-  const std::vector<GURL> urls = {GURL("http://localhost2/path1")};
-  post_interceptor_ = std::make_unique<URLLoaderPostInterceptor>(
-      urls, config_->test_url_loader_factory());
-
-  EXPECT_TRUE(post_interceptor_->ExpectRequest(
-      std::make_unique<PartialMatch>("test"),
-      GetTestFilePath("updatecheck_reply_1.json"),
-      {{"X-Retry-After", "6000"}}));
-
-  request_sender_ =
-      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
-  request_sender_->Send(
-      urls, {}, "test", false,
-      base::BindOnce(&RequestSenderTest::RequestSenderComplete,
-                     base::Unretained(this)));
-  RunThreads();
-
-  EXPECT_EQ(0, error_);
-  EXPECT_EQ(retry_after_sec_, -1);
 }
 
 }  // namespace update_client
