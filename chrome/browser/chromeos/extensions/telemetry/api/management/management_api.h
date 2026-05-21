@@ -5,14 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_MANAGEMENT_MANAGEMENT_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_MANAGEMENT_MANAGEMENT_API_H_
 
-#include <memory>
+#include <optional>
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/management/remote_telemetry_management_service_strategy.h"
-#include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -28,17 +25,11 @@ class ManagementApiFunctionBase
  protected:
   ~ManagementApiFunctionBase() override;
 
-  mojo::Remote<crosapi::mojom::TelemetryManagementService>& GetRemoteService();
-
   // Gets the parameters passed to the JavaScript call and tries to convert it
   // to the `Params` type. If the `Params` can't be created, this resolves the
   // corresponding JavaScript call with an error and returns `nullptr`.
   template <class Params>
   std::optional<Params> GetParams();
-
- private:
-  std::unique_ptr<RemoteTelemetryManagementServiceStrategy>
-      remote_telemetry_management_service_strategy_;
 };
 
 class OsManagementSetAudioGainFunction : public ManagementApiFunctionBase {
@@ -50,8 +41,6 @@ class OsManagementSetAudioGainFunction : public ManagementApiFunctionBase {
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
-
-  void OnResult(bool is_success);
 };
 
 class OsManagementSetAudioVolumeFunction : public ManagementApiFunctionBase {
@@ -63,8 +52,6 @@ class OsManagementSetAudioVolumeFunction : public ManagementApiFunctionBase {
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
-
-  void OnResult(bool is_success);
 };
 
 }  // namespace chromeos

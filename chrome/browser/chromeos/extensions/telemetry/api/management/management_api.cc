@@ -6,36 +6,28 @@
 
 #include <inttypes.h>
 
-#include <memory>
+#include <algorithm>
 #include <optional>
-#include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "chrome/common/chromeos/extensions/api/management.h"
-#include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace chromeos {
 
 namespace {
 namespace cx_manage = api::os_management;
-namespace crosapi = ::crosapi::mojom;
+
+constexpr int32_t kMaxAudioGain = 100;
+constexpr int32_t kMinAudioGain = 0;
+constexpr int32_t kMaxAudioVolume = 100;
+constexpr int32_t kMinAudioVolume = 0;
 }  // namespace
 
 // ManagementApiFunctionBase ---------------------------------------------------
 
-ManagementApiFunctionBase::ManagementApiFunctionBase()
-    : remote_telemetry_management_service_strategy_(
-          RemoteTelemetryManagementServiceStrategy::Create()) {}
-
+ManagementApiFunctionBase::ManagementApiFunctionBase() = default;
 ManagementApiFunctionBase::~ManagementApiFunctionBase() = default;
-
-mojo::Remote<crosapi::TelemetryManagementService>&
-ManagementApiFunctionBase::GetRemoteService() {
-  DCHECK(remote_telemetry_management_service_strategy_);
-  return remote_telemetry_management_service_strategy_->GetRemoteService();
-}
 
 template <class Params>
 std::optional<Params> ManagementApiFunctionBase::GetParams() {
@@ -58,13 +50,19 @@ void OsManagementSetAudioGainFunction::RunIfAllowed() {
     return;
   }
 
-  auto cb = base::BindOnce(&OsManagementSetAudioGainFunction::OnResult, this);
-  GetRemoteService()->SetAudioGain(params.value().args.node_id,
-                                   params.value().args.gain, std::move(cb));
-}
+  // Only input audio node is supported.
+  auto node_id = params.value().args.node_id;
+  auto* cras_audio_handler = ash::CrasAudioHandler::Get();
+  const ash::AudioDevice* device = cras_audio_handler->GetDeviceFromId(node_id);
+  if (!device || !device->is_input) {
+    Respond(WithArguments(false));
+    return;
+  }
 
-void OsManagementSetAudioGainFunction::OnResult(bool is_success) {
-  Respond(WithArguments(is_success));
+  auto gain =
+      std::clamp(params.value().args.gain, kMinAudioGain, kMaxAudioGain);
+  cras_audio_handler->SetVolumeGainPercentForDevice(node_id, gain);
+  Respond(WithArguments(true));
 }
 
 // OsManagementSetAudioVolumeFunction ------------------------------------------
@@ -77,14 +75,20 @@ void OsManagementSetAudioVolumeFunction::RunIfAllowed() {
     return;
   }
 
-  auto cb = base::BindOnce(&OsManagementSetAudioVolumeFunction::OnResult, this);
-  GetRemoteService()->SetAudioVolume(
-      params.value().args.node_id, params.value().args.volume,
-      params.value().args.is_muted, std::move(cb));
-}
+  // Only output audio node is supported.
+  auto node_id = params.value().args.node_id;
+  auto* cras_audio_handler = ash::CrasAudioHandler::Get();
+  const ash::AudioDevice* device = cras_audio_handler->GetDeviceFromId(node_id);
+  if (!device || device->is_input) {
+    Respond(WithArguments(false));
+    return;
+  }
 
-void OsManagementSetAudioVolumeFunction::OnResult(bool is_success) {
-  Respond(WithArguments(is_success));
+  auto volume =
+      std::clamp(params.value().args.volume, kMinAudioVolume, kMaxAudioVolume);
+  cras_audio_handler->SetVolumeGainPercentForDevice(node_id, volume);
+  cras_audio_handler->SetMuteForDevice(node_id, params.value().args.is_muted);
+  Respond(WithArguments(true));
 }
 
 }  // namespace chromeos

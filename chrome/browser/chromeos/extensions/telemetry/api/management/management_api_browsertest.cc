@@ -2,58 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstdint>
-#include <memory>
-#include <utility>
+#include <stdint.h>
 
-#include "base/check_deref.h"
-#include "base/test/bind.h"
+#include <string>
+
+#include "base/test/run_until.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/management/fake_telemetry_management_service.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/management/fake_telemetry_management_service_factory.h"
-#include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
-#include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
-namespace {
-namespace crosapi = ::crosapi::mojom;
-}  // namespace
-
-class TelemetryExtensionManagementApiBrowserTest
-    : public BaseTelemetryExtensionBrowserTest {
- public:
-  TelemetryExtensionManagementApiBrowserTest() {
-    ash::TelemetryManagementServiceAsh::Factory::SetForTesting(
-        &fake_telemetry_management_service_factory_);
-  }
-
-  ~TelemetryExtensionManagementApiBrowserTest() override = default;
-
-  TelemetryExtensionManagementApiBrowserTest(
-      const TelemetryExtensionManagementApiBrowserTest&) = delete;
-  TelemetryExtensionManagementApiBrowserTest& operator=(
-      const TelemetryExtensionManagementApiBrowserTest&) = delete;
-
-  void SetServiceForTesting(std::unique_ptr<FakeTelemetryManagementService>
-                                fake_telemetry_management_service_impl) {
-    fake_telemetry_management_service_factory_.SetCreateInstanceResponse(
-        std::move(fake_telemetry_management_service_impl));
-  }
-
- private:
-  FakeTelemetryManagementServiceFactory
-      fake_telemetry_management_service_factory_;
-};
+using TelemetryExtensionManagementApiBrowserTest =
+    BaseTelemetryExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
                        SetAudioGain) {
-  {
-    auto fake_service_impl = std::make_unique<FakeTelemetryManagementService>();
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
+  constexpr uint64_t kNodeId = 30054771072;
+  ash::FakeCrasAudioClient::Get()->InsertAudioNodeToList(ash::AudioNode(
+      /*is_input=*/true,
+      /*id=*/kNodeId,
+      /*has_v2_stable_device_id=*/false,
+      /*stable_device_id_v1=*/0,
+      /*stable_device_id_v2=*/0,
+      /*device_name=*/std::string(),
+      /*type=*/"HEADPHONE",
+      /*name=*/std::string(),
+      /*active=*/false,
+      /*plugged_time=*/0,
+      /*max_supported_channels=*/0,
+      /*audio_effect=*/0,
+      /*number_of_volume_steps=*/0));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return bool(ash::CrasAudioHandler::Get()->GetDeviceFromId(kNodeId));
+  }));
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -71,10 +55,24 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
                        SetAudioVolume) {
-  {
-    auto fake_service_impl = std::make_unique<FakeTelemetryManagementService>();
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
+  constexpr uint64_t kNodeId = 21474836480;
+  ash::FakeCrasAudioClient::Get()->InsertAudioNodeToList(ash::AudioNode(
+      /*is_input=*/false,
+      /*id=*/kNodeId,
+      /*has_v2_stable_device_id=*/false,
+      /*stable_device_id_v1=*/0,
+      /*stable_device_id_v2=*/0,
+      /*device_name=*/std::string(),
+      /*type=*/"HEADPHONE",
+      /*name=*/std::string(),
+      /*active=*/false,
+      /*plugged_time=*/0,
+      /*max_supported_channels=*/0,
+      /*audio_effect=*/0,
+      /*number_of_volume_steps=*/0));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return bool(ash::CrasAudioHandler::Get()->GetDeviceFromId(kNodeId));
+  }));
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
