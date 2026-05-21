@@ -176,6 +176,13 @@ class PersistentCachePerftest
                             iteration_count));
   }
 
+  static base::FilePath GetBaseName(int i) {
+    return base::FilePath(kBaseName).InsertBeforeExtensionASCII(
+        base::NumberToString(i));
+  }
+
+  BackendStorage& backend_storage() { return *backend_storage_; }
+
  private:
   static constexpr base::FilePath::StringViewType kBaseName =
       FILE_PATH_LITERAL("perftest");
@@ -184,6 +191,64 @@ class PersistentCachePerftest
   std::optional<BackendStorage> backend_storage_;
   bool under_measurment_ = false;
 };
+
+TEST_P(PersistentCachePerftest, Create) {
+  int iteration_count = 1024;
+
+  if (HasExpensiveCommits()) {
+    iteration_count /= 4;
+  }
+
+  // iteration_count distinct backend names.
+  auto backend_names =
+      base::HeapArray<base::FilePath>::WithSize(iteration_count);
+  std::ranges::generate(backend_names,
+                        [i = 0] mutable { return GetBaseName(i++); });
+
+  // Storage for iteration_count distinct caches.
+  auto caches = base::HeapArray<std::unique_ptr<PersistentCache>>::WithSize(
+      iteration_count);
+
+  // Creates or opens all iteration_count caches.
+  auto make_and_bind_caches = [&, single_connection = std::get<0>(GetParam()),
+                               journal_mode_wal = std::get<1>(GetParam())] {
+    std::ranges::generate(
+        caches, [&, i = 0] mutable -> std::unique_ptr<PersistentCache> {
+          if (auto pending_backend = backend_storage().MakePendingBackend(
+                  backend_names[i++], single_connection, journal_mode_wal);
+              pending_backend.has_value()) {
+            if (auto cache_result = PersistentCache::Bind(
+                    Client::kTest, *std::move(pending_backend));
+                cache_result.has_value()) {
+              return std::move(cache_result).value();
+            }
+          }
+          return nullptr;
+        });
+  };
+
+  // Closes all iteration_count caches.
+  auto close_caches = [&caches] { std::ranges::fill(caches, nullptr); };
+
+  RunAndTimeTest("Create", iteration_count, [&] { make_and_bind_caches(); });
+  ASSERT_EQ(std::ranges::count(caches, nullptr), 0);
+
+  RunAndTimeTest("FirstClose", iteration_count, [&] { close_caches(); });
+  ASSERT_EQ(std::ranges::count(caches, nullptr), iteration_count);
+
+  RunAndTimeTest("FirstOpen", iteration_count, [&] { make_and_bind_caches(); });
+  ASSERT_EQ(std::ranges::count(caches, nullptr), 0);
+
+  RunAndTimeTest("SecondClose", iteration_count, [&] { close_caches(); });
+  ASSERT_EQ(std::ranges::count(caches, nullptr), iteration_count);
+
+  RunAndTimeTest("SecondOpen", iteration_count,
+                 [&] { make_and_bind_caches(); });
+  ASSERT_EQ(std::ranges::count(caches, nullptr), 0);
+
+  RunAndTimeTest("ThirdClose", iteration_count, [&] { close_caches(); });
+  ASSERT_EQ(std::ranges::count(caches, nullptr), iteration_count);
+}
 
 TEST_P(PersistentCachePerftest, OpenClose) {
   if (!CanShareConnections()) {
