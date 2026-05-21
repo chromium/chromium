@@ -141,6 +141,8 @@ bool IsFontDataServiceEnabled();
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFrameRoutingCache);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFrameRoutingCacheResponseSize;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kGeolocationProxy);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGroupNIKByJoiningOrigin);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kHidePastePopupOnGSB);

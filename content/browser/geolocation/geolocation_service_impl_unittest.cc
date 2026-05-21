@@ -17,6 +17,8 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_request_description.h"
@@ -459,6 +461,66 @@ TEST_F(ApproximatePermissionGeolocationServiceTest,
       }));
 
   EXPECT_EQ(PermissionStatus::GRANTED, create_geolocation_future.Get());
+}
+
+TEST_P(GeolocationServiceTest, BrokerDisconnectDoesNotStopActivityCount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeolocationProxy);
+
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
+
+  permission_manager()->SetRequestCallback(
+      base::BindRepeating([](PermissionCallback permission_callback) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                std::move(permission_callback),
+                std::vector{content::PermissionResult(
+                    PermissionStatus::GRANTED,
+                    PermissionStatusSource::UNSPECIFIED,
+                    base::FeatureList::IsEnabled(
+                        content_settings::features::
+                            kApproximateGeolocationPermission)
+                        ? std::make_optional(GeolocationSetting{
+                              .approximate = PermissionOption::kAllowed,
+                              .precise = PermissionOption::kAllowed})
+                        : std::nullopt)}));
+      }));
+
+  mojo::Remote<Geolocation> geolocation;
+  TestFuture<blink::mojom::PermissionStatus> create_geolocation_future;
+  service_remote()->CreateGeolocation(
+      geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
+      create_geolocation_future.GetCallback());
+
+  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            create_geolocation_future.Get());
+
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  EXPECT_TRUE(web_contents_impl->IsCapabilityActive(
+      WebContentsCapabilityType::kGeolocation));
+
+  // Disconnect the broker pipe.
+  service_remote().reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Security/Privacy Check: Ensure the geolocation capability remains active
+  // as long as the data pipe is open, even if the broker pipe is disconnected.
+  // This guarantees the location indicator in the UI remains visible while
+  // the renderer can still receive updates.
+  EXPECT_TRUE(web_contents_impl->IsCapabilityActive(
+      WebContentsCapabilityType::kGeolocation));
+
+  // Close the data pipe.
+  geolocation.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Active state should now be false.
+  EXPECT_FALSE(web_contents_impl->IsCapabilityActive(
+      WebContentsCapabilityType::kGeolocation));
 }
 
 }  // namespace

@@ -352,6 +352,16 @@ BASE_FEATURE(kFrameRoutingCache, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kFrameRoutingCacheResponseSize{
     &kFrameRoutingCache, "responseSize", 4};
 
+// Guards the lifetime mediation fix for the Geolocation active frame count.
+// When enabled, `GeolocationProxy` is introduced in the browser process to
+// intermediate between the renderer and the Device Service's Geolocation
+// implementation. This ensures the active frame count (UI location indicator)
+// is tied to the actual geolocation data pipe lifetime, rather than just the
+// broker connection.
+// When disabled, legacy pass-through binding is used.
+// See crbug.com/514489361.
+BASE_FEATURE(kGeolocationProxy, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Group network isolation key(NIK) by storage interest group joining origin to
 // improve privacy and performance -- IGs of the same joining origin can reuse
 // sockets, so we don't need to renegotiate those connections.
