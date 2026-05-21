@@ -46,9 +46,8 @@ update_expat_config_h() {
   STEP="update expat config.h" &&
   ( cd third_party/expat/src/expat &&
     ./buildconf.sh &&
-    ./configure --without-getrandom --without-sys-getrandom) &&
+    ./configure --without-arc4random --without-arc4random-buf --without-getentropy --without-getrandom --without-sys-getrandom) &&
   cp third_party/expat/src/expat/expat_config.h third_party/expat/include/expat_config/ &&
-  patch -d third_party/expat -p3 < third_party/expat/0001-Do-not-claim-getrandom.patch &&
   git add third_party/expat/include/expat_config/expat_config.h
 }
 

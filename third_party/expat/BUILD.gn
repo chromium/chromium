@@ -66,8 +66,10 @@ if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
       # expat expects to define WIN32_LEAN_AND_MEAN itself
       configs -= [ "//build/config/win:lean_and_mean" ]
       defines += [ "COMPILED_FROM_DSP" ]
+      sources += [ "src/expat/lib/random_rand_s.c" ]
     } else {
       defines += [ "HAVE_EXPAT_CONFIG_H" ]
+      sources += [ "src/expat/lib/random_dev_urandom.c" ]
     }
   }
 }

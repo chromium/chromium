@@ -1,10 +1,10 @@
 Name: Expat XML Parser
 Short Name: expat
 URL: https://github.com/libexpat/libexpat
-Version: R_2_7_5-0-gf31adfd5
-CPEPrefix: cpe:/a:libexpat_project:libexpat:2.7.5
-Date: 2026-03-19
-Revision: f31adfd584b7f6c50bbf4d22eb928538ffc9145a
+Version: R_2_8_0-29-g9bdfbc77
+CPEPrefix: cpe:/a:libexpat_project:libexpat:2.8.0
+Date: 2026-05-20
+Revision: 9bdfbc77e3355405ceefbe59420abed953a5657e
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -22,17 +22,12 @@ Roll process:
   roll-dep --roll-to origin/upstream/master src/third_party/expat/src/
   cd $CHROMIUM_SRC/third_party/expat/src/expat
   ./buildconf.sh
-  ./configure --without-getrandom --without-sys-getrandom
+  ./configure --without-arc4random --without-arc4random-buf --without-getentropy --without-getrandom --without-sys-getrandom
   cp expat_config.h $CHROMIUM_SRC/third_party/expat/include/expat_config/
   cd $CHROMIUM_SRC/third_party/expat
-  patch -p3 < 0001-Do-not-claim-getrandom.patch
 
   Then update the README.chromium and BUILD.gn as needed.
   This can usually by handled by running roll-expat.sh from $CHROMIUM_SRC.
-
-Patches:
-    0001-Do-not-claim-getrandom.patch:
-      * Not all platforms have getrandom.
 
 Added files:
   include/expat_config/expat_config.h (a generated config file)
