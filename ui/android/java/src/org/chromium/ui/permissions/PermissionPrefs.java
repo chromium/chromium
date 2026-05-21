@@ -53,9 +53,9 @@ public class PermissionPrefs {
     /** Clear the shared pref indicating that {@code permission} was denied by the user. */
     static void clearPermissionWasDenied(String permission) {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.remove(getPermissionWasDeniedKey(permission));
-        editor.apply();
+        String key = getPermissionWasDeniedKey(permission);
+        if (!prefs.contains(key)) return;
+        prefs.edit().remove(key).apply();
     }
 
     /**
