@@ -4,9 +4,9 @@
 
 ## News and Updates
 
-Please report all Chromium security bugs in the tracker using [this
-form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342)
-or https://bughunters.google.com/report/vrp -> Chrome VRP.
+Please report all Chromium security bugs in the tracker using
+[Google Bughunters](https://bughunters.google.com/report/vrp) and select
+ -> Chrome VRP. (Directly reporting to the Chromium tracker is deprecated.)
 
 Please check here for any news and updates about the Chrome VRP.
 

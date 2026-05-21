@@ -7,9 +7,9 @@
 <a name="TOC-How-do-i-report-a-security-vulnerability"></a>
 ### How do I report a security vulnerability?
 
-Please report all Chromium security bugs using [this
-form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342)
-or via [Google Bughunters](https://bughunters.google.com/report/vrp) and select Chrome VRP.
+Please report all Chromium security bugs via
+[Google Bughunters](https://bughunters.google.com/report/vrp) and select
+Chrome VRP. (Direct intake to the Chromium issuetracker is deprecated.)
 
 <a name="TOC-Which-bugs-are-valid-for-rewards-under-the-Chrome-Vulnerability-Rewards-program-"></a>
 ### Which bugs are valid for rewards under the Chrome Vulnerability Rewards program?
@@ -1288,7 +1288,7 @@ biometrics are unavailable (e.g. on a laptop with a closed lid).
 
 If you can demonstrate bypassing the user verification challenge where the
 request user verification parameter is set to 'required', please
-[report it](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342).
+[report it](https://bughunters.google.com/report/vrp).
 
 ## Other
 

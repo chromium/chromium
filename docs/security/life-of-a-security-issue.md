@@ -44,8 +44,8 @@ sequenceDiagram
 
 A security bug begins when a reporter [
 discloses](https://www.chromium.org/Home/chromium-security/reporting-security-bugs/)
-a bug in the [Chromium issue
-tracker](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342).
+a bug in the Chrome VRP intake on
+[Google Bughunters](https://bughunters.google.com/report/vrp).
 The new bug is placed in a queue of other incoming security bugs, and it is
 view-restricted to the reporter and select individuals on a need-to-know
 basis.
