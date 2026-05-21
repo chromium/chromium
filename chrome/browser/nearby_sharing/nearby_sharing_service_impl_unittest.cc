@@ -249,10 +249,13 @@ class FakeFastInitiationScannerFactory : public FastInitiationScanner::Factory {
   size_t scanner_destroyed_count() { return scanner_destroyed_count_; }
 
  private:
-  void OnScannerDestroyed() { ++scanner_destroyed_count_; }
+  void OnScannerDestroyed() {
+    ++scanner_destroyed_count_;
+    last_fake_fast_initiation_scanner_ = nullptr;
+  }
 
-  raw_ptr<FakeFastInitiationScanner, DanglingUntriaged>
-      last_fake_fast_initiation_scanner_ = nullptr;
+  raw_ptr<FakeFastInitiationScanner> last_fake_fast_initiation_scanner_ =
+      nullptr;
   size_t scanner_created_count_ = 0u;
   size_t scanner_destroyed_count_ = 0u;
   bool is_hardware_support_available_ = true;
@@ -540,6 +543,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     ON_CALL(*mock_bluetooth_adapter_, AddObserver(_))
         .WillByDefault(Invoke(
             this, &NearbySharingServiceImplTestBase::AddAdapterObserver));
+    ON_CALL(*mock_bluetooth_adapter_, RemoveObserver(_))
+        .WillByDefault(Invoke(
+            this, &NearbySharingServiceImplTestBase::RemoveAdapterObserver));
     ON_CALL(*mock_bluetooth_adapter_, OnSetAdvertisingInterval(_, _))
         .WillByDefault(Invoke(
             this, &NearbySharingServiceImplTestBase::OnSetAdvertisingInterval));
@@ -581,10 +587,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    if (service_) {
-      service_->Shutdown();
-      service_.reset();
-    }
+    ShutdownAndResetService();
 
     if (profile_) {
       DownloadCoreServiceFactory::GetForBrowserContext(profile_)
@@ -739,6 +742,21 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   void AddAdapterObserver(device::BluetoothAdapter::Observer* observer) {
     DCHECK(!adapter_observer_);
     adapter_observer_ = observer;
+  }
+
+  void RemoveAdapterObserver(device::BluetoothAdapter::Observer* observer) {
+    DCHECK_EQ(adapter_observer_, observer);
+    adapter_observer_ = nullptr;
+  }
+
+  void ShutdownAndResetService() {
+    fake_nearby_connections_manager_ = nullptr;
+    power_client_ = nullptr;
+    wifi_network_handler_ = nullptr;
+    if (service_) {
+      service_->Shutdown();
+      service_.reset();
+    }
   }
 
   void OnSetAdvertisingInterval(int64_t min, int64_t max) {
@@ -1576,11 +1594,10 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   raw_ptr<user_manager::User> user_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  raw_ptr<FakeNearbyConnectionsManager, DanglingUntriaged>
-      fake_nearby_connections_manager_ = nullptr;
-  raw_ptr<FakePowerClient, DanglingUntriaged> power_client_ = nullptr;
-  raw_ptr<FakeWifiNetworkConfigurationHandler, DanglingUntriaged>
-      wifi_network_handler_ = nullptr;
+  raw_ptr<FakeNearbyConnectionsManager> fake_nearby_connections_manager_ =
+      nullptr;
+  raw_ptr<FakePowerClient> power_client_ = nullptr;
+  raw_ptr<FakeWifiNetworkConfigurationHandler> wifi_network_handler_ = nullptr;
   FakeNearbyShareLocalDeviceDataManager::Factory
       local_device_data_manager_factory_;
   FakeNearbyShareContactManager::Factory contact_manager_factory_;
@@ -1598,8 +1615,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_support_state_;
-  raw_ptr<device::BluetoothAdapter::Observer, DanglingUntriaged>
-      adapter_observer_ = nullptr;
+  raw_ptr<device::BluetoothAdapter::Observer> adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
   raw_ptr<device::MockBluetoothLowEnergyScanSession> mock_scan_session_ =
@@ -1718,6 +1734,13 @@ class TestObserver : public NearbySharingService::Observer {
     service_->AddObserver(this);
   }
 
+  ~TestObserver() override {
+    if (service_) {
+      service_->RemoveObserver(this);
+      service_ = nullptr;
+    }
+  }
+
   void OnHighVisibilityChanged(bool in_high_visibility) override {
     in_high_visibility_ = in_high_visibility;
   }
@@ -1740,7 +1763,10 @@ class TestObserver : public NearbySharingService::Observer {
 
   void OnShutdown() override {
     shutdown_called_ = true;
-    service_->RemoveObserver(this);
+    if (service_) {
+      service_->RemoveObserver(this);
+      service_ = nullptr;
+    }
   }
 
   bool in_high_visibility_ = false;
@@ -1750,7 +1776,7 @@ class TestObserver : public NearbySharingService::Observer {
   bool devices_detected_called_ = false;
   bool devices_not_detected_called_ = false;
   bool scanning_stopped_called_ = false;
-  raw_ptr<NearbySharingService, DanglingUntriaged> service_;
+  raw_ptr<NearbySharingService> service_;
 };
 
 TEST_P(NearbySharingServiceImplTest, DisableNearbyShutdownConnections) {
@@ -2072,10 +2098,7 @@ TEST_P(NearbySharingServiceImplTest,
                                     SendSurfaceState::kForeground));
   run_loop2.Run();
 
-  // Shut down the service while the discovery callbacks are still in scope.
-  // OnShareTargetLost() will be invoked during shutdown.
-  service_->Shutdown();
-  service_.reset();
+  ShutdownAndResetService();
 }
 
 TEST_P(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
@@ -2136,10 +2159,7 @@ TEST_P(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
                                     SendSurfaceState::kForeground));
   run_loop2.Run();
 
-  // Shut down the service while the discovery callbacks are still in scope.
-  // OnShareTargetLost() will be invoked during shutdown.
-  service_->Shutdown();
-  service_.reset();
+  ShutdownAndResetService();
 }
 
 TEST_P(NearbySharingServiceImplValidSendTest,
@@ -4612,6 +4632,9 @@ TEST_P(NearbySharingServiceImplTest, ShutdownCallsObservers) {
   EXPECT_TRUE(observer.shutdown_called_);
 
   // Prevent a double shutdown.
+  fake_nearby_connections_manager_ = nullptr;
+  power_client_ = nullptr;
+  wifi_network_handler_ = nullptr;
   service_.reset();
 }
 
@@ -4708,6 +4731,9 @@ TEST_P(NearbySharingServiceImplTest, ShutdownCallsObserversWithArcCallback) {
   EXPECT_TRUE(arc_session.CleanupCallbackCalled());
 
   // Prevent a double shutdown.
+  fake_nearby_connections_manager_ = nullptr;
+  power_client_ = nullptr;
+  wifi_network_handler_ = nullptr;
   service_.reset();
 }
 
@@ -4865,8 +4891,7 @@ TEST_P(NearbySharingServiceImplTest,
             certificate_manager()->num_download_public_certificates_calls());
 
   EXPECT_CALL(discovery_callback, OnShareTargetLost);
-  service_->Shutdown();
-  service_.reset();
+  ShutdownAndResetService();
 }
 
 TEST_P(NearbySharingServiceImplTest,
@@ -4930,8 +4955,7 @@ TEST_P(NearbySharingServiceImplTest,
     run_loop.Run();
   }
   EXPECT_CALL(discovery_callback, OnShareTargetLost).Times(3);
-  service_->Shutdown();
-  service_.reset();
+  ShutdownAndResetService();
 }
 
 TEST_P(NearbySharingServiceImplTest,
@@ -4976,8 +5000,7 @@ TEST_P(NearbySharingServiceImplTest,
   task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
   EXPECT_EQ(2u,
             certificate_manager()->num_download_public_certificates_calls());
-  service_->Shutdown();
-  service_.reset();
+  ShutdownAndResetService();
 }
 
 TEST_P(NearbySharingServiceImplTest, RetryDiscoveredEndpoints_DownloadLimit) {
@@ -5029,8 +5052,7 @@ TEST_P(NearbySharingServiceImplTest, RetryDiscoveredEndpoints_DownloadLimit) {
   EXPECT_EQ(3u + kMaxCertificateDownloadsDuringDiscovery,
             certificate_manager()->num_download_public_certificates_calls());
 
-  service_->Shutdown();
-  service_.reset();
+  ShutdownAndResetService();
 }
 
 TEST_P(NearbySharingServiceImplTest, NotBoundToProcessIfDisabled) {
