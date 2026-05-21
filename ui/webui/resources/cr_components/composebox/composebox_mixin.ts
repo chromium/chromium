@@ -1150,6 +1150,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         onVoiceSearchButtonClick() {
+          if (this.inVoiceSearchMode) {
+            return;
+          }
           this.inVoiceSearchMode = true;
           this.hasVoiceSearchError = false;
           this.animationState = GlowAnimationState.LISTENING;

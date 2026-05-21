@@ -292,6 +292,10 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   start() {
+    if (this.state_ !== State.UNINITIALIZED &&
+        this.state_ !== State.ERROR_RECEIVED) {
+      return;
+    }
     this.errorMessage_ = '';
     // If continuous is false, then speech webkit determines when to end, and
     // there is no manual set timeout.
