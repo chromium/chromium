@@ -43,6 +43,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/google/core/common/google_util.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
@@ -501,6 +502,14 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
                           ->mutable_quality();
   quality_log->set_embedding_model_version(
       embedder_model_version_.value_or(-1));
+  quality_log->set_tab_selection_model_version(-1);
+  if (model_handler_) {
+    std::optional<optimization_guide::ModelInfo> model_info =
+        model_handler_->GetModelInfo();
+    if (model_info.has_value()) {
+      quality_log->set_tab_selection_model_version(model_info->GetVersion());
+    }
+  }
 
   SelectRelevantTabs(
       query, options, query_embedding, all_tabs, explicit_urls,
