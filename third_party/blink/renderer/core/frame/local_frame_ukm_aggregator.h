@@ -11,7 +11,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -491,8 +490,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
   std::optional<base::TimeTicks> animation_request_timestamp_;
   std::optional<base::TimeTicks> request_timestamp_for_current_frame_;
   base::TimeTicks last_frame_request_timestamp_for_test_;
-
-  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace blink

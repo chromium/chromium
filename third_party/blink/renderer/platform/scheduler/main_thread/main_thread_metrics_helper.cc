@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
@@ -121,7 +122,7 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                                            task_timing.end_time());
 
   if (queue && base::TimeTicks::IsHighResolution() &&
-      metrics_subsampler_.ShouldSample(sampling_ratio_)) {
+      base::ShouldRecordSubsampledMetric(sampling_ratio_)) {
     base::TimeDelta elapsed =
         task_timing.start_time() - task.GetDesiredExecutionTime();
     UNSAFE_TODO(queueing_delay_histograms_[static_cast<size_t>(

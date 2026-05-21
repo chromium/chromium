@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
@@ -347,8 +346,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // performance.mark() as a resuming signal is called.
   bool is_waiting_for_user_timing_ = false;
   base::TimeTicks time_waiting_for_user_timing_;
-
-  base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace blink

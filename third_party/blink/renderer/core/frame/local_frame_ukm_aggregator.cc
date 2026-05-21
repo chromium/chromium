@@ -370,7 +370,7 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
     record.pre_fcp_aggregate += count;
 
   // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
-  if (!metrics_subsampler_.ShouldSample(0.001)) {
+  if (!base::ShouldRecordSubsampledMetric(0.001)) {
     return;
   }
 

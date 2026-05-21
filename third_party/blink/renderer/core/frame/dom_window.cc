@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -1137,7 +1138,7 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
     // browser-side downsampling rates.
     if (!base::FeatureList::IsEnabled(
             features::kSubSampleWindowProxyUsageMetrics) ||
-        metrics_sub_sampler_.ShouldSample(0.0001)) {
+        base::ShouldRecordSubsampledMetric(0.0001)) {
       accessing_frame->GetLocalFrameHostRemote().RecordWindowProxyUsageMetrics(
           GetFrame()->GetFrameToken(), access_type);
     }

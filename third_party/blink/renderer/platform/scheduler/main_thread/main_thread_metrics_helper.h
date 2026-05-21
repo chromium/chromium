@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -64,7 +63,6 @@ class PLATFORM_EXPORT MainThreadMetricsHelper {
 
   MainThreadTaskLoadState main_thread_task_load_state_;
   float sampling_ratio_ = .01;
-  base::MetricsSubSampler metrics_subsampler_;
   base::TimeTicks last_foregrounded_time_;
 };
 
