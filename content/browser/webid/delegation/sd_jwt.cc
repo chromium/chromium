@@ -12,7 +12,9 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
+#include "crypto/sign.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -591,6 +593,20 @@ bool Jwt::Sign(Signer signer) {
                         &signature.value());
 
   return true;
+}
+
+bool Jwt::Verify(Verifier verifier) const {
+  std::string message = Base64UrlEncode(header.value()).value() + "." +
+                        Base64UrlEncode(payload.value()).value();
+
+  std::string sig_bytes;
+  if (!base::Base64UrlDecode(signature.value(),
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &sig_bytes)) {
+    return false;
+  }
+
+  return std::move(verifier).Run(message, base::as_byte_span(sig_bytes));
 }
 
 SdJwt::SdJwt() = default;

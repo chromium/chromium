@@ -206,6 +206,9 @@ struct CONTENT_EXPORT Payload {
 typedef base::OnceCallback<std::optional<std::vector<uint8_t>>(
     const std::string_view&)>
     Signer;
+typedef base::OnceCallback<bool(const std::string_view&,
+                                base::span<const uint8_t>)>
+    Verifier;
 
 // https://datatracker.ietf.org/doc/html/rfc7519
 struct CONTENT_EXPORT Jwt {
@@ -218,6 +221,7 @@ struct CONTENT_EXPORT Jwt {
   Jwt(const Jwt& other);
 
   bool Sign(Signer signer);
+  bool Verify(Verifier verifier) const;
 
   static std::optional<Jwt> From(const base::ListValue& json);
   static std::optional<base::ListValue> Parse(const std::string_view& jwt);

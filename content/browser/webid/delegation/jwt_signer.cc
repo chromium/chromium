@@ -21,6 +21,7 @@
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
+#include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -46,6 +47,15 @@ namespace {
 template <typename T>
 T NumBitsToBytes(T x) {
   return (x / 8) + (7 + (x % 8)) / 8;
+}
+
+std::optional<std::string> Base64UrlDecode(const std::string_view& base64) {
+  std::string str;
+  if (!base::Base64UrlDecode(
+          base64, base::Base64UrlDecodePolicy::IGNORE_PADDING, &str)) {
+    return std::nullopt;
+  }
+  return str;
 }
 
 int GetGroupDegreeInBytes(EC_KEY* ec) {
@@ -228,6 +238,103 @@ Signer CreateJwtSigner(crypto::keypair::PrivateKey private_key) {
             return std::nullopt;
           });
   }
+}
+
+std::optional<crypto::keypair::PublicKey> ImportPublicKey(const Jwk& jwk) {
+  if (jwk.kty == "OKP" && jwk.crv == "Ed25519") {
+    auto x_bytes = Base64UrlDecode(jwk.x);
+    if (!x_bytes || x_bytes->size() != 32) {
+      return std::nullopt;
+    }
+    return crypto::keypair::PublicKey::FromEd25519PublicKey(
+        base::as_byte_span(*x_bytes).first<32>());
+  } else if (jwk.kty == "EC" && jwk.crv == "P-256") {
+    auto x_bytes = Base64UrlDecode(jwk.x);
+    auto y_bytes = Base64UrlDecode(jwk.y);
+    if (!x_bytes || !y_bytes || x_bytes->size() != 32 ||
+        y_bytes->size() != 32) {
+      return std::nullopt;
+    }
+    std::vector<uint8_t> point;
+    point.reserve(1 + x_bytes->size() + y_bytes->size());
+    point.push_back(0x04);
+    point.insert(point.end(), x_bytes->begin(), x_bytes->end());
+    point.insert(point.end(), y_bytes->begin(), y_bytes->end());
+
+    return crypto::keypair::PublicKey::FromEcP256Point(point);
+  } else if (jwk.kty == "RSA") {
+    auto n_bytes = Base64UrlDecode(jwk.n);
+    auto e_bytes = Base64UrlDecode(jwk.e);
+    if (!n_bytes || !e_bytes) {
+      return std::nullopt;
+    }
+    return crypto::keypair::PublicKey::FromRsaPublicKeyComponents(
+        base::as_byte_span(*n_bytes), base::as_byte_span(*e_bytes));
+  }
+
+  return std::nullopt;
+}
+
+bool VerifyJwt(const Jwk& jwk,
+               const Header& header,
+               const std::string_view& data,
+               base::span<const uint8_t> signature) {
+  auto public_key = ImportPublicKey(jwk);
+  if (!public_key) {
+    return false;
+  }
+
+  crypto::sign::SignatureKind kind;
+  if (jwk.kty == "OKP" && jwk.crv == "Ed25519" && header.alg == "EdDSA") {
+    kind = crypto::sign::SignatureKind::ED25519;
+  } else if (jwk.kty == "EC" && jwk.crv == "P-256" && header.alg == "ES256") {
+    kind = crypto::sign::SignatureKind::ECDSA_SHA256;
+  } else if (jwk.kty == "RSA" && header.alg == "RS256") {
+    kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
+  } else {
+    return false;
+  }
+
+  if (kind == crypto::sign::SignatureKind::ED25519 ||
+      kind == crypto::sign::SignatureKind::RSA_PKCS1_SHA256) {
+    return crypto::sign::Verify(kind, *public_key, base::as_byte_span(data),
+                                signature);
+  }
+
+  // ES256 requires an exception because JWS signature format is raw
+  // concatenated r and s (64 bytes), but BoringSSL expects DER encoded ASN.1
+  // structure.
+  if (signature.size() != 64u) {
+    return false;
+  }
+  bssl::UniquePtr<BIGNUM> r(BN_bin2bn(signature.data(), 32, nullptr));
+  bssl::UniquePtr<BIGNUM> s(
+      BN_bin2bn(signature.subspan(32u).data(), 32, nullptr));
+  if (!r || !s) {
+    return false;
+  }
+
+  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
+  if (!ecdsa_sig ||
+      !ECDSA_SIG_set0(ecdsa_sig.get(), r.release(), s.release())) {
+    return false;
+  }
+  std::vector<uint8_t> sig_vec;
+  const int len = i2d_ECDSA_SIG(ecdsa_sig.get(), nullptr);
+  if (len <= 0) {
+    return false;
+  }
+  sig_vec.resize(len);
+  uint8_t* ptr = sig_vec.data();
+  if (i2d_ECDSA_SIG(ecdsa_sig.get(), &ptr) <= 0) {
+    return false;
+  }
+  return crypto::sign::Verify(kind, *public_key, base::as_byte_span(data),
+                              sig_vec);
+}
+
+Verifier CreateJwtVerifier(const Jwk& jwk, const Header& header) {
+  return base::BindOnce(&VerifyJwt, jwk, header);
 }
 
 }  // namespace content::sdjwt

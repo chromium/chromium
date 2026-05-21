@@ -12,6 +12,8 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "content/browser/webid/delegation/jwt_signer.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -189,6 +191,29 @@ TEST_F(SdJwtTest, JwtSerializing) {
   // Jwt's top level structure:
   // Base64UrlEncode(header) . Base64UrlEncode(payload)  . signature
   EXPECT_EQ(token.Serialize(), JSONString("aGVhZGVy.cGF5bG9hZA.signature"));
+}
+
+TEST_F(SdJwtTest, JwtVerification) {
+  auto key = crypto::keypair::PrivateKey::GenerateEd25519();
+  auto pub_bytes =
+      crypto::keypair::PublicKey::FromPrivateKey(key).ToEd25519PublicKey();
+
+  sdjwt::Jwk jwk;
+  jwk.kty = "OKP";
+  jwk.crv = "Ed25519";
+  base::Base64UrlEncode(pub_bytes, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &jwk.x);
+
+  Jwt token;
+  token.header = JSONString(R"({"alg":"EdDSA","kid":"test_kid","typ":"JWT"})");
+  token.payload = JSONString(R"({"iss":"issuer","exp":1234567890})");
+
+  ASSERT_TRUE(token.Sign(sdjwt::CreateJwtSigner(std::move(key))));
+
+  sdjwt::Header header;
+  header.alg = "EdDSA";
+  header.typ = "JWT";
+  EXPECT_TRUE(token.Verify(sdjwt::CreateJwtVerifier(jwk, header)));
 }
 
 TEST_F(SdJwtTest, HeaderParsingAndSerializing) {

@@ -295,6 +295,72 @@ TEST_F(JwtSignerTest, JwtSignerEdDsa) {
   VerifyEdDsa(public_key, base::as_byte_span(*signature), message);
 }
 
+TEST_F(JwtSignerTest, JwtVerifierEdDsa) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateEd25519();
+  auto jwk = ExportPublicKey(private_key);
+  ASSERT_TRUE(jwk);
+
+  const std::string message = "hello world";
+  auto signer = CreateJwtSigner(std::move(private_key));
+  auto signature = std::move(signer).Run(message);
+
+  ASSERT_TRUE(signature);
+
+  Header header;
+  header.alg = "EdDSA";
+  auto verifier = CreateJwtVerifier(*jwk, header);
+  EXPECT_TRUE(std::move(verifier).Run(message, base::as_byte_span(*signature)));
+}
+
+TEST_F(JwtSignerTest, JwtVerifierEs256) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  auto jwk = ExportPublicKey(private_key);
+  ASSERT_TRUE(jwk);
+
+  const std::string message = "hello world";
+  auto signer = CreateJwtSigner(std::move(private_key));
+  auto signature = std::move(signer).Run(message);
+
+  ASSERT_TRUE(signature);
+
+  Header header;
+  header.alg = "ES256";
+  auto verifier = CreateJwtVerifier(*jwk, header);
+  EXPECT_TRUE(std::move(verifier).Run(message, base::as_byte_span(*signature)));
+}
+
+TEST_F(JwtSignerTest, JwtVerifierRs256) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  auto jwk = ExportPublicKey(private_key);
+  ASSERT_TRUE(jwk);
+
+  const std::string message = "hello world";
+  auto signer = CreateJwtSigner(std::move(private_key));
+  auto signature = std::move(signer).Run(message);
+
+  ASSERT_TRUE(signature);
+
+  Header header;
+  header.alg = "RS256";
+  auto verifier = CreateJwtVerifier(*jwk, header);
+  EXPECT_TRUE(std::move(verifier).Run(message, base::as_byte_span(*signature)));
+}
+
+TEST_F(JwtSignerTest, JwtVerificationUnsupported) {
+  Jwk jwk;
+  jwk.kty = "unknown";
+
+  Jwt token;
+  token.header = JSONString("header");
+  token.payload = JSONString("payload");
+  token.signature = Base64String("signature");
+
+  Header header;
+  header.alg = "unknown";
+  auto verifier = CreateJwtVerifier(jwk, header);
+  EXPECT_FALSE(token.Verify(std::move(verifier)));
+}
+
 TEST_F(JwtSignerTest, ExportPublicKeyEdDsa) {
   crypto::keypair::PrivateKey private_key =
       crypto::keypair::PrivateKey::GenerateEd25519();
