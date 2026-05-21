@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -254,7 +253,8 @@ class QuickUnlockPrivateUnitTest
     test_api_ = std::make_unique<ash::quick_unlock::TestApi>(
         /*override_quick_unlock=*/true);
     test_api_->EnablePinByPolicy(ash::quick_unlock::Purpose::kAny);
-    ash::quick_unlock::PinBackend::Initialize();
+    ash::quick_unlock::PinBackend::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     base::RunLoop().RunUntilIdle();
 
@@ -530,31 +530,33 @@ class QuickUnlockPrivateUnitTest
 
   int GetExposedPinLength() {
     const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
-    return user_manager::KnownUser(g_browser_process->local_state())
+    return user_manager::KnownUser(
+               TestingBrowserProcess::GetGlobal()->local_state())
         .GetUserPinLength(account_id);
   }
 
   void ClearExposedPinLength() {
     const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
-    user_manager::KnownUser(g_browser_process->local_state())
+    user_manager::KnownUser(TestingBrowserProcess::GetGlobal()->local_state())
         .SetUserPinLength(account_id, 0);
   }
 
   bool IsBackfillNeeded() {
     const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
-    return user_manager::KnownUser(g_browser_process->local_state())
+    return user_manager::KnownUser(
+               TestingBrowserProcess::GetGlobal()->local_state())
         .PinAutosubmitIsBackfillNeeded(account_id);
   }
 
   void SetBackfillNotNeeded() {
     const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
-    user_manager::KnownUser(g_browser_process->local_state())
+    user_manager::KnownUser(TestingBrowserProcess::GetGlobal()->local_state())
         .PinAutosubmitSetBackfillNotNeeded(account_id);
   }
 
   void SetBackfillNeededForTests() {
     const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
-    user_manager::KnownUser(g_browser_process->local_state())
+    user_manager::KnownUser(TestingBrowserProcess::GetGlobal()->local_state())
         .PinAutosubmitSetBackfillNeededForTests(account_id);
   }
 

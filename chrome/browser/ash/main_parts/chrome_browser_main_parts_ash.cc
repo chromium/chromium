@@ -952,7 +952,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       g_browser_process->shared_url_loader_factory(),
       g_browser_process->platform_part()->browser_policy_connector_ash());
 
-  quick_unlock::PinBackend::Initialize();
+  quick_unlock::PinBackend::Initialize(g_browser_process->local_state());
 
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
       user_manager::UserManager::Get());

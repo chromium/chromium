@@ -252,7 +252,8 @@ class WizardControllerTestBase : public ::testing::Test {
     // PreProfileInit:
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
     session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
-    quick_unlock::PinBackend::Initialize();
+    quick_unlock::PinBackend::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     CHECK(profile_manager_->SetUp());
