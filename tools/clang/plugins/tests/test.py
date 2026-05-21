@@ -24,7 +24,7 @@ class ChromeStylePluginTest(plugin_testing.ClangPluginTest):
         '-fsyntax-only',
         # Fake system directory for tests
         '-isystem',
-        os.path.join(os.getcwd(), 'system'),
+        'system',
         '-Wno-inconsistent-missing-override',
         '-Wunsafe-buffer-usage',
         '--include-directory',
@@ -48,12 +48,12 @@ def main():
                       help='Filter to test files that match a regex')
   args = parser.parse_args()
 
-  return ChromeStylePluginTest(os.path.dirname(os.path.realpath(__file__)),
-                               args.clang_path,
-                               ['find-bad-constructs', 'unsafe-buffers'],
-                               args.reset_results,
-                               args.quiet,
-                               filename_regex=args.filter).Run()
+  return ChromeStylePluginTest(
+      os.path.dirname(os.path.realpath(__file__)),
+      args.clang_path, ['find-bad-constructs', 'unsafe-buffers', 'strict-deps'],
+      args.reset_results,
+      args.quiet,
+      filename_regex=args.filter).Run()
 
 
 if __name__ == '__main__':

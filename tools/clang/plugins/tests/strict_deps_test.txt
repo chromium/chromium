@@ -1,19 +1,25 @@
-strict_deps_test.cpp:7:10: error: module //tests:strict_deps_test_Private does not depend on a module exporting 'atomic'
-#include <atomic>  // Simulate header in system include missing from modulemap
-         ^
 strict_deps_test.cpp:8:10: error: module //tests:strict_deps_test_Private does not depend on a module exporting 'not_in_modulemap'
+Suggestion: Add an AllowedHeader entry for 'not_in_modulemap' to build/modules/unified/modulemap_config.py
 #include <not_in_modulemap>  // Header in sysroot missing from modulemap
          ^
-strict_deps_test.cpp:9:10: error: use of private header from outside its module: 'private' [-Wprivate-header]
+strict_deps_test.cpp:9:10: error: use of private header from outside its module: 'private'
+Suggestion: Add an AllowedHeader entry for 'private' to build/modules/unified/modulemap_config.py
 #include <private>  // Simulate header in sysroot private in the modulemap
          ^
-strict_deps_test.cpp:15:10: error: module //tests:strict_deps_test_Private does not directly depend on a module exporting 'indirect.h', which is part of indirectly-used module //tests:indirect
+strict_deps_test.cpp:7:10: error: module //tests:strict_deps_test_Private does not depend on a module exporting 'atomic'
+For potential fixes, run `gn suggest $OUT_DIR //tests:strict_deps_test_Private=system/atomic //tests:strict_deps_test_Private=strict_deps_test/indirect.h //tests:strict_deps_test_Private=strict_deps_test/missing_dep.h //tests:strict_deps_test_Private=strict_deps_test/undeclared_header.h`
+#include <atomic>  // Simulate header in system include missing from modulemap
+         ^
+strict_deps_test.cpp:15:10: error: module //tests:strict_deps_test_Private does not depend on a module exporting 'indirect.h', which is part of indirectly used module //tests:indirect
+For potential fixes, run `gn suggest $OUT_DIR //tests:strict_deps_test_Private=system/atomic //tests:strict_deps_test_Private=strict_deps_test/indirect.h //tests:strict_deps_test_Private=strict_deps_test/missing_dep.h //tests:strict_deps_test_Private=strict_deps_test/undeclared_header.h`
 #include "indirect.h"  // Simulate transitive dep on module defining indirect.h
          ^
 strict_deps_test.cpp:16:10: error: module //tests:strict_deps_test_Private does not depend on a module exporting 'missing_dep.h'
+For potential fixes, run `gn suggest $OUT_DIR //tests:strict_deps_test_Private=system/atomic //tests:strict_deps_test_Private=strict_deps_test/indirect.h //tests:strict_deps_test_Private=strict_deps_test/missing_dep.h //tests:strict_deps_test_Private=strict_deps_test/undeclared_header.h`
 #include "missing_dep.h"        // Missing dep on module defining missing_dep.h.
          ^
 strict_deps_test.cpp:17:10: error: module //tests:strict_deps_test_Private does not depend on a module exporting 'undeclared_header.h'
+For potential fixes, run `gn suggest $OUT_DIR //tests:strict_deps_test_Private=system/atomic //tests:strict_deps_test_Private=strict_deps_test/indirect.h //tests:strict_deps_test_Private=strict_deps_test/missing_dep.h //tests:strict_deps_test_Private=strict_deps_test/undeclared_header.h`
 #include "undeclared_header.h"  // Simulate header file missing from BUILD.gn.
          ^
 6 errors generated.
