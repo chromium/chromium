@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  .container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  .content {
+    width: 600px;
+    height: 600px;
+  }
+
+  .vertical-rl {
+    writing-mode: vertical-rl;
+  }
+  .horizontal-tb {
+    writing-mode: horizontal-tb;
+  }
+
+  #overscroll-main-inline-start {
+    block-size: 100%;
+    inline-size: 50px;
+    inset-inline-end: 100%;
+  }
+  #overscroll-main-block-start {
+    block-size: 50px;
+    inline-size: 100%;
+    inset-block-end: 100%;
+  }
+  #overscroll-nested {
+    block-size: 100%;
+    inline-size: 50px;
+    inset-inline-end: 100%;
+  }
+</style>
+
+<!-- Test Case 1: Vertical-RL Container and Inherited Writing Mode -->
+<div id="container-main" class="container vertical-rl" overscrollcontainer>
+  <div id="overscroll-main-inline-start"></div>
+  <div id="overscroll-main-block-start"></div>
+  <div id="content-main" class="content"></div>
+</div>
+<button id="btn-main-inline" command="toggle-overscroll" commandfor="overscroll-main-inline-start"></button>
+<button id="btn-main-block" command="toggle-overscroll" commandfor="overscroll-main-block-start"></button>
+
+<!-- Test Case 2: Mixed Writing Modes (Horizontal-TB Container, Vertical-RL Area) -->
+<div id="container-nested" class="container horizontal-tb" overscrollcontainer>
+  <div id="overscroll-nested" class="vertical-rl"></div>
+  <div id="content-nested" class="content"></div>
+</div>
+<button id="btn-nested" command="toggle-overscroll" commandfor="overscroll-nested"></button>
+
+<script>
+function click(button) {
+  let event_received = new Promise(resolve => {
+    button.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  const container = document.getElementById("container-main");
+  const containerRect = container.getBoundingClientRect();
+
+  // 1. Test overscroll-main-inline-start (Physically above container, bottom: 100%)
+  assert_equals(document.getElementById("overscroll-main-inline-start").getBoundingClientRect().bottom, containerRect.top, "overscroll-main-inline-start initially above container");
+
+  await click(document.getElementById("btn-main-inline"));
+  assert_equals(document.getElementById("overscroll-main-inline-start").getBoundingClientRect().top, containerRect.top, "overscroll-main-inline-start top aligned after toggle");
+
+  await click(document.getElementById("btn-main-inline"));
+  assert_equals(document.getElementById("overscroll-main-inline-start").getBoundingClientRect().bottom, containerRect.top, "overscroll-main-inline-start hidden after toggle");
+
+  // 2. Test overscroll-main-block-start (Physically to the right of container, left: 100%)
+  assert_equals(document.getElementById("overscroll-main-block-start").getBoundingClientRect().left, containerRect.right, "overscroll-main-block-start initially to the right of container");
+
+  await click(document.getElementById("btn-main-block"));
+  assert_equals(document.getElementById("overscroll-main-block-start").getBoundingClientRect().right, containerRect.right, "overscroll-main-block-start right aligned after toggle");
+
+  await click(document.getElementById("btn-main-block"));
+  assert_equals(document.getElementById("overscroll-main-block-start").getBoundingClientRect().left, containerRect.right, "overscroll-main-block-start hidden after toggle");
+
+}, "Toggle overscroll works in vertical-rl writing mode");
+
+promise_test(async () => {
+  const container = document.getElementById("container-nested");
+  const containerRect = container.getBoundingClientRect();
+  const area = document.getElementById("overscroll-nested");
+
+  // Initially physically above the container.
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.top, "area initially physically above container");
+
+  // Click to bring it into view.
+  await click(document.getElementById("btn-nested"));
+  assert_equals(area.getBoundingClientRect().top, containerRect.top, "area top aligned after toggle");
+
+  // Click to hide it again.
+  await click(document.getElementById("btn-nested"));
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.top, "area hidden after toggle");
+
+}, "Toggle overscroll area with vertical-rl writing mode inside horizontal-tb container works");
+</script>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  #overscroll-diagonal {
+    width: 50px;
+    height: 50px;
+    bottom: 100%;
+    right: 100%;
+  }
+  #content {
+    width: 600px;
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="overscroll-diagonal"></div>
+  <div id="content"></div>
+</div>
+
+<button id="btn" command="toggle-overscroll" commandfor="overscroll-diagonal"></button>
+
+<script>
+function click(button) {
+  let event_received = new Promise(resolve => {
+    button.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  const containerRect = container.getBoundingClientRect();
+  const area = document.getElementById("overscroll-diagonal");
+
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.top, "area initially physically above container");
+  assert_equals(area.getBoundingClientRect().right, containerRect.left, "area initially physically to the left of container");
+
+  await click(btn);
+
+  assert_equals(area.getBoundingClientRect().top, containerRect.top, "Equal offsets: top edge aligned");
+  assert_equals(area.getBoundingClientRect().left, containerRect.left, "Equal offsets: left edge aligned");
+
+  await click(btn);
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.top, "Closed: bottom edge returned");
+  assert_equals(area.getBoundingClientRect().right, containerRect.left, "Closed: right edge returned");
+
+  // Make Horizontal offset larger
+  area.style.width = "100px";
+
+  await click(btn);
+
+  assert_equals(area.getBoundingClientRect().left, containerRect.left, "Horizontal dominant: left edge aligned");
+  assert_equals(area.getBoundingClientRect().top, containerRect.top, "Horizontal dominant: top edge aligned");
+
+  await click(btn);
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.top, "Closed dominant: bottom edge returned");
+  assert_equals(area.getBoundingClientRect().right, containerRect.left, "Closed dominant: right edge returned");
+
+}, "Toggle overscroll area positioned diagonally scrolls diagonally into view");
+</script>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  #overscroll-top {
+    width: 100%;
+    height: 50px;
+    bottom: 100%;
+  }
+  #overscroll-bottom {
+    width: 100%;
+    height: 50px;
+    top: 100%;
+  }
+  #overscroll-left {
+    width: 50px;
+    height: 100%;
+    right: 100%;
+  }
+  #overscroll-right {
+    width: 50px;
+    height: 100%;
+    left: 100%;
+  }
+  #content {
+    width: 600px;
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="overscroll-top"></div>
+  <div id="overscroll-bottom"></div>
+  <div id="overscroll-left"></div>
+  <div id="overscroll-right"></div>
+  <div id="content"></div>
+</div>
+
+<button id="btn-top" command="toggle-overscroll" commandfor="overscroll-top"></button>
+<button id="btn-bottom" command="toggle-overscroll" commandfor="overscroll-bottom"></button>
+<button id="btn-left" command="toggle-overscroll" commandfor="overscroll-left"></button>
+<button id="btn-right" command="toggle-overscroll" commandfor="overscroll-right"></button>
+
+<script>
+function click(button) {
+  let event_received = new Promise(resolve => {
+    button.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  const containerRect = container.getBoundingClientRect();
+
+  const areaTop = document.getElementById("overscroll-top");
+  const areaBottom = document.getElementById("overscroll-bottom");
+  const areaLeft = document.getElementById("overscroll-left");
+  const areaRight = document.getElementById("overscroll-right");
+
+  // Verify initial layout
+  assert_equals(areaTop.getBoundingClientRect().bottom, containerRect.top, "area-top initially above");
+  assert_equals(areaBottom.getBoundingClientRect().top, containerRect.bottom, "area-bottom initially below");
+  assert_equals(areaLeft.getBoundingClientRect().right, containerRect.left, "area-left initially to the left");
+  assert_equals(areaRight.getBoundingClientRect().left, containerRect.right, "area-right initially to the right");
+
+  // 1. Toggle Top
+  await click(document.getElementById("btn-top"));
+  assert_equals(areaTop.getBoundingClientRect().top, containerRect.top, "area-top top aligned after toggle");
+  await click(document.getElementById("btn-top"));
+  assert_equals(areaTop.getBoundingClientRect().bottom, containerRect.top, "area-top hidden again");
+
+  // 2. Toggle Bottom
+  await click(document.getElementById("btn-bottom"));
+  assert_equals(areaBottom.getBoundingClientRect().bottom, containerRect.bottom, "area-bottom bottom aligned after toggle");
+  await click(document.getElementById("btn-bottom"));
+  assert_equals(areaBottom.getBoundingClientRect().top, containerRect.bottom, "area-bottom hidden again");
+
+  // 3. Toggle Left
+  await click(document.getElementById("btn-left"));
+  assert_equals(areaLeft.getBoundingClientRect().left, containerRect.left, "area-left left aligned after toggle");
+  await click(document.getElementById("btn-left"));
+  assert_equals(areaLeft.getBoundingClientRect().right, containerRect.left, "area-left hidden again");
+
+  // 4. Toggle Right
+  await click(document.getElementById("btn-right"));
+  assert_equals(areaRight.getBoundingClientRect().right, containerRect.right, "area-right right aligned after toggle");
+  await click(document.getElementById("btn-right"));
+  assert_equals(areaRight.getBoundingClientRect().left, containerRect.right, "area-right hidden again");
+
+}, "Toggle overscroll buttons work with four separate overscroll areas");
+</script>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+  #overscroll-all-sides {
+    left: -50px;
+    right: -50px;
+    top: -50px;
+    bottom: -50px;
+  }
+  #content {
+    width: 600px;
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="overscroll-all-sides"></div>
+  <div id="content"></div>
+</div>
+
+<button id="btn" command="toggle-overscroll" commandfor="overscroll-all-sides"></button>
+
+<script>
+function click(button) {
+  let event_received = new Promise(resolve => {
+    button.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  const containerRect = container.getBoundingClientRect();
+  const area = document.getElementById("overscroll-all-sides");
+
+  // Verify initial state (extends 50px outside all 4 boundaries)
+  assert_equals(area.getBoundingClientRect().left, containerRect.left - 50, "Initially 50px to the left");
+  assert_equals(area.getBoundingClientRect().right, containerRect.right + 50, "Initially 50px to the right");
+  assert_equals(area.getBoundingClientRect().top, containerRect.top - 50, "Initially 50px above");
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.bottom + 50, "Initially 50px below");
+
+  await click(btn);
+
+  assert_equals(area.getBoundingClientRect().top, containerRect.top, "top edge aligned (overscrolled top)");
+  assert_equals(area.getBoundingClientRect().left, containerRect.left - 50, "left edge remains unaligned");
+
+  // Close it
+  await click(btn);
+  assert_equals(area.getBoundingClientRect().left, containerRect.left - 50, "Closed: left edge returned");
+  assert_equals(area.getBoundingClientRect().right, containerRect.right + 50, "Closed: right edge returned");
+  assert_equals(area.getBoundingClientRect().top, containerRect.top - 50, "Closed: top edge returned");
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.bottom + 50, "Closed: bottom edge returned");
+
+  // Asymmetric Test.
+  area.style.top = "-40px";
+  area.style.bottom = "-60px";
+
+  await click(btn);
+
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.bottom, "bottom edge aligned (overscrolled bottom)");
+
+  // Close it
+  await click(btn);
+  assert_equals(area.getBoundingClientRect().top, containerRect.top - 40, "Closed asymmetric: top edge returned");
+  assert_equals(area.getBoundingClientRect().bottom, containerRect.bottom + 60, "Closed asymmetric: bottom edge returned");
+
+}, "Toggle overscroll with area spanning all directions resolves via tie-breaker");
+</script>

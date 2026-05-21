@@ -684,6 +684,9 @@ crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-sibling-se
 
 ### ====== Paint team owned tests to here ======
 
+### ====== Overscroll tests ======
+wpt_internal/overscroll-gestures/toggle-overscroll-diagonal.html [ Failure ]
+
 ### ====== Payments related tests begin =======
 
 crbug.com/825270 external/wpt/payment-request/delegate-request.https.sub.html [ Failure ]
