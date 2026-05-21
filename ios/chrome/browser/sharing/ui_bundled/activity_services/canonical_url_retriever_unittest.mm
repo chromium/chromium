@@ -188,5 +188,5 @@ TEST_F(CanonicalURLRetrieverTest, TestCanonicalLinkNonHTTPOrHTTPS) {
   EXPECT_TRUE(url.is_empty());
   histogram_tester_.ExpectUniqueSample(
       ui_metrics::kCanonicalURLResultHistogram,
-      ui_metrics::SUCCESS_CANONICAL_URL_NOT_HTTPS, 1);
+      ui_metrics::FAILED_CANONICAL_URL_NOT_HTTP_NOR_HTTPS, 1);
 }

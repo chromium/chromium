@@ -46,9 +46,13 @@ GURL UrlFromValue(const GURL& visible_url, const base::Value* value) {
   } else if (!canonical_url.is_valid()) {
     // Log result if an invalid canonical URL is found.
     LogCanonicalUrlResultHistogram(ui_metrics::FAILED_CANONICAL_URL_INVALID);
+  } else if (!canonical_url.SchemeIsHTTPOrHTTPS()) {
+    // Log result if a canonical URL is not HTTP nor HTTPS.
+    LogCanonicalUrlResultHistogram(
+        ui_metrics::FAILED_CANONICAL_URL_NOT_HTTP_NOR_HTTPS);
   } else {
-    // If the canonical URL is valid, then the retrieval was successful,
-    // and the success can be logged.
+    // If the canonical URL is valid, and HTTP or HTTPS then the retrieval was
+    // successful, and the success can be logged.
     LogCanonicalUrlResultHistogram(
         !canonical_url.SchemeIsCryptographic()
             ? ui_metrics::SUCCESS_CANONICAL_URL_NOT_HTTPS
@@ -57,8 +61,6 @@ GURL UrlFromValue(const GURL& visible_url, const base::Value* value) {
             : ui_metrics::SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
   }
 
-  // TODO(crbug.com/514070067): Update the metric, to consider an non HTTP/HTTPS
-  // canonical_url as failure.
   return canonical_url.is_valid() && canonical_url.SchemeIsHTTPOrHTTPS()
              ? canonical_url
              : GURL();

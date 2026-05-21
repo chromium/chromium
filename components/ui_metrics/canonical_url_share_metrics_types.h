@@ -37,6 +37,10 @@ enum CanonicalURLResult {
   // (but the visible URL is).
   SUCCESS_CANONICAL_URL_NOT_HTTPS,
 
+  // The canonical URL retrieval failed because the retrieved canonical URL is
+  // not HTTP nor HTTPS.
+  FAILED_CANONICAL_URL_NOT_HTTP_NOR_HTTPS,
+
   // The count of canonical URL results. This must be the last item in the enum.
   CANONICAL_URL_RESULT_COUNT
 };

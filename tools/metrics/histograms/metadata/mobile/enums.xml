@@ -46,6 +46,9 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Canonical URL retrieved: Canonical URL not HTTPS (but visible
              URL is)"/>
+  <int value="7"
+      label="Canonical URL not retrieved: Canonical URL not HTTP nor HTTPS
+             (but visible URL is)"/>
 </enum>
 
 <enum name="ContextMenuIOSCopyImage">
