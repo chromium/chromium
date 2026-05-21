@@ -253,10 +253,12 @@ SplitTabChange::AddedChange::AddedChange(const SplitTabChange::AddedChange&) =
 SplitTabChange::VisualsChange::VisualsChange(
     const split_tabs::SplitTabVisualData& old_visual_data,
     const split_tabs::SplitTabVisualData& new_visual_data,
-    SplitVisualChangeReason reason)
+    SplitVisualChangeReason reason,
+    bool is_intermediate)
     : old_visual_data_(old_visual_data),
       new_visual_data_(new_visual_data),
-      reason_(reason) {}
+      reason_(reason),
+      is_intermediate_(is_intermediate) {}
 SplitTabChange::VisualsChange::~VisualsChange() = default;
 
 SplitTabChange::ContentsChange::ContentsChange(

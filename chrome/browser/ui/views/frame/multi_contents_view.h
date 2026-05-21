@@ -152,11 +152,6 @@ class MultiContentsView
 
   void SetIsAnimatingContent(bool is_animating);
 
-  // If the split view is being resized.
-  bool IsSplitResizing() const {
-    return initial_start_width_on_resize_.has_value();
-  }
-
   // Returns accessible panes to be used in BrowserView to create the order of
   // pane traversal.
   std::vector<views::View*> GetAccessiblePanes();

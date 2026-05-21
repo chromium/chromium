@@ -2809,6 +2809,85 @@ TEST_P(TabStripModelTest, SplitRatioTest) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+class SplitTabVisualsObserver : public TabStripModelObserver {
+ public:
+  explicit SplitTabVisualsObserver(TabStripModel* model) : model_(model) {
+    model_->AddObserver(this);
+  }
+  ~SplitTabVisualsObserver() override { model_->RemoveObserver(this); }
+
+  void OnSplitTabChanged(const SplitTabChange& change) override {
+    if (change.type == SplitTabChange::Type::kVisualsChanged) {
+      is_intermediate_ = change.GetVisualsChange()->is_intermediate();
+      reason_ = change.GetVisualsChange()->reason();
+      call_count_++;
+    }
+  }
+
+  std::optional<bool> is_intermediate() const { return is_intermediate_; }
+  std::optional<SplitTabChange::SplitVisualChangeReason> reason() const {
+    return reason_;
+  }
+  int call_count() const { return call_count_; }
+
+  void Reset() {
+    is_intermediate_.reset();
+    reason_.reset();
+    call_count_ = 0;
+  }
+
+ private:
+  raw_ptr<TabStripModel> model_;
+  std::optional<bool> is_intermediate_;
+  std::optional<SplitTabChange::SplitVisualChangeReason> reason_;
+  int call_count_ = 0;
+};
+
+TEST_P(TabStripModelTest, UpdateSplitRatioIntermediate) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
+
+  // Add tab at index 4 to a group.
+  tabstrip()->AddToNewGroup({4});
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  SplitTabVisualsObserver observer(tabstrip());
+
+  // Test non-intermediate update (default).
+  tabstrip()->UpdateSplitRatio(split_tab_id, 0.7);
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_FALSE(observer.is_intermediate().value_or(true));
+  EXPECT_EQ(observer.reason().value(),
+            SplitTabChange::SplitVisualChangeReason::kRatioUpdated);
+
+  observer.Reset();
+
+  // Test intermediate update.
+  tabstrip()->UpdateSplitRatio(split_tab_id, 0.6, /*is_intermediate=*/true);
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_TRUE(observer.is_intermediate().value_or(false));
+  EXPECT_EQ(observer.reason().value(),
+            SplitTabChange::SplitVisualChangeReason::kRatioUpdated);
+
+  observer.Reset();
+
+  // Test explicit non-intermediate update.
+  tabstrip()->UpdateSplitRatio(split_tab_id, 0.5, /*is_intermediate=*/false);
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_FALSE(observer.is_intermediate().value_or(true));
+  EXPECT_EQ(observer.reason().value(),
+            SplitTabChange::SplitVisualChangeReason::kRatioUpdated);
+
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
 TEST_P(TabStripModelTest, ReplaceActiveTabInSplit) {
   // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(

@@ -384,7 +384,8 @@ struct SplitTabChange {
   struct VisualsChange : public Delta {
     VisualsChange(const split_tabs::SplitTabVisualData& old_visual_data,
                   const split_tabs::SplitTabVisualData& new_visual_data,
-                  SplitVisualChangeReason reason);
+                  SplitVisualChangeReason reason,
+                  bool is_intermediate = false);
     ~VisualsChange() override;
 
     const split_tabs::SplitTabVisualData& old_visual_data() const {
@@ -395,11 +396,16 @@ struct SplitTabChange {
     }
 
     SplitVisualChangeReason reason() const { return reason_; }
+    bool is_intermediate() const { return is_intermediate_; }
 
    private:
     split_tabs::SplitTabVisualData old_visual_data_;
     split_tabs::SplitTabVisualData new_visual_data_;
     SplitVisualChangeReason reason_;
+
+    // True if the visual change is the result of a user drag-resizing the split
+    // group. False once the drag-resizing operation has finished.
+    bool is_intermediate_;
   };
 
   struct ContentsChange : public Delta {

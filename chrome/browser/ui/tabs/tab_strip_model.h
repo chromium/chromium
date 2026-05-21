@@ -630,7 +630,8 @@ class TabStripModel {
 
   // Updates the ratio for the tabs with `split_id` and notifies observers.
   void UpdateSplitRatio(split_tabs::SplitTabId split_id,
-                        double start_content_ratio);
+                        double start_content_ratio,
+                        bool is_intermediate = false);
 
   // Updates the split tab at index `split_index` with the tab at
   // `update_index`. The split that includes `split_index` must include the
@@ -980,7 +981,8 @@ class TabStripModel {
       split_tabs::SplitTabId split_id,
       const split_tabs::SplitTabVisualData& old_visual_data,
       const split_tabs::SplitTabVisualData& new_visual_data,
-      const SplitTabChange::SplitVisualChangeReason reason);
+      const SplitTabChange::SplitVisualChangeReason reason,
+      bool is_intermediate = false);
 
   // Notify observers that contents of a split has been reordered.
   void NotifySplitTabContentsUpdated(

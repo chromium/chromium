@@ -63,7 +63,8 @@ void MultiContentsViewDelegateImpl::ResizeWebContents(double start_ratio,
       tab_strip_model_->GetActiveTab()->GetSplit();
 
   CHECK(split_tab_id.has_value());
-  tab_strip_model_->UpdateSplitRatio(split_tab_id.value(), start_ratio);
+  tab_strip_model_->UpdateSplitRatio(split_tab_id.value(), start_ratio,
+                                     !done_resizing);
 
   if (done_resizing) {
     const split_tabs::SplitTabId split_id =
