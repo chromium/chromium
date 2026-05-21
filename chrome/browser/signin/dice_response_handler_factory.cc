@@ -7,10 +7,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
-#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/binding_key_registration_token_helper.h"
 #include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -21,10 +21,11 @@
 namespace {
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-std::unique_ptr<BindingKeyRegistrationTokenHelper> BuildRegistrationTokenHelper(
+std::unique_ptr<signin::BindingKeyRegistrationTokenHelper>
+BuildRegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    BindingKeyRegistrationTokenHelper::KeyInitParam key_init_param) {
-  return std::make_unique<BindingKeyRegistrationTokenHelper>(
+    signin::BindingKeyRegistrationTokenHelper::KeyInitParam key_init_param) {
+  return std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
       unexportable_key_service, std::move(key_init_param));
 }
 
