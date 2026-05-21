@@ -216,6 +216,29 @@ TEST(MediaFragmentURIParserTest, LastTParamWins) {
   EXPECT_DOUBLE_EQ(parser.EndTime(), 30.0);
 }
 
+TEST(MediaFragmentURIParserTest, FragmentConstructorParsesTime) {
+  MediaFragmentURIParser parser(StringView("t=5,10"));
+  EXPECT_DOUBLE_EQ(parser.StartTime(), 5.0);
+  EXPECT_DOUBLE_EQ(parser.EndTime(), 10.0);
+}
+
+TEST(MediaFragmentURIParserTest, FragmentConstructorParsesSpatial) {
+  MediaFragmentURIParser parser(StringView("xywh=10,20,30,40"));
+  SpatialClip clip = parser.SpatialFragment();
+  EXPECT_TRUE(clip.IsValid());
+  EXPECT_EQ(clip.rect, gfx::Rect(10, 20, 30, 40));
+  EXPECT_EQ(clip.unit, SpatialClip::Unit::kPixel);
+}
+
+// Tests that an empty StringView yields the same defaults as an invalid KURL.
+TEST(MediaFragmentURIParserTest, FragmentConstructorEmptyStringYieldsDefaults) {
+  MediaFragmentURIParser parser(StringView(""));
+  EXPECT_TRUE(std::isnan(parser.StartTime()));
+  EXPECT_TRUE(std::isnan(parser.EndTime()));
+  EXPECT_TRUE(parser.DefaultTracks().empty());
+  EXPECT_FALSE(parser.SpatialFragment().IsValid());
+}
+
 // Tests that an invalid URL leaves both times as NaN and default tracks empty.
 TEST(MediaFragmentURIParserTest, InvalidUrlYieldsNaN) {
   MediaFragmentURIParser parser{KURL()};

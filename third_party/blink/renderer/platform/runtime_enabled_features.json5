@@ -5769,6 +5769,10 @@
       status: "stable",
     },
     {
+      name: "SvgSupportMediaFragments",
+      status: "experimental",
+    },
+    {
       name: "SvgTextPathPathAttribute",
       status: "stable",
     },

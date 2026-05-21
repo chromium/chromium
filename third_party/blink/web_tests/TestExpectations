@@ -554,7 +554,6 @@ crbug.com/699040 external/wpt/svg/text/reftests/text-xml-space-001.svg [ Failure
 
 # SVG referenced using Media Fragments syntax
 crbug.com/40362942 external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
-crbug.com/40362942 external/wpt/svg/linking/reftests/media-fragment-override-multiple.html [ Failure ]
 
 # Content Shell on macOS doesn't work well for Han glyph selection for
 # languages. Chrome works well.

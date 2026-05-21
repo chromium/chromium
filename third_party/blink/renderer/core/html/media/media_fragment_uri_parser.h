@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -54,15 +55,15 @@ struct SpatialClip {
 };
 
 // TODO(dmangal): Move MediaFragmentURIParser to a shared location since it is
-// now used by both HTML media and SVG.
-// TODO(dmangal): Avoid storing the whole URL; accept and store only the
-// fragment string to reduce redundant work when the caller has already
-// extracted and decoded the fragment. crbug.com/495475010
+// now used by both HTML media and SVG. crbug.com/500224589
 class CORE_EXPORT MediaFragmentURIParser final {
   STACK_ALLOCATED();
 
  public:
-  MediaFragmentURIParser(const KURL&);
+  // Primary API: parse a fragment string without the leading '#'.
+  explicit MediaFragmentURIParser(const StringView& fragment);
+  // Convenience overload for callers that still have a full URL.
+  explicit MediaFragmentURIParser(const KURL&);
 
   double StartTime();
   double EndTime();
@@ -80,7 +81,7 @@ class CORE_EXPORT MediaFragmentURIParser final {
   FRIEND_TEST_ALL_PREFIXES(ParseNPTTimeTest, TestParseNPTTime);
   bool ParseNPTTime(std::string_view, size_t& offset, double& time);
 
-  KURL url_;
+  String fragment_;
 
   double start_time_;
   double end_time_;

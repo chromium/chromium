@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -37,6 +38,9 @@ class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
   static const SVGViewSpec* CreateForViewElement(const SVGViewElement&);
   static const SVGViewSpec* CreateFromAspectRatio(
       const SVGPreserveAspectRatio*);
+  static const SVGViewSpec* CreateFromSpatialFragment(
+      const String& fragment,
+      const gfx::SizeF natural_size);
 
   const SVGRect* ViewBox() const { return view_box_.Get(); }
   const SVGPreserveAspectRatio* PreserveAspectRatio() const {

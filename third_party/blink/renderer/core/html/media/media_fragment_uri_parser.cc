@@ -68,13 +68,18 @@ bool ParseComma(std::string_view& str) {
 
 }  // namespace
 
-MediaFragmentURIParser::MediaFragmentURIParser(const KURL& url)
-    : url_(url),
+MediaFragmentURIParser::MediaFragmentURIParser(const StringView& fragment)
+    : fragment_(fragment.ToString()),
       start_time_(std::numeric_limits<double>::quiet_NaN()),
       end_time_(std::numeric_limits<double>::quiet_NaN()) {}
 
+MediaFragmentURIParser::MediaFragmentURIParser(const KURL& url)
+    : MediaFragmentURIParser(url.IsValid() && url.HasFragmentIdentifier()
+                                 ? url.FragmentIdentifier()
+                                 : StringView()) {}
+
 double MediaFragmentURIParser::StartTime() {
-  if (!url_.IsValid()) {
+  if (fragment_.IsNull()) {
     return std::numeric_limits<double>::quiet_NaN();
   }
   if (!has_parsed_time_) {
@@ -84,7 +89,7 @@ double MediaFragmentURIParser::StartTime() {
 }
 
 double MediaFragmentURIParser::EndTime() {
-  if (!url_.IsValid()) {
+  if (fragment_.IsNull()) {
     return std::numeric_limits<double>::quiet_NaN();
   }
   if (!has_parsed_time_) {
@@ -94,7 +99,7 @@ double MediaFragmentURIParser::EndTime() {
 }
 
 Vector<String> MediaFragmentURIParser::DefaultTracks() {
-  if (!url_.IsValid()) {
+  if (fragment_.IsNull()) {
     return {};
   }
   if (!has_parsed_track_) {
@@ -105,10 +110,7 @@ Vector<String> MediaFragmentURIParser::DefaultTracks() {
 
 void MediaFragmentURIParser::ParseFragments() {
   has_parsed_fragments_ = true;
-  if (!url_.HasFragmentIdentifier()) {
-    return;
-  }
-  StringView fragment_string = url_.FragmentIdentifier();
+  StringView fragment_string = fragment_;
   if (fragment_string.empty())
     return;
 
@@ -352,7 +354,7 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
 }
 
 SpatialClip MediaFragmentURIParser::SpatialFragment() {
-  if (!url_.IsValid()) {
+  if (fragment_.IsNull()) {
     return {};
   }
   if (!has_parsed_spatial_) {
