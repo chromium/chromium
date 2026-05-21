@@ -325,6 +325,17 @@ class GraphBuilderTflite final {
                                           TensorIndex rhs_tensor_index,
                                           TensorIndex output_tensor_index);
 
+  // Emit a BOOL-in / BOOL-out binary op for logicalAnd/Or/Xor, reducing rank
+  // when an input exceeds the kernel's 4D broadcast limit.
+  base::expected<void, std::string> InsertLogicalBinaryOperations(
+      ::tflite::BuiltinOperator code,
+      TensorIndex lhs_bool_tensor_index,
+      base::span<const int32_t> lhs_dims,
+      TensorIndex rhs_bool_tensor_index,
+      base::span<const int32_t> rhs_dims,
+      TensorIndex output_bool_tensor_index,
+      base::span<const int32_t> output_dims);
+
   // Serialize a sub graph (min appending max operation) for clamp.
   template <typename DataType>
   base::expected<OperatorOffset, std::string> SerializeSubGraphMaxMin(
