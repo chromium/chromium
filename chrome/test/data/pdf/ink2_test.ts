@@ -6,27 +6,12 @@ import {AnnotationMode, PluginController, PluginControllerEventType, UserAction}
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {getNewTestBeforeUnloadProxy} from './test_before_unload_proxy.js';
-import {createTextBox, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
-const mockPlugin = setupTestMockPluginForInk();
+setupTestMockPluginForInk();
 const mockMetricsPrivate = setupMockMetricsPrivate();
-
-// Disable beforeunload to avoid hanging after tests succeed.
-getNewTestBeforeUnloadProxy();
-
-async function enableTextAnnotations(enabled: boolean) {
-  loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': enabled});
-  viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
-  await microtasksFinished();
-}
-
-async function setAnnotationMode(mode: AnnotationMode) {
-  viewerToolbar.setAnnotationMode(mode);
-  await microtasksFinished();
-}
 
 chrome.test.runTests([
   // Test that Ink2 mode are enabled.
@@ -46,14 +31,18 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     // Disable text annotations.
-    await enableTextAnnotations(false);
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
-    await setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
 
-    await setAnnotationMode(AnnotationMode.OFF);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
     chrome.test.succeed();
@@ -63,7 +52,10 @@ chrome.test.runTests([
   async function testSetAnnotationModeTextEnabled() {
     mockMetricsPrivate.reset();
 
-    await enableTextAnnotations(true);
+    // Enable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
 
     function assertMetrics(expected: {
       ink2: {enter: number, exit: number},
@@ -91,25 +83,29 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     // NONE -> TEXT
-    await setAnnotationMode(AnnotationMode.TEXT);
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 0}, sidepanel: 1});
 
     // TEXT -> NONE
-    await setAnnotationMode(AnnotationMode.OFF);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 1}, sidepanel: 1});
 
     // NONE -> DRAW
-    await setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 1, exit: 0}, text: {enter: 1, exit: 1}, sidepanel: 2});
 
     // DRAW -> TEXT
-    await setAnnotationMode(AnnotationMode.TEXT);
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
     // Back and forth between draw and text doesn't increment sidepanel entry
     // metric.
@@ -117,13 +113,15 @@ chrome.test.runTests([
         {ink2: {enter: 1, exit: 1}, text: {enter: 2, exit: 1}, sidepanel: 2});
 
     // TEXT -> DRAW
-    await setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 2, exit: 1}, text: {enter: 2, exit: 2}, sidepanel: 2});
 
     // DRAW -> NONE
-    await setAnnotationMode(AnnotationMode.OFF);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 2, exit: 2}, text: {enter: 2, exit: 2}, sidepanel: 2});
@@ -139,11 +137,14 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     // Disable text annotations.
-    await enableTextAnnotations(false);
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
 
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
-    await setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-side-panel');
     chrome.test.assertTrue(!!sidePanel);
@@ -152,7 +153,8 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     chrome.test.assertTrue(isVisible(sidePanel));
 
-    await setAnnotationMode(AnnotationMode.OFF);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
 
     // The side panel should be hidden when annotation mode is disabled.
@@ -168,7 +170,9 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     // Enable text annotations.
-    await enableTextAnnotations(true);
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
 
     const drawPanelQuery = 'viewer-side-panel';
     const textPanelQuery = 'viewer-text-side-panel';
@@ -179,7 +183,8 @@ chrome.test.runTests([
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
 
     // In text mode, only the text panel is visible.
-    await setAnnotationMode(AnnotationMode.TEXT);
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
     const drawPanel = viewer.shadowRoot.querySelector(drawPanelQuery);
     const textPanel = viewer.shadowRoot.querySelector(textPanelQuery);
     chrome.test.assertTrue(!!drawPanel);
@@ -188,12 +193,14 @@ chrome.test.runTests([
     chrome.test.assertTrue(isVisible(textPanel));
 
     // In draw mode, only the draw panel is visible.
-    await setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
     chrome.test.assertTrue(isVisible(drawPanel));
     chrome.test.assertFalse(isVisible(textPanel));
 
     // Both removed from the DOM again when annotation mode is disabled.
-    await setAnnotationMode(AnnotationMode.OFF);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
 
@@ -202,15 +209,19 @@ chrome.test.runTests([
 
   async function testTextboxVisibility() {
     // Enable text annotations.
-    await enableTextAnnotations(true);
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
 
     // Annotation mode off. Textbox is not in the DOM.
-    await setAnnotationMode(AnnotationMode.OFF);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
+    await microtasksFinished();
     let textbox = viewer.shadowRoot.querySelector('ink-text-box');
     chrome.test.assertFalse(!!textbox);
 
     // Text annotation mode. Textbox is in the DOM but isn't visible.
-    await setAnnotationMode(AnnotationMode.TEXT);
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
     textbox = viewer.shadowRoot.querySelector('ink-text-box');
     chrome.test.assertTrue(!!textbox);
     chrome.test.assertFalse(isVisible(textbox));
@@ -225,166 +236,18 @@ chrome.test.runTests([
     chrome.test.assertTrue(isVisible(textbox));
 
     // Switching to a different annotation mode removes the box from the DOM.
-    await setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
     textbox = viewer.shadowRoot.querySelector('ink-text-box');
     chrome.test.assertFalse(!!textbox);
 
     // Text annotation mode. Switching back to text puts the box back in the
     // DOM, but does not immediately make it visible.
-    await setAnnotationMode(AnnotationMode.TEXT);
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
     textbox = viewer.shadowRoot.querySelector('ink-text-box');
     chrome.test.assertTrue(!!textbox);
     chrome.test.assertFalse(isVisible(textbox));
-
-    chrome.test.succeed();
-  },
-
-  async function testSwitchFromTextToDrawCommits() {
-    mockPlugin.clearMessages();
-    mockMetricsPrivate.reset();
-
-    // Enable text annotations.
-    await enableTextAnnotations(true);
-
-    // Switch to TEXT mode.
-    await setAnnotationMode(AnnotationMode.TEXT);
-    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
-
-    // Create a textbox.
-    createTextBox();
-    await microtasksFinished();
-    const textbox = viewer.shadowRoot.querySelector('ink-text-box')!;
-    chrome.test.assertTrue(!!textbox);
-    chrome.test.assertTrue(isVisible(textbox));
-
-    // Edit the textbox.
-    textbox.$.textbox.value = 'Hello';
-    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
-    await microtasksFinished();
-
-    // Switch to DRAW mode. This should commit the textbox.
-    await setAnnotationMode(AnnotationMode.DRAW);
-
-    // Verify textbox is removed and committed.
-    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector('ink-text-box'));
-    const finishMessage = mockPlugin.findMessage('finishTextAnnotation');
-    chrome.test.assertNe(undefined, finishMessage);
-    chrome.test.succeed();
-  },
-
-  async function testSwitchFromTextToOffCommits() {
-    mockPlugin.clearMessages();
-    mockMetricsPrivate.reset();
-
-    // Enable text annotations.
-    await enableTextAnnotations(true);
-
-    // Switch to TEXT mode.
-    await setAnnotationMode(AnnotationMode.TEXT);
-
-    // Create a textbox.
-    createTextBox();
-    await microtasksFinished();
-    const textbox = viewer.shadowRoot.querySelector('ink-text-box')!;
-
-    // Edit the textbox.
-    textbox.$.textbox.value = 'World';
-    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
-    await microtasksFinished();
-
-    // Switch to OFF mode. This should commit the textbox.
-    await setAnnotationMode(AnnotationMode.OFF);
-
-    // Verify textbox is removed and committed.
-    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector('ink-text-box'));
-    const finishMessage = mockPlugin.findMessage('finishTextAnnotation');
-    chrome.test.assertNe(undefined, finishMessage);
-    chrome.test.succeed();
-  },
-
-  async function testPrintCommits() {
-    mockPlugin.clearMessages();
-    mockMetricsPrivate.reset();
-
-    // Enable text annotations and printing.
-    loadTimeData.overrideValues({
-      'pdfTextAnnotationsEnabled': true,
-      'printingEnabled': true,
-    });
-    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
-    await microtasksFinished();
-
-    // Switch to TEXT mode.
-    await setAnnotationMode(AnnotationMode.TEXT);
-
-    // Create a textbox.
-    createTextBox();
-    await microtasksFinished();
-    const textbox = viewer.shadowRoot.querySelector('ink-text-box')!;
-
-    // Edit the textbox.
-    textbox.$.textbox.value = 'Print me';
-    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
-    await microtasksFinished();
-
-    // Trigger print via toolbar button.
-    const printButton =
-        viewerToolbar.shadowRoot.querySelector<HTMLElement>('#print')!;
-    chrome.test.assertTrue(!!printButton);
-    printButton.click();
-    await microtasksFinished();
-
-    // The finishTextAnnotation message should have been sent before print.
-    const setTextIndex = mockPlugin.messages.findIndex(
-        message => message.type === 'finishTextAnnotation');
-    const printIndex =
-        mockPlugin.messages.findIndex(message => message.type === 'print');
-    chrome.test.assertNe(-1, setTextIndex);
-    chrome.test.assertNe(-1, printIndex);
-    chrome.test.assertTrue(setTextIndex < printIndex);
-
-    chrome.test.succeed();
-  },
-
-  async function testScriptPrintCommits() {
-    mockPlugin.clearMessages();
-    mockMetricsPrivate.reset();
-
-    // Enable text annotations and printing.
-    loadTimeData.overrideValues({
-      'pdfTextAnnotationsEnabled': true,
-      'printingEnabled': true,
-    });
-    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
-    await microtasksFinished();
-
-    // Switch to TEXT mode.
-    await setAnnotationMode(AnnotationMode.TEXT);
-
-    // Create a textbox.
-    createTextBox();
-    await microtasksFinished();
-    const textbox = viewer.shadowRoot.querySelector('ink-text-box')!;
-
-    // Edit the textbox.
-    textbox.$.textbox.value = 'Print me script';
-    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
-    await microtasksFinished();
-
-    // Trigger print via scripting API.
-    viewer.handleScriptingMessage(new MessageEvent('message', {
-      data: {type: 'print'},
-    }));
-    await microtasksFinished();
-
-    // The finishTextAnnotation message should have been sent before print.
-    const setTextIndex = mockPlugin.messages.findIndex(
-        message => message.type === 'finishTextAnnotation');
-    const printIndex =
-        mockPlugin.messages.findIndex(message => message.type === 'print');
-    chrome.test.assertNe(-1, setTextIndex);
-    chrome.test.assertNe(-1, printIndex);
-    chrome.test.assertTrue(setTextIndex < printIndex);
 
     chrome.test.succeed();
   },

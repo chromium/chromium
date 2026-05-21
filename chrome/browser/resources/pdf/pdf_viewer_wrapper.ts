@@ -73,7 +73,7 @@ export {UndoRedoStack} from './undo_redo_stack.js';
 export type {UndoRedoState, UndoRedoStateChangedDetail} from './undo_redo_stack.js';
 // </if>
 export type {PdfPluginElement} from './internal_plugin.js';
-export {PostMessageDataType, record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
+export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
 export {PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 export type {NavigatorDelegate, PdfNavigator} from './navigator.js';
 export {OpenPdfParamsParser, ViewMode} from './open_pdf_params_parser.js';

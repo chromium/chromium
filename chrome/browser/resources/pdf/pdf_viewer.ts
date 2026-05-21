@@ -69,7 +69,7 @@ import type {UndoRedoStateChangedDetail} from './undo_redo_stack.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {convertDocumentDimensionsMessage, convertFormFocusChangeMessage, convertLoadProgressMessage, convertSendKeyEventMessage} from './message_converter.js';
-import {PostMessageDataType, record, recordEnumeration, UserAction} from './metrics.js';
+import {record, recordEnumeration, UserAction, PostMessageDataType} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 import type {PdfNavigator} from './navigator.js';
 import {LoadState} from './pdf_scripting_api.js';
@@ -680,10 +680,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return;
     }
 
-    if (this.annotationMode_ === AnnotationMode.TEXT) {
-      await this.maybeCommitActiveTextbox_();
-    }
-
     if (this.annotationMode_ === AnnotationMode.OFF) {
       record(
           this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
@@ -952,14 +948,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         break;
       case 'print':
         messageType = PostMessageDataType.PRINT;
-        // <if expr="enable_pdf_ink2">
-        this.maybeCommitActiveTextbox_().then(() => {
-          this.pluginController_.print();
-        });
-        // </if>
-        // <if expr="not enable_pdf_ink2">
         this.pluginController_.print();
-        // </if>
         break;
       case 'selectAll':
         messageType = PostMessageDataType.SELECT_ALL;
@@ -1378,18 +1367,17 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return this.saveToDriveState_ === SaveToDriveState.UPLOADING;
   }
 
-  protected async onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
+  protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
     if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
+      PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
       this.saveToDriveRequestType_ = e.detail;
       let pdfInk2Enabled = false;
       // <if expr="enable_pdf_ink2">
       pdfInk2Enabled = this.pdfInk2Enabled_;
       if (this.pdfInk2Enabled_ && e.detail === SaveRequestType.ANNOTATION) {
-        await this.maybeCommitActiveTextbox_();
         Ink2Manager.getInstance().initiateSave();
       }
       // </if>
-      PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
       recordSaveToDriveMetrics(
           e.detail, this.hasCommittedEdits_(), pdfInk2Enabled);
       return;
@@ -1636,7 +1624,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     assert(this.currentController);
 
     // <if expr="enable_pdf_ink2">
-    await this.maybeCommitActiveTextbox_();
+    // If there is an open textbox, call commitTextAnnotation(). This will fire
+    // a message to the plugin with the annotation, if it has been edited.
+    if (this.textboxState_ !== TextBoxState.INACTIVE) {
+      const textbox = this.shadowRoot.querySelector('ink-text-box');
+      assert(textbox);
+      await textbox.commitTextAnnotation();
+    }
 
     // `this.hasUnsavedEdits_` will be set back to true if save is disrupted for
     // SaveRequestType.ANNOTATION or SaveRequestType.EDITED.
@@ -1879,12 +1873,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     PdfViewerPrivateProxyImpl.getInstance().glicSummarize();
   }
 
-  protected async onPrint_() {
+  protected onPrint_() {
     record(UserAction.PRINT);
     assert(this.currentController);
-    // <if expr="enable_pdf_ink2">
-    await this.maybeCommitActiveTextbox_();
-    // </if>
     this.currentController.print();
   }
 
@@ -1905,19 +1896,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   protected isTextboxActive_(): boolean {
     return this.textboxState_ !== TextBoxState.INACTIVE;
-  }
-
-  /**
-   * Commits the textbox if it is active, no-op otherwise.
-   */
-  private maybeCommitActiveTextbox_(): Promise<void> {
-    if (!this.isTextboxActive_()) {
-      return Promise.resolve();
-    }
-
-    const textbox = this.shadowRoot.querySelector('ink-text-box');
-    assert(textbox);
-    return textbox.commitTextAnnotation();
   }
 
   protected isInTextAnnotationMode_(): boolean {
