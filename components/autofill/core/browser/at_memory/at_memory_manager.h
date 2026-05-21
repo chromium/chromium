@@ -12,12 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
-#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -102,23 +97,6 @@ class AtMemoryManager {
                       const FormData& form,
                       const FormFieldData& field,
                       const Suggestion& suggestion);
-
-  // Fills the unmasked AutofillAI value after fetching it.
-  void FillSensitiveAutofillAiData(const EntityInstance::EntityId& entity_id,
-                                   const FormData& form,
-                                   const FormFieldData& field,
-                                   const Suggestion& suggestion,
-                                   const AtMemoryDataType& data_type);
-
-  // Callback handler when the unmasked AutofillAI entity has been fetched.
-  void OnAutofillAiFetched(
-      const FormData& form,
-      const FormFieldData& field,
-      const Suggestion& suggestion,
-      const AtMemoryDataType& data_type,
-      base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
-          result,
-      bool reauth_attempted);
 
   const raw_ptr<BrowserAutofillManager> owner_;
 

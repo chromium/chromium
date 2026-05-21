@@ -57,11 +57,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->bnpl_manager_ = std::move(bnpl_manager);
   }
 
-  void set_autofill_ai_access_manager(
-      std::unique_ptr<AutofillAiAccessManager> manager) {
-    manager_->autofill_ai_access_manager_ = std::move(manager);
-  }
-
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {
     manager_->OnFormProcessed(form, form_structure);
