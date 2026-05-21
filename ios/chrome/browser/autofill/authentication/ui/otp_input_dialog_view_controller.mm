@@ -139,7 +139,7 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
       kNewCodeLinkCooldownTime);
 }
 
-#pragma mark - PaymentsSuggestionBottomSheetConsumer
+#pragma mark - OtpInputDialogConsumer
 
 - (void)setContent:(OtpInputDialogContent*)content {
   // Content should not be updated once initialized.
