@@ -120,7 +120,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::Fetch(
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
   cookie_manager->GetCookieList(
-      request_.url, options, net::CookiePartitionKeyCollection::Todo(),
+      request_.url, options, net::CookiePartitionKeyCollection(),
       base::BindOnce(
           &GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies,
           base::Unretained(this)));

@@ -115,7 +115,7 @@ void CookiesMover::StartMovingCookies() {
   source_profile_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(url_, net::CookieOptions::MakeAllInclusive(),
-                      net::CookiePartitionKeyCollection::Todo(),
+                      net::CookiePartitionKeyCollection(),
                       base::BindOnce(&CookiesMover::OnCookiesReceived,
                                      weak_pointer_factory_.GetWeakPtr()));
 }

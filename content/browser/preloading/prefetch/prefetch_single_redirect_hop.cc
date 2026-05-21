@@ -190,7 +190,7 @@ void PrefetchSingleRedirectHop::CopyIsolatedCookies() {
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   isolated_network_context->GetCookieManager()->GetCookieList(
-      url_, options, net::CookiePartitionKeyCollection::Todo(),
+      url_, options, net::CookiePartitionKeyCollection(),
       base::BindOnce(&PrefetchSingleRedirectHop::OnGotIsolatedCookiesForCopy,
                      weak_ptr_factory_.GetWeakPtr()));
 }

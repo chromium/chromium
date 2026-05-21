@@ -1046,7 +1046,7 @@ void PrefetchService::OnGotServiceWorkerResult(
   // `url` is needed to avoid use-after-move.
   const GURL url = params.url;
   default_storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      url, options, net::CookiePartitionKeyCollection::Todo(),
+      url, options, net::CookiePartitionKeyCollection(),
       base::BindOnce(&PrefetchService::OnGotCookiesForEligibilityCheck,
                      weak_method_factory_.GetWeakPtr(), std::move(params)));
 }

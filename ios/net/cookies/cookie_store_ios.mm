@@ -666,7 +666,7 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
     cookie_monster_->GetCookieListWithOptionsAsync(
         key.first, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeyCollection::Todo(), std::move(callback));
+        net::CookiePartitionKeyCollection(), std::move(callback));
   }
 }
 

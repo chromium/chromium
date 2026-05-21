@@ -49,7 +49,7 @@ void BoundSessionCookieObserver::StartGetCookieList() {
 
   cookie_manager->GetCookieList(
       url_, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection::Todo(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&BoundSessionCookieObserver::OnGetCookieList,
                      weak_ptr_factory_.GetWeakPtr()));
 }

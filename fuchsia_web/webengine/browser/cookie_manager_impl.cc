@@ -219,7 +219,7 @@ void CookieManagerImpl::GetCookieList(
           net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
       cookie_manager_->GetCookieList(
-          GURL(*url), options, net::CookiePartitionKeyCollection::Todo(),
+          GURL(*url), options, net::CookiePartitionKeyCollection(),
           base::BindOnce(&OnCookiesAndExcludedReceived, std::move(iterator)));
     } else {
       // TODO(crbug.com/42050622): Support filtering by name.

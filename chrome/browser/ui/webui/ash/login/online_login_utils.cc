@@ -278,7 +278,7 @@ void GaiaCookieRetriever::RetrieveCookies(
       net::CookieOptions::MakeAllInclusive();
   cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(), cookie_options,
-      net::CookiePartitionKeyCollection::Todo(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&GaiaCookieRetriever::OnGetCookieListResponse,
                      weak_factory_.GetWeakPtr()));
 }

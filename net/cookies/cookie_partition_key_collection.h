@@ -53,19 +53,6 @@ class NET_EXPORT CookiePartitionKeyCollection {
   static CookiePartitionKeyCollection MatchesSite(
       const net::SchemefulSite& top_level_site);
 
-
-  // Temporary method used to record where we need to decide how to build the
-  // CookiePartitionKeyCollection.
-  //
-  // Returns an empty key collection, so no partitioned cookies will be returned
-  // at callsites this is used.
-  //
-  // TODO(crbug.com/40188414): Remove this method and update callsites to use
-  // appropriate constructor.
-  static CookiePartitionKeyCollection Todo() {
-    return CookiePartitionKeyCollection();
-  }
-
   // CookieMonster can check if the key collection is empty to avoid searching
   // the PartitionedCookieMap at all.
   bool IsEmpty() const { return state_ && state_->empty(); }

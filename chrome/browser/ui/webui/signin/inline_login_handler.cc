@@ -174,7 +174,7 @@ void InlineLoginHandler::HandleCompleteLoginMessage(
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection::Todo(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&InlineLoginHandler::HandleCompleteLoginMessageWithCookies,
                      weak_ptr_factory_.GetWeakPtr(), args.Clone()));
 }

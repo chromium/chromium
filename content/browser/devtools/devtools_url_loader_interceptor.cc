@@ -1723,7 +1723,7 @@ void InterceptionJob::FetchCookies(base::OnceClosure callback) {
               network::mojom::RequestDestination::kWebIdentity));
 
   cookie_manager_->GetCookieList(
-      request.url, options, net::CookiePartitionKeyCollection::Todo(),
+      request.url, options, net::CookiePartitionKeyCollection(),
       base::BindOnce(&InterceptionJob::OnGotCookies, base::Unretained(this),
                      std::move(callback)));
 }

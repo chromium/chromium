@@ -129,7 +129,7 @@ class SynchronousCookieManager {
                            const net::CookieAccessResultList&>
         future;
     cookie_service_->GetCookieList(url, options,
-                                   net::CookiePartitionKeyCollection::Todo(),
+                                   net::CookiePartitionKeyCollection(),
                                    future.GetCallback());
     return std::get<1>(future.Take());
   }

@@ -322,7 +322,7 @@ void UkmPageLoadMetricsObserver::UpdateMainFrameRequestHadCookie(
 
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       url, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection::Todo(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(
           &UkmPageLoadMetricsObserver::OnMainFrameRequestHadCookieResult,
           weak_factory_.GetWeakPtr(), base::Time::Now()));
