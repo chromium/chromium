@@ -4,6 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 
+#import <Intents/Intents.h>
 #import <WebKit/WebKit.h>
 
 #import <algorithm>
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -82,6 +84,7 @@
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/navigation_test_util.h"
@@ -201,6 +204,16 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 }
 @end
 
+@interface FakeUserActivity : NSUserActivity
+@property(nonatomic, strong) INInteraction* mockInteraction;
+@end
+
+@implementation FakeUserActivity
+- (INInteraction*)interaction {
+  return self.mockInteraction;
+}
+@end
+
 @implementation ChromeEarlGreyAppInterface
 
 + (BOOL)isTabGridSetUp {
@@ -300,6 +313,29 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   UIScene* scene = application.connectedScenes.anyObject;
 
   [scene.delegate scene:scene openURLContexts:[NSSet setWithObject:context]];
+}
+
++ (void)sceneContinueUserActivityWithType:(NSString*)activityType
+                                      url:(NSString*)urlString {
+  FakeUserActivity* fakeActivity =
+      [[FakeUserActivity alloc] initWithActivityType:activityType];
+
+  Class intentClass = NSClassFromString(activityType);
+  id intent = [[intentClass alloc] init];
+
+  if (urlString && [intent respondsToSelector:@selector(setUrl:)]) {
+    NSArray* urls = @[ [NSURL URLWithString:urlString] ];
+    [intent performSelector:@selector(setUrl:) withObject:urls];
+  }
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+  fakeActivity.mockInteraction = interaction;
+
+  UIApplication* application = UIApplication.sharedApplication;
+  UIScene* scene = application.connectedScenes.anyObject;
+
+  [scene.delegate scene:scene continueUserActivity:fakeActivity];
 }
 
 + (void)startLoadingURL:(NSString*)spec {

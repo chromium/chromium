@@ -443,6 +443,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface sceneOpenURL:spec];
 }
 
+- (void)sceneContinueUserActivityWithType:(NSString*)activityType
+                                      url:(NSString*)urlString {
+  [ChromeEarlGreyAppInterface sceneContinueUserActivityWithType:activityType
+                                                            url:urlString];
+}
+
 - (NSError*)loadURL:(const GURL&)URL
     webStateAppearanceTimeout:(base::TimeDelta)webStateAppearanceTimeout
               pageLoadTimeout:(base::TimeDelta)pageLoadTimeout {

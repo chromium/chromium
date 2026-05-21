@@ -159,6 +159,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // options.
 - (void)sceneOpenURL:(const GURL&)URL;
 
+// Continues `userActivity` using some connected scene with a specific URL.
+- (void)sceneContinueUserActivityWithType:(NSString*)activityType
+                                      url:(NSString*)urlString;
+
 // Loads `URL` in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
 // specified `timeout`. This timeout is used for both webView appearance and

@@ -73,6 +73,10 @@ enum class TipsNotificationType;
 // Opens `URL` using some connected scene.
 + (void)sceneOpenURL:(NSString*)spec;
 
+// Continues `userActivity` using some connected scene with a specific URL.
++ (void)sceneContinueUserActivityWithType:(NSString*)activityType
+                                      url:(NSString*)urlString;
+
 // Loads the URL `spec` in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED and returns without waiting for the page to load.
 + (void)startLoadingURL:(NSString*)spec;
