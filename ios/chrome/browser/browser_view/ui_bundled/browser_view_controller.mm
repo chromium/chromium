@@ -593,11 +593,17 @@ bool IsFullscreenNextIAEnabled() {
   if (_isShutdown) {
     return UIEdgeInsetsZero;
   }
-  UIEdgeInsets safeArea = self.safeAreaProvider.safeArea;
 
-  return UIEdgeInsetsEqualToEdgeInsets(safeArea, UIEdgeInsetsZero)
-             ? self.view.safeAreaInsets
-             : safeArea;
+  UIEdgeInsets safeArea = self.safeAreaProvider.safeArea;
+  if (!UIEdgeInsetsEqualToEdgeInsets(safeArea, UIEdgeInsetsZero)) {
+    return safeArea;
+  }
+
+  if ([self isViewLoaded]) {
+    return self.view.safeAreaInsets;
+  }
+
+  return UIEdgeInsetsZero;
 }
 
 - (CGFloat)headerHeight {
