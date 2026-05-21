@@ -110,6 +110,7 @@ public final class TabGridViewBinderUnitTest {
 
     @Before
     public void setUp() {
+        doReturn(mDrawable).when(mDrawable).mutate();
         mContext =
                 new ContextThemeWrapper(
                         RuntimeEnvironment.application, R.style.Theme_BrowserUI_DayNight);
@@ -385,6 +386,7 @@ public final class TabGridViewBinderUnitTest {
                         callback.onResult(mTabFavicon);
                     }
                 };
+        doReturn(fetcher).when(mFaviconView).getTag();
         mModel.set(TabProperties.FAVICON_FETCHER, fetcher);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 

@@ -1,0 +1,215 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.view.InputDevice;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.test.filters.SmallTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+
+import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** Unit tests for {@link TabVerticalViewBinder}. */
+// TODO(crbug.com/515147675): Create an instrumented RenderTest class once Pinned Tabs and
+//  Tab Group Spines are implemented, to capture pixel snapshots of the rows in all visual states
+//  (resting, selected, incognito, pinned, etc.).
+@RunWith(BaseRobolectricTestRunner.class)
+public class TabVerticalViewBinderUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private LinearLayout mItemView;
+    private TextView mTitleView;
+    private ImageView mFaviconView;
+    private ImageView mCloseButton;
+    private PropertyModel mModel;
+
+    @Before
+    public void setUp() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mItemView =
+                (LinearLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_item, null, false);
+        mTitleView = mItemView.findViewById(R.id.tab_title);
+        mFaviconView = mItemView.findViewById(R.id.tab_favicon);
+        mCloseButton = mItemView.findViewById(R.id.action_button);
+
+        mModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(TabProperties.IS_INCOGNITO, false)
+                        .build();
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTitle() {
+        mModel.set(TabProperties.TITLE, "Google");
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TITLE);
+
+        assertEquals("Google", mTitleView.getText());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindSelectionColors_Selected() {
+        mModel.set(TabProperties.IS_SELECTED, true);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull("Background tint should not be null when selected", bgTint);
+        assertNotNull(mTitleView.getTextColors());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindSelectionColors_Unselected() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindFavicon() {
+        TabFaviconFetcher mockFetcher = mock(TabFaviconFetcher.class);
+        TabFavicon mockFavicon = mock(TabFavicon.class);
+        Drawable mockDrawable = mock(Drawable.class);
+        when(mockDrawable.mutate()).thenReturn(mockDrawable);
+        when(mockFavicon.getDefaultDrawable()).thenReturn(mockDrawable);
+
+        doAnswer(
+                        invocation -> {
+                            Callback<TabFavicon> callback = invocation.getArgument(0);
+                            callback.onResult(mockFavicon);
+                            return null;
+                        })
+                .when(mockFetcher)
+                .fetch(any());
+
+        mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
+
+        assertEquals(View.VISIBLE, mFaviconView.getVisibility());
+        assertEquals(mockDrawable, mFaviconView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindFavicon_NullFetcher() {
+        mModel.set(TabProperties.FAVICON_FETCHER, null);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
+
+        assertEquals(View.GONE, mFaviconView.getVisibility());
+        assertNull(mFaviconView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindClickListeners() {
+        TabActionListener mockClickListener = mock(TabActionListener.class);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mockClickListener);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_CLICK_LISTENER);
+
+        mItemView.performClick();
+        verify(mockClickListener).run(any(View.class), eq(123), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindCloseButtonClickListener() {
+        TabActionListener mockCloseListener = mock(TabActionListener.class);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mockCloseListener);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        mCloseButton.performClick();
+        verify(mockCloseListener).run(any(View.class), eq(123), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseButtonHover() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        assertEquals(View.INVISIBLE, mCloseButton.getVisibility());
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverExitEvent);
+        assertEquals(View.INVISIBLE, mCloseButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseButtonHover_Selected() {
+        mModel.set(TabProperties.IS_SELECTED, true);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverExitEvent);
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+    }
+}

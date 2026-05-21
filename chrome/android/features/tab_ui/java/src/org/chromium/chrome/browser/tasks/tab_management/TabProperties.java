@@ -289,4 +289,18 @@ public class TabProperties {
                 ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 CONTENT_DESCRIPTION_TEXT_RESOLVER,
             };
+
+    public static final PropertyKey[] ALL_KEYS_VERTICAL_TAB =
+            new PropertyKey[] {
+                TAB_ID,
+                TITLE,
+                FAVICON_FETCHER,
+                IS_SELECTED,
+                IS_INCOGNITO,
+                TAB_CLICK_LISTENER,
+                TAB_LONG_CLICK_LISTENER,
+                TAB_CONTEXT_CLICK_LISTENER,
+                TAB_ACTION_BUTTON_DATA,
+                TAB_GROUP_CARD_COLOR
+            };
 }

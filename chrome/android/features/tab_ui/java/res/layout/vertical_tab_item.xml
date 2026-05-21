@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/vertical_tab_item_padding_horizontal"
+    android:paddingEnd="@dimen/vertical_tab_item_padding_horizontal"
+    android:paddingTop="@dimen/vertical_tab_item_padding_vertical"
+    android:paddingBottom="@dimen/vertical_tab_item_padding_vertical"
+    android:layout_marginBottom="@dimen/vertical_tab_item_margin_bottom"
+    android:background="@drawable/vertical_tab_item_background">
+
+    <!-- Tab Favicon (Website Icon) -->
+    <ImageView
+        android:id="@+id/tab_favicon"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:layout_marginEnd="@dimen/vertical_tab_item_favicon_margin_end"
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no" />
+
+    <!-- Tab Title (Page Title text) -->
+    <TextView
+        android:id="@+id/tab_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/vertical_tab_item_title_margin_end"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+    <!-- Media Indicator (e.g., speaker icon when playing audio) -->
+    <ImageView
+        android:id="@+id/media_indicator_icon"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:layout_marginEnd="@dimen/vertical_tab_item_media_indicator_margin_end"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
+    <!-- Tab Close Button -->
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/action_button"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:src="@drawable/material_ic_close_24dp"
+        android:tint="@macro/default_icon_color"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/close_tab"
+        android:visibility="gone" />
+</LinearLayout>

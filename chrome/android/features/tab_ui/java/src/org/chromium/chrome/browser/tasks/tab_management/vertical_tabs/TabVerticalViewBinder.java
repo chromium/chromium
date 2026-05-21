@@ -1,0 +1,180 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
+
+import org.chromium.build.NullUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** View binder for the Vertical Tab List item rows. */
+@NullMarked
+class TabVerticalViewBinder {
+
+    /**
+     * Binds the PropertyModel properties of a tab item to the row's ViewGroup elements.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the tab row item.
+     * @param propertyKey the specific property key to bind, or null to bind all properties.
+     */
+    public static void bindTab(
+            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
+        NullUtil.assertNonNull(model);
+        NullUtil.assertNonNull(view);
+        NullUtil.assertNonNull(propertyKey);
+
+        // titleView can be null for icon-only pinned tab rows.
+        if (TabProperties.TITLE == propertyKey) {
+            @Nullable TextView titleView = view.findViewById(R.id.tab_title);
+            if (titleView != null) {
+                titleView.setText(model.get(TabProperties.TITLE));
+            }
+        } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
+            updateFavicon(model, view);
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
+            updateColors(model, view);
+        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
+            TabListViewBinderUtils.setNullableClickListener(
+                    model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
+            TabListViewBinderUtils.setNullableLongClickListener(
+                    model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_CONTEXT_CLICK_LISTENER == propertyKey) {
+            TabListViewBinderUtils.setNullableContextClickListener(
+                    model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
+            @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+            @Nullable View actionButton = view.findViewById(R.id.action_button);
+            if (actionButton != null) {
+                TabListViewBinderUtils.bindActionButton(model, actionButton, data);
+            }
+        }
+        // TODO(crbug.com/509226293): Add MEDIA_INDICATOR to TabProperties.ALL_KEYS_VERTICAL_TAB
+        // and implement binder logic to display/update playing/muted audio icons.
+    }
+
+    private static void updateFavicon(PropertyModel model, ViewGroup view) {
+        @Nullable ImageView faviconView = view.findViewById(R.id.tab_favicon);
+        if (faviconView != null) {
+            TabListViewBinderUtils.updateFavicon(model, faviconView);
+        }
+    }
+
+    private static void updateColors(PropertyModel model, ViewGroup view) {
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+        Context context = view.getContext();
+
+        @Nullable Drawable bg = view.getBackground();
+        if (bg != null) {
+            bg.mutate();
+            ViewCompat.setBackgroundTintList(
+                    view, getBackgroundTintList(context, isSelected, isIncognito));
+        }
+
+        @Nullable TextView titleView = view.findViewById(R.id.tab_title);
+        if (titleView != null) {
+            titleView.setTextColor(getTextColor(context, isSelected, isIncognito));
+        }
+
+        @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
+        if (actionButton != null) {
+            ImageViewCompat.setImageTintList(
+                    actionButton, getActionButtonTintList(context, isSelected, isIncognito));
+            actionButton.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
+        }
+
+        updateFavicon(model, view);
+        setupCloseButtonHoverListener(model, view);
+    }
+
+    private static ColorStateList getBackgroundTintList(
+            Context context, boolean isSelected, boolean isIncognito) {
+        if (isSelected) {
+            int color =
+                    isIncognito
+                            ? ContextCompat.getColor(
+                                    context, R.color.incognito_tab_bg_selected_color)
+                            : SemanticColorUtils.getColorSurface(context);
+            return ColorStateList.valueOf(color);
+        }
+        return ColorStateList.valueOf(Color.TRANSPARENT);
+    }
+
+    private static @ColorInt int getTextColor(
+            Context context, boolean isSelected, boolean isIncognito) {
+        if (isSelected) {
+            return isIncognito
+                    ? ContextCompat.getColor(context, R.color.incognito_tab_title_selected_color)
+                    : SemanticColorUtils.getColorOnSurface(context);
+        } else {
+            return isIncognito
+                    ? ContextCompat.getColor(context, R.color.incognito_tab_title_color)
+                    : SemanticColorUtils.getDefaultTextColorSecondary(context);
+        }
+    }
+
+    private static ColorStateList getActionButtonTintList(
+            Context context, boolean isSelected, boolean isIncognito) {
+        int color =
+                isIncognito
+                        ? ContextCompat.getColor(
+                                context,
+                                isSelected
+                                        ? R.color.incognito_tab_title_selected_color
+                                        : R.color.incognito_tab_title_color)
+                        : (isSelected
+                                ? SemanticColorUtils.getDefaultIconColor(context)
+                                : SemanticColorUtils.getDefaultIconColorSecondary(context));
+        return ColorStateList.valueOf(color);
+    }
+
+    private static void setupCloseButtonHoverListener(PropertyModel model, ViewGroup view) {
+        @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
+        if (actionButton == null) return;
+
+        view.setOnHoverListener(
+                (rowView, motionEvent) -> {
+                    boolean isSelected = model.get(TabProperties.IS_SELECTED);
+                    if (isSelected) {
+                        actionButton.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_HOVER_ENTER:
+                            actionButton.setVisibility(View.VISIBLE);
+                            break;
+                        case MotionEvent.ACTION_HOVER_EXIT:
+                            actionButton.setVisibility(View.INVISIBLE);
+                            break;
+                    }
+                    return false;
+                });
+    }
+}

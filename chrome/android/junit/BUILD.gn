@@ -1353,6 +1353,10 @@ if (is_android) {
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripItemViewBinderUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripMediatorTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripViewBinderTest.java",
+      "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/TabVerticalViewBinderUnitTest.java",
+      "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabListCoordinatorUnitTest.java",
+      "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabUtilsUnitTest.java",
+      "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabsSideUiCoordinatorUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsCardViewBinderUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsDialogCoordinatorUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsMessageServiceUnitTest.java",
@@ -1387,8 +1391,6 @@ if (is_android) {
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListMediatorUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabStripSnapshotterTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabUiMetricsHelperUnitTest.java",
-      "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabUtilsUnitTest.java",
-      "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabsSideUiCoordinatorUnitTest.java",
     ]
 
     deps = [

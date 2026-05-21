@@ -10,7 +10,10 @@ found in the LICENSE file.
     android:id="@+id/vertical_tab_rail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@macro/vertical_tabs_rail_bg_color"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/vertical_tabs_rail_horizontal_margin"
+    android:paddingEnd="@dimen/vertical_tabs_rail_horizontal_margin">
 
     <!-- Header Container: Socket for future search/toolbar buttons -->
     <FrameLayout

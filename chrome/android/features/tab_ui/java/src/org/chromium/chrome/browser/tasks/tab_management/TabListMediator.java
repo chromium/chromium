@@ -165,7 +165,7 @@ import java.util.function.Supplier;
  * true.
  */
 @NullMarked
-class TabListMediator implements TabListNotificationHandler {
+public class TabListMediator implements TabListNotificationHandler {
     /** An interface to handle requests about updating TabGridDialog. */
     public interface TabGridDialogHandler {
         /**
@@ -225,7 +225,7 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     /** An interface to get the onClickListener when clicking on a grid card. */
-    interface GridCardOnClickListenerProvider {
+    public interface GridCardOnClickListenerProvider {
         /**
          * Returns the {@link TabActionListener} to handle a tab group card click. If the given
          * {@link Tab} is not able to create a group, return null.
@@ -1024,7 +1024,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param snackbarManager The manager to show snackbars.
      * @param allowedSelectionCount The maximum number of tabs that can be selected at once.
      */
-    TabListMediator(
+    public TabListMediator(
             Activity activity,
             TabListModel modelList,
             @TabListMode int mode,
@@ -1670,7 +1670,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
      * @return Whether the {@link TabListRecyclerView} can be shown quickly.
      */
-    boolean resetWithListOfTabs(
+    public boolean resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
         mShowingTabs = tabs != null;
         // The reset supersedes any delayed tab additions, don't add the tab.
