@@ -15,6 +15,7 @@
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/finds/core/finds_metrics.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
@@ -46,7 +47,8 @@ namespace finds {
 // inference.
 class FindsService : public KeyedService,
                      public base::SupportsUserData,
-                     public syncer::SyncServiceObserver {
+                     public syncer::SyncServiceObserver,
+                     public history::HistoryServiceObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -127,6 +129,10 @@ class FindsService : public KeyedService,
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+
   void CheckFindsNotificationsEnabledAndMaybeExecute();
   void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
                               history::QueryResults results);
@@ -159,6 +165,9 @@ class FindsService : public KeyedService,
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 
   base::WeakPtrFactory<FindsService> weak_ptr_factory_{this};
 };

@@ -235,6 +235,10 @@ FindsService::FindsService(
     sync_observation_.Observe(sync_service_);
   }
 
+  if (history_service_) {
+    history_observation_.Observe(history_service_);
+  }
+
   // Clean up any stale existing scheduled notifications if permissions are not
   // currently granted.
   MaybeDeleteNotificationsOnPermissionLoss();
@@ -265,6 +269,15 @@ void FindsService::OnStateChanged(syncer::SyncService* sync) {
 void FindsService::OnSyncShutdown(syncer::SyncService* sync) {
   sync_observation_.Reset();
   sync_service_ = nullptr;
+}
+
+void FindsService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  if (notification_schedule_service_) {
+    notification_schedule_service_->DeleteNotifications(
+        notifications::SchedulerClientType::kChromeFinds);
+  }
 }
 
 void FindsService::MaybeDeleteNotificationsOnPermissionLoss() {

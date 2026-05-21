@@ -75,6 +75,8 @@ class FindsServiceTest : public testing::Test {
         testing::NiceMock<MockOptimizationGuideKeyedService>>();
     history_service_ =
         std::make_unique<testing::NiceMock<history::MockHistoryService>>();
+    history_service_->set_backend_task_runner_for_testing(
+        task_environment_.GetMainThreadTaskRunner());
     notification_schedule_service_ = std::make_unique<testing::NiceMock<
         notifications::test::MockNotificationScheduleService>>();
     service_ = std::make_unique<FindsService>(
@@ -137,6 +139,16 @@ TEST_F(FindsServiceTest, DeleteNotificationsOnHistorySyncToggle) {
       syncer::UserSelectableType::kHistory, false);
   // TestSyncService requires explicit firing of observer events.
   sync_service_.FireStateChanged();
+}
+
+TEST_F(FindsServiceTest, DeleteNotificationsOnHistoryDeletion) {
+  EXPECT_CALL(
+      *notification_schedule_service_,
+      DeleteNotifications(notifications::SchedulerClientType::kChromeFinds))
+      .Times(1);
+
+  static_cast<history::HistoryServiceObserver*>(service_.get())
+      ->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
 }
 
 TEST_F(FindsServiceTest, HistoryServiceUnavailable) {
