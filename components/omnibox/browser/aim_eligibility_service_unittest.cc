@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/country_codes/country_codes.h"
@@ -569,4 +570,33 @@ TEST_F(AimEligibilityServiceTest, IsIetfBcp47) {
   EXPECT_FALSE(AimEligibilityServiceFriend::IsIetfBcp47("en_US"));
   EXPECT_FALSE(AimEligibilityServiceFriend::IsIetfBcp47("fr_CA"));
   EXPECT_FALSE(AimEligibilityServiceFriend::IsIetfBcp47("sr_Latn_RS"));
+}
+
+TEST_F(AimEligibilityServiceTest, LogsFuseboxEligibilityHistogram) {
+  base::HistogramTester histogram_tester;
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  response.set_is_fusebox_eligible(true);
+
+  // Trigger the request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  // Respond to the pending request.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  std::string response_string;
+  response.SerializeToString(&response_string);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      request.url.spec(), response_string, net::HTTP_OK);
+
+  // Verify histograms.
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEligibility.EligibilityResponse.User.is_fusebox_eligible",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEligibility.EligibilityResponse.is_fusebox_eligible", true,
+      1);
 }

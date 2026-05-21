@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="is_cobrowse_eligible" summary="is_cobrowse_eligible"/>
   <variant name="is_deep_search_eligible" summary="is_deep_search_eligible"/>
   <variant name="is_eligible" summary="is_eligible"/>
+  <variant name="is_fusebox_eligible" summary="is_fusebox_eligible"/>
   <variant name="is_image_generation_eligible"
       summary="is_image_generation_eligible"/>
   <variant name="is_pdf_upload_eligible" summary="is_pdf_upload_eligible"/>
@@ -730,6 +731,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name="is_cobrowse_eligible" summary="is_cobrowse_eligible"/>
     <variant name="is_deep_search_eligible" summary="is_deep_search_eligible"/>
     <variant name="is_eligible" summary="is_eligible"/>
+    <variant name="is_fusebox_eligible" summary="is_fusebox_eligible"/>
     <variant name="is_image_generation_eligible"
         summary="is_image_generation_eligible"/>
     <variant name="is_pdf_upload_eligible" summary="is_pdf_upload_eligible"/>

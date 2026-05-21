@@ -1317,6 +1317,11 @@ void AimEligibilityService::LogEligibilityResponse(
       most_recent_response_.is_cobrowse_eligible());
   base::UmaHistogramBoolean(base::StrCat({prefix, ".is_cobrowse_eligible"}),
                             most_recent_response_.is_cobrowse_eligible());
+  base::UmaHistogramBoolean(
+      base::StrCat({sliced_prefix, ".is_fusebox_eligible"}),
+      most_recent_response_.is_fusebox_eligible());
+  base::UmaHistogramBoolean(base::StrCat({prefix, ".is_fusebox_eligible"}),
+                            most_recent_response_.is_fusebox_eligible());
 }
 
 void AimEligibilityService::LogEligibilityResponseChanges(
@@ -1342,6 +1347,9 @@ void AimEligibilityService::LogEligibilityResponseChanges(
   base::UmaHistogramBoolean(base::StrCat({prefix, ".is_cobrowse_eligible"}),
                             old_response.is_cobrowse_eligible() !=
                                 new_response.is_cobrowse_eligible());
+  base::UmaHistogramBoolean(
+      base::StrCat({prefix, ".is_fusebox_eligible"}),
+      old_response.is_fusebox_eligible() != new_response.is_fusebox_eligible());
 }
 
 void AimEligibilityService::LogEligibilityRequestDebounced(
