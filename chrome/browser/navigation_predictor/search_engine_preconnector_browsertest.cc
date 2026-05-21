@@ -459,12 +459,12 @@ class SearchEnginePreconnectorKeepSocketBrowserTest
   ~SearchEnginePreconnectorKeepSocketBrowserTest() override = default;
 };
 
-// TODO(https://crbugs.com/507121988): Re-enable once the test is fixed.
-#if !BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/507121988): Re-enable once the test is fixed.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SocketWarmForSearch DISABLED_SocketWarmForSearch
 #else
 #define MAYBE_SocketWarmForSearch SocketWarmForSearch
-#endif  // !BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorKeepSocketBrowserTest,
                        MAYBE_SocketWarmForSearch) {
   // Verifies that a navigation to search will use a warm socket.
