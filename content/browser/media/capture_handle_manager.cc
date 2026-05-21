@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -14,6 +15,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
 
 namespace content {
 
@@ -79,6 +84,46 @@ bool IsEqual(const media::mojom::CaptureHandlePtr& lhs,
   }
 
   return lhs->capture_handle == rhs->capture_handle;
+}
+
+std::optional<GlobalRenderFrameHostId> GetCapturedFrameHostId(
+    const std::string& device_id) {
+  WebContentsMediaCaptureId captured_tab_id;
+  if (WebContentsMediaCaptureId::Parse(device_id, &captured_tab_id)) {
+    return GlobalRenderFrameHostId(captured_tab_id.render_process_id,
+                                   captured_tab_id.main_render_frame_id);
+  }
+
+  content::DesktopMediaID desktop_id =
+      content::DesktopMediaID::Parse(device_id);
+
+  if (desktop_id.is_null() ||
+      desktop_id.type != content::DesktopMediaID::TYPE_WINDOW) {
+    DVLOG(1) << "Not a tab-capture or supported window-capture ID: "
+             << device_id << ".";
+    return std::nullopt;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  gfx::NativeWindow target_window =
+      content::DesktopMediaID::GetNativeWindowById(desktop_id);
+
+  WebContents* web_contents =
+      GetContentClient()
+          ->browser()
+          ->GetWebContentsFromWindowIfCaptureHandleAllowed(target_window);
+
+  if (!web_contents) {
+    DVLOG(1) << "Window does not host a WebContents or capture handle is "
+                "disallowed.";
+    return std::nullopt;
+  }
+
+  return web_contents->GetPrimaryMainFrame()->GetGlobalId();
+#else
+  DVLOG(1) << "Window capture handle parsing is not supported on Android.";
+  return std::nullopt;
+#endif
 }
 }  // namespace
 
@@ -196,27 +241,25 @@ CaptureHandleManager::~CaptureHandleManager() {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO));
 }
 
-void CaptureHandleManager::OnTabCaptureStarted(
+void CaptureHandleManager::OnCaptureStarted(
     const std::string& label,
     const blink::MediaStreamDevice& captured_device,
     GlobalRenderFrameHostId capturer,
     DeviceCaptureHandleChangeCallback handle_change_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContentsMediaCaptureId captured_tab_id;
-  if (!WebContentsMediaCaptureId::Parse(captured_device.id, &captured_tab_id)) {
-    DVLOG(1) << "Not a tab-capture ID:" << captured_device.id << ".";
+  std::optional<GlobalRenderFrameHostId> captured =
+      GetCapturedFrameHostId(captured_device.id);
+  if (!captured.has_value()) {
     return;
   }
-  const GlobalRenderFrameHostId captured(captured_tab_id.render_process_id,
-                                         captured_tab_id.main_render_frame_id);
 
   const CaptureKey capture_key{label, captured_device.type};
 
   // base::Unretained(this) is safe because the observer is owned by |this|
   // and both live on the UI thread together.
   std::unique_ptr<Observer> observer = Observer::Create(
-      capture_key, captured, capturer,
+      capture_key, *captured, capturer,
       base::BindRepeating(&CaptureHandleManager::OnCaptureHandleConfigUpdate,
                           base::Unretained(this)));
   if (!observer) {
@@ -245,7 +288,7 @@ void CaptureHandleManager::OnTabCaptureStarted(
   captures_[capture_key]->observer->UpdateCaptureHandleConfig();
 }
 
-void CaptureHandleManager::OnTabCaptureStopped(
+void CaptureHandleManager::OnCaptureStopped(
     const std::string& label,
     const blink::MediaStreamDevice& captured_device) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -253,7 +296,7 @@ void CaptureHandleManager::OnTabCaptureStopped(
   captures_.erase({label, captured_device.type});
 }
 
-void CaptureHandleManager::OnTabCaptureDevicesUpdated(
+void CaptureHandleManager::OnCaptureDevicesUpdated(
     const std::string& label,
     blink::mojom::StreamDevicesSetPtr new_stream_devices_set,
     GlobalRenderFrameHostId capturer,
@@ -273,12 +316,12 @@ void CaptureHandleManager::OnTabCaptureDevicesUpdated(
   const blink::mojom::StreamDevices& new_devices =
       *new_stream_devices_set->stream_devices[0];
   if (new_devices.audio_device.has_value()) {
-    OnTabCaptureStarted(label, new_devices.audio_device.value(), capturer,
-                        handle_change_callback);
+    OnCaptureStarted(label, new_devices.audio_device.value(), capturer,
+                     handle_change_callback);
   }
   if (new_devices.video_device.has_value()) {
-    OnTabCaptureStarted(label, new_devices.video_device.value(), capturer,
-                        handle_change_callback);
+    OnCaptureStarted(label, new_devices.video_device.value(), capturer,
+                     handle_change_callback);
   }
 
   // Forget any old device which was not in |new_devices|.
