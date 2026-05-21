@@ -283,6 +283,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "alternate_nav_infobar_delegate_browsertest.cc",
+      "omnibox_metrics_browsertest.cc",
       "omnibox_search_aggregator_browsertest.cc",
     ]
     deps = [
@@ -336,10 +337,7 @@ if (!is_android) {
     source_set("interactive_ui_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-      sources = [
-        "ai_mode_page_action_controller_interactive_uitest.cc",
-        "omnibox_metrics_browsertest.cc",
-      ]
+      sources = [ "ai_mode_page_action_controller_interactive_uitest.cc" ]
       deps = [
         "//base/test:test_support",
         "//chrome/browser/autocomplete",
