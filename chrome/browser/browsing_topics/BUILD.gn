@@ -57,6 +57,7 @@ if (!is_android) {
       "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/webui/browsing_topics",
       "//chrome/test:test_support",
       "//components/browsing_topics",
       "//components/browsing_topics:test_support",
