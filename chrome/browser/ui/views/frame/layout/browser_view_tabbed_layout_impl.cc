@@ -967,27 +967,16 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     const bool include_trailing_inset =
         !(is_split_outline_replacing_shadow_or_separator &&
           horizontal_layout.has_side_panel() && !side_panel_leading);
+    const int default_inset = MultiContentsView::kSplitViewContentInset;
+    const int panel_side_inset =
+        base::ClampRound((1.0 - side_panel_reveal_amount) * default_inset);
 
-    gfx::Insets start_contents_view_inset = gfx::Insets::TLBR(
-        include_top_inset ? MultiContentsView::kSplitViewContentInset : 0,
-        include_leading_inset ? MultiContentsView::kSplitViewContentInset : 0,
-        MultiContentsView::kSplitViewContentInset,
-        include_trailing_inset ? MultiContentsView::kSplitViewContentInset : 0);
-    gfx::Insets end_contents_view_inset = start_contents_view_inset;
+    const gfx::Insets contents_insets = gfx::Insets::TLBR(
+        include_top_inset ? default_inset : 0,
+        include_leading_inset ? default_inset : panel_side_inset, default_inset,
+        include_trailing_inset ? default_inset : panel_side_inset);
 
-    // Remove the insets on the shared edge between the start and end contents
-    // views.
-    if (views().multi_contents_view->GetSplitLayout() ==
-        split_tabs::SplitTabLayout::kSideBySide) {
-      start_contents_view_inset.set_right(0);
-      end_contents_view_inset.set_left(0);
-    } else {
-      start_contents_view_inset.set_bottom(0);
-      end_contents_view_inset.set_top(0);
-    }
-
-    views().multi_contents_view->SetSplitViewInsets(start_contents_view_inset,
-                                                    end_contents_view_inset);
+    views().multi_contents_view->SetSplitViewInsets(contents_insets);
   }
 
   // Update the multi-contents view about if we will be animating content

@@ -177,8 +177,7 @@ class MultiContentsView
   void OnDragAndDropPrefStateChange();
 
   void SetShouldShowTopSeparator(bool should_show);
-  void SetSplitViewInsets(gfx::Insets start_contents_view_inset,
-                          gfx::Insets end_contents_view_inset);
+  void SetSplitViewInsets(const gfx::Insets& insets);
 
   void set_min_contents_size_for_testing(int size) {
     min_contents_size_for_testing_ = std::make_optional(size);
@@ -315,8 +314,7 @@ class MultiContentsView
   std::optional<double> initial_start_width_on_resize_;
 
   // Insets of the start and end contents view when in split view
-  gfx::Insets start_contents_view_inset_;
-  gfx::Insets end_contents_view_inset_;
+  gfx::Insets contents_view_insets_;
 
   bool active_contents_view_highlighted_ = false;
 
