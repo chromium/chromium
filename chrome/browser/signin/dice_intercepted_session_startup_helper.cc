@@ -160,6 +160,19 @@ void DiceInterceptedSessionStartupHelper::MoveTab() {
   accounts_in_cookie_observer_.Reset();
   reconcilor_observer_.Reset();
   on_cookie_update_timeout_.Cancel();
+
+  // Defer the actual tab movement asynchronously to avoid observer reentrancy
+  // issues in AccountReconcilor. This method is called inside the reconcilor's
+  // notification loop (OnStateChanged), and navigating synchronously would
+  // trigger request throttling which attempts to lock/block the reconcilor
+  // synchronously, starting a second nested notification loop.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DiceInterceptedSessionStartupHelper::PerformMoveTab,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void DiceInterceptedSessionStartupHelper::PerformMoveTab() {
   reconcilor_lock_.reset();
 
   GURL url_to_open = chrome::ChromeUINewTabURLAsGURL();

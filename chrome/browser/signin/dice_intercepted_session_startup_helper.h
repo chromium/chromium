@@ -76,9 +76,16 @@ class DiceInterceptedSessionStartupHelper
   // Called when multilogin completes.
   void OnSetAccountInCookieCompleted(signin::SetAccountsInCookieResult result);
 
-  // Creates a browser with a new tab, and closes the intercepted tab if it's
-  // still open.
+  // Entry point to move the intercepted tab to the new/target profile.
+  // This method synchronously disconnects all observers to avoid receiving
+  // further events, and then schedules the actual tab movement asynchronously
+  // (via PerformMoveTab) to avoid observer reentrancy issues in
+  // AccountReconcilor.
   void MoveTab();
+
+  // Performs the actual tab movement and browser creation. Called
+  // asynchronously from MoveTab().
+  void PerformMoveTab();
 
   const raw_ptr<Profile> profile_;
   base::WeakPtr<content::WebContents> web_contents_;
