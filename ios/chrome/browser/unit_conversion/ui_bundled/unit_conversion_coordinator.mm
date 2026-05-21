@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 
+#import <algorithm>
+
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mediator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_view_controller.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
 
@@ -107,7 +111,6 @@ CGFloat const kHalfSheetCornerRadius = 13;
 
 // Presents the UnitConversionCoordinator's view controller and adapt the
 // presentation based on the device (popover for ipad, half sheet for iphone)
-
 - (void)presentUnitConversionViewController {
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -115,9 +118,28 @@ CGFloat const kHalfSheetCornerRadius = 13;
   UIPopoverPresentationController* popover =
       navigationController.popoverPresentationController;
   popover.delegate = _viewController;
-  popover.sourceView = self.baseViewController.view;
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  UIView* sourceView = activeWebState ? activeWebState->GetView() : nil;
+
+  popover.sourceView = sourceView ?: self.baseViewController.view;
+
+  CGPoint location = _location;
+  if (sourceView) {
+    // Convert the location from the browser view's coordinate system to the
+    // WebState view's coordinate system, and clamp it to the bounds of the
+    // WebState view.
+    location = [self.baseViewController.view convertPoint:_location
+                                                   toView:sourceView];
+    CGRect bounds = sourceView.bounds;
+    location.x =
+        std::clamp(location.x, CGRectGetMinX(bounds), CGRectGetMaxX(bounds));
+    location.y =
+        std::clamp(location.y, CGRectGetMinY(bounds), CGRectGetMaxY(bounds));
+  }
+
   popover.sourceRect =
-      CGRectMake(_location.x, _location.y, kPopOverSourceRectWidth,
+      CGRectMake(location.x, location.y, kPopOverSourceRectWidth,
                  kPopOverSourceRectHeight);
   popover.permittedArrowDirections =
       UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;

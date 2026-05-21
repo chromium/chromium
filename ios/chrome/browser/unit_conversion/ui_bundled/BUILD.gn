@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/unit_conversion/model",
     "//ios/chrome/browser/unit_conversion/model:unit_conversion_factory",
@@ -25,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+    "//ios/web/public",
     "//ui/base",
   ]
 }
