@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
 
 #include <optional>
 #include <utility>
@@ -30,8 +30,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(
-    kProfilePickerSignInToolbarDontSignInButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kProfilePickerToolbarDontSignInButtonElementId);
 
 namespace {
 
@@ -83,7 +82,7 @@ class DontSignInButton : public ToolbarButton {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetProperty(views::kElementIdentifierKey,
-                kProfilePickerSignInToolbarDontSignInButtonElementId);
+                kProfilePickerToolbarDontSignInButtonElementId);
   }
 
   DontSignInButton(const DontSignInButton&) = delete;
@@ -119,7 +118,7 @@ END_METADATA
 
 }  // namespace
 
-ProfilePickerSignInToolbar::ProfilePickerSignInToolbar() {
+ProfilePickerToolbar::ProfilePickerToolbar() {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -133,9 +132,9 @@ ProfilePickerSignInToolbar::ProfilePickerSignInToolbar() {
                   .WithWeight(1));
 }
 
-ProfilePickerSignInToolbar::~ProfilePickerSignInToolbar() = default;
+ProfilePickerToolbar::~ProfilePickerToolbar() = default;
 
-void ProfilePickerSignInToolbar::BuildToolbar(
+void ProfilePickerToolbar::BuildToolbar(
     base::RepeatingClosure on_back_callback,
     base::RepeatingClosure on_dont_sign_in_callback) {
   DCHECK(children().empty());
@@ -166,11 +165,11 @@ void ProfilePickerSignInToolbar::BuildToolbar(
   CHECK_DEREF(layer()).SetFillsBoundsOpaquely(false);
 }
 
-void ProfilePickerSignInToolbar::SetDontSignInButtonVisible(bool visible) {
+void ProfilePickerToolbar::SetDontSignInButtonVisible(bool visible) {
   if (dont_sign_in_button_) {
     dont_sign_in_button_->SetVisible(visible);
   }
 }
 
-BEGIN_METADATA(ProfilePickerSignInToolbar)
+BEGIN_METADATA(ProfilePickerToolbar)
 END_METADATA

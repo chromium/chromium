@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -886,7 +886,7 @@ void ProfilePickerView::BuildLayout() {
   web_view_ = AddChildView(std::move(web_view));
 
   // Toolbar gets built and set visible once it's needed for the signin.
-  toolbar_ = AddChildView(std::make_unique<ProfilePickerSignInToolbar>());
+  toolbar_ = AddChildView(std::make_unique<ProfilePickerToolbar>());
   SetNativeToolbarVisible(false);
 
   web_contents_attached_subscription_ =

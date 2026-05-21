@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -2004,8 +2004,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunDontSignInOnGaiaPageInteractiveUiTest,
       CompleteIntroStep(/*sign_in=*/true),
       WaitForWebContentsNavigation(kWebContentsId,
                                    GetSigninChromeSyncDiceUrl()),
-      WaitForShow(kProfilePickerSignInToolbarDontSignInButtonElementId),
-      PressButton(kProfilePickerSignInToolbarDontSignInButtonElementId));
+      WaitForShow(kProfilePickerToolbarDontSignInButtonElementId),
+      PressButton(kProfilePickerToolbarDontSignInButtonElementId));
 
   WaitForPickerClosed();
   EXPECT_TRUE(proceed_future.Get());

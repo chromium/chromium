@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_TOOLBAR_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_TOOLBAR_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TOOLBAR_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TOOLBAR_H_
 
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -11,19 +11,18 @@
 #include "ui/views/view.h"
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
-    kProfilePickerSignInToolbarDontSignInButtonElementId);
+    kProfilePickerToolbarDontSignInButtonElementId);
 
-// Class responsible for the top toolbar shown during the GAIA sign-in within
-// profile creation flow.
-class ProfilePickerSignInToolbar : public views::View {
-  METADATA_HEADER(ProfilePickerSignInToolbar, views::View)
+// Class responsible for the top toolbar shown within the First Run and Profile
+// Creation flows.
+class ProfilePickerToolbar : public views::View {
+  METADATA_HEADER(ProfilePickerToolbar, views::View)
 
  public:
-  ProfilePickerSignInToolbar();
-  ~ProfilePickerSignInToolbar() override;
-  ProfilePickerSignInToolbar(const ProfilePickerSignInToolbar&) = delete;
-  ProfilePickerSignInToolbar& operator=(const ProfilePickerSignInToolbar&) =
-      delete;
+  ProfilePickerToolbar();
+  ~ProfilePickerToolbar() override;
+  ProfilePickerToolbar(const ProfilePickerToolbar&) = delete;
+  ProfilePickerToolbar& operator=(const ProfilePickerToolbar&) = delete;
 
   // Builds the actual toolbar, before calling this function, it remains empty.
   // `on_back_callback` is called when the user clicks on the back button
@@ -41,4 +40,4 @@ class ProfilePickerSignInToolbar : public views::View {
   raw_ptr<views::View> dont_sign_in_button_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_TOOLBAR_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TOOLBAR_H_
