@@ -17,7 +17,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_storage.h"
@@ -491,8 +491,9 @@ void NigoriSyncBridgeImpl::SetDecryptionPassphrase(
   if (passphrase.empty()) {
     return;
   }
-  SetDecryptionNigori(Nigori::CreateByDerivation(
-      GetKeyDerivationParamsForPendingKeys(), passphrase));
+  NigoriKeyBag tmp_key_bag = NigoriKeyBag::CreateEmpty();
+  tmp_key_bag.AddKey(GetKeyDerivationParamsForPendingKeys(), passphrase);
+  SetExplicitPassphraseDecryptionKeyBag(tmp_key_bag);
 }
 
 void NigoriSyncBridgeImpl::SetDecryptionBootstrapToken(
@@ -501,24 +502,19 @@ void NigoriSyncBridgeImpl::SetDecryptionBootstrapToken(
   if (bootstrap_token.IsEmpty()) {
     return;
   }
-  const sync_pb::NigoriKey& proto = bootstrap_token.ToProto();
-  SetDecryptionNigori(Nigori::CreateByImport(
-      proto.deprecated_user_key(), proto.encryption_key(), proto.mac_key()));
+  NigoriKeyBag tmp_key_bag = NigoriKeyBag::CreateEmpty();
+  tmp_key_bag.AddKeyFromProto(bootstrap_token.ToProto());
+  SetExplicitPassphraseDecryptionKeyBag(tmp_key_bag);
 }
 
-void NigoriSyncBridgeImpl::SetDecryptionNigori(std::unique_ptr<Nigori> key) {
+void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKeyBag(
+    const NigoriKeyBag& key_bag) {
   if (!state_.pending_keys) {
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
     return;
   }
-  if (!key) {
-    return;
-  }
 
-  NigoriKeyBag tmp_key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string new_key_name = tmp_key_bag.AddKey(std::move(key));
-
-  std::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
+  std::optional<ModelError> error = TryDecryptPendingKeysWith(key_bag);
   if (error.has_value()) {
     processor_->ReportError(*error);
     return;
@@ -542,7 +538,6 @@ void NigoriSyncBridgeImpl::SetDecryptionNigori(std::unique_ptr<Nigori> key) {
             state_.custom_passphrase_key_derivation_params));
   }
 
-  DCHECK_EQ(state_.cryptographer->GetDefaultEncryptionKeyName(), new_key_name);
   storage_->StoreData(SerializeAsNigoriLocalData());
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
@@ -565,8 +560,7 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
   const std::vector<std::string> encoded_keys = Base64EncodeKeys(keys);
   NigoriKeyBag tmp_key_bag = NigoriKeyBag::CreateEmpty();
   for (const std::string& encoded_key : encoded_keys) {
-    tmp_key_bag.AddKey(Nigori::CreateByDerivation(
-        GetKeyDerivationParamsForPendingKeys(), encoded_key));
+    tmp_key_bag.AddKey(GetKeyDerivationParamsForPendingKeys(), encoded_key);
   }
 
   std::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);

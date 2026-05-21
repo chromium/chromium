@@ -18,7 +18,8 @@ using testing::Eq;
 using testing::NotNull;
 
 std::string ComputeKeystoreKeyName(const std::string& keystore_key) {
-  return Nigori::CreateByDerivation(KeyDerivationParams::CreateForPbkdf2(),
+  return Nigori::CreateByDerivation(NigoriPassKey::ForTesting(),
+                                    KeyDerivationParams::CreateForPbkdf2(),
                                     keystore_key)
       ->GetKeyName();
 }

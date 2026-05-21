@@ -18,6 +18,21 @@
 namespace syncer {
 
 class KeyDerivationParams;
+class NigoriKeyBag;
+class RequiredPassphraseVerifierImpl;
+
+// A passkey class used to restrict the construction of Nigori objects to
+// authorized classes.
+class NigoriPassKey {
+ public:
+  static NigoriPassKey ForTesting();
+
+ private:
+  friend class NigoriKeyBag;
+  friend class RequiredPassphraseVerifierImpl;
+
+  NigoriPassKey() = default;
+};
 
 // A (partial) implementation of Nigori, a protocol to securely store secrets in
 // the cloud. This implementation does not support server authentication or
@@ -40,12 +55,14 @@ class Nigori {
   // `password`. The key derivation method must not be UNSUPPORTED. The return
   // value is guaranteed to be non-null.
   static std::unique_ptr<Nigori> CreateByDerivation(
+      NigoriPassKey pass_key,
       const KeyDerivationParams& key_derivation_params,
       const std::string& password);
 
   // Initialize by importing the given keys instead of deriving new ones.
   // Returns null in case of failure.
   static std::unique_ptr<Nigori> CreateByImport(
+      NigoriPassKey pass_key,
       const std::string& user_key,
       const std::string& encryption_key,
       const std::string& mac_key);
@@ -107,6 +124,7 @@ class Nigori {
   Nigori();
 
   static std::unique_ptr<Nigori> CreateByDerivationImpl(
+      NigoriPassKey pass_key,
       const KeyDerivationParams& key_derivation_params,
       const std::string& password,
       const base::TickClock* tick_clock);

@@ -249,10 +249,10 @@ TEST(CryptographerImplTest, ShouldEmplaceKeysFrom) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name_1 = key_bag.AddKey(Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password1"));
-  const std::string key_name_2 = key_bag.AddKey(Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password2"));
+  const std::string key_name_1 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
+  const std::string key_name_2 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password2");
   ASSERT_FALSE(cryptographer->HasKey(key_name_1));
   ASSERT_FALSE(cryptographer->HasKey(key_name_2));
 
@@ -503,7 +503,8 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithOneKey) {
 
   ASSERT_EQ(decrypted_keys_proto.key_size(), 1);
   std::unique_ptr<Nigori> decrypted_key =
-      Nigori::CreateByImport(decrypted_keys_proto.key(0).deprecated_user_key(),
+      Nigori::CreateByImport(NigoriPassKey::ForTesting(),
+                             decrypted_keys_proto.key(0).deprecated_user_key(),
                              decrypted_keys_proto.key(0).encryption_key(),
                              decrypted_keys_proto.key(0).mac_key());
   EXPECT_THAT(decrypted_key, HasKeyName(key_name));
@@ -529,8 +530,8 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithMultipleKeys) {
   std::vector<std::unique_ptr<Nigori>> decrypted_keys;
   for (const sync_pb::NigoriKey& decrypted_key : decrypted_keys_proto.key()) {
     decrypted_keys.push_back(Nigori::CreateByImport(
-        decrypted_key.deprecated_user_key(), decrypted_key.encryption_key(),
-        decrypted_key.mac_key()));
+        NigoriPassKey::ForTesting(), decrypted_key.deprecated_user_key(),
+        decrypted_key.encryption_key(), decrypted_key.mac_key()));
   }
 
   EXPECT_THAT(decrypted_keys, UnorderedElementsAre(HasKeyName(key_name1),

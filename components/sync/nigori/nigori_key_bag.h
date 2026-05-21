@@ -11,12 +11,13 @@
 
 namespace sync_pb {
 class EncryptedData;
-class NigoriKey;
 class LocalNigoriKeyBag;
+class NigoriKey;
 }  // namespace sync_pb
 
 namespace syncer {
 
+class KeyDerivationParams;
 class Nigori;
 
 // A set of Nigori keys, aka keybag. Note that there is no notion of default
@@ -31,7 +32,7 @@ class NigoriKeyBag {
   NigoriKeyBag(NigoriKeyBag&& other);
   ~NigoriKeyBag();
 
-  NigoriKeyBag& operator=(NigoriKeyBag&&) = default;
+  NigoriKeyBag& operator=(NigoriKeyBag&&);
 
   // Serialization to proto.
   sync_pb::LocalNigoriKeyBag ToProto() const;
@@ -45,12 +46,13 @@ class NigoriKeyBag {
   // `key_name` must exist in this keybag.
   sync_pb::NigoriKey ExportKey(const std::string& key_name) const;
 
-  // Adds a new key to the keybag. Returns the name of the key or an empty
-  // string in case of failure.
-  std::string AddKey(std::unique_ptr<Nigori> nigori);
+  // Adds a new key to the keybag by deriving Nigori keys. Returns the name of
+  // the key or an empty string in case of failure.
+  std::string AddKey(const KeyDerivationParams& key_derivation_params,
+                     const std::string& password);
 
-  // Similar to AddKey(), but reads the key material from a proto. The `name`
-  // field is ignored since it's redundant.
+  // Similar to AddKey(), but reads the key material from a proto. The
+  // `name` field is ignored since it's redundant.
   std::string AddKeyFromProto(const sync_pb::NigoriKey& key);
 
   // Merges all keys from another keybag, which means adding all keys that we
@@ -71,6 +73,12 @@ class NigoriKeyBag {
 
  private:
   NigoriKeyBag();
+
+  // Adds a new key to the keybag. Returns the name of the key or an empty
+  // string in case of failure.
+  std::string AddKey(std::unique_ptr<Nigori> nigori);
+
+  static std::unique_ptr<Nigori> CloneNigori(const Nigori& nigori);
 
   // The Nigoris we know about, mapped by key name.
   std::map<std::string, std::unique_ptr<const Nigori>> nigori_map_;

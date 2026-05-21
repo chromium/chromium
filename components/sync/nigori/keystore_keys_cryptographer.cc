@@ -37,8 +37,7 @@ KeystoreKeysCryptographer::FromKeystoreKeys(
   std::string last_key_name;
 
   for (const std::string& key : keystore_keys) {
-    last_key_name = key_bag.AddKey(Nigori::CreateByDerivation(
-        KeyDerivationParams::CreateForPbkdf2(), key));
+    last_key_name = key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), key);
 
     if (last_key_name.empty()) {
       // TODO(crbug.com/40868132): this shouldn't be possible, clean up once

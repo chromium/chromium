@@ -49,7 +49,8 @@ MATCHER(NullTime, "") {
 MATCHER_P(HasDefaultKeyDerivedFrom, key_params, "") {
   const Cryptographer& cryptographer = arg;
   std::unique_ptr<Nigori> expected_default_nigori = Nigori::CreateByDerivation(
-      key_params.derivation_params, key_params.password);
+      NigoriPassKey::ForTesting(), key_params.derivation_params,
+      key_params.password);
   return cryptographer.GetDefaultEncryptionKeyName() ==
          expected_default_nigori->GetKeyName();
 }
@@ -111,7 +112,8 @@ MATCHER(HasCustomPassphraseNigori, "") {
 MATCHER_P(CanDecryptWith, key_params, "") {
   const Cryptographer& cryptographer = arg;
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      key_params.derivation_params, key_params.password);
+      NigoriPassKey::ForTesting(), key_params.derivation_params,
+      key_params.password);
   const std::string unencrypted = "test";
   sync_pb::EncryptedData encrypted;
   encrypted.set_key_name(nigori->GetKeyName());
@@ -180,7 +182,8 @@ NigoriMetadataBatch CreateFakeNigoriMetadataBatch(
 }
 
 std::unique_ptr<Nigori> MakeNigoriKey(const KeyParamsForTesting& key_params) {
-  return Nigori::CreateByDerivation(key_params.derivation_params,
+  return Nigori::CreateByDerivation(NigoriPassKey::ForTesting(),
+                                    key_params.derivation_params,
                                     key_params.password);
 }
 
@@ -1006,8 +1009,8 @@ TEST_F(NigoriSyncBridgeImplTest,
           kPassphraseKeyParams.password,
           kPassphraseKeyParams.derivation_params);
   NigoriKeyBag old_key_key_bag = NigoriKeyBag::CreateEmpty();
-  old_key_key_bag.AddKey(Nigori::CreateByDerivation(
-      kOldKeyParams.derivation_params, kOldKeyParams.password));
+  old_key_key_bag.AddKey(kOldKeyParams.derivation_params,
+                         kOldKeyParams.password);
   ASSERT_TRUE(passphrase_cryptographer->Encrypt(
       old_key_key_bag.ToProto(), specifics.mutable_encryption_keybag()));
   EntityData corrupted_entity_data;

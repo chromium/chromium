@@ -29,18 +29,6 @@ sync_pb::NigoriKey NigoriToProto(const Nigori& nigori,
   return proto;
 }
 
-std::unique_ptr<Nigori> CloneNigori(const Nigori& nigori) {
-  std::string user_key;
-  std::string encryption_key;
-  std::string mac_key;
-  nigori.ExportKeys(&user_key, &encryption_key, &mac_key);
-
-  std::unique_ptr<Nigori> nigori_copy =
-      Nigori::CreateByImport(user_key, encryption_key, mac_key);
-  DCHECK(nigori_copy);
-  return nigori_copy;
-}
-
 }  // namespace
 
 // static
@@ -65,6 +53,8 @@ NigoriKeyBag NigoriKeyBag::CreateFromProto(
 NigoriKeyBag::NigoriKeyBag(NigoriKeyBag&& other) = default;
 
 NigoriKeyBag::~NigoriKeyBag() = default;
+
+NigoriKeyBag& NigoriKeyBag::operator=(NigoriKeyBag&&) = default;
 
 sync_pb::LocalNigoriKeyBag NigoriKeyBag::ToProto() const {
   sync_pb::LocalNigoriKeyBag output;
@@ -99,8 +89,17 @@ sync_pb::NigoriKey NigoriKeyBag::ExportKey(const std::string& key_name) const {
   return key;
 }
 
+std::string NigoriKeyBag::AddKey(
+    const KeyDerivationParams& key_derivation_params,
+    const std::string& password) {
+  return AddKey(Nigori::CreateByDerivation(NigoriPassKey(),
+                                           key_derivation_params, password));
+}
+
 std::string NigoriKeyBag::AddKey(std::unique_ptr<Nigori> nigori) {
-  DCHECK(nigori);
+  if (!nigori) {
+    return std::string();
+  }
   const std::string key_name = nigori->GetKeyName();
   if (key_name.empty()) {
     NOTREACHED();
@@ -110,19 +109,9 @@ std::string NigoriKeyBag::AddKey(std::unique_ptr<Nigori> nigori) {
 }
 
 std::string NigoriKeyBag::AddKeyFromProto(const sync_pb::NigoriKey& key) {
-  std::unique_ptr<Nigori> nigori = Nigori::CreateByImport(
-      key.deprecated_user_key(), key.encryption_key(), key.mac_key());
-  if (!nigori) {
-    return std::string();
-  }
-
-  const std::string key_name = nigori->GetKeyName();
-  if (key_name.empty()) {
-    return std::string();
-  }
-
-  nigori_map_[key_name] = std::move(nigori);
-  return key_name;
+  return AddKey(Nigori::CreateByImport(NigoriPassKey(),
+                                       key.deprecated_user_key(),
+                                       key.encryption_key(), key.mac_key()));
 }
 
 void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
@@ -130,6 +119,19 @@ void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
     // Only use this key if we don't already know about it.
     nigori_map_.emplace(key_name, CloneNigori(*nigori));
   }
+}
+
+// static
+std::unique_ptr<Nigori> NigoriKeyBag::CloneNigori(const Nigori& nigori) {
+  std::string user_key;
+  std::string encryption_key;
+  std::string mac_key;
+  nigori.ExportKeys(&user_key, &encryption_key, &mac_key);
+
+  std::unique_ptr<Nigori> nigori_copy = Nigori::CreateByImport(
+      NigoriPassKey(), user_key, encryption_key, mac_key);
+  DCHECK(nigori_copy);
+  return nigori_copy;
 }
 
 sync_pb::EncryptedData NigoriKeyBag::EncryptWithKey(

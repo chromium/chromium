@@ -122,12 +122,14 @@ constexpr GaiaId::Literal kDefaultGaiaId("gaia_id_for_user1_gmail.com");
 MATCHER_P(IsDataEncryptedWith, key_params, "") {
   const sync_pb::EncryptedData& encrypted_data = arg;
   std::unique_ptr<syncer::Nigori> nigori = syncer::Nigori::CreateByDerivation(
-      key_params.derivation_params, key_params.password);
+      syncer::NigoriPassKey::ForTesting(), key_params.derivation_params,
+      key_params.password);
   return encrypted_data.key_name() == nigori->GetKeyName();
 }
 
 std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
-  return syncer::Nigori::CreateByDerivation(key_params.derivation_params,
+  return syncer::Nigori::CreateByDerivation(syncer::NigoriPassKey::ForTesting(),
+                                            key_params.derivation_params,
                                             key_params.password)
       ->GetKeyName();
 }

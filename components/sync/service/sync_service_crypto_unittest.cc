@@ -46,8 +46,8 @@ using testing::SaveArg;
 sync_pb::EncryptedData MakeEncryptedData(
     const std::string& passphrase,
     const KeyDerivationParams& derivation_params) {
-  std::unique_ptr<Nigori> nigori =
-      Nigori::CreateByDerivation(derivation_params, passphrase);
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+      NigoriPassKey::ForTesting(), derivation_params, passphrase);
 
   const std::string unencrypted = "test";
   sync_pb::EncryptedData encrypted;
@@ -71,8 +71,8 @@ std::unique_ptr<RequiredPassphraseVerifier> CreateVerifier(
 CustomPassphraseBootstrapToken CreateBootstrapToken(
     const std::string& passphrase,
     const KeyDerivationParams& derivation_params) {
-  std::unique_ptr<Nigori> nigori =
-      Nigori::CreateByDerivation(derivation_params, passphrase);
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+      NigoriPassKey::ForTesting(), derivation_params, passphrase);
 
   sync_pb::NigoriKey proto;
   proto.set_deprecated_name(nigori->GetKeyName());

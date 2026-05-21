@@ -185,18 +185,25 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
   return true;
 }
 
+// static
+NigoriPassKey NigoriPassKey::ForTesting() {
+  return NigoriPassKey();
+}
+
 Nigori::~Nigori() = default;
 
 // static
 std::unique_ptr<Nigori> Nigori::CreateByDerivation(
+    NigoriPassKey pass_key,
     const KeyDerivationParams& key_derivation_params,
     const std::string& password) {
-  return CreateByDerivationImpl(key_derivation_params, password,
+  return CreateByDerivationImpl(pass_key, key_derivation_params, password,
                                 base::DefaultTickClock::GetInstance());
 }
 
 // static
 std::unique_ptr<Nigori> Nigori::CreateByImport(
+    NigoriPassKey pass_key,
     const std::string& user_key,
     const std::string& encryption_key,
     const std::string& mac_key) {
@@ -299,13 +306,15 @@ std::unique_ptr<Nigori> Nigori::CreateByDerivationForTesting(
     const KeyDerivationParams& key_derivation_params,
     const std::string& password,
     const base::TickClock* tick_clock) {
-  return CreateByDerivationImpl(key_derivation_params, password, tick_clock);
+  return CreateByDerivationImpl(NigoriPassKey::ForTesting(),  // IN-TEST
+                                key_derivation_params, password, tick_clock);
 }
 
 Nigori::Nigori() = default;
 
 // static
 std::unique_ptr<Nigori> Nigori::CreateByDerivationImpl(
+    NigoriPassKey pass_key,
     const KeyDerivationParams& key_derivation_params,
     const std::string& password,
     const base::TickClock* tick_clock) {

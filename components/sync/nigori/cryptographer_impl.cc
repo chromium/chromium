@@ -105,8 +105,7 @@ sync_pb::EncryptedData CryptographerImpl::ExportEncryptedKeyBag() const {
 std::string CryptographerImpl::EmplaceKey(
     const std::string& passphrase,
     const KeyDerivationParams& derivation_params) {
-  return key_bag_.AddKey(
-      Nigori::CreateByDerivation(derivation_params, passphrase));
+  return key_bag_.AddKey(derivation_params, passphrase);
 }
 
 void CryptographerImpl::SetKeyPair(

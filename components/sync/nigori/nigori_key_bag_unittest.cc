@@ -21,11 +21,6 @@ using testing::Eq;
 using testing::Ne;
 using testing::SizeIs;
 
-std::unique_ptr<Nigori> CreateTestNigori(const std::string& password) {
-  return Nigori::CreateByDerivation(KeyDerivationParams::CreateForPbkdf2(),
-                                    password);
-}
-
 TEST(NigoriKeyBagTest, ShouldCreateEmpty) {
   const NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
   EXPECT_THAT(key_bag, SizeIs(0));
@@ -36,12 +31,14 @@ TEST(NigoriKeyBagTest, ShouldAddKeys) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
   ASSERT_THAT(key_bag, SizeIs(0));
 
-  const std::string key_name1 = key_bag.AddKey(CreateTestNigori("password1"));
+  const std::string key_name1 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
   EXPECT_THAT(key_name1, Ne(""));
   EXPECT_THAT(key_bag, SizeIs(1));
   EXPECT_TRUE(key_bag.HasKey(key_name1));
 
-  const std::string key_name2 = key_bag.AddKey(CreateTestNigori("password2"));
+  const std::string key_name2 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password2");
   EXPECT_THAT(key_name2, Ne(""));
   EXPECT_THAT(key_name2, Ne(key_name1));
   EXPECT_THAT(key_bag, SizeIs(2));
@@ -51,7 +48,8 @@ TEST(NigoriKeyBagTest, ShouldAddKeys) {
 
 TEST(NigoriKeyBagTest, ShouldExportKey) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name1 = key_bag.AddKey(CreateTestNigori("password1"));
+  const std::string key_name1 =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
   ASSERT_THAT(key_bag, SizeIs(1));
   ASSERT_THAT(key_name1, Ne(""));
   ASSERT_TRUE(key_bag.HasKey(key_name1));
@@ -74,7 +72,8 @@ TEST(NigoriKeyBagTest, ShouldConvertEmptyToProto) {
 
 TEST(NigoriKeyBagTest, ShouldConvertNonEmptyToProto) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name = key_bag.AddKey(CreateTestNigori("password1"));
+  const std::string key_name =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
 
   sync_pb::LocalNigoriKeyBag proto = key_bag.ToProto();
   ASSERT_THAT(proto.key(), SizeIs(1));
@@ -94,10 +93,10 @@ TEST(NigoriKeyBagTest, ShouldCreateEmptyFromProto) {
 
 TEST(NigoriKeyBagTest, ShouldCreateNonEmptyFromProto) {
   NigoriKeyBag original_key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name1 =
-      original_key_bag.AddKey(CreateTestNigori("password1"));
-  const std::string key_name2 =
-      original_key_bag.AddKey(CreateTestNigori("password2"));
+  const std::string key_name1 = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password1");
+  const std::string key_name2 = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password2");
   ASSERT_THAT(original_key_bag, SizeIs(2));
 
   const NigoriKeyBag restored_key_bag =
@@ -109,10 +108,10 @@ TEST(NigoriKeyBagTest, ShouldCreateNonEmptyFromProto) {
 
 TEST(NigoriKeyBagTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
   NigoriKeyBag original_key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name1 =
-      original_key_bag.AddKey(CreateTestNigori("password1"));
-  const std::string key_name2 =
-      original_key_bag.AddKey(CreateTestNigori("password2"));
+  const std::string key_name1 = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password1");
+  const std::string key_name2 = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password2");
 
   sync_pb::LocalNigoriKeyBag malformed_proto = original_key_bag.ToProto();
   ASSERT_THAT(malformed_proto.key(), SizeIs(2));
@@ -128,10 +127,10 @@ TEST(NigoriKeyBagTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
 
 TEST(NigoriKeyBagTest, ShouldClone) {
   NigoriKeyBag original_key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name1 =
-      original_key_bag.AddKey(CreateTestNigori("password1"));
-  const std::string key_name2 =
-      original_key_bag.AddKey(CreateTestNigori("password2"));
+  const std::string key_name1 = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password1");
+  const std::string key_name2 = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password2");
   ASSERT_THAT(original_key_bag, SizeIs(2));
 
   const NigoriKeyBag cloned_key_bag = original_key_bag.Clone();
@@ -144,12 +143,13 @@ TEST(NigoriKeyBagTest, ShouldClone) {
 // set.
 TEST(NigoriKeyBagTest, ShouldIgnoreDeprecatedKeyNameProtoField) {
   NigoriKeyBag original_key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string real_key_name =
-      original_key_bag.AddKey(CreateTestNigori("password1"));
+  const std::string real_key_name = original_key_bag.AddKey(
+      KeyDerivationParams::CreateForPbkdf2(), "password1");
   ASSERT_THAT(original_key_bag, SizeIs(1));
 
   const std::string actual_key_name_in_proto =
-      NigoriKeyBag::CreateEmpty().AddKey(CreateTestNigori("password2"));
+      NigoriKeyBag::CreateEmpty().AddKey(KeyDerivationParams::CreateForPbkdf2(),
+                                         "password2");
 
   sync_pb::LocalNigoriKeyBag proto = original_key_bag.ToProto();
   proto.mutable_key(0)->set_deprecated_name(actual_key_name_in_proto);
@@ -163,7 +163,8 @@ TEST(NigoriKeyBagTest, ShouldIgnoreDeprecatedKeyNameProtoField) {
 
 TEST(NigoriKeyBagTest, ShouldEncryptAndDecrypt) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string key_name = key_bag.AddKey(CreateTestNigori("password1"));
+  const std::string key_name =
+      key_bag.AddKey(KeyDerivationParams::CreateForPbkdf2(), "password1");
   ASSERT_TRUE(key_bag.HasKey(key_name));
 
   const std::string data = "qwerty";

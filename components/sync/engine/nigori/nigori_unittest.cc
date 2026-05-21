@@ -47,7 +47,8 @@ constexpr base::TimeDelta FakeTickClock::kTicksAdvanceAfterEachCall;
 
 TEST(SyncNigoriTest, GetKeyName) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   std::string expected =
@@ -58,13 +59,15 @@ TEST(SyncNigoriTest, GetKeyName) {
 
 TEST(SyncNigoriTest, GetKeyNameIsConstant) {
   std::unique_ptr<Nigori> nigori1 = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori1, NotNull());
 
   std::string keyname1 = nigori1->GetKeyName();
 
   std::unique_ptr<Nigori> nigori2 = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori2, NotNull());
 
   std::string keyname2 = nigori2->GetKeyName();
@@ -75,7 +78,8 @@ TEST(SyncNigoriTest, GetKeyNameIsConstant) {
 
 TEST(SyncNigoriTest, EncryptDifferentIv) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   const std::string plaintext("value");
@@ -84,7 +88,8 @@ TEST(SyncNigoriTest, EncryptDifferentIv) {
 
 TEST(SyncNigoriTest, Decrypt) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   std::string encrypted =
@@ -100,7 +105,8 @@ TEST(SyncNigoriTest, Decrypt) {
 
 TEST(SyncNigoriTest, EncryptDecrypt) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   const std::string plaintext("value");
@@ -113,7 +119,8 @@ TEST(SyncNigoriTest, EncryptDecrypt) {
 
 TEST(SyncNigoriTest, EncryptDecryptEmptyString) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   const std::string plaintext;
@@ -126,7 +133,8 @@ TEST(SyncNigoriTest, EncryptDecryptEmptyString) {
 
 TEST(SyncNigoriTest, CorruptedIv) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   const std::string plaintext("test");
@@ -144,7 +152,8 @@ TEST(SyncNigoriTest, CorruptedIv) {
 
 TEST(SyncNigoriTest, CorruptedCiphertext) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   const std::string plaintext("test");
@@ -163,7 +172,8 @@ TEST(SyncNigoriTest, CorruptedCiphertext) {
 
 TEST(SyncNigoriTest, ExportImport) {
   std::unique_ptr<Nigori> nigori1 = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori1, NotNull());
 
   std::string user_key;
@@ -171,8 +181,8 @@ TEST(SyncNigoriTest, ExportImport) {
   std::string mac_key;
   nigori1->ExportKeys(&user_key, &encryption_key, &mac_key);
 
-  std::unique_ptr<Nigori> nigori2 =
-      Nigori::CreateByImport(user_key, encryption_key, mac_key);
+  std::unique_ptr<Nigori> nigori2 = Nigori::CreateByImport(
+      NigoriPassKey::ForTesting(), user_key, encryption_key, mac_key);
   ASSERT_THAT(nigori2, NotNull());
 
   std::string original("test");
@@ -192,7 +202,8 @@ TEST(SyncNigoriTest, ExportImport) {
 
 TEST(SyncNigoriTest, CreateByDerivationSetsUserKey) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori, NotNull());
 
   std::string user_key;
@@ -205,7 +216,8 @@ TEST(SyncNigoriTest, CreateByDerivationSetsUserKey) {
 
 TEST(SyncNigoriTest, ToleratesEmptyUserKey) {
   std::unique_ptr<Nigori> nigori1 = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), "password");
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
   ASSERT_THAT(nigori1, NotNull());
 
   std::string user_key;
@@ -216,8 +228,8 @@ TEST(SyncNigoriTest, ToleratesEmptyUserKey) {
   EXPECT_FALSE(encryption_key.empty());
   EXPECT_FALSE(mac_key.empty());
 
-  std::unique_ptr<Nigori> nigori2 =
-      Nigori::CreateByImport(/*user_key=*/"", encryption_key, mac_key);
+  std::unique_ptr<Nigori> nigori2 = Nigori::CreateByImport(
+      NigoriPassKey::ForTesting(), /*user_key=*/"", encryption_key, mac_key);
   ASSERT_THAT(nigori2, NotNull());
 
   user_key = "non-empty-value";
@@ -231,7 +243,8 @@ TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingPbkdf2) {
   const std::string kPassphrase = "hunter2";
 
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForPbkdf2(), kPassphrase);
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      kPassphrase);
   ASSERT_THAT(nigori, NotNull());
 
   std::string user_key;
@@ -251,7 +264,8 @@ TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingScrypt) {
   const std::string kPassphrase = "hunter2";
 
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      KeyDerivationParams::CreateForScrypt(kSalt), kPassphrase);
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForScrypt(kSalt),
+      kPassphrase);
   ASSERT_THAT(nigori, NotNull());
 
   std::string user_key;
@@ -323,11 +337,14 @@ TEST(SyncNigoriTest, GenerateScryptSaltShouldReturnNontrivialSalt) {
 }
 
 TEST(SyncNigoriTest, ShouldFailToImportEmpty) {
-  EXPECT_THAT(Nigori::CreateByImport("", "", ""), IsNull());
+  EXPECT_THAT(Nigori::CreateByImport(NigoriPassKey::ForTesting(), "", "", ""),
+              IsNull());
 }
 
 TEST(SyncNigoriTest, ShouldFailToImportInvalid) {
-  EXPECT_THAT(Nigori::CreateByImport("foo", "bar", "baz"), IsNull());
+  EXPECT_THAT(
+      Nigori::CreateByImport(NigoriPassKey::ForTesting(), "foo", "bar", "baz"),
+      IsNull());
 }
 
 }  // anonymous namespace

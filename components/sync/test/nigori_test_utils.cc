@@ -85,8 +85,7 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
 
   NigoriKeyBag encryption_keybag = NigoriKeyBag::CreateEmpty();
   for (const KeyParamsForTesting& key_params : keybag_keys_params) {
-    encryption_keybag.AddKey(Nigori::CreateByDerivation(
-        key_params.derivation_params, key_params.password));
+    encryption_keybag.AddKey(key_params.derivation_params, key_params.password);
   }
 
   sync_pb::EncryptionKeys keys_for_encryption;
