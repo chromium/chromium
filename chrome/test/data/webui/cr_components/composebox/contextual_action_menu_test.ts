@@ -1180,4 +1180,85 @@ suite('ContextualActionMenu', () => {
     assertTrue(isVisible(suffix));
     assertTrue(suffix!.hasAttribute('disabled'));
   });
+
+  test('Menu closes after tab selection in Realbox', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+      composeboxContextMenuEnableMultiTabSelection: true,
+    });
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    Object.assign(actionMenu, {
+      metricsSource_: 'NewTabPage',
+    });
+
+    const tabInfo: TabInfo = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://google.com',
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    };
+    actionMenu.tabSuggestions = [tabInfo];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    });
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    Object.assign(actionMenu, {shareTabsFlyoutOpen_: true});
+    await microtasksFinished();
+    assertTrue(actionMenu.$.menu.open);
+
+    const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+        '.share-tabs-flyout button.dropdown-item')!;
+    tabButton.click();
+    await microtasksFinished();
+
+    assertFalse(actionMenu.$.menu.open);
+  });
+
+  test(
+      'Menu stays open after tab selection in Side Panel with multi-tab selection',
+      async () => {
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: true,
+          composeboxContextMenuEnableMultiTabSelection: true,
+        });
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        Object.assign(actionMenu, {
+          metricsSource_: 'contextual-tasks',
+        });
+
+        const tabInfo: TabInfo = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://google.com',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        actionMenu.tabSuggestions = [tabInfo];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
+
+        actionMenu.showAt(actionMenu);
+        Object.assign(actionMenu, {shareTabsFlyoutOpen_: true});
+        await microtasksFinished();
+        assertTrue(actionMenu.$.menu.open);
+
+        const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+            '.share-tabs-flyout button.dropdown-item')!;
+        tabButton.click();
+        await microtasksFinished();
+
+        assertTrue(actionMenu.$.menu.open);
+      });
 });

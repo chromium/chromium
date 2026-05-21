@@ -474,7 +474,9 @@ export class ContextualActionMenuElement extends
       delayUpload: false,
       origin: TabUploadOrigin.CONTEXT_MENU,
     });
-    if (!this.enableMultiTabSelection_) {
+    if (!this.enableMultiTabSelection_ ||
+        this.metricsSource_ === 'NewTabPage' ||
+        this.metricsSource_ === 'Omnibox') {
       this.$.menu.close();
     }
   }
