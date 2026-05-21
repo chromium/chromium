@@ -447,7 +447,8 @@ const Big5EncodeTable& EnsureBig5EncodeTable() {
           uint16_t pointer =
               (lead - 0x81) * 157 + (byte - (byte < 0x7F ? 0x40 : 0x62));
           UChar32 code_point;
-          int32_t output_len = output - output_span.data();
+          int32_t output_len =
+              static_cast<int32_t>(output - output_span.data());
           if (output_len == 1) {
             code_point = icu_output[0];
           } else {

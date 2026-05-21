@@ -31,6 +31,7 @@
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/encoding_tables.h"
@@ -590,7 +591,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
                 bool stop_on_error,
                 bool& saw_error) override {
     StringBuilder result;
-    result.ReserveCapacity(bytes.size());
+    result.ReserveCapacity(base::checked_cast<wtf_size_t>(bytes.size()));
 
     if (prepended_byte_ &&
         ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
@@ -1129,7 +1130,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
                                      bool stop_on_error,
                                      bool& saw_error) {
   StringBuilder result;
-  result.ReserveCapacity(bytes.size());
+  result.ReserveCapacity(base::checked_cast<wtf_size_t>(bytes.size()));
 
   if (prepended_byte_ &&
       ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==

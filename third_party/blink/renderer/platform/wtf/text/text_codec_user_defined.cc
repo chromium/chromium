@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_user_defined.h"
 
 #include <memory>
+
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,7 +53,7 @@ String TextCodecUserDefined::Decode(base::span<const uint8_t> data,
                                     bool,
                                     bool&) {
   StringBuilder result;
-  result.ReserveCapacity(data.size());
+  result.ReserveCapacity(base::checked_cast<wtf_size_t>(data.size()));
 
   for (const auto cc : data) {
     signed char c = cc;
