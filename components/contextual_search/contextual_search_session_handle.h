@@ -150,7 +150,7 @@ class ContextualSearchSessionHandle {
   // Clear all context controller files from this particular instance of the
   // session handle. This does not clear the internal state of the context
   // controller, which may be shared with other session handles.
-  void ClearFiles();
+  void ClearFiles(bool query_submitted = false);
 
   // Returns the search url for a new query for opening. If the request info
   // contains file tokens, only those provided tokens are used. If the request
@@ -224,6 +224,9 @@ class ContextualSearchSessionHandle {
   // information about the presence of tab and non-tab context.
   void NotifyQuerySubmittedSessionState(const std::vector<FileInfo>& file_infos,
                                         int query_text_length);
+
+  // Returns true if the token corresponds to a tab context.
+  bool IsTabToken(const base::UnguessableToken& token) const;
 
   // The list of uploaded but not yet committed context tokens for this
   // particular instance of the session. This list is unique to this instance of

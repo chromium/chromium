@@ -133,6 +133,7 @@ class ContextualSearchboxHandler
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
+  void ClearFiles(bool should_block_auto_suggested_tabs, bool query_submitted);
   void SubmitQuery(const std::string& query_text,
                    uint8_t mouse_button,
                    bool alt_key,

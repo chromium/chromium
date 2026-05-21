@@ -60,6 +60,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
@@ -282,6 +283,10 @@ class ContextualSearchboxHandlerTest
     mock_searchbox_page_.FlushForTesting();
     base::RunLoop().RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&mock_searchbox_page_);
+
+    ON_CALL(query_controller(), GetFileInfo)
+        .WillByDefault(testing::Invoke(query_controller_.get(),
+                                       &MockQueryController::FakeGetFileInfo));
 
     ON_CALL(query_controller(), CreateSearchUrl)
         .WillByDefault(
@@ -2128,6 +2133,142 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
 
   // Flush the mojo pipe to ensure the callback is run.
   mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, ClearFiles_KeepTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  // Add a file context:
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.png";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/image";
+
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  base::UnguessableToken file_token;
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillOnce([&](const base::UnguessableToken& token, auto, auto) {
+        file_token = token;
+        query_controller().AddFileInfoForTesting(token, lens::MimeType::kImage);
+      });
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> file_callback;
+  EXPECT_CALL(file_callback, Run).Times(1);
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           file_callback.Get());
+
+  // Add a tab context:
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          lens::TabContextualizationController::From(tab));
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .Times(1)
+      .WillRepeatedly(
+          [](lens::TabContextualizationController::GetPageContextCallback
+                 callback) {
+            std::move(callback).Run(
+                std::make_unique<lens::ContextualInputData>());
+          });
+
+  base::UnguessableToken tab_token;
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .WillOnce([&](const base::UnguessableToken& token, auto, auto) {
+        tab_token = token;
+        query_controller().AddTabFileInfoForTesting(token, sample_url);
+      });
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> tab_callback;
+  EXPECT_CALL(tab_callback, Run).Times(1);
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/false,
+                          tab_callback.Get());
+
+  // Verify both tokens are uploaded:
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 2u);
+
+  handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+                       /*query_submitted=*/true);
+
+  // Verify only tab token remains, file token was cleared:
+  auto remaining_tokens = handler().GetUploadedContextTokens();
+  EXPECT_EQ(remaining_tokens.size(), 1u);
+  EXPECT_EQ(remaining_tokens[0], tab_token);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       ClearFiles_DoNotKeepTabsIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kContextManagementInComposebox);
+
+  // Add a file context:
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.png";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/image";
+
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  base::UnguessableToken file_token;
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillOnce([&](const base::UnguessableToken& token, auto, auto) {
+        file_token = token;
+        query_controller().AddFileInfoForTesting(token, lens::MimeType::kImage);
+      });
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> file_callback;
+  EXPECT_CALL(file_callback, Run).Times(1);
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           file_callback.Get());
+
+  // Add a tab context:
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          lens::TabContextualizationController::From(tab));
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .Times(1)
+      .WillRepeatedly(
+          [](lens::TabContextualizationController::GetPageContextCallback
+                 callback) {
+            std::move(callback).Run(
+                std::make_unique<lens::ContextualInputData>());
+          });
+
+  base::UnguessableToken tab_token;
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .WillOnce([&](const base::UnguessableToken& token, auto, auto) {
+        tab_token = token;
+        query_controller().AddTabFileInfoForTesting(token, sample_url);
+      });
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> tab_callback;
+  EXPECT_CALL(tab_callback, Run).Times(1);
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/false,
+                          tab_callback.Get());
+
+  // Verify both tokens are uploaded:
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 2u);
+
+  handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+                       /*query_submitted=*/true);
+
+  // Verify no tokens remain since the feature is disabled:
+  auto remaining_tokens = handler().GetUploadedContextTokens();
+  EXPECT_EQ(remaining_tokens.size(), 0u);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {

@@ -1259,7 +1259,13 @@ export const ComposeboxEmbedderMixin =
           if (!querySubmitted) {
             this.resetModes();
           }
-          const undeletableFiles =
+          const undeletableFiles = querySubmitted ?
+              Array.from(this.files.values())
+                  .filter(
+                      file => !file.isDeletable ||
+                          (file.tabId &&
+                           loadTimeData.getBoolean(
+                               'contextManagementInComposeboxEnabled'))) :
               Array.from(this.files.values()).filter(file => !file.isDeletable);
           if (undeletableFiles.length !== this.files.size) {
             this.files =
@@ -1268,8 +1274,12 @@ export const ComposeboxEmbedderMixin =
                 new Map(undeletableFiles.filter(file => file.tabId)
                             .map(file => [file.tabId!, file.uuid]));
           }
-          // Reset files in set to match remaining files in carousel.
-          this.pendingUploads = new Set([...this.files.keys()]);
+          // Reset files in set to match remaining files in carousel that are
+          // still uploading.
+          this.pendingUploads = new Set(
+              Array.from(this.files.values())
+                  .filter(file => !isContextUploadStatusTerminal(file.status))
+                  .map(file => file.uuid));
           this.smartComposeInlineHint = '';
           this.resetSmartComposeStats();
           if (!querySubmitted) {

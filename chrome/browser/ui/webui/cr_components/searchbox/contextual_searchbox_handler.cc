@@ -1191,12 +1191,32 @@ void ContextualSearchboxHandler::DeleteContext(
 
 void ContextualSearchboxHandler::ClearFiles(
     bool should_block_auto_suggested_tabs) {
-  selected_tabs_.clear();
-  if (auto* contextual_session_handle = GetContextualSessionHandle()) {
-    contextual_session_handle->ClearFiles();
+  ClearFiles(should_block_auto_suggested_tabs, /*query_submitted=*/false);
+}
+
+void ContextualSearchboxHandler::ClearFiles(
+    bool should_block_auto_suggested_tabs,
+    bool query_submitted) {
+  if (!query_submitted) {
+    selected_tabs_.clear();
   }
-  context_input_data_ = std::nullopt;
-  tab_context_snapshot_.reset();
+
+  if (auto* contextual_session_handle = GetContextualSessionHandle()) {
+    // Clears files if `query_submitted`=true, and if
+    // `omnibox::kContextManagementInComposebox` is enabled.
+    contextual_session_handle->ClearFiles(
+        query_submitted);
+    // Clear cached tab images (snapshots) if tab context no longer exists
+    // due to being deleted in `clearFiles` (this will clear it fully
+    // if it does decide to).
+    if (contextual_session_handle->GetUploadedContextTokens().empty()) {
+      context_input_data_ = std::nullopt;
+      tab_context_snapshot_.reset();
+    }
+  } else {  // No active contextual session -> clear all snapshot images.
+    context_input_data_ = std::nullopt;
+    tab_context_snapshot_.reset();
+  }
 
   // Ensure `input_state_model_` is updated when context is cleared.
   if (input_state_model_) {
@@ -1448,7 +1468,9 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
 
     file_info_list =
         contextual_session_handle->GetController()->GetFileInfoList();
-
+    // Do not keep tabs in composebox's 'future context to use' since this searchbox handler
+    // will be destroyed when this query is submitted and AIM/cobrowsing opens via
+    // `CreateSearchUrl`. Tabs are passed to cobrowse composebox through web contents instead.
     contextual_session_handle->CreateSearchUrl(
         std::move(search_url_request_info),
         base::BindOnce(
@@ -1461,7 +1483,8 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
             weak_ptr_factory_.GetWeakPtr(), disposition));
   }
 
-  ClearFiles(/*should_block_auto_suggested_tabs*/ false);
+  ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+             /*query_submitted=*/true);
 }
 
 void ContextualSearchboxHandler::OnGetTabPageContext(
