@@ -1792,6 +1792,7 @@
 <translation id="3763752038825281594">మీరు ఈ సైట్‌కు మునుపు <ph name="PERMISSION" />‌ను అనుమతించలేదు</translation>
 <translation id="3765588406864124894">మెయిల్‌బాక్స్ 9</translation>
 <translation id="3767485424735936570">ఈ కంటెంట్‌ను <ph name="VM_NAME" />కు కాపీ చేసి, పేస్ట్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా సిఫార్సు చేయబడదు</translation>
+<translation id="3769584711865378220"><ph name="URL" /> లొకేషన్ యాక్సెస్‌ను సుమారు నుండి ఖచ్చితమైనదిగా మార్చాలనుకుంటోంది</translation>
 <translation id="3772211998634047851">పేపర్ (బాండ్)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepలో త్వరగా కొత్త నోట్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="3780694243617746492">అవుట్‌పుట్ బిన్</translation>
@@ -2073,6 +2074,7 @@
 <translation id="421066178035138955">వర్చువల్ రియాలిటీ పరికరాలను, డేటాను వినియోగించడం</translation>
 <translation id="4213500579045346575">బాడీబిల్డింగ్</translation>
 <translation id="4214357935346142455">సైన్ ఇన్ స్క్రీన్ ప్రొఫైల్</translation>
+<translation id="4218327733815631046">లొకేషన్‌ను సుమారుగా ఉంచండి</translation>
 <translation id="4219596572397833317">స్మార్ట్‌గా షాపింగ్ చేయడంలో మీకు సహాయపడటానికి, ధర హిస్టరీ, మరింత సమాచారాన్ని చూడండి.</translation>
 <translation id="4220128509585149162">క్రాష్‌లు</translation>
 <translation id="4221630205957821124">&lt;h4&gt;1వ దశ: పోర్టల్‌కు సైన్ ఇన్ చేయండి&lt;/h4&gt;
@@ -2192,7 +2194,6 @@
 <translation id="4358059973562876591">DnsOverHttpsMode విధానానికి సంబంధించి ఏర్పడిన ఎర్రర్ కారణంగా మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలు కాకపోవచ్చు.</translation>
 <translation id="4358461427845829800">పేమెంట్ ఆప్షన్‌లను నిర్వహించండి...</translation>
 <translation id="4359160567981085931">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. Chrome సహాయపడగలదు. మీ పాస్‌వర్డ్‌‌ను మార్చి, మీ ఖాతా ప్రమాదంలో ఉండవచ్చని Googleకు తెలియజేయడానికి, 'ఖాతాను సంరక్షించు'ను క్లిక్ చేయండి.</translation>
-<translation id="4359853272024672680">AI మోడ్ సెర్చ్</translation>
 <translation id="4363222835916186793">ఈ ప్రోడక్ట్‌కి సంబంధించిన హెచ్చరికలు ఆఫ్ చేయబడ్డాయి</translation>
 <translation id="4366943895537458493">ప్లేట్</translation>
 <translation id="4369179505195332608">డ్రైవింగ్ లైసెన్స్‌ను ఎడిట్ చేయండి</translation>
@@ -2996,6 +2997,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> మిమ్మల్ని అనేక సార్లు దారి మళ్లించింది.</translation>
 <translation id="5619721953841297650">ప్రీసెట్</translation>
 <translation id="5624120631404540903">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
+<translation id="5627344039351500898">ఖచ్చితమైన లొకేషన్‌కు మార్చండి</translation>
 <translation id="5628060911499153873">Google ప్రోడక్ట్‌లలో పనులను వేగంగా పూర్తి చేయడానికి మీ సమాచారాన్ని సేవ్ చేయండి. మీ సమాచారం, <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />‌లో సేవ్ చేయబడుతుంది.</translation>
 <translation id="5629630648637658800">విధాన సెట్టింగ్‌లను లోడ్ చేయడంలో విఫలమైంది</translation>
 <translation id="5630981295558454585">'ఈ పేజీ వివరాల గురించి Googleను అడగండి' అనే బటన్, ఈ పేజీ వివరాల గురించి Googleను అడగడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -3791,6 +3793,7 @@
 <translation id="6883745783646124431">వర్క్ ప్లేస్ అడ్రస్</translation>
 <translation id="6886283082988906333">ZIP ఆర్కైవ్</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">లొకేషన్‌ను ఉపయోగించండి</translation>
 <translation id="6888584790432772780">మరింత తేలికగా చదవడానికి వీలుగా Chrome ఈ పేజీని సులభతరం చేసింది. సురక్షితం కాని కనెక్షన్ ద్వారా Chrome అసలు పేజీని తిరిగి పొందింది.</translation>
 <translation id="6890443033788248019">లొకేషన్‌ను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో <ph name="DEVICE_LABEL" />‌తో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, మీరు దాన్ని <ph name="BEGIN_LINK" />తొలగించమని రిక్వెస్ట్<ph name="END_LINK" /> చేయవచ్చు.</translation>

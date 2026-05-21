@@ -552,7 +552,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
 <translation id="3417835166382867856">Sök bland flikar</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
-<translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3435914367318771664">Lägg till fliken i en ny grupp</translation>

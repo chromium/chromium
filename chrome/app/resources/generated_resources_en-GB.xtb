@@ -7397,6 +7397,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6096326118418049043">X.500 Name</translation>
 <translation id="6097480669505687979">If you don’t free up space, users and data may be automatically removed.</translation>
 <translation id="6097600385983390082">Voice search closed</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">Use this card on your iPhone</translation>
 <translation id="609942571968311933">Text copied from <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Always allow <ph name="HOST" /> to control and reprogramme your MIDI devices</translation>
@@ -8751,6 +8752,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7030695672997239647">Right-click on a tab and select 'Add tab to group' and then select 'New group'</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
 <translation id="7033616203784997570">Input must be at most 62 characters</translation>
+<translation id="7033731598469029604">Auto browse</translation>
 <translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
 <translation id="70356134210715500">Get your passkeys</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> just created a passkey for your account. Passkeys offer a faster and safer way to sign in and are saved in Google Password Manager for <ph name="USER" />. <ph name="LEARN_MORE" /></translation>

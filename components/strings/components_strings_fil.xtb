@@ -1797,6 +1797,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3763752038825281594">Hindi mo pinayagan dati ang <ph name="PERMISSION" /> para sa site na ito</translation>
 <translation id="3765588406864124894">Mailbox 9</translation>
 <translation id="3767485424735936570">Hindi inirerekomenda ng patakaran ng administrator ang pagkopya at pag-paste ng content na ito sa <ph name="VM_NAME" /></translation>
+<translation id="3769584711865378220">Gustong gawing eksakto ng <ph name="URL" /> ang access sa lokasyon mula sa dating tinatantya</translation>
 <translation id="3772211998634047851">Papel (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong tala sa Google Keep nang mabilis</translation>
 <translation id="3780694243617746492">Output bin</translation>
@@ -2078,6 +2079,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="421066178035138955">Gumamit ng mga virtual reality device at data</translation>
 <translation id="4213500579045346575">Bodybuilding</translation>
 <translation id="4214357935346142455">profile sa screen sa pag-sign in</translation>
+<translation id="4218327733815631046">Panatilihin ang tinatantyang lokasyon</translation>
 <translation id="4219596572397833317">Tingnan ang history ng presyo at higit pa para mas matalino kang makapamili.</translation>
 <translation id="4220128509585149162">Mga Pag-crash</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Hakbang 1: Mag-sign in sa portal&lt;/h4&gt;
@@ -2197,7 +2199,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4358059973562876591">Posibleng hindi mailapat ang mga template na tinukoy mo dahil sa error sa patakarang DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Pamahalaan ang mga paraan ng pagbabayad...</translation>
 <translation id="4359160567981085931">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Makakatulong ang Chrome. Para palitan ang iyong password at abisuhan ang Google na posibleng nasa panganib ang iyong account, i-click ang Protektahan ang Account.</translation>
-<translation id="4359853272024672680">Paghahanap sa AI Mode</translation>
 <translation id="4363222835916186793">Na-off ang mga alerto para sa produktong ito</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="4369179505195332608">I-edit ang lisensya sa pagmamaneho</translation>
@@ -3001,6 +3002,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5617949217645503996">Masyadong maraming beses kang na-redirect ng <ph name="HOST_NAME" />.</translation>
 <translation id="5619721953841297650">Preset</translation>
 <translation id="5624120631404540903">Pamahalaan ang mga password</translation>
+<translation id="5627344039351500898">Gawing eksakto</translation>
 <translation id="5628060911499153873">I-save ang iyong impormasyon para mas mabilis na tapusin ang mga bagay, sa lahat ng produkto ng Google. Naka-save ang iyong impormasyon sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para sa <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Nabigong i-load ang mga setting ng patakaran</translation>
 <translation id="5630981295558454585">Button na Magtanong sa Google tungkol sa page na ito, i-activate para magtanong sa Google tungkol sa page na ito</translation>
@@ -3796,6 +3798,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6883745783646124431">address ng trabaho</translation>
 <translation id="6886283082988906333">ZIP Archive</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Gumamit ng lokasyon</translation>
 <translation id="6888584790432772780">Pinasimple ng Chrome ang page na ito para mas madali itong mabasa. Nakuha ng Chrome ang orihinal na page sa pamamagitan ng hindi secure na koneksyon.</translation>
 <translation id="6890443033788248019">Payagan ang lokasyon?</translation>
 <translation id="6890531741535756070">Pinili mong mag-verify gamit ang <ph name="DEVICE_LABEL" /> sa mga website na gumagamit ng <ph name="PROVIDER_ORIGIN" />. Posibleng nag-store ang provider na ito ng impormasyon tungkol sa iyong paraan ng pagbabayad, na puwede mong <ph name="BEGIN_LINK" />hilinging i-delete<ph name="END_LINK" />.</translation>

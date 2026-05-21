@@ -7395,6 +7395,7 @@
 <translation id="6096326118418049043">X.500 नाम</translation>
 <translation id="6097480669505687979">अगर आप स्थान खाली नहीं करते, तो उपयोगकर्ता और डेटा अपने आप निकाले जा सकते हैं.</translation>
 <translation id="6097600385983390082">बोलकर खोजने की सुविधा बंद है</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">अपने iPhone पर इस कार्ड का इस्तेमाल करें</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> से कॉपी किया गया टेक्स्ट</translation>
 <translation id="6099766472403716061"><ph name="HOST" /> को हमेशा अपने एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करने की अनुमति दें</translation>
@@ -8751,6 +8752,7 @@
 <translation id="7030695672997239647">टैब पर दायां क्लिक करें और "टैब को ग्रुप में जोड़ें" चुनें. इसके बाद, "नया ग्रुप" चुनें</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - सीरियल पोर्ट कनेक्ट है</translation>
 <translation id="7033616203784997570">नाम ज़्यादा से ज़्यादा 62 वर्णों का होना चाहिए</translation>
+<translation id="7033731598469029604">ऑटो ब्राउज़</translation>
 <translation id="7034692021407794547">ऐसा एडमिन जिसके पास बिलिंग मैनेज करने का खास अधिकार है, उसे सबसे पहले Admin console के 'Google Meet हार्डवेयर' सेक्शन में जाकर, Google Meet हार्डवेयर की सेवा की शर्तों को स्वीकार करना होगा.</translation>
 <translation id="70356134210715500">अपनी पासकी पाएं</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> ने आपके खाते के लिए अभी एक पासकी बनाई है. पासकी की मदद से, फटाफट और सुरक्षित तरीके से साइन इन किया जा सकता है. ये <ph name="USER" /> के लिए, Google Password Manager में सेव की जाएंगी. <ph name="LEARN_MORE" /></translation>

@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chromium vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chromium seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of app met toegang tot die web plaasvind.</translation>
 <translation id="1024111578869940408">Aanvallers boots soms werwe na deur veranderinge aan die webadres te maak wat moeilik is om te sien.</translation>
 <translation id="1024913885641459127">Produkresensies en prysvergelykings</translation>
+<translation id="1025174656774447058">Deel outomaties oop oortjies vir hierdie gespreksdraad?</translation>
 <translation id="102916930470544692">Wagwoordsleutel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil groot data permanent op jou toestel berg</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Geen}=1{Van 1 werf af. Meld jou by die meeste werwe af. }other{Van # werwe af. Meld jou by die meeste werwe af. }}</translation>
@@ -1025,6 +1026,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Gebruik van nou af skermslot om kaarte te bevestig</translation>
 <translation id="2552532158894206888">regtersleutel</translation>
+<translation id="2552601157105591479">Chrome sal relevante oop oortjies in elke nuwe gespreksdraad deel om beter antwoorde te kry. Kry meer inligting oor</translation>
 <translation id="2553352788023127673">Soekgeskiedenis en wagwoorde kan in die bestuurinstelllings uitgevee word</translation>
 <translation id="2553853292994445426">Gaan jou veilige-DNS-instellings na. Jy het dalk 'n veilige-DNS-bediener opgestel waaraan verbindings misluk.</translation>
 <translation id="255497580849974774">Hou asseblief jou toestel tydens die opdatering aan ’n laaier gekoppel.</translation>
@@ -1241,6 +1243,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2930531075747147366">Oortjie van jou ander toestel af</translation>
 <translation id="2930577230479659665">Knip ná elke kopie</translation>
 <translation id="2933624813161016821">Reliëffoelie</translation>
+<translation id="2935726091208500473">deel tans jou oortjies</translation>
 <translation id="293796669683825859">Opmerkings</translation>
 <translation id="2938225289965773019">Maak <ph name="PROTOCOL" />-skakels oop</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Wissel apps, herlaai die bladsy of gaan terug om jou skermpyltjie te wys</translation>
@@ -1268,6 +1271,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="297173220375858963">Rekenaarpublisering</translation>
 <translation id="2972581237482394796">Herdoen</translation>
 <translation id="2974468223369775963">Hierdie IBAN kon nie in jou Google-rekening gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor. Chrome sal jou weer vra die volgende keer as jy hierdie IBAN gebruik.</translation>
+<translation id="2976162850019490782">Wanneer dit aan is, sal Chrome alle oortjies in hierdie venster deel om jou te help om meer relevante antwoorde te kry. Jy kan dit vir alle gespreksdrade in Instellings aanskakel.</translation>
 <translation id="297667759942911166">Werk saam in oortjiegroepe</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tans gekies. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2193,7 +2197,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4358059973562876591">Die template wat jy gespesifiseer het, kan weens 'n fout met die DnsOverHttpsMode-beleid dalk nie toegepas word nie.</translation>
 <translation id="4358461427845829800">Bestuur betaalmetodes …</translation>
 <translation id="4359160567981085931">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome kan help. Klik Beskerm Rekening om jou wagwoord te verander en stel Google in kennis dat jou rekening dalk in gevaar is.</translation>
-<translation id="4359853272024672680">KI-modussoektog</translation>
 <translation id="4363222835916186793">Opletberigte vir hierdie produk is afgeskakel</translation>
 <translation id="4366943895537458493">Plaat</translation>
 <translation id="4369179505195332608">Wysig rybewys</translation>
@@ -3321,6 +3324,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6133984428121856852">Lêeruitbreidings is leeg of misvorm.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
 <translation id="6139975341602920272">17x22 dm.</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, gekies</translation>
 <translation id="6143097244789397208">Aangevulde en virtuele realiteit</translation>
 <translation id="614327212146763975">Beweging- en ligsensors word toegelaat</translation>
 <translation id="6146055958333702838">Gaan alle kabels na en herselflaai enige roeteerders, modems of ander
@@ -3791,6 +3795,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6883745783646124431">werkadres</translation>
 <translation id="6886283082988906333">ZIP-argief</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Gebruik ligging</translation>
 <translation id="6888584790432772780">Chrome het hierdie bladsy vereenvoudig om dit makliker te maak om te lees. Chrome het die oorspronklike bladsy oor 'n onveilige verbinding gaan haal.</translation>
 <translation id="6890443033788248019">Laat ligging toe?</translation>
 <translation id="6890531741535756070">Jy het gekies om met <ph name="DEVICE_LABEL" /> te verifieer op webwerwe wat <ph name="PROVIDER_ORIGIN" /> gebruik. Hierdie verskaffer het dalk inligting oor betaalmetode geberg, wat jy kan <ph name="BEGIN_LINK" />vra dat dit uitgevee word<ph name="END_LINK" />.</translation>
@@ -4197,6 +4202,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> sal kyk of jy kwalifiseer (dit sal nie jou krediettelling beïnvloed nie). Met goedkeuring sal <ph name="BNPL_ISSUER_NAME" /> betaalplanne verskaf waaruit jy kan kies en waarmee jy jou aankoop kan voltooi.</translation>
 <translation id="7489392576326061356">Sjampoes en opknappers</translation>
 <translation id="7489919936111034362">Jou Google Drive-berging is vol</translation>
+<translation id="7490026840522163531">Deel outomaties oop oortjies in elke gespreksdraad?</translation>
 <translation id="7495528107193238112">Hierdie inhoud is geblokkeer. Kontak die werfeienaar om die kwessie reg te stel.</translation>
 <translation id="749865518782565832">Loodgieterwerk</translation>
 <translation id="7499188644237027195">Beskou eWallet en Pix as opsies wanneer jy aankope in Chrome doen</translation>
@@ -5317,6 +5323,7 @@ Bykomende besonderhede:
 <translation id="964050462028070434">Bestuur wagwoorde en toegangsleutels …</translation>
 <translation id="964681140808832181">Ja, ek wil kanselleer</translation>
 <translation id="969892804517981540">Amptelike bou</translation>
+<translation id="970182982363142444">Wanneer dit aan is, sal Chrome alle oortjies in hierdie venster deel om jou te help om meer relevante antwoorde te kry. Jy kan dit vir alle kletse aanskakel in</translation>
 <translation id="97054401902912338">Kry meer inligting oor inhoudfilters</translation>
 <translation id="973788791897303708">Hierdie oortjiegroep is vol</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Geen}=1{1 item}other{# items}}</translation>

@@ -7387,6 +7387,7 @@
 <translation id="6096326118418049043">‏اسم X.500</translation>
 <translation id="6097480669505687979">إذا لم تفرّغ مساحة، فقد تتم إزالة المستخدمين والبيانات تلقائيا.</translation>
 <translation id="6097600385983390082">ميزة البحث الصوتي مغلقة</translation>
+<translation id="60980640539386483">‫<ph name="BUTTON_TEXT" />، ‏<ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">‏استخدام هذه البطاقة على هاتف iPhone</translation>
 <translation id="609942571968311933">تم نسخ النص من <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">‏السماح للموقع الإلكتروني <ph name="HOST" /> دائمًا بالتحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
@@ -8749,6 +8750,7 @@
 <translation id="7030695672997239647">انقر بزر الماوس الأيمن على علامة تبويب واختَر "إضافة علامة التبويب إلى مجموعة"، ثم اختَر "مجموعة جديدة".</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - تم ربط المنفذ التسلسلي</translation>
 <translation id="7033616203784997570">يجب ألا يزيد الإدخال عن 62 حرفًا.</translation>
+<translation id="7033731598469029604">التصفّح التلقائي</translation>
 <translation id="7034692021407794547">‏أولاً، يجب أن يوافق أحد المشرفين الذين لديهم امتيازات إدارة الفوترة على بنود خدمة جهاز Goolge Meet في قسم جهاز Goolge Meet ضِمن وحدة تحكُّم المشرف.</translation>
 <translation id="70356134210715500">الوصول إلى مفاتيح المرور</translation>
 <translation id="7036550011779986598">‏تم إنشاء مفتاح مرور لحسابك من قِبل <ph name="RP_ID" />. تتيح لك مفاتيح المرور طريقة أسرع وأكثر أمانًا لتسجيل الدخول، ويتم حفظها في "مدير كلمات المرور في Google" للحساب <ph name="USER" />. <ph name="LEARN_MORE" /></translation>

@@ -37,7 +37,7 @@
 <translation id="1016876401615857435">如要在此裝置上使用密鑰，請驗證身分</translation>
 <translation id="1017280919048282932">新增至字典(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
-<translation id="1020008977311763380">名義效能層級為：<ph name="CPU_TIER" /></translation>
+<translation id="1020008977311763380">標準效能層級為：<ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">您的裝置由 <ph name="DOMAIN" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="1022719295563085177">網絡預設值</translation>
@@ -492,7 +492,7 @@
 <translation id="1323433172918577554">顯示更多</translation>
 <translation id="132539964543492755">按下「x」可切換選擇滑鼠左鍵、右鍵或左右同選</translation>
 <translation id="1325611581149097457">提升寫作品質</translation>
-<translation id="1325798198269334655">進一步瞭解如何維持 Chrome 更新</translation>
+<translation id="1325798198269334655">進一步瞭解如何確保 Chrome 持續更新</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 票證</translation>
 <translation id="1327495825214193325">必須重新啟動 <ph name="DEVICE_TYPE" /> 才能啟用 ADB 偵錯。如要停用 ADB 偵錯，則需要將裝置回復原廠設定。</translation>
@@ -2989,7 +2989,7 @@
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 將會建立私人 Wi-Fi 連線。</translation>
 <translation id="3004385386820284928">自訂鍵盤按鍵</translation>
 <translation id="300580149047131921">最近使用過</translation>
-<translation id="3005928441045180122">堆疊</translation>
+<translation id="3005928441045180122">上下並排</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3007555010975143508">這些應用程式會用於錄製你的螢幕畫面：</translation>
 <translation id="3007771295016901659">複製標籤</translation>
@@ -11276,7 +11276,7 @@
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>
-<translation id="877515298105563553">並排</translation>
+<translation id="877515298105563553">左右並排</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}other{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}}</translation>

@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chromium では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chromium ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
 <translation id="1024111578869940408">不正なユーザーが、ウェブアドレスを一目ではわからないように改変してサイトを偽装している可能性があります。</translation>
 <translation id="1024913885641459127">商品レビュー、価格比較</translation>
+<translation id="1025174656774447058">このスレッドで開いているタブを自動的に共有しますか？</translation>
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{なし}=1{1 件のサイトが対象。ほとんどのサイトからログアウトします。}other{# 件のサイトが対象。ほとんどのサイトからログアウトします。}}</translation>
@@ -1025,6 +1026,7 @@
 <translation id="2552246211866555379">はがき</translation>
 <translation id="2552295903035773204">今後、画面ロックを使用してカードを確認する</translation>
 <translation id="2552532158894206888">右矢印キー</translation>
+<translation id="2552601157105591479">より関連性の高い回答が得られるよう、新しいすべてのスレッドで開いている関連タブを共有します。詳細</translation>
 <translation id="2553352788023127673">検索履歴とパスワードは管理設定で削除できます</translation>
 <translation id="2553853292994445426">セキュア DNS の設定を確認してください。接続できないセキュア DNS サーバーを設定している可能性があります。</translation>
 <translation id="255497580849974774">更新中はデバイスを充電器に接続したままにしてください。</translation>
@@ -1241,6 +1243,7 @@
 <translation id="2930531075747147366">他のデバイスのタブ</translation>
 <translation id="2930577230479659665">トリミング（コピー単位）</translation>
 <translation id="2933624813161016821">ホイル（エンボス）</translation>
+<translation id="2935726091208500473">タブの共有</translation>
 <translation id="293796669683825859">コメント</translation>
 <translation id="2938225289965773019">「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – カーソルを表示するには、アプリを切り替えるか、ページを再読み込みするか、前に戻ります</translation>
@@ -1268,6 +1271,7 @@
 <translation id="297173220375858963">DTP</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2974468223369775963">この IBAN は Google アカウントに保存できず、代わりにこのデバイスの Chrome に保存されました。次回この IBAN を使用するときに再度確認が行われます。</translation>
+<translation id="2976162850019490782">オンにすると、より関連性の高い回答が得られるよう、このウィンドウのすべてのタブを共有します。[設定] ですべてのスレッドに対してこの機能をオンにできます。</translation>
 <translation id="297667759942911166">タブグループでの共同作業</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">オペラ</translation>
@@ -2195,7 +2199,6 @@
 <translation id="4358059973562876591">DnsOverHttpsMode ポリシーに問題があるため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="4358461427845829800">お支払い方法を管理...</translation>
 <translation id="4359160567981085931">偽のサイトでパスワードを入力しました。Chrome を使って不正利用への対策ができます。パスワードを変更し、Google にアカウントの状況を通知するには、[アカウントを保護] をクリックしてください。</translation>
-<translation id="4359853272024672680">AI モードの検索</translation>
 <translation id="4363222835916186793">この商品のアラートをオフにしました</translation>
 <translation id="4366943895537458493">プレート</translation>
 <translation id="4369179505195332608">運転免許証の編集</translation>
@@ -3324,6 +3327,7 @@
 <translation id="6133984428121856852">ファイル拡張子が空であるか、形式が正しくありません。</translation>
 <translation id="6138680304137685902">X9.62 ECDSA 署名（SHA-384）</translation>
 <translation id="6139975341602920272">17x22 インチ</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />、選択済み</translation>
 <translation id="6143097244789397208">拡張現実、バーチャル リアリティ</translation>
 <translation id="614327212146763975">モーション センサーと光センサーの使用を許可しました</translation>
 <translation id="6146055958333702838">ケーブルを確認し、使用しているネットワーク デバイス（ルーター、モデムなど）を
@@ -3794,6 +3798,7 @@
 <translation id="6883745783646124431">職場の住所</translation>
 <translation id="6886283082988906333">ZIP アーカイブ</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">位置情報の使用</translation>
 <translation id="6888584790432772780">ページを見やすくするため、Chrome によって簡易表示されています。Chrome による元のページの取得は、保護されていない接続を介して行われました。</translation>
 <translation id="6890443033788248019">位置情報の使用を許可しますか？</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで <ph name="DEVICE_LABEL" /> による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="BEGIN_LINK" />削除をリクエスト<ph name="END_LINK" />できます。</translation>
@@ -4201,6 +4206,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> が利用資格の有無を確認します（これはクレジット スコアには影響しません）。承認された場合は、<ph name="BNPL_ISSUER_NAME" /> からお支払いプランが提供され、選択いただくと購入を完了できます。</translation>
 <translation id="7489392576326061356">シャンプー、コンディショナー</translation>
 <translation id="7489919936111034362">ご利用の Google ドライブ ストレージの空き容量がなくなりました</translation>
+<translation id="7490026840522163531">すべてのスレッドで開いているタブを自動的に共有しますか？</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="749865518782565832">配管</translation>
 <translation id="7499188644237027195">Chrome で購入手続きのオプションとして電子ウォレットと Pix が表示されます</translation>
@@ -5321,6 +5327,7 @@
 <translation id="964050462028070434">パスワードとパスキーを管理...</translation>
 <translation id="964681140808832181">はい、キャンセルします</translation>
 <translation id="969892804517981540">公式ビルド</translation>
+<translation id="970182982363142444">オンにすると、より関連性の高い回答が得られるよう、このウィンドウのすべてのタブを共有します。すべてのチャットに対してこの機能をオンにできます。</translation>
 <translation id="97054401902912338">コンテンツ フィルタの詳細</translation>
 <translation id="973788791897303708">このタブグループのユーザーは上限に達しました</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{なし}=1{1 件のアイテム}other{# 件のアイテム}}</translation>

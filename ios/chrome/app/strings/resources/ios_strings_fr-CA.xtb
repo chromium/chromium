@@ -680,7 +680,7 @@
 <translation id="340669334496430859">Dernière modification</translation>
 <translation id="3409785640040772790">Google Maps</translation>
 <translation id="3416023309465857378">25 octobre 2023</translation>
-<translation id="3426715535827854458">Masquer la barre d'outils Masquer</translation>
+<translation id="3426715535827854458">Masquer l'option Masquer la barre d'outils</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3441673211568148613">Gardez votre navigation privée</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
@@ -1819,6 +1819,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="7300448350764260141">Ajoutez une couche de protection supplémentaire contre les menaces en ligne.</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
+<translation id="7312823817809783355">Vos tâches</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} option de remplissage automatique accessible au-dessus de votre clavier.}one{{count} option de remplissage automatique accessible au-dessus de votre clavier.}other{{count} options de remplissage automatique accessibles au-dessus de votre clavier.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1826,6 +1827,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7345061034321640811">Importation non autorisée</translation>
 <translation id="7347998088283246662">Importez des mots de passe, un historique, des favoris et plus encore</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
+<translation id="7357999308187750900">Tout afficher</translation>
 <translation id="7364796246159120393">Sélectionner un fichier</translation>
 <translation id="736564850024123010">Modifiez la position de votre barre d'adresse pour une expérience personnalisée.</translation>
 <translation id="7366909168761621528">Données de navigation</translation>

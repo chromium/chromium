@@ -164,6 +164,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1104098698795583187">Você vai perder imediatamente o acesso a este grupo de guias, e ele será excluído de todos seus dispositivos</translation>
 <translation id="1106270460549661906">Cancelar o compartilhamento com o Gemini</translation>
 <translation id="1106350001632362876">Aumentar o limite</translation>
+<translation id="1107300737351978027">Não pode conter dígitos repetidos</translation>
 <translation id="110850812463801904">Conectar manualmente ao OneDrive</translation>
 <translation id="1108600514891325577">&amp;Parar</translation>
 <translation id="1108938384783527433">Sincronizar histórico</translation>
@@ -268,6 +269,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1174073918202301297">Atalho adicionado</translation>
 <translation id="1174366174291287894">Sua conexão é sempre segura, a menos que o Chrome informe o contrário</translation>
+<translation id="1174759280027683968">Ir para o Chrome</translation>
 <translation id="1175131936083782305">O administrador desativou este recurso.</translation>
 <translation id="1175277108283187866">Acesse um site ou pesquise na barra de endereço</translation>
 <translation id="1175364870820465910">&amp;Imprimir...</translation>
@@ -5768,6 +5770,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4931387733184123331">Eclipses</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933484234309072027">incorporado em <ph name="URL" /></translation>
+<translation id="4934763315031217818">Não pode conter dígitos sequenciais</translation>
 <translation id="4936042273057045735">A sincronização de notificações não é compatível com smartphones conectados a perfis de trabalho</translation>
 <translation id="4937676329899947885">Recebendo rede Wi-Fi</translation>
 <translation id="4938052313977274277">Velocidade</translation>
@@ -10543,6 +10546,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="826511437356419340">Iniciado modo de visão geral da janela. Deslize para navegar ou pressione Tab se estiver usando um teclado.</translation>
 <translation id="8266430295499893285">Você precisa confirmar sua identidade antes de acessar as senhas</translation>
+<translation id="8266751606569906450">Precisa ter pelo menos <ph name="MINIMUM" /> caracteres</translation>
 <translation id="8266947622852630193">Todos os métodos de entrada</translation>
 <translation id="8267539814046467575">Adicionar impressora</translation>
 <translation id="826905130698769948">Certificado do cliente inválido</translation>

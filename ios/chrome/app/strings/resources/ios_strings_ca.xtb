@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">No s'ha pogut compartir perquè no esteu connectat a la xarxa.</translation>
 <translation id="1668001730617725852">Obre en un grup de pestanyes nou</translation>
 <translation id="1670861525135254448">Desa el vehicle</translation>
+<translation id="1671568970992212376">Desa fotos a Google Fotos i accedeix-hi en qualsevol moment.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Segons les polítiques de l'organització, aquest fitxer pot contenir informació sensible</translation>
 <translation id="168389590065701766">Ara pots obrir Google Lens des de la barra d'adreces i cercar qualsevol cosa que vegis</translation>
@@ -1806,6 +1807,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="7300448350764260141">Afegeix una capa addicional de protecció contra les amenaces en línia.</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
+<translation id="7312823817809783355">Les teves tasques</translation>
 <translation id="7313347584264171202">Trobaràs les pestanyes d'incògnit aquí</translation>
 <translation id="7322186060879266048">{count,plural, =1{Hi ha {count} opció d'emplenament automàtic disponible a sobre del teclat.}other{Hi ha {count} opcions d'emplenament automàtic disponibles a sobre del teclat.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1813,6 +1815,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7345061034321640811">No es permet la importació</translation>
 <translation id="7347998088283246662">Importa les contrasenyes, l'historial, les adreces d'interès i més</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
+<translation id="7357999308187750900">Mostra-ho tot</translation>
 <translation id="7364796246159120393">Tria un fitxer</translation>
 <translation id="736564850024123010">Canvia la posició de la barra d'adreces per gaudir d'una experiència personalitzada.</translation>
 <translation id="7366909168761621528">Dades de navegació</translation>

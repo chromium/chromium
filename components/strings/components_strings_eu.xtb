@@ -2189,7 +2189,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4358059973562876591">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroaren errore bat dela eta.</translation>
 <translation id="4358461427845829800">Kudeatu ordainketa-metodoak…</translation>
 <translation id="4359160567981085931">Webgune engainagarri batean idatzi duzu pasahitza. Chrome-k lagundu egin diezazuke. Pasahitza aldatzeko eta Google-ri agian kontua arriskuan dagoela jakinarazteko, egin klik Babestu kontua botoian.</translation>
-<translation id="4359853272024672680">AA moduko bilaketa</translation>
 <translation id="4363222835916186793">Desaktibatu dira produktuari buruzko alertak</translation>
 <translation id="4366943895537458493">Plaka</translation>
 <translation id="4369179505195332608">Editatu gidabaimena</translation>
@@ -3786,6 +3785,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6883745783646124431">laneko helbidea</translation>
 <translation id="6886283082988906333">ZIP fitxategia</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Erabili kokapena</translation>
 <translation id="6888584790432772780">Chrome-k sinplifikatu egin du orri hau errazago irakurri ahal izan dadin. Segurua ez den konexio baten bidez eskuratu du jatorrizko orria.</translation>
 <translation id="6890443033788248019">Kokapena erabiltzeko baimena eman nahi diozu?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> darabilten webguneetan <ph name="DEVICE_LABEL" /> erabilita egiaztatzea aukeratu duzu. Baliteke hornitzaile horrek zure ordainketa-metodoari buruzko informazioa gorde izatea, baina <ph name="BEGIN_LINK" />hura ezabatzeko eska<ph name="END_LINK" /> dezakezu.</translation>

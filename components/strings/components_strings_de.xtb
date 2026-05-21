@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Du siehst diesen Fehler aufgrund eines Zertifikats, das auf deinem Gerät installiert ist. Chromium vertraut dem Zertifikat nicht, weil es Netzwerke unterbrechen und überwachen kann. Natürlich gibt es berechtigte Gründe für eine Überwachung, z. B. im Netzwerk von Schulen oder Unternehmen. Trotzdem soll sichergestellt werden, dass du über die Überwachung informiert bist, selbst wenn du sie nicht unterbinden kannst. Die Überwachung ist in jedem Browser und jeder Anwendung mit Webzugriff möglich.</translation>
 <translation id="1024111578869940408">Angreifer kopieren manchmal Websites und nehmen unauffällige Änderungen an der Webadresse vor.</translation>
 <translation id="1024913885641459127">Rezensionen und Preisvergleiche</translation>
+<translation id="1025174656774447058">Geöffnete Tabs für diesen Thread automatisch teilen?</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> möchte dauerhaft umfangreiche Daten auf deinem Gerät speichern</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Keine}=1{Von 1 Website. Du wirst von den meisten Websites abgemeldet. }other{Von # Websites. Du wirst von den meisten Websites abgemeldet. }}</translation>
@@ -1025,6 +1026,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Von jetzt an Displaysperre verwenden, um Karten zu bestätigen</translation>
 <translation id="2552532158894206888">die rechte Taste</translation>
+<translation id="2552601157105591479">Chrome teilt relevante geöffnete Tabs in jedem neuen Thread, um bessere Antworten zu erhalten. Weitere Informationen zum</translation>
 <translation id="2553352788023127673">Suchverlauf und Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="2553853292994445426">Prüfe die Einstellungen für sichere DNS-Abfragen. Du hast möglicherweise einen sicheren DNS-Server konfiguriert, zu dem keine Verbindung aufgebaut werden kann.</translation>
 <translation id="255497580849974774">Lass dein Gerät während des Updates an ein Ladegerät angeschlossen.</translation>
@@ -1241,6 +1243,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2930531075747147366">Tab von deinem anderen Gerät</translation>
 <translation id="2930577230479659665">Nach jeder Kopie zuschneiden</translation>
 <translation id="2933624813161016821">Prägefolie</translation>
+<translation id="2935726091208500473">Teilen deiner Tabs</translation>
 <translation id="293796669683825859">Kommentare</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-Links öffnen</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – zum Einblenden des Cursors: zu einer anderen App wechseln, die Seite aktualisieren oder zurückgehen</translation>
@@ -1268,6 +1271,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="297173220375858963">Desktop-Publishing</translation>
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
 <translation id="2974468223369775963">Diese IBAN konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du diese IBAN das nächste Mal verwendest, fragt Chrome dich noch einmal.</translation>
+<translation id="2976162850019490782">Wenn diese Option aktiviert ist, teilt Chrome alle Tabs in diesem Fenster, damit du relevantere Antworten erhältst. Du kannst sie in den Einstellungen für alle Threads aktivieren.</translation>
 <translation id="297667759942911166">In Tabgruppen gemeinsam arbeiten</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktuell ausgewählt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Oper</translation>
@@ -2191,7 +2195,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4358059973562876591">Die von dir angegebenen Vorlagen können wegen eines Fehlers bei der Richtlinie "DnsOverHttpsMode" nicht angewendet werden.</translation>
 <translation id="4358461427845829800">Zahlungsmethoden verwalten…</translation>
 <translation id="4359160567981085931">Du hast dein Passwort gerade auf einer verdächtigen Website eingegeben. Chrome kann dir helfen. Wenn du dein Passwort ändern und Google darüber informieren möchtest, dass dein Konto gefährdet sein könnte, klicke auf "Konto schützen".</translation>
-<translation id="4359853272024672680">Suche im KI-Modus</translation>
 <translation id="4363222835916186793">Benachrichtigungen zu diesem Produkt wurden deaktiviert</translation>
 <translation id="4366943895537458493">Platte</translation>
 <translation id="4369179505195332608">Führerschein bearbeiten</translation>
@@ -3319,6 +3322,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6133984428121856852">Die Dateiendung ist leer oder fehlerhaft.</translation>
 <translation id="6138680304137685902">X9.62-ECDSA-Signatur mit SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 Zoll</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, ausgewählt</translation>
 <translation id="6143097244789397208">Augmented Reality und Virtual Reality</translation>
 <translation id="614327212146763975">Zugriff auf Bewegungs- und Lichtsensoren erlaubt</translation>
 <translation id="6146055958333702838">Überprüfe alle Kabel und starte alle verwendeten Router, Modems und
@@ -3789,6 +3793,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6883745783646124431">Arbeitsadresse</translation>
 <translation id="6886283082988906333">ZIP-Archiv</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Standort verwenden</translation>
 <translation id="6888584790432772780">Diese Seite wird in Chrome vereinfacht dargestellt, damit sie leichter zu lesen ist. Die Originalseite hat Chrome über eine unsichere Verbindung abgerufen.</translation>
 <translation id="6890443033788248019">Standortermittlung zulassen?</translation>
 <translation id="6890531741535756070">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit <ph name="DEVICE_LABEL" /> durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst <ph name="BEGIN_LINK" />beantragen, dass diese Informationen gelöscht werden<ph name="END_LINK" />.</translation>
@@ -4196,6 +4201,7 @@ Weitere Details:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> prüft, ob du die Voraussetzungen erfüllst. Das hat keinen Einfluss auf deinen Kreditscore. Nach der Genehmigung erhältst du von <ph name="BNPL_ISSUER_NAME" /> Abrechnungsmodelle, aus denen du eines auswählen und den Kauf abschließen kannst.</translation>
 <translation id="7489392576326061356">Haarpflegeprodukte</translation>
 <translation id="7489919936111034362">Dein Google Drive-Speicherplatz ist voll</translation>
+<translation id="7490026840522163531">Geöffnete Tabs automatisch in jedem Thread teilen?</translation>
 <translation id="7495528107193238112">Dieser Inhalt ist blockiert. Setze dich mit dem Websiteinhaber in Verbindung, um das Problem zu beheben.</translation>
 <translation id="749865518782565832">Klempnerarbeiten</translation>
 <translation id="7499188644237027195">Wenn du in Chrome einkaufst, werden die Optionen für das E‑Wallet und Pix angezeigt</translation>
@@ -5317,6 +5323,7 @@ Weitere Details:
 <translation id="964050462028070434">Passwörter und Passkeys verwalten…</translation>
 <translation id="964681140808832181">Ja, ich möchte abbrechen</translation>
 <translation id="969892804517981540">Offizieller Build</translation>
+<translation id="970182982363142444">Wenn diese Option aktiviert ist, teilt Chrome alle Tabs in diesem Fenster, damit du relevantere Antworten erhältst. Du kannst sie für alle Chats aktivieren in:</translation>
 <translation id="97054401902912338">Weitere Informationen zu Inhaltsfiltern</translation>
 <translation id="973788791897303708">Diese Tabgruppe ist voll</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Element}other{# Elemente}}</translation>

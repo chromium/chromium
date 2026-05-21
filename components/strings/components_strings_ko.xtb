@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">나 또는 다른 사용자가 기기에 설치한 인증서로 인해 이 문제가 발생할 수 있습니다. 이 인증서는 네트워크를 모니터링하고 가로막는 데 사용되는 것으로 알려졌으며, Chromium에서 신뢰하지 않습니다. 학교나 회사 네트워크에서 발생하는 합법적인 모니터링도 존재합니다. 사용자가 멈출 수는 없더라도 모니터링이 이뤄지고 있다는 사실을 Chromium에서는 알립니다. 모니터링은 웹에 액세스하는 모든 브라우저 또는 애플리케이션에서 이뤄집니다.</translation>
 <translation id="1024111578869940408">어떤 공격자는 웹 주소를 알아채기 어렵게 변경하는 방법으로 다른 사이트를 모방합니다.</translation>
 <translation id="1024913885641459127">제품 리뷰 및 가격 비교</translation>
+<translation id="1025174656774447058">이 대화목록에 열린 탭을 자동으로 공유하시겠습니까?</translation>
 <translation id="102916930470544692">패스키</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{없음}=1{사이트 1개입니다. 대부분의 사이트에서 로그아웃됩니다. }other{사이트 #개입니다. 대부분의 사이트에서 로그아웃됩니다. }}</translation>
@@ -1025,6 +1026,7 @@
 <translation id="2552246211866555379">엽서</translation>
 <translation id="2552295903035773204">지금부터 화면 잠금을 사용하여 카드 확인</translation>
 <translation id="2552532158894206888">오른쪽 키</translation>
+<translation id="2552601157105591479">더 나은 대답을 받을 수 있도록 Chrome에서 각 새 대화목록에 관련성 있는 열린 탭을 공유합니다. 다음에 대해 자세히 알아보기</translation>
 <translation id="2553352788023127673">관리 설정에서 검색 기록과 비밀번호를 삭제할 수 있습니다</translation>
 <translation id="2553853292994445426">보안 DNS 설정을 확인하세요. 연결되지 않는 보안 DNS 서버를 설정했을 수도 있습니다.</translation>
 <translation id="255497580849974774">업데이트 중에는 기기를 충전기에 연결해 두세요.</translation>
@@ -1241,6 +1243,7 @@
 <translation id="2930531075747147366">다른 기기의 탭</translation>
 <translation id="2930577230479659665">각 사본 뒤에 트림</translation>
 <translation id="2933624813161016821">엠보싱 호일</translation>
+<translation id="2935726091208500473">탭 공유</translation>
 <translation id="293796669683825859">댓글</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: 커서를 표시하려면 앱을 전환하거나, 페이지를 새로고침하거나, 뒤로 돌아가세요.</translation>
@@ -1268,6 +1271,7 @@
 <translation id="297173220375858963">컴퓨터 출판</translation>
 <translation id="2972581237482394796">다시 실행(&amp;R)</translation>
 <translation id="2974468223369775963">이 IBAN은 Google 계정에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다. 다음에 이 IBAN을 사용할 때 Chrome에서 다시 확인합니다.</translation>
+<translation id="2976162850019490782">사용 설정하면 더욱 관련성 높은 대답을 받을 수 있도록 Chrome에서 이 창의 모든 탭을 공유합니다. '설정'에서 모든 대화목록에 대해 이 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="297667759942911166">탭 그룹에서 공동작업하세요</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />이(가) 현재 선택되어 있습니다. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">오페라</translation>
@@ -2193,7 +2197,6 @@
 <translation id="4358059973562876591">지정한 템플릿이 DnsOverHttpsMode 정책 오류로 인해 적용되지 않을 수 있습니다.</translation>
 <translation id="4358461427845829800">결제 수단 관리...</translation>
 <translation id="4359160567981085931">사기성 사이트에 비밀번호를 입력했습니다. Chrome이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
-<translation id="4359853272024672680">AI 모드 검색</translation>
 <translation id="4363222835916186793">제품 관련 알림이 사용 중지되었습니다.</translation>
 <translation id="4366943895537458493">플레이트</translation>
 <translation id="4369179505195332608">운전면허증 수정</translation>
@@ -3321,6 +3324,7 @@
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="6139975341602920272">17x22인치</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, 선택됨</translation>
 <translation id="6143097244789397208">증강 현실 및 가상 현실</translation>
 <translation id="614327212146763975">움직임 감지 센서 및 조도 센서가 허용되었습니다</translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
@@ -3791,6 +3795,7 @@
 <translation id="6883745783646124431">직장 주소</translation>
 <translation id="6886283082988906333">ZIP 파일</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">위치 사용</translation>
 <translation id="6888584790432772780">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 안전하지 않은 연결을 통해 원본 페이지를 가져왔습니다.</translation>
 <translation id="6890443033788248019">위치 정보 액세스 권한을 허용하시겠습니까?</translation>
 <translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />을(를) 사용하는 웹사이트에서 <ph name="DEVICE_LABEL" />(으)로 인증하도록 선택했습니다. 제공업체에서 내 결제 수단 정보를 저장했을 가능성이 있으며 이 경우 <ph name="BEGIN_LINK" />삭제를 요청<ph name="END_LINK" />할 수 있습니다.</translation>
@@ -4197,6 +4202,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />에서 자격 요건을 확인합니다(신용 점수에는 영향을 미치지 않음). 승인되면 <ph name="BNPL_ISSUER_NAME" />에서 구매를 완료하기 위해 선택할 수 있는 여러 요금제를 제공합니다.</translation>
 <translation id="7489392576326061356">샴푸 및 린스</translation>
 <translation id="7489919936111034362">Google Drive 스토리지가 가득 찼습니다.</translation>
+<translation id="7490026840522163531">모든 대화목록에 열린 탭을 자동으로 공유하시겠습니까?</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="749865518782565832">배관공사</translation>
 <translation id="7499188644237027195">Chrome에서 구매할 때 전자 지갑 및 Pix 옵션이 표시됩니다.</translation>
@@ -5316,6 +5322,7 @@
 <translation id="964050462028070434">비밀번호 및 패스키 관리…</translation>
 <translation id="964681140808832181">예, 취소하겠습니다.</translation>
 <translation id="969892804517981540">공식 빌드</translation>
+<translation id="970182982363142444">사용 설정하면 더욱 관련성 높은 대답을 받을 수 있도록 Chrome에서 이 창의 모든 탭을 공유합니다. 다음에서 모든 채팅에 대해 이 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="97054401902912338">콘텐츠 필터에 대해 자세히 알아보기</translation>
 <translation id="973788791897303708">탭 그룹이 가득 참</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{없음}=1{항목 1개}other{항목 #개}}</translation>

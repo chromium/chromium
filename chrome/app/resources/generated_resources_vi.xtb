@@ -1554,6 +1554,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2044750031738659219">{0,plural, =1{Đóng cửa sổ khách}other{Đóng cửa sổ khách (# cửa sổ)}}</translation>
 <translation id="204497730941176055">Tên Mẫu Chứng chỉ của Microsoft</translation>
 <translation id="2045211794962848221">Bạn sẽ không thấy thông báo cụ thể này nữa</translation>
+<translation id="2045540927991079503">Mở đường liên kết bằng tài khoản</translation>
 <translation id="2045838962742066664">Nhập liệu nhanh</translation>
 <translation id="204622017488417136">Thiết bị của bạn sẽ được quay lại phiên bản Chrome đã cài đặt trước đó. Tất cả các tài khoản người dùng và dữ liệu cục bộ sẽ bị xóa. Không thể hoàn tác thao tác này.</translation>
 <translation id="2046702855113914483">Mỳ tôm</translation>
@@ -1579,6 +1580,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="206308717637808771">Xoá dữ liệu khi bạn đóng tất cả cửa sổ. Dữ liệu được xử lý theo cách tương tự như trang web bạn đang xem</translation>
 <translation id="2066700471214517561">Micrô tạo chùm tia giúp nghe rõ người dùng Chromebook.</translation>
 <translation id="2068581968816126410">Sử dụng dấu trang trên nhiều thiết bị</translation>
+<translation id="2069020119963193894">&amp;Kích thước</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> đã in xong bằng <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Không có tệp nhật ký cục bộ.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Nhấp để cài đặt tiện ích này}other{Nhấp để cài đặt các tiện ích này}}</translation>
@@ -1712,6 +1714,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2148892889047469596">Thẻ Truyền</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2150139952286079145">Tìm kiếm máy in đích</translation>
+<translation id="2150168665016482929">Th&amp;u nhỏ</translation>
 <translation id="2150661552845026580">Thêm "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Chỉ mục thẻ không hợp lệ được nhập.</translation>
 <translation id="2153809900849531051">Tinh vân</translation>
@@ -4482,6 +4485,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="402707738228916911">Đã nhận được hướng dẫn <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="4028467762035011525">Thêm phương thức nhập</translation>
+<translation id="4028830198155575078">&amp;Di chuyển</translation>
 <translation id="4029024445166427442">trình chạy + shift + backspace</translation>
 <translation id="4029556917477724407">Quay về trang trước trang <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Cho phép micrô</translation>
@@ -6521,6 +6525,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5473099001878321374">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của con bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp các lựa chọn mua hàng trong ứng dụng.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Mã PIN phải có ít nhất 1 ký tự}other{Mã PIN phải có ít nhất # ký tự}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay bây giờ và tải bản cập nhật xuống, hoặc tải xuống từ đường kết nối có đo lượng dữ liệu (bạn có thể mất phí).</translation>
+<translation id="547615291475756075">Tố&amp;i đa</translation>
 <translation id="5476957746413745956">Điều chỉnh tốc độ riêng cho từng hướng</translation>
 <translation id="5477089831058413614">Định cấu hình điểm phát sóng <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Không được phép tự động tải nhiều tệp xuống</translation>
@@ -7392,6 +7397,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6096326118418049043">Tên X.500</translation>
 <translation id="6097480669505687979">Nếu bạn không giải phóng dung lượng, người dùng và dữ liệu có thể tự động bị xóa.</translation>
 <translation id="6097600385983390082">Tùy chọn tìm kiếm bằng giọng nói đã đóng</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">Sử dụng thẻ này trên iPhone</translation>
 <translation id="609942571968311933">Văn bản được sao chép từ <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Luôn cho phép <ph name="HOST" /> điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
@@ -8748,6 +8754,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7030695672997239647">Nhấp chuột phải vào một thẻ rồi chọn "Thêm thẻ vào nhóm", sau đó chọn "Nhóm mới"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Đã kết nối với cổng nối tiếp</translation>
 <translation id="7033616203784997570">Dữ liệu nhập chỉ được dài tối đa 62 ký tự</translation>
+<translation id="7033731598469029604">Tự động duyệt web</translation>
 <translation id="7034692021407794547">Trước tiên, một quản trị viên có đặc quyền Quản lý thanh toán phải chấp nhận Điều khoản dịch vụ dành cho Thiết bị Google Meet trong phần Thiết bị Google Meet của Bảng điều khiển dành cho quản trị viên.</translation>
 <translation id="70356134210715500">Sử dụng khoá truy cập</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> vừa tạo khoá truy cập cho tài khoản của bạn. Khoá truy cập giúp đăng nhập nhanh và an toàn hơn, đồng thời khoá truy cập được lưu trong Trình quản lý mật khẩu của Google cho <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
@@ -8833,6 +8840,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7098389117866926363">Thiết bị USB-C (cổng bên trái ở phía sau)</translation>
 <translation id="7098447629416471489">Các công cụ tìm kiếm đã lưu khác sẽ xuất hiện ở đây</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Xóa Ứng dụng}other{Xóa các Ứng dụng}}</translation>
+<translation id="7099027177878709408">&amp;Đóng</translation>
 <translation id="7099337801055912064">Không thể tải PPD có kích cỡ lớn. Kích cỡ tối đa là 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Không có mật khẩu nào bị lộ}=1{{COUNT} mật khẩu bị lộ}other{{COUNT} mật khẩu bị lộ}}</translation>
 <translation id="7100379916748214860">Chrome vừa chặn hành động tải một tệp nguy hiểm xuống. Chế độ bảo vệ nâng cao sẽ mang đến khả năng bảo mật mạnh mẽ hơn nữa.</translation>
@@ -9873,6 +9881,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7817361223956157679">Bàn phím ảo chưa hoạt động trên các ứng dụng Linux</translation>
 <translation id="7818135753970109980">Đã thêm chủ đề mới (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">Tiện ích là các ứng dụng bổ sung cho Chrome có thể giúp bạn làm được nhiều việc hơn</translation>
+<translation id="7819968103441522596">&amp;Khôi phục</translation>
 <translation id="7820400255539998692">Xoá <ph name="FILENAME" /> để những người khác sử dụng thiết bị này không thấy được mật khẩu của bạn</translation>
 <translation id="7820561748632634942">Gán thêm công tắc?</translation>
 <translation id="782057141565633384">S&amp;ao chép địa chỉ video</translation>

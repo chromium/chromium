@@ -404,7 +404,7 @@
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
 <translation id="5527463683072221100">PDF'leri Chromium'da aç</translation>
 <translation id="5536164441519929134">Bu sekme hakkında<ph name="LINE_BREAK" />soru sorun</translation>
-<translation id="555970465369471303">Chrome, bir siteyi ilk kez ziyaret ettiğinizde güvenlik için JavaScript optimizasyonunu devre dışı bırakır.
+<translation id="555970465369471303">Chromium, bir siteyi ilk kez ziyaret ettiğinizde güvenlik için JavaScript optimizasyonunu devre dışı bırakır.
 
 Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>

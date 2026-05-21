@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Aquest problema es produeix a causa d'un certificat que tu o una altra persona heu instal·lat al dispositiu. Se sap que aquest certificat s'utilitza per supervisar i interceptar xarxes, i Chromium no hi confia. Tot i que hi ha casos en què és legítim dur a terme una supervisió, per exemple, en el cas d'una empresa o d'un centre educatiu, Chromium vol assegurar-se que estiguis al cas d'aquesta situació, encara que no la puguis evitar. La supervisió es pot produir en qualsevol navegador o aplicació que accedeixi al web.</translation>
 <translation id="1024111578869940408">De vegades, els atacants imiten llocs web introduint canvis difícils de veure a l'adreça web.</translation>
 <translation id="1024913885641459127">Comentaris sobre productes i comparatives de preus</translation>
+<translation id="1025174656774447058">Vols compartir automàticament les pestanyes obertes d'aquest fil de discussió?</translation>
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vol emmagatzemar una gran quantitat de dades al dispositiu de manera permanent</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Cap}=1{D'1 lloc web. Se't tancarà la sessió de la majoria de llocs web. }other{De # llocs web. Se't tancarà la sessió de la majoria de llocs web. }}</translation>
@@ -1025,6 +1026,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">A partir d'ara, fes servir el bloqueig de pantalla per confirmar les targetes</translation>
 <translation id="2552532158894206888">tecla dreta</translation>
+<translation id="2552601157105591479">Chrome compartirà les pestanyes obertes rellevants de cada fil de discussió nou per obtenir millors respostes. Obtén més informació sobre</translation>
 <translation id="2553352788023127673">L'historial de cerques i les contrasenyes es poden suprimir a la configuració de gestió corresponent</translation>
 <translation id="2553853292994445426">Revisa la configuració de DNS segur. Pot ser que hagis configurat un servidor de DNS segur en què fallin les connexions.</translation>
 <translation id="255497580849974774">Mantén el dispositiu connectat a un carregador durant l'actualització.</translation>
@@ -1241,6 +1243,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2930531075747147366">Pestanya del teu altre dispositiu</translation>
 <translation id="2930577230479659665">Retalla després de cada còpia</translation>
 <translation id="2933624813161016821">Làmina de degoteig gofrada</translation>
+<translation id="2935726091208500473">com es poden compartir les pestanyes.</translation>
 <translation id="293796669683825859">Comentaris</translation>
 <translation id="2938225289965773019">Obrir els enllaços del protocol <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />. Per mostrar el cursor, canvia d'aplicació, torna a carregar la pàgina o torna enrere.</translation>
@@ -1268,6 +1271,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="297173220375858963">Autoedició</translation>
 <translation id="2972581237482394796">&amp;Refés</translation>
 <translation id="2974468223369775963">Aquest IBAN no s'ha pogut desar al teu Compte de Google. S'ha desat a Chrome en aquest dispositiu. Chrome t'ho tornarà a preguntar la propera vegada que utilitzis aquest IBAN.</translation>
+<translation id="2976162850019490782">Quan l'opció estigui activada, Chrome compartirà totes les pestanyes d'aquesta finestra per ajudar-te a obtenir respostes més rellevants. Pots activar aquesta opció per a tots els fils de discussió a Configuració.</translation>
 <translation id="297667759942911166">Col·labora en grups de pestanyes</translation>
 <translation id="2977665033722899841">S'ha seleccionat <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Òpera</translation>
@@ -2192,7 +2196,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4358059973562876591">Pot ser que les plantilles que has especificat no s'apliquin a causa d'un error amb la política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestiona les formes de pagament...</translation>
 <translation id="4359160567981085931">Acabes d'introduir la contrasenya en un lloc web enganyós. Chrome pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
-<translation id="4359853272024672680">Cerca en mode IA</translation>
 <translation id="4363222835916186793">Les alertes d'aquest producte s'han desactivat</translation>
 <translation id="4366943895537458493">Làmina</translation>
 <translation id="4369179505195332608">Edita el permís de conduir</translation>
@@ -3319,6 +3322,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6133984428121856852">L'extensió de fitxer està buida o té un format incorrecte.</translation>
 <translation id="6138680304137685902">Signatura d'ECDSA X9.62 amb SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 polzades</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, seleccionat</translation>
 <translation id="6143097244789397208">Realitat virtual i augmentada</translation>
 <translation id="614327212146763975">Els sensors de moviment i de llum estan permesos</translation>
 <translation id="6146055958333702838">Reviseu els cables i reinicieu els encaminadors, els mòdems o altres
@@ -3449,6 +3453,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="634500758737709758">Indicacions</translation>
 <translation id="6348220984832452017">Variacions actives</translation>
 <translation id="6349101878882523185">Instal·la <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Paga sense copiar ni enganxar el codi Pix. <ph name="BEGIN_LINK1" />Mira com funciona<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Suprimeix les dades de navegació</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Cap}=1{1 contrasenya per a <ph name="DOMAIN_LIST" /> (sincronitzats)}=2{2 contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}other{# contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}}</translation>
 <translation id="6354918092619878358">Corba el·líptica secp256r1 d'SECG (també coneguda com a X9.62 prime256v1 d'ANSI o NIST P-256)</translation>
@@ -3663,6 +3668,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="668132230070712111">El vídeo s'ha desat a Google Drive</translation>
 <translation id="6681790815630918386">CVC desat</translation>
 <translation id="6683022854667115063">Auriculars</translation>
+<translation id="6686570026048064255">Per desactivar la detecció de codis Pix, ves a <ph name="BEGIN_LINK1" />Configuració de Wallet<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Sobre (llis)</translation>
 <translation id="6687335167692595844">Cos de font sol·licitada</translation>
 <translation id="6688743156324860098">Actualitza…</translation>
@@ -3787,6 +3793,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6883745783646124431">adreça de la feina</translation>
 <translation id="6886283082988906333">Fitxer ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> (<ph name="SHORT_URL" />)</translation>
+<translation id="688706781007114099">Utilitza la ubicació</translation>
 <translation id="6888584790432772780">Chrome ha simplificat aquesta pàgina perquè sigui més fàcil de llegir. A més, ha recuperat la pàgina original amb una connexió no segura.</translation>
 <translation id="6890443033788248019">Vols permetre l'accés a la ubicació?</translation>
 <translation id="6890531741535756070">Has decidit verificar amb <ph name="DEVICE_LABEL" /> els llocs web que utilitzen <ph name="PROVIDER_ORIGIN" />. És possible que aquest proveïdor hagi emmagatzemat informació sobre la teva forma de pagament. Si vols, pots <ph name="BEGIN_LINK" />sol·licitar que se suprimeixi<ph name="END_LINK" />.</translation>
@@ -4194,6 +4201,7 @@ Detalls addicionals:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> comprovarà la teva idoneïtat. Això no afectarà la teva puntuació creditícia. Si l'aprova, <ph name="BNPL_ISSUER_NAME" /> t'oferirà diversos plans de pagament entre els quals podràs triar i finalitzar la compra.</translation>
 <translation id="7489392576326061356">Xampús i suavitzants</translation>
 <translation id="7489919936111034362">El teu emmagatzematge de Google Drive és ple</translation>
+<translation id="7490026840522163531">Vols compartir automàticament les pestanyes obertes de cada fil de discussió?</translation>
 <translation id="7495528107193238112">Aquest contingut està bloquejat. Contacta amb el propietari del lloc web per resoldre el problema.</translation>
 <translation id="749865518782565832">Lampisteria</translation>
 <translation id="7499188644237027195">Quan facis compres a Chrome, veuràs la cartera electrònica i Pix com a opcions</translation>
@@ -5312,6 +5320,7 @@ Detalls addicionals:
 <translation id="964050462028070434">Gestiona les contrasenyes i les claus d'accés…</translation>
 <translation id="964681140808832181">Sí, vull cancel·lar-lo</translation>
 <translation id="969892804517981540">Compilació oficial</translation>
+<translation id="970182982363142444">Quan l'opció estigui activada, Chrome compartirà totes les pestanyes d'aquesta finestra per ajudar-te a obtenir respostes més rellevants. Pots activar aquesta opció per a tots els xats a</translation>
 <translation id="97054401902912338">Més informació sobre els filtres de contingut</translation>
 <translation id="973788791897303708">Aquest grup de pestanyes és ple</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Cap}=1{1 element}other{# elements}}</translation>

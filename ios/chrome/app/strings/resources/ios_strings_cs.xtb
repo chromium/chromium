@@ -1819,6 +1819,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="7300448350764260141">Využijte další vrstvu ochrany proti online hrozbám.</translation>
 <translation id="7311244614769792472">Žádné výsledky</translation>
+<translation id="7312823817809783355">Vaše úkoly</translation>
 <translation id="7313347584264171202">Zde najdete své anonymní karty</translation>
 <translation id="7322186060879266048">{count,plural, =1{Nad klávesnicí je k dispozici {count} možnost automatického vyplňování.}few{Nad klávesnicí jsou k dispozici {count} možnosti automatického vyplňování.}many{Nad klávesnicí je k dispozici {count} možnosti automatického vyplňování.}other{Nad klávesnicí je k dispozici {count} možností automatického vyplňování.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1826,6 +1827,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7345061034321640811">Import není povolen</translation>
 <translation id="7347998088283246662">Importujte hesla, historii, záložky a další položky</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
+<translation id="7357999308187750900">Zobrazit vše</translation>
 <translation id="7364796246159120393">Vybrat soubor</translation>
 <translation id="736564850024123010">Prostředí si můžete přizpůsobit změnou polohy adresního řádku.</translation>
 <translation id="7366909168761621528">Údaje o prohlížení</translation>

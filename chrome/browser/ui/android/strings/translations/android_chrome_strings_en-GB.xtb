@@ -552,7 +552,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> download failed due to file system errors.</translation>
 <translation id="3417835166382867856">Search tabs</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
-<translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3435914367318771664">Add tab to new group</translation>

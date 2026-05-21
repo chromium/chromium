@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chromium 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chromium 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
 <translation id="1024111578869940408">攻击者有时会对网址做些令人难以察觉的更改来仿冒网站。</translation>
 <translation id="1024913885641459127">商品评价与比价</translation>
+<translation id="1025174656774447058">要在此会话串中自动分享已打开的标签页吗？</translation>
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{无}=1{来自 1 个网站。会致使您从大多数网站退出账号。}other{来自 # 个网站。会致使您从大多数网站退出账号。}}</translation>
@@ -1025,6 +1026,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">从现在开始，使用“屏幕锁定”功能确认银行卡</translation>
 <translation id="2552532158894206888">向右键</translation>
+<translation id="2552601157105591479">Chrome 会在每个新会话串中分享已打开的相关标签页，以便提供更优质的回答。详细了解</translation>
 <translation id="2553352788023127673">搜索记录和密码可在相应管理设置中删除</translation>
 <translation id="2553853292994445426">请检查您的安全 DNS 设置。您可能已配置了安全 DNS 服务器但无法连接到它。</translation>
 <translation id="255497580849974774">更新期间，请将设备连接到充电器。</translation>
@@ -1241,6 +1243,7 @@
 <translation id="2930531075747147366">来自您的其他设备的标签页</translation>
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
 <translation id="2933624813161016821">压纹箔</translation>
+<translation id="2935726091208500473">分享标签页</translation>
 <translation id="293796669683825859">评注</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> - 如需显示光标，请切换应用、重新加载页面或返回</translation>
@@ -1268,6 +1271,7 @@
 <translation id="297173220375858963">桌面出版</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2974468223369775963">此 IBAN 无法保存到您的 Google 账号中，已改为保存到此设备上的 Chrome 中。Chrome 会在您下次使用此 IBAN 时再次询问您。</translation>
+<translation id="2976162850019490782">开启后，Chrome 会分享此窗口中的所有标签页，以便您获得更贴合需求的回答。您可以在“设置”中为所有会话串开启此功能。</translation>
 <translation id="297667759942911166">在标签页分组中协作</translation>
 <translation id="2977665033722899841">目前已选择“<ph name="ROW_NAME" />”。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌剧</translation>
@@ -2189,7 +2193,6 @@
 <translation id="4358059973562876591">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策出错了。</translation>
 <translation id="4358461427845829800">管理付款方式…</translation>
 <translation id="4359160567981085931">您刚刚在一个诈骗网站中输入了密码。Chrome 可以为您提供帮助。若要更改密码并让 Google 知晓您的账号可能处于危险状态，请点击“保护账号”。</translation>
-<translation id="4359853272024672680">AI 模式搜索</translation>
 <translation id="4363222835916186793">针对此商品的提醒已被关闭</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="4369179505195332608">修改驾照信息</translation>
@@ -3317,6 +3320,7 @@
 <translation id="6133984428121856852">文件扩展名为空或格式错误。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
 <translation id="6139975341602920272">17 x 22 英寸</translation>
+<translation id="614163496107844520">已选择“<ph name="BUTTON_TEXT" />”</translation>
 <translation id="6143097244789397208">增强现实与虚拟现实</translation>
 <translation id="614327212146763975">允许使用移动传感器和光传感器</translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
@@ -3786,6 +3790,7 @@
 <translation id="6883745783646124431">工作地址</translation>
 <translation id="6886283082988906333">ZIP 归档文件</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">使用位置信息</translation>
 <translation id="6888584790432772780">Chrome 已简化该页面，让内容更易于阅读，并且通过不安全的连接检索到了原始网页。</translation>
 <translation id="6890443033788248019">允许使用位置信息？</translation>
 <translation id="6890531741535756070">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过<ph name="DEVICE_LABEL" />来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="BEGIN_LINK" />请求删除相应信息<ph name="END_LINK" />。</translation>
@@ -4193,6 +4198,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />将检查您是否符合资格要求（这不会影响您的信用评分）。如果获得批准，<ph name="BNPL_ISSUER_NAME" />将提供付款方案供您选择，以便您完成购买交易。</translation>
 <translation id="7489392576326061356">洗发水和护发素</translation>
 <translation id="7489919936111034362">您的 Google 云端硬盘存储空间已满</translation>
+<translation id="7490026840522163531">要在所有会话串中自动分享已打开的标签页吗？</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="749865518782565832">管道维修</translation>
 <translation id="7499188644237027195">当您在 Chrome 中购物时，可看到电子钱包和 Pix 选项</translation>
@@ -5313,6 +5319,7 @@
 <translation id="964050462028070434">管理密码和通行密钥…</translation>
 <translation id="964681140808832181">是的，我要取消</translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="970182982363142444">开启后，Chrome 会分享此窗口中的所有标签页，以便您获得更贴合需求的回答。您可以在以下位置为所有对话开启此功能：</translation>
 <translation id="97054401902912338">详细了解内容过滤器</translation>
 <translation id="973788791897303708">此标签页分组已满</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{无}=1{1 项内容}other{# 项内容}}</translation>

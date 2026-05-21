@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chromium non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chromium quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="1024111578869940408">Ás veces, os atacantes imitan sitios facendo cambios no enderezo web que son difíciles de ver.</translation>
 <translation id="1024913885641459127">Recensións de produtos e comparativas de prezos</translation>
+<translation id="1025174656774447058">Queres compartir automaticamente as pestanas abertas neste fío de mensaxes?</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ningún}=1{De 1 sitio. Pecha a túa sesión na maioría dos sitios. }other{De # sitios. Pecha a túa sesión na maioría dos sitios. }}</translation>
@@ -1025,6 +1026,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Usar bloqueo de pantalla a partir de agora para confirmar as tarxetas</translation>
 <translation id="2552532158894206888">tecla dereita</translation>
+<translation id="2552601157105591479">Chrome compartirá as pestanas abertas relevantes en cada novo fío de mensaxes para obter mellores respostas. Obtén máis información sobre</translation>
 <translation id="2553352788023127673">O historial de busca e os contrasinais poden eliminarse na súa configuración de xestión</translation>
 <translation id="2553853292994445426">Comproba a configuración do DNS seguro. Poden producirse erros ao conectar co DNS seguro que configurases.</translation>
 <translation id="255497580849974774">Conecta o dispositivo a un cargador durante a actualización.</translation>
@@ -1241,6 +1243,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2930531075747147366">Pestana do teu outro dispositivo</translation>
 <translation id="2930577230479659665">Recorte despois de cada copia</translation>
 <translation id="2933624813161016821">Lámina en relevo</translation>
+<translation id="2935726091208500473">compartindo as túas pestanas</translation>
 <translation id="293796669683825859">Comentarios</translation>
 <translation id="2938225289965773019">Abrir <ph name="PROTOCOL" /> ligazóns</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: Para mostrar o cursor, cambia de aplicación, volve cargar a páxina ou vai atrás</translation>
@@ -1268,6 +1271,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="297173220375858963">Autoedición</translation>
 <translation id="2972581237482394796">&amp;Refacer</translation>
 <translation id="2974468223369775963">Este IBAN non se puido gardar na túa Conta de Google. En lugar diso, gardouse en Chrome neste dispositivo. Chrome preguntarache de novo a próxima vez que o uses.</translation>
+<translation id="2976162850019490782">Cando esta opción está activada, Chrome compartirá todas as pestanas desta ventá para axudarche a obter respostas máis relevantes. Podes activar esta opción para todos os fíos en Configuración.</translation>
 <translation id="297667759942911166">Colabora en grupos de pestanas</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />: opción actualmente seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -2193,7 +2197,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4358059973562876591">Os modelos que especificaches poden non aplicarse debido a un erro coa política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Xestiona os métodos de pago…</translation>
 <translation id="4359160567981085931">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome pode axudarche. Para cambiar o teu contrasinal e notificarlle a Google que a túa conta pode estar en risco, fai clic en Protexer conta.</translation>
-<translation id="4359853272024672680">Busca do modo IA</translation>
 <translation id="4363222835916186793">Desactiváronse as alertas para este produto</translation>
 <translation id="4366943895537458493">Placas</translation>
 <translation id="4369179505195332608">Editar o permiso de conducir</translation>
@@ -3321,6 +3324,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6133984428121856852">A extensión de ficheiro está baleira ou ten un formato incorrecto.</translation>
 <translation id="6138680304137685902">Sinatura X9.62 ECDSA con SHA-384</translation>
 <translation id="6139975341602920272">17 × 22 in</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, opción seleccionada</translation>
 <translation id="6143097244789397208">Realidade virtual e aumentada</translation>
 <translation id="614327212146763975">Permiso concedido para usar os sensores de movemento e de luz</translation>
 <translation id="6146055958333702838">Comproba os cables e reinicia os routers, módems e demais dispositivos
@@ -3791,6 +3795,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6883745783646124431">enderezo do traballo</translation>
 <translation id="6886283082988906333">Arquivo ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Usar localización</translation>
 <translation id="6888584790432772780">Chrome simplificou esta páxina para que sexa máis fácil de ler. Chrome recuperou a páxina orixinal a través dunha conexión insegura.</translation>
 <translation id="6890443033788248019">Queres permitir o acceso á localización?</translation>
 <translation id="6890531741535756070">Escolliches verificar as compras con <ph name="DEVICE_LABEL" /> nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago, pero podes <ph name="BEGIN_LINK" />solicitar a súa eliminación<ph name="END_LINK" />.</translation>
@@ -4197,6 +4202,7 @@ Detalles adicionais:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> comprobará se cumpres os requisitos (este proceso non lle afectará á túa cualificación crediticia). Se os cumpres, <ph name="BNPL_ISSUER_NAME" /> ofrecerache varios plans de pagos entre os que poderás escoller para completar a compra.</translation>
 <translation id="7489392576326061356">Champús e acondicionadores</translation>
 <translation id="7489919936111034362">Tes ocupado todo o espazo de almacenamento de Google Drive</translation>
+<translation id="7490026840522163531">Queres compartir automaticamente as pestanas abertas en todos os fíos de mensaxes?</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="749865518782565832">Fontanaría</translation>
 <translation id="7499188644237027195">Cando fagas compras en Chrome, verás o moedeiro electrónico e Pix como opcións</translation>
@@ -5317,6 +5323,7 @@ Detalles adicionais:
 <translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="964681140808832181">Si, quero cancelar a carga</translation>
 <translation id="969892804517981540">Compilación oficial</translation>
+<translation id="970182982363142444">Cando esta opción está activada, Chrome compartirá todas as pestanas desta ventá para axudarche a obter respostas máis relevantes. Podes activar esta opción para todos os chats en</translation>
 <translation id="97054401902912338">Máis información sobre os filtros de contido</translation>
 <translation id="973788791897303708">Este grupo de pestanas está cheo</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ningún}=1{1 elemento}other{# elementos}}</translation>

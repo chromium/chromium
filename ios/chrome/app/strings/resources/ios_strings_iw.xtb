@@ -1819,6 +1819,7 @@
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="7300448350764260141">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט.</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
+<translation id="7312823817809783355">המשימות שלך</translation>
 <translation id="7313347584264171202">הכרטיסיות במצב אנונימי זמינות כאן</translation>
 <translation id="7322186060879266048">{count,plural, =1{אפשרות אחת ({count}) למילוי אוטומטי זמינה מעל המקלדת.}one{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}two{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}other{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1826,6 +1827,7 @@
 <translation id="7345061034321640811">הייבוא אסור</translation>
 <translation id="7347998088283246662">אפשר לייבא סיסמאות, היסטוריה, סימניות ועוד</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
+<translation id="7357999308187750900">הצגת כל הפריטים</translation>
 <translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="736564850024123010">כדי להתאים אישית את חוויית השימוש, אפשר לשנות את המיקום של סרגל הכתובות.</translation>
 <translation id="7366909168761621528">נתוני גלישה</translation>

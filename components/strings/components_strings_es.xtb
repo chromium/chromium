@@ -2199,7 +2199,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4358059973562876591">Es posible que las plantillas que has especificado no se apliquen debido a un error con la política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestiona tus métodos de pago...</translation>
 <translation id="4359160567981085931">Acabas de introducir tu contraseña en un sitio web engañoso. Chrome puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
-<translation id="4359853272024672680">Búsqueda en Modo IA</translation>
 <translation id="4363222835916186793">Se han desactivado las alertas de este producto</translation>
 <translation id="4366943895537458493">Lámina</translation>
 <translation id="4369179505195332608">Editar carné de conducir</translation>
@@ -3799,6 +3798,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6883745783646124431">dirección de trabajo</translation>
 <translation id="6886283082988906333">Archivo ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Usar ubicación</translation>
 <translation id="6888584790432772780">Chrome ha simplificado esta página para facilitar su lectura y ha recuperado la página original mediante una conexión no segura.</translation>
 <translation id="6890443033788248019">¿Permitir ubicación?</translation>
 <translation id="6890531741535756070">Has elegido realizar la verificación con <ph name="DEVICE_LABEL" /> en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu método de pago. Puedes <ph name="BEGIN_LINK" />solicitar que se eliminen esos datos<ph name="END_LINK" />.</translation>

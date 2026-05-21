@@ -2200,7 +2200,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4358059973562876591">Jūsų nurodyti šablonai gali būti netaikomi dėl klaidos, susijusios su „DnsOverHttpsMode“ politika.</translation>
 <translation id="4358461427845829800">Tvarkyti mokėjimo metodus...</translation>
 <translation id="4359160567981085931">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chrome“ gali padėti. Norėdami pakeisti slaptažodį ir pranešti „Google“, kad jūsų paskyrai gali grėsti pavojus, spustelėkite „Apsaugoti paskyrą“.</translation>
-<translation id="4359853272024672680">DI režimo paieška</translation>
 <translation id="4363222835916186793">Šio produkto įspėjimai išjungti</translation>
 <translation id="4366943895537458493">Plokštelė</translation>
 <translation id="4369179505195332608">Vairuotojo pažymėjimo redagavimas</translation>
@@ -3800,6 +3799,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6883745783646124431">darbo adresas</translation>
 <translation id="6886283082988906333">ZIP archyvas</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Naudoti vietovę</translation>
 <translation id="6888584790432772780">„Chrome“ supaprastino šį puslapį, kad būtų paprasčiau skaityti. „Chrome“ gavo pradinį puslapį prisijungusi nesaugiu ryšiu.</translation>
 <translation id="6890443033788248019">Leisti pasiekti vietovę?</translation>
 <translation id="6890531741535756070">Pasirinkote patvirtinti naudodami <ph name="DEVICE_LABEL" /> svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, kurią <ph name="BEGIN_LINK" />galite paprašyti ištrinti<ph name="END_LINK" />.</translation>

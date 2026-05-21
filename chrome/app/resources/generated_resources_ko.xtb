@@ -1555,6 +1555,7 @@
 <translation id="2044750031738659219">{0,plural, =1{게스트 창 닫기}other{게스트 창(창 #개) 닫기}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045211794962848221">이 메시지가 다시 표시되지 않습니다.</translation>
+<translation id="2045540927991079503">다음으로 링크 열기</translation>
 <translation id="2045838962742066664">약식 입력</translation>
 <translation id="204622017488417136">기기가 이전에 설치된 버전의 Chrome으로 돌아갑니다. 사용자 계정과 로컬 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
 <translation id="2046702855113914483">라면</translation>
@@ -1580,6 +1581,7 @@
 <translation id="206308717637808771">모든 창을 닫으면 데이터를 삭제합니다. 데이터는 현재 보고 있는 사이트와 동일하게 처리됩니다.</translation>
 <translation id="2066700471214517561">빔포밍 마이크로 Chromebook 사용자의 목소리가 선명하게 전달됩니다.</translation>
 <translation id="2068581968816126410">여러 기기에서 북마크 사용</translation>
+<translation id="2069020119963193894">크기(S)</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />에서 <ph name="PRINTER_NAME" /> 프린터로 인쇄를 완료했습니다.</translation>
 <translation id="2071393345806050157">로컬 로그 파일이 없습니다.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 설치하려면 클릭하세요.}other{확장 프로그램을 설치하려면 클릭하세요.}}</translation>
@@ -1713,6 +1715,7 @@
 <translation id="2148892889047469596">탭 전송</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2150139952286079145">대상 검색</translation>
+<translation id="2150168665016482929">최소화(N)</translation>
 <translation id="2150661552845026580">'<ph name="EXTENSION_NAME" />'을(를) 추가하시겠습니까?</translation>
 <translation id="2151576029659734873">잘못된 탭 색인을 입력했습니다.</translation>
 <translation id="2153809900849531051">성운</translation>
@@ -4484,6 +4487,7 @@
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> 안내 받음</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> 폴더</translation>
 <translation id="4028467762035011525">입력 방법 추가</translation>
+<translation id="4028830198155575078">이동(M)</translation>
 <translation id="4029024445166427442">런처 + Shift + 백스페이스</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> 페이지에서 돌아오기</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
@@ -6521,6 +6525,7 @@
 <translation id="5473099001878321374">계속하면 이 기기에서 Google, 자녀의 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수도 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN은 1자 이상이어야 합니다.}other{PIN은 #자 이상이어야 합니다.}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다. 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.</translation>
+<translation id="547615291475756075">최대화(X)</translation>
 <translation id="5476957746413745956">각 방향에 개별적으로 속도 조정</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> 핫스팟 구성</translation>
 <translation id="5481273127572794904">여러 파일 자동 다운로드가 허용되지 않음</translation>
@@ -7392,6 +7397,7 @@
 <translation id="6096326118418049043">X.500 이름</translation>
 <translation id="6097480669505687979">저장 공간을 확보하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
 <translation id="6097600385983390082">음성 검색 닫힘</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">iPhone에서 이 카드 사용하기</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" />에서 텍스트가 복사됨</translation>
 <translation id="6099766472403716061"><ph name="HOST" />에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 항상 허용</translation>
@@ -8746,6 +8752,7 @@
 <translation id="7030695672997239647">탭을 마우스 오른쪽 버튼으로 클릭하고 '그룹에 탭 추가'를 선택한 다음 '새 그룹'을 선택합니다.</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>
 <translation id="7033616203784997570">최대 62자(영문 기준)까지 입력할 수 있습니다.</translation>
+<translation id="7033731598469029604">자동 탐색</translation>
 <translation id="7034692021407794547">먼저 결제 관리 권한을 보유한 관리자가 관리 콘솔의 Google Meet 하드웨어 섹션에서 Google Meet 하드웨어 서비스 약관에 동의해야 합니다.</translation>
 <translation id="70356134210715500">패스키 가져오기</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" />에서 방금 내 계정의 패스키를 만들었습니다. 패스키는 더 빠르고 안전하게 로그인하는 방법을 제공하며 <ph name="USER" />의 Google 비밀번호 관리자에 저장됩니다. <ph name="LEARN_MORE" /></translation>
@@ -8831,6 +8838,7 @@
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="7098447629416471489">저장한 다른 검색엔진이 여기에 표시됨</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
+<translation id="7099027177878709408">닫기(C)</translation>
 <translation id="7099337801055912064">큰 PPD를 로드할 수 없습니다. 최대 크기는 250KB입니다.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="7100379916748214860">Chrome에서 위험한 파일 다운로드를 차단했습니다. 향상된 보호 모드로 보안을 더욱 강화하세요.</translation>
@@ -9870,6 +9878,7 @@
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>
 <translation id="7818135753970109980">새 테마가 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">확장 프로그램은 Chrome에 추가되는 부가기능으로, 더 많은 작업을 할 수 있도록 도와줍니다.</translation>
+<translation id="7819968103441522596">복원(R)</translation>
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>

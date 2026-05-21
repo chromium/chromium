@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Ce problème survient en raison d'un certificat installé, par vous ou quelqu'un d'autre, sur votre appareil. Le certificat n'est pas considéré comme fiable par Chromium, parce qu'on sait qu'il est utilisé pour surveiller et intercepter les réseaux. Certains cas requièrent de la surveillance, comme un réseau scolaire ou d'entreprise, mais Chromium vous le mentionne pour que vous sachiez que cette surveillance se produit, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire dans tous les navigateurs et toutes les applications qui accèdent au Web.</translation>
 <translation id="1024111578869940408">Les pirates tentent parfois d'imiter des sites Web en utilisant des variations subtiles d'adresses Web.</translation>
 <translation id="1024913885641459127">Avis sur les produits et comparaison de prix</translation>
+<translation id="1025174656774447058">Partager automatiquement les onglets ouverts pour ce fil?</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030706264415084469">L'URL <ph name="URL" /> veut stocker de façon permanente de grandes quantités de données sur votre appareil</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Aucun}=1{À partir de 1 site. Cette option vous déconnectera de la plupart des sites. }one{À partir de # site. Cette option vous déconnectera de la plupart des sites. }other{À partir de # sites. Cette option vous déconnectera de la plupart des sites. }}</translation>
@@ -1025,6 +1026,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Utiliser le verrouillage d'écran pour confirmer les cartes à partir de maintenant</translation>
 <translation id="2552532158894206888">touche de droite</translation>
+<translation id="2552601157105591479">Chrome partagera les onglets ouverts pertinents dans chaque nouveau fil pour obtenir de meilleures réponses. En savoir plus sur</translation>
 <translation id="2553352788023127673">L'historique de recherche et les mots de passe peuvent être supprimés dans leurs paramètres de gestion</translation>
 <translation id="2553853292994445426">Vérifiez les paramètres de DNS sécurisé. L'échec de connexion est peut-être dû à un serveur DNS sécurisé que vous avez configuré.</translation>
 <translation id="255497580849974774">Veuillez garder votre appareil connecté à un chargeur pendant la mise à jour.</translation>
@@ -1241,6 +1243,7 @@
 <translation id="2930531075747147366">Onglet à partir de votre autre appareil</translation>
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2933624813161016821">Feuille de gaufrage</translation>
+<translation id="2935726091208500473">partage de vos onglets</translation>
 <translation id="293796669683825859">Commentaires</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Pour afficher votre curseur, changer d'appli, actualiser la page ou revenir en arrière</translation>
@@ -1268,6 +1271,7 @@
 <translation id="297173220375858963">Éditique</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2974468223369775963">Cet IBAN n'a pas pu être enregistré dans votre compte Google. Il est plutôt enregistré dans Chrome sur cet appareil. Chrome vous le demandera à nouveau la prochaine fois que vous utiliserez cet IBAN.</translation>
+<translation id="2976162850019490782">Lorsque cette option est activée, Chrome partagera tous les onglets de cette fenêtre pour vous aider à obtenir des réponses plus pertinentes. Vous pouvez activer cette option pour tous les fils dans les paramètres.</translation>
 <translation id="297667759942911166">Collaborer dans des groupes d'onglets</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opéra</translation>
@@ -2193,7 +2197,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4358059973562876591">Les modèles que vous avez indiqués pourraient ne pas être appliqués en raison d'une erreur avec la politique DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gérer les modes de paiement</translation>
 <translation id="4359160567981085931">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
-<translation id="4359853272024672680">Recherche en mode IA</translation>
 <translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="4366943895537458493">Plaque</translation>
 <translation id="4369179505195332608">Modifier le permis de conduire</translation>
@@ -3321,6 +3324,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6133984428121856852">L'extension de fichier est vide ou malformée.</translation>
 <translation id="6138680304137685902">Signature X9.62 ECDSA avec SHA-384</translation>
 <translation id="6139975341602920272">17 po x 22 po</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, sélectionné</translation>
 <translation id="6143097244789397208">Réalité augmentée et réalité virtuelle</translation>
 <translation id="614327212146763975">Les capteurs de mouvement et de luminosité sont autorisés</translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
@@ -3791,6 +3795,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6883745783646124431">adresse professionnelle</translation>
 <translation id="6886283082988906333">Archive ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Utiliser la localisation</translation>
 <translation id="6888584790432772780">Chrome a simplifié cette page pour la rendre plus facile à lire. Chrome a téléchargé la page originale par connexion non sécurisée.</translation>
 <translation id="6890443033788248019">Autoriser l'accès à la position?</translation>
 <translation id="6890531741535756070">Vous avez choisi de vérifier avec <ph name="DEVICE_LABEL" /> sur les sites Web qui utilisent <ph name="PROVIDER_ORIGIN" />. Ce fournisseur peut avoir stocké des informations sur votre mode de paiement, dont vous pouvez <ph name="BEGIN_LINK" />demander la suppression<ph name="END_LINK" />.</translation>
@@ -4197,6 +4202,7 @@ Détails supplémentaires :
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> vérifiera votre admissibilité (cela n'affectera pas votre cote de crédit). En cas d'approbation, <ph name="BNPL_ISSUER_NAME" /> vous proposera des forfaits de paiement parmi lesquels choisir et finalisera votre achat.</translation>
 <translation id="7489392576326061356">Shampooings et après-shampooings</translation>
 <translation id="7489919936111034362">Votre espace de stockage Google Disque est plein</translation>
+<translation id="7490026840522163531">Partager automatiquement les onglets ouverts dans chaque fil?</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Communiquez avec le propriétaire du site pour corriger le problème.</translation>
 <translation id="749865518782565832">Plomberie</translation>
 <translation id="7499188644237027195">Lorsque vous effectuez des achats sur Chrome, vous verrez le portefeuille électronique et Pix comme options</translation>
@@ -5316,6 +5322,7 @@ Détails supplémentaires :
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
 <translation id="964681140808832181">Oui, je veux annuler</translation>
 <translation id="969892804517981540">Version officielle</translation>
+<translation id="970182982363142444">Lorsque cette option est activée, Chrome partagera tous les onglets de cette fenêtre pour vous aider à obtenir des réponses plus pertinentes. Vous pouvez activer cette option pour tous les clavardages dans</translation>
 <translation id="97054401902912338">En savoir plus sur les filtres de contenu</translation>
 <translation id="973788791897303708">Ce groupe d'onglets est complet</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Aucun}=1{1 élément}one{# élément}other{# éléments}}</translation>

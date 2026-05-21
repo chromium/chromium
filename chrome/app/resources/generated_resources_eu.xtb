@@ -11712,7 +11712,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9070342919388027491">Ezkerrera eraman da fitxa</translation>
 <translation id="9072220108592671115">Instalatutako bertsioa: <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Webgune hauetan saioa hasteko baimena eman diozu Gemini-ri, zure izenean zereginak egin ditzan</translation>
-<translation id="9074618195273027322">{CORE_COUNT,plural, =1{Nukleo bat}other{{CORE_COUNT} nukleo}}</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 nukleo}other{{CORE_COUNT} nukleo}}</translation>
 <translation id="9074739597929991885">Bluetootha</translation>
 <translation id="9074836595010225693">USB sagua konektatu da</translation>
 <translation id="9075413375877487220">"Arakatze seguru hobetua" eginbideak ez du jotzen fidagarritzat luzapena.</translation>

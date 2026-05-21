@@ -1819,6 +1819,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7300448350764260141">Aggiungi un ulteriore livello di protezione dalle minacce online.</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
+<translation id="7312823817809783355">Le tue attività</translation>
 <translation id="7313347584264171202">Qui troverai le tue schede Incognito</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opzione di compilazione automatica disponibile sopra la tastiera.}other{{count} opzioni di compilazione automatica disponibili sopra la tastiera.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1826,6 +1827,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7345061034321640811">Importazione non consentita</translation>
 <translation id="7347998088283246662">Importa password, cronologia, preferiti e altro</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
+<translation id="7357999308187750900">Mostra tutto</translation>
 <translation id="7364796246159120393">Scegli file</translation>
 <translation id="736564850024123010">Cambia la posizione della barra degli indirizzi per un'esperienza personalizzata.</translation>
 <translation id="7366909168761621528">Dati di navigazione</translation>

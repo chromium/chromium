@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chromium 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chromium 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入不易察覺的細微變更來仿冒網站。</translation>
 <translation id="1024913885641459127">產品評論與比價</translation>
+<translation id="1025174656774447058">要自動與這個對話串共用開啟的分頁嗎？</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在你的裝置上永久儲存大量資料</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{無}=1{來自 1 個網站。刪除 Cookie 後，大多數網站都會將你登出。}other{來自 # 個網站。刪除 Cookie 後，大多數網站都會將你登出。}}</translation>
@@ -1024,6 +1025,7 @@
 <translation id="2552246211866555379">Hagaki 紙匣</translation>
 <translation id="2552295903035773204">開始使用螢幕鎖定功能驗證卡片</translation>
 <translation id="2552532158894206888">右鍵</translation>
+<translation id="2552601157105591479">Chrome 會與每個新對話串共用已開啟的相關分頁，以取得更實用的回覆。進一步瞭解</translation>
 <translation id="2553352788023127673">搜尋記錄和密碼可以在相關管理設定中刪除</translation>
 <translation id="2553853292994445426">請檢查你的安全 DNS 設定。可能是已設定的安全 DNS 伺服器導致連線失敗。</translation>
 <translation id="255497580849974774">請將裝置接上電源，在更新期間不要拔除。</translation>
@@ -1240,6 +1242,7 @@
 <translation id="2930531075747147366">來自其他裝置的分頁</translation>
 <translation id="2930577230479659665">完成每次複印後裁切</translation>
 <translation id="2933624813161016821">壓紋箔</translation>
+<translation id="2935726091208500473">共用分頁</translation>
 <translation id="293796669683825859">留言</translation>
 <translation id="2938225289965773019">開啟<ph name="PROTOCOL" />連結</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> - 如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
@@ -1267,6 +1270,7 @@
 <translation id="297173220375858963">電腦排版</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2974468223369775963">這個 IBAN 無法儲存到 Google 帳戶，因此改存到這部裝置的 Chrome。下次你使用這個 IBAN 時，Chrome 會再次詢問。</translation>
+<translation id="2976162850019490782">開啟後，Chrome 會共用這個視窗的所有分頁，以提供更貼近需求的回覆。你可以前往「設定」為所有對話串開啟這個選項。</translation>
 <translation id="297667759942911166">在分頁群組中協作</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />，目前已選取。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌劇</translation>
@@ -2191,7 +2195,6 @@
 <translation id="4358059973562876591">DnsOverHttpsMode 政策發生錯誤，因此系統無法套用你指定的範本。</translation>
 <translation id="4358461427845829800">管理付款方式...</translation>
 <translation id="4359160567981085931">你剛才在詐騙網站上輸入了密碼。Chrome 能夠幫助你。如要變更密碼並通知 Google 你的帳戶可能面臨風險，請按一下 [保護帳戶]。</translation>
-<translation id="4359853272024672680">AI 模式搜尋</translation>
 <translation id="4363222835916186793">這項產品的快訊已關閉</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="4369179505195332608">編輯駕照</translation>
@@ -3319,6 +3322,7 @@
 <translation id="6133984428121856852">副檔名空白或格式錯誤。</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽章</translation>
 <translation id="6139975341602920272">17 x 22 吋</translation>
+<translation id="614163496107844520">已選取「<ph name="BUTTON_TEXT" />」</translation>
 <translation id="6143097244789397208">擴增和虛擬實境</translation>
 <translation id="614327212146763975">允許使用動作和光度感應器</translation>
 <translation id="6146055958333702838">檢查您的網路線是否穩固連接。重新啟動您可能正在使用的任何路由器、
@@ -3789,6 +3793,7 @@
 <translation id="6883745783646124431">公司地址</translation>
 <translation id="6886283082988906333">ZIP 封存檔</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">使用位置資訊</translation>
 <translation id="6888584790432772780">Chrome 已簡化這個頁面，讓內容更易於閱讀。Chrome 透過不安全的連線擷取原始頁面。</translation>
 <translation id="6890443033788248019">要授予位置存取權嗎？</translation>
 <translation id="6890531741535756070">你已選擇透過<ph name="DEVICE_LABEL" />在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。這個供應商可能已儲存你的付款方式資訊，但你可以<ph name="BEGIN_LINK" />要求刪除<ph name="END_LINK" />。</translation>
@@ -4196,6 +4201,7 @@
 <translation id="7489255442002627311">「<ph name="BNPL_ISSUER_NAME" />」會確認資格，這不會影響你的信用評分。如果核准，「<ph name="BNPL_ISSUER_NAME" />」就會提供付款方案供你選擇，讓你完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮精與潤髮乳</translation>
 <translation id="7489919936111034362">Google 雲端硬碟儲存空間已滿</translation>
+<translation id="7490026840522163531">要自動與所有對話串共用開啟的分頁嗎？</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
 <translation id="749865518782565832">水管工程</translation>
 <translation id="7499188644237027195">在 Chrome 中進行購買交易時可選擇「電子錢包」和「Pix」</translation>
@@ -5315,6 +5321,7 @@
 <translation id="964050462028070434">管理密碼和密碼金鑰…</translation>
 <translation id="964681140808832181">是的，我要取消</translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="970182982363142444">開啟後，Chrome 會共用這個視窗的所有分頁，以提供更貼近需求的回覆。如要為所有對話開啟這個選項，請前往</translation>
 <translation id="97054401902912338">進一步瞭解內容篩選器</translation>
 <translation id="973788791897303708">這個分頁群組已額滿</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{無}=1{1 個項目}other{# 個項目}}</translation>

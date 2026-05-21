@@ -14,6 +14,7 @@
 <translation id="1021753677514347426">Šīs problēmas iemesls ir sertifikāts, kuru jūs vai kāds cits ir instalējis jūsu ierīcē. Ir zināms, ka šis sertifikāts tiek izmantots tīklu pārraudzībai un pārtveršanai, un pārlūks Chromium tam neuzticas. Lai gan pastāv daži likumīgi pārraudzības gadījumi, piemēram, skolas vai uzņēmuma tīklā, pārlūks Chromium vēlas pārliecināties, ka esat par to informēts, pat ja nevarat to apturēt. Pārraudzība var notikt jebkurā pārlūkā vai lietojumprogrammā ar piekļuvi tīmeklim.</translation>
 <translation id="1024111578869940408">Uzbrucēji dažkārt atdarina vietnes, veicot grūti pamanāmas izmaiņas tīmekļa adresē.</translation>
 <translation id="1024913885641459127">Produktu apskati un cenu salīdzinājumi</translation>
+<translation id="1025174656774447058">Vai automātiski kopīgot atvērtās cilnes šim pavedienam?</translation>
 <translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1030706264415084469">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt jūsu ierīcē lielu datu apjomu.</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nav}=1{No vienas vietnes. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }zero{No # vietnēm. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }one{No # vietnes. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }other{No # vietnēm. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }}</translation>
@@ -1025,6 +1026,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Turpmāk izmantot ekrāna bloķēšanu, lai ātrāk apstiprinātu kartes</translation>
 <translation id="2552532158894206888">labais taustiņš</translation>
+<translation id="2552601157105591479">Lai nodrošinātu labākas atbildes, Chrome kopīgos atbilstošas atvērtās cilnes katrā jaunā pavedienā. Uzziniet vairāk par</translation>
 <translation id="2553352788023127673">Meklēšanas vēsturi un paroles var dzēst to pārvaldības iestatījumos.</translation>
 <translation id="2553853292994445426">Pārbaudiet droša DNS servera iestatījumus. Iespējams, esat konfigurējis drošu DNS serveri, ar kuru neizdodas izveidot savienojumu.</translation>
 <translation id="255497580849974774">Atjaunināšanas laikā neatvienojiet ierīci no lādētāja.</translation>
@@ -1241,6 +1243,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2930531075747147366">Cilne no citas jūsu ierīces</translation>
 <translation id="2930577230479659665">Apgriešana pēc katras kopijas</translation>
 <translation id="2933624813161016821">Folijspieduma folija</translation>
+<translation id="2935726091208500473">savu ciļņu kopīgošanu</translation>
 <translation id="293796669683825859">Komentāri</translation>
 <translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – lai parādītu kursoru, pārslēgtu lietotnes, atkārtoti ielādētu lapu vai pārietu atpakaļ</translation>
@@ -1268,6 +1271,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="297173220375858963">Maketēšana</translation>
 <translation id="2972581237482394796">&amp;Pāratsaukt</translation>
 <translation id="2974468223369775963">Šo IBAN nevarēja saglabāt jūsu Google kontā. Taču tas tika saglabāts pārlūkā Chrome šajā ierīcē. Pārlūkā Chrome vēlreiz tiks jautāts, kad nākamreiz izmantosiet šo IBAN.</translation>
+<translation id="2976162850019490782">Ja šis iestatījums ir ieslēgts, Chrome kopīgos visas šī loga cilnes, lai palīdzētu jums iegūt atbilstošākas atbildes. Varat to ieslēgt visiem pavedieniem sadaļā Iestatījumi.</translation>
 <translation id="297667759942911166">Sadarbība ciļņu grupās</translation>
 <translation id="2977665033722899841">Pašlaik ir atlasīta rinda “<ph name="ROW_NAME" />”. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2191,7 +2195,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4358059973562876591">Norādītās veidnes, iespējams, netiks lietotas, jo ir radusies kļūda ar politiku DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Pārvaldīt maksājumu veidus...</translation>
 <translation id="4359160567981085931">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome var palīdzēt. Lai mainītu paroli un paziņotu uzņēmumam Google, ka jūsu konts, iespējams, ir apdraudēts, noklikšķiniet uz pogas Aizsargāt kontu.</translation>
-<translation id="4359853272024672680">Meklēšana MI režīmā</translation>
 <translation id="4363222835916186793">Paziņojumi par šo produktu ir izslēgti.</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="4369179505195332608">Autovadītāja apliecības informācijas rediģēšana</translation>
@@ -3319,6 +3322,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6133984428121856852">Faila paplašinājums ir tukšs vai nepareizi veidots.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA paraksts ar SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 collas</translation>
+<translation id="614163496107844520"><ph name="BUTTON_TEXT" />, atlasīta</translation>
 <translation id="6143097244789397208">Papildinātā un virtuālā realitāte</translation>
 <translation id="614327212146763975">Ir atļauts izmantot kustību un gaismas sensorus</translation>
 <translation id="6146055958333702838">Pārbaudiet vadus un atkārtoti palaidiet maršrutētājus, modemus vai citas
@@ -3789,6 +3793,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6883745783646124431">darbavietas adrese</translation>
 <translation id="6886283082988906333">ZIP arhīvs</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />: <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Izmantot atrašanās vietu</translation>
 <translation id="6888584790432772780">Chrome vienkāršoja šo lapu, lai atvieglotu lasīšanu. Chrome izguva sākotnējo lapu, izmantojot nedrošu savienojumu.</translation>
 <translation id="6890443033788248019">Vai atļaut piekļuvi atrašanās vietai?</translation>
 <translation id="6890531741535756070">Jūs izvēlējāties veikt verifikāciju ar <ph name="DEVICE_LABEL" /> tīmekļa vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="BEGIN_LINK" />pieprasīt šīs informācijas dzēšanu<ph name="END_LINK" />.</translation>
@@ -4196,6 +4201,7 @@ Papildu informācija:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> pārbaudīs jūsu piemērotību (tas neietekmēs jūsu kredīta rādītājus). Ja piemērotība tiks apstiprināta, <ph name="BNPL_ISSUER_NAME" /> nodrošinās maksājumu plānus, no kuriem varēsiet izvēlēties, un varēsiet pabeigt pirkumu.</translation>
 <translation id="7489392576326061356">Šampūni un kondicionieri</translation>
 <translation id="7489919936111034362">Jūsu Google diska krātuve ir pilna.</translation>
+<translation id="7490026840522163531">Vai automātiski kopīgot atvērtās cilnes katrā pavedienā?</translation>
 <translation id="7495528107193238112">Šis saturs ir bloķēts. Lai novērstu problēmu, sazinieties ar vietnes īpašnieku.</translation>
 <translation id="749865518782565832">Santehnikas darbi</translation>
 <translation id="7499188644237027195">Rādīt e-maku un Pix kā iespējas, kad veicat pirkumus pārlūkā Chrome</translation>
@@ -5316,6 +5322,7 @@ Papildu informācija:
 <translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="964681140808832181">Jā, es vēlos atcelt</translation>
 <translation id="969892804517981540">Oficiālā Uzbūve</translation>
+<translation id="970182982363142444">Ja šis iestatījums ir ieslēgts, Chrome kopīgos visas šī loga cilnes, lai palīdzētu jums iegūt atbilstošākas atbildes. Varat to ieslēgt visām tērzēšanas sarunām sadaļā</translation>
 <translation id="97054401902912338">Uzzināt vairāk par satura filtriem</translation>
 <translation id="973788791897303708">Šī ciļņu grupa ir pilna</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nav}=1{1 vienums}zero{# vienumi}one{# vienums}other{# vienumi}}</translation>

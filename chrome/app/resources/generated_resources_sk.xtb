@@ -1546,6 +1546,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2044750031738659219">{0,plural, =1{Zavrieť okno hosťa}few{Zavrieť # okná hostí}many{Close Guest (# windows)}other{Zavrieť # okien hostí}}</translation>
 <translation id="204497730941176055">Názov šablóny certifikátu od spoločnosti Microsoft</translation>
 <translation id="2045211794962848221">Táto konkrétna správa sa vám už nezobrazí</translation>
+<translation id="2045540927991079503">Otvoriť odkaz ako</translation>
 <translation id="2045838962742066664">Rýchlopis</translation>
 <translation id="204622017488417136">Na vašom zariadení sa obnoví predchádzajúca nainštalovaná verzia prehliadača Chrome. Všetky používateľské účty a miestne údaje budú odstránené. Túto akciu nie je možné vrátiť späť.</translation>
 <translation id="2046702855113914483">Rámen</translation>
@@ -1571,6 +1572,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="206308717637808771">Odstraňujte údaje pri zavretí všetkých okien. Prístup k údajom je rovnaký ako na webe, ktorý si prezeráte.</translation>
 <translation id="2066700471214517561">Mikrofón s podporou beamformingu, aby bol hlas osoby používajúcej Chromebook zreteľný.</translation>
 <translation id="2068581968816126410">Používanie záložiek v rôznych zariadeniach</translation>
+<translation id="2069020119963193894">&amp;Veľkosť</translation>
 <translation id="206960706005837784">Aplikácia <ph name="APP_NAME" /> dokončila tlač na tlačiarni <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Žiadny miestny súbor denníka nie je k dispozícii.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Kliknutím nainštalujete rozšírenie}few{Kliknutím nainštalujete rozšírenia}many{Kliknutím nainštalujete rozšírenia}other{Kliknutím nainštalujete rozšírenia}}</translation>
@@ -1704,6 +1706,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2148892889047469596">Prenos karty</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2150139952286079145">Hľadať ciele</translation>
+<translation id="2150168665016482929">Minimalizovať</translation>
 <translation id="2150661552845026580">Pridať rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2151576029659734873">Zadali ste neplatný index kariet.</translation>
 <translation id="2153809900849531051">Hmlovina</translation>
@@ -4471,6 +4474,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="402707738228916911">Bol prijatý pokyn <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Priečinok <ph name="FOLDER_TITLE" /></translation>
 <translation id="4028467762035011525">Pridať metódy vstupu</translation>
+<translation id="4028830198155575078">&amp;Presunúť</translation>
 <translation id="4029024445166427442">kláves spúšťača + shift + medzerník</translation>
 <translation id="4029556917477724407">Späť zo stránky <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
@@ -6508,6 +6512,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5473099001878321374">Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora vášho dieťaťa a výrobcu tohto zariadenia a v prípade potreby pritom môže používať mobilné dáta. Niektoré tieto aplikácie môžu ponúkať nákupy v aplikácii.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí mať aspoň jeden znak}few{PIN musí mať aspoň # znaky}many{PIN must be at least # characters}other{PIN musí mať aspoň # znakov}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> vyžaduje, aby ste sa ihneď pripojili k sieti Wi-Fi a stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).</translation>
+<translation id="547615291475756075">Maximalizovať</translation>
 <translation id="5476957746413745956">Upraviť rýchlosť samostatne pre každý smer</translation>
 <translation id="5477089831058413614">Konfigurácia hotspotu zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Nemôže automaticky sťahovať viacero súborov</translation>
@@ -8822,6 +8827,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7098389117866926363">Zariadenie USB-C (ľavý port vzadu)</translation>
 <translation id="7098447629416471489">Tu sa zobrazia ďalšie uložené vyhľadávače</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Odstrániť aplikáciu}few{Odstrániť aplikácie}many{Odstrániť aplikácie}other{Odstrániť aplikácie}}</translation>
+<translation id="7099027177878709408">&amp;Zavrieť</translation>
 <translation id="7099337801055912064">Súbor PPD sa nedá načítať, pretože je príliš veľký. Maximálna veľkosť je 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Žiadne odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="7100379916748214860">Chrome práve zablokoval sťahovanie nebezpečného súboru. Získajte ešte lepšie zabezpečenie s rozšírenou ochranou.</translation>
@@ -9861,6 +9867,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7817361223956157679">Klávesnica na obrazovke ešte nie je v systéme Linux funkčná</translation>
 <translation id="7818135753970109980">Bol pridaný nový motív (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">Rozšírenia sú doplnky pre Chrome, ktoré zvýšia vašu produktivitu</translation>
+<translation id="7819968103441522596">&amp;Obnoviť</translation>
 <translation id="7820400255539998692">Odstráňte <ph name="FILENAME" />, aby si ostatní používatelia tohto zariadenia nemohli zobraziť vaše heslá</translation>
 <translation id="7820561748632634942">Chcete prideliť ďalšie prepínače?</translation>
 <translation id="782057141565633384">K&amp;opírovať adresu videa</translation>

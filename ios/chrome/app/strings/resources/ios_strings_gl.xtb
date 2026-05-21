@@ -1819,6 +1819,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
+<translation id="7312823817809783355">As túas tarefas</translation>
 <translation id="7313347584264171202">Aquí atoparás as túas pestanas do modo de incógnito</translation>
 <translation id="7322186060879266048">{count,plural, =1{Hai {count} opción de autocompletado dispoñible enriba do teclado.}other{Hai {count} opcións de autocompletado dispoñibles enriba do teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -1826,6 +1827,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7345061034321640811">Non se permite a importación</translation>
 <translation id="7347998088283246662">Importa os contrasinais, o historial, os marcadores e moito máis</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
+<translation id="7357999308187750900">Ver todo</translation>
 <translation id="7364796246159120393">Seleccionar ficheiro</translation>
 <translation id="736564850024123010">Cambia a posición da barra de enderezos para desfrutar dunha experiencia personalizada.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>

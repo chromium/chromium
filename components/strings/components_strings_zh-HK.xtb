@@ -2196,7 +2196,6 @@
 <translation id="4358059973562876591">DnsOverHttpsMode 政策發生錯誤，因此系統無法套用您指定的範本。</translation>
 <translation id="4358461427845829800">管理付款方法…</translation>
 <translation id="4359160567981085931">您剛才在欺詐網站上輸入了密碼。Chrome 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
-<translation id="4359853272024672680">AI 模式搜尋</translation>
 <translation id="4363222835916186793">此產品的通知已關閉</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="4369179505195332608">編輯駕駛執照</translation>
@@ -3795,6 +3794,7 @@
 <translation id="6883745783646124431">公司地址</translation>
 <translation id="6886283082988906333">ZIP 封存檔案</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">使用位置資料</translation>
 <translation id="6888584790432772780">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過不安全連線擷取原始網頁。</translation>
 <translation id="6890443033788248019">要授予位置存取權嗎？</translation>
 <translation id="6890531741535756070">您已選擇透過<ph name="DEVICE_LABEL" />在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。此供應商可能已儲存您的付款方法相關資料，您可以<ph name="BEGIN_LINK" />要求刪除<ph name="END_LINK" />。</translation>

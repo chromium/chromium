@@ -1797,6 +1797,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3763752038825281594">You previously didn't allow <ph name="PERMISSION" /> for this site</translation>
 <translation id="3765588406864124894">Mailbox 9</translation>
 <translation id="3767485424735936570">Copying and pasting this content to <ph name="VM_NAME" /> is not recommended by administrator policy</translation>
+<translation id="3769584711865378220"><ph name="URL" /> wants to change location access from approximate to precise</translation>
 <translation id="3772211998634047851">Paper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new note in Google Keep quickly</translation>
 <translation id="3780694243617746492">Output bin</translation>
@@ -2078,6 +2079,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="421066178035138955">Use virtual reality devices and data</translation>
 <translation id="4213500579045346575">Bodybuilding</translation>
 <translation id="4214357935346142455">sign-in screen profile</translation>
+<translation id="4218327733815631046">Keep approximate location</translation>
 <translation id="4219596572397833317">See price history and more to help you shop smarter.</translation>
 <translation id="4220128509585149162">Crashes</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Step 1: Sign in to the portal&lt;/h4&gt;
@@ -2197,7 +2199,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4358059973562876591">The templates that you've specified may not be applied due to an error with the DnsOverHttpsMode policy.</translation>
 <translation id="4358461427845829800">Manage payment methods...</translation>
 <translation id="4359160567981085931">You just entered your password on a deceptive site. Chrome can help. To change your password and notify Google that your account may be at risk, click 'Protect account'.</translation>
-<translation id="4359853272024672680">AI Mode search</translation>
 <translation id="4363222835916186793">Alerts for this product have been turned off</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="4369179505195332608">Edit driving licence</translation>
@@ -3001,6 +3002,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> redirected you too many times.</translation>
 <translation id="5619721953841297650">Preset</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
+<translation id="5627344039351500898">Change to precise</translation>
 <translation id="5628060911499153873">Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Failed to load policy settings</translation>
 <translation id="5630981295558454585">Ask Google about this page button, activate to ask Google about this page</translation>
@@ -3796,6 +3798,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6883745783646124431">work address</translation>
 <translation id="6886283082988906333">ZIP archive</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
+<translation id="688706781007114099">Use location</translation>
 <translation id="6888584790432772780">Chrome simplified this page to make it easier to read. Chrome retrieved the original page over an insecure connection.</translation>
 <translation id="6890443033788248019">Allow location?</translation>
 <translation id="6890531741535756070">You chose to verify with <ph name="DEVICE_LABEL" /> on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="BEGIN_LINK" />request to have deleted<ph name="END_LINK" />.</translation>

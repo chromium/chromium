@@ -7393,6 +7393,7 @@
 <translation id="6096326118418049043">X.500 పేరు</translation>
 <translation id="6097480669505687979">మీరు స్టోరేజ్‌ స్థలాన్ని ఖాళీ చేయకపోతే, వినియోగదారులు మరియు డేటా ఆటోమేటిక్‌గా తొలగించబడవచ్చు.</translation>
 <translation id="6097600385983390082">వాయిస్ శోధన మూసివేయబడింది</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">ఈ కార్డ్‌ను మీ iPhoneలో ఉపయోగించండి</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> నుండి కాపీ చేసిన వచనం</translation>
 <translation id="6099766472403716061">మీ MIDI పరికరాలను కంట్రోల్ చేసి, తిరిగి ప్రోగ్రామ్ చేయడానికి ఎల్లవేళలా <ph name="HOST" />‌ను అనుమతించండి</translation>
@@ -8747,6 +8748,7 @@
 <translation id="7030695672997239647">ట్యాబ్‌పై కుడి క్లిక్ చేసి, "Tabను గ్రూప్‌నకు జోడించండి" ఆప్షన్‌ను ఎంచుకుని, తర్వాత "కొత్త గ్రూప్"ను ఎంచుకోండి</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - సీరియల్ పోర్ట్ కనెక్ట్ చేయబడింది</translation>
 <translation id="7033616203784997570">ఇన్‌పుట్‌లో గరిష్ఠంగా 62 అక్షరాలు ఉండవచ్చు</translation>
+<translation id="7033731598469029604">ఆటోమేటిక్ బ్రౌజింగ్</translation>
 <translation id="7034692021407794547">బిల్లింగ్ మేనేజ్‌మెంట్ ప్రత్యేక హక్కులతో ఉన్న అడ్మినిస్ట్రేటర్ మొదట అడ్మిన్ కన్సోల్‌లోని Google Meet హార్డ్‌వేర్ విభాగంలో Google Meet హార్డ్‌వేర్ సర్వీస్ నియమాలను అంగీకరించాలి.</translation>
 <translation id="70356134210715500">మీ పాస్-కీలను పొందండి</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> మీ ఖాతా కోసం ఇప్పుడే ఒక పాస్-కీని క్రియేట్ చేసింది. పాస్-కీలతో మరింత వేగంగా, సురక్షితంగా సైన్ ఇన్ చేయవచ్చు, <ph name="USER" /> కోసం ఇవి Google Password Managerలో సేవ్ అయ్యి ఉంటాయి. <ph name="LEARN_MORE" /></translation>
