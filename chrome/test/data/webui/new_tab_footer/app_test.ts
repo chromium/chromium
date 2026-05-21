@@ -4,13 +4,11 @@
 
 import type {NewTabFooterAppElement} from 'chrome://newtab-footer/app.js';
 import {CustomizeDialogPage, FooterCustomizeChromeEntryPoint, FooterElement} from 'chrome://newtab-footer/app.js';
-import {NewTabFooterDocumentProxy} from 'chrome://newtab-footer/browser_proxy.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
-import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
-import {CustomizeButtonsProxy} from 'chrome://newtab-footer/customize_buttons_proxy.js';
+import {browserProxyFactory as customizeButtonsproxyFactory, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection} from 'chrome://newtab-footer/customize_chrome.mojom-webui.js';
 import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
-import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote, NewTabPageType} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
+import {browserProxyFactory as newTabFooterproxyFactory, NewTabFooterHandlerRemote, NewTabPageType} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {WindowProxy} from 'chrome://newtab-footer/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
@@ -37,7 +35,8 @@ suite('NewTabFooterAppTest', () => {
   let handler: TestMock<NewTabFooterHandlerRemote>&NewTabFooterHandlerRemote;
   let callbackRouter: NewTabFooterDocumentRemote;
   let customizeButtonsCallbackRouterRemote: CustomizeButtonsDocumentRemote;
-  let customizeButtonsHandler: TestMock<CustomizeButtonsHandlerRemote>;
+  let customizeButtonsHandler: TestMock<CustomizeButtonsHandlerRemote>&
+      CustomizeButtonsHandlerRemote;
   let metrics: MetricsTracker;
   let windowProxy: TestMock<WindowProxy>;
 
@@ -46,18 +45,15 @@ suite('NewTabFooterAppTest', () => {
   async function setupFooter(ntpType: NewTabPageType = NewTabPageType.kOther) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(NewTabFooterHandlerRemote);
-    NewTabFooterDocumentProxy.setInstance(
-        handler, new NewTabFooterDocumentCallbackRouter());
-    callbackRouter = NewTabFooterDocumentProxy.getInstance()
-                         .callbackRouter.$.bindNewPipeAndPassRemote();
+    const {instance, remote} = newTabFooterproxyFactory.createForTest(handler);
+    callbackRouter = remote;
+    newTabFooterproxyFactory.setInstance(instance);
 
-    customizeButtonsHandler = installMock(
-        CustomizeButtonsHandlerRemote,
-        mock => CustomizeButtonsProxy.setInstance(
-            mock, new CustomizeButtonsDocumentCallbackRouter()));
-    customizeButtonsCallbackRouterRemote =
-        CustomizeButtonsProxy.getInstance()
-            .callbackRouter.$.bindNewPipeAndPassRemote();
+    customizeButtonsHandler = TestMock.fromClass(CustomizeButtonsHandlerRemote);
+    const {instance: customizeInstance, remote: customizeRemote} =
+        customizeButtonsproxyFactory.createForTest(customizeButtonsHandler);
+    customizeButtonsCallbackRouterRemote = customizeRemote;
+    customizeButtonsproxyFactory.setInstance(customizeInstance);
     metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('url', url);
