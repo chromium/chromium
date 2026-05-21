@@ -235,7 +235,9 @@ cr-icon-button {
       var(--cr-icon-button-hover-background-color);
   --cr-icon-button-height: var(
       --cr-composebox-entrypoint-height, var(--cr-icon-button-size));
-  --cr-icon-button-margin-start: 6px;
+  /* Let parent ('contextual-entrypoint-and-menu') add margins around button.
+   */
+  --cr-icon-button-margin-start: 0;
   --cr-icon-button-width: var(
       --cr-composebox-entrypoint-width, var(--cr-icon-button-size));
   --icon-block-padding-small: 10px;

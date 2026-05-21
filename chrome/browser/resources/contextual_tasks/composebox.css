@@ -144,6 +144,11 @@
 }
 
 #composebox::part(composebox) {
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start:
+      12px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
+      0;
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end: 0;
   min-height: var(--composebox-min-height);
 }
 
@@ -197,8 +202,6 @@
   --text-input-top-spacing: 12px;
   --composebox-context-menu-entrypoint-button-color:
       var(--color-composebox-voice-lens-button);
-  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start: 0;
-
   box-shadow: none;
   box-sizing: border-box;
   display: block;
@@ -344,7 +347,11 @@
 #composebox::part(context-menu-entrypoint-icon) {
   --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
-  --cr-icon-button-margin-start: 4px;
+  /* Do not set '--cr-icon-button-margin-start' here. Use
+  * 'contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start'
+  * and the 'inline-end version'. These variables are set in
+  * '#composebox::part(composebox)'.
+  */
   --cr-icon-button-size: var(--icon-menu-button-size);
 }
 
@@ -355,7 +362,6 @@
   --cr-composebox-entrypoint-border-radius: 100px;
   --cr-composebox-entrypoint-height: 36px;
   --cr-composebox-entrypoint-width: 48px;
-  --cr-icon-button-margin-start: 8px;
 }
 
 :host([energy-effect-animation-enabled_]) #composebox::part(context-menu-entrypoint-icon),

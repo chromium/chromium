@@ -9,6 +9,10 @@
  * #include=cr-icons-lit
  * #css_wrapper_metadata_end */
 
+:host {
+  width: var(--cr-composebox-entrypoint-width, auto);
+}
+
 #entrypointButton.menu-open::part(entrypoint-button) {
   --cr-hover-background-color: var(--cr-icon-button-hover-background-color);
   background-color: var(--cr-icon-button-hover-background-color);
