@@ -1251,7 +1251,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
       browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  content::WebContentsAddedObserver web_contents_added_observer;
+  content::CreateAndLoadWebContentsObserver web_contents_observer(
+      1, base::BindRepeating([](content::WebContents* web_contents) {
+        return !web_contents->GetWebUI();
+      }));
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
@@ -1262,8 +1265,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   // this to the caller.
   EXPECT_EQ(1, action_results.size());
 
-  content::WebContents* new_contents =
-      web_contents_added_observer.GetWebContents();
+  content::WebContents* new_contents = web_contents_observer.Wait();
   ASSERT_TRUE(new_contents);
 
   bool platform_supports_programmatic_window_activation = true;

@@ -729,7 +729,10 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
   // is enabled, allow the popup. If disabled, preserve the popup behaviour of
   // other tools. See also ExecutionEngineBrowserTest.ForceSameTabNavigation.
 
-  content::WebContentsAddedObserver web_contents_added_observer;
+  content::CreateAndLoadWebContentsObserver web_contents_observer(
+      1, base::BindRepeating([](content::WebContents* web_contents) {
+        return !web_contents->GetWebUI();
+      }));
   EXPECT_EQ(
       federation_enabled(),
       content::EvalJs(web_contents(),
@@ -738,8 +741,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                           popup_url)));
 
   if (federation_enabled()) {
-    content::WebContents* new_contents =
-        web_contents_added_observer.GetWebContents();
+    content::WebContents* new_contents = web_contents_observer.Wait();
     EXPECT_EQ(true, content::EvalJs(new_contents, "!!window.opener;"));
   }
 }
