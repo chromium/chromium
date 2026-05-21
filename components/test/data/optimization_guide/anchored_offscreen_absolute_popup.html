@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anchored Offscreen Absolute Popup</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 200vh;
+    }
+
+    #trigger {
+      margin: 16px;
+    }
+
+    /*
+     * Keep the popup rendered but park it outside the viewport where it cannot
+     * be reached by scrolling.
+     */
+    #popup {
+      position: absolute;
+      top: 0;
+      left: -9999px;
+    }
+  </style>
+</head>
+<body>
+  <button id="trigger">Choose size</button>
+  <div id="popup">
+    <button id="size-option">Size 6.5</button>
+  </div>
+</body>
+</html>

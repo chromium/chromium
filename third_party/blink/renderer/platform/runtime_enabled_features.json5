@@ -331,16 +331,16 @@
         "default": "",
       },
     },
-    // Strip actionability from popup-like content that is positioned offscreen
-    // via position:absolute and cannot be reached by scrolling.
-    {
-      name: "AIPageContentAnchoredAbsoluteOffscreenNonActionability",
-      status: "test",
-    },
-    // Strip actionability from popup-like content that is positioned offscreen
+    // Strip actionability from content that is positioned offscreen
     // via position:fixed and cannot be reached by scrolling.
     {
       name: "AIPageContentAnchoredFixedOffscreenNonActionability",
+      status: "stable",
+    },
+    // Strip actionability from content that is positioned offscreen via
+    // absolute/relative/static positioning and cannot be reached by scrolling.
+    {
+      name: "AIPageContentAnchoredNonFixedOffscreenNonActionability",
       status: "stable",
     },
     // Whether to automatically build an APC content_extraction tree on load.

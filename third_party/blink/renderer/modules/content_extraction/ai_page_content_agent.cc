@@ -453,14 +453,120 @@ gfx::Rect LocalToOuterBoundingBox(const LayoutObject& object,
   return outer_box;
 }
 
+mojom::blink::AIPageContentCssPosition ConvertCssPosition(
+    EPosition css_position);
+
+// Builds the geometry APC emits. Reachability checks use the same boxes so
+// they make decisions from the geometry consumers will see.
+mojom::blink::AIPageContentGeometryPtr ComputeNodeGeometry(
+    const LayoutObject& object) {
+  auto geometry = mojom::blink::AIPageContentGeometry::New();
+  geometry->css_position = ConvertCssPosition(object.StyleRef().GetPosition());
+
+  gfx::RectF local_bounding_box;
+  geometry->visible_bounding_box =
+      ComputeVisibleBoundingBox(object, &local_bounding_box);
+  const bool map_to_outer =
+      RuntimeEnabledFeatures::AIPageContentOuterBoxMapToAncestorSpaceEnabled();
+  geometry->outer_bounding_box =
+      map_to_outer ? LocalToOuterBoundingBox(object, local_bounding_box)
+                   : ComputeOuterBoundingBox(object);
+
+  // A visible rect is the best safe fallback when the unclipped outer mapping
+  // fails or saturates.
+  if (map_to_outer && geometry->outer_bounding_box.IsEmpty() &&
+      !geometry->visible_bounding_box.IsEmpty()) {
+    geometry->outer_bounding_box = geometry->visible_bounding_box;
+  }
+
+  return geometry;
+}
+
+const mojom::blink::AIPageContentGeometry& GetOrComputeNodeGeometry(
+    const LayoutObject& object,
+    const mojom::blink::AIPageContentNode* content_node,
+    mojom::blink::AIPageContentGeometryPtr& computed_geometry) {
+  // Use the geometry already stored on the APC node when there is one.
+  if (content_node && content_node->content_attributes &&
+      content_node->content_attributes->geometry) {
+    return *content_node->content_attributes->geometry;
+  }
+
+  computed_geometry = ComputeNodeGeometry(object);
+  return *computed_geometry;
+}
+
+// Returns whether `object` is reachable through its nearest overflow
+// container. A scrollable dialog can reveal content below the fold; an
+// overflow:hidden container can only reveal content inside its current clip.
+bool IsReachableInOverflowContainer(const LayoutObject& object,
+                                    const LayoutBox& overflow_container) {
+  // Compare in the overflow container's coordinate space so current clipping
+  // does not hide content that scrolling the container can reveal.
+  gfx::RectF local_box =
+      ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
+          object.LocalBoundingBoxRectForAccessibility(
+              LayoutObject::IncludeDescendants(false)));
+
+  [[maybe_unused]] const bool mapped_to_container =
+      object.MapToVisualRectInAncestorSpace(&overflow_container, local_box,
+                                            kSkipAncestorAndViewportClips);
+  DCHECK(mapped_to_container);
+
+  const PhysicalRect object_rect(ToEnclosingRect(local_box));
+
+  if (overflow_container.IsUserScrollable()) {
+    // User-scrollable containers can reveal anything in their scrollable area,
+    // even if it is outside the current clip.
+    return overflow_container.ScrollableOverflowRect().Intersects(object_rect);
+  }
+
+  // `overflow:hidden` creates a Blink scroll container, but users cannot scroll
+  // it. Only the current overflow clip is reachable.
+  return overflow_container.OverflowClipRect(PhysicalOffset())
+      .Intersects(object_rect);
+}
+
+gfx::Rect ComputeDocumentBoundsInViewport(const LayoutView& layout_view) {
+  const LocalFrameView* frame_view = layout_view.GetDocument().View();
+  DCHECK(frame_view) << "A LayoutView should belong to a framed document.";
+
+  // `DocumentRect()` starts in document coordinates. `DocumentToFrame()`
+  // removes layout-viewport scrolling, then `FrameToViewport()` applies
+  // visual-viewport offset and scale, such as browser-controls shifts or pinch
+  // zoom.
+  return frame_view->FrameToViewport(frame_view->DocumentToFrame(
+      ToPixelSnappedRect(layout_view.DocumentRect())));
+}
+
 // Return true if the LayoutObject is positioned offscreen in such a way that it
 // can never be scrolled to, effectively hiding it.
 bool IsAnchoredOffscreen(const LayoutObject& object,
                          const mojom::blink::AIPageContentGeometry& geometry,
-                         bool is_in_fixed_to_view_subtree) {
+                         bool is_in_fixed_pos_subtree,
+                         const LayoutBox* nearest_overflow_container,
+                         bool is_inside_unreachable_overflow_container) {
   // Any visible pixels mean the node is reachable right now.
   if (!geometry.visible_bounding_box.IsEmpty()) {
     return false;
+  }
+
+  const bool fixed_non_actionability_enabled = RuntimeEnabledFeatures::
+      AIPageContentAnchoredFixedOffscreenNonActionabilityEnabled();
+  const bool non_fixed_non_actionability_enabled = RuntimeEnabledFeatures::
+      AIPageContentAnchoredNonFixedOffscreenNonActionabilityEnabled();
+
+  const bool relevant_offscreen_action_filter_enabled =
+      is_in_fixed_pos_subtree ? fixed_non_actionability_enabled
+                              : non_fixed_non_actionability_enabled;
+  if (!relevant_offscreen_action_filter_enabled) {
+    return false;
+  }
+
+  // Descendants cannot be reached through an overflow container that is itself
+  // unreachable from its parent chain.
+  if (is_inside_unreachable_overflow_container) {
+    return true;
   }
 
   // Without an outer box, APC does not know where the node would land after
@@ -471,59 +577,23 @@ bool IsAnchoredOffscreen(const LayoutObject& object,
     return false;
   }
 
+  // Overflow containers define the local reachable area for their descendants.
+  // This applies inside fixed subtrees too: a visible fixed scroller can reveal
+  // items outside the current viewport by scrolling its own contents.
+  if (nearest_overflow_container) {
+    return !IsReachableInOverflowContainer(object, *nearest_overflow_container);
+  }
+
   const LayoutView* layout_view = object.GetDocument().GetLayoutView();
-  if (!layout_view) {
-    return false;
-  }
-  const LocalFrameView* frame_view = object.GetDocument().View();
-  if (!frame_view) {
-    return false;
-  }
+  CHECK(layout_view) << "APC offscreen actionability runs while walking an "
+                        "existing layout tree.";
 
-  if (is_in_fixed_to_view_subtree) {
-    // Check if the position: fixed offscreen anchor case should be handled.
-    if (!RuntimeEnabledFeatures::
-            AIPageContentAnchoredFixedOffscreenNonActionabilityEnabled()) {
-      return false;
-    }
-  } else {
-    // Check if the position: absolute case should be handled. For now, this is
-    // turned off in stable builds because the implementation was flawed, and
-    // was marking elements that could be scrolled to in an ancestor scrollable
-    // div as anchored offscreen.
-    // TODO(crbug.com/513343406) only support this path if position:absolute is
-    // on an ancestor, and address the overflow:scroll/auto ancestor case.
-    if (!RuntimeEnabledFeatures::
-            AIPageContentAnchoredAbsoluteOffscreenNonActionabilityEnabled()) {
-      return false;
-    }
-  }
-
-  // Nodes in a viewport-fixed subtree must intersect the current viewport to
-  // be reachable. Other nodes only need to intersect the scrollable document
-  // bounds, because normal document scrolling can still bring them onscreen
-  // later.
-  //
-  // `outer_bounding_box` is viewport-relative, so the non-fixed path must use
-  // document bounds in the same coordinate space. A raw `DocumentRect()`
-  // starts at document-space origin (0, 0), which would wrongly classify
-  // nodes above or left of the current scroll position as anchored offscreen
-  // even though the user can scroll back to them.
-  //
-  // `DocumentToFrame()` removes layout-viewport scrolling, and
-  // `FrameToViewport()` then applies visual-viewport offset and scale. This
-  // keeps the document bounds aligned with `outer_bounding_box`, including
-  // cases like browser controls shifting the visible viewport.
-  const gfx::Rect document_bounds_in_viewport =
-      frame_view->FrameToViewport(frame_view->DocumentToFrame(
-          ToPixelSnappedRect(layout_view->DocumentRect())));
+  // Fixed nodes must intersect the viewport. Non-fixed nodes only need to
+  // intersect the root document's scrollable bounds, because normal document
+  // scrolling can still bring them onscreen later.
   const gfx::Rect reachable_bounds =
-      is_in_fixed_to_view_subtree ? ComputeVisibleBoundingBox(*layout_view)
-                                  : document_bounds_in_viewport;
-  if (reachable_bounds.IsEmpty()) {
-    return false;
-  }
-
+      is_in_fixed_pos_subtree ? ComputeVisibleBoundingBox(*layout_view)
+                              : ComputeDocumentBoundsInViewport(*layout_view);
   return !geometry.outer_bounding_box.Intersects(reachable_bounds);
 }
 
@@ -2093,15 +2163,37 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
       child_recursion_data.is_aria_disabled = true;
     }
     const auto* child_box = DynamicTo<LayoutBox>(child);
-    child_recursion_data.is_in_fixed_to_view_subtree =
-        recursion_data.is_in_fixed_to_view_subtree ||
-        (child_box && child_box->IsFixedToView());
+    const bool child_is_fixed_to_view = child_box && child_box->IsFixedToView();
+    child_recursion_data.is_in_fixed_pos_subtree =
+        recursion_data.is_in_fixed_pos_subtree || child_is_fixed_to_view;
+    if (child_is_fixed_to_view) {
+      // Viewport-fixed content escapes ancestor overflow clips and scroll
+      // offsets, so a DOM scroller ancestor should not constrain it.
+      child_recursion_data.nearest_overflow_container = nullptr;
+      child_recursion_data.is_inside_unreachable_overflow_container = false;
+    }
 
     has_visible_content |= IsVisible(*child);
 
     bool child_has_visible_content = false;
     auto child_content_node =
         MaybeGenerateContentNode(*child, child_recursion_data);
+
+    if (child_box && child_box->IsScrollContainer()) {
+      mojom::blink::AIPageContentGeometryPtr computed_child_geometry;
+      const auto& child_geometry = GetOrComputeNodeGeometry(
+          *child_box, child_content_node.get(), computed_child_geometry);
+      // The child is checked against its parent chain. Descendants then check
+      // against the child container's own reachable area.
+      child_recursion_data.is_inside_unreachable_overflow_container |=
+          IsAnchoredOffscreen(
+              *child_box, child_geometry,
+              child_recursion_data.is_in_fixed_pos_subtree,
+              child_recursion_data.nearest_overflow_container,
+              child_recursion_data.is_inside_unreachable_overflow_container);
+      child_recursion_data.nearest_overflow_container = child_box;
+    }
+
     if (!ShouldSkipDescendants(child_content_node, *child)) {
       if (child_content_node) {
         child_recursion_data.stack_depth++;
@@ -2196,6 +2288,11 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     child_recursion_data.stack_depth = recursion_data.stack_depth + 1;
     child_recursion_data.accessibility_focused_node_id =
         GetAccessibilityFocusedDOMNodeId(*local_frame);
+    // The iframe document has its own layout viewport and coordinate space, so
+    // it cannot inherit the parent's nearest overflow container. It is still
+    // hidden if the iframe element is inside an unreachable ancestor container.
+    child_recursion_data.is_inside_unreachable_overflow_container =
+        recursion_data.is_inside_unreachable_overflow_container;
 
     // Add a node for the iframe's LayoutView for consistency with remote
     // frames.
@@ -2355,8 +2452,10 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   // We drop the actionable metadata so that downstream click generation does
   // not chase nodes that scrolling can never reach.
   if (attributes.node_interaction_info && attributes.geometry &&
-      IsAnchoredOffscreen(object, *attributes.geometry,
-                          recursion_data.is_in_fixed_to_view_subtree)) {
+      IsAnchoredOffscreen(
+          object, *attributes.geometry, recursion_data.is_in_fixed_pos_subtree,
+          recursion_data.nearest_overflow_container,
+          recursion_data.is_inside_unreachable_overflow_container)) {
     attributes.node_interaction_info.reset();
   }
 
@@ -2599,47 +2698,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
       << "AddNodeGeometry only works when layout is complete for object: "
       << object;
 
-  attributes.geometry = mojom::blink::AIPageContentGeometry::New();
+  attributes.geometry = ComputeNodeGeometry(object);
   mojom::blink::AIPageContentGeometry& geometry = *attributes.geometry;
-  geometry.css_position = ConvertCssPosition(object.StyleRef().GetPosition());
-
-  // Compute the two fundamental bounding boxes:
-  //
-  // 1. outer_bounding_box: The object's full bounding box in viewport
-  //    coordinates, ignoring all ancestor clipping (including the viewport
-  //    clip). This includes the entire object regardless of viewport
-  //    visibility. The origin is relative to the viewport; negative values
-  //    indicate the object begins above/left of the viewport.
-  //
-  // 2. visible_bounding_box: The portion visible in the viewport, expressed in
-  //    viewport coordinates after applying all ancestor and viewport clipping.
-  //
-  // These boxes serve different purposes:
-  // - outer_bounding_box: Used for hit-testing semantics and determining the
-  //   object’s overall size and position relative to the viewport once scrolled
-  //   into view (ignoring ancestor clips).
-  // - visible_bounding_box: Used for determining what is actually visible to
-  //   users and immediately hit-testable without scrolling.
-  // Compute the visible bounding box and capture the local box so the outer
-  // box can reuse identical geometry inputs when the feature flag is enabled.
-  gfx::RectF local_bounding_box;
-  geometry.visible_bounding_box =
-      ComputeVisibleBoundingBox(object, &local_bounding_box);
-  const bool map_to_outer =
-      RuntimeEnabledFeatures::AIPageContentOuterBoxMapToAncestorSpaceEnabled();
-  geometry.outer_bounding_box =
-      map_to_outer ? LocalToOuterBoundingBox(object, local_bounding_box)
-                   : ComputeOuterBoundingBox(object);
-
-  // For APC, the most useful fallback is to clamp the outer box to the visible
-  // box when the mapping fails or saturates:
-  // - It preserves the key invariant checked by ValidateBoundingBoxes().
-  // - It avoids emitting enormous/sentinel geometry to consumers.
-  // - It does not change visible_bounding_box semantics.
-  if (map_to_outer && geometry.outer_bounding_box.IsEmpty() &&
-      !geometry.visible_bounding_box.IsEmpty()) {
-    geometry.outer_bounding_box = geometry.visible_bounding_box;
-  }
 
   CollectGeometryForRedactedNodes(object, attributes.redaction_decision,
                                   geometry.visible_bounding_box);

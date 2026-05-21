@@ -27,6 +27,7 @@
 namespace blink {
 class Document;
 class LayoutIFrame;
+class LayoutBox;
 class LayoutObject;
 class LocalFrame;
 class Node;
@@ -110,7 +111,13 @@ class MODULES_EXPORT AIPageContentAgent final
       RecursionData(const ComputedStyle& document_style);
 
       bool is_aria_disabled = false;
-      bool is_in_fixed_to_view_subtree = false;
+      bool is_in_fixed_pos_subtree = false;
+      // The nearest overflow container clips descendants. It may or may not be
+      // user-scrollable, because `overflow:hidden` also creates a container.
+      const LayoutBox* nearest_overflow_container = nullptr;
+      // Once an overflow container cannot be reached, its descendants cannot
+      // be reached through that container either.
+      bool is_inside_unreachable_overflow_container = false;
       const ComputedStyle& document_style;
       int stack_depth = 0;
       DOMNodeId accessibility_focused_node_id = kInvalidDOMNodeId;

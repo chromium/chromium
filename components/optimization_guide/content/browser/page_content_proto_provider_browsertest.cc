@@ -928,6 +928,34 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AnchoredOffscreenAbsolutePopupLosesInteractionInfo) {
+  // The page models an absolute popup parked at left: -9999px where it cannot
+  // be reached by scrolling.
+  LoadPage(https_server()->GetURL("/anchored_offscreen_absolute_popup.html"),
+           nullptr);
+
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto& root = ActionableContentRootNode();
+  const auto* trigger = FindFirstNodeWithAttributeTypeAndTextSubstring(
+      root, optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL,
+      "Choose size");
+  ASSERT_TRUE(trigger);
+  ASSERT_TRUE(trigger->content_attributes().has_interaction_info());
+
+  const auto* size_option = FindFirstNodeWithAttributeTypeAndTextSubstring(
+      root, optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL,
+      "Size 6.5");
+  ASSERT_TRUE(size_option);
+
+  // The hidden option still exists in the DOM, but APC should stop presenting
+  // it as directly actionable because scrolling cannot bring it on screen.
+  const auto& option_geometry = size_option->content_attributes().geometry();
+  EXPECT_LT(option_geometry.outer_bounding_box().x(), 0);
+  EXPECT_FALSE(size_option->content_attributes().has_interaction_info());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoGeometry) {
   LoadPage(https_server()->GetURL("/simple.html"), nullptr);
 
