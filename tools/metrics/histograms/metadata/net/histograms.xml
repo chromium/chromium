@@ -8591,6 +8591,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.EntriesWithHintsPercentage" units="%"
+    expires_after="2026-11-15">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the percentage of live cache entries that have associated hints set.
+    This is recorded once each time the in-memory index is loaded from the
+    database. This data is used to evaluate the efficiency of the in-memory data
+    structures.
+  </summary>
+</histogram>
+
 <histogram name="Net.SqlDiskCache.ExclusiveOperationDelay" units="microseconds"
     expires_after="2026-11-15">
   <owner>horo@chromium.org</owner>

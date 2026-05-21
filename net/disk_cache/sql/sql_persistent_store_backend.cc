@@ -2826,6 +2826,13 @@ SqlPersistentStore::Backend::LoadInMemoryIndexInternal() {
       }
     }
   }
+
+  if (index.size() > 0) {
+    base::UmaHistogramPercentage(
+        "Net.SqlDiskCache.EntriesWithHintsPercentage",
+        static_cast<int>(hints_map.size() * 100 / index.size()));
+  }
+
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat(
           {kSqlDiskCacheBackendHistogramPrefix, "LoadInMemoryIndexTime"}),
