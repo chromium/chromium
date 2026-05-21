@@ -221,10 +221,6 @@ void AshTestBase::TearDown() {
 
   // Make sure that we can exit tablet mode before shutdown correctly.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-
-  // Flush pre shutdown tasks first.
-  base::RunLoop().RunUntilIdle();
-
   Shell::Get()->session_controller()->NotifyChromeTerminating();
 
   // Flush the message loop to finish pending release tasks.
