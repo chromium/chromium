@@ -200,7 +200,7 @@ void SetForceDisableSubpixelFontRendering(bool disable) {
 }
 
 bool GetFontRenderParamsSubpixelRenderingEnabledForTesting() {
-  return force_disable_subpixel_font_rendering;
+  return !force_disable_subpixel_font_rendering;
 }
 
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,

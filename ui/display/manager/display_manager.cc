@@ -537,9 +537,26 @@ void DisplayManager::UpdateInternalDisplay(
 void DisplayManager::RefreshFontParams() {
   bool force_disable_subpixel_font_rendering = false;
   if (features::DoesFormFactorControlSubpixelRendering()) {
-    force_disable_subpixel_font_rendering =
-        chromeos::GetFormFactor() != chromeos::form_factor::kClamshell;
+    const chromeos::DeviceType device_type = chromeos::GetDeviceType();
+    const bool should_enable_subpixel_rendering =
+        device_type != chromeos::DeviceType::kChromebit &&
+        device_type != chromeos::DeviceType::kChromebox &&
+        device_type != chromeos::DeviceType::kUnknown;
+    force_disable_subpixel_font_rendering = !should_enable_subpixel_rendering;
   }
+
+  // TODO(vincentchiang): Create per display subpixel rendering controls, and
+  // get rid of the global setting.
+  for (const auto& display : active_display_list_) {
+    if (display.IsInternal()) {
+      const ManagedDisplayInfo& info = GetDisplayInfo(display.id());
+      if (info.GetLogicalActiveRotation() != Display::ROTATE_0) {
+        force_disable_subpixel_font_rendering = true;
+      }
+      break;
+    }
+  }
+
   if (features::IsOledScaleFactorEnabled()) {
     force_disable_subpixel_font_rendering = true;
   }

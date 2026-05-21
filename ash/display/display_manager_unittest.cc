@@ -5423,11 +5423,56 @@ TEST_F(DisplayManagerTest, VirtualDisplayUtilAddRemove) {
 
 TEST_F(DisplayManagerTest, FontConfig) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII("form-factor", "CHROMEBOX");
+
+  // Configure the first display as internal
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Default to Clamshell and unrotated displays
+  command_line->InitFromArgv({"", "--form-factor=CLAMSHELL"});
+  UpdateDisplay("400x300,800x600");
   display_manager()->RefreshFontParams();
   EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
 
-  command_line->AppendSwitchASCII("form-factor", "CLAMSHELL");
+  // Rotating the internal display should force disable subpixel font rendering
+  UpdateDisplay("400x300/r,800x600");
+  display_manager()->RefreshFontParams();
+  EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  // Rotating ONLY the external display should NOT force disable subpixel font
+  // rendering
+  UpdateDisplay("400x300,800x600/r");
+  display_manager()->RefreshFontParams();
+  EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  // Reset back to unrotated displays
+  UpdateDisplay("400x300,800x600");
+
+  // CHROMEBASE, CHROMESLATE, CONVERTIBLE and DETACHABLE form factors should
+  // allow subpixel font rendering
+  command_line->InitFromArgv({"", "--form-factor=CHROMEBASE"});
+  display_manager()->RefreshFontParams();
+  EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  command_line->InitFromArgv({"", "--form-factor=CHROMESLATE"});
+  display_manager()->RefreshFontParams();
+  EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  command_line->InitFromArgv({"", "--form-factor=CONVERTIBLE"});
+  display_manager()->RefreshFontParams();
+  EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  command_line->InitFromArgv({"", "--form-factor=DETACHABLE"});
+  display_manager()->RefreshFontParams();
+  EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  // CHROMEBOX form factor should force disable it
+  command_line->InitFromArgv({"", "--form-factor=CHROMEBOX"});
+  display_manager()->RefreshFontParams();
+  EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  // OTHER form factors should force disable it
+  command_line->InitFromArgv({"", "--form-factor=OTHER"});
   display_manager()->RefreshFontParams();
   EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
 
@@ -5436,10 +5481,11 @@ TEST_F(DisplayManagerTest, FontConfig) {
     feature_list_.InitAndEnableFeature(
         display::features::kOledScaleFactorEnabled);
     display_manager()->RefreshFontParams();
-    EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+    EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
   }
-  display_manager()->RefreshFontParams();
-  EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  // Reset command line to clamshell for other tests
+  command_line->InitFromArgv({"", "--form-factor=CLAMSHELL"});
 }
 
 // This test tests the behavior of going to one or zero display in the Unified
