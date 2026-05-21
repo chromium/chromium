@@ -154,6 +154,7 @@ source_set("unit_tests") {
     "pasteboard_util_unittest.mm",
     "rtl_geometry_unittest.mm",
     "terms_util_unittest.mm",
+    "ui_view_controller_with_display_tracing_unittest.mm",
     "uikit_ui_util_unittest.mm",
     "uiview_window_coordinates_unittest.mm",
     "uiview_window_observing_unittest.mm",
