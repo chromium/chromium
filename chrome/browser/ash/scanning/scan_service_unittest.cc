@@ -460,9 +460,9 @@ TEST_F(ScanServiceTest, BadScannerId) {
 // results in obtaining no capabilities.
 TEST_F(ScanServiceTest, NoCapabilities) {
   AddScanner(kFirstTestScannerName);
-  fake_lorgnette_scanner_manager_.SimulateDBusFailure(true);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
+  fake_lorgnette_scanner_manager_.SimulateDBusFailure(true);
   auto caps = GetScannerCapabilities(scanners[0]->id);
   EXPECT_TRUE(caps->sources.empty());
 }

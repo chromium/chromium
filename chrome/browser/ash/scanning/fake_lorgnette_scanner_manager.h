@@ -20,11 +20,12 @@ namespace ash {
 
 // Fake implementation of LorgnetteScannerManager for tests.
 //
-// It keeps track of cancelled scan jobs, which affects the behavior of
-// ReadScanData (fails with OPERATION_RESULT_CANCELLED for cancelled jobs) and
-// CancelScan (fails with OPERATION_RESULT_UNKNOWN for already cancelled jobs).
-// Other than that, tests are free to configure the various operations's
-// responses.
+// Tests can register scanners and scan data (see `AddScanner` and
+// `SetDataForFutureScanJobs`). The implementation simulates the real
+// Lorgnette system, e.g. keeps track of configurations, scanner handles,
+// scan jobs, etc.
+// NOTE: The legacy API (the `Scan` function and the one-argument `CancelScan`
+// function) is not fully implemented.
 class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
  public:
   FakeLorgnetteScannerManager();
@@ -61,14 +62,14 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
             PageCallback page_callback,
             CompletionCallback completion_callback) override;
   void CancelScan(CancelCallback cancel_callback) override;
-  // TODO(crbug.com/479031241): Fix edge cases.
   void CancelScan(const lorgnette::CancelScanRequest& request,
                   CancelScanCallback callback) override;
 
-  // Flips a flag to simulate D-Bus failure for OpenScanner and SetOptions, i.e.
-  // make them pass std::nullopt to their response callbacks.
-  // TODO(crbug.com/479031241): Make this affect all relevant operations but
-  // make the behavior mimic production: the current behavior is too simplistic.
+  // Flips a flag to simulate D-Bus failure. When enabled, all D-Bus facing
+  // operations will mimic the behavior of a lost connection to the lorgnette
+  // daemon, matching the production LorgnetteScannerManagerImpl's behavior
+  // (e.g., returning empty scanner lists, or passing std::nullopt/false to
+  // callbacks depending on the method).
   void SimulateDBusFailure(bool simulate);
 
   // Flips a flag to simulate failure when the scanner tries to scan. This
@@ -77,12 +78,12 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   // respectively). Note that simulated DBus failure (see above) takes priority.
   void SimulateScannerFailure(bool simulate);
 
-  // Registers a scanner with a template configuration. A subsequent OpenScanner
-  // request with the scanner id from `scanner_info` will succeed and return a
-  // copy of `config_template` with a unique session handle populated in the
-  // scanner token, unless overridden via SimulateDBusFailure.
-  // TODO(crbug.com/479031241): Update this and other comments once the class
-  // rewrite is complete.
+  // Registers a scanner. A subsequent `OpenScanner` request with the scanner
+  // name (`scanner_id`) from `scanner_info` will succeed and return a copy of
+  // `config_template` with a unique session handle populated in the scanner
+  // token, unless overridden via SimulateDBusFailure. `scanner_info` will be
+  // also be used by `GetScannerInfoList`. `capabilities` will be used by
+  // `GetScannerCapabilities` (nullopt results in default capabilities).
   void AddScanner(lorgnette::ScannerInfo scanner_info,
                   lorgnette::ScannerConfig config_template,
                   std::optional<lorgnette::ScannerCapabilities> capabilities =
@@ -131,7 +132,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   };
 
   struct JobState {
-    JobState();
+    explicit JobState(std::vector<std::string> scan_data);
     JobState(const JobState&);
     JobState(JobState&&) noexcept;
     JobState& operator=(const JobState&);
@@ -143,17 +144,28 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   };
 
   std::string CreateFreshHandle();
+
   base::optional_ref<ScannerState> GetScannerByHandle(
       std::string_view scanner_handle);
-  // TODO(neis): Use either "scanner_name" or "scanner_id", right now we mix.
   base::optional_ref<ScannerState> GetScannerByName(
       std::string_view scanner_name);
 
+  // See `SimulateDBusFailure` method.
   bool simulate_dbus_failure_ = false;
+
+  // See `SimulateScannerFailure` method.
   bool simulate_scanner_failure_ = false;
+
+  // See `CreateFreshHandle` method.
   size_t handle_count_ = 0;
+
+  // See `AddScanner` method.
   std::vector<ScannerState> scanners_;
+
+  // Scan jobs keyed by job handle.
   absl::flat_hash_map<std::string, JobState> scan_jobs_;
+
+  // See `last_scan_settings` method.
   std::optional<lorgnette::ScanSettings> last_scan_settings_;
 };
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <iterator>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -123,7 +124,11 @@ FakeLorgnetteScannerManager::ScannerState::operator=(
     ScannerState&& other) noexcept = default;
 FakeLorgnetteScannerManager::ScannerState::~ScannerState() = default;
 
-FakeLorgnetteScannerManager::JobState::JobState() = default;
+FakeLorgnetteScannerManager::JobState::JobState(
+    std::vector<std::string> scan_data)
+    : remaining_data(std::make_move_iterator(scan_data.begin()),
+                     std::make_move_iterator(scan_data.end())) {}
+
 FakeLorgnetteScannerManager::JobState::JobState(const JobState&) = default;
 FakeLorgnetteScannerManager::JobState::JobState(JobState&&) noexcept = default;
 FakeLorgnetteScannerManager::JobState&
@@ -134,8 +139,11 @@ FakeLorgnetteScannerManager::JobState::~JobState() = default;
 
 void FakeLorgnetteScannerManager::GetScannerNames(
     GetScannerNamesCallback callback) {
-  std::vector<std::string> names = base::ToVector(
-      scanners_, [](const ScannerState& state) { return state.info.name(); });
+  std::vector<std::string> names;
+  if (!simulate_dbus_failure_) {
+    names = base::ToVector(
+        scanners_, [](const ScannerState& state) { return state.info.name(); });
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(names)));
 }
@@ -145,17 +153,13 @@ void FakeLorgnetteScannerManager::GetScannerInfoList(
     LocalScannerFilter local_only,
     SecureScannerFilter secure_only,
     GetScannerInfoListCallback callback) {
-  if (simulate_dbus_failure_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-    return;
-  }
-
   lorgnette::ListScannersResponse response;
-  for (const ScannerState& state : scanners_) {
-    *response.add_scanners() = state.info;
+  if (!simulate_dbus_failure_) {
+    for (const ScannerState& state : scanners_) {
+      *response.add_scanners() = state.info;
+    }
+    response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
   }
-  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
@@ -163,14 +167,13 @@ void FakeLorgnetteScannerManager::GetScannerInfoList(
 void FakeLorgnetteScannerManager::GetScannerCapabilities(
     const std::string& scanner_name,
     GetScannerCapabilitiesCallback callback) {
-  if (simulate_dbus_failure_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-    return;
-  }
-
   std::optional<lorgnette::ScannerCapabilities> caps;
   if (auto scanner = GetScannerByName(scanner_name); scanner.has_value()) {
+    if (simulate_dbus_failure_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      return;
+    }
     caps = scanner->capabilities;
   }
 
@@ -183,12 +186,6 @@ void FakeLorgnetteScannerManager::OpenScanner(
     OpenScannerCallback callback) {
   CHECK(request.has_scanner_id());
 
-  if (simulate_dbus_failure_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-    return;
-  }
-
   lorgnette::OpenScannerResponse response;
   *response.mutable_scanner_id() = request.scanner_id();
 
@@ -199,6 +196,10 @@ void FakeLorgnetteScannerManager::OpenScanner(
   } else if (scanner->active_session.has_value() &&
              scanner->active_session->client_id != request.client_id()) {
     response.set_result(lorgnette::OPERATION_RESULT_DEVICE_BUSY);
+  } else if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
   } else {
     response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
     response.mutable_config()->CopyFrom(scanner->template_config);
@@ -371,10 +372,8 @@ void FakeLorgnetteScannerManager::StartPreparedScan(
     response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
     std::string job_handle = CreateFreshHandle();
     response.mutable_job_handle()->set_token(job_handle);
-    JobState job_state;
-    job_state.remaining_data = base::queue<std::string>(
-        scanner->scan_data_.begin(), scanner->scan_data_.end());
-    scan_jobs_[std::move(job_handle)] = std::move(job_state);
+    JobState job_state(scanner->scan_data_);
+    scan_jobs_.try_emplace(std::move(job_handle), std::move(job_state));
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -450,23 +449,13 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
                                        CompletionCallback completion_callback) {
   last_scan_settings_ = settings;
 
-  if (simulate_dbus_failure_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion_callback),
-                                  lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
-    return;
-  }
-
   auto scanner = GetScannerByName(scanner_name);
-  if (!scanner.has_value()) {
+  if (!scanner.has_value() || simulate_dbus_failure_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_callback),
                                   lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
     return;
   }
-
-  // TODO(neis): Open an active session?
-  // TODO(neis): Create anonymous ScanJob.
 
   if (simulate_scanner_failure_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -496,7 +485,8 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
 
 void FakeLorgnetteScannerManager::CancelScan(CancelCallback cancel_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(cancel_callback), true));
+      FROM_HERE,
+      base::BindOnce(std::move(cancel_callback), !simulate_dbus_failure_));
 }
 
 void FakeLorgnetteScannerManager::CancelScan(
