@@ -17,14 +17,13 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Manages the state of the window for a {@link ChromeAndroidTaskImpl}. This class is responsible
- * for determining if the window is minimized, maximized, fullscreen, or in a normal state.
- */
+/** Manages the {@link WindowState} and window bounds for a {@link ChromeAndroidTaskImpl}. */
 @NullMarked
 final class WindowStateManager {
 
@@ -55,49 +54,106 @@ final class WindowStateManager {
     }
 
     private @WindowState int mWindowState = WindowState.UNKNOWN;
-    private @Nullable Rect mRestoredRect;
+
+    private @Nullable Rect mCurrentBoundsInDp;
+    private @Nullable Rect mCurrentBoundsInPx;
+    private @Nullable Rect mPreviousBoundsInDp;
+    private @Nullable Rect mRestoredBoundsInPx;
 
     /**
-     * Updates the current window state and caches the restored bounds if the window is in a normal
-     * state. This method should be called when the window state might have changed, for example,
-     * after a configuration change or when the activity's layout changes.
+     * Updates the current window state, including bounds.
      *
-     * @param activity The current {@link Activity}.
+     * <p>This method should be called when the window state may have changed, for example, after a
+     * configuration change or when the {@link Activity}'s layout changes.
+     *
+     * @param activity The top {@link Activity} in the window.
+     * @param display The {@link DisplayAndroid} the activity is on.
      */
-    public void update(Activity activity) {
+    void update(Activity activity, DisplayAndroid display) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return;
         }
-        @WindowState int newWindowState = getWindowState(activity);
 
+        // Update the current bounds and the previous bounds.
+        Rect newBoundsInPx = activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+        Rect newBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(newBoundsInPx, 1.0f / display.getDipScale());
+        mPreviousBoundsInDp = mCurrentBoundsInDp;
+        mCurrentBoundsInPx = newBoundsInPx;
+        mCurrentBoundsInDp = newBoundsInDp;
+
+        // Determine the window state using the current bounds.
+        @WindowState int newWindowState = getWindowStateInternal(activity, newBoundsInPx);
+
+        // Update "restored bounds" using the current window state.
         if (newWindowState == WindowState.NORMAL) {
-            mRestoredRect = activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+            mRestoredBoundsInPx = newBoundsInPx;
         }
         mWindowState = newWindowState;
     }
 
-    /**
-     * Gets the current state of the window.
-     *
-     * @return The current {@link WindowState}.
-     */
-    public @WindowState int getWindowState() {
-        assert mWindowState != WindowState.UNKNOWN;
+    /** Returns the current {@link WindowState}. */
+    @WindowState
+    int getWindowState() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return WindowState.UNKNOWN;
+        }
+
+        assert mWindowState != WindowState.UNKNOWN
+                : "update() must be called before getWindowState()";
         return mWindowState;
     }
 
+    /** Returns the current window bounds (in DP). */
+    Rect getCurrentBoundsInDp() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return new Rect();
+        }
+
+        assert mCurrentBoundsInDp != null : "update() must be called before getCurrentBoundsInDp()";
+        return mCurrentBoundsInDp;
+    }
+
+    /** Returns the current window bounds (in pixels). */
+    Rect getCurrentBoundsInPx() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return new Rect();
+        }
+
+        assert mCurrentBoundsInPx != null : "update() must be called before getCurrentBoundsInPx()";
+        return mCurrentBoundsInPx;
+    }
+
     /**
-     * Returns the bounds of the window when it was last in the {@link WindowState#NORMAL} state.
-     * These bounds can be used to restore the window to its previous size and position.
+     * Returns the bounds of the window (in pixels) for its most recent {@link WindowState#NORMAL}
+     * state.
      *
-     * @return The restored bounds in pixels.
+     * <p>These bounds will be used to restore the window from the maximized/minimized state to the
+     * normal state.
      */
-    public @Nullable Rect getRestoredRectInPx() {
-        return mRestoredRect;
+    @Nullable Rect getRestoredBoundsInPx() {
+        return mRestoredBoundsInPx;
+    }
+
+    /**
+     * Returns whether there is a change in valid window bounds (in DP) after the last call to
+     * {@link #update}.
+     *
+     * <p>This method will only detect changes in valid window bounds, i.e., it will return false if
+     * called immediately after a window is initialized, in which case there is only the "initial
+     * bounds" and no "previous bounds" to compare the initial bounds with.
+     */
+    boolean boundsChangedInDp() {
+        // Only detect changes in valid (non-null) bounds.
+        if (mPreviousBoundsInDp == null || mCurrentBoundsInDp == null) {
+            return false;
+        }
+
+        return !mCurrentBoundsInDp.equals(mPreviousBoundsInDp);
     }
 
     @RequiresApi(api = VERSION_CODES.R)
-    private @WindowState int getWindowState(Activity activity) {
+    private @WindowState int getWindowStateInternal(Activity activity, Rect currentBoundsInPx) {
         if (isMinimized(activity)) {
             return WindowState.MINIMIZED;
         }
@@ -106,7 +162,7 @@ final class WindowStateManager {
             return WindowState.FULLSCREEN;
         }
 
-        if (isMaximized(activity)) {
+        if (isMaximized(activity, currentBoundsInPx)) {
             return WindowState.MAXIMIZED;
         }
         return WindowState.NORMAL;
@@ -132,22 +188,17 @@ final class WindowStateManager {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
-    private static boolean isMaximized(Activity activity) {
+    private static boolean isMaximized(Activity activity, Rect currentBoundsInPx) {
         if (activity.isInMultiWindowMode()) {
             // Desktop windowing mode is also a multi-window mode. This should return false
             // if the task is in split-screen mode.
             Rect maxBoundsInPx =
                     ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(
                             activity.getWindowManager());
-            return getCurrentBoundsInPx(activity).equals(maxBoundsInPx);
+            return currentBoundsInPx.equals(maxBoundsInPx);
         } else {
             // In non-multi-window mode, Chrome is maximized by default.
             return true;
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    private static Rect getCurrentBoundsInPx(Activity activity) {
-        return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
     }
 }

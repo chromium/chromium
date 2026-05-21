@@ -1412,64 +1412,52 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
         var taskBounds0 = new Rect(0, 0, 500, 600);
         var taskBounds1 = new Rect(0, 0, 800, 600);
-        var taskBounds2 = new Rect(0, 0, 1920, 1080);
 
-        // Arrange: Simulate startup global layout.
+        // Act.
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds0);
         chromeAndroidTask.onGlobalLayout();
 
-        // Act.
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds1);
-        chromeAndroidTask.onGlobalLayout();
-
-        ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds2);
         chromeAndroidTask.onGlobalLayout();
 
         // Assert.
         assertEquals(2, testFeature.mTaskBoundsChangeDpHistory.size());
-        assertEquals(taskBounds1, testFeature.mTaskBoundsChangeDpHistory.get(0));
-        assertEquals(taskBounds2, testFeature.mTaskBoundsChangeDpHistory.get(1));
+        assertEquals(taskBounds0, testFeature.mTaskBoundsChangeDpHistory.get(0));
+        assertEquals(taskBounds1, testFeature.mTaskBoundsChangeDpHistory.get(1));
 
         assertEquals(2, testFeature.mTaskBoundsChangeDisplayIdHistory.size());
         assertEquals(0, (int) testFeature.mTaskBoundsChangeDisplayIdHistory.get(0));
         assertEquals(0, (int) testFeature.mTaskBoundsChangeDisplayIdHistory.get(1));
 
         assertEquals(2, testFeature.mTaskBoundsChangePxHistory.size());
-        assertEquals(taskBounds1, testFeature.mTaskBoundsChangePxHistory.get(0));
-        assertEquals(taskBounds2, testFeature.mTaskBoundsChangePxHistory.get(1));
+        assertEquals(taskBounds0, testFeature.mTaskBoundsChangePxHistory.get(0));
+        assertEquals(taskBounds1, testFeature.mTaskBoundsChangePxHistory.get(1));
     }
 
     @Test
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void
             onGlobalLayout_windowBoundsDoesNotChangeInPxOrDp_doesNotInvokeOnTaskBoundsChangedForFeature() {
-        // Arrange.
+        // Arrange: Set up ChromeAndroidTask.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
-        float dipScale = 2.0f;
-        var mockDisplayAndroid =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
-        when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
-
+        // Arrange: Set up ChromeAndroidTaskFeature.
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
         var featureKey =
                 new ChromeAndroidTaskFeatureKey(
                         TestChromeAndroidTaskFeature.class, /* profile= */ null);
         chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
+        // Arrange: Set up window metrics for next global layout.
+        float dipScale = 2.0f;
+        var mockDisplayAndroid =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
-        var initialTaskBoundsInPx = new Rect(0, 0, 500, 600);
         var taskBoundsInPx = new Rect(0, 0, 800, 600);
-
-        // Arrange: Simulate startup global layout.
-        ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(
-                mockWindowManager, initialTaskBoundsInPx);
-        chromeAndroidTask.onGlobalLayout();
-
-        // Arrange: Setup window metrics for next global layout.
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(
                 mockWindowManager, taskBoundsInPx);
 
@@ -1478,7 +1466,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onGlobalLayout();
 
         // Assert:
-        // Only the first onGlobalLayout() after startup should trigger onTaskBoundsChanged() as the
+        // Only the first onGlobalLayout() should trigger onTaskBoundsChanged() as the
         // second onGlobalLayout() doesn't include a change in window bounds.
         assertEquals(1, testFeature.mTaskBoundsChangeDpHistory.size());
         assertEquals(
@@ -1509,15 +1497,8 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockDisplayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
 
-        var taskBoundsInPx0 = new Rect(0, 0, 500, 600);
         var taskBoundsInPx1 = new Rect(0, 0, 800, 600);
         var taskBoundsInPx2 = DisplayUtil.scaleToEnclosingRect(taskBoundsInPx1, dipScale2);
-
-        // Arrange: Simulate startup global layout.
-        when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale1);
-        ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(
-                mockWindowManager, taskBoundsInPx0);
-        chromeAndroidTask.onGlobalLayout();
 
         // Act.
         when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale1);
@@ -1531,7 +1512,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onGlobalLayout();
 
         // Assert:
-        // Only the first onGlobalLayout() after startup should trigger onTaskBoundsChanged() as the
+        // Only the first onGlobalLayout() should trigger onTaskBoundsChanged() as the
         // second onGlobalLayout() doesn't include a DP change in window bounds.
         assertEquals(1, testFeature.mTaskBoundsChangeDpHistory.size());
         assertEquals(
@@ -1793,13 +1774,16 @@ public class ChromeAndroidTaskImplUnitTest {
     public void getBoundsInDp_convertsBoundsInPxToDp() {
         // Arrange: ChromeAndroidTask
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
         // Arrange: scaling factor
+        // Note that changing the scaling factor should trigger onGlobalLayout().
         float dipScale = 2.0f;
         var mockDisplayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
         when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
+        chromeAndroidTask.onGlobalLayout();
 
         // Act
         Rect boundsInDp = chromeAndroidTask.getBoundsInDp();
