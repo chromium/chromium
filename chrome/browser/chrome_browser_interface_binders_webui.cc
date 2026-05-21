@@ -46,6 +46,7 @@
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/webui/buildflags.h"
 
@@ -63,14 +64,17 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "components/search/ntp_features.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #endif
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -89,7 +93,7 @@ namespace chrome::internal {
 using content::RegisterWebUIControllerInterfaceBinder;
 
 namespace {
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void BindColorChangeListener(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
@@ -98,7 +102,8 @@ void BindColorChangeListener(
       ui::ColorChangeHandler::GetOrCreateForCurrentDocument(frame_host);
   color_change_handler->Bind(std::move(pending_receiver));
 }
-#endif  // !BUILDFLAG(ENABLE_WEBUI_NTP)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP) ||
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
@@ -207,10 +212,16 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
     content::RegisterWebUIControllerInterfaceBinder<
         action_chips::mojom::ActionChipsHandlerFactory, NewTabPageUI>(map);
   }
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   map->Add<color_change_listener::mojom::PageHandler>(
       base::BindRepeating(&BindColorChangeListener));
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP) ||
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 // TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP) && BUILDFLAG(IS_ANDROID)
   // A variant of these exist in
   // chrome_browser_interface_binders_webui_parts_desktop.cc:
   // that enables them for more pages.
@@ -218,8 +229,7 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       searchbox::mojom::PageHandlerFactory, NewTabPageUI>(map);
   content::RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory, NewTabPageUI>(map);
-#endif  // BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP) && BUILDFLAG(IS_ANDROID)
 
 // For the case that's !IS_ANDROID, PageHandlerFactory is registered in
 // chrome_browser_interface_binders_webui_parts_desktop.cc.
@@ -294,7 +304,7 @@ void PopulateTrustedChromeWebUIFrameInterfaceBrokers(
   PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   registry.AddGlobal<color_change_listener::mojom::PageHandler>(
       base::BindRepeating(&BindColorChangeListener));
 #endif
@@ -315,10 +325,10 @@ void PopulateUntrustedChromeWebUIFrameInterfaceBrokers(
   PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   registry.AddGlobal<color_change_listener::mojom::PageHandler>(
       base::BindRepeating(&BindColorChangeListener));
-#endif
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // When possible, please use one of the Parts functions above and avoid making
   // this function longer.

@@ -687,6 +687,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithActivityLogFlag, All) {
   RunTest("extensions/manager_test_with_activity_log_flag.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, WebuiRefresh2026) {
+  RunTest("extensions/manager_test.js", "runMochaSuite('WebuiRefresh2026')");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Service Tests
 

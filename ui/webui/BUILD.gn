@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//ui/webui/webui_features.gni")
 
 if (use_blink) {
@@ -38,7 +39,7 @@ if (use_blink) {
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
     ]
 
-    if (enable_webui_ntp) {
+    if (enable_webui_ntp || enable_extensions_core) {
       public_deps +=
           [ "//ui/webui/resources/cr_components/color_change_listener:mojom" ]
       sources += [
