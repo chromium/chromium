@@ -215,13 +215,17 @@ GetFileDataBlocking(
                                  file_data.size / 1024, 1,
                                  kMaxUploadSizeMetricsKB, 50);
 
+  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
+  if (base::FeatureList::IsEnabled(kEnableNewUploadSizeLimit)) {
+    max_file_size_bytes = 1024 * 1024 * kMaxContentAnalysisFileSizeMB.Get();
+  }
+
   // When forced, or if the feature is not enabled, or the file is not large
   // enough, compute the hash now and add to file data.
   if (force_sync_hash_computation ||
       !base::FeatureList::IsEnabled(
           enterprise_connectors::kContentHashInFileUploadFinalCall) ||
-      file_data.size <=
-          enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
+      file_data.size <= max_file_size_bytes) {
     // TODO(crbug.com/367257039): Pass along hash of unobfuscated file for
     // enterprise scans
     file_data.hash = ComputeHashBlocking(
@@ -248,10 +252,6 @@ GetFileDataBlocking(
                        std::move(scoped_file_access), is_cancelled);
   }
 
-  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
-  if (base::FeatureList::IsEnabled(kEnableNewUploadSizeLimit)) {
-    max_file_size_bytes = 1024 * 1024 * kMaxContentAnalysisFileSizeMB.Get();
-  }
   return {file_data.size <= max_file_size_bytes
               ? ScanRequestUploadResult::kSuccess
               : ScanRequestUploadResult::kFileTooLarge,
