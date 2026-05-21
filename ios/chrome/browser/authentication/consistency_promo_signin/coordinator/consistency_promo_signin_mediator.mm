@@ -262,6 +262,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     case signin_ui::CancelationReason::kUserCanceled:
     case signin_ui::CancelationReason::kFailed:
     case signin_ui::CancelationReason::kAgeMismatchCanceled:
+    case signin_ui::CancelationReason::kSignInNotAllowed:
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::
               IOS_AUTH_FLOW_CANCELLED_OR_FAILED,

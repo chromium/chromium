@@ -21,6 +21,7 @@
 #import "components/policy/core/common/policy_types.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -194,6 +195,7 @@ class AuthenticationFlowTest : public PlatformTest {
 
     signin_ui::SigninCompletionCallback sign_in_completion =
         ^(signin_ui::CancelationReason cancelationReason) {
+          cancelation_reason_ = cancelationReason;
           run_loop_->Quit();
           switch (cancelationReason) {
             case signin_ui::CancelationReason::kNotCanceled:
@@ -204,6 +206,7 @@ class AuthenticationFlowTest : public PlatformTest {
             case signin_ui::CancelationReason::
                 kAgeMismatchCanceledStaySignedOut:
             case signin_ui::CancelationReason::kFailed:
+            case signin_ui::CancelationReason::kSignInNotAllowed:
               signin_result_ = signin::Tribool::kFalse;
               break;
           }
@@ -438,6 +441,8 @@ class AuthenticationFlowTest : public PlatformTest {
   // Used to wait for sign-in workflow to complete.
   std::unique_ptr<base::RunLoop> run_loop_;
   signin::Tribool signin_result_ = signin::Tribool::kUnknown;
+  signin_ui::CancelationReason cancelation_reason_ =
+      signin_ui::CancelationReason::kNotCanceled;
 };
 
 // Tests a Sign In of a normal account on the same profile.
@@ -614,6 +619,30 @@ TEST_F(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
 
   [authentication_flow_ startSignIn];
   run_loop_->Run();
+}
+
+// Tests that when sign-in is disabled, the flow is canceled with
+// `kSignInNotAllowed`.
+TEST_F(AuthenticationFlowTest, TestSignInNotAllowed) {
+  // Disable sign-in on device.
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+
+  CreateAuthenticationFlow(PostSignInActionSet(), identity1_,
+                           signin_metrics::AccessPoint::kStartPage,
+                           /*shouldHandOverToFlowInProfile=*/NO);
+
+  OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
+                                    forIdentity:identity1_])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow_ didFetchManagedStatus:nil];
+      });
+
+  [authentication_flow_ startSignIn];
+
+  CheckSignInCompletion(/*expected_signed_in=*/false);
+  EXPECT_EQ(signin_ui::CancelationReason::kSignInNotAllowed,
+            cancelation_reason_);
 }
 
 }  // namespace

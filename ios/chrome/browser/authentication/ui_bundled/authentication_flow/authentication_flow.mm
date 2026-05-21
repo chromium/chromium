@@ -87,6 +87,12 @@ enum class AuthenticationState {
   kFetchProfileSeparationPoliciesIfNeeded,
   kShowManagedConfirmationIfNeeded,
   kConvertPersonalProfileToManagedIfNeeded,
+  // Checks with AuthenticationService is sign-in is allowed. If not,
+  // the sign-in is canceled.
+  kCheckSignInAllowed,
+  // After this step, sign-in should not be canceled or stopped.
+  // This steps calls `-[<AuthenticationFlowDelegate>
+  // authenticationFlowWillSwitchProfileWithReadyCompletion:]` if needed.
   kSwitchProfileIfNeeded,
   kHandOverToAuthenticationFlowInProfile,
   kCompleteWithFailure,
@@ -395,6 +401,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
     case AuthenticationState::kShowManagedConfirmationIfNeeded:
     case AuthenticationState::kConvertPersonalProfileToManagedIfNeeded:
+    case AuthenticationState::kCheckSignInAllowed:
     case AuthenticationState::kSwitchProfileIfNeeded:
     case AuthenticationState::kHandOverToAuthenticationFlowInProfile:
       return AuthenticationState::kCompleteWithFailure;
@@ -432,6 +439,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kShowManagedConfirmationIfNeeded:
       return AuthenticationState::kConvertPersonalProfileToManagedIfNeeded;
     case AuthenticationState::kConvertPersonalProfileToManagedIfNeeded:
+      return AuthenticationState::kCheckSignInAllowed;
+    case AuthenticationState::kCheckSignInAllowed:
       return AuthenticationState::kSwitchProfileIfNeeded;
     case AuthenticationState::kSwitchProfileIfNeeded:
       return AuthenticationState::kHandOverToAuthenticationFlowInProfile;
@@ -493,6 +502,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
     case AuthenticationState::kConvertPersonalProfileToManagedIfNeeded:
       [self convertPersonalProfileToManagedIfNeededStep];
+      return;
+
+    case AuthenticationState::kCheckSignInAllowed:
+      [self checkSignInAllowedStep];
       return;
 
     case AuthenticationState::kSwitchProfileIfNeeded:
@@ -668,6 +681,18 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
   [_performer makePersonalProfileManagedWithIdentity:_identityToSignIn];
+}
+
+// Checks if sign-in is allowed on the current profile.
+- (void)checkSignInAllowedStep {
+  ProfileIOS* profile = [self profile];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  if (!authenticationService->SigninEnabled()) {
+    [self cancelFlowWithReason:signin_ui::CancelationReason::kSignInNotAllowed];
+    return;
+  }
+  [self continueFlow];
 }
 
 // Switches profile if `_identityToSignIn` is assigned to another profile.

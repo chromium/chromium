@@ -251,6 +251,10 @@
       [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                        completionIdentity:nil];
       break;
+    case signin_ui::CancelationReason::kSignInNotAllowed:
+      [self runCompletionWithSigninResult:SigninCoordinatorResultDisabled
+                       completionIdentity:nil];
+      break;
   }
 }
 
