@@ -5,19 +5,29 @@
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,27 +62,31 @@ URLLoaderPostInterceptor::URLLoaderPostInterceptor(
 URLLoaderPostInterceptor::~URLLoaderPostInterceptor() = default;
 
 bool URLLoaderPostInterceptor::ExpectRequest(
-    std::unique_ptr<RequestMatcher> request_matcher) {
-  return ExpectRequest(std::move(request_matcher), net::HTTP_OK);
+    std::unique_ptr<RequestMatcher> request_matcher,
+    const base::flat_map<std::string, std::string>& extra_headers) {
+  return ExpectRequest(std::move(request_matcher), net::HTTP_OK, extra_headers);
 }
 
 bool URLLoaderPostInterceptor::ExpectRequest(
     std::unique_ptr<RequestMatcher> request_matcher,
-    net::HttpStatusCode response_code) {
+    net::HttpStatusCode response_code,
+    const base::flat_map<std::string, std::string>& extra_headers) {
   expectations_.emplace(std::move(request_matcher),
-                        ExpectationResponse(response_code, ""));
+                        ExpectationResponse(response_code, "", extra_headers));
   return true;
 }
 
 bool URLLoaderPostInterceptor::ExpectRequest(
     std::unique_ptr<RequestMatcher> request_matcher,
-    const base::FilePath& filepath) {
+    const base::FilePath& filepath,
+    const base::flat_map<std::string, std::string>& extra_headers) {
   std::string response;
   if (filepath.empty() || !base::ReadFileToString(filepath, &response)) {
     return false;
   }
-  expectations_.emplace(std::move(request_matcher),
-                        ExpectationResponse(net::HTTP_OK, response));
+  expectations_.emplace(
+      std::move(request_matcher),
+      ExpectationResponse(net::HTTP_OK, response, extra_headers));
   return true;
 }
 
@@ -127,8 +141,14 @@ void URLLoaderPostInterceptor::Resume() {
           return;
         }
         const auto& [url, response] = pending_expectations_.front();
-        url_loader_factory_->AddResponse(url.spec(), response.response_body,
-                                         response.response_code);
+        network::mojom::URLResponseHeadPtr head =
+            network::CreateURLResponseHead(response.response_code);
+        for (const auto& [key, value] : response.extra_headers) {
+          head->headers->AddHeader(key, value);
+        }
+        url_loader_factory_->AddResponse(
+            url, std::move(head), response.response_body,
+            network::URLLoaderCompletionStatus(net::OK));
         pending_expectations_.pop();
       }));
 }
@@ -184,8 +204,14 @@ void URLLoaderPostInterceptor::InitializeWithInterceptor() {
           }
 
           if (!is_paused_) {
-            url_loader_factory_->AddResponse(request.url.spec(), response_body,
-                                             response_code);
+            network::mojom::URLResponseHeadPtr head =
+                network::CreateURLResponseHead(response_code);
+            for (const auto& [key, value] : response.extra_headers) {
+              head->headers->AddHeader(key, value);
+            }
+            url_loader_factory_->AddResponse(
+                request.url, std::move(head), response_body,
+                network::URLLoaderCompletionStatus(net::OK));
           } else {
             pending_expectations_.emplace(request.url, response);
           }
@@ -232,20 +258,36 @@ URLLoaderPostInterceptor::RequestHandler(
 
   const auto& [matcher, response] = expectations_.front();
   if (matcher->Match(request_body)) {
-    const net::HttpStatusCode response_code(response.response_code);
-    const std::string response_body(response.response_body);
-    expectations_.pop();
     ++hit_count_;
 
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse);
-    http_response->set_code(response_code);
-    http_response->set_content(response_body);
+    std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(response.response_code);
+    http_response->set_content(response.response_body);
+    for (const auto& [key, value] : response.extra_headers) {
+      http_response->AddCustomHeader(key, value);
+    }
+    expectations_.pop();
     return http_response;
   }
 
   return nullptr;
 }
+
+URLLoaderPostInterceptor::ExpectationResponse::ExpectationResponse(
+    net::HttpStatusCode code,
+    const std::string& body,
+    const base::flat_map<std::string, std::string>& extra_headers)
+    : response_code(code), response_body(body), extra_headers(extra_headers) {}
+
+URLLoaderPostInterceptor::ExpectationResponse::ExpectationResponse(
+    const ExpectationResponse&) = default;
+
+URLLoaderPostInterceptor::ExpectationResponse&
+URLLoaderPostInterceptor::ExpectationResponse::operator=(
+    const ExpectationResponse&) = default;
+
+URLLoaderPostInterceptor::ExpectationResponse::~ExpectationResponse() = default;
 
 bool PartialMatch::Match(const std::string& actual) const {
   return actual.find(expected_) != std::string::npos;
