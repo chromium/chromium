@@ -415,6 +415,12 @@ if (!is_debug) {
       "//third_party/fp16",
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
+
+    # ASan inflates stack frames significantly, and the fuzzer deep call chain
+    # overflows the default 1MB stack on Windows. Set to 8MB instead.
+    if (is_win) {
+      ldflags = [ "/STACK:0x800000" ]
+    }
   }
 }
 
