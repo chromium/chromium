@@ -108,8 +108,9 @@ std::vector<float> ContextualTasksContextModelHandler::ExtractModelFeatures(
           TAB_RELEVANCE_FEATURE_ACTIVE_CANDIDATE_TAB_SIMILARITY:
         features.push_back(tab_signals.active_title_candidate_title_similarity);
         break;
-      default:
-        // Padded for unknown features to maintain vector size.
+      case optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_UNKNOWN:
+        // If the metadata is set correctly, this should never happen.
         features.push_back(0.0f);
         break;
     }

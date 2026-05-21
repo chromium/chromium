@@ -1582,14 +1582,22 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
   // unit_test_tab_relevance.tflite expects 25 float inputs.
   optimization_guide::proto::TabRelevanceModelMetadata metadata;
   metadata.set_num_features(25);
+  metadata.set_num_passages_per_tab(10);
   metadata.add_feature_sequence(
       optimization_guide::proto::TabRelevanceModelMetadata::
           TAB_RELEVANCE_FEATURE_QUERY_LENGTH);
-  for (int i = 0; i < 24; ++i) {
-    metadata.add_feature_sequence(
-        optimization_guide::proto::TabRelevanceModelMetadata::
-            TAB_RELEVANCE_FEATURE_UNKNOWN);
-  }
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_TITLE_LEXICAL_SIMILARITY);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_ACTIVE_TAB_SIMILARITY);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_CANDIDATE_TAB_SIMILARITY);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_CANDIDATE_TAB_SIMILARITY);
 
   optimization_guide::proto::Any any_metadata;
   any_metadata.set_type_url(
