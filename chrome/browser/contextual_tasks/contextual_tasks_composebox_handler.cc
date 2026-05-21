@@ -286,8 +286,24 @@ void ContextualTasksComposeboxHandler::OnContextUploadStatusChanged(
       context_upload_status == ContextUploadStatus::kValidationFailed ||
       context_upload_status == ContextUploadStatus::kUploadReplaced;
 
+  // Modality chips are injected directly from the server and do not go through
+  // `AddFileContext` or `AddTabContext` on the client. Consequently, their
+  // tokens are not pre-registered in `pending_context_uploads_`.
+  // To ensure the query flow properly tracks in-flight modality chip state
+  // (e.g. stashing queries while waiting for `cluster_info_`), the token must
+  // be inserted into `pending_context_uploads_` on any non-terminal status.
   if (is_terminal_upload_status) {
     MarkContextUploadFinished(context_token);
+  } else {
+    auto* session_handle = GetContextualSessionHandle();
+    if (session_handle && session_handle->GetController()) {
+      const auto* file_info =
+          session_handle->GetController()->GetFileInfo(context_token);
+      if (file_info && file_info->input_data &&
+          file_info->input_data->modality_chip_props.has_value()) {
+        pending_context_uploads_.insert(context_token);
+      }
+    }
   }
   if (context_upload_status == ContextUploadStatus::kUploadSuccessful) {
     auto* contextual_session_handle = GetContextualSessionHandle();

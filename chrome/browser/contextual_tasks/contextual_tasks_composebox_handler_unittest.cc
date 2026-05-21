@@ -3407,3 +3407,75 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->IsAnyContextUploading());
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 }
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       SubmitQuery_WaitsForModalityChipUpload) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  // Setup context.
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+  EXPECT_CALL(*mock_contextual_tasks_service_ptr_,
+              GetContextForTask(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid&,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams>,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+
+  // Setup FileInfo representing a server-injected modality chip in kProcessing
+  // status.
+  contextual_search::FileInfo uploading_info{};
+  uploading_info.upload_status =
+      contextual_search::ContextUploadStatus::kProcessing;
+  uploading_info.mime_type = lens::MimeType::kUnknown;
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->modality_chip_props.emplace();
+  input_data->modality_chip_props->set_id("test_chip_id");
+  uploading_info.input_data = std::move(input_data);
+
+  EXPECT_CALL(*mock_controller_, GetFileInfo(token))
+      .WillRepeatedly(testing::Return(&uploading_info));
+
+  // Expect no queries are sent immediately because the chip is still uploading.
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
+
+  // Simulate the status transition to kProcessing, which should register the
+  // modality chip in the handler's pending uploads set.
+  SimulateUploadStatusChanged(
+      token, lens::MimeType::kUnknown,
+      contextual_search::ContextUploadStatus::kProcessing, std::nullopt);
+
+  // Verify the chip is tracked as uploading.
+  ASSERT_TRUE(handler_->IsAnyContextUploading());
+  ASSERT_EQ(handler_->GetNumContextUploading(), 1);
+
+  // Submit query manually. It should be stashed.
+  handler_->SubmitQuery("Test query", 0, false, false, false, false);
+  ASSERT_TRUE(handler_->HasPendingQueryForTesting());
+
+  // Now expect the stashed query to be sent when the chip completes
+  // successfully.
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(1);
+
+  // Simulate transition to kUploadSuccessful.
+  SimulateUploadStatusChanged(
+      token, lens::MimeType::kUnknown,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+
+  // Verify pending uploads are cleared and the query has been sent.
+  ASSERT_FALSE(handler_->IsAnyContextUploading());
+  ASSERT_FALSE(handler_->HasPendingQueryForTesting());
+  ASSERT_EQ(handler_->GetNumContextUploading(), 0);
+}

@@ -5777,8 +5777,14 @@ TEST_F(ComposeboxQueryControllerTest, UploadModalityChipSuccess) {
   WaitForClusterInfo();
 
   // Assert: Validate file upload status changes.
-  // Modality chips don't have kProcessing or kUploadStarted states because
-  // they are considered already uploaded from the server.
+  ContextUploadStatusTuple processing_file_upload_status =
+      context_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
+  EXPECT_EQ(lens::MimeType::kUnknown,
+            std::get<1>(processing_file_upload_status));
+  EXPECT_EQ(ContextUploadStatus::kProcessing,
+            std::get<2>(processing_file_upload_status));
+
   ContextUploadStatusTuple final_file_upload_status =
       context_upload_status_future_.Take();
   EXPECT_EQ(file_token, std::get<0>(final_file_upload_status));
@@ -5811,7 +5817,10 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesModalityChip) {
 
   WaitForClusterInfo();
 
-  context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kProcessing);
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kUploadSuccessful);
 
   // Act: Create search URL.
   std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
@@ -5858,7 +5867,10 @@ TEST_F(ComposeboxQueryControllerTest,
 
   WaitForClusterInfo();
 
-  context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kProcessing);
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kUploadSuccessful);
 
   // Create ClientToAimRequest.
   auto create_client_to_aim_request_info =
@@ -5904,7 +5916,10 @@ TEST_F(ComposeboxQueryControllerTest,
 
   WaitForClusterInfo();
 
-  context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kProcessing);
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kUploadSuccessful);
 
   // Create ClientToAimRequest.
   auto create_client_to_aim_request_info =
@@ -5943,7 +5958,10 @@ TEST_F(ComposeboxQueryControllerTest,
 
   WaitForClusterInfo();
 
-  context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kProcessing);
+  EXPECT_EQ(std::get<2>(context_upload_status_future_.Take()),
+            ContextUploadStatus::kUploadSuccessful);
 
   // Create ClientToAimRequest.
   auto create_client_to_aim_request_info =
