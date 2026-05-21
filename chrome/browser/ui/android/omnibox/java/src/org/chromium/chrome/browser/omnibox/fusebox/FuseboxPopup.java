@@ -156,7 +156,7 @@ class FuseboxPopup {
 
         initializeItem(
                 mAddCurrentTab,
-                isBottomSheet ? R.string.fusebox_current_tab : R.string.fusebox_add_current_tab,
+                isBottomSheet ? R.string.fusebox_add_tab : R.string.fusebox_add_current_tab,
                 0,
                 0);
         initializeItem(
