@@ -29,7 +29,7 @@ namespace webauthn {
 // Implementation of the public InternalAuthenticator interface.
 // This class is meant only for trusted and internal components of Chrome to
 // use. The Android implementation is in
-// org.chromium.chrome.browser.webauth.AuthenticatorImpl.
+// org.chromium.components.webauthn.AuthenticatorImpl.
 // When MakeCredential() or GetAssertion() is called, the Java implementation
 // passes the response through InvokeMakeCredentialResponse() and
 // InvokeGetAssertionResponse(), which eventually invokes the callback given by
