@@ -683,7 +683,9 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_remote_linking = True,
+    # TODO: crbug.com/509602362 - Speculatively disable remote linking as we
+    # observe performance issues on RBE-CAS upload/download.
+    siso_remote_linking = False,
 )
 
 try_.compilator_builder(
