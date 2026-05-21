@@ -145,7 +145,7 @@ void TabUnderlineController::OnIndicatorStatusChanged(bool enabled) {
 }
 
 void TabUnderlineController::OnPinnedTabsChanged(
-    const std::vector<content::WebContents*>& pinned_contents) {
+    const std::vector<tabs::TabInterface*>& pinned_tabs) {
   if (!GetTabInterface()) {
     // If the TabInterface is invalid at this point, there is no relevant UI
     // to handle.

@@ -38,7 +38,7 @@ class GlicEmptyPinnedTabManager : public GlicPinnedTabManager {
   bool IsTabPinned(tabs::TabHandle tab_handle) const override;
   std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
       tabs::TabHandle tab_handle) const override;
-  std::vector<content::WebContents*> GetPinnedTabs() const override;
+  std::vector<tabs::TabInterface*> GetPinnedTabs() const override;
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;

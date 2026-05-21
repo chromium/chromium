@@ -65,8 +65,7 @@ class TabUnderlineController
   void OnIndicatorStatusChanged(bool enabled);
 
   // Called when the glic set of pinned tabs changes.
-  void OnPinnedTabsChanged(
-      const std::vector<content::WebContents*>& pinned_contents);
+  void OnPinnedTabsChanged(const std::vector<tabs::TabInterface*>& pinned_tabs);
 
   // GlicInstanceCoordinator::StateObserver:
   void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;

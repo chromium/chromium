@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   auto pin_event_sub = manager_.AddTabPinningStatusEventCallback(
       pin_event_future.GetRepeatingCallback());
 
-  base::test::TestFuture<const std::vector<content::WebContents*>&>
+  base::test::TestFuture<const std::vector<tabs::TabInterface*>&>
       pinned_tabs_future;
   auto pinned_tabs_sub = manager_.AddPinnedTabsChangedCallback(
       pinned_tabs_future.GetRepeatingCallback());
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   // Verify Pinned Tabs List Changed
   auto pinned_tabs = pinned_tabs_future.Take();
   EXPECT_EQ(pinned_tabs.size(), 1u);
-  EXPECT_EQ(pinned_tabs[0], tab->GetContents());
+  EXPECT_EQ(pinned_tabs[0], tab);
 
   // 2. MODIFY Tab Title (triggers PinnedTabDataChanged)
   std::u16string new_title = u"New Title";
@@ -394,9 +394,8 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
 
   // Verify initial state.
   EXPECT_THAT(manager_.GetPinnedTabs(),
-              testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
-                                            handles[1].Get()->GetContents(),
-                                            handles[2].Get()->GetContents()));
+              testing::UnorderedElementsAre(handles[0].Get(), handles[1].Get(),
+                                            handles[2].Get()));
 
   // Set up subscription for tab pinning status changes.
   base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future(
@@ -464,9 +463,9 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   manager_.SetDelegate(&manager);
 
   // Verify initial state.
-  EXPECT_THAT(manager_.GetPinnedTabs(),
-              testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
-                                            handles[1].Get()->GetContents()));
+  EXPECT_THAT(
+      manager_.GetPinnedTabs(),
+      testing::UnorderedElementsAre(handles[0].Get(), handles[1].Get()));
 
   // Setup subscription to consume status changes.
   bool callback_called = false;
@@ -488,9 +487,9 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   EXPECT_FALSE(callback_called);
 
   // Verify state is still correct.
-  EXPECT_THAT(manager_.GetPinnedTabs(),
-              testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
-                                            handles[1].Get()->GetContents()));
+  EXPECT_THAT(
+      manager_.GetPinnedTabs(),
+      testing::UnorderedElementsAre(handles[0].Get(), handles[1].Get()));
 }
 
 class GlicStablePinningDelegatingSharingManagerBrowserTest

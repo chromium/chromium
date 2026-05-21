@@ -176,7 +176,6 @@ namespace glic {
 
 namespace {
 
-
 #if BUILDFLAG(IS_MAC)
 constexpr mojom::Platform kPlatform = mojom::Platform::kMacOS;
 #elif BUILDFLAG(IS_WIN)
@@ -1507,12 +1506,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void OnPinningChanged(
-      const std::vector<content::WebContents*>& pinned_contents) {
+  void OnPinningChanged(const std::vector<tabs::TabInterface*>& pinned_tabs) {
     std::vector<glic::mojom::TabDataPtr> tab_data;
-    for (content::WebContents* web_contents : pinned_contents) {
-      tab_data.push_back(
-          CreateTabData(tabs::TabInterface::GetFromContents(web_contents)));
+    for (tabs::TabInterface* tab : pinned_tabs) {
+      tab_data.push_back(CreateTabData(tab));
     }
     web_client_->NotifyPinnedTabsChanged(std::move(tab_data));
   }

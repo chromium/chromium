@@ -85,9 +85,9 @@ class BaseDelegate : public GlicMetrics::Delegate {
   }
   std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
     std::vector<content::WebContents*> pinned_and_shared;
-    for (content::WebContents* web_contents :
-         sharing_manager_->GetPinnedTabs()) {
-      if (IsTabValidForSharing(web_contents)) {
+    for (tabs::TabInterface* tab : sharing_manager_->GetPinnedTabs()) {
+      content::WebContents* web_contents = tab->GetContents();
+      if (web_contents && IsTabValidForSharing(web_contents)) {
         pinned_and_shared.push_back(web_contents);
       }
     }

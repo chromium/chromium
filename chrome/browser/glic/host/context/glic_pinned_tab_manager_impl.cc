@@ -460,13 +460,15 @@ bool GlicPinnedTabManagerImpl::IsTabPinned(tabs::TabHandle tab_handle) const {
   return !!GetPinnedTabEntry(tab_handle);
 }
 
-std::vector<content::WebContents*> GlicPinnedTabManagerImpl::GetPinnedTabs()
+std::vector<tabs::TabInterface*> GlicPinnedTabManagerImpl::GetPinnedTabs()
     const {
-  std::vector<content::WebContents*> pinned_contents;
+  std::vector<tabs::TabInterface*> pinned_tabs;
   for (auto& entry : pinned_tabs_) {
-    pinned_contents.push_back(entry.tab_observer->web_contents());
+    if (auto* tab = entry.tab_handle.Get()) {
+      pinned_tabs.push_back(tab);
+    }
   }
-  return pinned_contents;
+  return pinned_tabs;
 }
 
 std::optional<GlicPinnedTabUsage> GlicPinnedTabManagerImpl::GetPinnedTabUsage(

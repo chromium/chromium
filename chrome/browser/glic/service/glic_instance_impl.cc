@@ -264,11 +264,9 @@ GlicInstanceImpl::~GlicInstanceImpl() {
     UnbindEmbedder(key);
   }
 
-  for (auto* web_contents : sharing_manager().GetPinnedTabs()) {
-    if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-      if (auto* helper = GlicInstanceHelper::From(tab)) {
-        helper->OnUnpinnedByInstance(this);
-      }
+  for (tabs::TabInterface* tab : sharing_manager().GetPinnedTabs()) {
+    if (auto* helper = GlicInstanceHelper::From(tab)) {
+      helper->OnUnpinnedByInstance(this);
     }
   }
 }

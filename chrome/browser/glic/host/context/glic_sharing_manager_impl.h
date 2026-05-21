@@ -66,7 +66,7 @@ class GlicSharingManagerImpl : public GlicSharingManager,
       TabPinningStatusChangedCallback callback) override;
 
   using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
+      base::RepeatingCallback<void(const std::vector<tabs::TabInterface*>&)>;
   base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) override;
 
@@ -102,7 +102,7 @@ class GlicSharingManagerImpl : public GlicSharingManager,
 
   int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) override;
 
-  std::vector<content::WebContents*> GetPinnedTabs() const override;
+  std::vector<tabs::TabInterface*> GetPinnedTabs() const override;
 
   std::optional<GlicGetContextError> CheckPreliminaryContextSharingEligibility(
       tabs::TabHandle tab_handle) const override;
@@ -122,7 +122,6 @@ class GlicSharingManagerImpl : public GlicSharingManager,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;
 
   void OnConversationTurnSubmitted() override;
-
 
   base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 

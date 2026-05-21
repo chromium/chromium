@@ -41,7 +41,7 @@ class GlicPinnedTabManager {
   // Registers a callback to be invoked when the collection of pinned tabs
   // changes.
   using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<content::WebContents*>&)>;
+      base::RepeatingCallback<void(const std::vector<tabs::TabInterface*>&)>;
   virtual base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) = 0;
 
@@ -104,7 +104,7 @@ class GlicPinnedTabManager {
       tabs::TabHandle tab_handle) const = 0;
 
   // Fetches the current list of pinned tabs.
-  virtual std::vector<content::WebContents*> GetPinnedTabs() const = 0;
+  virtual std::vector<tabs::TabInterface*> GetPinnedTabs() const = 0;
 
   // Subscribes to changes in pin candidates.
   virtual void SubscribeToPinCandidates(

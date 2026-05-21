@@ -187,8 +187,8 @@ void GlicInstanceMetrics::OnPolylinePointsChanged(
 }
 
 void GlicInstanceMetrics::OnPinnedTabsChanged(
-    const std::vector<content::WebContents*>& pinned_contents) {
-  pinned_tab_count_ = pinned_contents.size();
+    const std::vector<tabs::TabInterface*>& pinned_tabs) {
+  pinned_tab_count_ = pinned_tabs.size();
   session_manager_.SetPinnedTabCount(pinned_tab_count_);
 }
 

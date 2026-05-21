@@ -207,7 +207,6 @@ BrowserWindowInterface* GlicSharingManagerImpl::GetFocusedBrowser() const {
   return focused_browser_manager_->GetFocusedBrowser();
 }
 
-
 base::CallbackListSubscription
 GlicSharingManagerImpl::AddFocusedTabDataChangedCallback(
     FocusedTabDataChangedCallback callback) {
@@ -292,8 +291,7 @@ void GlicSharingManagerImpl::GetContextForActorFromTab(
   GetContextFromTabImpl(tab, options, std::move(callback));
 }
 
-std::vector<content::WebContents*> GlicSharingManagerImpl::GetPinnedTabs()
-    const {
+std::vector<tabs::TabInterface*> GlicSharingManagerImpl::GetPinnedTabs() const {
   return pinned_tab_manager()->GetPinnedTabs();
 }
 

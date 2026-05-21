@@ -39,7 +39,7 @@ class GlicZeroStateSuggestionsManager {
   void NotifyZeroStateSuggestionsOnPinnedTabChanged(
       bool is_first_run,
       const std::vector<std::string>& supported_tools,
-      const std::vector<content::WebContents*>& pinned_tab_data);
+      const std::vector<tabs::TabInterface*>& pinned_tabs);
 
   // Callback to send zero state suggestions to the webui when pinned tab data
   // changes.

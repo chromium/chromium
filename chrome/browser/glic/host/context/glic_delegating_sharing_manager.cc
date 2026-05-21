@@ -106,7 +106,6 @@ BrowserWindowInterface* GlicDelegatingSharingManagerBase::GetFocusedBrowser()
              : nullptr;
 }
 
-
 base::CallbackListSubscription
 GlicDelegatingSharingManagerBase::AddFocusedTabDataChangedCallback(
     FocusedTabDataChangedCallback callback) {
@@ -173,10 +172,10 @@ void GlicDelegatingSharingManagerBase::GetContextForActorFromTab(
                                                        std::move(callback));
 }
 
-std::vector<content::WebContents*>
+std::vector<tabs::TabInterface*>
 GlicDelegatingSharingManagerBase::GetPinnedTabs() const {
   return sharing_manager_delegate_ ? sharing_manager_delegate_->GetPinnedTabs()
-                                   : std::vector<content::WebContents*>{};
+                                   : std::vector<tabs::TabInterface*>{};
 }
 
 void GlicDelegatingSharingManagerBase::OnConversationTurnSubmitted() {
@@ -236,7 +235,7 @@ void GlicDelegatingSharingManagerBase::OnTabPinningStatusEventCallback(
 }
 
 void GlicDelegatingSharingManagerBase::OnPinnedTabsChangedCallback(
-    const std::vector<content::WebContents*>& pinned_tabs) {
+    const std::vector<tabs::TabInterface*>& pinned_tabs) {
   pinned_tabs_changed_callback_list_.Notify(pinned_tabs);
 }
 
@@ -298,19 +297,15 @@ void GlicDelegatingSharingManagerBase::RefreshDelegateSubscriptions() {
 }
 
 void GlicDelegatingSharingManagerBase::ForceNotify(
-    const std::vector<content::WebContents*>& old_pinned_tabs) {
+    const std::vector<tabs::TabInterface*>& old_pinned_tabs) {
   for (auto* tab : old_pinned_tabs) {
-    tab_pinning_status_changed_callback_list_.Notify(
-        tabs::TabInterface::GetFromContents(tab), false);
-    tab_pinning_status_event_callback_list_.Notify(
-        tabs::TabInterface::GetFromContents(tab), GetEmptyUnpinEvent());
+    tab_pinning_status_changed_callback_list_.Notify(tab, false);
+    tab_pinning_status_event_callback_list_.Notify(tab, GetEmptyUnpinEvent());
   }
 
   for (auto* tab : GetPinnedTabs()) {
-    tab_pinning_status_changed_callback_list_.Notify(
-        tabs::TabInterface::GetFromContents(tab), true);
-    tab_pinning_status_event_callback_list_.Notify(
-        tabs::TabInterface::GetFromContents(tab), GetEmptyPinEvent());
+    tab_pinning_status_changed_callback_list_.Notify(tab, true);
+    tab_pinning_status_event_callback_list_.Notify(tab, GetEmptyPinEvent());
   }
 
   // Note: in the case where delegate is now null, we still want to fire these
