@@ -50,6 +50,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 using testing::_;
 
@@ -392,6 +393,53 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     return WaitForStateChange(kPrimaryTab, change);
   }
 
+  auto WaitForFaviconGroupWithTitle(const ui::ElementIdentifier& contents_id,
+                                    const std::string& expected_title) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = {"contextual-tasks-app"};
+    change.test_function = base::StringPrintf(
+        "function(app) {"
+        "  const el = "
+        "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
+        "querySelector('#composebox')?.shadowRoot?."
+        "querySelector('#contextEntrypoint')?.shadowRoot?."
+        "querySelector('#entrypointButton')?.shadowRoot?."
+        "querySelector('composebox-favicon-group');"
+        "  if (el && el.tabs && el.tabs.length === 1 && "
+        "el.tabs[0].title.includes('%s')) {"
+        "    return true;"
+        "  }"
+        "  return false;"
+        "}",
+        expected_title.c_str());
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
+  auto WaitForDocumentChipWithTitle(const ui::ElementIdentifier& contents_id,
+                                    const std::string& expected_title) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = {"contextual-tasks-app"};
+    change.test_function = base::StringPrintf(
+        "function(app) {"
+        "  const el = "
+        "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
+        "querySelector('#composebox')?.shadowRoot?."
+        "querySelector('#carousel')?.shadowRoot?."
+        "querySelector('cr-composebox-file-thumbnail')?.shadowRoot?."
+        "querySelector('#documentChip')?.querySelector('#documentTitle');"
+        "  if (el && el.textContent.trim().includes('%s')) {"
+        "    return true;"
+        "  }"
+        "  return false;"
+        "}",
+        expected_title.c_str());
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
   auto WaitForInterceptionAndLoad() {
     return Steps(WaitForWebContentsNavigation(kPrimaryTab),
                  CheckElement(kPrimaryTab,
@@ -498,6 +546,10 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+
+ private:
+  gfx::ScopedAnimationDurationScaleMode disable_animations_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -540,10 +592,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   ForceClickAddContextEntrypoint(kPrimaryTab),
                   ForceClickMenuButton(kPrimaryTab, "fileUpload"),
 
-                  WaitForElementExists(kPrimaryTab, kDocumentChip),
-                  CheckJsResultAt(kPrimaryTab, kDocumentChipTitle,
-                                  "el => el.textContent.trim()",
-                                  testing::HasSubstr("download.pdf")),
+                  WaitForDocumentChipWithTitle(kPrimaryTab, "download.pdf"),
                   WaitForComposeboxFilesCount(1),
 
                   ClickButton(kPrimaryTab, kRemoveDocumentButton),
@@ -606,11 +655,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   ForceClickAddContextEntrypoint(kPrimaryTab),
                   ForceClickMenuButton(kPrimaryTab, 0),
 
-                  WaitForElementExists(kPrimaryTab, kFaviconGroup),
-                  CheckJsResultAt(kPrimaryTab, kFaviconGroup,
-                                  "el => el.tabs && el.tabs.length === 1 && "
-                                  "el.tabs[0].title.includes('title1.html')",
-                                  true),
+                  WaitForFaviconGroupWithTitle(kPrimaryTab, "title1.html"),
                   WaitForComposeboxFilesCount(1),
 
                   ForceClickAddContextEntrypoint(kPrimaryTab),
@@ -641,11 +686,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
       ForceClickAddContextEntrypoint(kPrimaryTab),
       ForceClickMenuButton(kPrimaryTab, 0),
-      WaitForElementExists(kPrimaryTab, kFaviconGroup),
-      CheckJsResultAt(kPrimaryTab, kFaviconGroup,
-                      "el => el.tabs && el.tabs.length === 1 && "
-                      "el.tabs[0].title.includes('title1.html')",
-                      true),
+      WaitForFaviconGroupWithTitle(kPrimaryTab, "title1.html"),
       WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
       VerifySubmitQueryMessage(
           lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
@@ -688,10 +729,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
       ForceClickAddContextEntrypoint(kPrimaryTab),
       ForceClickMenuButton(kPrimaryTab, "fileUpload"),
-      WaitForElementExists(kPrimaryTab, kDocumentChip),
-      CheckJsResultAt(kPrimaryTab, kDocumentChipTitle,
-                      "el => el.textContent.trim()",
-                      testing::HasSubstr("download.pdf")),
+      WaitForDocumentChipWithTitle(kPrimaryTab, "download.pdf"),
       WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
       VerifySubmitQueryMessage(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
                                "download.pdf"));
