@@ -405,6 +405,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -8573,22 +8574,29 @@ bool ChromeContentBrowserClient::ShouldUseFirstPartyStorageKey(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
-content::RenderFrameHost*
-ChromeContentBrowserClient::GetEffectiveTopFrameForPartitioning(
-    content::RenderFrameHost* render_frame_host) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Walks up from `render_frame_host` to the *outermost* MIME handler
+// extension frame, then verifies that frame's wrapper is the topmost
+// main frame of its frame tree (the OOPIF embedding the extension is
+// not itself iframed by a real web ancestor). Returns nullptr otherwise.
+//
+// There is no explicit pass-through branch for inner frames of the
+// MHV (about:blank subframes, same-origin chrome-extension
+// subframes): they are simply not registered as extension hosts with
+// the stream manager (only the wrapper-attached extension RFH is),
+// so the ancestor walk skips past them and lands on the outermost
+// MHV extension RFH. For theoretical nesting (one MHV embedding
+// another via its own wrapper), the loop's last match wins.
+content::RenderFrameHost* GetOutermostMimeHandlerExtensionFrame(
+    content::RenderFrameHost* render_frame_host) {
   auto* manager =
       extensions::mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
           render_frame_host);
   if (!manager) {
     return nullptr;
   }
-  // Walk up to the *outermost* MIME handler extension frame. Same-origin
-  // chrome-extension subframes and about:blank subframes inside the MHV
-  // are not themselves registered as extension hosts (only the
-  // wrapper-attached extension RFH is), so they are passed through. For
-  // theoretical nesting (one MHV embedding another via its own wrapper),
-  // the outermost extension is the right effective top.
   content::RenderFrameHost* extension_rfh = nullptr;
   for (auto* rfh = render_frame_host; rfh; rfh = rfh->GetParent()) {
     if (manager->IsExtensionHost(rfh)) {
@@ -8598,17 +8606,27 @@ ChromeContentBrowserClient::GetEffectiveTopFrameForPartitioning(
   if (!extension_rfh) {
     return nullptr;
   }
-  // Only treat the extension as the effective top for full-page MIME handler.
-  // For an HTML page that explicitly iframes a PDF, the embedding HTML page
-  // IS a real web ancestor; do not hide it. The wrapper must be the topmost
-  // main frame of its frame tree (which includes the inner main frame of a
-  // `<webview>`); this is what `GetOutermostMainFrame()` returns per its
-  // doc comment.
+  // Only treat the extension as the outermost MHV for full-page MIME
+  // handler. For an HTML page that explicitly iframes a PDF, the
+  // embedding HTML page IS a real web ancestor; do not hide it. The
+  // wrapper must be the topmost main frame of its frame tree (which
+  // includes the inner main frame of a `<webview>`); this is what
+  // `GetOutermostMainFrame()` returns per its doc comment.
   content::RenderFrameHost* wrapper = extension_rfh->GetParent();
   if (!wrapper || wrapper != wrapper->GetOutermostMainFrame()) {
     return nullptr;
   }
   return extension_rfh;
+}
+
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+
+content::RenderFrameHost*
+ChromeContentBrowserClient::GetEffectiveTopFrameForPartitioning(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+  return GetOutermostMimeHandlerExtensionFrame(render_frame_host);
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
@@ -8648,6 +8666,42 @@ bool ChromeContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
   return false;
+}
+
+std::optional<network::ParsedPermissionsPolicy>
+ChromeContentBrowserClient::GetContainerPolicyOverrideForCommit(
+    content::NavigationHandle& navigation_handle) {
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+  content::RenderFrameHost* rfh = navigation_handle.GetRenderFrameHost();
+  // Only the outermost MIME handler extension frame gets the override.
+  // An MHV iframed inside a real HTML ancestor (e.g., `<iframe src=foo.pdf>`)
+  // keeps the parent-derived `allow` policy: the embedding page is a real
+  // web ancestor and its delegation choices stand.
+  if (!rfh || GetOutermostMimeHandlerExtensionFrame(rfh) != rfh) {
+    return std::nullopt;
+  }
+  std::optional<url::Origin> commit_origin =
+      navigation_handle.GetOriginToCommit();
+  if (!commit_origin) {
+    return std::nullopt;
+  }
+  // The MIME handler extension RFH is a cross-origin iframe of the
+  // embedder, so `EnableForSelf` features (the schema default for most
+  // of the catalog) would be blocked without an explicit `allow`
+  // attribute. Grant every feature so the extension document has the
+  // same starting set as a top-level extension context, and can
+  // delegate to its own cross-origin children via `allow="..."`.
+  network::ParsedPermissionsPolicy policy;
+  for (const auto& [feature, _] :
+       network::GetPermissionsPolicyFeatureList(*commit_origin)) {
+    network::ParsedPermissionsPolicyDeclaration decl(feature);
+    decl.matches_all_origins = true;
+    policy.push_back(std::move(decl));
+  }
+  return policy;
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<content::ResponsivenessCalculatorDelegate>

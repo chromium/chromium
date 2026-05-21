@@ -1072,6 +1072,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsCrossOriginSubframeAllowedToShowFilePicker(
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
+  std::optional<network::ParsedPermissionsPolicy>
+  GetContainerPolicyOverrideForCommit(
+      content::NavigationHandle& navigation_handle) override;
 
   bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh) override;
 

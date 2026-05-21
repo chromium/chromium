@@ -1800,6 +1800,12 @@ bool ContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(
   return false;
 }
 
+std::optional<network::ParsedPermissionsPolicy>
+ContentBrowserClient::GetContainerPolicyOverrideForCommit(
+    NavigationHandle& navigation_handle) {
+  return std::nullopt;
+}
+
 bool ContentBrowserClient::ShouldSkipBeforeUnloadDialog(
     content::RenderFrameHost* rfh) {
   return false;

@@ -3074,6 +3074,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
 
+  // Returns an override that fully replaces the parent-imposed
+  // `frame_policy.container_policy` at commit, or `std::nullopt` to
+  // leave it untouched. Called from `CommitNavigation()` only; not
+  // invoked on page-activating navigations (BFCache, prerender).
+  virtual std::optional<network::ParsedPermissionsPolicy>
+  GetContainerPolicyOverrideForCommit(NavigationHandle& navigation_handle);
+
   // Checks if the BeforeUnload Dialog event should be skipped.
   virtual bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh);
 

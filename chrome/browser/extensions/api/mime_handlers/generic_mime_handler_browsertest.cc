@@ -3,20 +3,30 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 
 namespace extensions {
 
@@ -41,13 +51,54 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
+  // Returns the RFH identified by `MimeHandlerStreamManager` as the MIME
+  // handler extension host in the active tab, or nullptr if none.
+  content::RenderFrameHost* FindMimeHandlerExtensionFrame() {
+    content::WebContents* web_contents = GetActiveWebContents();
+    auto* manager =
+        mime_handler::MimeHandlerStreamManager::FromWebContents(web_contents);
+    if (!manager) {
+      return nullptr;
+    }
+    content::RenderFrameHost* extension_frame = nullptr;
+    web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+      if (manager->IsExtensionHost(rfh)) {
+        extension_frame = rfh;
+      }
+    });
+    return extension_frame;
+  }
+
+  // Loads the test extension, navigates to /test.pdf, blocks until
+  // handler.js calls `chrome.test.succeed()`, and returns the extension
+  // RFH (nullptr on failure). Also verifies the architectural invariant
+  // that the extension frame is a cross-origin iframe of a top-level
+  // embedder frame -- the scenario these tests target.
+  content::RenderFrameHost* LoadHandlerAndGetExtensionFrame() {
+    EXPECT_TRUE(
+        LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler")));
+    EXPECT_TRUE(OpenTestURL(embedded_test_server()->GetURL("/test.pdf"),
+                            /*open_in_incognito=*/false));
+    content::RenderFrameHost* extension_frame = FindMimeHandlerExtensionFrame();
+    if (!extension_frame) {
+      return nullptr;
+    }
+    EXPECT_FALSE(extension_frame->IsInPrimaryMainFrame());
+    content::RenderFrameHost* embedder_frame = extension_frame->GetParent();
+    EXPECT_TRUE(embedder_frame);
+    EXPECT_TRUE(embedder_frame->IsInPrimaryMainFrame());
+    EXPECT_NE(extension_frame->GetLastCommittedOrigin(),
+              embedder_frame->GetLastCommittedOrigin());
+    return extension_frame;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedCurrentChannel channel_{version_info::Channel::UNKNOWN};
 };
 
-// Verifies that navigating to an application/pdf URL handled by a generic MIME
-// handler extension loads the handler page in an OOPIF and that
+// Verifies that navigating to an application/pdf URL handled by a generic
+// MIME handler extension loads the handler page in an OOPIF and that
 // chrome.mimeHandler.getStreamInfo() returns correct stream metadata.
 IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   const Extension* extension =
@@ -194,6 +245,97 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
         }
       });
   EXPECT_FALSE(found_extension_frame);
+}
+
+// Verifies that every permissions policy feature is enabled on the
+// MIME handler extension's outermost frame, restoring the
+// top-level-frame parity these extensions had before being embedded
+// as cross-origin iframes.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       AllPermissionsPolicyFeaturesEnabledInExtensionFrame) {
+  content::RenderFrameHost* extension_frame = LoadHandlerAndGetExtensionFrame();
+  ASSERT_TRUE(extension_frame);
+
+  // EXPECT (not ASSERT) so a single missing feature surfaces all gaps.
+  for (const auto& [feature, _] : network::GetPermissionsPolicyFeatureList(
+           extension_frame->GetLastCommittedOrigin())) {
+    SCOPED_TRACE(testing::Message()
+                 << "feature index: " << static_cast<int>(feature));
+    EXPECT_TRUE(extension_frame->IsFeatureEnabled(feature));
+  }
+}
+
+// Verifies that the MIME handler extension frame can delegate
+// permissions policy features to a cross-origin child iframe via the
+// `allow` attribute.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       FeatureDelegatedToCrossOriginChildFrame) {
+  content::RenderFrameHost* extension_frame = LoadHandlerAndGetExtensionFrame();
+  ASSERT_TRUE(extension_frame);
+
+  // `local-fonts` is EnableForSelf-by-default; without delegation a
+  // cross-origin child would not receive it.
+  GURL child_url = embedded_test_server()->GetURL("cdn.example", "/echo");
+  content::TestNavigationObserver iframe_observer(GetActiveWebContents());
+  ASSERT_TRUE(content::ExecJs(
+      extension_frame,
+      content::JsReplace("const f = document.createElement('iframe');"
+                         "f.allow = 'local-fonts';"
+                         "f.src = $1;"
+                         "document.body.appendChild(f);",
+                         child_url)));
+  iframe_observer.Wait();
+
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(extension_frame, 0);
+  ASSERT_TRUE(child_frame);
+  EXPECT_TRUE(child_frame->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLocalFonts));
+}
+
+// Verifies that a user permission granted to the embedder origin does
+// NOT leak to the MIME handler extension frame. The override opens the
+// permissions-policy gate for every feature on the extension frame, but
+// permissions-policy is only a gate -- the actual permission check is
+// keyed on the calling document's origin. The extension frame's origin
+// remains `chrome-extension://<ID>/`, so a grant scoped to the embedder
+// origin must read as `prompt` (i.e., not granted) when queried from
+// the extension.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       EmbedderPermissionGrantDoesNotLeakToExtensionFrame) {
+  // Grant geolocation to the embedder origin before navigation.
+  // Geolocation is `EnableForSelf` in permissions-policy AND gated by a
+  // per-origin user grant, which makes it the right discriminator: if
+  // the override accidentally laundered permissions across origins, the
+  // extension frame would read `granted` here.
+  GURL embedder_url = embedded_test_server()->GetURL("/test.pdf");
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(embedder_url, embedder_url,
+                                      ContentSettingsType::GEOLOCATION,
+                                      CONTENT_SETTING_ALLOW);
+
+  content::RenderFrameHost* extension_frame = LoadHandlerAndGetExtensionFrame();
+  ASSERT_TRUE(extension_frame);
+  content::RenderFrameHost* embedder_frame = extension_frame->GetParent();
+  ASSERT_TRUE(embedder_frame);
+
+  // Sanity: the permissions-policy gate is open in the extension frame.
+  // If this fails, a `prompt` result below would be a false positive --
+  // the gate, not the grant, would be blocking access.
+  ASSERT_TRUE(extension_frame->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGeolocation));
+
+  constexpr char kQueryGeolocation[] =
+      "navigator.permissions.query({name: 'geolocation'})"
+      "    .then(status => status.state)";
+
+  // The embedder grant resolves against the embedder origin.
+  EXPECT_EQ("granted", content::EvalJs(embedder_frame, kQueryGeolocation));
+
+  // From the extension frame the grant must not appear. A regression to
+  // `granted` would mean the override is laundering host-page
+  // permissions to the extension origin.
+  EXPECT_EQ("prompt", content::EvalJs(extension_frame, kQueryGeolocation));
 }
 
 }  // namespace extensions

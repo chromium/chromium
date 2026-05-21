@@ -20,6 +20,7 @@ source_set("browser_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/plugins",
@@ -33,10 +34,12 @@ source_set("browser_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
+    "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:mime_handler_registry",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//net:test_support",
+    "//services/network/public/cpp:web_platform",
     "//services/network/public/mojom",
     "//testing/gmock",
   ]

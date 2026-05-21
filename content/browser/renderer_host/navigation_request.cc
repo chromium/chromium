@@ -6991,6 +6991,19 @@ void NavigationRequest::CommitNavigation() {
     }
   }
 
+  // Let the embedder fully replace the inherited container policy at
+  // commit (e.g., to grant all permissions-policy features to MIME
+  // handler extensions that previously ran as top-level frames).
+  // Runs after the fenced-frame fixup above so the override wins by
+  // construction; no current frame is both a fenced frame and a
+  // consumer of this hook.
+  if (auto container_policy_override =
+          GetContentClient()->browser()->GetContainerPolicyOverrideForCommit(
+              *this)) {
+    commit_params_->frame_policy.container_policy =
+        std::move(*container_policy_override);
+  }
+
   // Create a view of the fenced frame properties from the perspective of the
   // fenced frame content, which will be sent to its renderer.
   // On each navigation commit within the fenced frame tree:
