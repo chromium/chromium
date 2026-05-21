@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/sub_apps/sub_apps_service_impl.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,9 +13,11 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/i18n/message_formatter.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -71,6 +74,11 @@ using blink::mojom::SubAppsServiceRemoveResultPtr;
 using blink::mojom::SubAppsServiceResultCode;
 
 namespace web_app {
+
+BASE_FEATURE(kSubAppsInstallLimit, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kSubAppsInstallLimitParam{&kSubAppsInstallLimit,
+                                                        "limit", 20};
 
 namespace {
 
@@ -317,12 +325,30 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  const WebAppRegistrar& registrar = provider->registrar_unsafe();
+  size_t current_count =
+      registrar.GetAllSubAppIds(*GetAppId(render_frame_host())).size();
+
+  // Return all as failed if sub app limit is reached.
+  // It is possible to check and install only sub apps that do not exceed the
+  // limit, however, all sub app installations are rejected to simplify for
+  // users reason of failure and to prevent situations of stalling the API if
+  // 10000 sub apps were provided.
+  int sub_apps_limit = std::max(0, kSubAppsInstallLimitParam.Get());
+  int over_the_limit =
+      std::max(0, static_cast<int>(current_count + sub_apps_to_add.size()) -
+                      sub_apps_limit);
+  if (over_the_limit > 0) {
+    ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
+    return;
+  }
+
   // Assign id to this add call
   int add_call_id = next_add_call_id_++;
   AddCallInfo& add_call_info = add_call_info_[add_call_id];
   add_call_info.mojo_callback = std::move(result_callback);
 
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   auto parent_manifest_id = provider->registrar_unsafe()
                                 .GetAppById(*GetAppId(render_frame_host()))
                                 ->manifest_id();

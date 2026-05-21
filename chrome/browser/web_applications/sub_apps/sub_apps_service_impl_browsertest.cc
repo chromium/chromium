@@ -960,6 +960,46 @@ IN_PROC_BROWSER_TEST_F(
                   .HasAll(standalone_app->GetSources()));
 }
 
+class SubAppsServiceImplLimitBrowserTest
+    : public SubAppsServiceImplBrowserTest {
+ public:
+  SubAppsServiceImplLimitBrowserTest() {
+    // Set limit to 1.
+    scoped_feature_list.InitAndEnableFeatureWithParameters(kSubAppsInstallLimit,
+                                                           {{"limit", "1"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplLimitBrowserTest,
+                       AddFailExceedsLimit) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  // Add 2 sub-apps, all should fail.
+  ExpectCallAdd(
+      {
+          {webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+           SubAppsServiceResultCode::kFailure},
+
+          {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+           SubAppsServiceResultCode::kFailure},
+      },
+      {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
+
+  // Add 1 more - success.
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
+
+  // Add 1 more - failure.
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppPath2, kSubAppPath2}});
+}
+
 /********** Tests for the List API call. **********/
 
 // List call returns the correct value for three sub-apps.

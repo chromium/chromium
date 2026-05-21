@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -22,6 +24,12 @@ class RenderFrameHost;
 }
 
 namespace web_app {
+
+// Total limit of sub apps per parent app.
+// Number of sub apps per parent app cannot be more than that,
+// regardless of how much sub apps they install per single API call.
+BASE_DECLARE_FEATURE(kSubAppsInstallLimit);
+extern const base::FeatureParam<int> kSubAppsInstallLimitParam;
 
 namespace {
 
