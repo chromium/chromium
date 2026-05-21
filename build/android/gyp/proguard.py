@@ -206,21 +206,16 @@ def _ParseOptions():
       '--dump-unknown-refs',
       action='store_true',
       help='Log all reasons why API modelling cannot determine API level')
-  parser.add_argument(
-      '--stamp',
-      help='File to touch upon success. Mutually exclusive with --output-path')
   parser.add_argument('--desugared-library-keep-rule-output',
                       help='Path to desugared library keep rule output file.')
+  parser.add_argument('--keep-radius-output', help='Create a keepradius.pb')
 
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
-  if options.feature_names:
-    if options.output_path:
-      parser.error('Feature splits cannot specify an output in GN.')
-    if not options.actual_file and not options.stamp:
-      parser.error('Feature splits require a stamp file as output.')
-  elif not options.output_path:
+  if options.feature_names and options.output_path:
+    parser.error('Feature splits cannot specify an output in GN.')
+  elif not options.feature_names and not options.output_path:
     parser.error('Output path required when feature splits aren\'t used')
 
   if bool(options.keep_rules_targets_regex) != bool(
@@ -379,6 +374,11 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
       cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
     if options.dump_unknown_refs:
       cmd += ['-Dcom.android.tools.r8.reportUnknownApiReferences=1']
+    if options.keep_radius_output:
+      cmd += [
+          '-Dcom.android.tools.r8.dumpkeepradiustofile=' +
+          options.keep_radius_output
+      ]
     cmd += [
         '-cp',
         '{}:{}'.format(options.r8_path, options.custom_r8_path),
@@ -583,15 +583,6 @@ def _ExtractEmbeddedConfigs(jar_path, embedded_configs):
       embedded_configs[config_path] = z.read(filename).decode('utf-8').rstrip()
 
 
-def _MaybeWriteStampAndDepFile(options, inputs):
-  output = options.output_path
-  if options.stamp:
-    build_utils.Touch(options.stamp)
-    output = options.stamp
-  if options.depfile:
-    action_helpers.write_depfile(options.depfile, output, inputs=inputs)
-
-
 def _IterParentContexts(context_name, split_contexts_by_name):
   while context_name:
     context = split_contexts_by_name[context_name]
@@ -680,7 +671,11 @@ def _Run(options):
   if options.apply_mapping:
     depfile_inputs.append(options.apply_mapping)
 
-  _MaybeWriteStampAndDepFile(options, depfile_inputs)
+  if options.depfile:
+    first_gn_output = options.output_path or options.mapping_output
+    action_helpers.write_depfile(options.depfile,
+                                 first_gn_output,
+                                 inputs=depfile_inputs)
 
 
 def main():

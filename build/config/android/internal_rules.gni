@@ -1241,6 +1241,15 @@ if (enable_java_templates) {
     } else {
       _mapping_path = "${invoker.output}.mapping"
     }
+    _keep_radius_path = "${target_gen_dir}/${target_name}.keepradius.pb"
+    _outputs = []
+    if (!defined(invoker.modules)) {
+      _outputs += [ invoker.output ]
+    }
+    _outputs += [
+      _mapping_path,
+      _keep_radius_path,
+    ]
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
 
@@ -1265,6 +1274,8 @@ if (enable_java_templates) {
       "--min-api=${invoker.min_sdk_version}",
       "--mapping-output",
       rebase_path(_mapping_path, root_build_dir),
+      "--keep-radius-output",
+      rebase_path(_keep_radius_path, root_build_dir),
       "--sdk-jars",
       "@FileArg($_rebased_build_config:sdk_jars)",
       "--sdk-extension-jars",
@@ -1324,12 +1335,7 @@ if (enable_java_templates) {
         }
         _deps += [ _feature_module.build_config_target ]
       }
-      _stamp = "${target_gen_dir}/${target_name}.r8.stamp"
-      _outputs = [ _stamp ]
-      _output_arg = [
-        "--stamp",
-        rebase_path(_stamp, root_build_dir),
-      ]
+      _output_args = []
     } else {
       _args += [
         "--input-paths=@FileArg($_rebased_build_config:processed_classpath)",
@@ -1338,13 +1344,11 @@ if (enable_java_templates) {
       # We don't directly set the output arg on the _args variable since it is
       # shared with the expectation target that uses its own stamp file and
       # does not take an --output-path.
-      _output_arg = [
+      _output_args = [
         "--output-path",
         rebase_path(invoker.output, root_build_dir),
       ]
-      _outputs = [ invoker.output ]
     }
-    _outputs += [ _mapping_path ]
 
     _enable_checks = (!defined(invoker.enable_proguard_checks) ||
                       invoker.enable_proguard_checks) && enable_r8_tracerefs
@@ -1445,7 +1449,7 @@ if (enable_java_templates) {
       inputs = _inputs
       outputs = _outputs
       depfile = "${target_gen_dir}/${target_name}.d"
-      args = _args + _output_arg + [
+      args = _args + _output_args + [
                "--depfile",
                rebase_path(depfile, root_build_dir),
              ]
