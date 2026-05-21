@@ -276,7 +276,8 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   // Check if content is scrolled past the bottom.
   CGFloat scrollViewHeight = CGRectGetHeight(scrollView.frame);
   CGFloat contentHeight = scrollView.contentSize.height;
-  if (contentOffset + scrollViewHeight > contentHeight) {
+  if (contentOffset + scrollViewHeight - scrollView.contentInset.bottom >
+      contentHeight) {
     return;
   }
 
