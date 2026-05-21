@@ -2,6 +2,7 @@
   "Mac Release (Intel)": {
     "gtest_tests": [
       {
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -31,6 +32,7 @@
           "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -59,6 +61,7 @@
           "--use-gpu-in-tests",
           "--git-revision=${got_revision}"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -93,6 +96,7 @@
           "--test-launcher-jobs=1",
           "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -129,6 +133,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -172,6 +177,7 @@
           "${buildername}",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -216,6 +222,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -255,6 +262,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -298,6 +306,7 @@
           "3e9b",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -341,6 +350,7 @@
           "${buildername}",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -386,6 +396,7 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -425,6 +436,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -466,6 +478,7 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_mac_runtimes.json",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
