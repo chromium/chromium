@@ -407,7 +407,8 @@ UIImage* GetManualFillSymbol() {
   // can supply a parameter to use the keyboard down symbol.
   bool useKeyboardDownSymbol =
       !IsLiquidGlassEffectEnabled() ||
-      kIOSKeyboardAccessoryTwoBubbleKeyboardIconParam.Get();
+      (IsIOSKeyboardAccessoryTwoBubbleEnabled() &&
+       kIOSKeyboardAccessoryTwoBubbleKeyboardIconParam.Get());
   if (useKeyboardDownSymbol) {
     closeButtonSymbol =
         DefaultSymbolWithPointSize(kKeyboardDownSymbol, kSymbolActionPointSize);
