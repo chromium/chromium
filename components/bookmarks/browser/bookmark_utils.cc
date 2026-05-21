@@ -222,7 +222,7 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
             : n2->date_folder_modified();
 
     // If no node has been modified more recently, choose a default folder.
-    return t1 == t2 ? (n1 == default_node || n2 != default_node) : (t1 > t2);
+    return t1 == t2 ? (n1 == default_node && n2 != default_node) : (t1 > t2);
   };
 
   std::ranges::stable_sort(nodes, more_recently_modified);
