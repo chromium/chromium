@@ -1194,6 +1194,9 @@ bool RenderViewContextMenu::IsInProgressiveWebApp() const {
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
 
+  const bool use_simplified_menu_for_text_selection =
+      ShouldUseSimplifiedTextSelection();
+
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
     AppendPageItems();
   }
@@ -1219,14 +1222,18 @@ void RenderViewContextMenu::InitMenu() {
     AppendImageItems();
   }
 
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
-    AppendSearchWebForImageItems();
-  }
+  if (features::IsMenuSimplificationEnabled()) {
+    AppendLensGeminiSection();
+  } else {
+    if (content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
+      AppendSearchWebForImageItems();
+    }
 
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE)) {
-    AppendGlicShareImageItem();
+    if (content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE)) {
+      AppendGlicShareImageItem();
+    }
   }
 
   if (content_type_->SupportsGroup(
@@ -1269,7 +1276,11 @@ void RenderViewContextMenu::InitMenu() {
 
   AppendGlicItems();
 
-  if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY)) {
+  if (use_simplified_menu_for_text_selection &&
+      !(params_.has_image_contents && !params_.link_url.is_empty())) {
+    AppendRevisedTextSelectionSection();
+  } else if (content_type_->SupportsGroup(
+                 ContextMenuContentType::ITEM_GROUP_COPY)) {
     DCHECK(!editable);
     AppendCopyItem();
     AppendLinkToTextItems();
@@ -1284,7 +1295,9 @@ void RenderViewContextMenu::InitMenu() {
     AppendSharingItems();
   }
 
-  if (content_type_->SupportsGroup(
+  if (!use_simplified_menu_for_text_selection &&
+      !(features::IsMenuSimplificationEnabled() && editable) &&
+      content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SEARCH_PROVIDER) &&
       params_.misspelled_word.empty() &&
       (params_.page_url != GetGooglePasswordManagerSubPageURLStr() &&
@@ -1297,7 +1310,8 @@ void RenderViewContextMenu::InitMenu() {
     MaybeAppendOpenGlicItem();
   }
 
-  if (!media_image &&
+  if (!use_simplified_menu_for_text_selection && !media_image &&
+      !(features::IsMenuSimplificationEnabled() && editable) &&
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PRINT)) {
     AppendPrintItem();
   } else {
@@ -1311,13 +1325,18 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) &&
       !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
-    AppendReadAnythingItem();
+    if (!use_simplified_menu_for_text_selection) {
+      AppendReadAnythingItem();
+    }
   }
 
   // Partial Translate is not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_PARTIAL_TRANSLATE) &&
+      !use_simplified_menu_for_text_selection &&
+      content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
       search::DefaultSearchProviderIsGoogle(GetProfile()) &&
       CanTranslate(/*menu_logging=*/false)) {
     // If the target language isn't supported in partial translation, fall
@@ -1438,7 +1457,9 @@ void RenderViewContextMenu::InitMenu() {
       features::GetReadAnythingMenuShuffleExperimentGroup() ==
           features::ReadAnythingMenuShuffleExperimentGroup::kPlaceAtBottom &&
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
-    AppendReadAnythingItem();
+    if (!use_simplified_menu_for_text_selection) {
+      AppendReadAnythingItem();
+    }
   }
 }
 
@@ -2014,7 +2035,7 @@ void RenderViewContextMenu::AppendCopyLinkLocationItem() {
                                   params_.link_url.SchemeIs(url::kMailToScheme)
                                       ? IDS_CONTENT_CONTEXT_COPYEMAILADDRESS
                                       : IDS_CONTENT_CONTEXT_COPYLINKLOCATION);
-  if (features::IsMenuSimplificationEnabled()) {
+  if (features::IsMenuSimplificationEnabled() && !params_.has_image_contents) {
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
         IDS_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
@@ -2390,6 +2411,8 @@ void RenderViewContextMenu::AppendPluginItems() {
 void RenderViewContextMenu::AppendPageItems() {
   AppendExitFullscreenItem();
 
+  const bool use_simplified_text_selection = ShouldUseSimplifiedTextSelection();
+
   menu_model_.AddItemWithStringId(IDC_BACK, IDS_CONTENT_CONTEXT_BACK);
   menu_model_.AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
   menu_model_.AddItemWithStringId(IDC_RELOAD, IDS_CONTENT_CONTEXT_RELOAD);
@@ -2413,18 +2436,26 @@ void RenderViewContextMenu::AppendPageItems() {
 
     if (experiment_group ==
         features::ReadAnythingMenuShuffleExperimentGroup::kDefault) {
-      AppendReadAnythingItem();
+      if (!use_simplified_text_selection) {
+        AppendReadAnythingItem();
+      }
     } else if (experiment_group ==
                features::ReadAnythingMenuShuffleExperimentGroup::
                    kPlaceWithSeparation) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-      AppendReadAnythingItem();
+      if (!use_simplified_text_selection) {
+        AppendReadAnythingItem();
+      }
     }
   } else {  // No ReadAnythingMenuShuffleExperiment -- keep default code.
-    if (IsRegionSearchEnabled()) {
-      AppendRegionSearchItem();
+    if (!features::IsMenuSimplificationEnabled()) {
+      if (IsRegionSearchEnabled()) {
+        AppendRegionSearchItem();
+      }
     }
-    AppendReadAnythingItem();
+    if (!use_simplified_text_selection) {
+      AppendReadAnythingItem();
+    }
   }
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
@@ -2479,8 +2510,19 @@ void RenderViewContextMenu::AppendCopyItem() {
   if (menu_model_.GetItemCount()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPY,
-                                  IDS_CONTENT_CONTEXT_COPY);
+
+  std::u16string selected_text = PrintableSelectionText();
+  base::TrimWhitespace(selected_text, base::TRIM_ALL, &selected_text);
+  if (features::IsMenuSimplificationEnabled() && !selected_text.empty()) {
+    selected_text =
+        gfx::TruncateString(selected_text, 25, gfx::CHARACTER_BREAK);
+    menu_model_.AddItem(IDC_CONTENT_CONTEXT_COPY,
+                        l10n_util::GetStringFUTF16(
+                            IDS_CONTENT_CONTEXT_COPY_SELECTION, selected_text));
+  } else {
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPY,
+                                    IDS_CONTENT_CONTEXT_COPY);
+  }
 }
 
 void RenderViewContextMenu::AppendLinkToTextItems() {
@@ -2514,6 +2556,10 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 }
 
 void RenderViewContextMenu::AppendPrintItem() {
+  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_PRINTING)
   if (GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
       (params_.media_type == ContextMenuDataMediaType::kNone ||
@@ -2526,6 +2572,10 @@ void RenderViewContextMenu::AppendPrintItem() {
 }
 
 void RenderViewContextMenu::AppendPartialTranslateItem() {
+  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+    return;
+  }
+
   menu_model_.AddItem(
       IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
       l10n_util::GetStringFUTF16(
@@ -2541,6 +2591,10 @@ void RenderViewContextMenu::AppendPartialTranslateItem() {
 }
 
 void RenderViewContextMenu::AppendTranslateItem() {
+  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+    return;
+  }
+
   menu_model_.AddItemWithIcon(
       IDC_CONTENT_CONTEXT_TRANSLATE,
       l10n_util::GetStringFUTF16(
@@ -2558,6 +2612,10 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 }
 
 void RenderViewContextMenu::AppendReadAnythingItem() {
+  if (features::IsMenuSimplificationEnabled() && params_.is_editable) {
+    return;
+  }
+
   // Show Read Anything option if it's not already open in the side panel.
   if (GetBrowser() && GetBrowser()->is_type_normal() &&
       !IsReadAnythingEntryShowing(GetBrowser())) {
@@ -2608,6 +2666,12 @@ void RenderViewContextMenu::AppendSearchProvider() {
     return;
   }
 
+  if (features::IsMenuSimplificationEnabled() &&
+      (IsPasswordField() || params_.form_control_type ==
+                                blink::mojom::FormControlType::kInputEmail)) {
+    return;
+  }
+
   base::TrimWhitespace(params_.selection_text, base::TRIM_ALL,
                        &params_.selection_text);
   if (params_.selection_text.empty()) {
@@ -2654,6 +2718,13 @@ void RenderViewContextMenu::AppendSearchProvider() {
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
                                      default_provider->short_name(),
                                      printable_selection_text));
+      if (features::IsMenuSimplificationEnabled()) {
+        menu_model_.SetIconForCommandId(
+            IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+            ui::ImageModel::FromVectorIcon(
+                vector_icons::kSearchChromeRefreshOldIcon, ui::kColorMenuIcon,
+                kTabMenuIconSize));
+      }
     }
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
@@ -2673,7 +2744,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
     AppendSpellingSuggestionItems();
   }
 
-  if (!params_.misspelled_word.empty()) {
+  if (!params_.misspelled_word.empty() &&
+      !features::IsMenuSimplificationEnabled()) {
     AppendSearchProvider();
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -2777,6 +2849,18 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
                                     IDS_CONTENT_CONTEXT_SELECTALL);
   }
 
+  if (features::IsMenuSimplificationEnabled() &&
+      !params_.selection_text.empty()) {
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    AppendSearchProvider();
+    AppendPrintItem();
+    if (CanPartiallyTranslateTargetLanguage()) {
+      AppendPartialTranslateItem();
+    } else {
+      AppendTranslateItem();
+    }
+  }
+
   if (!menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE)
            .has_value()) {
     AppendReadAnythingItem();
@@ -2786,6 +2870,10 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
 }
 
 void RenderViewContextMenu::AppendLanguageSettings() {
+  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+    return;
+  }
+
   const bool use_spelling = !IsRunningInForcedAppMode();
   if (!use_spelling) {
     return;
@@ -2808,6 +2896,10 @@ void RenderViewContextMenu::AppendLanguageSettings() {
 }
 
 void RenderViewContextMenu::AppendSpellingSuggestionItems() {
+  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+    return;
+  }
+
   if (!spelling_suggestions_menu_observer_) {
     spelling_suggestions_menu_observer_ =
         std::make_unique<SpellingMenuObserver>(this);
@@ -4267,6 +4359,10 @@ bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
 bool RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
                                                       bool draw_icon,
                                                       bool add_separator) {
+  if (features::IsMenuSimplificationEnabled()) {
+    return false;
+  }
+
   if (!IsQRCodeGeneratorEnabled()) {
     return false;
   }
@@ -5342,6 +5438,102 @@ void RenderViewContextMenu::AddItemWithOptionalIcon(
                                        ui::SimpleMenuModel::kDefaultIconSize));
   } else {
     menu_model_.AddItemWithStringId(command, string);
+  }
+}
+
+bool RenderViewContextMenu::IsPasswordField() const {
+  return params_.form_control_type ==
+         blink::mojom::FormControlType::kInputPassword;
+}
+
+bool RenderViewContextMenu::ShouldUseSimplifiedTextSelection() const {
+  return features::IsMenuSimplificationEnabled() &&
+         !params_.selection_text.empty() && !params_.is_editable;
+}
+
+bool RenderViewContextMenu::CanAppendRegionSearchItem() const {
+  if (!IsRegionSearchEnabled()) {
+    return false;
+  }
+
+  auto* entry_point_controller =
+      GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
+                   : nullptr;
+
+  if (entry_point_controller && entry_point_controller->IsEnabled()) {
+    return entry_point_controller->AreVisible();
+  }
+
+  return GetImageSearchProvider() != nullptr;
+}
+
+bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
+  if (!glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) ||
+      IsGlicWindow(this, browser_context_)) {
+    return false;
+  }
+
+  return tabs::TabInterface::MaybeGetFromContents(source_web_contents_) !=
+         nullptr;
+}
+
+void RenderViewContextMenu::AppendLensGeminiSection() {
+  if (!features::IsMenuSimplificationEnabled()) {
+    return;
+  }
+
+  bool can_region =
+      content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE) &&
+      CanAppendRegionSearchItem();
+  bool can_glic = content_type_->SupportsGroup(
+                      ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
+                  CanAppendGlicShareImageItem();
+
+  if (!can_region && !can_glic) {
+    return;
+  }
+
+  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
+  if (can_region) {
+    AppendRegionSearchItem();
+  }
+  if (can_glic) {
+    AppendGlicShareImageItem();
+  }
+
+  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+}
+
+void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
+  if (!params_.link_url.is_empty()) {
+    // Link + Selection case
+    AppendCopyItem();
+    AppendLinkToTextItems();
+    AppendSearchProvider();
+    AppendPrintItem();
+
+    if (CanPartiallyTranslateTargetLanguage()) {
+      AppendPartialTranslateItem();
+    } else {
+      AppendTranslateItem();
+    }
+  } else {
+    // Pure Selection case
+    AppendCopyItem();
+    AppendLinkToTextItems();
+    AppendPrintItem();
+
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AppendSearchProvider();
+    AppendReadAnythingItem();
+
+    if (CanPartiallyTranslateTargetLanguage()) {
+      AppendPartialTranslateItem();
+    } else {
+      AppendTranslateItem();
+    }
   }
 }
 

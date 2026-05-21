@@ -342,6 +342,10 @@ class RenderViewContextMenu
   void AppendPrintPreviewItems();
   void AppendSearchWebForImageItems();
   void AppendGlicShareImageItem();
+  bool CanAppendRegionSearchItem() const;
+  bool CanAppendGlicShareImageItem() const;
+  void AppendLensGeminiSection();
+  void AppendRevisedTextSelectionSection();
   void AppendProtocolHandlerSubMenu();
   void AppendSharingItems();
   void AppendClickToCallItem();
@@ -354,6 +358,8 @@ class RenderViewContextMenu
   void AddItemWithOptionalIcon(int command,
                                int string,
                                const gfx::VectorIcon& icon);
+  bool IsPasswordField() const;
+  bool ShouldUseSimplifiedTextSelection() const;
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
       bool notify_if_restricted) const;

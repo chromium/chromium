@@ -832,6 +832,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_COPY" desc="The name of the Copy command in the content area context menu">
             &amp;Copy
           </message>
+          <message name="IDS_CONTENT_CONTEXT_COPY_SELECTION" desc="The name of the Copy command with selection in the content area context menu">
+            &amp;Copy "<ph name="SELECTION">$1<ex>text</ex></ph>"
+          </message>
           <message name="IDS_CONTENT_CONTEXT_PASTE" desc="The name of the Paste command in the content area context menu" meaning="'Paste' menu command in sentence case">
             &amp;Paste
           </message>
@@ -1156,6 +1159,9 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPY" desc="In Title Case: The name of the Copy command in the content area context menu">
             &amp;Copy
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_COPY_SELECTION" desc="The name of the Copy command with selection in the content area context menu">
+            &amp;Copy "<ph name="SELECTION">$1<ex>text</ex></ph>"
           </message>
           <!-- Paste and Match Style / Paste as Plain Text -->
           <if expr="is_macosx">
