@@ -123,10 +123,10 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.OMNIBOX_SITE_SEARCH, FeatureState.ENABLED_IN_TEST);
 
     private static final CachedFlag sOmniboxMultimodalInput =
-            newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_PROD);
 
     public static final BooleanCachedFeatureParam sCompactFusebox =
-            newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", false);
+            newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", true);
 
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
@@ -144,7 +144,7 @@ public class OmniboxFeatures {
      * into the client when this param is enabled.
      */
     public static final BooleanCachedFeatureParam sShowModelPicker =
-            newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", false);
+            newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", true);
 
     /**
      * Whether the bottom sheet popup should be shown. This is private to ensure that callers use

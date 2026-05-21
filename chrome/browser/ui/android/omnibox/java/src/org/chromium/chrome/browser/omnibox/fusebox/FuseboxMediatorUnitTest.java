@@ -180,6 +180,7 @@ public class FuseboxMediatorUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
@@ -1559,7 +1560,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testExpandedMode() {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mMediator.setIsTextWrapping(false);
+        mMediator.setIsTextWrapping(true);
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 

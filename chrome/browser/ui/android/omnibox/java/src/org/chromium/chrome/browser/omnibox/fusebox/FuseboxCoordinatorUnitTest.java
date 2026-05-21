@@ -45,11 +45,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -105,6 +106,8 @@ public class FuseboxCoordinatorUnitTest {
             ObservableSuppliers.createNonNull(List.of());
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<InputState> mComposeInputStateSupplier =
+            ObservableSuppliers.createMonotonic();
     private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
 
     @Before
@@ -124,6 +127,7 @@ public class FuseboxCoordinatorUnitTest {
         lenient().doReturn(Collections.emptyIterator()).when(mTabModel).iterator();
         doReturn(true).when(mComposebox).isFuseboxEligible();
         doReturn(mSuggestedTabsSupplier).when(mComposebox).getSuggestedTabsSupplier();
+        doReturn(mComposeInputStateSupplier).when(mComposebox).getInputStateSupplier();
 
         mAutocompleteInput =
                 new AutocompleteInput()
@@ -164,7 +168,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testBeginInput_initializesMediator() {
         mCoordinator.beginInput(createSession(mProfile));
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -173,7 +176,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testBeginInput_featureEnabled_noBridge() {
         mComposebox = null;
         mCoordinator.beginInput(createSession());
@@ -190,7 +192,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled_mediatorInitialized() {
         mCoordinator.setMediatorForTesting(mMediator);
 
@@ -203,7 +204,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled_disabledByServer() {
         mCoordinator.setMediatorForTesting(mMediator);
 
@@ -224,7 +224,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -242,7 +241,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_basedOnPageClassification() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -268,7 +266,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNonGoogleDse() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -282,7 +279,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -310,7 +306,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNotifyOmniboxSessionEnded() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -328,7 +323,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testPopupDismissed() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();

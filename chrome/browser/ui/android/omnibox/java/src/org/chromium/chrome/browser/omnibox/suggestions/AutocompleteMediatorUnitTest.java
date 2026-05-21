@@ -904,6 +904,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void onSuggestionClicked_aimIsSentSuggestionText() {
         String suggestionText = "test suggestion";
         AutocompleteMatch match =
@@ -914,7 +915,8 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onSuggestionClicked(match, /* matchIndex= */ 0, JUnitTestGURLs.RED_1);
 
-        verify(mComposeboxQueryControllerBridge).getAimUrl(any(), eq(suggestionText), any());
+        verify(mComposeboxQueryControllerBridge)
+                .getAimUrlFromInputState(eq(JUnitTestGURLs.RED_1), eq(suggestionText), any());
         verifyNoMoreInteractions(mAutocompleteDelegate);
     }
 
@@ -1624,6 +1626,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void loadTypedOmniboxText_aimUrl() {
         var session = createEmptySession();
         var autocompleteInput = session.getAutocompleteInput();
@@ -1642,7 +1645,7 @@ public class AutocompleteMediatorUnitTest {
                             return null;
                         })
                 .when(mComposeboxQueryControllerBridge)
-                .getAimUrl(any(), any(), any());
+                .getAimUrlFromInputState(any(), any(), any());
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -1663,6 +1666,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void loadTypedOmniboxText_imageGenerationUrl() {
         var session = createEmptySession();
         var autocompleteInput = session.getAutocompleteInput();
@@ -1685,7 +1689,7 @@ public class AutocompleteMediatorUnitTest {
                             return null;
                         })
                 .when(mComposeboxQueryControllerBridge)
-                .getImageGenerationUrl(any(), any(), any());
+                .getAimUrlFromInputState(any(), any(), any());
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
