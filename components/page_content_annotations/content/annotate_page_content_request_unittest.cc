@@ -1354,6 +1354,18 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_SameDocument) {
       1);
 }
 
+TEST_P(AnnotatePageContentRequestTest, AboutBlankNavigation_NoExtraction) {
+  SetTriggeringMode("on_load");
+
+  SimulateNavigation(GURL("about:blank"));
+
+  // Wait long enough to ensure no extraction is triggered.
+  task_environment()->FastForwardBy(base::Seconds(30));
+
+  // Extraction should not be triggered for about:blank in either case.
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AnnotatePageContentRequestTest,
                          ::testing::Combine(::testing::Bool(),

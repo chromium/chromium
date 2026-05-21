@@ -68,12 +68,6 @@ extern const base::FeatureParam<bool> kPageContentCacheUseUserEngagement;
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageSettledMonitor);
 
-// Enables the use of PageSettledMonitor for PCES extractions to better
-// determine when a page is stable enough for content extraction. This replaces
-// the legacy load/FCP plus a fixed-delay.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPageContentExtractionUsingPageSettledMonitor);
-
 // The overall observation timeout when waiting on a renderer tool to complete.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kPageStabilityTimeout;
@@ -105,6 +99,12 @@ extern const base::FeatureParam<base::TimeDelta> kObservationDelayTimeout;
 // loading.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kObservationDelayLcp;
+
+// Enables the use of PageSettledMonitor for PCES extractions to better
+// determine when a page is stable enough for content extraction. This replaces
+// the legacy load/FCP plus a fixed-delay.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageContentExtractionUsingPageSettledMonitor);
 
 // If enabled, observation for page load excludes load in ad frames.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
@@ -240,6 +240,11 @@ enum class PageContentExtractionTriggeringMode {
 // Returns the triggering mode for page content extraction.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode();
+
+// Allows heuristically delaying the extraction for AnnotatedPageContent once
+// the page has been settled using PageSettledMonitor.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+base::TimeDelta GetPageSettledCaptureDelay();
 
 // Returns whether |locale| is a supported locale for |feature|.
 //

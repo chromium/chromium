@@ -317,6 +317,15 @@ void AnnotatedPageContentRequest::DidFinishNavigationWithPageSettledMonitor(
     return;
   }
 
+  ResetForNewNavigation(navigation_handle->IsSameDocument());
+
+  // Skip about:blank navigations. Legacy path waits for FCP which never occurs
+  // for about:blank, effectively skipping it. We match that behavior here
+  // to avoid unnecessary extractions for pages without meaningful content.
+  if (navigation_handle->GetURL().IsAboutBlank()) {
+    return;
+  }
+
   const bool monitor_already_exists = !!monitor;
   if (!monitor_already_exists) {
     // If the monitor was not created in DidStartNavigation (e.g. because this
@@ -339,8 +348,6 @@ void AnnotatedPageContentRequest::DidFinishNavigationWithPageSettledMonitor(
       "OptimizationGuide.PageContentExtraction."
       "HadSettledMonitorAtDidFinishNavigation",
       monitor_already_exists);
-
-  ResetForNewNavigation(navigation_handle->IsSameDocument());
 
   active_page_settled_monitor_ = std::move(monitor);
   active_page_settled_monitor_->Wait(
@@ -450,7 +457,7 @@ void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
       base::BindOnce(&AnnotatedPageContentRequest::OnExtractionTimerFired,
                      weak_factory_.GetWeakPtr(), *trigger_source),
       use_page_settled_monitor_
-          ? base::TimeDelta()
+          ? features::GetPageSettledCaptureDelay()
           : features::GetAnnotatedPageContentCaptureDelay());
 }
 
