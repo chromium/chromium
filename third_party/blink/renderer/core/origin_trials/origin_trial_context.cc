@@ -444,27 +444,11 @@ bool OriginTrialContext::InstallFeatures(
       }
     }
 
-    if (InstallSettingFeature(document, enabled_feature))
-      continue;
-
     InstallPropertiesPerFeature(script_state, enabled_feature);
     added_binding_features = true;
   }
 
   return added_binding_features;
-}
-
-bool OriginTrialContext::InstallSettingFeature(
-    Document& document,
-    mojom::blink::OriginTrialFeature enabled_feature) {
-  switch (enabled_feature) {
-    case mojom::blink::OriginTrialFeature::kAutoDarkMode:
-      if (document.GetSettings())
-        document.GetSettings()->SetForceDarkModeEnabled(true);
-      return true;
-    default:
-      return false;
-  }
 }
 
 void OriginTrialContext::AddFeature(mojom::blink::OriginTrialFeature feature) {

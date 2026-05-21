@@ -545,29 +545,6 @@ TEST_F(OriginTrialContextTest, ImpliedFeatureExpiryTimesAreUpdated) {
           mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPIImplied));
 }
 
-TEST_F(OriginTrialContextTest, SettingFeatureUpdatesDocumentSettings) {
-  // Create a page holder window/document with an OriginTrialContext.
-  auto page_holder = std::make_unique<DummyPageHolder>();
-  LocalDOMWindow* window = page_holder->GetFrame().DomWindow();
-  OriginTrialContext* context = window->GetOriginTrialContext();
-
-  // Force-disabled the AutoDarkMode feature in the page holder's settings.
-  ASSERT_TRUE(page_holder->GetDocument().GetSettings());
-  page_holder->GetDocument().GetSettings()->SetForceDarkModeEnabled(false);
-
-  // Enable a settings-based origin trial API ("AutoDarkMode").
-  context->AddFeature(mojom::blink::OriginTrialFeature::kAutoDarkMode);
-  EXPECT_TRUE(context->IsFeatureEnabled(
-      mojom::blink::OriginTrialFeature::kAutoDarkMode));
-
-  // Expect the AutoDarkMode setting to have been enabled.
-  EXPECT_TRUE(
-      page_holder->GetDocument().GetSettings()->GetForceDarkModeEnabled());
-
-  // TODO(crbug.com/1260410): Switch this test away from using the AutoDarkMode
-  // feature towards an OriginTrialsSampleAPI* feature.
-}
-
 // This test ensures that the feature and token data are correctly mapped. The
 // assertions mirror the code that is used to send origin trial overrides to the
 // browser process via RuntimeFeatureStateOverrideContext's IPC.

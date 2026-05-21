@@ -759,7 +759,6 @@
     {
       name: "AutoDarkMode",
       base_feature: "none",
-      origin_trial_feature_name: "AutoDarkMode",
     },
     {
       // When enabled, the dark mode filter (Auto Dark / force-dark) skips
