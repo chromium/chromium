@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -57,17 +58,18 @@ std::string ReadTestMediaFile(std::string_view file_name) {
 }
 
 struct TestParams {
-  std::string audio_data;
+  base::RepeatingCallback<std::string()> data_factory;
   media::AudioCodec codec = media::AudioCodec::kUnknown;
   std::string test_suffix;
 };
 
 std::vector<TestParams> GetTestParams() {
   return {
-      {.audio_data = std::string(kTestAudioData, kTestAudioDataSize),
+      {.data_factory = base::BindRepeating(
+           []() { return std::string(kTestAudioData, kTestAudioDataSize); }),
        .codec = media::AudioCodec::kPCM,
        .test_suffix = "Wav"},
-      {.audio_data = ReadTestMediaFile("bear.flac"),
+      {.data_factory = base::BindRepeating(&ReadTestMediaFile, "bear.flac"),
        .codec = media::AudioCodec::kFLAC,
        .test_suffix = "Flac"},
   };
@@ -113,9 +115,10 @@ class AudioStreamHandlerTestWithParams
       public testing::WithParamInterface<TestParams> {
  protected:
   std::unique_ptr<AudioStreamHandler> CreateHandler(bool loop = false) {
+    const std::string audio_data = GetParam().data_factory.Run();
     EXPECT_CALL(mock_resource_delegate(),
                 GetRawDataResource(kTestResourceId, _, _))
-        .WillOnce(DoAll(SetArgPointee<2>(GetParam().audio_data), Return(true)));
+        .WillOnce(DoAll(SetArgPointee<2>(audio_data), Return(true)));
     return std::make_unique<AudioStreamHandler>(
         /*stream_factory_binder=*/base::DoNothing(), kTestResourceId,
         GetParam().codec, loop);
