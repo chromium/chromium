@@ -330,6 +330,7 @@ public class MediaDrmBridge {
                 boolean result = startProvisioning();
                 if (!result) {
                     onCreateError(MediaDrmCreateError.FAILED_TO_START_PROVISIONING);
+                    release();
                 }
                 return result;
             }
@@ -723,6 +724,14 @@ public class MediaDrmBridge {
 
         assert mMediaDrm != null;
 
+        if (mMediaCrypto != null) {
+            mMediaCrypto.release();
+            mMediaCrypto = null;
+        } else {
+            // MediaCrypto never notified. Notify a null one now.
+            onMediaCryptoReady(null);
+        }
+
         // Close all open sessions.
         for (SessionId sessionId : mSessionManager.getAllSessionIds()) {
             Log.i(TAG, "Force closing session %s", sessionId);
@@ -747,14 +756,6 @@ public class MediaDrmBridge {
             }
 
             mMediaDrm = null;
-        }
-
-        if (mMediaCrypto != null) {
-            mMediaCrypto.release();
-            mMediaCrypto = null;
-        } else {
-            // MediaCrypto never notified. Notify a null one now.
-            onMediaCryptoReady(null);
         }
     }
 
@@ -1733,6 +1734,10 @@ public class MediaDrmBridge {
                     break;
                 case MediaDrm.EVENT_SESSION_RECLAIMED:
                     Log.d(TAG, "MediaDrm.EVENT_SESSION_RECLAIMED for session %s", sessionId);
+                    if (mMediaDrm != null) {
+                        closeSessionNoException(sessionId);
+                    }
+                    mSessionManager.remove(sessionId);
                     onSessionClosed(sessionId, MediaDrmCdmSessionClosedReason.SESSION_RECLAIMED);
                     break;
                 default:
@@ -1766,6 +1771,10 @@ public class MediaDrmBridge {
                             }
 
                             Log.d(TAG, "SessionLost: " + sessionId);
+                            if (mMediaDrm != null) {
+                                closeSessionNoException(sessionId);
+                            }
+                            mSessionManager.remove(sessionId);
                             // TODO(crbug.com/40181810): Consider passing a reason for sessionClosed
                             // that more closely represents a lost state.
                             onSessionClosed(sessionId, MediaDrmCdmSessionClosedReason.CLOSE);
