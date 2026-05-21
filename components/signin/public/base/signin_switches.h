@@ -560,11 +560,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kRestrictDeviceManagementServiceOAuthScope);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Experimenting with showing the profile picker to all users (not only the
-// users with multiple profiles).
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kShowProfilePickerToAllUsersExperiment);
-
 #if BUILDFLAG(IS_ANDROID)
 // Experiment replacing signed out avatar with signin button on Android, see
 // crbug.com/475816843.

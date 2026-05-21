@@ -107,8 +107,6 @@ export class ProfilePickerMainViewElement extends
   protected accessor pickerButtonsDisabled_: boolean = false;
 
   protected accessor isRefreshedUI_: boolean = isUseRefreshedUI();
-  private showProfilePickerToAllUsersExperiment_: boolean =
-      loadTimeData.getBoolean('showProfilePickerToAllUsersExperiment');
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -291,11 +289,7 @@ export class ProfilePickerMainViewElement extends
   }
 
   private computeHideAskOnStartup_(): boolean {
-    const shouldShowBasedOnProfilesCount = this.profilesList_.length >= 2 ||
-        (this.profilesList_.length >= 1 &&
-         this.showProfilePickerToAllUsersExperiment_);
-
-    return !isAskOnStartupAllowed() || !shouldShowBasedOnProfilesCount;
+    return !isAskOnStartupAllowed() || this.profilesList_.length < 2;
   }
 
   protected onToggleDrag_(e: CustomEvent<{toggle: boolean}>) {

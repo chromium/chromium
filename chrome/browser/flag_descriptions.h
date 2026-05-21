@@ -4301,12 +4301,6 @@ inline constexpr char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "As part of the Sign In Level Up experiment, changes the decline "
     "sign in CTA string in profile creation entry points";
 
-inline constexpr char kShowProfilePickerToAllUsersExperimentName[] =
-    "Show profile picker to all users";
-inline constexpr char kShowProfilePickerToAllUsersExperimentDescription[] =
-    "As part of the Growth experiments, show the profile picker to users who "
-    "only have one profile";
-
 inline constexpr char kSmoothScrollingName[] = "Smooth Scrolling";
 inline constexpr char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";

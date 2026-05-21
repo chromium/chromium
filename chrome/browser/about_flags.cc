@@ -11996,14 +11996,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kSearchSettingsUpdate)},
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"show-profile-picker-to-all-users-experiment",
-     flag_descriptions::kShowProfilePickerToAllUsersExperimentName,
-     flag_descriptions::kShowProfilePickerToAllUsersExperimentDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kShowProfilePickerToAllUsersExperiment)},
-#endif
-
     {"profile-signals-reporting-enabled",
      flag_descriptions::kProfileSignalsReportingEnabledName,
      flag_descriptions::kProfileSignalsReportingEnabledDescription, kOsAll,

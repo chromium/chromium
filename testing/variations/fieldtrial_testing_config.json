@@ -19669,23 +19669,6 @@
             ]
         }
     ],
-    "ProfileExperimentsM0": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "ShowProfilePickerToAllUsersExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProfileManagerDeferAsyncLoading": [
         {
             "platforms": [

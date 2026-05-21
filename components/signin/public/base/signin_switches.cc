@@ -590,11 +590,6 @@ BASE_FEATURE(kRestrictDeviceManagementServiceOAuthScope,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kShowProfilePickerToAllUsersExperiment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSigninLevelUpButton, base::FEATURE_DISABLED_BY_DEFAULT);
 

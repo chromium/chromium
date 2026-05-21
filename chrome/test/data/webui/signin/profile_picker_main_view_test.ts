@@ -88,7 +88,6 @@ suite('ProfilePickerMainViewTest', function() {
       isProfileCreationAllowed: true,
       isAskOnStartupAllowed: true,
       profilesReorderingEnabled: true,
-      showProfilePickerToAllUsersExperiment: false,
       maxProfilesCountToShowOpenAllProfilesButton: 0,
       useRefreshedUI: false,
     });
@@ -339,35 +338,6 @@ suite('ProfilePickerMainViewTest', function() {
     profileCards.forEach(profileCard => {
       assertFalse(profileCard.$.profileCardButton.disabled);
     });
-  });
-
-  test('AskOnStartupWithProfilePickerShownToAllUsers', async function() {
-    loadTimeData.overrideValues({
-      showProfilePickerToAllUsersExperiment: true,
-    });
-    resetTest();
-    await browserProxy.whenCalled('initializeMainView');
-    // Hidden while profiles list is not yet defined.
-    assertFalse(isChildVisible(mainViewElement, '#profilesWrapper'));
-    assertFalse(isChildVisible(mainViewElement, '#askOnStartup'));
-    let profiles = generateProfilesList(1);
-    await simulateProfilesListChanged(profiles);
-    await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
-    // The checkbox 'Ask when chrome opens' should be visible to all users and
-    // checked by default.
-    assertTrue(isChildVisible(mainViewElement, '#askOnStartup'));
-    assertTrue(mainViewElement.$.askOnStartup.checked);
-    // Add a second profile.
-    profiles = generateProfilesList(2);
-    await simulateProfilesListChanged(profiles);
-    await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
-    assertTrue(isChildVisible(mainViewElement, '#askOnStartup'));
-    assertTrue(mainViewElement.$.askOnStartup.checked);
-    mainViewElement.$.askOnStartup.click();
-    await browserProxy.whenCalled('askOnStartupChanged');
-    assertFalse(mainViewElement.$.askOnStartup.checked);
   });
 
   [true, false].forEach(isRefreshedUI => {

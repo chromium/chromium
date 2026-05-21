@@ -220,7 +220,6 @@ void AddFlags(content::WebUIDataSource* html_source,
     html_source->AddBoolean("isBrowserSigninAllowed", false);
     html_source->AddBoolean("isGuestModeEnabled", false);
     html_source->AddBoolean("isProfileCreationAllowed", false);
-    html_source->AddBoolean("showProfilePickerToAllUsersExperiment", false);
     html_source->AddBoolean("isOpenAllProfilesButtonExperimentEnabled", false);
     html_source->AddInteger("maxProfilesCountToShowOpenAllProfilesButton", 0);
     html_source->AddBoolean("useRefreshedUI", false);
@@ -249,10 +248,6 @@ void AddFlags(content::WebUIDataSource* html_source,
   html_source->AddBoolean("isProfileCreationAllowed",
                           profiles::IsProfileCreationAllowed());
 
-  html_source->AddBoolean(
-      "showProfilePickerToAllUsersExperiment",
-      base::FeatureList::IsEnabled(
-          switches::kShowProfilePickerToAllUsersExperiment));
   html_source->AddBoolean("useRefreshedUI",
                           is_first_run_desktop_refresh_enabled);
 }
