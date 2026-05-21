@@ -155,10 +155,9 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString("webuiRefresh2026", base::FeatureList::IsEnabled(
-                                                 features::kWebuiRefresh2026)
-                                                 ? "webui-refresh-2026"
-                                                 : "");
+  html_source->AddString(
+      "webuiRefresh2026",
+      features::IsWebuiRefresh2026Enabled() ? "webui-refresh-2026" : "");
 }
 
 }  // namespace

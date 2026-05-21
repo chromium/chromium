@@ -119,10 +119,9 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       l10n_util::GetStringFUTF16(IDS_SKILLS_DIALOG_CHAR_LIMIT_ERROR,
                                  base::FormatNumber(kMaxPromptCharCount)));
 
-  source->AddString("webuiRefresh2026",
-                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
-                        ? "webui-refresh-2026"
-                        : "");
+  source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
+                                            ? "webui-refresh-2026"
+                                            : "");
 }
 
 void SkillsUI::InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,
