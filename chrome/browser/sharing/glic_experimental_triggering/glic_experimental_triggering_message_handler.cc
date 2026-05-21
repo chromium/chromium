@@ -225,6 +225,9 @@ class ExperimentalTriggeringUpdatesHandler
       if (!browser_window) {
         DLOG(ERROR) << "No browser window found for Profile for "
                        "GlicExperimentalTriggering";
+        SendTaskUpdateMessage(TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                              "No active browser window found.");
+        message_handler_->OnUpdatesHandlerCleanup(context_id_);
         return;
       }
     }
@@ -239,19 +242,22 @@ class ExperimentalTriggeringUpdatesHandler
         },
         weak_ptr_factory_.GetWeakPtr());
     options.on_error = base::BindOnce(
-        [](base::WeakPtr<GlicExperimentalTriggeringMessageHandler>
-               message_handler,
+        [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> updates_handler,
            const std::string& context_id, glic::GlicInvokeError error) {
-          // TODO(b/505825633): Propagate the error to the actuation
-          // request sender.
           DLOG(WARNING) << "Glic invocation failed with error: "
                         << static_cast<int>(error);
-
-          if (message_handler) {
-            message_handler->OnUpdatesHandlerCleanup(context_id);
+          if (updates_handler) {
+            updates_handler->SendTaskUpdateMessage(
+                TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                "Glic invocation failed with error: " +
+                    base::NumberToString(static_cast<int>(error)));
+            if (updates_handler->message_handler_) {
+              updates_handler->message_handler_->OnUpdatesHandlerCleanup(
+                  context_id);
+            }
           }
         },
-        message_handler_, context_id_);
+        weak_ptr_factory_.GetWeakPtr(), context_id_);
 
     instance_ =
         glic_service->InvokeWithAutoSubmit(passkey_, std::move(options));
