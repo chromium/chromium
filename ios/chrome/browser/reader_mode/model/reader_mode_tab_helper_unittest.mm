@@ -991,6 +991,56 @@ TEST_F(ReaderModeTabHelperTest, AddsInfobarWhenActivated) {
   EXPECT_EQ(0u, infobar_manager->infobars().size());
 }
 
+// Tests that when Reader Mode cancels a request, the request is forwarded to
+// the navigation manager with the correct
+// ReferrerPolicyStrictOriginWhenCrossOrigin policy.
+TEST_F(ReaderModeTabHelperTest, ReaderModeContentDidCancelRequestForwarding) {
+  web_state()->WasShown();
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  // Activate Reader Mode.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(web_state());
+
+  // Ensure the host tab navigation manager has not been called yet.
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          web_state()->GetNavigationManager());
+  ASSERT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
+
+  // Simulate a navigation cancellation with a referrer.
+  NSMutableURLRequest* request = [NSMutableURLRequest
+      requestWithURL:[NSURL URLWithString:@"https://destination.url/"]];
+  [request setValue:@"https://referrer.url/"
+      forHTTPHeaderField:@"Referer"];
+
+  web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/true,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/true,
+      /*user_tapped_recently=*/true);
+
+  reader_mode_tab_helper()->ReaderModeContentDidCancelRequest(nil, request,
+                                                              request_info);
+
+  // Verify that the host WebState's navigation manager loaded the request
+  // with web::ReferrerPolicyStrictOriginWhenCrossOrigin.
+  EXPECT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
+  web::NavigationManager::WebLoadParams load_params =
+      navigation_manager->GetLastLoadURLWithParams().value();
+  EXPECT_EQ(GURL("https://destination.url/"), load_params.url);
+  EXPECT_EQ(GURL("https://referrer.url/"), load_params.referrer.url);
+  EXPECT_EQ(web::ReferrerPolicyStrictOriginWhenCrossOrigin,
+            load_params.referrer.policy);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ReaderModeTabHelperWithEligibilityTest,

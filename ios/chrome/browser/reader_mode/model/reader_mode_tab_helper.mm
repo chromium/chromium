@@ -378,7 +378,7 @@ void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
   if (referrer_value) {
     NSURL* referrer_url = [NSURL URLWithString:referrer_value];
     params.referrer.url = net::GURLWithNSURL(referrer_url);
-    params.referrer.policy = web::ReferrerPolicyDefault;
+    params.referrer.policy = web::ReferrerPolicyStrictOriginWhenCrossOrigin;
   }
   params.transition_type = request_info.transition_type;
   web_state_->GetNavigationManager()->LoadURLWithParams(params);
