@@ -4060,7 +4060,7 @@ Ulteriori dettagli:
 <translation id="7360451453306104998">Quando Google trova sconti disponibili, li mostra nella fase di pagamento</translation>
 <translation id="7362039113312920489">Rivedi e gestisci</translation>
 <translation id="7362281996276843968">Questo gruppo è chiuso</translation>
-<translation id="7363096869660964304">Non sei completamente invisibile: in modalità Incognito, la tua navigazione non viene nascosta al tuo datore di lavoro, al provider di servizi internet o ai siti web che visiti.</translation>
+<translation id="7363096869660964304">Non sei completamente invisibile: in modalità Incognito, la navigazione non viene nascosta al tuo datore di lavoro, al provider di servizi internet o ai siti web che visiti.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per aggiungere e gestire indirizzi nelle impostazioni di Chrome</translation>
 <translation id="7365849542400970216">Conoscere l'utilizzo del tuo dispositivo?</translation>
 <translation id="736592699917579616">Cibo</translation>
@@ -4071,7 +4071,7 @@ Ulteriori dettagli:
 <translation id="7372526636730851647">Foto (patinata)</translation>
 <translation id="7372973238305370288">risultato della ricerca</translation>
 <translation id="7374461526650987610">Gestori di protocollo</translation>
-<translation id="7374733840632556089">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chrome. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chrome vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
+<translation id="7374733840632556089">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chrome. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chrome vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al web.</translation>
 <translation id="73750335798090836">Per una maggiore protezione, usa sempre l'impronta, il volto o un altro metodo di blocco schermo quando usi informazioni sensibili come documenti di viaggio e di identità</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nessun sito autorizzato}=1{1 sito autorizzato}other{# siti autorizzati}}</translation>
 <translation id="7375818412732305729">Viene allegato un file</translation>

@@ -9253,7 +9253,7 @@
 <translation id="7427798576651127129">שיחה מ-<ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">‏מדמה את הפלט של צג ברייל ניתן לרענון
     בחלונית ChromeVox שנמצאת בחלק העליון של המסך</translation>
-<translation id="7429568074268678162">‏הקובץ <ph name="FILENAME" /> עלול להיות מסוכן. מוסיפים סיסמה אם רוצים ש-Chrome יאמת אותה, או שאפשר להוריד אותה ישירות.</translation>
+<translation id="7429568074268678162">‏הקובץ <ph name="FILENAME" /> עלול להיות מסוכן. כדאי להוסיף סיסמה אם רוצים ש-Chrome יאמת את הקובץ, או שאפשר להוריד אותו ישירות.</translation>
 <translation id="7431719494109538750">‏לא נמצאו התקני HID</translation>
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>
 <translation id="7432200167665670017">מנהל המערכת חסם את "<ph name="EXTENSION_NAME" />" – מזהה האפליקציה <ph name="EXTENSION_ID" /></translation>

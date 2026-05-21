@@ -2922,7 +2922,7 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="2896434627453256512">Definir a política para ativar o recurso de janela fantasma.
       Se a política for definida como "true" (verdadeira), janelas fantasma do ARC serão criadas antes da inicialização do ARC após uma falha ou reinicialização com base na configuração de restauração do app.
       Se a política for definida como "false" (falsa), nenhuma janela fantasma será criada antes da inicialização do ARC. Apps do ARC serão restaurados após a inicialização dele</translation>
-<translation id="2897716186959852329">Nunca permitir a leitura em voz alta</translation>
+<translation id="2897716186959852329">Nunca permitir Ler em voz alta</translation>
 <translation id="2899002520262095963">Os apps Android podem usar as configurações de rede e os certificados de CA definidos por esta política, mas não têm acesso a algumas opções de configuração.</translation>
 <translation id="2899213072616346687">Restringe modo de impressão de gráficos em segundo plano. Se esta política não for definida, não haverá restrição.</translation>
 <translation id="2899640611559504158">Desativar acesso à linha de comando de máquinas virtuais</translation>
@@ -9079,7 +9079,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
       Se a política for ativada, os sites poderão usar os SharedArrayBuffers sem restrições.
 
       Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento entre origens.</translation>
-<translation id="6734397897213913438">Sempre permitir a leitura em voz alta</translation>
+<translation id="6734397897213913438">Sempre permitir Ler em voz alta</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
 <translation id="6736283207617136584">Ativar relatórios sobre o status de atualização do SO do dispositivo</translation>
 <translation id="6739541168983991680">Automatizar o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
@@ -10307,8 +10307,7 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 <translation id="7455912144588577399">Se a política for definida como verdadeira, os usuários poderão ler páginas da
 Web qualificadas em voz alta usando a conversão de texto em voz. Isso é possível graças à síntese de áudio e
 à destilação de conteúdo do lado do servidor. Se for definida como falsa,
-esse recurso será desativado. Se definida como padrão ou deixada sem definição,
-a leitura em voz alta será ativada.</translation>
+esse recurso será desativado. Se definida como padrão ou deixada sem definição, o reucurso Ler em voz alta será ativado.</translation>
 <translation id="7456922722153109956">Esta política controla a visibilidade do aviso abaixo da caixa de pesquisa na página "Nova guia".
 
       Se a política estiver definida como Ativada, a página "Nova guia" vai mostrar o aviso abaixo da caixa de pesquisa, caso esteja disponível.
@@ -12290,7 +12289,7 @@ o esquema https.</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="8720288018555457355">Permitir descobertas do Chrome sem melhorar os modelos de IA.</translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
-<translation id="8721685661759544418">Ativar a leitura em voz alta (destilação de texto e síntese de conversão de texto em voz) para páginas da Web</translation>
+<translation id="8721685661759544418">Ativar o recurso Ler em voz alta (destilação de texto e síntese de conversão de texto em voz) para páginas da Web</translation>
 <translation id="8726080977639508431">Esta política controla como o <ph name="PRODUCT_NAME" /> interpreta políticas de lista de sites/lista cinza no recurso Suporte a navegadores legados. Ela afeta as políticas <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Se ela for definida como "Default" (0) ou for deixada sem definição, a correspondência de URL será menos rigorosa. Regras que não tiverem "/" procurarão uma substring em qualquer lugar no nome do host do URL. A correspondência do componente de caminho de um URL diferencia maiúsculas de minúsculas.
