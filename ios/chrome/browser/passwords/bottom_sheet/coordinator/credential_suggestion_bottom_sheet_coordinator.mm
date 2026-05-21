@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
+#import "base/task/thread_pool.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -183,24 +184,22 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                                       }];
 
   // Dismiss right away if the presentation failed to avoid having a zombie
-  // coordinator. This is the best proxy we have to know whether the view
-  // controller for the bottom sheet could really be presented as the completion
-  // block is only called when presentation really happens, and we can't get any
-  // error message or signal. Based on what we could test, we know that
-  // presentingViewController is only set if the view controller can be
-  // presented, where it is left to nil if the presentation is rejected for
-  // various reasons (having another view controller already presented is one of
-  // them). One should not think they can know all the reasons why the
-  // presentation fails.
+  // coordinator. The check is performed asynchronously in the main queue to
+  // prevent the credential suggestion bottom sheet from being dismissed
+  // prematurely due to UIKit's asynchronous presentation timing. This is the
+  // best proxy we have to know whether the view controller for the bottom sheet
+  // could really be presented as the completion block is only called when
+  // presentation really happens, and we can't get any error message or signal.
   //
   // Keep this line at the end of -start because the
   // delegate will likely -stop the coordinator when closing suggestions, so the
   // coordinator should be in the most up to date state where it can be safely
   // stopped.
-  if (!_navigationController.presentingViewController) {
-    [_mediator logExitReason:kCouldNotPresent];
-    [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
-  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf verifyPresentation];
+      }));
 }
 
 - (void)stop {
@@ -401,6 +400,16 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   CHECK(activeWebState);
   if (activeWebState) {
     [activeWebState->GetView() endEditing:NO];
+  }
+}
+
+// Verifies whether the bottom sheet view controller was successfully presented.
+// If not, logs an exit reason and dismisses the password suggestions.
+- (void)verifyPresentation {
+  if (!_navigationController.presentingViewController &&
+      !_navigationController.beingPresented) {
+    [_mediator logExitReason:kCouldNotPresent];
+    [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   }
 }
 
