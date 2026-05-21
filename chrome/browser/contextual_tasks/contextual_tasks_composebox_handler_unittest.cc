@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -3478,4 +3480,46 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->IsAnyContextUploading());
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
   ASSERT_EQ(handler_->GetNumContextUploading(), 0);
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, MultiFilesSelected) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath file1_path = temp_dir.GetPath().AppendASCII("file1.pdf");
+  base::FilePath file2_path = temp_dir.GetPath().AppendASCII("file2.png");
+
+  std::string file1_content = "dummy pdf content";
+  std::string file2_content = "dummy image content";
+
+  ASSERT_TRUE(base::WriteFile(file1_path, file1_content));
+  ASSERT_TRUE(base::WriteFile(file2_path, file2_content));
+
+  std::vector<ui::SelectedFileInfo> files;
+  files.emplace_back(file1_path, file1_path);
+  files.emplace_back(file2_path, file2_path);
+
+  base::RunLoop run_loop;
+  int file_contexts_added = 0;
+  EXPECT_CALL(mock_searchbox_page_, AddFileContext(testing::_, testing::_))
+      .Times(2)
+      .WillRepeatedly([&](const base::UnguessableToken& token,
+                          searchbox::mojom::SelectedFileInfoPtr file_info) {
+        file_contexts_added++;
+        if (file_info->file_name == "file1.pdf") {
+          EXPECT_EQ(file_info->mime_type, "application/pdf");
+        } else if (file_info->file_name == "file2.png") {
+          EXPECT_EQ(file_info->mime_type, "image/png");
+        }
+        if (file_contexts_added == 2) {
+          run_loop.Quit();
+        }
+      });
+
+  handler_->MultiFilesSelected(files);
+
+  // Wait for ThreadPool tasks to finish processing files.
+  run_loop.Run();
+
+  EXPECT_EQ(handler_->GetNumContextUploading(), 2);
 }

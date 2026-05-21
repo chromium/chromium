@@ -46,6 +46,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
@@ -599,7 +600,7 @@ void ContextualTasksComposeboxHandler::HandleFileUpload(bool is_image) {
   }
   file_types.include_all_files = true;
 
-  file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
+  file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE,
                            /*title=*/std::u16string(),
                            /*default_path=*/base::FilePath(), &file_types,
                            /*file_type_index=*/0,
@@ -610,14 +611,54 @@ void ContextualTasksComposeboxHandler::HandleFileUpload(bool is_image) {
 void ContextualTasksComposeboxHandler::FileSelected(
     const ui::SelectedFileInfo& file,
     int index) {
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ReadFileAndProcess, file.path(), file.display_name),
-      base::BindOnce(&ContextualTasksComposeboxHandler::OnFileRead,
-                     weak_factory_.GetWeakPtr()));
+  MultiFilesSelected({file});
+}
+
+void ContextualTasksComposeboxHandler::MultiFilesSelected(
+    const std::vector<ui::SelectedFileInfo>& files) {
+  auto* session_handle = GetContextualSessionHandle();
+  size_t valid_files_count =
+      (session_handle ? session_handle->GetUploadedContextFileInfos().size()
+                      : 0) +
+      pending_context_uploads_.size();
+  auto composebox_config =
+      ntp_composebox::FeatureConfig::Get().config.composebox();
+  size_t max_files = composebox_config.max_num_files();
+  if (GetInputState().max_total_inputs > 0) {
+    max_files = GetInputState().max_total_inputs;
+  }
+  if (max_files == 0) {
+    max_files = omnibox::kDefaultMaxTotalInputs;
+  }
+
+  for (const auto& file : files) {
+    if (valid_files_count >= max_files) {
+      // To trigger the limit error banner on the WebUI frontend without reading
+      // the exceeded file from disk or allocating memory for its contents, this
+      // fakes its registration long enough to report a validation error.
+      // The frontend immediately displays the global limit error toast and
+      // deletes this dummy context silently, rendering no failed chip.
+      auto dummy_token = base::UnguessableToken::Create();
+      auto dummy_info = searchbox::mojom::SelectedFileInfo::New();
+      dummy_info->file_name = file.path().BaseName().AsUTF8Unsafe();
+      dummy_info->mime_type = "application/octet-stream";
+      dummy_info->is_deletable = true;
+      ContextualSearchboxHandler::page_->AddFileContext(dummy_token,
+                                                        std::move(dummy_info));
+      ContextualSearchboxHandler::page_->OnContextualInputStatusChanged(
+          dummy_token,
+          contextual_search::ContextUploadStatus::kValidationFailed,
+          contextual_search::ContextUploadErrorType::
+              kBrowserProcessingMaxFilesExceededError);
+      break;
+    }
+    valid_files_count++;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&ReadFileAndProcess, file.path(), file.display_name),
+        base::BindOnce(&ContextualTasksComposeboxHandler::OnFileRead,
+                       weak_factory_.GetWeakPtr()));
+  }
   file_dialog_.reset();
 }
 

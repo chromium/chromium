@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
@@ -522,7 +523,7 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("searchboxCr23SteadyStateShadow",
            ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
-  int max_files = 10;
+  int max_files = omnibox::kDefaultMaxTotalInputs;
   int max_images = max_files;
   int max_pdfs = max_files;
   AimEligibilityService* service =

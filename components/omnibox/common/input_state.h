@@ -20,6 +20,8 @@
 
 namespace omnibox {
 
+inline constexpr int kDefaultMaxTotalInputs = 10;
+
 // Represents a valid searchbox inputs state.
 // LINT.IfChange(InputState)
 struct InputState {

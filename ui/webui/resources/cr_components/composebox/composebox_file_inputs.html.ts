@@ -19,12 +19,14 @@ ${this.disableFileInputs ? html`<slot></slot>` : html`
       accept="${this.imageFileTypes_}"
       id="imageInput"
       @change="${this.onFileChange_}"
+      multiple
       hidden>
   </input>
   <input type="file"
       accept="${this.attachmentFileTypes_}"
       id="fileInput"
       @change="${this.onFileChange_}"
+      multiple
       hidden>
   </input>
 `}

@@ -65,6 +65,8 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override;
   void FileSelectionCanceled() override;
 
  private:

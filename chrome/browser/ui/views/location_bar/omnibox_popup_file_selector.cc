@@ -16,11 +16,16 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -29,6 +34,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
@@ -59,7 +65,7 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
   const ui::SelectFileDialog::Type dialog_type =
-      ui::SelectFileDialog::SELECT_OPEN_FILE;
+      ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
 
   ui::SelectFileDialog::FileTypeInfo file_types;
   if (is_image) {
@@ -77,6 +83,10 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
                            owning_window_);
 }
 
+namespace {
+
+constexpr size_t kDefaultMaxNumFiles = omnibox::kDefaultMaxTotalInputs;
+
 std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
   auto file_data = std::make_unique<FileData>();
 
@@ -90,13 +100,63 @@ std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
   return file_data;
 }
 
+}  // namespace
+
 void OmniboxPopupFileSelector::FileSelected(const ui::SelectedFileInfo& file,
                                             int index) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ReadFileAndProcess, file.path()),
-      base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
-                     weak_factory_.GetWeakPtr()));
+  MultiFilesSelected({file});
+}
+
+void OmniboxPopupFileSelector::MultiFilesSelected(
+    const std::vector<ui::SelectedFileInfo>& files) {
+  auto* webui = web_contents_ ? web_contents_->GetWebUI() : nullptr;
+  auto* omnibox_popup_ui =
+      webui ? webui->GetController()->GetAs<OmniboxPopupUI>() : nullptr;
+  auto* composebox_handler =
+      omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
+
+  size_t valid_files_count =
+      composebox_handler ? composebox_handler->GetUploadedContextTokens().size()
+                         : 0;
+
+  size_t max_files = kDefaultMaxNumFiles;
+  if (composebox_handler) {
+    auto composebox_config =
+        ntp_composebox::FeatureConfig::Get().config.composebox();
+    max_files = composebox_config.max_num_files();
+
+    auto* input_state_model = composebox_handler->input_state_model();
+    if (input_state_model &&
+        input_state_model->GetInputState().max_total_inputs > 0) {
+      max_files = input_state_model->GetInputState().max_total_inputs;
+    }
+  }
+  if (max_files == 0) {
+    max_files = kDefaultMaxNumFiles;
+  }
+
+  for (const auto& file : files) {
+    if (valid_files_count >= max_files) {
+      // To trigger the limit error banner on the WebUI frontend without reading
+      // the exceeded file from disk or allocating memory for its contents, this
+      // pushes a direct validation error to SearchboxContextData.
+      // The frontend immediately displays the global limit error toast and
+      // deletes this dummy context silently, rendering no failed chip.
+      UpdateSearchboxContextData(
+          lens::MimeType::kUnknown, /*image_data_url=*/"",
+          file.path().BaseName().AsUTF8Unsafe(),
+          /*mime_string=*/"application/octet-stream",
+          base::unexpected(contextual_search::ContextUploadErrorType::
+                               kBrowserProcessingMaxFilesExceededError));
+      break;
+    }
+    valid_files_count++;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&ReadFileAndProcess, file.path()),
+        base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
+                       weak_factory_.GetWeakPtr()));
+  }
   file_dialog_.reset();
 }
 
@@ -156,7 +216,7 @@ void OmniboxPopupFileSelector::OnFileDataReady(
       std::string file_name_copy = file_data->name;
       omnibox_popup_ui->composebox_handler()->AddFileContextFromBrowser(
           std::move(file_name_copy), std::move(mime_type_copy),
-          std::move(file_data_buffer), std::move(image_encoding_options_),
+          std::move(file_data_buffer), image_encoding_options_,
           base::BindOnce(&OmniboxPopupFileSelector::UpdateSearchboxContextData,
                          weak_factory_.GetWeakPtr(), mime_type,
                          std::move(image_data_url), std::move(file_data->name),
@@ -243,5 +303,21 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
   context->file_infos.push_back(
       searchbox::mojom::SearchContextAttachment::NewFileAttachment(
           std::move(file_attachment)));
-  searchbox_context_data->SetPendingContext(std::move(context));
+
+  auto* location_bar = browser_window_interface->GetFeatures().location_bar();
+  auto* omnibox_controller =
+      location_bar ? location_bar->GetOmniboxController() : nullptr;
+
+  if (omnibox_controller &&
+      omnibox_controller->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim) {
+    if (auto* webui = web_contents_->GetWebUI()) {
+      auto* omnibox_popup_ui = webui->GetController()->GetAs<OmniboxPopupUI>();
+      if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
+        omnibox_popup_ui->popup_aim_handler()->AddContext(std::move(context));
+      }
+    }
+  } else {
+    searchbox_context_data->SetPendingContext(std::move(context));
+  }
 }
