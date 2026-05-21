@@ -25,8 +25,7 @@ namespace blink {
 // constructed in webrtc worker sequence. After construction, all the operations
 // including destructor must be done in the webrtc encoder sequence.
 class PLATFORM_EXPORT VideoEncoderStateObserverImpl
-    : public VideoEncoderStateObserver,
-      public StatsCollector {
+    : public VideoEncoderStateObserver {
  public:
   struct TopLayerInfo {
     int encoder_id;
@@ -50,6 +49,9 @@ class PLATFORM_EXPORT VideoEncoderStateObserverImpl
 
   std::optional<TopLayerInfo> FindHighestActiveEncoding() const;
 
+  // Clear the internal stats collector (used by tests).
+  void ClearStatsCollectionForTesting() { stats_collector_.Clear(); }
+
  private:
   class EncoderState;
 
@@ -59,6 +61,7 @@ class PLATFORM_EXPORT VideoEncoderStateObserverImpl
       VALID_CONTEXT_REQUIRED(encoder_sequence_);
   void UpdateStatsCollection(base::TimeTicks now)
       VALID_CONTEXT_REQUIRED(encoder_sequence_);
+  void ReportStats(const StatsCollector::Stats& stats) const;
 
   base::flat_map<int, std::unique_ptr<EncoderState>> encoder_state_by_id_
       GUARDED_BY_CONTEXT(encoder_sequence_);
@@ -67,6 +70,10 @@ class PLATFORM_EXPORT VideoEncoderStateObserverImpl
 
   base::TimeTicks last_update_stats_collection_time_
       GUARDED_BY_CONTEXT(encoder_sequence_);
+
+  const StatsCollector::StoreProcessingStatsCB store_processing_stats_cb_;
+
+  StatsCollector stats_collector_;
 
   // WebRTC encoder sequence.
   SEQUENCE_CHECKER(encoder_sequence_);

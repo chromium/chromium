@@ -40,8 +40,7 @@ namespace blink {
 // mutual exclusive. Release() may be called on any sequence as long as the
 // encoding sequence has stopped.
 class PLATFORM_EXPORT StatsCollectingEncoder
-    : private StatsCollector,
-      public webrtc::VideoEncoder,
+    : public webrtc::VideoEncoder,
       private webrtc::EncodedImageCallback {
  public:
   // Creates a StatsCollectingEncoder object for the specified `format`.
@@ -50,9 +49,10 @@ class PLATFORM_EXPORT StatsCollectingEncoder
   // `encoder`. The provided `stats_callback` will be called periodically to
   // push the performance data that has been collected. The lifetime of
   // `stats_callback` must outlive the lifetime of the StatsCollectingEncoder.
-  explicit StatsCollectingEncoder(const webrtc::SdpVideoFormat& format,
-                                  std::unique_ptr<webrtc::VideoEncoder> encoder,
-                                  StoreProcessingStatsCB stats_callback);
+  explicit StatsCollectingEncoder(
+      const webrtc::SdpVideoFormat& format,
+      std::unique_ptr<webrtc::VideoEncoder> encoder,
+      StatsCollector::StoreProcessingStatsCB stats_callback);
 
   ~StatsCollectingEncoder() override;
 
@@ -79,6 +79,8 @@ class PLATFORM_EXPORT StatsCollectingEncoder
     base::TimeTicks encode_start;
   };
 
+  void ReportStats(const StatsCollector::Stats& stats) const;
+
   // Implementation of webrtc::EncodedImageCallback.
   Result OnEncodedImage(
       const webrtc::EncodedImage& encoded_image,
@@ -93,6 +95,7 @@ class PLATFORM_EXPORT StatsCollectingEncoder
   base::Lock lock_;
 
   const std::unique_ptr<webrtc::VideoEncoder> encoder_;
+  const StatsCollector::StoreProcessingStatsCB stats_callback_;
   raw_ptr<webrtc::EncodedImageCallback> encoded_callback_{nullptr};
   // We only care about the highest layer...
   // - In simulcast, the stream index refers to the simulcast index.
@@ -105,6 +108,7 @@ class PLATFORM_EXPORT StatsCollectingEncoder
   base::TimeTicks last_check_for_simultaneous_encoders_;
 
   Deque<EncodeStartInfo> encode_start_info_ GUARDED_BY(lock_);
+  StatsCollector stats_collector_;
 
   SEQUENCE_CHECKER(encoding_sequence_checker_);
 };

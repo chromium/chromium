@@ -31,12 +31,12 @@ std::atomic_int* GetDecoderCounter() {
 StatsCollectingDecoder::StatsCollectingDecoder(
     const webrtc::SdpVideoFormat& format,
     std::unique_ptr<webrtc::VideoDecoder> decoder,
-    StatsCollectingDecoder::StoreProcessingStatsCB stats_callback)
-    : StatsCollector(
+    StatsCollector::StoreProcessingStatsCB stats_callback)
+    : decoder_(std::move(decoder)),
+      stats_callback_(stats_callback),
+      stats_collector_(
           /*is_decode=*/true,
-          WebRtcVideoFormatToMediaVideoCodecProfile(format),
-          stats_callback),
-      decoder_(std::move(decoder)) {
+          WebRtcVideoFormatToMediaVideoCodecProfile(format)) {
   DVLOG(3) << __func__;
   CHECK(decoder_);
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
@@ -44,6 +44,11 @@ StatsCollectingDecoder::StatsCollectingDecoder(
 
 StatsCollectingDecoder::~StatsCollectingDecoder() {
   DVLOG(3) << __func__;
+}
+
+void StatsCollectingDecoder::ReportStats(
+    const StatsCollector::Stats& stats) const {
+  stats_callback_.Run(stats.key, stats.video_stats);
 }
 
 // Implementation of webrtc::VideoDecoder.
@@ -85,9 +90,10 @@ int32_t StatsCollectingDecoder::Release() {
   // decoder_->Release(). Any outstanding calls to Decoded() will also finish
   // before decoder_->Release() returns. It's therefore safe to access member
   // variables here.
-  if (active_stats_collection() &&
-      samples_collected() >= kMinSamplesThreshold) {
-    ReportStats();
+  if (stats_collector_.is_active() &&
+      stats_collector_.samples_collected() >=
+          StatsCollector::kMinSamplesThreshold) {
+    ReportStats(stats_collector_.ComputeVideoStats());
   }
 
   if (first_frame_decoded_) {
@@ -120,7 +126,7 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
   // sequence.
   DCHECK(decoded_callback_);
   decoded_callback_->Decoded(decodedImage, decode_time_ms, qp);
-  if (stats_collection_finished()) {
+  if (stats_collector_.has_finished()) {
     // Return early if we've already finished the stats collection.
     return;
   }
@@ -132,14 +138,14 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
       kCheckSimultaneousDecodersInterval) {
     last_check_for_simultaneous_decoders_ = now;
     DVLOG(3) << "Simultaneous decoders: " << *GetDecoderCounter();
-    if (active_stats_collection()) {
+    if (stats_collector_.is_active()) {
       if (*GetDecoderCounter() > kMaximumDecodersToCollectStats) {
         // Too many decoders, cancel stats collection.
-        ClearStatsCollection();
+        stats_collector_.Clear();
       }
     } else if (*GetDecoderCounter() <= kMaximumDecodersToCollectStats) {
       // Start up stats collection since there's only a single decoder active.
-      StartStatsCollection();
+      stats_collector_.Start();
     }
   }
 
@@ -151,14 +157,19 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
     number_of_new_keyframes_ = 0;
   }
 
-  if (active_stats_collection() && decodedImage.processing_time()) {
+  if (stats_collector_.is_active() && decodedImage.processing_time()) {
     int pixel_size = static_cast<int>(decodedImage.size());
     bool is_hardware_accelerated =
         decoder_->GetDecoderInfo().is_hardware_accelerated;
     float processing_time_ms = decodedImage.processing_time()->Elapsed().ms();
 
-    AddProcessingTime(pixel_size, is_hardware_accelerated, processing_time_ms,
-                      number_of_new_keyframes, now);
+    std::optional<StatsCollector::Stats> stats_to_report =
+        stats_collector_.AddProcessingTimeAndGetStats(
+            pixel_size, is_hardware_accelerated, processing_time_ms,
+            number_of_new_keyframes, now);
+    if (stats_to_report) {
+      ReportStats(*stats_to_report);
+    }
   }
 }
 

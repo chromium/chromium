@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTOR_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
@@ -28,6 +30,11 @@ class PLATFORM_EXPORT StatsCollector {
     float p99_processing_time_ms;
   };
 
+  struct Stats {
+    StatsKey key;
+    VideoStats video_stats;
+  };
+
   // Only report data if at least 100 samples were collected. This is the
   // minimum number of samples needed for the 99th percentile to be meaningful.
   static constexpr int kMinSamplesThreshold = 100;
@@ -38,32 +45,30 @@ class PLATFORM_EXPORT StatsCollector {
   using StoreProcessingStatsCB =
       base::RepeatingCallback<void(const StatsKey&, const VideoStats&)>;
 
-  StatsCollector(bool is_decode,
-                 media::VideoCodecProfile codec_profile,
-                 StoreProcessingStatsCB stats_callback);
+  StatsCollector(bool is_decode, media::VideoCodecProfile codec_profile);
 
-  bool active_stats_collection() const {
+  bool is_active() const {
     return static_cast<bool>(processing_time_ms_histogram_);
   }
-  bool stats_collection_finished() const { return stats_collection_finished_; }
+  bool has_finished() const { return stats_collection_finished_; }
   size_t samples_collected() const {
     DCHECK(processing_time_ms_histogram_);
     return processing_time_ms_histogram_->NumValues();
   }
 
-  void StartStatsCollection();
-  void ClearStatsCollection();
-  void AddProcessingTime(int pixel_size,
-                         bool is_hardware_accelerated,
-                         const float processing_time_ms,
-                         const size_t new_keyframes,
-                         const base::TimeTicks& now);
-  void ReportStats() const;
+  void Start();
+  void Clear();
+  std::optional<Stats> AddProcessingTimeAndGetStats(
+      int pixel_size,
+      bool is_hardware_accelerated,
+      const float processing_time_ms,
+      const size_t new_keyframes,
+      const base::TimeTicks& now);
+  Stats ComputeVideoStats() const;
 
  private:
   const bool is_decode_;
   const media::VideoCodecProfile codec_profile_;
-  const StoreProcessingStatsCB stats_callback_;
   // Tracks the processing time in ms as well as the number of processed frames.
   std::unique_ptr<LinearHistogram> processing_time_ms_histogram_;
   // Tracks the total number of processed key frames.

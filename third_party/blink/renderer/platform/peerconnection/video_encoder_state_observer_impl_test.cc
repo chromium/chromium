@@ -697,7 +697,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
     EXPECT_EQ(video_stats.p99_processing_time_ms, 1u);
 
     // Clear stats to not invoke ReportStats() on the next Encode().
-    observer_->ClearStatsCollection();
+    observer_->ClearStatsCollectionForTesting();
   }
 }
 }  // namespace blink

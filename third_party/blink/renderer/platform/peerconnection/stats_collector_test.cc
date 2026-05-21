@@ -27,14 +27,12 @@ class StatsCollectorTest : public ::testing::Test {
       : mock_now_(base::TimeTicks::Now()),
         stats_collector_(
             /*is_decode=*/true,
-            kCodecProfile,
-            base::BindRepeating(&StatsCollectorTest::StoreProcessingStatsCB,
-                                base::Unretained(this))) {
-    stats_collector_.StartStatsCollection();
+            kCodecProfile) {
+    stats_collector_.Start();
   }
 
-  void StoreProcessingStatsCB(const StatsCollector::StatsKey& stats_key,
-                              const StatsCollector::VideoStats& video_stats) {
+  void StoreProcessingStats(const StatsCollector::StatsKey& stats_key,
+                            const StatsCollector::VideoStats& video_stats) {
     ++stats_callbacks_;
     last_stats_key_ = stats_key;
     last_video_stats_ = video_stats;
@@ -54,10 +52,15 @@ class StatsCollectorTest : public ::testing::Test {
           i % 100 < 90 ? kMinProcessingTimeMs : kExpectedP99ProcessingTimeMs;
 
       mock_now_ += base::Milliseconds(1000 / frame_rate);
-      if (!stats_collector_.stats_collection_finished()) {
-        stats_collector_.AddProcessingTime(pixel_size, is_hw_accelerated,
-                                           processing_time_ms, is_keyframe,
-                                           mock_now_);
+      if (!stats_collector_.has_finished()) {
+        std::optional<StatsCollector::Stats> stats_to_report =
+            stats_collector_.AddProcessingTimeAndGetStats(
+                pixel_size, is_hw_accelerated, processing_time_ms, is_keyframe,
+                mock_now_);
+        if (stats_to_report) {
+          StoreProcessingStats(stats_to_report->key,
+                               stats_to_report->video_stats);
+        }
       }
     }
   }

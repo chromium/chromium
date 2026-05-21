@@ -34,8 +34,7 @@ namespace blink {
 // mutual exclusive. Release() may be called on any sequence as long as the
 // decoding sequence has stopped.
 class PLATFORM_EXPORT StatsCollectingDecoder
-    : private StatsCollector,
-      public webrtc::VideoDecoder,
+    : public webrtc::VideoDecoder,
       private webrtc::DecodedImageCallback {
  public:
   // Creates a StatsCollectingDecoder object for the specified `format`.
@@ -44,9 +43,10 @@ class PLATFORM_EXPORT StatsCollectingDecoder
   // `decoder`. The provided `stats_callback` will be called periodically to
   // push the performance data that has been collected. The lifetime of
   // `stats_callback` must outlive the lifetime of the StatsCollectingDecoder.
-  explicit StatsCollectingDecoder(const webrtc::SdpVideoFormat& format,
-                                  std::unique_ptr<webrtc::VideoDecoder> decoder,
-                                  StoreProcessingStatsCB stats_callback);
+  explicit StatsCollectingDecoder(
+      const webrtc::SdpVideoFormat& format,
+      std::unique_ptr<webrtc::VideoDecoder> decoder,
+      StatsCollector::StoreProcessingStatsCB stats_callback);
 
   ~StatsCollectingDecoder() override;
 
@@ -61,6 +61,8 @@ class PLATFORM_EXPORT StatsCollectingDecoder
   DecoderInfo GetDecoderInfo() const override;
 
  private:
+  void ReportStats(const StatsCollector::Stats& stats) const;
+
   // Implementation of webrtc::DecodedImageCallback.
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override;
   void Decoded(webrtc::VideoFrame& decodedImage,
@@ -68,6 +70,7 @@ class PLATFORM_EXPORT StatsCollectingDecoder
                std::optional<uint8_t> qp) override;
 
   const std::unique_ptr<webrtc::VideoDecoder> decoder_;
+  const StatsCollector::StoreProcessingStatsCB stats_callback_;
   raw_ptr<webrtc::DecodedImageCallback> decoded_callback_{nullptr};
 
   // Lock for variables that are accessed in both Decode() and Decoded(). This
@@ -81,6 +84,8 @@ class PLATFORM_EXPORT StatsCollectingDecoder
   // continuously read out in the Decoded() callback.
   size_t number_of_new_keyframes_ GUARDED_BY(lock_){0};
   base::TimeTicks last_check_for_simultaneous_decoders_;
+
+  StatsCollector stats_collector_;
 
   SEQUENCE_CHECKER(decoding_sequence_checker_);
 };

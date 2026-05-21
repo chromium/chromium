@@ -32,19 +32,23 @@ StatsCollectingEncoder::StatsCollectingEncoder(
     const webrtc::SdpVideoFormat& format,
     std::unique_ptr<webrtc::VideoEncoder> encoder,
     StatsCollector::StoreProcessingStatsCB stats_callback)
-    : StatsCollector(
+    : encoder_(std::move(encoder)),
+      stats_callback_(stats_callback),
+      stats_collector_(
           /*is_decode=*/false,
-          WebRtcVideoFormatToMediaVideoCodecProfile(format),
-          stats_callback),
-      encoder_(std::move(encoder)) {
+          WebRtcVideoFormatToMediaVideoCodecProfile(format)) {
   DVLOG(3) << __func__;
   CHECK(encoder_);
-  ClearStatsCollection();
   DETACH_FROM_SEQUENCE(encoding_sequence_checker_);
 }
 
 StatsCollectingEncoder::~StatsCollectingEncoder() {
   DVLOG(3) << __func__;
+}
+
+void StatsCollectingEncoder::ReportStats(
+    const StatsCollector::Stats& stats) const {
+  stats_callback_.Run(stats.key, stats.video_stats);
 }
 
 void StatsCollectingEncoder::SetFecControllerOverride(
@@ -85,9 +89,10 @@ int32_t StatsCollectingEncoder::Release() {
   // encoder_->Release(). Any outstanding calls to Encoded() will also finish
   // before encoder_->Release() returns. It's therefore safe to access member
   // variables here.
-  if (active_stats_collection() &&
-      samples_collected() >= kMinSamplesThreshold) {
-    ReportStats();
+  if (stats_collector_.is_active() &&
+      stats_collector_.samples_collected() >=
+          StatsCollector::kMinSamplesThreshold) {
+    ReportStats(stats_collector_.ComputeVideoStats());
   }
 
   if (first_frame_encoded_) {
@@ -164,7 +169,7 @@ webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
   highest_observed_stream_index_ =
       std::max(highest_observed_stream_index_, encoded_image_stream_index);
 
-  if (stats_collection_finished() ||
+  if (stats_collector_.has_finished() ||
       encoded_image_stream_index != highest_observed_stream_index_) {
     // Return early if we've already finished the stats collection or if this is
     // a lower stream layer. We only do stats collection for the highest
@@ -179,18 +184,18 @@ webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
       kCheckSimultaneousEncodersInterval) {
     last_check_for_simultaneous_encoders_ = now;
     DVLOG(3) << "Simultaneous encoders: " << *GetEncoderCounter();
-    if (active_stats_collection()) {
+    if (stats_collector_.is_active()) {
       if (*GetEncoderCounter() > kMaximumEncodersToCollectStats) {
         // Too many encoders, cancel stats collection.
-        ClearStatsCollection();
+        stats_collector_.Clear();
       }
     } else if (*GetEncoderCounter() <= kMaximumEncodersToCollectStats) {
       // Start up stats collection since there's only a single encoder active.
-      StartStatsCollection();
+      stats_collector_.Start();
     }
   }
 
-  if (active_stats_collection()) {
+  if (stats_collector_.is_active()) {
     std::optional<base::TimeTicks> encode_start;
     {
       // Read out encode start timestamp if we can find a matching RTP
@@ -212,8 +217,13 @@ webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
       bool is_hardware_accelerated =
           encoder_->GetEncoderInfo().is_hardware_accelerated;
       bool is_keyframe = encoded_image.IsKey();
-      AddProcessingTime(pixel_size, is_hardware_accelerated, encode_time_ms,
-                        is_keyframe, now);
+      std::optional<StatsCollector::Stats> stats_to_report =
+          stats_collector_.AddProcessingTimeAndGetStats(
+              pixel_size, is_hardware_accelerated, encode_time_ms, is_keyframe,
+              now);
+      if (stats_to_report) {
+        ReportStats(*stats_to_report);
+      }
     }
   }
   return result;
