@@ -1154,10 +1154,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   return _isAIMAllowed && IsAimEnabledInNtp();
 }
 
-// Returns YES if scroll should be skipped when focusing the omnibox.
 - (BOOL)shouldSkipScrollToFocusOmnibox {
-  return self.scrolledToMinimumHeight ||
-         (IsSplitToolbarMode(self) && !CanShowTabStrip(self));
+  return self.scrolledToMinimumHeight || [self shouldPinFakeOmnibox];
 }
 
 // Returns the collection view containing all NTP content.
@@ -1859,7 +1857,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat minimumHeight = collectionViewHeight + headerHeight;
   if (!CanShowTabStrip(self.collectionView)) {
     minimumHeight -= self.collectionView.contentInset.bottom;
-    if (IsSplitToolbarMode(self)) {
+    if ([self shouldPinFakeOmnibox]) {
       minimumHeight -= [self stickyOmniboxHeight];
     } else {
       // Add in half of the margin between the fakebox and the rest of the

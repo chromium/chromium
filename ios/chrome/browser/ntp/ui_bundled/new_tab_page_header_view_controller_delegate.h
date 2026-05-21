@@ -15,6 +15,9 @@
 // Whether the scrollview is scrolled to the omnibox.
 @property(nonatomic, assign, readonly) BOOL scrolledToMinimumHeight;
 
+// Whether the fake omnibox should pin to the top.
+- (BOOL)shouldPinFakeOmnibox;
+
 // Notifies the delegate when the omnibox position is updated in the
 // `viewController`.
 - (void)didChangeOmniboxPosition:

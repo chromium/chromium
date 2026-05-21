@@ -282,7 +282,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (CGFloat)pinnedOffsetY {
   CGFloat offsetY = [self headerHeight];
-  if (IsSplitToolbarMode(self) && !CanShowTabStrip(self)) {
+  if ([self.delegate shouldPinFakeOmnibox]) {
     offsetY -= content_suggestions::FakeToolbarHeight();
   }
 
