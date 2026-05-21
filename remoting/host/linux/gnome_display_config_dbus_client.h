@@ -132,8 +132,6 @@ class GnomeDisplayConfigDBusClient {
   // Called by OnDisplayConfigCurrentStateReply() on error.
   void OnDisplayConfigCurrentStateError();
 
-  base::WeakPtr<GnomeDisplayConfigDBusClient> weak_ptr_;
-
   scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
 
   ScopedGObject<GCancellable> cancellable_
