@@ -454,7 +454,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
                     "Hostname "
                             + hostName
                             + " is illegal."
-                            + " The name of the host does not comply with RFC 1122 and RFC 1123.");
+                            + " The name of the host does not comply with RFC 1122 and RFC 1123.",
+                    ex);
         }
     }
 
