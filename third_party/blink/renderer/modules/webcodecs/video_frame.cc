@@ -321,37 +321,40 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
 const base::TimeDelta CachedVideoFramePool::kIdleTimeout = base::Seconds(10);
 
-class CanvasSnapshotProviderCache
-    : public GarbageCollected<CanvasSnapshotProviderCache>,
+class CanvasNon2DResourceProviderCache
+    : public GarbageCollected<CanvasNon2DResourceProviderCache>,
       public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleStateObserver {
  public:
   static const char kSupplementName[];
 
-  static CanvasSnapshotProviderCache& From(ExecutionContext& context) {
-    CanvasSnapshotProviderCache* supplement =
-        Supplement<ExecutionContext>::From<CanvasSnapshotProviderCache>(
+  static CanvasNon2DResourceProviderCache& From(ExecutionContext& context) {
+    CanvasNon2DResourceProviderCache* supplement =
+        Supplement<ExecutionContext>::From<CanvasNon2DResourceProviderCache>(
             context);
     if (!supplement) {
-      supplement = MakeGarbageCollected<CanvasSnapshotProviderCache>(context);
+      supplement =
+          MakeGarbageCollected<CanvasNon2DResourceProviderCache>(context);
       Supplement<ExecutionContext>::ProvideTo(context, supplement);
     }
     return *supplement;
   }
-  CanvasSnapshotProviderCache& operator=(const CanvasSnapshotProviderCache&) =
-      delete;
+  CanvasNon2DResourceProviderCache& operator=(
+      const CanvasNon2DResourceProviderCache&) = delete;
 
-  explicit CanvasSnapshotProviderCache(ExecutionContext& context)
+  explicit CanvasNon2DResourceProviderCache(ExecutionContext& context)
       : Supplement<ExecutionContext>(context),
         ExecutionContextLifecycleStateObserver(&context) {
     UpdateStateIfNeeded();
   }
-  ~CanvasSnapshotProviderCache() override = default;
+  ~CanvasNon2DResourceProviderCache() override = default;
 
   // Disallow copy and assign.
-  CanvasSnapshotProviderCache(const CanvasSnapshotProviderCache&) = delete;
+  CanvasNon2DResourceProviderCache(const CanvasNon2DResourceProviderCache&) =
+      delete;
 
-  CanvasSnapshotProvider* CreateProvider(const media::VideoFrame& frame) {
+  CanvasNon2DResourceProviderSharedImage* CreateProvider(
+      const media::VideoFrame& frame) {
     if (providers_.empty()) {
       PostMonitoringTask();
     }
@@ -370,7 +373,7 @@ class CanvasSnapshotProviderCache
       providers_.clear();
     }
 
-    std::unique_ptr<CanvasSnapshotProvider> provider =
+    std::unique_ptr<CanvasNon2DResourceProviderSharedImage> provider =
         CanvasNon2DResourceProviderSharedImage::Create(
             required_provider_info.size, required_provider_info.format,
             required_provider_info.alpha_type,
@@ -413,7 +416,7 @@ class CanvasSnapshotProviderCache
     task_handle_ = PostDelayedCancellableTask(
         *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
         FROM_HERE,
-        BindOnce(&CanvasSnapshotProviderCache::PurgeIdleFramePool,
+        BindOnce(&CanvasNon2DResourceProviderCache::PurgeIdleFramePool,
                  WrapWeakPersistent(this)),
         kIdleTimeout);
   }
@@ -426,15 +429,15 @@ class CanvasSnapshotProviderCache
     PostMonitoringTask();
   }
 
-  Vector<std::unique_ptr<CanvasSnapshotProvider>> providers_;
+  Vector<std::unique_ptr<CanvasNon2DResourceProviderSharedImage>> providers_;
   base::TimeTicks last_access_time_;
   TaskHandle task_handle_;
 };
 
 // static -- defined out of line to satisfy link time requirements.
-const char CanvasSnapshotProviderCache::kSupplementName[] =
-    "CanvasSnapshotProviderCache";
-const base::TimeDelta CanvasSnapshotProviderCache::kIdleTimeout =
+const char CanvasNon2DResourceProviderCache::kSupplementName[] =
+    "CanvasNon2DResourceProviderCache";
+const base::TimeDelta CanvasNon2DResourceProviderCache::kIdleTimeout =
     base::Seconds(10);
 
 std::optional<media::VideoPixelFormat> CopyToFormat(
@@ -1542,7 +1545,8 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame) {
   auto* execution_context =
       ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
-  auto& provider_cache = CanvasSnapshotProviderCache::From(*execution_context);
+  auto& provider_cache =
+      CanvasNon2DResourceProviderCache::From(*execution_context);
 
   if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
     return CreateUnacceleratedImageFromVideoFrame(
@@ -1554,9 +1558,7 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
     return nullptr;
   }
 
-  return CreateAcceleratedImageFromVideoFrame(
-      frame,
-      static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider));
+  return CreateAcceleratedImageFromVideoFrame(frame, snapshot_provider);
 }
 
 ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
