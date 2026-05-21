@@ -720,7 +720,7 @@ bool IsGeminiFloatyAllPagesEnabled() {
   return base::FeatureList::IsEnabled(kGeminiFloatyAllPages);
 }
 
-BASE_FEATURE(kGeminiMapsRichUI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiMapsRichUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiMapsRichUIEnabled() {
   if (!IsPageActionMenuEnabled()) {
