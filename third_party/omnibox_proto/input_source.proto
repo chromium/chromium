@@ -14,7 +14,7 @@ option java_outer_classname = 'InputSourceProto';
 package omnibox;
 
 // Input source
-// Next ID: 4
+// Next ID: 5
 enum InputSource {
   // Unspecified input source.
   INPUT_SOURCE_UNSPECIFIED = 0;
@@ -24,4 +24,6 @@ enum InputSource {
   INPUT_SOURCE_CAMERA = 2;
   // Use a file picker as the input source.
   INPUT_SOURCE_FILE_PICKER = 3;
+  // Use Google Drive as the input source.
+  INPUT_SOURCE_DRIVE = 4;
 }

@@ -13,6 +13,7 @@ option java_outer_classname = 'SearchboxConfigProto';
 
 package omnibox;
 
+import "feature_gate_constraints.proto";
 import "input_type_config.proto";
 import "model_config.proto";
 import "model_mode.proto";
@@ -23,7 +24,7 @@ import "tool_config.proto";
 import "tool_mode.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 11
+// Next ID: 12
 message SearchboxConfig {
   // The rule set to use for the searchbox.
   optional RuleSet rule_set = 1;
@@ -50,4 +51,7 @@ message SearchboxConfig {
   // /complete/search request using the 'azi' CGI arg.
   // This is not relevant for Chrome at this point.
   optional SuggestInventory preferred_inventory = 10;
+
+  // Feature gating configurations.
+  repeated FeatureGateConfig feature_gate_configs = 11;
 }

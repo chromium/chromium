@@ -6,6 +6,7 @@
 # See README.chromium for details.
 
 import("//components/proto_extras/proto_extras.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -53,7 +54,7 @@ _proto_files = [
   "url_param.proto",
 ]
 
-proto_library("omnibox_proto") {
+fuzzable_proto_library("omnibox_proto") {
   sources = _proto_files
   proto_in_dir = "."
 }
