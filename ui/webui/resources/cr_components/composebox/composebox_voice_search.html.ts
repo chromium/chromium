@@ -12,35 +12,42 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
     <div id="container">
       <div id="error-container" ?hidden="${!this.shouldShowErrorScrim_()}">
         <span id="error-message">${this.errorMessage_}</span>
-        ${this.detailedError_ === VoiceSearchError.NO_MATCH ?
+        ${
+      this.detailedError_ === VoiceSearchError.NO_MATCH ?
           html`<a id="tryAgainLink" href="#" @click="${this.onTryAgainClick_}">
             ${this.i18n('tryAgain')}
           </a>
-        `: ''}
+        ` :
+          ''}
         <a id="details" part="voice-details-link" target="_blank" href="${
       this.detailsUrl_}"
             @click="${this.onLinkClick_}">
           ${this.i18n('voiceDetails')}
         </a>
       </div>
-      ${this.liveTranscriptEnabled ?
-          html`<textarea id="input"
+      ${
+      this.liveTranscriptEnabled ? html`<textarea id="input"
               .value="${this.transcript_}"
               placeholder="${this.listeningPlaceholder_}"
-              ?hidden="${this.shouldShowErrorScrim_()}" disabled>
+              class="${this.shouldShowErrorScrim_() ? 'hidden' : ''}" disabled>
           </textarea>
-          `: ''}
-      ${!this.submitStopButtonsEnabled ||
-          this.shouldShowErrorScrim_() ?
+          ` :
+                                   ''}
+      ${
+  !this.submitStopButtonsEnabled || this.shouldShowErrorScrim_() ?
       html`<cr-icon-button id="closeButton" class="icon-clear"
               part="voice-close-button"
               title="${this.i18n('voiceClose')}" @click="${this.onCloseClick_}"
               ></cr-icon-button>
-          ` : ''}
+          ` :
+      ''}
       ${
       this.submitStopButtonsEnabled ?
       html`<div id="bottomActions"
-              ?hidden="${this.shouldShowErrorScrim_()}">
+              class="${
+          this.shouldShowErrorScrim_() ?
+          'hidden' :
+          ''}">
             <cr-icon-button id="stopButton" part="voice-stop-button"
                 iron-icon="composebox:stop"
                  title="${this.i18n('voiceStop')}"
@@ -56,7 +63,8 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
                 ?disabled="${!(this.finalResult_ || this.interimResult_)}">
             </cr-composebox-submit>
           </div>
-        ` : ''}
+        ` :
+      ''}
     </div>
   `;
 }

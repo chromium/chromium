@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/animated_glow.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
-import {EventTracker} from '//resources/js/event_tracker.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {DriveUploadError} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
-import type {VoicePermissionPromptState} from './composebox_voice_search.js';
 
 import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
@@ -25,7 +25,7 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
-import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
+import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -33,6 +33,8 @@ export enum VoiceSearchAction {
   ACTIVATE = 0,
   QUERY_SUBMITTED = 1,
 }
+
+const PERMISSION_PROMPT_CSS_CLASS = 'embedded-permission-prompt-showing';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -484,9 +486,29 @@ export const ComposeboxEmbedderMixin =
         // Common event handlers
         // =====================================================================
 
-        onVoicePermissionChanged(
-            e: CustomEvent<VoicePermissionPromptState>) {
+        onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>) {
           this.fire('embedded-voice-permission-prompt-changed', e.detail);
+          const audioAnimation =
+              this.shadowRoot?.querySelector<SearchAnimatedGlowElement>(
+                  '#animatedSearchElement');
+          if (audioAnimation) {
+            if (e.detail.isOpened) {  // Permission prompt opened.
+              audioAnimation.classList.add(PERMISSION_PROMPT_CSS_CLASS);
+            } else {  // Permission prompt closed.
+              audioAnimation.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
+            }
+          }
+
+          const voiceSearchElement =
+              this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
+                  '#voiceSearch');
+          if (voiceSearchElement) {
+            if (e.detail.isOpened) {  // Permission prompt opened.
+              voiceSearchElement.classList.add(PERMISSION_PROMPT_CSS_CLASS);
+            } else {  // Permission prompt closed.
+              voiceSearchElement.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
+            }
+          }
         }
 
         // This function is called when backend starts a file upload flow,
