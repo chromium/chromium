@@ -357,6 +357,11 @@ class BottomControlsMediator
         return mModel.get(BottomControlsProperties.SHOW_SHADOW) ? mBottomControlsShadowHeight : 0;
     }
 
+    @Override
+    public void clearOffsetTag() {
+        mModel.set(BottomControlsProperties.OFFSET_TAG, null);
+    }
+
     @Nullable ChangeObserver getEdgeToEdgeChangeObserverForTesting() {
         return mEdgeToEdgeChangeObserver;
     }

@@ -426,6 +426,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mHasBottomControlsHeightAnimation = shouldAnimateBrowserControlsHeightChanges();
         if (mHasBottomControlsHeightAnimation) {
             mBottomAnimationInitialOffset = getBottomControlOffset();
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onBottomControlsHeightAnimationStarted();
+            }
         }
         if (!isVisibilityForced()) {
             updateBottomControlsOffsetTagConstraints(
@@ -811,7 +814,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      * Forces the Android controls to hide. While there are acquired tokens the browser controls
      * Android view will always be hidden, otherwise they will show/hide based on position.
      *
-     * NB: this only affects the Android controls. For controlling composited toolbar visibility,
+     * <p>NB: this only affects the Android controls. For controlling composited toolbar visibility,
      * implement {@link BrowserControlsVisibilityDelegate#canShowBrowserControls()}.
      */
     private int hideAndroidControls() {
@@ -872,6 +875,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     /**
      * Updates the positions of the browser controls and content based on the desired position of
      * the current tab.
+     *
      * @param topControlsOffset The Y offset of the top controls in px.
      * @param bottomControlsOffset The Y offset of the bottom controls in px.
      * @param topContentOffset The Y offset for the content in px.
@@ -1135,6 +1139,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     /**
      * Sets the flat indicating if browser control offset is overridden by animation.
+     *
      * @param flag Boolean flag of the new offset overridden state.
      */
     private void setOffsetOverridden(boolean flag) {

@@ -70,6 +70,9 @@ public interface BrowserControlsStateProvider {
         default void onBottomControlsHeightChanged(
                 int bottomControlsHeight, int bottomControlsMinHeight) {}
 
+        /** Called when the animation of the height of the bottom controls starts. */
+        default void onBottomControlsHeightAnimationStarted() {}
+
         /** Called when the animation of the height of the bottom controls ends. */
         default void onBottomControlsHeightAnimationEnded() {}
 
@@ -115,6 +118,7 @@ public interface BrowserControlsStateProvider {
 
     /**
      * Remove a previously added observer.
+     *
      * @param obs The observer to remove.
      */
     void removeObserver(Observer obs);
@@ -142,9 +146,9 @@ public interface BrowserControlsStateProvider {
 
     /**
      * @return The current top controls min-height. If the min-height is changing with an animation,
-     * this will return a value between the old min-height and the new min-height, which is equal to
-     * the current visible min-height. Otherwise, this will return the same value as
-     * {@link #getTopControlsMinHeight()}.
+     *     this will return a value between the old min-height and the new min-height, which is
+     *     equal to the current visible min-height. Otherwise, this will return the same value as
+     *     {@link #getTopControlsMinHeight()}.
      */
     int getTopControlsMinHeightOffset();
 
@@ -160,9 +164,9 @@ public interface BrowserControlsStateProvider {
 
     /**
      * @return The current bottom controls min-height. If the min-height is changing with an
-     * animation, this will return a value between the old min-height and the new min-height, which
-     * is equal to the current visible min-height. Otherwise, this will return the same value as
-     * {@link #getBottomControlsMinHeight()}.
+     *     animation, this will return a value between the old min-height and the new min-height,
+     *     which is equal to the current visible min-height. Otherwise, this will return the same
+     *     value as {@link #getBottomControlsMinHeight()}.
      */
     int getBottomControlsMinHeightOffset();
 
@@ -182,8 +186,8 @@ public interface BrowserControlsStateProvider {
     int getBottomControlOffset();
 
     /**
-     * @return The ratio that the browser controls are off screen; this will be a number [0,1]
-     *         where 1 is completely hidden and 0 is completely shown.
+     * @return The ratio that the browser controls are off screen; this will be a number [0,1] where
+     *     1 is completely hidden and 0 is completely shown.
      */
     float getBrowserControlHiddenRatio();
 

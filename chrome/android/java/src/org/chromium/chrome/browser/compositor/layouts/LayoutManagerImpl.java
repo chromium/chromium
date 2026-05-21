@@ -370,6 +370,7 @@ public class LayoutManagerImpl
                     StripLayoutHelperManager.class,
                     // The Bookmark Bar will appear to move behind the toolbar during animation.
                     BookmarkBarSceneLayer.class,
+                    ReadAloudMiniPlayerSceneLayer.class,
                     TopToolbarOverlayCoordinator.class,
                     // StripLayoutHelperManager should be updated before
                     // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
@@ -377,8 +378,7 @@ public class LayoutManagerImpl
                     ScrollingBottomViewSceneLayer.class,
                     ContextualSearchPanel.class,
                     EdgeToEdgeBottomChinSceneLayer.class,
-                    StatusIndicatorCoordinator.getSceneOverlayClass(),
-                    ReadAloudMiniPlayerSceneLayer.class
+                    StatusIndicatorCoordinator.getSceneOverlayClass()
                 };
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
@@ -413,11 +413,12 @@ public class LayoutManagerImpl
     /**
      * Gives the {@link LayoutManagerImpl} a chance to intercept and process motion events from the
      * Android {@link View} system.
-     * @param e                 The {@link MotionEvent} that might be intercepted.
+     *
+     * @param e The {@link MotionEvent} that might be intercepted.
      * @param isKeyboardShowing Whether or not the keyboard is showing.
-     * @param eventType         The type of input event that is processed by an {@link EventFilter}.
-     * @return                  Whether or not this current motion event should be intercepted and
-     *                          continually forwarded to this class.
+     * @param eventType The type of input event that is processed by an {@link EventFilter}.
+     * @return Whether or not this current motion event should be intercepted and continually
+     *     forwarded to this class.
      */
     public boolean onInterceptMotionEvent(
             MotionEvent e, boolean isKeyboardShowing, @EventType int eventType) {
@@ -475,8 +476,9 @@ public class LayoutManagerImpl
     /**
      * Gives the {@link LayoutManagerImpl} a chance to process the touch events from the Android
      * {@link View} system.
+     *
      * @param e A {@link MotionEvent} instance.
-     * @return  Whether or not {@code e} was consumed.
+     * @return Whether or not {@code e} was consumed.
      */
     public boolean onTouchEvent(MotionEvent e) {
         if (mActiveEventFilter == null) return false;
@@ -585,7 +587,7 @@ public class LayoutManagerImpl
     }
 
     /**
-     * Updates the state of the active {@link Layout} if needed.  This updates the animations and
+     * Updates the state of the active {@link Layout} if needed. This updates the animations and
      * cascades the changes to the tabs.
      */
     public void onUpdate() {
@@ -748,7 +750,9 @@ public class LayoutManagerImpl
         }
     }
 
-    /** @return A resource manager to pull textures from. */
+    /**
+     * @return A resource manager to pull textures from.
+     */
     public ResourceManager getResourceManager() {
         return mHost.getLayoutRenderHost().getResourceManager();
     }
@@ -927,13 +931,14 @@ public class LayoutManagerImpl
 
     /**
      * Should be called when a tab created event is triggered.
-     * @param id             The id of the tab that was created.
-     * @param sourceId       The id of the creating tab if any.
-     * @param launchType     How the tab was launched.
-     * @param incognito      Whether or not the created tab is incognito.
+     *
+     * @param id The id of the tab that was created.
+     * @param sourceId The id of the creating tab if any.
+     * @param launchType How the tab was launched.
+     * @param incognito Whether or not the created tab is incognito.
      * @param willBeSelected Whether or not the created tab will be selected.
-     * @param originX        The x coordinate of the action that created this tab in dp.
-     * @param originY        The y coordinate of the action that created this tab in dp.
+     * @param originX The x coordinate of the action that created this tab in dp.
+     * @param originY The y coordinate of the action that created this tab in dp.
      */
     protected void tabCreated(
             int id,
@@ -1074,15 +1079,17 @@ public class LayoutManagerImpl
     }
 
     /**
-     * @return The next {@link Layout} that will be shown.  If no {@link Layout} has been set
-     *         since the last time {@link #startShowing(Layout, boolean)} was called, this will be
-     *         {@link #getDefaultLayout()}.
+     * @return The next {@link Layout} that will be shown. If no {@link Layout} has been set since
+     *     the last time {@link #startShowing(Layout, boolean)} was called, this will be {@link
+     *     #getDefaultLayout()}.
      */
     protected Layout getNextLayout() {
         return mNextActiveLayout != null ? mNextActiveLayout : getDefaultLayout();
     }
 
-    /** @return Whether a next layout has been explicitly specified. */
+    /**
+     * @return Whether a next layout has been explicitly specified.
+     */
     protected boolean hasExplicitNextLayout() {
         return mNextActiveLayout != null;
     }
@@ -1324,6 +1331,7 @@ public class LayoutManagerImpl
 
     /**
      * Should be called when the user presses the back button on the phone.
+     *
      * @return Whether or not the back button was consumed by the active {@link Layout}.
      */
     public boolean onBackPressed() {
@@ -1405,6 +1413,7 @@ public class LayoutManagerImpl
 
     /**
      * Clears all content associated with {@code tabId} from the internal caches.
+     *
      * @param tabId The id of the tab to clear.
      */
     protected void emptyTabCachesExcept(int tabId) {

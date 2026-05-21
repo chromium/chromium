@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerS
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -108,6 +109,8 @@ public class ToolbarPositionControllerTest {
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int CONTROL_CONTAINER_ID = 12356;
     private static final int STATUS_BAR_HEIGHT = 10;
+
+    private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
     private final BrowserControlsSizer mBrowserControlsSizer =
             new BrowserControlsSizer() {
@@ -184,10 +187,14 @@ public class ToolbarPositionControllerTest {
                 public void releaseAndroidControlsHidingToken(int token) {}
 
                 @Override
-                public void addObserver(Observer obs) {}
+                public void addObserver(Observer obs) {
+                    mBrowserControlsObserver = obs;
+                }
 
                 @Override
-                public void removeObserver(Observer obs) {}
+                public void removeObserver(Observer obs) {
+                    if (mBrowserControlsObserver == obs) mBrowserControlsObserver = null;
+                }
 
                 @Override
                 public int getTopControlsHeight() {
@@ -547,7 +554,6 @@ public class ToolbarPositionControllerTest {
         assertControlsAtBottom();
     }
 
-
     @Test
     @Config(qualifiers = "sw400dp")
     public void testUpdatePositionFormField_MiniOriginBar() {
@@ -586,6 +592,7 @@ public class ToolbarPositionControllerTest {
     public void testBottomControlsStacker_toolbarLayer() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
@@ -603,6 +610,7 @@ public class ToolbarPositionControllerTest {
     public void testBottomControlsStacker_progressBarLayer() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         BottomControlsLayer progressBarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.PROGRESS_BAR);
@@ -628,6 +636,7 @@ public class ToolbarPositionControllerTest {
 
         mIsOmniboxFocused.set(true);
         assertControlsAtTop();
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
         verify(mControlContainerView, atLeast(1)).setTranslationY(0);
@@ -1102,8 +1111,7 @@ public class ToolbarPositionControllerTest {
         // the toolbar should be translated up to the top of the screen but no further.
         doReturn(430).when(mDisplayAndroid).getDisplayHeight();
         mKeyboardHeightSupplier.set(401);
-        verify(mControlContainerView)
-                .setTranslationY(-(430f - TOOLBAR_HEIGHT - STATUS_BAR_HEIGHT));
+        verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT - STATUS_BAR_HEIGHT));
         verify(mControlContainer, atLeast(1)).setMaxHeight(20);
     }
 
@@ -1227,6 +1235,7 @@ public class ToolbarPositionControllerTest {
         observer.onSheetStateChanged(
                 BottomSheetController.SheetState.HIDDEN,
                 BottomSheetController.StateChangeReason.NONE);
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
     }
@@ -1276,6 +1285,7 @@ public class ToolbarPositionControllerTest {
         observer.onSheetStateChanged(
                 BottomSheetController.SheetState.HALF,
                 BottomSheetController.StateChangeReason.NONE);
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
@@ -1323,6 +1333,40 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         assertControlsAtTop();
         assertEquals(heightAboveToolbar, mControlContainerLayoutParams.topMargin);
+    }
+
+    @Test
+    public void testLayerVisibilityTransitions() {
+        // Start at TOP.
+        setUserToolbarAnchorPreference(true);
+        assertControlsAtTop();
+
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+
+        // Transition to BOTTOM.
+        setUserToolbarAnchorPreference(false);
+
+        // It should be in SHOWING state now.
+        assertEquals(LayerVisibility.SHOWING, toolbarLayer.getLayerVisibility());
+
+        // Trigger animation ended.
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
+
+        // Should become VISIBLE.
+        assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
+
+        // Transition back to TOP.
+        setUserToolbarAnchorPreference(true);
+
+        // It should be in HIDING state now.
+        assertEquals(LayerVisibility.HIDING, toolbarLayer.getLayerVisibility());
+
+        // Trigger animation ended.
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
+
+        // Should become HIDDEN.
+        assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
     }
 
     private void assertControlsAtBottom() {

@@ -42,6 +42,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
@@ -327,5 +328,14 @@ public class BottomControlsMediatorTest {
                 .thenReturn(false);
         mMediator.onBrowserControlsOffsetUpdate(0);
         assertEquals(0, mMediator.updateOffsetTag(offsetTagsInfo));
+    }
+
+    @Test
+    public void testClearOffsetTag() {
+        mModel.set(BottomControlsProperties.OFFSET_TAG, OffsetTag.createRandom());
+        assertNotNull(mModel.get(BottomControlsProperties.OFFSET_TAG));
+
+        mMediator.clearOffsetTag();
+        assertNull(mModel.get(BottomControlsProperties.OFFSET_TAG));
     }
 }

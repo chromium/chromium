@@ -802,6 +802,90 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
+    public void reposition_HidingLayer_Counteraction() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER,
+                        50,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.HIDING);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.addLayer(bottom);
+
+        mBottomControlsStacker.requestLayerUpdate(false);
+        // Total height should exclude HIDING layer! So 100 + 10 = 110.
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+
+        // Simulate animation: bottomOffset goes from -50 to 0.
+        // Frame 1: bottomOffset = -50.
+        onBottomControlsOffsetChanged(-50, 0, false, false);
+
+        // Since isVisibilityForced is false, it uses resting offsets.
+        // - bottom (VISIBLE) gets 0.
+        // - mid (HIDING) is skipped in resting offset calculation and falls back to height = 50.
+        // - top (VISIBLE) gets height - totalHeight = 100 - 110 = -10.
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(mid, 50);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
+    public void reposition_ShowingLayer_NoCounteraction() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER,
+                        50,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.SHOWING);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.addLayer(bottom);
+
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(160, 0);
+
+        // Simulate animation: bottomOffset goes from 50 to 0.
+        // Frame 1: bottomOffset = 50.
+        onBottomControlsOffsetChanged(50, 0, false, false);
+
+        // Since isVisibilityForced is false, it uses resting offsets.
+        // All layers are considered visible (including SHOWING).
+        // - bottom gets 0.
+        // - mid gets -bottom.height = -10.
+        // - top gets -bottom.height - mid.height = -10 - 50 = -60.
+        assertLayerYOffset(top, -60);
+        assertLayerYOffset(mid, -10);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
     public void reposition_Mixed_ThreeLayers_DefaultScrollUnderNeverScroll_AppliedByBrowser() {
         TestLayer top =
                 new TestLayer(
@@ -2068,5 +2152,45 @@ public class BottomControlsStackerUnitTest {
 
         assertTrue(mBottomControlsStacker.hasNonScrollableLayersOtherThan(TOP_LAYER));
         assertFalse(mBottomControlsStacker.hasNonScrollableLayersOtherThan(BOTTOM_LAYER));
+    }
+
+    @Test
+    public void testAnimationEnded_restoresOffsetTagWhenNonScrollableHidden() {
+        // Register a scrollable layer (BOTTOM_LAYER) and a non-scrollable layer (TOP_LAYER).
+        TestLayer scrollable =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer nonScrollable =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(scrollable);
+        mBottomControlsStacker.addLayer(nonScrollable);
+
+        // Initial update.
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        // Setup offset tags info.
+        BrowserControlsOffsetTagsInfo offsetTagsInfo = new BrowserControlsOffsetTagsInfo();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, offsetTagsInfo, 0, false);
+
+        // Trigger animation ended while both are visible.
+        mBottomControlsStacker.onBottomControlsHeightAnimationEnded();
+        assertNull(scrollable.mOffsetTag);
+
+        // Hide the non-scrollable layer.
+        nonScrollable.setVisibility(LayerVisibility.HIDDEN);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        // Trigger animation ended again. Now the scrollable layer should have its OffsetTag
+        // restored.
+        mBottomControlsStacker.onBottomControlsHeightAnimationEnded();
+        assertEquals(offsetTagsInfo.getBottomControlsOffsetTag(), scrollable.mOffsetTag);
     }
 }

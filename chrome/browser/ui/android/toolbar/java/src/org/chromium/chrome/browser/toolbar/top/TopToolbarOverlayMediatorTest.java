@@ -59,9 +59,12 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private ToolbarProgressBar mProgressBar;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
+
     @Captor private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutObserverCaptor;
+
     @Captor
     private ArgumentCaptor<ClipDrawableProgressBar.ProgressBarObserver> mProgressBarObserverCaptor;
 
@@ -448,5 +451,45 @@ public class TopToolbarOverlayMediatorTest {
                 700.0f,
                 mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOffsetTagDuringHeightAnimation() {
+        BrowserControlsOffsetTagsInfo originalOffsetTag = new BrowserControlsOffsetTagsInfo();
+        mMediator.updateOffsetTag(originalOffsetTag);
+
+        // Set position to BOTTOM.
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
+
+        // Verify initial state is set to bottom tag.
+        assertEquals(
+                originalOffsetTag.getBottomControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        // Trigger bottom controls height animation started.
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationStarted();
+
+        // Verify the tag in mModel is cleared (null) during animation.
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        // Trigger tag/constraint change during animation.
+        BrowserControlsOffsetTagsInfo newOffsetTag = new BrowserControlsOffsetTagsInfo();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onOffsetTagsInfoChanged(null, newOffsetTag, 0, false);
+
+        // Verify the model tag remains null during animation (it is not prematurely overwritten).
+        assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        // Trigger bottom controls height animation ended.
+        mBrowserControlsObserverCaptor.getValue().onBottomControlsHeightAnimationEnded();
+
+        // Verify the tag in mModel is restored to the latest tag (newOffsetTag) after animation.
+        assertEquals(
+                newOffsetTag.getBottomControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
     }
 }
