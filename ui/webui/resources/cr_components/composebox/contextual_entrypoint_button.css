@@ -28,6 +28,20 @@
   --input-foreground: #0a0a0a;
   --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
   --text-animation-curve: cubic-bezier(0.38, 0.72, 0, 1);
+
+  /* Energy Effect Icon Shimmer Spec Variables */
+  --icon-animation-duration: 1100ms;
+  --icon-rotation-start-angle: 0deg;
+  --icon-rotation-end-angle: 90deg;
+  --icon-rotation-curve: cubic-bezier(0.001, 0, 0, 1);
+
+  --icon-pulse-scale-0: 1;
+  --icon-pulse-scale-18: 1.2;
+  --icon-pulse-scale-100: 1;
+  --icon-pulse-curve-0: cubic-bezier(0.05, 1.05, 0.1, 1);
+  --icon-pulse-curve-18: var(--standard-curve);
+
+  --icon-color-curve: linear;
 }
 
 .glow-container {
@@ -215,6 +229,61 @@ cr-button#entrypoint:focus {
   100% { background: var(--input-background); }
 }
 
+/* Energy Effect Icon Shimmer Animations */
+:host([glif-animation-state='started'][energy-effect-animation-enabled]) #entrypointIcon,
+:host([glif-animation-state='started'][energy-effect-animation-enabled]) cr-icon-button#entrypoint {
+  animation:
+    icon-rotate var(--icon-animation-duration) var(--icon-rotation-curve),
+    icon-pulse var(--icon-animation-duration),
+    icon-color var(--icon-animation-duration) var(--icon-color-curve);
+}
+
+@keyframes icon-rotate {
+  from {
+    rotate: var(--icon-rotation-start-angle);
+  }
+  to {
+    rotate: var(--icon-rotation-end-angle);
+  }
+}
+
+@keyframes icon-pulse {
+  0% {
+    scale: var(--icon-pulse-scale-0);
+    animation-timing-function: var(--icon-pulse-curve-0);
+  }
+
+  18% {
+    scale: var(--icon-pulse-scale-18);
+    animation-timing-function: var(--icon-pulse-curve-18);
+  }
+
+  100% {
+    scale: var(--icon-pulse-scale-100);
+  }
+}
+
+@keyframes icon-color {
+  0% {
+    color: var(--composebox-context-menu-entrypoint-button-color, var(--cr-button-text-color));
+  }
+  3% {
+    color: #a6b9ff;
+  }
+  27% {
+    color: #7f9cff;
+  }
+  45% {
+    color: #3186ff;
+  }
+  88% {
+    color: #3186ff;
+  }
+  100% {
+    color: var(--composebox-context-menu-entrypoint-button-color, var(--cr-button-text-color));
+  }
+}
+
 @keyframes hover-background-delay {
   to {
     --cr-hover-background-color: var(
@@ -311,7 +380,8 @@ cr-icon-button {
 }
 
 #entrypoint:not([disabled]) {
-  --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color, var(--cr-button-text-color));
+  --cr-icon-button-fill-color: currentColor;
+  color: var(--composebox-context-menu-entrypoint-button-color, var(--cr-button-text-color));
 }
 
 #entrypointPlaceholder {
@@ -328,6 +398,7 @@ cr-icon-button {
   #entrypoint:not([disabled]) {
     --cr-button-text-color: ButtonText;
     --cr-icon-button-fill-color: ButtonText;
+    color: ButtonText;
   }
   #entrypoint {
     background-color: ButtonFace;
@@ -342,8 +413,9 @@ cr-icon-button {
   :host([glif-animation-state]) .aim-background {
     display: none;
   }
+  :host([glif-animation-state]) #entrypointIcon,
   :host([glif-animation-state]) #entrypoint {
-    animation: none;
+    animation: none !important;
   }
   :host([glif-animation-state]) #description {
     animation: none;
@@ -363,4 +435,3 @@ cr-icon-button {
   height: 20px;
   margin-right: 4px;
 }
-

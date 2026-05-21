@@ -19,7 +19,8 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
           @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
           ?upload-button-disabled="${this.uploadButtonDisabled}"
           ?show-context-menu-description="${this.showContextMenuDescription}"
-          glif-animation-state="${this.glifAnimationState}">
+          glif-animation-state="${this.glifAnimationState}"
+          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}">
       </cr-composebox-contextual-entrypoint-button>
     ` : ''}
     <cr-composebox-contextual-action-menu id="menu"

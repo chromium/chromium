@@ -59,6 +59,7 @@ export class ContextualEntrypointButtonElement extends
       sharedTabs: {type: Array},
       restoredTabs: {type: Array},
       tabFaviconChipsToCoinsEnabled_: {type: Boolean},
+      energyEffectAnimationEnabled: {type: Boolean, reflect: true},
     };
   }
 
@@ -73,6 +74,7 @@ export class ContextualEntrypointButtonElement extends
   accessor hasPopupFocus: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
+  accessor energyEffectAnimationEnabled: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor tabFaviconChipsToCoinsEnabled_: boolean =
       loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
@@ -128,6 +130,10 @@ export class ContextualEntrypointButtonElement extends
       x: entrypoint.getBoundingClientRect().left,
       y: entrypoint.getBoundingClientRect().bottom,
     });
+  }
+
+  protected onIconAnimationend_(e: AnimationEvent) {
+    this.onAnimationEnd_(e, 'icon-rotate');
   }
 
   protected onDescriptionAnimationend_(e: AnimationEvent) {

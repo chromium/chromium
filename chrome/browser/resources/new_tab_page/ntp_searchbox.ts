@@ -195,10 +195,12 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         type: Boolean,
         reflect: true,
       },
+      energyEffectAnimationEnabled: {type: Boolean},
     };
   }
 
   accessor ntpRealboxNextEnabled: boolean = false;
+  accessor energyEffectAnimationEnabled: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor cyclingPlaceholders: boolean = false;

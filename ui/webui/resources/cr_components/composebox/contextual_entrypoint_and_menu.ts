@@ -67,6 +67,7 @@ export class ContextualEntrypointAndMenuElement extends
       uploadButtonDisabled: {type: Boolean},
       disableAutoReposition: {type: Boolean},
       usePecApi: {type: Boolean},
+      energyEffectAnimationEnabled: {type: Boolean, reflect: true},
 
       // =========================================================================
       // Protected properties
@@ -96,6 +97,7 @@ export class ContextualEntrypointAndMenuElement extends
   accessor searchboxLayoutMode: string = '';
   accessor disableAutoReposition: boolean = false;
   accessor usePecApi: boolean = false;
+  accessor energyEffectAnimationEnabled: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
