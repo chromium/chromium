@@ -1129,9 +1129,20 @@ bool HTMLInputElement::IsAutoDirectionalityFormAssociated() const {
 
 void HTMLInputElement::UpdateHasBeenPasswordField(
     const AtomicString& new_type_name) {
-  has_been_password_field_ =
+  bool new_value =
       IsTextField() && (has_been_password_field_ ||
                         new_type_name == input_type_names::kPassword);
+  if (new_value == has_been_password_field_) {
+    return;
+  }
+
+  has_been_password_field_ = new_value;
+  UpdatePasswordTracking();
+}
+
+bool HTMLInputElement::IsNativeOrHeuristicPassword() const {
+  return TextControlElement::IsNativeOrHeuristicPassword() ||
+         HasBeenPasswordField();
 }
 
 void HTMLInputElement::MaybeSetHasBeenPasswordField() {

@@ -2074,6 +2074,18 @@ class CORE_EXPORT Element : public ContainerNode {
   void SetHasBeenHeuristicCustomPasswordCSS();
 
  protected:
+  // Returns true if this element is a native password field or has been
+  // identified as a custom password field via CSS or JS heuristics.
+  virtual bool IsNativeOrHeuristicPassword() const;
+
+  // Returns true if the element's coordinates should currently be tracked
+  // by the compositor for redaction purposes.
+  virtual bool ShouldTrackPassword() const;
+
+  // Updates the TrackedElementSubRect on feature `kPasswordTracking` for this
+  // element.
+  void UpdatePasswordTracking();
+
   bool HasElementFlag(ElementFlags mask) const;
   void SetElementFlag(ElementFlags, bool value = true);
   void ClearElementFlag(ElementFlags);

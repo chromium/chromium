@@ -1024,6 +1024,7 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
 
   if (text_is_changed) {
     MaybeSetHasBeenHeuristicCustomPasswordJS();
+    UpdatePasswordTracking();
 
     if (GetLayoutObject()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
@@ -1487,10 +1488,26 @@ bool TextControlElement::ShouldSkipNextSetValueAutoDiff() const {
   return skip_next_set_value_auto_diff_;
 }
 
+bool TextControlElement::ShouldTrackPassword() const {
+  // Don't track the password field for redaction if it's empty.
+  return HTMLFormControlElementWithState::ShouldTrackPassword() &&
+         !Value().empty();
+}
+
+bool TextControlElement::IsNativeOrHeuristicPassword() const {
+  return HTMLFormControlElementWithState::IsNativeOrHeuristicPassword() ||
+         HasBeenHeuristicCustomPasswordJS();
+}
+
 void TextControlElement::MaybeSetHasBeenHeuristicCustomPasswordJS() {
-  has_been_heuristic_custom_password_js_ =
-      IsTextControl() && (has_been_heuristic_custom_password_js_ ||
-                          IsLikelyJSCustomPasswordField(Value()));
+  bool new_value = IsTextControl() && (has_been_heuristic_custom_password_js_ ||
+                                       IsLikelyJSCustomPasswordField(Value()));
+  if (new_value == has_been_heuristic_custom_password_js_) {
+    return;
+  }
+
+  has_been_heuristic_custom_password_js_ = new_value;
+  UpdatePasswordTracking();
 }
 
 }  // namespace blink

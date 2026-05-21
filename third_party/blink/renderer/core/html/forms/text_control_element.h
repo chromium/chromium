@@ -242,6 +242,10 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
  protected:
   TextControlElement(const QualifiedName&, Document&);
 
+  // Element:
+  bool IsNativeOrHeuristicPassword() const override;
+  bool ShouldTrackPassword() const override;
+
   void RemovedFrom(ContainerNode&) override;
   void DisconnectAllOpaqueRanges();
   virtual HTMLElement* UpdatePlaceholderText() = 0;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
@@ -1713,5 +1714,29 @@ void PrintTo(FocusgroupData data, std::ostream* os) {
   *os << FocusgroupDataToStringForTesting(data).Utf8().c_str();
 }
 }  // namespace focusgroup
+
+TEST_F(ElementTest, TrackPasswordTrackingElementRectCSSHeuristic) {
+  ScopedAIPageContentTrackedElementsPasswordForTest scoped_feature(true);
+
+  viz::TrackedElementFeature tracking_feature =
+      viz::TrackedElementFeature::kPasswordTracking;
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id=test>abc</div>");
+  auto* div = To<Element>(GetDocument().getElementById(AtomicString("test")));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(div->GetTrackedElementSubRect(tracking_feature));
+
+  // Applying -webkit-text-security should trigger tracking.
+  div->setAttribute(html_names::kStyleAttr,
+                    AtomicString("-webkit-text-security: disc;"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(div->GetTrackedElementSubRect(tracking_feature));
+
+  // Removing the style should not clear the "has ever been" state.
+  div->removeAttribute(html_names::kStyleAttr);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(div->GetTrackedElementSubRect(tracking_feature));
+}
 
 }  // namespace blink

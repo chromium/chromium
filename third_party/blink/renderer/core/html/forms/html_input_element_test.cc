@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using ::testing::Truly;
 
@@ -520,5 +522,64 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(PasswordFieldResetParam{"password", "some_value", true},
                       PasswordFieldResetParam{"text", "some_value", true},
                       PasswordFieldResetParam{"range", "51", false}));
+
+TEST_F(HTMLInputElementTest, TrackPasswordTrackingElementRect) {
+  ScopedAIPageContentTrackedElementsPasswordForTest scoped_feature(true);
+
+  viz::TrackedElementFeature tracking_feature =
+      viz::TrackedElementFeature::kPasswordTracking;
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=password value='abc'>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+
+  EXPECT_TRUE(input->GetTrackedElementSubRect(tracking_feature));
+
+  input->setType(input_type_names::kCheckbox);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(input->GetTrackedElementSubRect(tracking_feature));
+
+  input->setType(input_type_names::kPassword);
+  GetDocument().UpdateStyleAndLayoutTree();
+  // value is still "abc", so it should track.
+  EXPECT_TRUE(input->GetTrackedElementSubRect(tracking_feature));
+
+  input->SetValue(AtomicString(""));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(input->GetTrackedElementSubRect(tracking_feature));
+
+  input->SetValue(AtomicString("def"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(input->GetTrackedElementSubRect(tracking_feature));
+}
+
+TEST_F(HTMLInputElementTest,
+       TrackPasswordTrackingElementRectJSHeuristicTypeChange) {
+  ScopedAIPageContentTrackedElementsPasswordForTest scoped_feature(true);
+
+  viz::TrackedElementFeature tracking_feature =
+      viz::TrackedElementFeature::kPasswordTracking;
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=text>");
+  auto& input = TestElement();
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  // Programmatic value change to a masked pattern triggers tracking.
+  input.SetValue("****a");
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(input.GetTrackedElementSubRect(tracking_feature));
+
+  // Changing to a non-text field should stop tracking.
+  input.setType(input_type_names::kCheckbox);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(input.GetTrackedElementSubRect(tracking_feature));
+
+  // Changing back to text should resume tracking.
+  input.setType(input_type_names::kText);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(input.GetTrackedElementSubRect(tracking_feature));
+}
 
 }  // namespace blink

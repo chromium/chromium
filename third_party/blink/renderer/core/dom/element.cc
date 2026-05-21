@@ -35,6 +35,7 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "cc/input/snap_selection_strategy.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -288,6 +289,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -9060,6 +9062,38 @@ void Element::SetHasBeenHeuristicCustomPasswordCSS() {
   }
 
   EnsureRareData().SetHasBeenHeuristicCustomPasswordCSS();
+  UpdatePasswordTracking();
+}
+
+bool Element::ShouldTrackPassword() const {
+  return IsNativeOrHeuristicPassword();
+}
+
+bool Element::IsNativeOrHeuristicPassword() const {
+  return HasBeenHeuristicCustomPasswordCSS();
+}
+
+void Element::UpdatePasswordTracking() {
+  if (!RuntimeEnabledFeatures::AIPageContentTrackedElementsPasswordEnabled()) {
+    return;
+  }
+
+  viz::TrackedElementFeature tracking_feature =
+      viz::TrackedElementFeature::kPasswordTracking;
+
+  const TrackedElementSubRect* tracked_element =
+      GetTrackedElementSubRect(tracking_feature);
+
+  const bool should_track = ShouldTrackPassword();
+  if (should_track && !tracked_element) {
+    SetTrackedElementSubRect(
+        tracking_feature,
+        TrackedElementSubRect(
+            TrackedElementId(base::Token::CreateRandom()),
+            /*should_add_to_compositor_frame_metadata=*/true));
+  } else if (!should_track && tracked_element) {
+    ClearTrackedElementSubRect(tracking_feature);
+  }
 }
 
 bool Element::HasBeenHeuristicCustomPasswordCSS() const {

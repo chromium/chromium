@@ -384,6 +384,12 @@
       name: "AIPageContentTrackedElementsIframe",
       status: "test"
     },
+    // When enabled, native or heuristics password element coordinates will be
+    // tracked using the Element::SetTrackedElementSubRect() method.
+    {
+      name: "AIPageContentTrackedElementsPassword",
+      status: "test"
+    },
     // Clamp AIPageContent visible bounding boxes to the local-root viewport
     // after visual-viewport mapping to normalize viewport-relative geometry.
     {
