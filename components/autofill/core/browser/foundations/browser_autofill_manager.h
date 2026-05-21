@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -378,14 +379,20 @@ class BrowserAutofillManager : public AutofillManager {
  private:
   friend class BrowserAutofillManagerTestApi;
 
-  // Fills `form_structure` and `autofill_field` with the cached elements
-  // corresponding to `form_id` and `field_id`.  This might have the side-effect
-  // of updating the cache.  Returns false if the form is not autofillable, or
-  // if either the form or the field cannot be found.
-  [[nodiscard]] bool GetCachedFormAndField(const FormGlobalId& form_id,
-                                           const FieldGlobalId& field_id,
-                                           FormStructure** form_structure,
-                                           AutofillField** autofill_field);
+  struct FormAndField {
+    STACK_ALLOCATED();
+
+   public:
+    FormStructure* form_structure = nullptr;
+    AutofillField* autofill_field = nullptr;
+  };
+
+  // Returns the cached form and field corresponding to `form_id` and
+  // `field_id`. This might have the side-effect of updating the cache. The
+  // returned `FormAndField` may not contain form or field, if the form is not
+  // autofillable, or if either the form or the field cannot be found.
+  FormAndField GetCachedFormAndField(const FormGlobalId& form_id,
+                                     const FieldGlobalId& field_id);
 
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,

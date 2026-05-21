@@ -1193,18 +1193,15 @@ class BrowserAutofillManagerTest
     task_environment_.FastForwardBy(time_delta);
   }
 
-  [[nodiscard]] bool GetCachedFormAndField(const FormGlobalId& form_id,
-                                           const FieldGlobalId& field_id,
-                                           FormStructure** form_structure,
-                                           AutofillField** autofill_field) {
+  std::pair<FormStructure*, AutofillField*> GetCachedFormAndField(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id) {
     FormStructure* cached_form =
         test_api(autofill_manager()).FindCachedFormById(form_id);
     if (!cached_form) {
-      return false;
+      return {};
     }
-    *form_structure = cached_form;
-    *autofill_field = cached_form->GetFieldById(field_id);
-    return *autofill_field != nullptr;
+    return {cached_form, cached_form->GetFieldById(field_id)};
   }
 
   void OnAskForValuesToFill(
@@ -4298,12 +4295,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
   // Simulate form submission.
   FormSubmitted(response_data);
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  ASSERT_TRUE(GetCachedFormAndField(form.global_id(),
-                                    form.fields().front().global_id(),
-                                    &form_structure, &autofill_field));
+  auto [form_structure, autofill_field] = GetCachedFormAndField(
+      form.global_id(), form.fields().front().global_id());
   ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(autofill_field);
 
   const std::vector<AutofillField::FieldLogEventType> focus_field_log_events =
       autofill_field->field_log_events();
@@ -4377,12 +4372,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   ExpectFilledForm(response_data, expected_address_fill_data,
                    /*card_fill_data=*/std::nullopt);
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  ASSERT_TRUE(GetCachedFormAndField(form.global_id(),
-                                    form.fields().front().global_id(),
-                                    &form_structure, &autofill_field));
+  auto [form_structure, autofill_field] = GetCachedFormAndField(
+      form.global_id(), form.fields().front().global_id());
   ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(autofill_field);
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
@@ -4488,12 +4481,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   ExpectFilledForm(response_data, expected_address_fill_data,
                    /*card_fill_data=*/std::nullopt);
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  ASSERT_TRUE(GetCachedFormAndField(form.global_id(),
-                                    form.fields().front().global_id(),
-                                    &form_structure, &autofill_field));
+  auto [form_structure, autofill_field] = GetCachedFormAndField(
+      form.global_id(), form.fields().front().global_id());
   ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(autofill_field);
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
@@ -4599,12 +4590,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   // Simulate form submission.
   FormSubmitted(response_data);
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  ASSERT_TRUE(GetCachedFormAndField(form.global_id(),
-                                    form.fields().front().global_id(),
-                                    &form_structure, &autofill_field));
+  auto [form_structure, autofill_field] = GetCachedFormAndField(
+      form.global_id(), form.fields().front().global_id());
   ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(autofill_field);
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
@@ -4673,12 +4662,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate form submission.
   FormSubmitted(response_data);
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  ASSERT_TRUE(GetCachedFormAndField(form.global_id(),
-                                    form.fields().front().global_id(),
-                                    &form_structure, &autofill_field));
+  auto [form_structure, autofill_field] = GetCachedFormAndField(
+      form.global_id(), form.fields().front().global_id());
   ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(autofill_field);
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
