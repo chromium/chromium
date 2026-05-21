@@ -49,8 +49,6 @@
                                    browser:(Browser*)browser
                                       mode:(signin::ManagedAccountSigninMode)
                                                mode {
-  // TODO(crbug.com/381853288): Add a mediator to listen to the identity
-  // changes.
   DCHECK(viewController);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
