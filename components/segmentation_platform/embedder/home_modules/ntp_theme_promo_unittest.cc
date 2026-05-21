@@ -36,6 +36,8 @@ class NtpThemePromoTest : public testing::Test {
                                  float educationalTipShownCount,
                                  float supportCustomizedNtpTheme,
                                  float hasCustomizedNtpBackground,
+                                 float themeTipBottomSheetShownCount,
+                                 float hasThemeTipBottomSheetBeenShown,
                                  EphemeralHomeModuleRank position) {
     auto card = std::make_unique<NtpThemePromo>(&pref_service_);
 
@@ -45,7 +47,8 @@ class NtpThemePromoTest : public testing::Test {
 
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {educationalTipShownCount, hasCustomizedNtpBackground,
-                     ntpThemePromoShownCount, supportCustomizedNtpTheme});
+                     hasThemeTipBottomSheetBeenShown, ntpThemePromoShownCount,
+                     supportCustomizedNtpTheme, themeTipBottomSheetShownCount});
     CardSelectionSignals card_signal(&all_signals, kNtpThemePromo);
     CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
     EXPECT_EQ(position, result.position);
@@ -59,7 +62,7 @@ class NtpThemePromoTest : public testing::Test {
 TEST_F(NtpThemePromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<NtpThemePromo>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 4u);
+  EXPECT_EQ(inputs.size(), 6u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kNtpThemePromoShownCount),
             inputs.end());
@@ -68,6 +71,11 @@ TEST_F(NtpThemePromoTest, GetInputsReturnsExpectedInputs) {
   EXPECT_NE(inputs.find(segmentation_platform::kSupportCustomizedNtpTheme),
             inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kHasCustomizedNtpBackground),
+            inputs.end());
+  EXPECT_NE(
+      inputs.find(segmentation_platform::kHasThemeTipBottomSheetBeenShown),
+      inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kThemeTipBottomSheetShownCount),
             inputs.end());
 }
 
@@ -79,7 +87,10 @@ TEST_F(NtpThemePromoTest, TestComputeCardResultWithCardEnabled) {
       /* ntpThemePromoShownCount */ 0,
       /* educationalTipShownCount */ 0,
       /* supportCustomizedNtpTheme */ 1.0,
-      /* hasCustomizedNtpBackground */ 0.0, EphemeralHomeModuleRank::kLast);
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -91,7 +102,10 @@ TEST_F(NtpThemePromoTest,
       /* ntpThemePromoShownCount */ 1,
       /* educationalTipShownCount */ 0,
       /* supportCustomizedNtpTheme */ 1.0,
-      /* hasCustomizedNtpBackground */ 0.0, EphemeralHomeModuleRank::kNotShown);
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -104,7 +118,10 @@ TEST_F(NtpThemePromoTest,
       /* ntpThemePromoShownCount */ 0,
       /* educationalTipShownCount */ 0,
       /* supportCustomizedNtpTheme */ 1.0,
-      /* hasCustomizedNtpBackground */ 0.0, EphemeralHomeModuleRank::kNotShown);
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when
@@ -118,7 +135,10 @@ TEST_F(
       /* ntpThemePromoShownCount */ 0,
       /* educationalTipShownCount */ 1,
       /* supportCustomizedNtpTheme */ 1.0,
-      /* hasCustomizedNtpBackground */ 0.0, EphemeralHomeModuleRank::kNotShown);
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that ComputeCardResult() returns kNotShown when
@@ -129,7 +149,10 @@ TEST_F(NtpThemePromoTest, TestComputeCardResultWithCardDisabledForNoSupport) {
       /* ntpThemePromoShownCount */ 0,
       /* educationalTipShownCount */ 0,
       /* supportCustomizedNtpTheme */ 0.0,
-      /* hasCustomizedNtpBackground */ 0.0, EphemeralHomeModuleRank::kNotShown);
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that ComputeCardResult() returns kNotShown when
@@ -140,7 +163,10 @@ TEST_F(NtpThemePromoTest, TestComputeCardResultWithCardDisabledForHasCustomizedN
       /* ntpThemePromoShownCount */ 0,
       /* educationalTipShownCount */ 0,
       /* supportCustomizedNtpTheme */ 1.0,
-      /* hasCustomizedNtpBackground */ 1.0, EphemeralHomeModuleRank::kNotShown);
+      /* hasCustomizedNtpBackground */ 1.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that `IsEnabled()` returns true when under the impression limit and
@@ -201,6 +227,36 @@ TEST_F(NtpThemePromoTest, IsEnabledReturnsFalseWhenShowPromoParamDisabled) {
       {{"show_promo", "false"}});
 
   EXPECT_FALSE(NtpThemePromo::IsEnabled(&pref_service_));
+}
+
+// Validates that ComputeCardResult() returns kNotShown when
+// theme_tip_bottom_sheet_shown_count is >= 1.
+TEST_F(NtpThemePromoTest,
+       TestComputeCardResultWithCardDisabledForThemeTipBottomSheetShown) {
+  TestComputeCardResultImpl(
+      /* hasNtpThemePromoInteracted */ false,
+      /* ntpThemePromoShownCount */ 0,
+      /* educationalTipShownCount */ 0,
+      /* supportCustomizedNtpTheme */ 1.0,
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 1,
+      /* hasThemeTipBottomSheetBeenShown */ 1.0,
+      EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that ComputeCardResult() returns kNotShown when the theme tip
+// bottom sheet has never been shown.
+TEST_F(NtpThemePromoTest,
+       TestComputeCardResultWithCardDisabledForHasThemeTipBottomSheetNotShown) {
+  TestComputeCardResultImpl(
+      /* hasNtpThemePromoInteracted */ false,
+      /* ntpThemePromoShownCount */ 0,
+      /* educationalTipShownCount */ 0,
+      /* supportCustomizedNtpTheme */ 1.0,
+      /* hasCustomizedNtpBackground */ 0.0,
+      /* themeTipBottomSheetShownCount */ 0.0,
+      /* hasThemeTipBottomSheetBeenShown */ 0.0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 }  // namespace segmentation_platform::home_modules

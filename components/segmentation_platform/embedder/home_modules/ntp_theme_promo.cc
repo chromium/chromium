@@ -26,9 +26,14 @@ const char kNtpThemePromoInteractedPref[] =
 const char kEducationalTipModuleHistogramName[] =
     "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
 
+const char kCustomizationBottomSheetShownHistogramName[] =
+    "NewTabPage.Customization.BottomSheet.Shown";
+
 // TODO(crbug.com/382803396): The enum id of the ntp theme promo card. Could
 // be referenced after refactor.
 const int kNtpThemePromoId = 19;
+
+const int kThemeTipBottomSheetShownId = 10;
 
 }  // namespace
 
@@ -74,6 +79,22 @@ std::map<SignalKey, FeatureQuery> NtpThemePromo::GetInputs() {
                   .tensor_length = 1,
                   .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
                   .name = kHasCustomizedNtpBackground}));
+  map.emplace(kHasThemeTipBottomSheetBeenShown,
+              FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+                  .tensor_length = 1,
+                  .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+                  .name = kHasThemeTipBottomSheetBeenShown}));
+
+  // Define UMA feature for Theme Tip Bottom Sheet shown times.
+  int theme_tip_limit_days =
+      features::kNewTabPageCustomizationV2PromoDisplayIntervalDays.Get();
+  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfThemeTipBottomSheetShownTimes,
+                                kCustomizationBottomSheetShownHistogramName,
+                                &kThemeTipBottomSheetShownId,
+                                /* enum_size= */ 1,
+                                /* days= */ theme_tip_limit_days);
+  map.emplace(kThemeTipBottomSheetShownCount,
+              std::move(countOfThemeTipBottomSheetShownTimes));
 
   return map;
 }
@@ -109,22 +130,32 @@ CardSelectionInfo::ShowResult NtpThemePromo::ComputeCardResult(
       signals.GetSignal(kSupportCustomizedNtpTheme);
   std::optional<float> result_for_has_customized_ntp_background =
       signals.GetSignal(kHasCustomizedNtpBackground);
+  std::optional<float> result_for_has_theme_tip_bottom_sheet_been_shown =
+      signals.GetSignal(kHasThemeTipBottomSheetBeenShown);
+  std::optional<float> result_for_theme_tip_bottom_sheet_shown_count =
+      signals.GetSignal(kThemeTipBottomSheetShownCount);
 
   if (!result_for_ntp_theme_promo_shown_count.has_value() ||
       !result_for_educational_tip_shown_count_for_ntp_theme_signal
            .has_value() ||
       !result_for_support_customized_ntp_theme.has_value() ||
-      !result_for_has_customized_ntp_background.has_value()) {
+      !result_for_has_customized_ntp_background.has_value() ||
+      !result_for_has_theme_tip_bottom_sheet_been_shown.has_value() ||
+      !result_for_theme_tip_bottom_sheet_shown_count.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
   // Show the promo card if the promo card has not been shown more than 1 times
-  // in 7 days and the user has not customized the NTP background.
+  // in 7 days, the user has not customized the NTP background, the theme tip
+  // bottom sheet has already been shown, and it has not been shown within the
+  // limited days.
   if (*result_for_support_customized_ntp_theme &&
       !*result_for_has_customized_ntp_background &&
+      *result_for_has_theme_tip_bottom_sheet_been_shown &&
       result_for_ntp_theme_promo_shown_count.value() < 1 &&
-      result_for_educational_tip_shown_count_for_ntp_theme_signal.value() < 1) {
+      result_for_educational_tip_shown_count_for_ntp_theme_signal.value() < 1 &&
+      result_for_theme_tip_bottom_sheet_shown_count.value() < 1) {
     result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }

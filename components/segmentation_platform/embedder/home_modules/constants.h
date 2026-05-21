@@ -65,6 +65,10 @@ const char kHistorySyncPromoShownCount[] = "history_sync_promo_shown_count";
 const char kNtpThemePromoShownCount[] = "ntp_theme_promo_shown_count";
 const char kSupportCustomizedNtpTheme[] = "support_customized_ntp_theme";
 const char kHasCustomizedNtpBackground[] = "has_customized_ntp_background";
+const char kHasThemeTipBottomSheetBeenShown[] =
+    "has_theme_tip_bottom_sheet_been_shown";
+const char kThemeTipBottomSheetShownCount[] =
+    "theme_tip_bottom_sheet_shown_count";
 
 const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
 

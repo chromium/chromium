@@ -390,6 +390,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Chrome Colors"/>
   <int value="8" label="Upload Image Photo Picker"/>
   <int value="9" label="Chrome Default"/>
+  <int value="10" label="Theme Tip"/>
 </enum>
 
 <enum name="NtpCustomizationEntryPoint">

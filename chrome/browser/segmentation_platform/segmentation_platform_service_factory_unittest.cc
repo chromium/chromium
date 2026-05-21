@@ -655,6 +655,9 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
       "has_customized_ntp_background",
       processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
+      "has_theme_tip_bottom_sheet_been_shown",
+      processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
       "is_user_signed_in", processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
       "should_show_non_role_manager_default_browser_promo",

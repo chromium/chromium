@@ -75,6 +75,11 @@ public class EducationalTipCardProviderSignalHandler {
                 inputContext.addEntry(
                         "support_customized_ntp_theme",
                         ProcessedValue.fromBoolean(actionDelegate.supportCustomizedNtpTheme()));
+                inputContext.addEntry(
+                        "has_theme_tip_bottom_sheet_been_shown",
+                        ProcessedValue.fromBoolean(
+                                NtpCustomizationUtils
+                                        .isThemeTipBottomSheetShownFromSharedPreference()));
                 return inputContext;
             case ModuleType.HISTORY_SYNC_PROMO:
                 inputContext.addEntry(

@@ -266,6 +266,10 @@ BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<bool> kNewTabPageCustomizationV2ShowPromo{
     &kNewTabPageCustomizationV2, "show_promo",
     /*default_value=*/false};
+constexpr base::FeatureParam<int>
+    kNewTabPageCustomizationV2PromoDisplayIntervalDays{
+        &kNewTabPageCustomizationV2, "promo_display_interval_days",
+        /*default_value=*/7};
 
 constexpr base::FeatureParam<int> kNewTabPageCustomizationV2IphMaxImpression{
     &kNewTabPageCustomizationV2, "iph_max_impression",
