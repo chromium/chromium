@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pinned_tab_item_container"
+    android:layout_width="@dimen/vertical_tab_pinned_item_width"
+    android:layout_height="@dimen/vertical_tab_pinned_item_height"
+    android:background="@drawable/vertical_tab_pinned_item_background"
+    android:layout_marginBottom="@dimen/vertical_tab_item_margin_bottom"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Centered Tab Favicon -->
+    <ImageView
+        android:id="@+id/tab_favicon"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no" />
+</FrameLayout>

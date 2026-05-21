@@ -22,6 +22,7 @@ import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -211,5 +212,111 @@ public class TabVerticalViewBinderUnitTest {
         hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
         mItemView.dispatchGenericMotionEvent(hoverExitEvent);
         assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_FaviconAndClick() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        ImageView faviconView = pinnedView.findViewById(R.id.tab_favicon);
+
+        // 1. Test Favicon fetching
+        TabFaviconFetcher mockFetcher = mock(TabFaviconFetcher.class);
+        TabFavicon mockFavicon = mock(TabFavicon.class);
+        Drawable mockDrawable = mock(Drawable.class);
+        when(mockDrawable.mutate()).thenReturn(mockDrawable);
+        when(mockFavicon.getDefaultDrawable()).thenReturn(mockDrawable);
+        doAnswer(
+                        invocation -> {
+                            Callback<TabFavicon> callback = invocation.getArgument(0);
+                            callback.onResult(mockFavicon);
+                            return null;
+                        })
+                .when(mockFetcher)
+                .fetch(any());
+
+        mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.FAVICON_FETCHER);
+        assertEquals(mockDrawable, faviconView.getDrawable());
+
+        // 2. Test Click Listener
+        TabActionListener mockClickListener = mock(TabActionListener.class);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_CLICK_LISTENER, mockClickListener);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_CLICK_LISTENER);
+        pinnedView.performClick();
+        verify(mockClickListener).run(any(View.class), eq(123), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_LongAndContextClick() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+
+        // 1. Test Long Click Listener
+        TabActionListener mockLongClickListener = mock(TabActionListener.class);
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_LONG_CLICK_LISTENER, mockLongClickListener);
+        TabVerticalViewBinder.bindPinnedTab(
+                mModel, pinnedView, TabProperties.TAB_LONG_CLICK_LISTENER);
+        pinnedView.performLongClick();
+        verify(mockLongClickListener).run(any(View.class), eq(123), any());
+
+        // 2. Test Context Click Listener
+        TabActionListener mockContextClickListener = mock(TabActionListener.class);
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, mockContextClickListener);
+        TabVerticalViewBinder.bindPinnedTab(
+                mModel, pinnedView, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+        pinnedView.performContextClick(0f, 0f);
+        verify(mockContextClickListener).run(any(View.class), eq(123), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_SelectionColors() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+
+        // 1. When Pinned Tab is Selected
+        mModel.set(TabProperties.IS_SELECTED, true);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+        ColorStateList selectedTint = pinnedView.getBackgroundTintList();
+        assertNotNull("Background tint should not be null when selected", selectedTint);
+
+        // 2. When Pinned Tab is Resting (Unselected)
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+        ColorStateList restingTint = pinnedView.getBackgroundTintList();
+        assertNull("Background tint should be null when resting to allow XML color", restingTint);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_ContentDescription() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+
+        mModel.set(TabProperties.TITLE, "Google Website");
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
+
+        assertEquals("Google Website", pinnedView.getContentDescription().toString());
     }
 }

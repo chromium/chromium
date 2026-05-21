@@ -48,6 +48,7 @@ public class TabProperties {
         UiType.TAB_GROUP_SUGGESTION_MESSAGE,
         UiType.IPH_MESSAGE,
         UiType.COLLABORATION_ACTIVITY_MESSAGE,
+        UiType.PINNED_TAB
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiType {
@@ -63,6 +64,7 @@ public class TabProperties {
         int TAB_GROUP_SUGGESTION_MESSAGE = 7;
         int IPH_MESSAGE = 8;
         int COLLABORATION_ACTIVITY_MESSAGE = 9;
+        int PINNED_TAB = 10;
     }
 
     /** IDs for possible tab action states. */
@@ -301,6 +303,7 @@ public class TabProperties {
                 TAB_LONG_CLICK_LISTENER,
                 TAB_CONTEXT_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_DATA,
-                TAB_GROUP_CARD_COLOR
+                TAB_GROUP_CARD_COLOR,
+                IS_PINNED
             };
 }

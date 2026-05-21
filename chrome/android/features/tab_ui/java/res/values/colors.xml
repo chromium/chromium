@@ -32,4 +32,6 @@ found in the LICENSE file.
 
     <!-- Vertical Tabs colors -->
     <macro name="vertical_tabs_rail_bg_color">?attr/colorSurfaceContainerHighest</macro>
+    <macro name="vertical_tab_pinned_item_bg_color">?attr/colorSurfaceContainerHigh</macro>
+    <macro name="vertical_tab_pinned_item_border_color">?attr/colorSurfaceContainer</macro>
 </resources>

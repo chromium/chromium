@@ -39,6 +39,7 @@ public class VerticalTabListCoordinator {
     // TODO(crbug.com/515138646): Refactor this loose String component name to a unified @IntDef
     // enum system once TabListMediator's constructor and UMA logging are updated to support it.
     static final String COMPONENT_NAME = "VerticalTabs";
+    static final int DEFAULT_GRID_SPAN_COUNT = 4;
     private final ViewGroup mContainerView;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private @Nullable TabListMediator mMediator;
@@ -72,7 +73,17 @@ public class VerticalTabListCoordinator {
     public VerticalTabListCoordinator(
             Activity activity, TabModelSelector tabModelSelector, Profile profile) {
         TabListModel modelList = new TabListModel();
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(modelList);
+        SimpleRecyclerViewAdapter adapter =
+                new SimpleRecyclerViewAdapter(modelList) {
+                    @Override
+                    public int getItemViewType(int position) {
+                        ListItem item = modelList.get(position);
+                        if (item.type == UiType.TAB && item.model.get(TabProperties.IS_PINNED)) {
+                            return UiType.PINNED_TAB;
+                        }
+                        return super.getItemViewType(position);
+                    }
+                };
 
         adapter.registerType(
                 UiType.TAB,
@@ -81,6 +92,14 @@ public class VerticalTabListCoordinator {
                                 LayoutInflater.from(activity)
                                         .inflate(R.layout.vertical_tab_item, parent, false),
                 TabVerticalViewBinder::bindTab);
+
+        adapter.registerType(
+                UiType.PINNED_TAB,
+                parent ->
+                        (ViewGroup)
+                                LayoutInflater.from(activity)
+                                        .inflate(R.layout.vertical_tab_pinned_item, parent, false),
+                TabVerticalViewBinder::bindPinnedTab);
 
         mContainerView =
                 (ViewGroup)
@@ -92,11 +111,7 @@ public class VerticalTabListCoordinator {
 
         TabListRecyclerView recyclerView = mContainerView.findViewById(R.id.tab_list_recycler_view);
 
-        // TODO(crbug.com/509226293): For Pinned Tabs, update the span count and attach a custom
-        // SpanSizeLookup. The span count will be calculated dynamically depending on the width of
-        // the panel to see how many pinned tabs can fit side-by-side, while regular tabs take up
-        // the full span width.
-        GridLayoutManager layoutManager = new GridLayoutManager(activity, 1);
+        GridLayoutManager layoutManager = createGridLayoutManager(activity, adapter);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -205,5 +220,30 @@ public class VerticalTabListCoordinator {
         if (mTabListFaviconProvider != null) {
             mTabListFaviconProvider.destroy();
         }
+    }
+
+    private GridLayoutManager createGridLayoutManager(
+            Activity activity, SimpleRecyclerViewAdapter adapter) {
+        GridLayoutManager layoutManager = new GridLayoutManager(activity, getSpanCount());
+        // Custom SpanSizeLookup: Pinned tabs take 1 column, regular tabs span the full grid width
+        layoutManager.setSpanSizeLookup(
+                new GridLayoutManager.SpanSizeLookup() {
+                    @Override
+                    public int getSpanSize(int position) {
+                        int type = adapter.getItemViewType(position);
+                        if (type == UiType.PINNED_TAB) {
+                            return 1;
+                        }
+                        return layoutManager.getSpanCount();
+                    }
+                });
+        return layoutManager;
+    }
+
+    /** Returns the default grid column span count for the Left Rail. */
+    private int getSpanCount() {
+        // TODO(crbug.com/509226293): When the Left Rail becomes collapsible or resizable, the span
+        // count must be calculated dynamically based on the measured width of the container.
+        return DEFAULT_GRID_SPAN_COUNT;
     }
 }

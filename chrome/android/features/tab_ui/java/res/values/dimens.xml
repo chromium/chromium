@@ -212,4 +212,9 @@ found in the LICENSE file.
     <dimen name="vertical_tab_item_media_indicator_margin_end">12dp</dimen>
     <dimen name="vertical_tab_item_corner_radius">8dp</dimen>
     <dimen name="vertical_tab_item_margin_bottom">4dp</dimen>
+
+    <!-- Dimens for vertical pinned tabs -->
+    <!-- TODO(crbug.com/509226293): A11y requires touch target to be a minimum of 48dp. -->
+    <dimen name="vertical_tab_pinned_item_width">42dp</dimen>
+    <dimen name="vertical_tab_pinned_item_height">32dp</dimen>
 </resources>

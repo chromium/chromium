@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@macro/vertical_tab_pinned_item_bg_color" />
+    <stroke
+        android:width="1dp"
+        android:color="@macro/vertical_tab_pinned_item_border_color" />
+    <corners android:radius="@dimen/vertical_tab_item_corner_radius" />
+</shape>

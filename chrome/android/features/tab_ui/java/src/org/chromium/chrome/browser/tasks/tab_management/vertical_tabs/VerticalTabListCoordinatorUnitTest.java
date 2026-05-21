@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.tab_ui.R;
@@ -50,6 +52,9 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Unit tests for {@link VerticalTabListCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -110,7 +115,7 @@ public class VerticalTabListCoordinatorUnitTest {
         assertNotNull(recyclerView.getLayoutManager());
 
         GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-        assertEquals(1, layoutManager.getSpanCount());
+        assertEquals(4, layoutManager.getSpanCount());
 
         assertNotNull(mSelectorObserverCaptor.getValue());
         verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.getValue());
@@ -127,5 +132,30 @@ public class VerticalTabListCoordinatorUnitTest {
 
         mCoordinator.destroy();
         verify(mTabModelSelector).removeObserver(observer);
+    }
+
+    @Test
+    @SmallTest
+    public void testAdapterInterceptionAndSpanLookup() {
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+        assertNotNull(recycler.getLayoutManager());
+        GridLayoutManager.SpanSizeLookup lookup =
+                ((GridLayoutManager) recycler.getLayoutManager()).getSpanSizeLookup();
+
+        PropertyModel reg = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
+        PropertyModel pin = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
+        pin.set(TabProperties.IS_PINNED, true);
+
+        assert adapter != null;
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, reg));
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, pin));
+
+        assertEquals(UiType.TAB, adapter.getItemViewType(0));
+        assertEquals(UiType.PINNED_TAB, adapter.getItemViewType(1));
+        assertEquals(4, lookup.getSpanSize(0));
+        assertEquals(1, lookup.getSpanSize(1));
     }
 }
