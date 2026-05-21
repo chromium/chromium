@@ -95,6 +95,11 @@ BASE_DECLARE_FEATURE(kResetTamperedDefaultSearchEngine);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kClankDefaultSearchApi);
 
+// Whether DumpWithoutCrashing-based debugging should be enabled on
+// some select keyword database refresh code paths.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kKwdbRefreshDebugging);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Restructuring of the search settings pages.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

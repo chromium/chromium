@@ -39,6 +39,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -155,6 +156,9 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
 
 std::string StringifyDuplicates(
     const std::map<int, size_t>& duplicate_counts_by_id) {
+  if (duplicate_counts_by_id.empty()) {
+    return "none";
+  }
   std::vector<std::string> pieces;
   for (const auto& [id, count] : duplicate_counts_by_id) {
     pieces.push_back(base::StringPrintf("%d:%zu", id, count + 1));
@@ -725,75 +729,78 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   RecordDefaultSearchMatchCount(entries_matching_dsp_to_reconcile,
                                 /*is_unreconciled_count=*/false);
 
-  size_t total_duplicates = 0;
-  for (const auto& [id, count] : duplicate_counts_by_id) {
-    total_duplicates += count;
-  }
-  base::UmaHistogramCounts100("Omnibox.TemplateUrl.DBRefresh.TotalDuplicates",
-                              total_duplicates);
+  if (base::FeatureList::IsEnabled(switches::kKwdbRefreshDebugging)) {
+    size_t total_duplicates = 0;
+    for (const auto& [id, count] : duplicate_counts_by_id) {
+      total_duplicates += count;
+    }
+    base::UmaHistogramCounts100("Omnibox.TemplateUrl.DBRefresh.TotalDuplicates",
+                                total_duplicates);
 
-  // Debugging https://crbug.com/507355138
-  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp_match", dsp_match != nullptr);
+    // Debugging https://crbug.com/507355138
+    SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp_match", dsp_match != nullptr);
 
-  // Breakdown of the accepted explanations for a DSP mismatch.
-  bool has_mismatch_explanation =
-      // There is no DSP.
-      !default_search_provider ||
-      // There is no set of existing turls to get a match from.
-      existing_urls.empty();
+    // Breakdown of the accepted explanations for a DSP mismatch.
+    bool has_mismatch_explanation =
+        // There is no DSP.
+        !default_search_provider ||
+        // There is no set of existing turls to get a match from.
+        existing_urls.empty();
 
-  // - Confirmed and expected reasons:
-  //   * No DSP preloaded from prefs.
-  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_no_preloaded_dsp",
-                        default_search_provider == nullptr);
-  //   * No existing URLs to get a match from.
-  SCOPED_CRASH_KEY_NUMBER("KwdbRefresh", "existing_urls_count",
-                          existing_urls.size());
+    // - Confirmed and expected reasons:
+    //   * No DSP preloaded from prefs.
+    SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_no_preloaded_dsp",
+                          default_search_provider == nullptr);
+    //   * No existing URLs to get a match from.
+    SCOPED_CRASH_KEY_NUMBER("KwdbRefresh", "existing_urls_count",
+                            existing_urls.size());
 
-  // - Other hypotheses
-  //   Not confirmed because they should normally not be brought up through
-  //   pre-loading DSP, or their first appearance should come after the keywords
-  //   DB is loaded, and then they should have been added to it.
-  SCOPED_CRASH_KEY_BOOL(
-      "KwdbRefresh", "is_dsp_prepopulated",
-      default_search_provider && default_search_provider->prepopulate_id() > 0);
+    // - Other hypotheses
+    //   Not confirmed because they should normally not be brought up through
+    //   pre-loading DSP, or their first appearance should come after the
+    //   keywords DB is loaded, and then they should have been added to it.
+    SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_prepopulated",
+                          default_search_provider &&
+                              default_search_provider->prepopulate_id() > 0);
 
-  SCOPED_CRASH_KEY_BOOL(
-      "KwdbRefresh", "is_dsp_from_policy",
-      default_search_provider && default_search_provider->enforced_by_policy());
+    SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_policy",
+                          default_search_provider &&
+                              default_search_provider->enforced_by_policy());
 
-  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_extension",
-                        default_search_provider &&
-                            (default_search_provider->type() ==
-                                 TemplateURL::OMNIBOX_API_EXTENSION ||
-                             default_search_provider->type() ==
-                                 TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION));
+    SCOPED_CRASH_KEY_BOOL(
+        "KwdbRefresh", "is_dsp_from_extension",
+        default_search_provider &&
+            (default_search_provider->type() ==
+                 TemplateURL::OMNIBOX_API_EXTENSION ||
+             default_search_provider->type() ==
+                 TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION));
 
-  SCOPED_CRASH_KEY_BOOL(
-      "KwdbRefresh", "is_from_reg_program",
-      default_search_provider &&
-          default_search_provider->CreatedByRegulatoryProgram());
+    SCOPED_CRASH_KEY_BOOL(
+        "KwdbRefresh", "is_from_reg_program",
+        default_search_provider &&
+            default_search_provider->CreatedByRegulatoryProgram());
 
-  SCOPED_CRASH_KEY_NUMBER("KwdbRefresh", "entries_matching_dsp",
-                          entries_matching_dsp_to_reconcile);
+    SCOPED_CRASH_KEY_NUMBER("KwdbRefresh", "entries_matching_dsp",
+                            entries_matching_dsp_to_reconcile);
 
-  SCOPED_CRASH_KEY_STRING256("KwdbRefresh", "prepop_duplicates",
-                             StringifyDuplicates(duplicate_counts_by_id));
+    SCOPED_CRASH_KEY_STRING256("KwdbRefresh", "prepop_duplicates",
+                               StringifyDuplicates(duplicate_counts_by_id));
 
-  if (!dsp_match && !has_mismatch_explanation) {
-    // This is not implemented with a `CHECK` for various reasons:
-    // - It's a pre-existing behaviour
-    // - Some of the ways to trigger it are explicitly not blocked upstream on
-    //   some platforms, during prefs loading.
-    // So we keep this as a `DumpWithoutCrashing` to avoid causing test
-    // failures, while still allowing to collect data, validating the logic in
-    // this function and following-up with some defensive checks.
-    base::debug::DumpWithoutCrashing();
+    if (!dsp_match && !has_mismatch_explanation) {
+      // This is not implemented with a `CHECK` for various reasons:
+      // - It's a pre-existing behaviour
+      // - Some of the ways to trigger it are explicitly not blocked upstream on
+      //   some platforms, during prefs loading.
+      // So we keep this as a `DumpWithoutCrashing` to avoid causing test
+      // failures, while still allowing to collect data, validating the logic in
+      // this function and following-up with some defensive checks.
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // We expect to only have one regulatory program engine at a time, see
   // `TemplateURLService::ResetPlayAPISearchEngine()`.
-  CHECK_LE(regulatory_entries.size(), 1u, base::NotFatalUntil::M150);
+  CHECK_LE(regulatory_entries.size(), 1u, base::NotFatalUntil::M152);
 
   // For each current prepopulated URL, check whether |template_urls| contained
   // a matching prepopulated URL.  If so, update the passed-in URL to match the
