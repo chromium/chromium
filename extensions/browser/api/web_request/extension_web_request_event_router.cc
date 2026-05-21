@@ -2872,8 +2872,8 @@ void WebRequestEventRouter::SendMessages(
   for (const auto& delta : deltas) {
     const std::set<std::string>& messages = delta.messages_to_extension;
     for (const std::string& message : messages) {
-      std::unique_ptr<WebRequestEventDetails> event_details(CreateEventDetails(
-          *blocked_request.request, /* extra_info_spec */ 0));
+      std::unique_ptr<WebRequestEventDetails> event_details(
+          CreateEventDetails(*blocked_request.request, /*extra_info_spec=*/0));
       event_details->SetString(keys::kMessageKey, message);
       event_details->SetString(keys::kStageKey,
                                GetRequestStageAsString(blocked_request.event));

@@ -150,7 +150,7 @@ class WebRequestEventRouter : public KeyedService {
 
   // AuthRequiredResponse indicates how an OnAuthRequired call is handled.
   enum class AuthRequiredResponse {
-    // No credenitals were provided.
+    // No credentials were provided.
     AUTH_REQUIRED_RESPONSE_NO_ACTION,
     // AuthCredentials is filled in with a username and password, which should
     // be used in a response to the provided auth challenge.
@@ -269,7 +269,7 @@ class WebRequestEventRouter : public KeyedService {
   // Notificaties when `request` is no longer being processed, regardless of
   // whether it has gone to completion or merely been cancelled. This is
   // guaranteed to be called eventually for any request observed by this object,
-  // and |*request| will be immintently destroyed after this returns.
+  // and |*request| will be imminently destroyed after this returns.
   void OnRequestWillBeDestroyed(content::BrowserContext* browser_context,
                                 const WebRequestInfo* request);
 
@@ -406,7 +406,7 @@ class WebRequestEventRouter : public KeyedService {
 
   // Identifier for a `BrowserContext` to scope the lifetime for references.
   // `BrowserContextID` is derived from `BrowserContext*`, used in comparison
-  // only, and are never deferenced.
+  // only, and are never dereferenced.
   using BrowserContextID = std::uintptr_t;
 
   static BrowserContextID GetBrowserContextID(

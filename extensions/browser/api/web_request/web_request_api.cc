@@ -247,7 +247,7 @@ void WebRequestAPI::Proxy::HandleAuthRequest(
   // Default implementation cancels the request.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
-                                false /* should_cancel */));
+                                /*should_cancel=*/false));
 }
 
 WebRequestAPI::ProxySet::ProxySet() {
@@ -321,7 +321,7 @@ void WebRequestAPI::ProxySet::MaybeProxyAuthRequest(
     // their auth credentials.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
-                                  false /* should_cancel */));
+                                  /*should_cancel=*/false));
     return;
   }
 
