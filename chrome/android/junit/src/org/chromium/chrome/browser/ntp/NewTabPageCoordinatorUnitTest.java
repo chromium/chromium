@@ -35,6 +35,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -88,6 +90,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.time.Duration;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabPageCoordinator}. */
@@ -101,6 +104,7 @@ import java.util.function.Supplier;
 public class NewTabPageCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
@@ -301,6 +305,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testCanTriggerCustomizationBottomSheet() {
+        mFakeTimeTestRule.advanceMillis(Duration.ofDays(10).toMillis());
         EdgeToEdgeStateProvider edgeToEdgeStateProvider =
                 NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
 
@@ -336,10 +341,23 @@ public class NewTabPageCoordinatorUnitTest {
         // Case 6: Force show enabled.
         ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
         assertTrue(mCoordinator.canTriggerCustomizationBottomSheet());
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+
+        NtpCustomizationUtils
+                .resetThemeTipBottomSheetShownTimestampFromSharedPreferenceForTesting();
+
+        // Case 7: Within cool down period (last applied 6 days ago).
+        long sixDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(6).toMillis();
+        NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(sixDaysAgo);
+        assertFalse(mCoordinator.canTriggerCustomizationBottomSheet());
+
+        // Case 8: Outside cool down period (last applied 8 days ago).
+        long eightDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(8).toMillis();
+        NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(eightDaysAgo);
+        assertTrue(mCoordinator.canTriggerCustomizationBottomSheet());
 
         // Reset force show for other tests.
         ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(false);
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         edgeToEdgeStateProvider.detach();
     }

@@ -1511,6 +1511,14 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    public void testLastApplyThemeTimestamp() {
+        long timestamp = 12345L;
+        NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(timestamp);
+        assertEquals(
+                timestamp, NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference());
+    }
+
+    @Test
     public void testThemeTipBottomSheetShownTimestamp() {
         assertFalse(NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference());
 

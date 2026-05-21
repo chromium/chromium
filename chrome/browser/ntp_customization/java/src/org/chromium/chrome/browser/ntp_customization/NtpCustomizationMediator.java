@@ -29,6 +29,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -132,6 +133,8 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
                         // Notify to recreate activities if a new customized theme color is selected
                         // or removed.
                         if (mShouldRecreate) {
+                            NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(
+                                    TimeUtils.uptimeMillis());
                             NtpThemeStateProvider.getInstance().notifyApplyThemeChanges();
                         }
                     }

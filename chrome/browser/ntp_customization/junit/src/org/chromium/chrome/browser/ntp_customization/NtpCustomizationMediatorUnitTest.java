@@ -365,13 +365,16 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.onNewColorSelected(/* isDifferentColor= */ true);
         observer.onSheetClosed(2);
         verify(ntpThemeStateProvider).notifyApplyThemeChanges();
+        assertTrue(NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference() > 0);
 
         clearInvocations(ntpThemeStateProvider);
+        NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(0);
 
         // Verifies notifyApplyThemeChanges() is NOT called when theme color isn't changed.
         mMediator.onNewColorSelected(/* isDifferentColor= */ false);
         observer.onSheetClosed(2);
         verify(ntpThemeStateProvider, never()).notifyApplyThemeChanges();
+        assertEquals(0, NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference());
 
         NtpThemeStateProvider.setInstanceForTesting(null);
     }

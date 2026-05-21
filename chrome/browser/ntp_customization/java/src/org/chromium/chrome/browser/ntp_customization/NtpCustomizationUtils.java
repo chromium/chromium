@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
@@ -869,6 +870,18 @@ public class NtpCustomizationUtils {
                 NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false);
     }
 
+    /** Sets the timestamp when a customized theme is last applied to the SharedPreference. */
+    public static void setLastApplyThemeTimestampToSharedPreference(long timestamp) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeLong(NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS, timestamp);
+    }
+
+    /** Gets the timestamp when a customized theme is last applied from the SharedPreference. */
+    public static long getLastApplyThemeTimestampFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readLong(NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS, 0);
+    }
+
     /**
      * Sets the timestamp when the theme tip bottom sheet has been shown to the SharedPreference.
      */
@@ -1545,6 +1558,7 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
         prefsManager.removeKey(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_COLOR_ID);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);
@@ -1619,5 +1633,11 @@ public class NtpCustomizationUtils {
             }
         }
         return inSampleSize;
+    }
+
+    /** Returns whether the theme tip bottom sheet has been shown before. */
+    public static void resetThemeTipBottomSheetShownTimestampFromSharedPreferenceForTesting() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
     }
 }

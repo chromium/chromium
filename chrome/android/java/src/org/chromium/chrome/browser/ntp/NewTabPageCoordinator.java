@@ -103,6 +103,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.url.GURL;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 
 /**
@@ -1199,8 +1200,17 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // Triggers the bottom sheet if this bottom sheet hasn't been shown before and this isn't
         // the first time that a NTP is open. The bottom sheet is shown once per lifetime.
-        return sCount > 1
-                && !NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference();
+        if (sCount <= 1 || NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference()) {
+            return false;
+        }
+
+        long lastApplyTime = NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference();
+        if (lastApplyTime > 0
+                && (TimeUtils.uptimeMillis() - lastApplyTime) < Duration.ofDays(7).toMillis()) {
+            return false;
+        }
+
+        return true;
     }
 
     /** Shows the NTP theme tip bottom sheet. */
