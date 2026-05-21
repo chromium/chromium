@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
@@ -23,7 +25,9 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
@@ -67,6 +71,52 @@ void WaitForInitialWebUIToolbar(BrowserWindowInterface* browser) {
     return;
   }
   run_loop.Run();
+}
+
+void SetUpWebUI(const ui::ElementIdentifier& element_id,
+                ui::TrackedElement** element_out,
+                WebUIToolbarWebView** webui_toolbar_view_out,
+                views::WebView** web_view_out,
+                Browser* browser) {
+  // Wait for the WebUIToolbarWebView to be available.
+  *webui_toolbar_view_out = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (!browser_view || !browser_view->toolbar()) {
+      return false;
+    }
+    ToolbarButtonProvider* provider = browser_view->toolbar();
+    *webui_toolbar_view_out = provider->GetWebUIToolbarViewForTesting();
+    return *webui_toolbar_view_out != nullptr;
+  }));
+  ASSERT_TRUE(*webui_toolbar_view_out);
+
+  if (element_id == kWebUIToolbarElementIdentifier) {
+    // We already have the view, and the Basic test doesn't strictly need the
+    // TrackedElement. ElementTracker might be flaky or slow here.
+    *element_out = views::ElementTrackerViews::GetInstance()->GetElementForView(
+        *webui_toolbar_view_out);
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      *element_out = BrowserElements::From(browser)->GetElement(element_id);
+      return *element_out != nullptr;
+    }));
+    ASSERT_TRUE(*element_out);
+  }
+
+  ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
+  *web_view_out = views::AsViewClass<views::WebView>(
+      (*webui_toolbar_view_out)->children()[0].get());
+  ASSERT_TRUE(*web_view_out);
+
+  // Wait for the WebView to finish composition.
+  content::WaitForCopyableViewInWebContents((*web_view_out)->GetWebContents());
+}
+
+WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
+  return BrowserView::GetBrowserViewForBrowser(browser)
+      ->toolbar_button_provider()
+      ->GetWebUIToolbarViewForTesting();
 }
 
 AvatarToolbarButtonTestAccessor::AvatarToolbarButtonTestAccessor(

@@ -39,11 +39,6 @@
 
 namespace {
 
-WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar_button_provider()
-      ->GetWebUIToolbarViewForTesting();
-}
 
 std::string GetPinnedButtonJS(
     toolbar_ui_api::mojom::PinnedToolbarAction action) {

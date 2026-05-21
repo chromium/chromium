@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
@@ -184,11 +185,6 @@ bool WaitForButtonVisible(content::WebContents* web_contents,
   });
 }
 
-WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar_button_provider()
-      ->GetWebUIToolbarViewForTesting();
-}
 
 void PinButton(Browser* browser, views::WebView* web_view, const char* pref) {
   browser->profile()->GetPrefs()->SetBoolean(pref, true);
@@ -431,45 +427,6 @@ WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser) {
   return webui_toolbar_view;
 }
 
-void SetUpWebUI(const ui::ElementIdentifier& element_id,
-                ui::TrackedElement** element_out,
-                WebUIToolbarWebView** webui_toolbar_view_out,
-                views::WebView** web_view_out,
-                Browser* browser) {
-  // Wait for the WebUIToolbarWebView to be available.
-  *webui_toolbar_view_out = nullptr;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    if (!browser_view || !browser_view->toolbar()) {
-      return false;
-    }
-    ToolbarButtonProvider* provider = browser_view->toolbar();
-    *webui_toolbar_view_out = provider->GetWebUIToolbarViewForTesting();
-    return *webui_toolbar_view_out != nullptr;
-  }));
-  ASSERT_TRUE(*webui_toolbar_view_out);
-
-  if (element_id == kWebUIToolbarElementIdentifier) {
-    // We already have the view, and the Basic test doesn't strictly need the
-    // TrackedElement. ElementTracker might be flaky or slow here.
-    *element_out = views::ElementTrackerViews::GetInstance()->GetElementForView(
-        *webui_toolbar_view_out);
-  } else {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      *element_out = BrowserElements::From(browser)->GetElement(element_id);
-      return *element_out != nullptr;
-    }));
-    ASSERT_TRUE(*element_out);
-  }
-
-  ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
-  *web_view_out = views::AsViewClass<views::WebView>(
-      (*webui_toolbar_view_out)->children()[0].get());
-  ASSERT_TRUE(*web_view_out);
-
-  // Wait for the WebView to finish composition.
-  content::WaitForCopyableViewInWebContents((*web_view_out)->GetWebContents());
-}
 
 }  // namespace
 
