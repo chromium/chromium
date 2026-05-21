@@ -40,6 +40,7 @@
           "project": "chromium"
         }
       ],
+      "retry_without_patch": false,
       "targets_spec_directory": "infra/config/generated/builders/try/ios-blink-rel-fyi/targets"
     }
   },

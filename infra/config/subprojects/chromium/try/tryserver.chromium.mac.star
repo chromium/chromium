@@ -662,6 +662,9 @@ ios_builder(
     mirrors = [
         "ci/ios-blink-rel-fyi",
     ],
+    builder_config_settings = builder_config.try_settings(
+        retry_without_patch = False,
+    ),
     gn_args = "ci/ios-blink-rel-fyi",
     builderless = True,
     cpu = cpu.ARM64,
