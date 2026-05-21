@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -92,7 +93,7 @@ struct LineClampData {
   }
 
   bool operator==(const LineClampData& other) const {
-    if (state != other.state) {
+    if (state != other.state || block_ellipsis != other.block_ellipsis) {
       return false;
     }
     switch (state) {
@@ -136,6 +137,11 @@ struct LineClampData {
   UntracedMember<const LayoutObject> clamp_after_layout_object;
 
   State state = kDisabled;
+
+  // When the `CSSLineClamp` runtime flag is disabled, whether to ellipsize the
+  // line before clamp. When that flag is enabled, use the `block-ellipsis`
+  // property value on the inline formatting context root.
+  EBlockEllipsis block_ellipsis = EBlockEllipsis::kEllipsis;
 };
 
 // This class is a linked list containing the data to compute the block size the

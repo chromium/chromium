@@ -16,6 +16,7 @@ struct SameSizeAsLineClampData {
   LayoutUnit clamp_bfc_offset;
   UntracedMember<const LayoutObject> clamp_after_layout_object;
   int state;
+  EBlockEllipsis block_ellipsis_state;
 };
 
 ASSERT_SIZE(LineClampData, SameSizeAsLineClampData);
@@ -40,6 +41,7 @@ CORE_EXPORT LineClampData::LineClampData(const LineClampData& o)
       clamp_bfc_offset = o.clamp_bfc_offset;
       break;
   }
+  block_ellipsis = o.block_ellipsis;
 }
 
 CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
@@ -63,6 +65,7 @@ CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
       clamp_bfc_offset = o.clamp_bfc_offset;
       break;
   }
+  block_ellipsis = o.block_ellipsis;
   return *this;
 }
 

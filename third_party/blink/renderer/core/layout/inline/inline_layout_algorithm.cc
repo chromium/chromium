@@ -337,8 +337,11 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info) const {
   }
   if (!(line_info && line_info->IsBlockInInline()) &&
       line_clamp_data.IsAtClampPoint()) {
-    if (!RuntimeEnabledFeatures::CSSLineClampEnabled() ||
-        Style().BlockEllipsis() == EBlockEllipsis::kEllipsis) [[likely]] {
+    EBlockEllipsis block_ellipsis =
+        RuntimeEnabledFeatures::CSSLineClampEnabled()
+            ? Style().BlockEllipsis()
+            : line_clamp_data.block_ellipsis;
+    if (block_ellipsis == EBlockEllipsis::kEllipsis) [[likely]] {
       return LineClampState::kLineClampEllipsis;
     }
   }

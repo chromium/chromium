@@ -4051,6 +4051,10 @@ NOINLINE void BlockLayoutAlgorithm::SetupLineClamp() {
 
       line_clamp_data_.UpdateFromStyle(Style().LineClamp(), clamp_bfc_offset,
                                        BorderPadding().block_end);
+
+      if (!RuntimeEnabledFeatures::CSSLineClampEnabled()) {
+        line_clamp_data_.data.block_ellipsis = EBlockEllipsis::kEllipsis;
+      }
     }
   } else {
     if (Style().WebkitLineClamp() != 0) {
