@@ -1959,6 +1959,8 @@ inline constexpr char kIwaKeyDistributionComponentExpCohortName[] =
     "Experimental cohort for the Iwa Key Distribution component";
 inline constexpr char kIwaKeyDistributionComponentExpCohortDescription[] =
     "Specifies the experimental cohort for the Iwa Key Distribution component.";
+inline constexpr char kIwaKeyDistributionComponentExpCohortStagingName[] =
+    "Staging";
 
 inline constexpr char kEnableUnframedIwaName[] =
     "Unframed display mode for Isolated Web Apps";

@@ -480,6 +480,13 @@ const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
      variations::switches::kEnableFieldTrialTestingConfig},
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::Choice kIwaKeyDistributionComponentExpCohortChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDisabled, "", ""},
+    {flag_descriptions::kIwaKeyDistributionComponentExpCohortStagingName,
+     component_updater::kIwaKeyDistributionComponentExpCohort, "staging"}};
+#endif
+
 const FeatureEntry::Choice kOverlayStrategiesChoices[] = {
     {flag_descriptions::kOverlayStrategiesDefault, "", ""},
     {flag_descriptions::kOverlayStrategiesNone,
@@ -5419,8 +5426,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIwaKeyDistributionComponentExpCohortName,
      flag_descriptions::kIwaKeyDistributionComponentExpCohortDescription,
      kOsDesktop,
-     STRING_VALUE_TYPE(component_updater::kIwaKeyDistributionComponentExpCohort,
-                       "")},
+     MULTI_VALUE_TYPE(kIwaKeyDistributionComponentExpCohortChoices)},
     {"enable-unframed-iwa", flag_descriptions::kEnableUnframedIwaName,
      flag_descriptions::kEnableUnframedIwaDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kUnframedIwa)},
