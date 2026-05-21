@@ -9,6 +9,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
@@ -214,6 +215,18 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
 
         Tab currentTab = mTabSupplier.get();
         if (currentTab != null) {
+            ActorUiTabController actorUiTabController = ActorUiTabController.from(currentTab);
+            if (actorUiTabController != null && actorUiTabController.isActorActive()) {
+                Runnable navigateRunnable =
+                        () -> {
+                            currentTab.loadUrl(
+                                    new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
+                        };
+                if (actorUiTabController.showTaskAbortConfirmationDialog(navigateRunnable)) {
+                    return;
+                }
+            }
+
             currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
         } else {
             // Fallback: If there's no active tab (e.g. from tab switcher), open in a new tab

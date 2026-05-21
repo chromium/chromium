@@ -166,6 +166,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialogTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabControllerTest.java",
   ]
   deps = [
     ":java",

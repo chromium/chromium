@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -29,9 +31,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
@@ -57,6 +64,7 @@ import java.util.function.Supplier;
 /** Unit tests for ToolbarTabControllerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.GLIC)
 public class ToolbarTabControllerImplTest {
     private static class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
         final LoadUrlParams mLoadUrlParams;
@@ -88,7 +96,9 @@ public class ToolbarTabControllerImplTest {
     @Mock private TabCreator mTabCreator;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private Supplier<Boolean> mIsOffTheRecordSupplier;
+    @Mock private ActorUiTabController mActorUiTabController;
 
+    private final UserDataHost mUserDataHost = new UserDataHost();
     private final GURL mGURL = new GURL("https://example.com");
     private ToolbarTabControllerImpl mToolbarTabController;
 
@@ -105,6 +115,8 @@ public class ToolbarTabControllerImplTest {
                 .when(mBottomControlsCoordinator)
                 .getHandleBackPressChangedSupplier();
         doReturn(false).when(mIsOffTheRecordSupplier).get();
+        doReturn(mUserDataHost).when(mTab).getUserDataHost();
+        mUserDataHost.setUserData(ActorUiTabController.class, mActorUiTabController);
         TrackerFactory.setTrackerForTests(mTracker);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         initToolbarTabController();
@@ -429,6 +441,54 @@ public class ToolbarTabControllerImplTest {
                                         new LoadUrlParams(homePageGurl, PageTransition.HOME_PAGE))),
                         eq(TabLaunchType.FROM_CHROME_UI),
                         eq(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void openHomepage_glicActive_interceptsAndConfirms() {
+        // Set up active Glic task.
+        doReturn(true).when(mActorUiTabController).isActorActive();
+        // When showTaskAbortConfirmationDialog is called, we simulate it confirming by running the
+        // provided Runnable.
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run(); // Simulates confirmation
+                            return true;
+                        })
+                .when(mActorUiTabController)
+                .showTaskAbortConfirmationDialog(any(Runnable.class));
+
+        mToolbarTabController.openHomepage();
+
+        // Verify home page was loaded.
+        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl(/* isIncognito= */ false);
+        if (homePageGurl.isEmpty()) {
+            homePageGurl = UrlConstantResolverFactory.getOriginalResolver().getNtpGurl();
+        }
+        verify(mTab)
+                .loadUrl(
+                        argThat(
+                                new LoadUrlParamsMatcher(
+                                        new LoadUrlParams(
+                                                homePageGurl, PageTransition.HOME_PAGE))));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void openHomepage_glicActive_interceptsAndCancels() {
+        // Set up active Glic task.
+        doReturn(true).when(mActorUiTabController).isActorActive();
+        // When showTaskAbortConfirmationDialog is called, we simulate it cancelling (doing
+        // nothing).
+        doReturn(true)
+                .when(mActorUiTabController)
+                .showTaskAbortConfirmationDialog(any(Runnable.class));
+
+        mToolbarTabController.openHomepage();
+
+        // Verify home page was NOT loaded.
+        verify(mTab, never()).loadUrl(any());
     }
 
     private void initToolbarTabController() {

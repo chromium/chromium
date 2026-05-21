@@ -20,6 +20,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.StoppedReason;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -217,15 +220,51 @@ public class ActorUiTabController implements UserData {
     @SuppressWarnings("unused")
     boolean maybeDeferNavigation(
             @JniType("GURL") GURL url, Callback<Boolean> navigationConfirmedCallback) {
+        return showConfirmationDialog(navigationConfirmedCallback);
+    }
+
+    /** Returns true if an Actor task is currently active on this tab. */
+    public boolean isActorActive() {
+        return mCurrentState != null && mCurrentState.actorOverlay.isActive;
+    }
+
+    /**
+     * Shows the confirmation dialog if an Actor task is active. If the user confirms, stops the
+     * Actor task and runs the provided Runnable.
+     *
+     * @param onConfirmedRunnable Runnable to execute when confirmed.
+     * @return True if the dialog was shown.
+     */
+    public boolean showTaskAbortConfirmationDialog(Runnable onConfirmedRunnable) {
+        if (!isActorActive()) return false;
+        return showConfirmationDialog(
+                (confirmed) -> {
+                    if (confirmed) {
+                        stopActorTask();
+                        onConfirmedRunnable.run();
+                    }
+                });
+    }
+
+    private boolean showConfirmationDialog(Callback<Boolean> callback) {
         if (mTab.getWindowAndroid() == null) return false;
         ModalDialogManager modalDialogManager = mTab.getWindowAndroid().getModalDialogManager();
         if (modalDialogManager == null) return false;
         Context context = mTab.getContext();
         if (context == null) return false;
 
-        ActorNavigationConfirmationDialog.show(
-                context, modalDialogManager, navigationConfirmedCallback);
+        ActorNavigationConfirmationDialog.show(context, modalDialogManager, callback);
         return true;
+    }
+
+    void stopActorTask() {
+        ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(mTab.getProfile());
+        if (service != null) {
+            Integer taskId = service.getActiveTaskIdOnTab(mTab.getId());
+            if (taskId != null) {
+                service.stopTask(taskId, StoppedReason.USER_NAVIGATED_AWAY);
+            }
+        }
     }
 
     @NativeMethods
