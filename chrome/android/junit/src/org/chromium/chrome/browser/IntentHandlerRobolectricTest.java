@@ -50,6 +50,7 @@ import org.robolectric.shadows.ShadowPowerManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Token;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -63,6 +64,8 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -70,8 +73,10 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Robolectric tests for IntentHandler. These tests do not require use of the native library (other
@@ -822,5 +827,91 @@ public class IntentHandlerRobolectricTest {
 
         LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
         Assert.assertNull(params.getInternalScrollToTextFragment());
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldIgnoreIntent_TabGroupMetadata() {
+        // Trusted source should be allowed.
+        Intent trustedIntent =
+                createTabGroupIntent(/* isIncognito= */ false, /* isTrusted= */ true);
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(trustedIntent, null));
+
+        // Untrusted source should be ignored.
+        Intent untrustedIntent =
+                createTabGroupIntent(/* isIncognito= */ false, /* isTrusted= */ false);
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
+
+        // Untrusted incognito should also be ignored.
+        Intent untrustedIncognito =
+                createTabGroupIntent(/* isIncognito= */ true, /* isTrusted= */ false);
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIncognito, null));
+
+        // Untrusted Custom Tab should also be ignored.
+        Assert.assertTrue(
+                IntentHandler.shouldIgnoreIntent(untrustedIntent, /* isCustomTab= */ true));
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldIgnoreIntent_MultiTabMetadata() {
+        // Trusted source should be allowed.
+        Intent trustedIntent =
+                createMultiTabIntent(/* isIncognito= */ false, /* isTrusted= */ true);
+        Assert.assertFalse(IntentHandler.shouldIgnoreIntent(trustedIntent, null));
+
+        // Untrusted source should be ignored.
+        Intent untrustedIntent =
+                createMultiTabIntent(/* isIncognito= */ false, /* isTrusted= */ false);
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
+
+        // Untrusted incognito should also be ignored.
+        Intent untrustedIncognito =
+                createMultiTabIntent(/* isIncognito= */ true, /* isTrusted= */ false);
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIncognito, null));
+
+        // Untrusted Custom Tab should also be ignored.
+        Assert.assertTrue(
+                IntentHandler.shouldIgnoreIntent(untrustedIntent, /* isCustomTab= */ true));
+    }
+
+    private Intent createTabGroupIntent(boolean isIncognito, boolean isTrusted) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        ArrayList<Map.Entry<Integer, String>> tabIdsToUrls = new ArrayList<>();
+        tabIdsToUrls.add(new SimpleImmutableEntry<>(1, "http://google.com"));
+        TabGroupMetadata metadata =
+                new TabGroupMetadata(
+                        /* selectedTabId= */ 1,
+                        /* sourceWindowId= */ 0,
+                        /* tabGroupId= */ new Token(1L, 2L),
+                        tabIdsToUrls,
+                        /* tabGroupColor= */ 0,
+                        /* tabGroupTitle= */ "Title",
+                        /* mhtmlTabTitle= */ null,
+                        /* tabGroupCollapsed= */ false,
+                        /* isGroupShared= */ false,
+                        isIncognito);
+        IntentHandler.setTabGroupMetadata(intent, metadata);
+        if (isTrusted) {
+            intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+            IntentUtils.addTrustedIntentExtras(intent);
+        }
+        return intent;
+    }
+
+    private Intent createMultiTabIntent(boolean isIncognito, boolean isTrusted) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        ArrayList<Integer> tabIds = new ArrayList<>();
+        tabIds.add(1);
+        ArrayList<String> urls = new ArrayList<>();
+        urls.add("http://google.com");
+        MultiTabMetadata metadata =
+                MultiTabMetadata.createForTesting(tabIds, urls, new boolean[] {false}, isIncognito);
+        IntentHandler.setMultiTabMetadata(intent, metadata);
+        if (isTrusted) {
+            intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+            IntentUtils.addTrustedIntentExtras(intent);
+        }
+        return intent;
     }
 }

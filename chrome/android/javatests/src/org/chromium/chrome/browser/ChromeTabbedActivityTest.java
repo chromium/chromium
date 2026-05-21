@@ -668,13 +668,9 @@ public class ChromeTabbedActivityTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.setClass(mActivity, ChromeTabbedActivity.class);
         IntentHandler.setTabGroupMetadata(intent, createTabGroupMetadata());
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
 
-        // The newly created ChromeTabbedActivity (created via #startActivity()) should be
-        // destroyed, and the intent should be launched in the existing ChromeTabbedActivity.
-        ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class,
-                Stage.DESTROYED,
-                () -> mActivity.getApplicationContext().startActivity(intent));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(intent));
 
         Assert.assertEquals(
                 "No new window should be opened.",
@@ -700,8 +696,7 @@ public class ChromeTabbedActivityTest {
                             tabModel.getTabAt(3).getUrl().getSpec(),
                             Matchers.equalTo(TAB_IDS_TO_URLS.get(0).getValue()));
 
-                    // Verify the tabs are grouped with the correct rootId and tabGroupId.
-                    int expectedRootId = tabModel.getTabAt(1).getId();
+                    // Verify the tabs are grouped with the correct tabGroupId.
                     for (int i = 1; i < tabModel.getCount() - 1; i++) {
                         Tab curTab = tabModel.getTabAt(i);
                         Assert.assertEquals(
@@ -730,6 +725,7 @@ public class ChromeTabbedActivityTest {
         Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
         reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
 
         IntentHandler.setMultiTabMetadata(
                 reparentingIntent,
@@ -888,6 +884,7 @@ public class ChromeTabbedActivityTest {
         Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
         reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
 
         IntentHandler.setMultiTabMetadata(
                 reparentingIntent,
@@ -906,10 +903,10 @@ public class ChromeTabbedActivityTest {
                 () -> {
                     TabModel tabModel = mActivity.getCurrentTabModel();
                     Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
-                    // Tabs are added at the end of the tab model.
-                    // Pinned tab is added to the start.
+                    // A multi-tab intent containing a pinned tab forces all tabs to move to the
+                    // front.
                     Tab firstTab = tabModel.getTabAt(initialTabCount.get() - 1);
-                    Tab secondTab = tabModel.getTabAt(initialTabCount.get() + 1);
+                    Tab secondTab = tabModel.getTabAt(initialTabCount.get());
                     Criteria.checkThat(firstTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_1));
                     Criteria.checkThat(secondTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_2));
                     Criteria.checkThat(firstTab.getIsPinned(), Matchers.is(true));
@@ -928,6 +925,7 @@ public class ChromeTabbedActivityTest {
         Intent dragIntent = new Intent(Intent.ACTION_VIEW);
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
         dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
 
         IntentHandler.setMultiTabMetadata(
                 dragIntent,
@@ -967,6 +965,7 @@ public class ChromeTabbedActivityTest {
         Intent dragIntent = new Intent(Intent.ACTION_VIEW);
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
         dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
 
         IntentHandler.setMultiTabMetadata(
                 dragIntent,
@@ -985,10 +984,10 @@ public class ChromeTabbedActivityTest {
                 () -> {
                     TabModel tabModel = mActivity.getCurrentTabModel();
                     Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
-                    // Tabs are added at the end of the tab model.
-                    // Pinned tab is added to the start.
+                    // A multi-tab intent containing a pinned tab forces all tabs to move to the
+                    // front.
                     Tab firstTab = tabModel.getTabAt(initialTabCount.get() - 1);
-                    Tab secondTab = tabModel.getTabAt(initialTabCount.get() + 1);
+                    Tab secondTab = tabModel.getTabAt(initialTabCount.get());
                     Criteria.checkThat(firstTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_1));
                     Criteria.checkThat(secondTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_2));
                     Criteria.checkThat(firstTab.getIsPinned(), Matchers.is(true));
