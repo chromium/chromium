@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -313,6 +314,7 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     @SuppressLint("SetTextI18n")
     @Features.EnableFeatures(ChromeFeatureList.PASSWORD_FORM_GROUPED_AFFILIATIONS)
+    @DisabledTest(message = "crbug.com/515482528")
     public void testShowsAfterPreviousSheetDismissal() throws Exception {
         BottomSheetContent otherBottomSheetContent =
                 runOnUiThreadBlocking(
