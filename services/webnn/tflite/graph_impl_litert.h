@@ -70,6 +70,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
   CreateAndBuildOnBackgroundThread(
       ContextProperties context_properties,
       mojom::Device context_device,
+      bool is_xnnpack_enabled,
       mojom::GraphInfoPtr graph_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,

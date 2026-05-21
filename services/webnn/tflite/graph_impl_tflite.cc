@@ -124,6 +124,7 @@ class GraphImplTflite::ComputeResources {
  public:
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   Create(mojom::Device context_device,
+         bool is_xnnpack_enabled,
          GraphBuilderTflite::Result build_graph_result) {
     auto self = std::make_unique<ComputeResources>(
         std::move(build_graph_result.input_name_to_descriptor),
@@ -168,13 +169,13 @@ class GraphImplTflite::ComputeResources {
     builder.SetNumThreads(num_of_threads);
     self->SetUpDelegates(builder, context_device,
                          build_graph_result.graph_requires_fp32_precision,
-                         num_of_threads);
+                         num_of_threads, is_xnnpack_enabled);
 
     TfLiteStatus status = builder(&self->interpreter_);
 
     // If failed to build interpreter with delegates, re-build the interpreter
     // with just the XNNPack delegate, then try again with no delegate.
-    if (status == kTfLiteDelegateError) {
+    if (status == kTfLiteDelegateError && is_xnnpack_enabled) {
       self->delegates_.clear();
       ::tflite::InterpreterBuilder builder_with_xnnpack(
           self->model_->GetModel(), op_resolver,
@@ -386,7 +387,8 @@ class GraphImplTflite::ComputeResources {
   void SetUpDelegates(::tflite::InterpreterBuilder& builder,
                       mojom::Device context_device,
                       bool graph_requires_fp32_precision,
-                      int num_of_threads) {
+                      int num_of_threads,
+                      bool is_xnnpack_enabled) {
     if (context_device == mojom::Device::kGpu) {
 #if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
       // TODO(crbug.com/394119734): Simplify this check once these functions are
@@ -412,7 +414,10 @@ class GraphImplTflite::ComputeResources {
 #endif
     }
 
-    SetUpXNNPackDelegate(builder, num_of_threads);
+    // Skip XNNPACK delegate creation when `xnn_initialize()` failed.
+    if (is_xnnpack_enabled) {
+      SetUpXNNPackDelegate(builder, num_of_threads);
+    }
   }
 
   void SetUpXNNPackDelegate(::tflite::InterpreterBuilder& builder,
@@ -473,7 +478,8 @@ void GraphImplTflite::CreateAndBuild(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplTflite::CreateAndBuildOnBackgroundThread,
                      context.properties(), context.options().device,
-                     std::move(graph_info), std::move(constant_operands),
+                     context.IsXNNPackInitialized(), std::move(graph_info),
+                     std::move(constant_operands),
                      std::move(operand_to_dependent_operations),
                      std::move(operand_to_producing_operation),
                      std::move(weights_file)),
@@ -488,6 +494,7 @@ base::expected<std::unique_ptr<GraphImplTflite::ComputeResources>,
 GraphImplTflite::CreateAndBuildOnBackgroundThread(
     ContextProperties context_properties,
     mojom::Device context_device,
+    bool is_xnnpack_enabled,
     mojom::GraphInfoPtr graph_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
@@ -508,7 +515,8 @@ GraphImplTflite::CreateAndBuildOnBackgroundThread(
       });
 
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(context_device, std::move(result)));
+                   ComputeResources::Create(context_device, is_xnnpack_enabled,
+                                            std::move(result)));
   return compute_resources;
 }
 

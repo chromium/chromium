@@ -250,6 +250,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   int tracing_id() const { return tracing_id_; }
 
+  // Returns true if `xnn_initialize()` succeeded during construction. Other
+  // XNNPACK APIs (including delegate creation) must not be used when this
+  // returns false.
+  bool IsXNNPackInitialized() const { return is_xnnpack_initialized_; }
+
   virtual std::string_view GetBackendName() const = 0;
 
   virtual std::vector<mojom::WebNNExecutionProviderDetailsPtr>
@@ -401,11 +406,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // WebNN contexts.
   const int tracing_id_;
 
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Whether `xnn_initialize()` succeeded. Other XNNPACK APIs (including
   // `xnn_deinitialize()`) must not be called when initialization failed.
   bool is_xnnpack_initialized_ = false;
-#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 };
 
 }  // namespace webnn
