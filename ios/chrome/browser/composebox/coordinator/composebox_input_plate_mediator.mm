@@ -315,6 +315,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   ComposeboxMode _previousMode;
 }
 
+- (void)setMetricsRecorder:(ComposeboxMetricsRecorder*)metricsRecorder {
+  _metricsRecorder = metricsRecorder;
+  _stateManager.metricsRecorder = metricsRecorder;
+}
+
 - (instancetype)
     initWithContextualSearchSession:
         (std::unique_ptr<contextual_search::ContextualSearchSessionHandle>)
@@ -1906,18 +1911,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self removeItem:item];
 }
 
-/// Updates the consumer items and maybe trigger AIM.
+/// Updates the consumer items.
 - (void)updateConsumerItems {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.consumer setItems:_items.containedItems];
-
-  // AI mode is implicitly enabled by items attachment.
-  BOOL shouldSwitchToAIM = !_items.empty && [_modeHolder isRegularSearch];
-  if (shouldSwitchToAIM) {
-    [self.metricsRecorder
-        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
-    _modeHolder.mode = ComposeboxMode::kAIM;
-  }
 }
 
 - (void)updateButtonsVisibility {
@@ -2056,8 +2053,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     if (_contextualSearchSession) {
       _contextualSearchSession->DeleteFile(item.serverToken);
     }
-    [_items removeItem:item];
   }
+  [_items removeItems:invalidatedItems];
 
   if (invalidatedItems.count > 0) {
     [self notifyContextChanged];

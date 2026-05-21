@@ -67,6 +67,10 @@ class UnguessableToken;
 // Removes an item from the collection.
 - (void)removeItem:(ComposeboxInputItem*)item;
 
+// Removes the given `items` from the collection in a single batch, triggering
+// delegate update only once.
+- (void)removeItems:(NSArray<ComposeboxInputItem*>*)items;
+
 // Removes all items from the collection.
 - (void)clearItems;
 

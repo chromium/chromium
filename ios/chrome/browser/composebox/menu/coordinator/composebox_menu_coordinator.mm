@@ -145,6 +145,7 @@ CGFloat const kSheetTopPadding = 40.0f;
                 sessionHandle:_sessionHandle.get()
                    entrypoint:_entrypoint
                   isIncognito:profile->IsOffTheRecord()];
+    _stateManager.metricsRecorder = _metricsRecorder;
 
     std::set<web::WebStateID> emptySet;
     _inputState = [_stateManager computeUIInputStateWithFavicon:nil

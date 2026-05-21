@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/public/features.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_strings.h"
@@ -275,6 +276,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   _modeHolder = nil;
   _searchEngineObserver.reset();
   _aimEligibilitySubscription = {};
+  _metricsRecorder = nil;
 }
 
 - (ComposeboxModelOption)activeModel {
@@ -313,6 +315,8 @@ ComposeboxStrings* ServerStringsFromInputState(
   BOOL switchToAIM = explicitUserAction && _modeHolder.isRegularSearch;
   if (switchToAIM) {
     _modeHolder.mode = ComposeboxMode::kAIM;
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
     return;
   }
 }
@@ -337,6 +341,15 @@ ComposeboxStrings* ServerStringsFromInputState(
   if (activeMode == ComposeboxMode::kImageGeneration) {
     [self setActiveToolInInputState:ToolModeForComposeboxMode(
                                         activeMode, self.items.hasImage)];
+  }
+
+  // AI mode is implicitly enabled by items attachment.
+  BOOL shouldSwitchToAIM =
+      self.items && !self.items.empty && _modeHolder.isRegularSearch;
+  if (shouldSwitchToAIM) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
   }
 }
 

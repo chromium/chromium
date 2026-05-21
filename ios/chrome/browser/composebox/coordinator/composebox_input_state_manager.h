@@ -47,6 +47,7 @@ class WebStateID;
 @class UIImage;
 @class ComposeboxModeHolder;
 @class ComposeboxInputItemCollection;
+@class ComposeboxMetricsRecorder;
 
 // Delegate protocol for ComposeboxInputStateManager.
 @protocol ComposeboxInputStateManagerDelegate <NSObject>
@@ -80,6 +81,9 @@ class WebStateID;
 // The collection of items attached to the composebox. Only used to query the
 // state of the items, `ComposeboxInputStateManager` should not modify items.
 @property(nonatomic, weak) ComposeboxInputItemCollection* items;
+
+// The metrics recorder.
+@property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
 // Initializes the manager.
 - (instancetype)

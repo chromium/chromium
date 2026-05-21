@@ -105,6 +105,15 @@
   [_delegate composeboxInputItemCollectionDidUpdateItems:self];
 }
 
+- (void)removeItems:(NSArray<ComposeboxInputItem*>*)items {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (items.count == 0) {
+    return;
+  }
+  [_containedItems removeObjectsInArray:items];
+  [_delegate composeboxInputItemCollectionDidUpdateItems:self];
+}
+
 - (void)clearItems {
   [_containedItems removeAllObjects];
   [_delegate composeboxInputItemCollectionDidUpdateItems:self];
