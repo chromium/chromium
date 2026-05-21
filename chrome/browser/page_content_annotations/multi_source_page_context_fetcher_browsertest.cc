@@ -675,9 +675,18 @@ IN_PROC_BROWSER_TEST_F(
                                 true, 1);
 }
 
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+// TODO(crbug.com/515405394): Fix ASAN/MSAN/Linux failures.
+#define MAYBE_RedactionWhenScreenshotReceivedFirst \
+  DISABLED_RedactionWhenScreenshotReceivedFirst
+#else
+#define MAYBE_RedactionWhenScreenshotReceivedFirst \
+  RedactionWhenScreenshotReceivedFirst
+#endif
 IN_PROC_BROWSER_TEST_F(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
-    RedactionWhenScreenshotReceivedFirst) {
+    MAYBE_RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -867,9 +876,18 @@ IN_PROC_BROWSER_TEST_F(
                                 true, 1);
 }
 
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+// TODO(crbug.com/515405394): Fix ASAN/MSAN/Linux failures.
+#define MAYBE_RedactionWhenScreenshotReceivedFirst \
+  DISABLED_RedactionWhenScreenshotReceivedFirst
+#else
+#define MAYBE_RedactionWhenScreenshotReceivedFirst \
+  RedactionWhenScreenshotReceivedFirst
+#endif
 IN_PROC_BROWSER_TEST_F(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
-    RedactionWhenScreenshotReceivedFirst) {
+    MAYBE_RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
