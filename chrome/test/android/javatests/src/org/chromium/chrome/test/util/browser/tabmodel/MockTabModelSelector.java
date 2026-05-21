@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelInternal;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelHolderFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelInternal;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -42,10 +41,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
         mProfile = profile;
         mIncognitoProfile = incognitoProfile;
         initialize(
-                TabModelHolderFactory.createTabModelHolderForTesting(
-                        new MockTabModel(profile, delegate)),
-                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
-                        new MockTabModel(incognitoProfile, delegate)));
+                new MockTabModel(profile, delegate), new MockTabModel(incognitoProfile, delegate));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
@@ -68,9 +64,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
             TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         destroy();
         resetTabModelListForTesting();
-        initialize(
-                TabModelHolderFactory.createTabModelHolderForTesting(normalModel),
-                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(incognitoModel));
+        initialize(normalModel, incognitoModel);
     }
 
     private static int nextIdOffset() {

@@ -180,9 +180,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         tabUngrouperFactory,
                         batchFactory);
 
-        mSelector.initialize(
-                new TabModelHolder(mNormalTabModel),
-                new IncognitoTabModelHolder(mIncognitoTabModel));
+        mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
     }
 
     /** Test TabModel that exposes the needed capabilities for testing. */

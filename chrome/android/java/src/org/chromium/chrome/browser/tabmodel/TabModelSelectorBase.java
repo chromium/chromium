@@ -90,14 +90,14 @@ public abstract class TabModelSelectorBase
 
     // Do not use @Initializer. Not called immediately after constructor.
     protected final void initialize(
-            TabModelHolder normalModelHolder, IncognitoTabModelHolder incognitoModelHolder) {
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         // Only normal and incognito supported for now.
         assert mTabModelInternals.isEmpty();
 
-        mTabModelInternals.add(normalModelHolder.tabModel);
-        mTabModelInternals.add(incognitoModelHolder.tabModel);
+        mTabModelInternals.add(normalModel);
+        mTabModelInternals.add(incognitoModel);
         mTabModels.addAll(mTabModelInternals);
-        mIncognitoTabModel = incognitoModelHolder.tabModel;
+        mIncognitoTabModel = incognitoModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
 
@@ -139,8 +139,8 @@ public abstract class TabModelSelectorBase
         }
         mIncognitoTabModel.addIncognitoObserver(this);
 
-        incognitoModelHolder.tabModel.setActive(mStartIncognito);
-        normalModelHolder.tabModel.setActive(!mStartIncognito);
+        incognitoModel.setActive(mStartIncognito);
+        normalModel.setActive(!mStartIncognito);
         mTabModelSupplier.set(mTabModelInternals.get(activeModelIndex));
 
         notifyChanged();

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,16 +17,16 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
 /**
- * Helper to create {@link TabModelHolder} and {@link IncognitoTabModelHolder}. This was a shim
+ * Helper to create {@link TabModelInternal} and {@link IncognitoTabModelInternal}. This was a shim
  * class to allow seamlessly swapping the implementation between legacy implementation and {@link
  * TabCollectionTabModelImpl}. It remains convenient for testing, but could be inlined.
  */
 @NullMarked
-public class TabModelHolderFactory {
-    private TabModelHolderFactory() {}
+public class TabModelFactory {
+    private TabModelFactory() {}
 
-    /** Creates a regular mode {@link TabModelHolder}, {@see TabModelImpl}'s constructor. */
-    public static TabModelHolder createTabModelHolder(
+    /** Creates a regular mode {@link TabModelInternal}, {@see TabModelImpl}'s constructor. */
+    public static TabModelInternal createTabModel(
             Profile profile,
             @ActivityType int activityType,
             @Nullable @CustomTabProfileType Integer customTabProfileType,
@@ -44,11 +44,10 @@ public class TabModelHolderFactory {
             @SupportedProfileType int supportedProfileType) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
                 && supportedProfileType == SupportedProfileType.OFF_THE_RECORD) {
-            StubTabModel model = new StubTabModel(/* isIncognito= */ false, profile);
-            return new TabModelHolder(model);
+            return new StubTabModel(/* isIncognito= */ false, profile);
         }
 
-        return createCollectionTabModelHolder(
+        return createCollectionTabModel(
                 profile,
                 activityType,
                 customTabProfileType,
@@ -66,10 +65,10 @@ public class TabModelHolderFactory {
     }
 
     /**
-     * Creates an incognito mode {@link IncognitoTabModelHolder}, {@see
+     * Creates an incognito mode {@link IncognitoTabModelInternal}, {@see
      * IncognitoTabModelImplCreator}'s constructor.
      */
-    public static IncognitoTabModelHolder createIncognitoTabModelHolder(
+    public static IncognitoTabModelInternal createIncognitoTabModel(
             ProfileProvider profileProvider,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
@@ -85,11 +84,10 @@ public class TabModelHolderFactory {
             @SupportedProfileType int supportedProfileType) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
                 && supportedProfileType == SupportedProfileType.REGULAR) {
-            StubTabModel model = new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
-            return new IncognitoTabModelHolder(model);
+            return new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
         }
 
-        return createCollectionIncognitoTabModelHolder(
+        return createCollectionIncognitoTabModel(
                 profileProvider,
                 regularTabCreator,
                 incognitoTabCreator,
@@ -104,13 +102,12 @@ public class TabModelHolderFactory {
                 tabUngrouperFactory);
     }
 
-    /** Creates an empty {@link IncognitoTabModelHolder}. */
-    public static IncognitoTabModelHolder createEmptyIncognitoTabModelHolder() {
-        EmptyTabModel model = EmptyTabModel.getInstance(/* isIncognito= */ true);
-        return new IncognitoTabModelHolder(model);
+    /** Creates an empty {@link IncognitoTabModelInternal}. */
+    public static IncognitoTabModelInternal createEmptyIncognitoTabModel() {
+        return EmptyTabModel.getInstance(/* isIncognito= */ true);
     }
 
-    private static TabModelHolder createCollectionTabModelHolder(
+    private static TabModelInternal createCollectionTabModel(
             Profile profile,
             @ActivityType int activityType,
             @Nullable @CustomTabProfileType Integer customTabProfileType,
@@ -125,29 +122,26 @@ public class TabModelHolderFactory {
             TabRemover tabRemover,
             TabUngrouperFactory tabUngrouperFactory,
             boolean supportUndo) {
-        TabCollectionTabModelImpl regularTabModel =
-                new TabCollectionTabModelImpl(
-                        profile,
-                        activityType,
-                        customTabProfileType,
-                        tabModelType,
-                        regularTabCreator,
-                        incognitoTabCreator,
-                        orderController,
-                        tabContentManager,
-                        nextTabPolicySupplier,
-                        modelDelegate,
-                        asyncTabParamsManager,
-                        tabRemover,
-                        /* isIncognitoBranded= */ false,
-                        tabUngrouperFactory,
-                        () -> createBatch(profile),
-                        supportUndo);
-
-        return new TabModelHolder(regularTabModel);
+        return new TabCollectionTabModelImpl(
+                profile,
+                activityType,
+                customTabProfileType,
+                tabModelType,
+                regularTabCreator,
+                incognitoTabCreator,
+                orderController,
+                tabContentManager,
+                nextTabPolicySupplier,
+                modelDelegate,
+                asyncTabParamsManager,
+                tabRemover,
+                /* isIncognitoBranded= */ false,
+                tabUngrouperFactory,
+                () -> createBatch(profile),
+                supportUndo);
     }
 
-    private static IncognitoTabModelHolder createCollectionIncognitoTabModelHolder(
+    private static IncognitoTabModelInternal createCollectionIncognitoTabModel(
             ProfileProvider profileProvider,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
@@ -174,26 +168,6 @@ public class TabModelHolderFactory {
                         modelDelegate,
                         tabRemover,
                         tabUngrouperFactory);
-        IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
-
-        return new IncognitoTabModelHolder(incognitoTabModel);
-    }
-
-    /**
-     * Creates a {@link TabModelHolder} for testing. The model is mostly a no-op. This is primarily
-     * intended for unit tests that use a {@link MockTabModel} and don't care about tab groups.
-     */
-    public static TabModelHolder createTabModelHolderForTesting(TabModelInternal tabModelInternal) {
-        return new TabModelHolder(tabModelInternal);
-    }
-
-    /**
-     * Creates a {@link IncognitoTabModelHolder} for testing. The model mostly no-ops. This is
-     * primarily intended for unit tests that use a {@link MockTabModel} and don't care about tab
-     * groups.
-     */
-    public static IncognitoTabModelHolder createIncognitoTabModelHolderForTesting(
-            IncognitoTabModelInternal incognitoTabModelInternal) {
-        return new IncognitoTabModelHolder(incognitoTabModelInternal);
+        return new IncognitoTabModelImpl(incognitoCreator);
     }
 }

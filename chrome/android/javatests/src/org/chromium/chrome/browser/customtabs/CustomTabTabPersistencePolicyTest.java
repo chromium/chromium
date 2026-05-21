@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.TabModelHolderFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
@@ -449,9 +448,7 @@ public class CustomTabTabPersistencePolicyTest {
                 AsyncTabParamsManagerSingleton.getInstance(),
                 new CipherFactory());
         TabModelSelectorImpl selector = (TabModelSelectorImpl) orchestrator.getTabModelSelector();
-        selector.initializeForTesting(
-                TabModelHolderFactory.createTabModelHolderForTesting(normalTabModel),
-                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(incognitoTabModel));
+        selector.initializeForTesting(normalTabModel, incognitoTabModel);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.DESTROYED);
         ApplicationStatus.unregisterActivityStateListener(stateListener);
         return selector;

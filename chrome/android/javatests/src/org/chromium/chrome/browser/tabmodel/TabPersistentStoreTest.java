@@ -194,10 +194,7 @@ public class TabPersistentStoreTest {
             TabModelInternal regularTabModel = new MockTabModel(profile, null);
             Profile incognitoProfile = profileProviderSupplier.get().getOffTheRecordProfile(true);
             IncognitoTabModelInternal incognitoTabModel = new MockTabModel(incognitoProfile, null);
-            initialize(
-                    TabModelHolderFactory.createTabModelHolderForTesting(regularTabModel),
-                    TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
-                            incognitoTabModel));
+            initialize(regularTabModel, incognitoTabModel);
         }
 
         @Override

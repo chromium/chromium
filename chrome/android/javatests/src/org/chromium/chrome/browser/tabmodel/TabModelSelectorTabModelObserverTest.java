@@ -99,10 +99,7 @@ public class TabModelSelectorTabModelObserverTest {
                         registrationCompleteCallback.notifyCalled();
                     }
                 };
-        mSelector.initialize(
-                TabModelHolderFactory.createTabModelHolderForTesting(sTestRule.getNormalTabModel()),
-                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
-                        sTestRule.getIncognitoTabModel()));
+        mSelector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
         registrationCompleteCallback.waitForCallback(0);
         assertAllModelsHaveObserver(mSelector, observer);
     }

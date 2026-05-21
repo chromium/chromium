@@ -1220,7 +1220,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabmodel/SettableLookAheadObservableSupplier.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabCollectionTabModelImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelDelegate.java",
-  "java/src/org/chromium/chrome/browser/tabmodel/TabModelHolderFactory.java",
+  "java/src/org/chromium/chrome/browser/tabmodel/TabModelFactory.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelImplUtil.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",

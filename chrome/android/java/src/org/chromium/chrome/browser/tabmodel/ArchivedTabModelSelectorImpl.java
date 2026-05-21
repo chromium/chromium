@@ -81,8 +81,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                             return regularTabModel;
                         });
 
-        TabModelHolder normalModelHolder =
-                TabModelHolderFactory.createTabModelHolder(
+        TabModelInternal normalModel =
+                TabModelFactory.createTabModel(
                         mProfile,
                         ActivityType.TABBED,
                         /* customTabProfileType= */ null,
@@ -100,23 +100,22 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         ArchivedTabModelSelectorImpl::createTabUngrouper,
                         SupportedProfileType.MIXED);
         if (tabCreator instanceof NeedsTabModel needsTabModel) {
-            needsTabModel.setTabModel(normalModelHolder.tabModel);
+            needsTabModel.setTabModel(normalModel);
         }
 
-        IncognitoTabModelHolder incognitoModelHolder =
-                TabModelHolderFactory.createEmptyIncognitoTabModelHolder();
+        IncognitoTabModelInternal incognitoModel = TabModelFactory.createEmptyIncognitoTabModel();
 
-        onNativeLibraryReadyInternal(tabContentProvider, normalModelHolder, incognitoModelHolder);
+        onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }
 
     @EnsuresNonNull("mTabContentManager")
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
             TabContentManager tabContentProvider,
-            TabModelHolder normalModelHolder,
-            IncognitoTabModelHolder incognitoModelHolder) {
+            TabModelInternal normalModel,
+            IncognitoTabModelInternal incognitoModel) {
         mTabContentManager = tabContentProvider;
-        initialize(normalModelHolder, incognitoModelHolder);
+        initialize(normalModel, incognitoModel);
 
         new TabModelSelectorTabObserver(this) {
             @Override
@@ -143,12 +142,12 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     /**
      * Exposed to allow tests to initialize the selector with different tab models.
      *
-     * @param normalModelHolder The normal tab model.
-     * @param incognitoModelHolder The incognito tab model.
+     * @param normalModel The normal tab model.
+     * @param incognitoModel The incognito tab model.
      */
     public void initializeForTesting(
-            TabModelHolder normalModelHolder, IncognitoTabModelHolder incognitoModelHolder) {
-        initialize(normalModelHolder, incognitoModelHolder);
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
+        initialize(normalModel, incognitoModel);
     }
 
     @Override

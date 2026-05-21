@@ -167,8 +167,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                         mContext, mModalDialogManager, tabModelSupplier);
                     }
                 };
-        TabModelHolder normalModelHolder =
-                TabModelHolderFactory.createTabModelHolder(
+        TabModelInternal normalModel =
+                TabModelFactory.createTabModel(
                         profileProvider.getOriginalProfile(),
                         mActivityType,
                         mCustomTabProfileType,
@@ -185,7 +185,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         tabUngrouperFactory,
                         mSupportedProfileType);
         if (regularTabCreator instanceof NeedsTabModel needsTabModel) {
-            needsTabModel.setTabModel(normalModelHolder.tabModel);
+            needsTabModel.setTabModel(normalModel);
         }
         if (regularTabCreator
                 instanceof NeedsTabModelOrderController needsTabModelOrderController) {
@@ -194,8 +194,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(() -> getModel(/* incognito= */ true));
-        IncognitoTabModelHolder incognitoModelHolder =
-                TabModelHolderFactory.createIncognitoTabModelHolder(
+        IncognitoTabModelInternal incognitoModel =
+                TabModelFactory.createIncognitoTabModel(
                         profileProvider,
                         regularTabCreator,
                         incognitoTabCreator,
@@ -210,23 +210,23 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         tabUngrouperFactory,
                         mSupportedProfileType);
         if (incognitoTabCreator instanceof NeedsTabModel needsTabModel) {
-            needsTabModel.setTabModel(incognitoModelHolder.tabModel);
+            needsTabModel.setTabModel(incognitoModel);
         }
         if (incognitoTabCreator
                 instanceof NeedsTabModelOrderController needsTabModelOrderController) {
             needsTabModelOrderController.setTabModelOrderController(mOrderController);
         }
-        onNativeLibraryReadyInternal(tabContentProvider, normalModelHolder, incognitoModelHolder);
+        onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }
 
     @EnsuresNonNull("mTabContentManager")
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
             TabContentManager tabContentProvider,
-            TabModelHolder normalModelHolder,
-            IncognitoTabModelHolder incognitoModelHolder) {
+            TabModelInternal normalModel,
+            IncognitoTabModelInternal incognitoModel) {
         mTabContentManager = tabContentProvider;
-        initialize(normalModelHolder, incognitoModelHolder);
+        initialize(normalModel, incognitoModel);
 
         addObserver(
                 new TabModelSelectorObserver() {
@@ -317,12 +317,12 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     /**
      * Exposed to allow tests to initialize the selector with different tab models.
      *
-     * @param normalModelHolder The normal tab model.
-     * @param incognitoModelHolder The incognito tab model.
+     * @param normalModel The normal tab model.
+     * @param incognitoModel The incognito tab model.
      */
     public void initializeForTesting(
-            TabModelHolder normalModelHolder, IncognitoTabModelHolder incognitoModelHolder) {
-        initialize(normalModelHolder, incognitoModelHolder);
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
+        initialize(normalModel, incognitoModel);
     }
 
     @Override

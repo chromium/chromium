@@ -173,10 +173,7 @@ public class TabModelSelectorTabObserverTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     selector.initialize(
-                            TabModelHolderFactory.createTabModelHolderForTesting(
-                                    sTestRule.getNormalTabModel()),
-                            TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
-                                    sTestRule.getIncognitoTabModel()));
+                            sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
                 });
 
         Tab normalTab1 = createTestTab(false);
