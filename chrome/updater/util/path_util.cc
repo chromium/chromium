@@ -11,11 +11,9 @@
 namespace updater {
 
 std::optional<base::FilePath> GetLogFilePath(UpdaterScope scope) {
-  const std::optional<base::FilePath> log_dir = GetInstallDirectory(scope);
-  if (log_dir) {
-    return log_dir->Append(FILE_PATH_LITERAL("updater.log"));
-  }
-  return std::nullopt;
+  return GetInstallDirectory(scope).transform([](const base::FilePath& path) {
+    return path.Append(FILE_PATH_LITERAL("updater.log"));
+  });
 }
 
 std::optional<base::FilePath> GetHistoryLogFilePath(UpdaterScope scope) {

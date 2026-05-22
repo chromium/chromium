@@ -75,11 +75,10 @@ constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
 std::optional<base::FilePath> GetVersionedInstallDirectory(
     UpdaterScope scope,
     const base::Version& version) {
-  const std::optional<base::FilePath> path = GetInstallDirectory(scope);
-  if (!path) {
-    return std::nullopt;
-  }
-  return path->AppendUTF8(version.GetString());
+  return GetInstallDirectory(scope).transform(
+      [&version](const base::FilePath& path) {
+        return path.AppendUTF8(version.GetString());
+      });
 }
 
 std::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope) {
@@ -89,20 +88,15 @@ std::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope) {
 std::optional<base::FilePath> GetUpdaterExecutablePath(
     UpdaterScope scope,
     const base::Version& version) {
-  std::optional<base::FilePath> path =
-      GetVersionedInstallDirectory(scope, version);
-  if (!path) {
-    return std::nullopt;
-  }
-  return path->Append(GetExecutableRelativePath());
+  return GetVersionedInstallDirectory(scope, version)
+      .transform([](const base::FilePath& path) {
+        return path.Append(GetExecutableRelativePath());
+      });
 }
 
 std::optional<base::FilePath> GetCrxCacheDirectory(UpdaterScope scope) {
-  const std::optional<base::FilePath> cache_path(GetInstallDirectory(scope));
-  if (!cache_path) {
-    return std::nullopt;
-  }
-  return std::optional<base::FilePath>(cache_path->AppendUTF8("crx_cache"));
+  return GetInstallDirectory(scope).transform(
+      [](const base::FilePath& path) { return path.AppendUTF8("crx_cache"); });
 }
 
 std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
@@ -110,16 +104,18 @@ std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
 }
 
 std::optional<base::FilePath> GetCrashDatabasePath(UpdaterScope scope) {
-  const std::optional<base::FilePath> path(GetVersionedInstallDirectory(scope));
-  return path ? std::optional<base::FilePath>(path->AppendUTF8("Crashpad"))
-              : std::nullopt;
+  return GetVersionedInstallDirectory(scope).transform(
+      [](const base::FilePath& path) { return path.AppendUTF8("Crashpad"); });
 }
 
 std::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope) {
-  const std::optional<base::FilePath> database_path(
-      GetCrashDatabasePath(scope));
-  return database_path && base::CreateDirectory(*database_path) ? database_path
-                                                                : std::nullopt;
+  return GetCrashDatabasePath(scope).and_then(
+      [](const base::FilePath& path) -> std::optional<base::FilePath> {
+        if (base::CreateDirectory(path)) {
+          return path;
+        }
+        return std::nullopt;
+      });
 }
 
 TagParsingResult::TagParsingResult() = default;

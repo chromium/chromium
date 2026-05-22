@@ -1639,11 +1639,8 @@ void LogComCaller(base::cstring_view caller_func) {
 
   VLOG(2) << caller_func
           << ": COM client for this COM server has PID: " << process.Pid()
-          << ", and has command line: " << [&] {
-               const HResultOr<std::wstring> cmd_line =
-                   GetCommandLineForPid(process.Pid());
-               return cmd_line.has_value() ? *cmd_line : std::wstring();
-             }();
+          << ", and has command line: "
+          << GetCommandLineForPid(process.Pid()).value_or(std::wstring());
 }
 
 std::optional<base::win::AccessToken> GetLoggedOnUserToken() {

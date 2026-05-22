@@ -262,10 +262,8 @@ Configurator::GetProtocolHandlerFactory() const {
 
 std::optional<bool> Configurator::IsMachineExternallyManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::optional<bool> is_managed_overridden =
-      external_constants_->IsMachineManaged();
-  return is_managed_overridden.has_value() ? is_managed_overridden
-                                           : is_managed_device_;
+  return external_constants_->IsMachineManaged().or_else(
+      [this] { return is_managed_device_; });
 }
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
