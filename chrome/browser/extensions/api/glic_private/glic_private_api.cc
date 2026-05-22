@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -29,6 +30,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -57,6 +59,9 @@ std::string InvocationSourceToString(
 constexpr char kPromptId[] = "promptId";
 constexpr char kInvocationSource[] = "invocationSource";
 constexpr char kPrompt[] = "prompt";
+constexpr char kGlicApiInvokeSyntheticFieldTrialName[] =
+    "GlicApiInvokeSyntheticFieldTrial";
+constexpr char kUniversalCartGroupName[] = "UniversalCart";
 
 using PromptCallback =
     base::OnceCallback<void(extensions::api::glic_private::ErrorCode,
@@ -340,6 +345,13 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
   std::optional<api::glic_private::Invoke::Params> params =
       api::glic_private::Invoke::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (params->details.invocation_source ==
+      api::glic_private::InvocationSource::kUniversalCart) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kGlicApiInvokeSyntheticFieldTrialName, kUniversalCartGroupName,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
