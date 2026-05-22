@@ -25,6 +25,9 @@ namespace google {
 namespace protobuf {
 namespace util {
 
+#undef PROTOBUF_EXPORT
+#define PROTOBUF_EXPORT
+
 // Utility functions for Timestamp and Duration.
 class PROTOBUF_EXPORT TimeUtil {
   typedef google::protobuf::Timestamp Timestamp;

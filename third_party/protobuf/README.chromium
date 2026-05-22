@@ -306,3 +306,12 @@ Description of the patches:
   time, so variables that reference these imported pointers cannot be constant-
   initialized. This patch uses PROTOBUF_CONSTINIT_WITH_PTR (from patch 0030)
   for these variables, which evaluates to empty on component builds.
+
+- 0064-time-util-no-export.patch
+
+  Do not export symbols in time_util.h.
+
+  This util was meant to be compiled with protobuf full. Since Chromium uses
+  protobuf lite (and lite WKTs, such as duration and timestamp), we can't make
+  it a part of protobuf as we would get a dependency cycle. Not exporting
+  symbols allows us to use it as a separate target.

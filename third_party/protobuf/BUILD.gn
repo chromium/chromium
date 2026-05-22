@@ -542,6 +542,16 @@ if (enable_js_protobuf) {
   }
 }
 
+source_set("time_util") {
+  public = [ "src/google/protobuf/util/time_util.h" ]
+  sources = [ "src/google/protobuf/util/time_util.cc" ]
+  deps = [
+    ":google_protobuf_duration_lite_proto",
+    ":google_protobuf_timestamp_lite_proto",
+    ":protobuf_lite",
+  ]
+}
+
 _current_dir = rebase_path(".", "//")
 _proto_out_dir_full = "$_current_dir/full/src"
 

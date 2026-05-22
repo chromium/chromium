@@ -1,0 +1,14 @@
+diff --git a/src/google/protobuf/util/time_util.h b/src/google/protobuf/util/time_util.h
+index ef5bbcee91e91..8244e0f27bdf1 100644
+--- a/src/google/protobuf/util/time_util.h
++++ b/src/google/protobuf/util/time_util.h
+@@ -25,6 +25,9 @@ namespace google {
+ namespace protobuf {
+ namespace util {
+ 
++#undef PROTOBUF_EXPORT
++#define PROTOBUF_EXPORT
++
+ // Utility functions for Timestamp and Duration.
+ class PROTOBUF_EXPORT TimeUtil {
+   typedef google::protobuf::Timestamp Timestamp;
