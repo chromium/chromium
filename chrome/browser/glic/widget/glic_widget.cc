@@ -163,18 +163,27 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override {
-      // GlicWidget should claim mouse events that fall within the draggable
-      // region.
-      if (glic_view()->IsPointWithinDraggableRegion(location)) {
-        return false;
-      }
+    // Draggable regions should be ignored for clicks into any owned child
+    // widgets of the GlicWidget, for example constrained dialogs.
+    gfx::Point location_in_screen = location;
+    views::View::ConvertPointToScreen(GetWidget()->GetRootView(),
+                                      &location_in_screen);
 
-      // On ChromeOS, constrained dialogs (like print dialogs) are child widgets
-      // of GlicWidget. We want these dialogs to claim mouses events, however
-      // hit-test can return `HTNOWHERE` for portions of dialogs outside of
-      // GlicWidget bounds.
-      const int hit_test = GetWidget()->GetNonClientComponent(location);
-      return hit_test == HTCLIENT || hit_test == HTNOWHERE;
+    views::Widget::Widgets widgets =
+        views::Widget::GetAllOwnedWidgets(GetWidget()->GetNativeView());
+    bool in_owned_widget = std::ranges::any_of(
+        widgets, [location_in_screen, this](views::Widget* widget) {
+          return widget != GetWidget() && widget->IsVisible() &&
+                 widget->GetWindowBoundsInScreen().Contains(location_in_screen);
+        });
+
+    if (in_owned_widget) {
+      return true;
+    }
+
+    // GlicWidget should claim mouse events that fall within the draggable
+    // region.
+    return !glic_view()->IsPointWithinDraggableRegion(location);
   }
 #endif  // defined(USE_AURA)
 
@@ -372,10 +381,12 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
 std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
                                                Profile* profile,
                                                const gfx::Rect& initial_bounds,
-                                               bool user_resizable) {
+                                               bool user_resizable,
+                                               gfx::NativeWindow context) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
+  params.context = context;
 
   // -------------- Non Platform-Specific Parameters.
   params.bounds = initial_bounds;
