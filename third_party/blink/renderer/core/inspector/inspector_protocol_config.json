@@ -126,7 +126,8 @@
                 "async": ["getResponseBody", "getRequestPostData"]
             },
             {
-                "domain": "WebMCP"
+                "domain": "WebMCP",
+                "exclude": ["invokeTool"]
             },
             {
                 "domain": "WebAudio"

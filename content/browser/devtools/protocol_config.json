@@ -247,6 +247,10 @@
             },
             {
                 "domain": "SmartCardEmulation"
+            },
+            {
+                "domain": "WebMCP",
+                "async": ["invokeTool"]
             }
         ]
     },

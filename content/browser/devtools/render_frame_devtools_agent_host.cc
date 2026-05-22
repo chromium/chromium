@@ -51,6 +51,7 @@
 #include "content/browser/devtools/protocol/system_info_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
+#include "content/browser/devtools/protocol/webmcp_handler.h"
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -76,6 +77,7 @@
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -431,6 +433,9 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
     CHECK(root_session);
     session->CreateAndAddHandler<protocol::TracingHandler>(this, GetIOContext(),
                                                            root_session);
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kDevToolsWebMCPSupport)) {
+    session->CreateAndAddHandler<protocol::WebMCPHandler>();
   }
   session->CreateAndAddHandler<protocol::LogHandler>();
   session->CreateAndAddHandler<protocol::FedCmHandler>();

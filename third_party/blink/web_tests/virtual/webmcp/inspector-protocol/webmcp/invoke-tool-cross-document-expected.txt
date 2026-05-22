@@ -1,0 +1,18 @@
+Tests WebMCP invokeTool command with cross-document navigation.
+Enabling WebMCP Domain
+Enabling Page Domain
+\n--- Invoking navigate_tool ---
+invokeTool response: {
+    invocationId : <string 0>
+}
+toolResponded invocationId matches
+toolResponded event: {
+    invocationId : <string 0>
+    output : [
+        [0] : {
+            cross-document : success
+        }
+    ]
+    status : Completed
+}
+

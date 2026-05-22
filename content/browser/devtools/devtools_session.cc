@@ -85,6 +85,7 @@ bool TerminateOnCrossProcessNavigation(crdtp::span<uint8_t> method) {
       crdtp::SpanFrom("Runtime.evaluate"),
       crdtp::SpanFrom("Runtime.runScript"),
       crdtp::SpanFrom("Runtime.terminateExecution"),
+      crdtp::SpanFrom("WebMCP.invokeTool"),
   };
   DCHECK(std::is_sorted(kEntries->begin(), kEntries->end(), crdtp::SpanLt()));
   return std::binary_search(kEntries->begin(), kEntries->end(), method,

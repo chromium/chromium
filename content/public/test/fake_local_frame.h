@@ -195,6 +195,13 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void UpdatePrerenderURL(const ::GURL& matched_url,
                           UpdatePrerenderURLCallback callback) override;
   void GetScrollPosition(GetScrollPositionCallback callback) override;
+  void InvokeScriptToolForInspector(
+      const base::UnguessableToken& invocation_id,
+      const std::string& tool_name,
+      const std::string& input_arguments,
+      InvokeScriptToolForInspectorCallback callback) override;
+  void NotifyInspectorOfCrossDocumentScriptToolResult(
+      const base::UnguessableToken& invocation_id) override;
 #if BUILDFLAG(IS_ANDROID)
   void PerformFullContentSpellCheck() override;
 #endif

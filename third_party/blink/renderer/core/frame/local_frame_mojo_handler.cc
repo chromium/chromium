@@ -71,6 +71,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/script_tools/model_context.h"
+#include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
@@ -979,6 +981,37 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
           ? mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed
           : mojom::blink::WantResultOption::kNoResult,
       mojom::blink::PromiseResultOption::kDoNotWait);
+}
+
+void LocalFrameMojoHandler::InvokeScriptToolForInspector(
+    const base::UnguessableToken& invocation_id,
+    const String& tool_name,
+    const String& input_arguments,
+    InvokeScriptToolForInspectorCallback callback) {
+  if (auto* model_context =
+          ModelContextSupplement::GetIfExists(*DomWindow()->navigator())) {
+    if (model_context->GetScriptToolDeclaration(tool_name)) {
+      frame_->GetTaskRunner(TaskType::kInternalInspector)
+          ->PostTask(
+              FROM_HERE,
+              blink::BindOnce(base::IgnoreResult(&ModelContext::ExecuteTool),
+                              WrapPersistent(model_context), invocation_id,
+                              tool_name, input_arguments,
+                              /*signal=*/nullptr, base::DoNothing()));
+      std::move(callback).Run(true);
+      return;
+    }
+  }
+  std::move(callback).Run(false);
+}
+
+void LocalFrameMojoHandler::NotifyInspectorOfCrossDocumentScriptToolResult(
+    const base::UnguessableToken& invocation_id) {
+  if (auto* model_context =
+          ModelContextSupplement::modelContext(*DomWindow()->navigator())) {
+    model_context->GetCrossDocumentScriptToolResult(invocation_id,
+                                                    base::DoNothing());
+  }
 }
 
 #if BUILDFLAG(IS_MAC)

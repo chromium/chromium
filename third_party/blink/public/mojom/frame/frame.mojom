@@ -1117,6 +1117,17 @@ interface LocalFrame {
       bool wants_result,
       int32 world_id) => (mojo_base.mojom.Value result);
 
+  // Invokes a script tool in the frame. Returns true if the tool was found and
+  // invocation started.
+  InvokeScriptToolForInspector(mojo_base.mojom.UnguessableToken invocation_id,
+                               string tool_name,
+                               string input_arguments) => (bool success);
+
+  // Notifies the frame that a tool invocation resulted in a navigation to this
+  // document, and requests the result of that invocation.
+  NotifyInspectorOfCrossDocumentScriptToolResult(
+      mojo_base.mojom.UnguessableToken invocation_id);
+
 
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using
