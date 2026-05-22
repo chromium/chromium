@@ -855,9 +855,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // prevent that, set the alpha to non-zero when the header is fully
   // offscreen. It will still not be seen, but it will be accessible to
   // Voiceover.
-  if (!IsChromeNextIaEnabled() || CanShowTabStrip(self)) {
     self.alpha = std::max(1 - progress, 0.01);
-  }
 
   widthConstraint.constant = searchFieldNormalWidth;
   self.fakeLocationBarHeightConstraint.constant =

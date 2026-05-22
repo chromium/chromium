@@ -1440,9 +1440,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   if (self.shouldAnimateHeader) {
     BOOL animateScrollAnimation =
-        IsChromeNextIaEnabled()
-            ? (IsSplitToolbarMode(self) || CanShowTabStrip(self))
-            : !self.disableScrollAnimation;
+        IsChromeNextIaEnabled() ? YES : !self.disableScrollAnimation;
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
     [self.headerViewController
         updateFakeOmniboxForOffset:[self adjustedOffset].y
