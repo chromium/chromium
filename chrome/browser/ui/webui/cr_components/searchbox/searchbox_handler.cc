@@ -93,6 +93,24 @@ const char* kReplyRotated180IconResourceName =
 }  // namespace searchbox_internal
 
 namespace {
+
+std::u16string GetSmartTabSharingMegaplusString() {
+  switch (contextual_tasks::kSmartTabSharingMegaplusStringOption.Get()) {
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV1:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS);
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV2:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V2);
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV3:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V3);
+    default:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS);
+  }
+}
+
 constexpr int kPromptHeightBuffer = 40;
 constexpr int kPromptWidthBuffer = 40;
 
@@ -578,9 +596,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            options.is_lens ? false
                            : contextual_tasks::ContextualTasksContextService::
                                  GetIsSmartTabSharingEnabled(profile));
-  dict.Set(
-      "stsMegaplusShareRelevantOpenTabs",
-      l10n_util::GetStringUTF16(IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS));
+  dict.Set("stsMegaplusShareRelevantOpenTabs",
+           GetSmartTabSharingMegaplusString());
 
   return dict;
 }

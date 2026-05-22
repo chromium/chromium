@@ -156,6 +156,15 @@ enum class SmartTabSharingIphTryItPromoOption {
 extern const base::FeatureParam<SmartTabSharingIphTryItPromoOption>
     kSmartTabSharingIphTryItPromoOption;
 
+// Option for smart tab sharing megaplus string.
+enum class SmartTabSharingMegaplusStringOption {
+  kMegaplusV1,
+  kMegaplusV2,
+  kMegaplusV3,
+};
+extern const base::FeatureParam<SmartTabSharingMegaplusStringOption>
+    kSmartTabSharingMegaplusStringOption;
+
 // Task string to use for formatting the query embedding.
 extern const base::FeatureParam<std::string> kQueryEmbeddingTask;
 

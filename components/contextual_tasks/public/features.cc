@@ -247,6 +247,18 @@ const base::FeatureParam<SmartTabSharingIphTryItPromoOption>
         SmartTabSharingIphTryItPromoOption::kIphTryItPromoV1,
         &kSmartTabSharingIphTryItPromoOptions);
 
+const base::FeatureParam<SmartTabSharingMegaplusStringOption>::Option
+    kSmartTabSharingMegaplusOptions[] = {
+        {SmartTabSharingMegaplusStringOption::kMegaplusV1, "megaplusV1"},
+        {SmartTabSharingMegaplusStringOption::kMegaplusV2, "megaplusV2"},
+        {SmartTabSharingMegaplusStringOption::kMegaplusV3, "megaplusV3"},
+};
+const base::FeatureParam<SmartTabSharingMegaplusStringOption>
+    kSmartTabSharingMegaplusStringOption(
+        &kContextualTasksContext,
+        "ContextualTasksContextSmartTabSharingMegaplusStringOption",
+        SmartTabSharingMegaplusStringOption::kMegaplusV1,
+        &kSmartTabSharingMegaplusOptions);
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};
