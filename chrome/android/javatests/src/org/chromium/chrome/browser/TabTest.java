@@ -67,6 +67,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Tests for Tab class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -82,6 +85,7 @@ public class TabTest {
     private int mRootIdForReset;
     private Token mTabGroupIdForReset;
     private CallbackHelper mOnTitleUpdatedHelper;
+    private final List<Tab> mExtraTabs = new ArrayList<>();
 
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
@@ -113,6 +117,24 @@ public class TabTest {
                     mTab.setRootId(mRootIdForReset);
                     mTab.setTabGroupId(mTabGroupIdForReset);
                     mTab.removeObserver(mTabObserver);
+
+                    // Remove any extra tabs created by the test so their entries are cleared
+                    // from TabImpl.sTabMap. Close via the model when the tab is still attached;
+                    // otherwise call destroy() directly (tests may detach the tab before
+                    // teardown, which makes closeTabs a no-op).
+                    TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
+                    for (Tab tab : mExtraTabs) {
+                        if (tab.isDestroyed()) continue;
+                        if (model.indexOf(tab) != TabList.INVALID_TAB_INDEX) {
+                            model.getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                            /* allowDialog= */ false);
+                        } else {
+                            tab.destroy();
+                        }
+                    }
+                    mExtraTabs.clear();
                 });
     }
 
@@ -448,39 +470,45 @@ public class TabTest {
 
     private Tab createSecondFrozenTab(String url) {
         Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabState state = TabStateExtractor.from(tab);
-                    mActivityTestRule
-                            .getActivity()
-                            .getCurrentTabModel()
-                            .getTabRemover()
-                            .closeTabs(
-                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
-                                    /* allowDialog= */ false);
-                    return mActivityTestRule
-                            .getActivity()
-                            .getCurrentTabCreator()
-                            .createFrozenTab(state, tab.getId(), /* index= */ 1);
-                });
+        Tab frozenTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabState state = TabStateExtractor.from(tab);
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabModel()
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                            /* allowDialog= */ false);
+                            return mActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createFrozenTab(state, tab.getId(), /* index= */ 1);
+                        });
+        mExtraTabs.add(frozenTab);
+        return frozenTab;
     }
 
     private Tab createLazyTab(String url) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabCreator tabCreator =
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getTabCreatorManagerSupplier()
-                                    .get()
-                                    .getTabCreator(/* incognito= */ false);
-                    LoadUrlParams params = new LoadUrlParams(new GURL(url));
-                    return tabCreator.createNewTab(
-                            params,
-                            "Lazy Title",
-                            TabLaunchType.FROM_SYNC_BACKGROUND,
-                            /* parent= */ null,
-                            /* position= */ TabList.INVALID_TAB_INDEX);
-                });
+        Tab lazyTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabCreator tabCreator =
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabCreatorManagerSupplier()
+                                            .get()
+                                            .getTabCreator(/* incognito= */ false);
+                            LoadUrlParams params = new LoadUrlParams(new GURL(url));
+                            return tabCreator.createNewTab(
+                                    params,
+                                    "Lazy Title",
+                                    TabLaunchType.FROM_SYNC_BACKGROUND,
+                                    /* parent= */ null,
+                                    /* position= */ TabList.INVALID_TAB_INDEX);
+                        });
+        mExtraTabs.add(lazyTab);
+        return lazyTab;
     }
 }
