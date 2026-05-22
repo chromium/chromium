@@ -52,7 +52,11 @@ WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
 void WalletHttpClientImpl::UpsertPublicPass(Pass pass,
                                             UpsertPublicPassCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(features::kWalletablePassDetection));
+  if (!base::FeatureList::IsEnabled(features::kWalletablePassDetection)) {
+    std::move(callback).Run(
+        base::unexpected(WalletRequestError::kGenericError));
+    return;
+  }
   SendRequest(std::make_unique<UpsertPublicPassRequest>(std::move(pass),
                                                         std::move(callback)));
 }
@@ -61,7 +65,11 @@ void WalletHttpClientImpl::UpsertPrivatePass(
     PrivatePass pass,
     std::optional<consent_auditor::ConsentAuditor::SessionId> session_id,
     UpsertPrivatePassCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(features::kWalletApiPrivatePassesEnabled));
+  if (!base::FeatureList::IsEnabled(features::kWalletApiPrivatePassesEnabled)) {
+    std::move(callback).Run(
+        base::unexpected(WalletRequestError::kGenericError));
+    return;
+  }
   SendRequest(std::make_unique<UpsertPrivatePassRequest>(
       std::move(pass), std::move(session_id), std::move(callback)));
 }
