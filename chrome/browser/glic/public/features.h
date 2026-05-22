@@ -22,6 +22,9 @@ extern const base::FeatureParam<bool> kGlicChromeStatusIconUseAltIcon;
 extern const base::FeatureParam<bool> kGlicChromeStatusIconLogOnly;
 extern const base::FeatureParam<std::string> kGlicChromeStatusIconOtherAppID;
 
+BASE_DECLARE_FEATURE(kGlicOSIconVariant);
+extern const base::FeatureParam<int> kGlicOSIconVariantParam;
+
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
 BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);

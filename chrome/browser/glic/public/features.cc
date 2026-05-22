@@ -24,6 +24,10 @@ const base::FeatureParam<bool> kGlicChromeStatusIconLogOnly{
 const base::FeatureParam<std::string> kGlicChromeStatusIconOtherAppID{
     &kGlicChromeStatusIcon, "glic-chrome-status-icon-other-app-id", ""};
 
+BASE_FEATURE(kGlicOSIconVariant, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGlicOSIconVariantParam{&kGlicOSIconVariant,
+                                                      "variant", 0};
+
 BASE_FEATURE(kGlicOrphanedReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicSelectionPrompt, base::FEATURE_DISABLED_BY_DEFAULT);

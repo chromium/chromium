@@ -162,6 +162,12 @@ OSIconProviderMac::OSIconProviderMac(PrefService& prefs,
 OSIconProviderMac::~OSIconProviderMac() = default;
 
 gfx::ImageSkia OSIconProviderMac::GetIcon() const {
+  if (base::FeatureList::IsEnabled(features::kGlicOSIconVariant) &&
+      features::kGlicOSIconVariantParam.Get() == 0) {
+    return gfx::CreateVectorIcon(
+        glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_OS_ICON_VARIANT),
+        features::kGlicChromeStatusIconSizePx.Get(), SK_ColorWHITE);
+  }
   if (GetUseAltIcon() && !features::kGlicChromeStatusIconLogOnly.Get()) {
     // Despite the similar name, this feature param now decides which alt icon
     // to use, not whether to use an alt icon at all.
