@@ -73,6 +73,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   private cachedPaddingRight_: number = -1;
   private cachedFont_: string = '';
   private cachedContentWidth_: number = -1;
+  private isRtl_: boolean = false;
 
   get inputElement(): HTMLInputElement|HTMLTextAreaElement {
     return this.$.input;
@@ -80,6 +81,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
+    this.updateDirection();
     this.setupWidthResizeObserver_();
     this.smartComposeResizeObserver_ = new ResizeObserver(() => {
       this.scheduleSmartComposeHeightUpdate_();
@@ -350,6 +352,14 @@ export class ComposeboxInputElement extends I18nMixinLit
     this.widthResizeObserver_.observe(inputWrapper);
   }
 
+  // Update RTL status when the direction of the component changes.
+  // Used mainly for testing to provide a way to update the RTL status.
+  // The use of MutationObserver was considered but rejected since we do not
+  // likely need responsiveness here.
+  updateDirection() {
+    this.isRtl_ = window.getComputedStyle(this).direction === 'rtl';
+  }
+
   private updateMirror_() {
     const mirror = this.shadowRoot.getElementById('mirror');
     if (!mirror) {
@@ -406,9 +416,8 @@ export class ComposeboxInputElement extends I18nMixinLit
     // CSS `position-anchor: --cursor-char` on #caret does the rest.
     const selectionEnd = (input as HTMLInputElement).selectionEnd;
     const atStart = selectionEnd === 0;
-    const targetSpan = atStart ? mirror.firstChild as HTMLElement :
-        mirror.childNodes[selectionEnd! - 1] as
-        HTMLElement;
+    const targetSpan =
+        getTargetSpan(input as HTMLInputElement, mirror, this.isRtl_);
 
     if (targetSpan) {
       targetSpan.style.anchorName = '--cursor-char';
@@ -443,6 +452,31 @@ export class ComposeboxInputElement extends I18nMixinLit
       caret.classList.add('at-start');
     }
   }
+}
+
+function getTargetSpan(
+    input: Readonly<HTMLInputElement|HTMLTextAreaElement>,
+    mirror: Readonly<HTMLElement>, isRtl: boolean): HTMLElement|null {
+  const selectionEnd = input.selectionEnd;
+  const atStart = selectionEnd === 0;
+  const atEnd = selectionEnd === input.value.length;
+
+  if (atStart) {
+    return mirror.firstChild as HTMLElement;
+  }
+  if (isRtl && atEnd) {
+    let targetSpan: HTMLElement|null = null;
+    let minLeft = Infinity;
+    for (const child of mirror.children) {
+      const element = child as HTMLElement;
+      if (element.offsetLeft < minLeft) {
+        minLeft = element.offsetLeft;
+        targetSpan = element;
+      }
+    }
+    return targetSpan;
+  }
+  return mirror.childNodes[selectionEnd! - 1] as HTMLElement;
 }
 
 declare global {
