@@ -484,8 +484,41 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO(crbug.com/492168146): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kContextualCueing:
-      // TODO(crbug.com/495507631): Add network traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation("suggestions_powered_by_ai",
+                                                 R"(
+        semantics {
+          sender: "Suggestions, powered by AI"
+          description:
+            "Generates contextual suggestions to the user at relevant moments."
+          trigger:
+            "User navigates to a page that is a part of one of the target "
+            "CUJs (ex: shopping and education)."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "Title and URL of the main frame page the user has navigated too."
+          internal {
+            contacts {
+              email: "sophiechang@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2026-04-28"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Administrators can control this feature via the "
+            "ChromeSuggestionsSettings policy. Users must also have history "
+            "sync enabled to use this feature."
+          chrome_policy {
+            ChromeSuggestionsSettings {
+              ChromeSuggestionsSettings: 1
+            }
+          }
+        })");
     case ModelBasedCapabilityKey::kUpdaterChat:
       // TODO(crbug.com/512194219): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;

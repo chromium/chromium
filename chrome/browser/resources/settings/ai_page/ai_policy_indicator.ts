@@ -14,12 +14,17 @@ import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js'
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './ai_policy_indicator.html.js';
-import {ModelExecutionEnterprisePolicyValue} from './constants.js';
+import {AiEnterpriseFeaturePrefName, ChromeSuggestionsSettingsValue, ModelExecutionEnterprisePolicyValue} from './constants.js';
 
 export function isFeatureDisabledByPolicy(
     enterprisePref: chrome.settingsPrivate.PrefObject|undefined): boolean {
-  return !!enterprisePref &&
-      enterprisePref.value === ModelExecutionEnterprisePolicyValue.DISABLE;
+  if (!enterprisePref) {
+    return false;
+  }
+  if (enterprisePref.key === AiEnterpriseFeaturePrefName.CONTEXTUAL_CUEING) {
+    return enterprisePref.value === ChromeSuggestionsSettingsValue.DISABLED;
+  }
+  return enterprisePref.value === ModelExecutionEnterprisePolicyValue.DISABLE;
 }
 
 const SettingsAiPolicyIndicatorBase = PrefControlMixin(PolymerElement);

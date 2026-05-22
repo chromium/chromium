@@ -404,6 +404,7 @@ after discussions on the right group.
       <annotation id="private_verification_tokens_service_get_tokens"/>
       <annotation id="skills_fetcher"/>
       <annotation id="web_app_custom_icon_fetcher"/>
+      <annotation id="suggestions_powered_by_ai"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

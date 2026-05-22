@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE(kTabOrganizationSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kHistorySearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kFindsSettingsVisibility);
+BASE_DECLARE_FEATURE(kContextualCueingSettingsVisibility);
 
 // Comma-separated list of performance classes (e.g. "3,4,5") accepted by
 // History Search. Use "*" if there is no performance class requirement.

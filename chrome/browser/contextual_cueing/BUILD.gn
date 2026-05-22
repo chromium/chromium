@@ -14,6 +14,7 @@ source_set("contextual_cueing") {
     "cueing_log.h",
     "features.h",
     "nudge_cap_tracker.h",
+    "prefs.h",
   ]
 
   public_deps = [

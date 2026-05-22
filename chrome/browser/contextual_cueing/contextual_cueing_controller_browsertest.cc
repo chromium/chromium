@@ -17,6 +17,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -914,9 +915,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
-      optimization_guide::prefs::kContextualCueingEnterprisePolicyAllowed,
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable));
+      optimization_guide::prefs::kChromeSuggestionsSettings,
+      static_cast<int>(
+          contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled));
 
   base::HistogramTester histogram_tester;
   SeedExecutionResult(MakeCompleteResponse());

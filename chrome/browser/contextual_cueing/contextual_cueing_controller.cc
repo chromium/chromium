@@ -24,6 +24,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -500,10 +501,10 @@ bool ContextualCueingController::IsAllowedToShowCue() {
   }
 
   // Check enterprise policy.
-  if (pref_service->GetInteger(optimization_guide::prefs::
-                                   kContextualCueingEnterprisePolicyAllowed) ==
-      static_cast<int>(optimization_guide::model_execution::prefs::
-                           ModelExecutionEnterprisePolicyValue::kDisable)) {
+  if (pref_service->GetInteger(
+          optimization_guide::prefs::kChromeSuggestionsSettings) ==
+      static_cast<int>(
+          contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled)) {
     RecordContextualCueingDecision(
         ContextualCueingDecision::kDisabledByEnterprisePolicy);
     return false;

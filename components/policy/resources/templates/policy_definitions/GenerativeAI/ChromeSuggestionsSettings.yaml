@@ -1,0 +1,30 @@
+caption: Settings for ChromeSuggestions
+desc: |-
+  This setting allows Chrome to suggest AI capabilities at relevant moments.
+
+  0/unset = Chrome suggestions will be enabled for users.
+
+  1 = Chrome suggestions are disabled for users.
+
+  For more information, please check the help center article: https://support.google.com/chrome/a?p=chrome_suggestions
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow Chrome suggestions
+  value: 0
+- caption: Disable Chrome suggestions
+  value: 1
+owners:
+  - sophiechang@google.com
+  - pulkitaga@google.com
+  - chrome-intelligence-core@google.com
+schema:
+  type: integer
+supported_on:
+  - chrome.*:150-
+  - chrome_os:150-
+tags: []
+type: int

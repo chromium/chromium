@@ -19,6 +19,11 @@ export enum ModelExecutionEnterprisePolicyValue {
 }
 // LINT.ThenChange(/components/optimization_guide/core/model_execution/model_execution_prefs.h:ModelExecutionEnterprisePolicyValue)
 
+export enum ChromeSuggestionsSettingsValue {
+  ENABLED = 0,
+  DISABLED = 1,
+}
+
 
 // Exporting pref names so that they can be referenced by tests.
 export enum SettingsAiPageFeaturePrefName {
@@ -36,8 +41,7 @@ export enum AiEnterpriseFeaturePrefName {
       'optimization_guide.model_execution.compose_enterprise_policy_allowed',
   AUTOFILL_AI =
       'optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed',
-  CONTEXTUAL_CUEING =
-      'optimization_guide.model_execution.contextual_cueing_enterprise_policy_allowed',
+  CONTEXTUAL_CUEING = 'contextual_cueing.chrome_suggestions_settings',
 }
 
 export enum AiPageActions {

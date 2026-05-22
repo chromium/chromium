@@ -1022,6 +1022,11 @@ constexpr char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 constexpr char kShouldShowRemoteAnnotatorFirstRunInfo[] =
     "accessibility_annotator.should_show_remote_annotator_first_run_info";
 
+// Deprecated 05/2026.
+constexpr char kContextualCueingEnterprisePolicyAllowedDeprecated[] =
+    "optimization_guide.model_execution.contextual_cueing_enterprise_policy_"
+    "allowed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1407,6 +1412,10 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 05/2026.
   registry->RegisterBooleanPref(kShouldShowRemoteAnnotatorFirstRunInfo, true);
+
+  // Deprecated 05/2026.
+  registry->RegisterIntegerPref(
+      kContextualCueingEnterprisePolicyAllowedDeprecated, 0);
 }
 
 }  // namespace

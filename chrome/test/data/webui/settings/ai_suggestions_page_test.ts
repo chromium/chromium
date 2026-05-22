@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import type {SettingsAiSuggestionsPageElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageSuggestionsInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {AiPageSuggestionsInteractions, ChromeSuggestionsSettingsValue, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -101,7 +101,7 @@ suite('SuggestionsPage', function() {
   test('suggestionsToggleDisabled', async () => {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.CONTEXTUAL_CUEING}.value`,
-        ModelExecutionEnterprisePolicyValue.DISABLE);
+        ChromeSuggestionsSettingsValue.DISABLED);
     await createPage();
 
     const indicator =

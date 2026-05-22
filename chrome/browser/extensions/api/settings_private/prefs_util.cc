@@ -1349,9 +1349,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::
                      kAutofillPredictionImprovementsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)
-      [optimization_guide::prefs::kContextualCueingEnterprisePolicyAllowed] =
-          settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::kChromeSuggestionsSettings] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[contextual_tasks::kContextualTasksSmartTabSharingSettings] =
       settings_api::PrefType::kNumber;
 

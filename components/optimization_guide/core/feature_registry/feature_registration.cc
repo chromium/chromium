@@ -65,10 +65,8 @@ const char kGeminiAntiscamProtectionEnterprisePolicyAllowed[] =
 const char kFindsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.finds_enterprise_policy_allowed";
 
-const char kContextualCueingEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.contextual_cueing_enterprise_policy_"
-    "allowed";
-
+const char kChromeSuggestionsSettings[] =
+    "contextual_cueing.chrome_suggestions_settings";
 }  // namespace prefs
 
 namespace features {
@@ -345,7 +343,7 @@ void RegisterContextualCueing() {
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
       kContextualCueingName, UserVisibleFeatureKey::kContextualCueing,
       EnterprisePolicyRegistry::GetInstance().Register(
-          prefs::kContextualCueingEnterprisePolicyAllowed));
+          prefs::kChromeSuggestionsSettings));
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
 }
 
