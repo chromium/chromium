@@ -668,19 +668,18 @@ void MuteAllSinksExcept(pa_threaded_mainloop* mainloop,
           std::string* exclude_sink_name = static_cast<std::string*>(userdata);
           // Check if current sink's name matches the exclude_sink_name
           if (i->name != *exclude_sink_name) {
-            pa_context_set_sink_mute_by_index(
+            pa_operation* mute_op = pa_context_set_sink_mute_by_index(
                 c, i->index, 1, /*callback=*/nullptr,
                 /*userdata=*/nullptr);  // Mute the sink
+            if (mute_op) {
+              pa_operation_unref(mute_op);
+            }
           }
         }
       },
       (void*)&exclude_sink_name);
 
   WaitForOperationCompletion(mainloop, op, context);
-  // Clean up the operation after completion
-  if (op) {
-    pa_operation_unref(op);
-  }
 }
 
 // Unmutes all audio output sinks in the system.
@@ -715,11 +714,8 @@ void UnmuteAllSinks(pa_threaded_mainloop* mainloop, pa_context* context) {
       mainloop  // Pass mainloop as userdata
   );
 
-  WaitForOperationCompletion(mainloop, op, context);
   // Wait for the operation to complete to ensure all sinks are unmuted.
-  if (op) {
-    pa_operation_unref(op);
-  }
+  WaitForOperationCompletion(mainloop, op, context);
 }
 
 std::string GetBusOfInput(pa_threaded_mainloop* mainloop,
