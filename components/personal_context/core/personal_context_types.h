@@ -19,10 +19,10 @@ namespace personal_context {
 // Used by consuming features to determine both feature execution and UI
 // entrypoint visibility.
 enum class PersonalContextEnablementState {
-  kDisabledNotEligible = 0,   // Feature disabled, user not eligible.
-  kDisabledPendingInfo = 1,   // Feature disabled pending Info.
-  kDisabledPendingSetup = 2,  // Feature disabled pending Setup.
-  kEnabled = 3                // Feature enabled, first run completed.
+  kDisabledNotEligible = 0,       // Feature disabled, user not eligible.
+  kDisabledShouldShowNotice = 1,  // Feature disabled pending Notice.
+  kDisabledNeedsOptIn = 2,        // Feature disabled pending OptIn.
+  kEnabled = 3                    // Feature enabled, first run completed.
 };
 
 // Defines the result of a PersonalContextService::FetchContext operation.

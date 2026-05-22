@@ -48,7 +48,7 @@ void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   switch (state) {
-    case PersonalContextEnablementState::kDisabledPendingInfo:
+    case PersonalContextEnablementState::kDisabledShouldShowNotice:
       client_->ShowNotice(web_contents, invocation_source,
                           std::move(wrapped_callback));
       break;
@@ -62,8 +62,8 @@ void PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted(
     NoticeResult result) {
   if (result == NoticeResult::kAcknowledged) {
     if (pref_service_) {
-      pref_service_->SetBoolean(prefs::kShouldShowPersonalContextFirstRunInfo,
-                                false);
+      pref_service_->SetBoolean(
+          prefs::kPersonalContextInAutofillNoticeShouldBeShown, false);
     }
   }
   std::move(callback).Run(FirstRunTriggerResult::kSuccess);

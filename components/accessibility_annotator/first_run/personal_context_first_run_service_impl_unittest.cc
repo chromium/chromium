@@ -77,7 +77,8 @@ class PersonalContextFirstRunServiceImplTest : public testing::Test {
 
 TEST_F(PersonalContextFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingInfo));
+      .WillOnce(
+          Return(PersonalContextEnablementState::kDisabledShouldShowNotice));
 
   EXPECT_CALL(*client(), ShowNotice)
       .WillOnce([](content::WebContents*, FirstRunInvocationSource,
@@ -92,12 +93,13 @@ TEST_F(PersonalContextFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
 
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kSuccess);
   EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kShouldShowPersonalContextFirstRunInfo));
+      prefs::kPersonalContextInAutofillNoticeShouldBeShown));
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingInfo));
+      .WillOnce(
+          Return(PersonalContextEnablementState::kDisabledShouldShowNotice));
 
   EXPECT_CALL(*client(), ShowNotice)
       .WillOnce([](content::WebContents*, FirstRunInvocationSource,
@@ -112,7 +114,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
 
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kSuccess);
   EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kShouldShowPersonalContextFirstRunInfo));
+      prefs::kPersonalContextInAutofillNoticeShouldBeShown));
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNotEligible) {
@@ -144,9 +146,9 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kIgnoredAlreadyEnabled);
 }
 
-TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenPendingSetup) {
+TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNeedsOptIn) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingSetup));
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledNeedsOptIn));
 
   EXPECT_CALL(*client(), ShowNotice).Times(0);
 
@@ -154,9 +156,10 @@ TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenPendingSetup) {
                                   base::DoNothing());
 }
 
-TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenPendingInfo) {
+TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenShouldShowNotice) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingInfo));
+      .WillOnce(
+          Return(PersonalContextEnablementState::kDisabledShouldShowNotice));
 
   EXPECT_CALL(*client(), ShowNotice).Times(1);
 

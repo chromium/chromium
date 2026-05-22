@@ -84,7 +84,8 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   void SetPrefs() {
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.SetBoolean(
-        personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
+        personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+        false);
     subscription_eligibility::prefs::RegisterProfilePrefs(
         pref_service_.registry());
     pref_service_.SetInteger(
@@ -129,7 +130,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "1"}});
     EXPECT_EQ(service().GetEnablementState(),
-              PersonalContextEnablementState::kDisabledPendingInfo);
+              PersonalContextEnablementState::kDisabledShouldShowNotice);
   }
 
   {
@@ -138,7 +139,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "2"}});
     EXPECT_EQ(service().GetEnablementState(),
-              PersonalContextEnablementState::kDisabledPendingSetup);
+              PersonalContextEnablementState::kDisabledNeedsOptIn);
   }
 
   {
@@ -183,14 +184,15 @@ TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
             PersonalContextEnablementState::kEnabled);
 }
 
-// Verifies that the state correctly transitions to `kDisabledPendingInfo` when
-// the user hasn't acknowledged the introductory info yet.
+// Verifies that the state correctly transitions to `kDisabledShouldShowNotice`
+// when the user hasn't acknowledged the introductory notice yet.
 TEST_F(PersonalContextEnablementServiceImplTest,
-       DisabledPendingInfoWhenInfoNotAcknowledged) {
+       DisabledShouldShowNoticeWhenNoticeNotAcknowledged) {
   pref_service_.SetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, true);
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      true);
   EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::kDisabledPendingInfo);
+            PersonalContextEnablementState::kDisabledShouldShowNotice);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
@@ -202,13 +204,14 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
 }
 
 // Verifies that the onboarding preference is reset when the user signs out,
-// ensuring they see the info again if they sign back in.
+// ensuring they see the notice again if they sign back in.
 TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
   pref_service_.SetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      false);
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_TRUE(pref_service_.GetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo));
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -342,18 +345,20 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   ASSERT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kEnabled);
 
-  // Trigger a change to kDisabledPendingInfo by setting a pref.
+  // Trigger a change to `kDisabledShouldShowNotice` by setting a pref.
   EXPECT_CALL(observer,
               OnEnablementStateChanged(
-                  PersonalContextEnablementState::kDisabledPendingInfo));
+                  PersonalContextEnablementState::kDisabledShouldShowNotice));
   pref_service_.SetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, true);
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      true);
 
   // Trigger a change back to kEnabled.
   EXPECT_CALL(observer, OnEnablementStateChanged(
                             PersonalContextEnablementState::kEnabled));
   pref_service_.SetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
+      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
+      false);
 
   service().RemoveObserver(&observer);
 }
@@ -422,7 +427,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 }
 
 TEST_F(PersonalContextEnablementServiceImplTest,
-       PendingSetupWhenAccountOptedOutOfContextAndOptInEnabled) {
+       NeedsOptInWhenAccountOptedOutOfContextAndOptInEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kPersonalContext,
@@ -441,11 +446,11 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::kDisabledPendingSetup);
+            PersonalContextEnablementState::kDisabledNeedsOptIn);
 }
 
 TEST_F(PersonalContextEnablementServiceImplTest,
-       PendingSetupWhenNoContextSourcesEnabledAndOptInEnabled) {
+       NeedsOptInWhenNoContextSourcesEnabledAndOptInEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kPersonalContext,
@@ -472,7 +477,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
-            PersonalContextEnablementState::kDisabledPendingSetup);
+            PersonalContextEnablementState::kDisabledNeedsOptIn);
 }
 
 class PersonalContextEnablementServiceImplGeolocationTest

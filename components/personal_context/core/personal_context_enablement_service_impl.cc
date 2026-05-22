@@ -178,9 +178,10 @@ const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
     return kDisabledNotEligible;
   }
 
-  if (pref_service->GetBoolean(prefs::kShouldShowPersonalContextFirstRunInfo)) {
-    MaybeOutputReason(debug_message, "Info not yet acknowledged.");
-    return kDisabledPendingInfo;
+  if (pref_service->GetBoolean(
+          prefs::kPersonalContextInAutofillNoticeShouldBeShown)) {
+    MaybeOutputReason(debug_message, "Notice not yet acknowledged.");
+    return kDisabledShouldShowNotice;
   }
 
   return kEnabled;
@@ -212,7 +213,7 @@ PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
     pref_registrar_.Add(
-        prefs::kShouldShowPersonalContextFirstRunInfo,
+        prefs::kPersonalContextInAutofillNoticeShouldBeShown,
         base::BindRepeating(
             &PersonalContextEnablementServiceImpl::UpdateEnablementState,
             base::Unretained(this)));
@@ -267,7 +268,7 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
 
   if (!SatisfiesOptInRequirements(account_settings_service_.get())) {
     return personal_context::features::IsPersonalContextFirstRunOptInEnabled()
-               ? kDisabledPendingSetup
+               ? kDisabledNeedsOptIn
                : kDisabledNotEligible;
   }
 
@@ -289,7 +290,8 @@ void PersonalContextEnablementServiceImpl::OnPrimaryAccountChanged(
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     if (pref_service_) {
-      pref_service_->ClearPref(prefs::kShouldShowPersonalContextFirstRunInfo);
+      pref_service_->ClearPref(
+          prefs::kPersonalContextInAutofillNoticeShouldBeShown);
     }
   }
   UpdateEnablementState();

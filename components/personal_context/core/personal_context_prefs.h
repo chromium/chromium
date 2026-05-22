@@ -9,8 +9,8 @@ class PrefRegistrySimple;
 
 namespace personal_context::prefs {
 
-inline constexpr char kShouldShowPersonalContextFirstRunInfo[] =
-    "personal_context.should_show_first_run_info";
+inline constexpr char kPersonalContextInAutofillNoticeShouldBeShown[] =
+    "personal_context.autofill.notice_should_be_shown";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

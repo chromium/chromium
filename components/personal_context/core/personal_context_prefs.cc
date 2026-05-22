@@ -9,7 +9,8 @@
 namespace personal_context::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kShouldShowPersonalContextFirstRunInfo, true);
+  registry->RegisterBooleanPref(kPersonalContextInAutofillNoticeShouldBeShown,
+                                true);
 }
 
 }  // namespace personal_context::prefs
