@@ -71,6 +71,8 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   std::string GetManagementNoticeText();
   std::string GetManagementNoticeIconDataUrl();
 
+  void OpenUrlInCurrentTabInternal(const GURL& url);
+
   // extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,
