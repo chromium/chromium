@@ -35,6 +35,9 @@ class SidePanelTabListObserverAndroid final : public TabListInterfaceObserver {
   // Implements `TabListInterfaceObserver`:
   void OnActiveTabChanged(TabListInterface& tab_list,
                           tabs::TabInterface* tab) override;
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
+                    TabRemovedReason removed_reason) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   const raw_ptr<SidePanelCoordinatorAndroid> coordinator_;

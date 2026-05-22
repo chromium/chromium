@@ -25265,6 +25265,7 @@ Called by update_net_error_codes.py.-->
   <int value="25"
       label="Opened from Immersive Reading Mode toggle presentation button"/>
   <int value="26" label="Opened from the Reading Mode keyboard shortcut"/>
+  <int value="27" label="Opened from window getting larger"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_enums.h:SidePanelOpenTrigger) -->

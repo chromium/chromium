@@ -41,9 +41,14 @@ enum class SidePanelOpenTrigger {
   kReadAnythingOmniboxChip = 24,
   kReadAnythingTogglePresentationButton = 25,
   kReadAnythingKeyboardShortcut = 26,
+#if BUILDFLAG(IS_ANDROID)
+  kWindowResized = 27,
+  kMaxValue = kWindowResized,
+#else
   kMaxValue = kReadAnythingKeyboardShortcut,
+#endif
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelOpenTrigger)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SidePanelOpenTrigger)
 
 enum class SidePanelContentState {
   // Content is ready to show and will influence side panel visibility.

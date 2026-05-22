@@ -52,6 +52,15 @@ void SidePanelTabListObserverAndroid::OnActiveTabChanged(
   active_tab_handle_ = tab->GetHandle();
 }
 
+void SidePanelTabListObserverAndroid::OnTabRemoved(
+    TabListInterface& tab_list,
+    tabs::TabInterface* tab,
+    TabRemovedReason removed_reason) {
+  if (tab) {
+    coordinator_->ClearDeferredEntryForTab(tab->GetHandle());
+  }
+}
+
 void SidePanelTabListObserverAndroid::OnTabListDestroyed(
     TabListInterface& tab_list) {
   observation_.Reset();

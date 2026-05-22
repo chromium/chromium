@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       CreateSidePanelEntry(entry_key, browser));
 
   // Set window to too small.
-  coordinator->OnWindowResized(nullptr, false);
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
 
   // Act: Try to show.
   coordinator->SidePanelUIBase::Show(entry_key, std::nullopt, true);
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
 
   // Make the window too small. This will hide the panel.
-  coordinator->OnWindowResized(nullptr, false);
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
   ASSERT_FALSE(coordinator->IsSidePanelShowing());
 
   // Act: Switch to Tab 1 while the window is still small.
@@ -1359,10 +1359,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SidePanelCoordinatorAndroidBrowserTest,
-    OnWindowResized_True_RestoresActiveEntryIfCachedKeyIsForDifferentTab) {
-  // Arrange: Open 2 tabs, both with their own entries.
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       OnWindowResized_RestoresTabScopedSidePanels) {
+  // Arrange
   BrowserWindowInterface* browser = GetBrowserWindow();
   auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
   auto* tab_list = TabListInterface::From(browser);
@@ -1379,32 +1378,94 @@ IN_PROC_BROWSER_TEST_F(
 
   coordinator->SetNoDelaysForTesting(true);
 
-  // 1. Show entry in Tab 1.
+  // Open Tab 1 and its tab-scoped side panel.
   tab_list->ActivateTab(tab_1->GetHandle());
   coordinator->SidePanelUIBase::Show(entry_key_1, std::nullopt, true);
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
 
-  // 2. Show entry in Tab 2.
+  // Open Tab 2 and its tab-scoped side panel.
   tab_list->ActivateTab(tab_2->GetHandle());
   coordinator->SidePanelUIBase::Show(entry_key_2, std::nullopt, true);
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
 
-  // 3. Make the window too small. This hides the panel and caches Tab 2's key.
-  coordinator->OnWindowResized(nullptr, false);
-  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+  // Make the window too narrow.
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
 
-  // 4. Switch to Tab 1 while the window is still small.
-  // This does NOT show the panel (blocked by small window).
+  // Tab 2's side panel is hidden (here we'll clear the active entry in Tab 2's
+  // SidePanelRegistry).
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(SidePanelRegistry::From(tab_2)->GetActiveEntry().has_value());
+
+  // Go to Tab 1.
   tab_list->ActivateTab(tab_1->GetHandle());
+
+  // Tab 1's side panel shouldn't appear because the window is still too narrow.
   ASSERT_FALSE(coordinator->IsSidePanelShowing());
 
-  // 5. Act: Make the window large again.
-  coordinator->OnWindowResized(nullptr, true);
+  // Now make the window wide enough.
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/true);
 
-  // 6. Assert: Side panel should be shown for Tab 1.
-  // Even though the cached key was for Tab 2, Tab 1 has its own active entry.
+  // Tab 1's side panel should appear (note that this is not the side panel
+  // entry that was hidden when the window became narrow).
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(entry_key_1));
+
+  // Go to Tab 2.
+  tab_list->ActivateTab(tab_2->GetHandle());
+
+  // Tab 2’s side panel should also appear (note that Tab 2’s SidePanelRegistry
+  // had no active entry when we went to Tab 2).
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(entry_key_2));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       OnWindowResized_RestoresMixedScopedSidePanels) {
+  // Arrange
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* tab_1 = tab_list->GetActiveTab();
+  tabs::TabInterface* tab_2 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  auto tab_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto window_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+
+  SidePanelRegistry::From(tab_1)->Register(
+      CreateSidePanelEntry(tab_entry_key, browser));
+  SidePanelRegistry::From(browser)->Register(
+      CreateSidePanelEntry(window_entry_key, browser));
+
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Open Tab 1 and its tab-scoped side panel.
+  tab_list->ActivateTab(tab_1->GetHandle());
+  coordinator->SidePanelUIBase::Show(tab_entry_key, std::nullopt, true);
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+
+  // Open Tab 2 and a window-scoped side panel.
+  tab_list->ActivateTab(tab_2->GetHandle());
+  coordinator->SidePanelUIBase::Show(window_entry_key, std::nullopt, true);
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+
+  // Go to Tab 1.
+  tab_list->ActivateTab(tab_1->GetHandle());
+
+  // Make the window too narrow.
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+
+  // Go to Tab 2.
+  tab_list->ActivateTab(tab_2->GetHandle());
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+
+  // Make the window wide enough.
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/true);
+
+  // Tab 2’s window-scoped panel should appear.
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(window_entry_key));
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
@@ -1562,14 +1623,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
 
   // 2. Window gets small -> Hides.
-  coordinator->OnWindowResized(nullptr, false);
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
   ASSERT_FALSE(coordinator->IsSidePanelShowing());
 
   // 3. Switch to Tab 2.
   tab_list->ActivateTab(tab_2->GetHandle());
 
   // 4. Window gets wide again.
-  coordinator->OnWindowResized(nullptr, true);
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/true);
 
   // Assert: Entry should NOT show in Tab 2 even though it has the same key.
   // This proves that UniqueKey (tab-aware) is used for restoration.
@@ -1587,4 +1648,92 @@ IN_PROC_BROWSER_TEST_F(
   // restoration key was specific to Tab 1 and was never cleared.
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(same_entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       TabClosure_ClearsDeferredEntryTracker) {
+  // Arrange
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* tab_1 = tab_list->GetActiveTab();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  SidePanelRegistry::From(tab_1)->Register(
+      CreateSidePanelEntry(entry_key, browser));
+
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Open Tab 1 and its tab-scoped panel.
+  tab_list->ActivateTab(tab_1->GetHandle());
+  coordinator->SidePanelUIBase::Show(entry_key, std::nullopt, true);
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+
+  // Make the window small. This defers the entry.
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+
+  const SidePanelDeferredEntryTracker& tracker =
+      coordinator->GetDeferredEntryTrackerForTesting();
+  tabs::TabHandle tab_1_handle = tab_1->GetHandle();
+  ASSERT_TRUE(tracker.GetEntry(tab_1_handle).has_value());
+
+  // Open Tab 2.
+  tabs::TabInterface* tab_2 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  tab_list->ActivateTab(tab_2->GetHandle());
+
+  // Act: Close Tab 1.
+  tab_list->CloseTab(tab_1_handle);
+
+  // Assert: The tracker should no longer hold an entry for Tab 1.
+  EXPECT_FALSE(tracker.GetEntry(tab_1_handle).has_value());
+}
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       TabSwitch_DefersEntry_ClearsRegistry) {
+  // Arrange
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* tab_1 = tab_list->GetActiveTab();
+  tabs::TabInterface* tab_2 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  SidePanelRegistry::From(tab_1)->Register(
+      CreateSidePanelEntry(entry_key, browser));
+
+  coordinator->SetNoDelaysForTesting(true);
+
+  // 1. Open side panel on Tab A.
+  tab_list->ActivateTab(tab_1->GetHandle());
+  coordinator->SidePanelUIBase::Show(entry_key, std::nullopt, true);
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_TRUE(SidePanelRegistry::From(tab_1)->GetActiveEntry().has_value());
+
+  // 2. Switch to Tab B.
+  tab_list->ActivateTab(tab_2->GetHandle());
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+  // CRITICAL: The entry remains active in Tab 1's background registry!
+  EXPECT_TRUE(SidePanelRegistry::From(tab_1)->GetActiveEntry().has_value());
+
+  // 3. Shrink the window.
+  coordinator->OnWindowResized(/*env=*/nullptr, /*can_show_side_panel=*/false);
+
+  // 4. Switch back to Tab A.
+  // This triggers MaybeShowEntryOnTabStripModelChanged -> Show() -> AddEntry().
+  tab_list->ActivateTab(tab_1->GetHandle());
+
+  // Assert: The panel cannot show because the window is small.
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+
+  // Assert: The entry should have been successfully deferred into the tracker.
+  const SidePanelDeferredEntryTracker& tracker =
+      coordinator->GetDeferredEntryTrackerForTesting();
+  EXPECT_TRUE(tracker.GetEntry(tab_1->GetHandle()).has_value());
+
+  // Because the entry is now deferred, it should not be active in the registry
+  // anymore. If AddEntry() didn't have ResetActiveEntry(), this expectation
+  // would fail.
+  EXPECT_FALSE(SidePanelRegistry::From(tab_1)->GetActiveEntry().has_value());
 }

@@ -62,6 +62,10 @@ inline std::string ToString(SidePanelOpenTrigger trigger) {
       return "ReadAnythingTogglePresentationButton";
     case SidePanelOpenTrigger::kReadAnythingKeyboardShortcut:
       return "ReadAnythingKeyboardShortcut";
+#if BUILDFLAG(IS_ANDROID)
+    case SidePanelOpenTrigger::kWindowResized:
+      return "WindowResized";
+#endif
   }
   NOTREACHED();
 }

@@ -214,36 +214,35 @@ void SidePanelCoordinatorAndroid::OnWindowResized(JNIEnv* env,
 
   is_window_too_small_ = !can_show_side_panel;
 
-  if (can_show_side_panel) {
-    CHECK(!IsSidePanelShowing() || IsClosing())
-        << "Side panel should not be visible when the window changes from "
-           "being too small to being large enough.";
-    if (key_to_restore_after_window_resize_ &&
-        CanShowEntryForKey(*key_to_restore_after_window_resize_)) {
-      // TODO(crbug.com/507911289): Revisit animations.
-      Show(*key_to_restore_after_window_resize_, std::nullopt,
-           /*suppress_animations=*/true);
-    } else {
-      // If we didn't restore a cached key (e.g. because we are on a different
-      // tab), check if the current tab has an active entry that was blocked.
-      SidePanelRegistry* contextual_registry = GetActiveContextualRegistry();
-      std::optional<SidePanelEntry*> active_contextual_entry =
-          contextual_registry ? contextual_registry->GetActiveEntry()
-                              : std::nullopt;
-      if (active_contextual_entry) {
-        Show(UniqueKey{contextual_registry->GetTabInterface().GetHandle(),
-                       (*active_contextual_entry)->key()},
-             std::nullopt, /*suppress_animations=*/true);
-      }
-    }
-  } else {
+  // Case 1: Window became too small. Hide the current side panel.
+  if (!can_show_side_panel) {
     if (IsSidePanelShowing() && !IsClosing()) {
-      std::optional<UniqueKey> current_key = this->current_key();
-      CHECK(current_key);
-      key_to_restore_after_window_resize_ = *current_key;
+      deferred_entry_tracker_.AddActiveEntries();
+
       Close(SidePanelEntryHideReason::kWindowResized,
             /*suppress_animations=*/true);
     }
+    return;
+  }
+
+  // Case 2: Window became large enough. Restore deferred entries.
+  CHECK(!IsSidePanelShowing() || IsClosing())
+      << "Side panel should not be visible when the window changes from "
+         "being too small to being large enough.";
+
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  if (!active_tab) {
+    return;
+  }
+
+  // Check if there's a deferred entry tracked explicitly.
+  std::optional<UniqueKey> key_to_show =
+      deferred_entry_tracker_.GetEntry(active_tab->GetHandle());
+
+  if (key_to_show) {
+    Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
+         /*suppress_animations=*/true);
   }
 }
 
@@ -298,8 +297,11 @@ void SidePanelCoordinatorAndroid::Show(
 
   if (is_window_too_small_) {
     SPLOG("Show - window is too small, skipping.");
+    deferred_entry_tracker_.AddEntry(key);
     return;
   }
+
+  deferred_entry_tracker_.ClearEntry(key);
 
   SidePanelEntry* entry = GetEntryForUniqueKey(key);
   if (!entry) {
@@ -456,13 +458,6 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
         << old_contextual_registry
         << ", new_contextual_registry: " << new_contextual_registry);
 
-  if (is_window_too_small_) {
-    SPLOG(
-        "MaybeShowEntryOnTabStripModelChanged - window is too small, "
-        "skipping.");
-    return;
-  }
-
   // If the side panel is showing, check if we should:
   // (1) replace the current UI content by calling `Show()`, or
   // (2) close the side panel by calling `Close()`.
@@ -470,12 +465,6 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
   // For (1), don't call `Close()` then `Show()`, which will cause janky UI.
   if (IsSidePanelShowing() && state_ != SidePanelState::kClosing) {
     std::optional<UniqueKey> new_active_key = GetNewActiveKeyOnTabChanged();
-
-    if (!new_active_key && key_to_restore_after_window_resize_ &&
-        CanShowEntryForKey(*key_to_restore_after_window_resize_)) {
-      new_active_key = key_to_restore_after_window_resize_;
-      key_to_restore_after_window_resize_.reset();
-    }
 
     if (new_active_key) {
       Show(*new_active_key, SidePanelOpenTrigger::kTabChanged,
@@ -490,6 +479,24 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
         Close(SidePanelEntryHideReason::kBackgrounded,
               /*suppress_animations=*/true);
       }
+
+      if (new_contextual_registry) {
+        // If there is no active entry in the new tab's registry, check if there
+        // is a deferred entry saved in the tracker for this tab or this window.
+        // This handles cases where a side panel was hidden due to constraints
+        // like a narrow window size.
+        // `Show()` handles `is_window_too_small_ == true`, and adds the entry
+        // to `SidePanelDeferredEntryTracker` if needed.
+        std::optional<UniqueKey> key_to_show = deferred_entry_tracker_.GetEntry(
+            new_contextual_registry->GetTabInterface().GetHandle());
+        if (key_to_show) {
+          // Suppress animations to avoid jarring UX during tab switches, and
+          // use SidePanelOpenTrigger::kWindowResized as the trigger to match
+          // the close reason that originally deferred this entry.
+          Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
+               /*suppress_animations=*/true);
+        }
+      }
     }
 
     return;
@@ -503,13 +510,28 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
     UniqueKey key{new_contextual_registry->GetTabInterface().GetHandle(),
                   (*new_active_entry)->key()};
     Show(key, SidePanelOpenTrigger::kTabChanged, /*suppress_animations=*/true);
-  } else if (key_to_restore_after_window_resize_ &&
-             CanShowEntryForKey(*key_to_restore_after_window_resize_)) {
-    Show(*key_to_restore_after_window_resize_,
-         SidePanelOpenTrigger::kTabChanged,
-         /*suppress_animations=*/true);
-    key_to_restore_after_window_resize_.reset();
+  } else if (new_contextual_registry) {
+    // If there is no active entry in the new tab's registry, check if there
+    // is a deferred entry saved in the tracker for this tab or this window.
+    // This handles cases where a side panel was hidden due to constraints
+    // like a narrow window size.
+    // `Show()` handles `is_window_too_small_ == true`, and adds the entry
+    // to `SidePanelDeferredEntryTracker` if needed.
+    std::optional<UniqueKey> key_to_show = deferred_entry_tracker_.GetEntry(
+        new_contextual_registry->GetTabInterface().GetHandle());
+    if (key_to_show) {
+      // Suppress animations to avoid jarring UX during tab switches, and use
+      // SidePanelOpenTrigger::kWindowResized as the trigger to match the close
+      // reason that originally deferred this entry.
+      Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
+           /*suppress_animations=*/true);
+    }
   }
+}
+
+void SidePanelCoordinatorAndroid::ClearDeferredEntryForTab(
+    const tabs::TabHandle& tab_handle) {
+  deferred_entry_tracker_.ClearEntryForTab(tab_handle);
 }
 
 void SidePanelCoordinatorAndroid::ClearCachedEntryViews() {

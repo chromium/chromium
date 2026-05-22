@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/side_panel/internal/android/side_panel_deferred_entry_tracker.h"
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_list_observer_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
@@ -66,12 +67,19 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
-  SidePanelEntryWaiter* GetWaiterForTesting() { return waiter(); }
-
+  // Other public functions:
+  void ClearDeferredEntryForTab(const tabs::TabHandle& tab_handle);
   bool IsClosing() const { return state_ == SidePanelState::kClosing; }
   bool ShouldClose() const {
     return state_ == SidePanelState::kShown ||
            state_ == SidePanelState::kOpening;
+  }
+
+  // Functions for testing:
+  SidePanelEntryWaiter* GetWaiterForTesting() { return waiter(); }
+  const SidePanelDeferredEntryTracker& GetDeferredEntryTrackerForTesting()
+      const {
+    return deferred_entry_tracker_;
   }
 
  protected:
@@ -127,9 +135,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Whether the window is too small to show a side panel.
   bool is_window_too_small_ = false;
 
-  // Key of the entry that was hidden when the window became too small.
-  // We'll re-show this entry if the window becomes large enough again.
-  std::optional<UniqueKey> key_to_restore_after_window_resize_;
+  SidePanelDeferredEntryTracker deferred_entry_tracker_{browser()};
 
   std::optional<gfx::Rect> last_starting_bounds_;
 
