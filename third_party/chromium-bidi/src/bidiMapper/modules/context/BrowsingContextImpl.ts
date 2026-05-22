@@ -809,6 +809,7 @@ export class BrowsingContextImpl {
         this.#downloadIdToUrlMap.set(params.guid, params.url);
 
         this.#eventManager.registerEvent(
+          // @ts-expect-error we do not support download yet. https://github.com/GoogleChromeLabs/chromium-bidi/issues/4155.
           {
             type: 'event',
             method: ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
@@ -843,6 +844,7 @@ export class BrowsingContextImpl {
         switch (params.state) {
           case 'canceled':
             this.#eventManager.registerEvent(
+              // @ts-expect-error we do not support download yet. https://github.com/GoogleChromeLabs/chromium-bidi/issues/4155.
               {
                 type: 'event',
                 method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
@@ -859,6 +861,7 @@ export class BrowsingContextImpl {
             break;
           case 'completed':
             this.#eventManager.registerEvent(
+              // @ts-expect-error we do not support download yet. https://github.com/GoogleChromeLabs/chromium-bidi/issues/4155.
               {
                 type: 'event',
                 method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,

@@ -761,6 +761,9 @@ export namespace BrowsingContext {
   export const NavigationSchema = z.lazy(() => z.string());
 }
 export namespace BrowsingContext {
+  export const DownloadSchema = z.lazy(() => z.string());
+}
+export namespace BrowsingContext {
   export const BaseNavigationInfoSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
@@ -1227,6 +1230,7 @@ export namespace BrowsingContext {
   export const DownloadWillBeginParamsSchema = z.lazy(() =>
     z
       .object({
+        download: BrowsingContext.DownloadSchema,
         suggestedFilename: z.string(),
       })
       .and(BrowsingContext.BaseNavigationInfoSchema),
@@ -1253,6 +1257,7 @@ export namespace BrowsingContext {
     z
       .object({
         status: z.literal('canceled'),
+        download: BrowsingContext.DownloadSchema,
       })
       .and(BrowsingContext.BaseNavigationInfoSchema),
   );
@@ -1262,6 +1267,7 @@ export namespace BrowsingContext {
     z
       .object({
         status: z.literal('complete'),
+        download: BrowsingContext.DownloadSchema,
         filepath: z.union([z.string(), z.null()]),
       })
       .and(BrowsingContext.BaseNavigationInfoSchema),

@@ -570,6 +570,9 @@ export namespace BrowsingContext {
   export type Navigation = string;
 }
 export namespace BrowsingContext {
+  export type Download = string;
+}
+export namespace BrowsingContext {
   export type BaseNavigationInfo = {
     context: BrowsingContext.BrowsingContext;
     navigation: BrowsingContext.Navigation | null;
@@ -998,6 +1001,7 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type DownloadWillBeginParams = {
+    download: BrowsingContext.Download;
     suggestedFilename: string;
   } & BrowsingContext.BaseNavigationInfo;
 }
@@ -1015,11 +1019,13 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type DownloadCanceledParams = {
     status: 'canceled';
+    download: BrowsingContext.Download;
   } & BrowsingContext.BaseNavigationInfo;
 }
 export namespace BrowsingContext {
   export type DownloadCompleteParams = {
     status: 'complete';
+    download: BrowsingContext.Download;
     filepath: string | null;
   } & BrowsingContext.BaseNavigationInfo;
 }
