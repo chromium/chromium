@@ -120,6 +120,8 @@ reviewer.
       label="User's account was determined to be ineligible by the server"/>
   <int value="9" label="User switched to a different tab"/>
   <int value="10" label="User navigated to a different website"/>
+  <int value="11" label="Max strikes reached"/>
+  <int value="12" label="Required delay after last strike not met"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixAccountLinkingFlowExitedReason) -->

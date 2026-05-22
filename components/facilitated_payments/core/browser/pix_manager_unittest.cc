@@ -160,7 +160,7 @@ class PixManagerTestWithAccountLinkingEnabled
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {
-        kEnablePixAccountLinking};
+        kEnablePixAccountLinkingNative};
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {
       enabled_features.push_back(kUseRustPixCodeValidator);
@@ -1202,7 +1202,7 @@ TEST_P(
     PixManagerTestWithAccountLinkingEnabled,
     NoLinkedAccount_AccountLinkingFlagDisabled_AccountLinkingFlowNotTriggered) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnablePixAccountLinking);
+  feature_list.InitAndDisableFeature(kEnablePixAccountLinkingNative);
 
   EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 

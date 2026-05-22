@@ -242,7 +242,7 @@ void PixManager::OnValidPixCode(std::string pix_code,
   // flow.
   if (!payments_data_manager->HasMaskedBankAccounts()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kNoLinkedAccount);
-    if (base::FeatureList::IsEnabled(kEnablePixAccountLinking)) {
+    if (base::FeatureList::IsEnabled(kEnablePixAccountLinkingNative)) {
       client_->InitPixAccountLinkingFlow(pix_payment_page_main_frame_origin_);
     }
     return;

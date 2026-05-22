@@ -355,7 +355,9 @@ INSTANTIATE_TEST_SUITE_P(
         PixAccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup,
         PixAccountLinkingFlowExitedReason::kServerSideIneligible,
         PixAccountLinkingFlowExitedReason::kTabIsNotActive,
-        PixAccountLinkingFlowExitedReason::kUserSwitchedWebsite));
+        PixAccountLinkingFlowExitedReason::kUserSwitchedWebsite,
+        PixAccountLinkingFlowExitedReason::kMaxStrikes,
+        PixAccountLinkingFlowExitedReason::kRequiredDelayNotPassed));
 
 TEST(FacilitatedPaymentsMetricsTest,
      LogGetDetailsForCreatePaymentInstrumentResultAndLatency) {

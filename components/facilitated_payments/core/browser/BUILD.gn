@@ -31,6 +31,8 @@ static_library("browser") {
     "pix_manager.h",
     "pix_manager_test_api.h",
     "strike_databases/payment_link_suggestion_strike_database.h",
+    "strike_databases/pix_account_linking_strike_database.cc",
+    "strike_databases/pix_account_linking_strike_database.h",
   ]
 
   public_deps = [

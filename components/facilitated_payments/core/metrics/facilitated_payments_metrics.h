@@ -189,7 +189,9 @@ enum class PixAccountLinkingFlowExitedReason {
   kServerSideIneligible = 8,
   kTabIsNotActive = 9,
   kUserSwitchedWebsite = 10,
-  kMaxValue = kUserSwitchedWebsite
+  kMaxStrikes = 11,
+  kRequiredDelayNotPassed = 12,
+  kMaxValue = kRequiredDelayNotPassed
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.AccountLinking.FlowExitedReason)
 
