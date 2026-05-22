@@ -618,6 +618,23 @@ TEST_F(ImageResourceTest, SuccessfulRevalidationJpeg) {
             image_resource->GetContent()->GetImage()->height());
 }
 
+TEST_F(ImageResourceTest, AddObserverDuringRevalidationNotifiesStaleImage) {
+  KURL url("http://127.0.0.1:8000/foo");
+  ImageResource* image_resource = ImageResource::CreateForTest(url);
+
+  ReceiveResponse(image_resource, url, "image/jpeg",
+                  base::as_chars(base::span(kJpegImage)));
+  ASSERT_TRUE(image_resource->GetContent()->HasImage());
+
+  image_resource->SetRevalidatingRequest(ResourceRequest(url));
+  auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
+      image_resource->GetContent());
+
+  EXPECT_EQ(1, observer->ImageChangedCount());
+  EXPECT_EQ(kJpegImageWidth, observer->ImageWidthOnLastImageChanged());
+  EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
+}
+
 TEST_F(ImageResourceTest, SuccessfulRevalidationSvg) {
   KURL url("http://127.0.0.1:8000/foo");
   ImageResource* image_resource = ImageResource::CreateForTest(url);

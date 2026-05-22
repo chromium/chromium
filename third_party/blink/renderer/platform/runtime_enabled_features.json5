@@ -5634,6 +5634,13 @@
       status: "stable",
     },
     {
+      // Kill switch for sending ImageChanged() to newly added
+      // observers while a stale cached image is revalidating.
+      // https://crbug.com/40757070
+      name: "StaleImageNaturalSizeDuringRevalidation",
+      status: "stable",
+    },
+    {
       // See https://github.com/w3c/csswg-drafts/issues/9398
       name: "StandardizedBrowserZoom",
       status: "stable",

@@ -174,11 +174,19 @@ void ImageResourceContent::AddObserver(ImageResourceObserver* observer) {
     }
   }
 
-  if (info_->IsCacheValidator())
+  const bool notify_during_revalidation =
+      RuntimeEnabledFeatures::StaleImageNaturalSizeDuringRevalidationEnabled();
+
+  if (!notify_during_revalidation && info_->IsCacheValidator()) {
     return;
+  }
 
   if (image_) {
     observer->ImageChanged(this, CanDeferInvalidation::kNo);
+  }
+
+  if (info_->IsCacheValidator()) {
+    return;
   }
 
   if (IsSufficientContentLoadedForPaint() && observers_.Contains(observer))
