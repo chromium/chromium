@@ -130,9 +130,6 @@
   <message name="IDS_AUTOFILL_CC_ELO" desc="Elo credit card name.">
     Elo
   </message>
-  <message name="IDS_AUTOFILL_CC_GOOGLE_PAY" desc="Google pay brand name">
-    Google Pay
-  </message>
   <message name="IDS_AUTOFILL_CC_JCB" desc="JCB credit card name.">
     JCB
   </message>
@@ -185,76 +182,13 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries.">
-    You are currently on a menu
-  </message>
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_CARD_INFORMATION_ENTRY" desc="Screen reader announcement used for filled card information that do not fill the web form.">
     Dialog with credit card details was shown
-  </message>
-
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that edit autofill profile option was selected.">
-    The edit address option was selected
-  </message>
-
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that delete autofill profile option was selected.">
-    The delete address option was selected
   </message>
 
   <!-- TODO(crbug.com/40266549): Update when Undo launches on iOS. -->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM" desc="Screen reader announcement indicating that current form autofilled values were cleared.">
     The autofilled info was cleared from the form
-  </message>
-
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling address fields option was selected.">
-    The fill address option was selected
-  </message>
-
-  <message name="IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="The text displayed at one of the autofill submenus options allowing the users to fill all address related fields at once." meaning="Fills all address related fields">
-    Fill address
-  </message>
-
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling name fields option was selected.">
-    The fill full name option was selected
-  </message>
-
-  <message name="IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED" desc="The text displayed at one of the autofill submenus options allowing the users to fill all name related fields at once." meaning="Fills all name related fields">
-    Fill full name
-  </message>
-
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that the fill everything option was selected.">
-    The fill everything option was selected
-  </message>
-
-  <message name="IDS_AUTOFILL_HIDE_SUGGESTIONS" desc="The text displayed at the Autofill popup to allow the user to hide the suggestions menu." meaning="Hides the suggestion list.">
-    Hide suggestions
-  </message>
-
-  <message name="IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub meny to open the edit address profile dialog." meaning="Entry point to address profile deletion.">
-    Edit address
-  </message>
-
-  <message name="IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub menu to open the delete address profile dialog." meaning="Entry point to address profile deletion.">
-    Delete address
-  </message>
-
-  <message name="IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT_OPTION_SELECTED" desc="The secondary text displayed on a house number suggestion was selected." meaning="The label for the house number field type store by autofill has been selected in the subpopup.">
-    House number option selected
-  </message>
-
-  <message name="IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT_OPTION_SELECTED" desc="The secondary text displayed on a street name suggestion was selected." meaning="The label for the street namefield type store by autofill has been selected in the subpopup.">
-    Street name option selected
-  </message>
-
-  <message name="IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT" desc="The secondary text displayed on a house number suggestion." meaning="The label for the house number field type store by autofill.">
-    House number
-  </message>
-
-  <message name="IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT" desc="The secondary text displayed on a street name suggestion." meaning="The label for the street namefield type store by autofill.">
-    Street name
-  </message>
-
-  <message name="IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the footer of the Autofill sub menu to fill everything from the address profile." meaning="Fill every available information from the address profile.">
-    Fill everything
   </message>
 
   <!-- Autofill Identity Credentials Suggestions -->
@@ -283,10 +217,6 @@
       Manage payment methods...
     </message>
 
-    <message name="IDS_AUTOFILL_MANAGE_PASSWORDS" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage passwords that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Passwords section of the Settings page." meaning="Manage passwords in the user profile that can be used by Chrome Autofill.">
-      Manage passwords...
-    </message>
-
     <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
       Manage loyalty cards...
     </message>
@@ -298,10 +228,6 @@
 
     <message name="IDS_AUTOFILL_MANAGE_PAYMENT_METHODS" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for payment methods like credit cards/debit cards. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage the payment methods in the user profile that can be used by Chrome Autofill.">
       Manage Payment Methods...
-    </message>
-
-    <message name="IDS_AUTOFILL_MANAGE_PASSWORDS" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage passwords that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Passwords section of the Settings page." meaning="Manage passwords in the user profile that can be used by Chrome Autofill.">
-      Manage Passwords...
     </message>
 
     <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
@@ -316,17 +242,6 @@
   <message name="IDS_AUTOFILL_SCAN_CREDIT_CARD" desc="An item in the autofill popup that triggers a new credit card to be scanned using the camera on the device." formatter_data="android_java">
     Scan new card
   </message>
-
-  <if expr="not use_titlecase">
-  <message name="IDS_AUTOFILL_SHOW_ALL_SAVED_FALLBACK" desc="The text shown as an option in the suggestion drop down when a password field is clicked">
-    Show all saved passwords
-  </message>
-  </if>
-  <if expr="use_titlecase">
-    <message name="IDS_AUTOFILL_SHOW_ALL_SAVED_FALLBACK" desc="In Title Case: The text shown as an option in the suggestion drop down when a password field is clicked">
-    Show All Saved Passwords
-  </message>
-  </if>
 
   <message name="IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE" desc="Title for the `Save and Fill` suggestion shown in the Autofill dropdown for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to save and fill a credit card with a single click.">
     Save card for faster checkout
@@ -368,11 +283,6 @@
   <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_TITLE" desc="Title text for IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
     Fill forms faster
   </message>
-
-
-  <!-- Autofill suggestion label separator -->
-  <message name="IDS_AUTOFILL_SUGGESTION_LABEL_SEPARATOR" desc="A separator to place between different elements of a suggestion's label. Labels sometimes have more than one type of information, such as a phone number and an email address or a street address, a phone number, and an email address. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate the parts of the label that appear on the same line, e.g. (877) 733-7699 • fanfeedback@redsox.com or 465 Huntington Ave • (617) 267-9300 • matthewt@mfa.org. A bullet • is preferred for separating the label parts; however, if the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
-  ''' • '''</message>
 
   <!-- Autofill credit card suggestion popup -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. [CHAR_LIMIT=32]">
@@ -633,9 +543,6 @@
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
       Save address?
     </message>
-    <message name="IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to migrate a new address in their Google Account.">
-      Save in account?
-    </message>
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
       Update address?
     </message>
@@ -674,9 +581,6 @@
     </message>
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to save a new address." meaning="In Title Case for iOS">
       Save address
-    </message>
-   <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to save a new address in Google Account." meaning="In Title Case for iOS">
-      Save in account
     </message>
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
       Update address
@@ -774,18 +678,6 @@
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that adds new info to an existing profile.">
       Cancel
     </message>
-    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE" desc="The 'Add new address' bubble title.">
-      Fill your address with less typing
-    </message>
-    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE" desc="The title of the editor dialog called after the 'Add new address' prompt is accepted.">
-      Add address
-    </message>
-    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_CHROME_PROMPT_BODY_TEXT" desc="The 'Add new address' bubble body text if the address will be saved in Chrome (locally or syncable among Chromes on different devices).">
-      You don't have any addresses saved. Add an address to use it in Chrome.
-    </message>
-    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_ACCOUNT_PROMPT_BODY_TEXT" desc="The 'Add new address' bubble body text if the address will be save in the user's Google account.">
-      You don't have any addresses saved. Add an address to use it across Google products.
-    </message>
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
       No thanks
     </message>
@@ -809,9 +701,6 @@
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
       Update
-    </message>
-    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_DIALOG_OK_BUTTON_LABEL" desc="Label of the OK button in the dialog that promts the user to add a new address.">
-      Add address
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
       Cancel
@@ -903,9 +792,6 @@
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION" desc="Message shown when @memory search fails to connect to the server." translateable="false">
     No server connection
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE" desc="Subtitle of the AtMemory search trigger affordance." translateable="false">
-    Find and fill info with Gemini
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE" desc="Title for the suggestion shown when the query is unsupported by @memory." translateable="false">
     Couldn't find this info
@@ -1252,9 +1138,6 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON" desc="Text displayed on the accept/save button of the update dialog.">
     Update
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS" desc="Text displayed on the footer of the save dialog giving users details about how enhanced autofill data is saved.">
-    Saved info and the page from <ph name="WEBSITE">$1<ex>airline.com</ex></ph> are sent to Google and may be seen by human reviewers to improve this feature.
-  </message>
 
   <!-- Iph -->
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE" desc="The title of a promotional bubble that is likely the user's first engagement with enhanced autofill. Many users are familiar with Chrome Autofill and use it to automatically fill in things like passwords and credit cards. This service promoted on this screen frames the new service as the autofill that users are familiar with but better, because it's powered by AI and can do more for you.">
@@ -1274,9 +1157,6 @@
   </message>
   <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_BODY" desc="IPH toast for a suggestion item with an item from Google Wallet.">
     Manage your information or turn these suggestions off in Settings
-  </message>
-  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH toast for a suggestion item with an item from Google Wallet.">
-    Now you can autofill more info from Google Wallet
   </message>
 
   <!-- Save/ Update dialog-->
