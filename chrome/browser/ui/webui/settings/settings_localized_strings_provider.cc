@@ -1836,6 +1836,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       autofill_client &&
           autofill::MayPerformAutofillAiAction(
               *autofill_client, autofill::AutofillAiAction::kOptIn));
+  // TODO(crbug.com/515356902): Check enable/disable eligibility per entity type,
+  // similar to how it is done on Clank. See crrev.com/c/7847781
   html_source->AddBoolean(
       "canEnableOrDisableAutofillAi",
       autofill_client &&
