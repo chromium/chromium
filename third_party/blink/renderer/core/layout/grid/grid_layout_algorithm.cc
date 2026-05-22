@@ -1657,7 +1657,9 @@ class GapAccumulator {
     return gap_idx_to_set_idx;
   }
 
-  const GapGeometry* FinalizeGapGeometry() {
+  const GapGeometry* FinalizeGapGeometry(
+      const GridLayoutTrackCollection& rows,
+      const GridLayoutTrackCollection& columns) {
     // `GapGeometry` requires both row(main) and column(cross) gaps to be valid.
     if (gap_geometry_->MainGapCount() == 0 &&
         gap_geometry_->CrossGapCount() == 0) {
@@ -1668,22 +1670,15 @@ class GapAccumulator {
     gap_geometry_->SetBlockGapSize(row_gutter_size_);
 
     // Finalize the `GapSegmentStateRanges` for each gap using the aggregated
-    // cell states collected during `AggregateCellStates`. Only finalize if there
-    // were any cells for that axis.
-    if (main_gaps_aggregator_.GetCellCount() > 0) {
-      for (wtf_size_t gap_index = 0; gap_index < gap_geometry_->MainGapCount();
-           ++gap_index) {
-        main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-            gap_geometry_->MainGapAt(gap_index), gap_index);
-      }
+    // cell states collected during `AggregateCellStates`.
+    if (main_gaps_aggregator_.GetCellCount() > 0 &&
+        gap_geometry_->MainGapCount() > 0) {
+      FinalizeAxisRanges(rows, GapAxis::kMain);
     }
 
-    if (cross_gaps_aggregator_.GetCellCount() > 0) {
-      for (wtf_size_t gap_index = 0; gap_index < gap_geometry_->CrossGapCount();
-           ++gap_index) {
-        cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-            gap_geometry_->CrossGapAt(gap_index), gap_index);
-      }
+    if (cross_gaps_aggregator_.GetCellCount() > 0 &&
+        gap_geometry_->CrossGapCount() > 0) {
+      FinalizeAxisRanges(columns, GapAxis::kCross);
     }
 
     gap_geometry_->SetContentInlineOffsets(content_inline_start_,
@@ -1697,6 +1692,57 @@ class GapAccumulator {
   }
 
  private:
+  enum class GapAxis { kMain, kCross };
+
+  // Finalizes each gap's `GapSegmentStateRanges` using the adjacent track
+  // index as the key, adjusting for collapsed tracks.
+  //
+  // TODO(samomekarajr): Apply the same range-based iteration to
+  // `BuildMainGaps` and `BuildCrossGaps`, which still walk every line with
+  // an O(nlogn) `RangeIndexFromGridLine` lookup per line.
+  void FinalizeAxisRanges(const GridLayoutTrackCollection& tracks,
+                          GapAxis axis) {
+    const wtf_size_t gap_count = axis == GapAxis::kMain
+                                     ? gap_geometry_->MainGapCount()
+                                     : gap_geometry_->CrossGapCount();
+    const wtf_size_t first_non_collapsed_line =
+        tracks.FirstNonCollapsedLineIndex();
+    wtf_size_t gap_index = 0;
+    for (wtf_size_t range_index = 0;
+         range_index < tracks.RangeCount() && gap_index < gap_count;
+         ++range_index) {
+      // Skip collapsed ranges, as the don't contribute to the gap geometry.
+      if (tracks.RangeProperties(range_index)
+              .HasProperty(TrackSpanProperties::kIsCollapsed)) {
+        continue;
+      }
+
+      const wtf_size_t start_line = tracks.RangeStartLine(range_index);
+      const wtf_size_t end_line =
+          start_line + tracks.RangeTrackCount(range_index);
+      wtf_size_t line_index = start_line;
+
+      // The first non-collapsed range's leading line is the outer edge of
+      // the grid content, so it's not a gap and we skip it.
+      if (start_line == first_non_collapsed_line) {
+        ++line_index;
+      }
+
+      for (; line_index < end_line && gap_index < gap_count; ++line_index) {
+        const wtf_size_t track_index = line_index - 1;
+        if (axis == GapAxis::kMain) {
+          main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+              gap_geometry_->MainGapAt(gap_index), track_index);
+        } else {
+          cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+              gap_geometry_->CrossGapAt(gap_index), track_index);
+        }
+        ++gap_index;
+      }
+    }
+    CHECK_EQ(gap_index, gap_count);
+  }
+
   GapGeometry* gap_geometry_ = nullptr;
 
   LayoutUnit content_block_start_;
@@ -1852,7 +1898,8 @@ void GridLayoutAlgorithm::PlaceGridItems(
   }
 
   if (gap_accumulator) {
-    if (const auto* gap_geometry = gap_accumulator->FinalizeGapGeometry()) {
+    if (const auto* gap_geometry = gap_accumulator->FinalizeGapGeometry(
+            layout_data->Rows(), layout_data->Columns())) {
       // If `out_unfragmented_gap_geometry` is present we just want to record
       // the initial position of all gaps for the purposes of fragmentation.
       // Don't add these to the builder.
