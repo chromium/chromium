@@ -18392,6 +18392,21 @@
             ]
         }
     ],
+    "PdfSaveToDrive_ChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfSaveToDrive"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfUseShowSaveFilePicker": [
         {
             "platforms": [
