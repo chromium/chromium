@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -38,6 +39,17 @@ FileSystemAccessRestorePermissionBubbleView::
     : LocationBarBubbleDelegateView(anchor, web_contents),
       window_title_(window_title),
       callback_(std::move(callback)) {
+  if (web_contents) {
+    if (auto* tab_interface =
+            tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+      tab_deactivation_subscription_ =
+          tab_interface->RegisterWillDeactivate(base::BindRepeating(
+              [](FileSystemAccessRestorePermissionBubbleView* bubble_view,
+                 tabs::TabInterface* tab) { bubble_view->CloseBubble(); },
+              base::Unretained(this)));
+    }
+  }
+
   // Initial set up.
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -126,7 +138,8 @@ FileSystemAccessRestorePermissionBubbleView::CreateAndShow(
 
   auto* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  if (!browser || !browser->GetWindow()) {
+  if (!browser || !browser->GetWindow() || !browser->GetActiveTabInterface() ||
+      browser->GetActiveTabInterface()->GetContents() != web_contents) {
     return nullptr;
   }
 
@@ -147,6 +160,11 @@ FileSystemAccessRestorePermissionBubbleView::CreateAndShow(
   bubble_view->ShowForReason(
       FileSystemAccessRestorePermissionBubbleView::AUTOMATIC);
   return bubble_view;
+}
+
+void FileSystemAccessRestorePermissionBubbleView::CloseBubble() {
+  tab_deactivation_subscription_ = {};
+  LocationBarBubbleDelegateView::CloseBubble();
 }
 
 void FileSystemAccessRestorePermissionBubbleView::AddedToWidget() {

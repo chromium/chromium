@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTORE_PERMISSION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTORE_PERMISSION_BUBBLE_VIEW_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/permissions/permission_util.h"
@@ -49,6 +50,9 @@ class FileSystemAccessRestorePermissionBubbleView
       base::OnceCallback<void(permissions::PermissionAction)> callback,
       content::WebContents* web_contents);
 
+  // LocationBarBubbleDelegateView:
+  void CloseBubble() override;
+
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
   bool ShouldShowCloseButton() const override;
@@ -67,6 +71,7 @@ class FileSystemAccessRestorePermissionBubbleView
  private:
   const std::u16string window_title_;
   base::OnceCallback<void(permissions::PermissionAction)> callback_;
+  base::CallbackListSubscription tab_deactivation_subscription_;
 };
 
 void ShowFileSystemAccessRestorePermissionDialog(
