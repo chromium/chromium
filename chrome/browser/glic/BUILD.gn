@@ -756,6 +756,7 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [
       "actor/glic_actor_policy_checker_browsertest.cc",
+      "common/instance_independent_hotkey_manager_browsertest.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
       "glic_browsertest.cc",
       "glic_context_menu_browsertest.cc",

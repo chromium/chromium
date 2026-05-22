@@ -102,8 +102,8 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
   tab_observer_ = GlicTabObserver::Create(
       profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
                                     weak_ptr_factory_.GetWeakPtr()));
-  hotkey_manager_ = std::make_unique<InstanceIndependentHotkeyManager>(this);
-
+  hotkey_manager_ =
+      std::make_unique<InstanceIndependentHotkeyManager>(this, profile_);
   metrics_.StartPeriodicMemoryMetricsRecording();
 }
 

@@ -60,22 +60,4 @@ void GlicController::ToggleUI(bool prevent_close,
   glic_keyed_service->ToggleUI(nullptr, prevent_close, source);
 }
 
-void GlicController::RequestCaptureRegion() {
-  BrowserWindowInterface* const bwi =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (!bwi) {
-    return;
-  }
-  GlicKeyedService* glic_keyed_service =
-      GlicKeyedService::Get(bwi->GetProfile());
-  if (!glic_keyed_service) {
-    return;
-  }
-  GlicInvokeOptions options(
-      glic::mojom::InvocationSource::kCaptureRegionHotkey);
-  options.wait_for_panel_open = true;
-  options.target = Target(bwi->GetActiveTabInterface());
-  glic_keyed_service->Invoke(std::move(options));
-}
-
 }  // namespace glic

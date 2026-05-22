@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +38,9 @@ constexpr int kFocusToggleAcceleratorModifiers =
 constexpr auto kCommandToPrefMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Command, const char*>(
         {{LocalHotkeyManager::Command::kFocusToggle,
-          prefs::kGlicFocusToggleHotkey}});
+          prefs::kGlicFocusToggleHotkey},
+         {LocalHotkeyManager::Command::kCaptureRegion,
+          prefs::kGlicSelectionHotkey}});
 
 constexpr std::array kCloseAccelerators = {
     ui::Accelerator{ui::VKEY_ESCAPE, ui::EF_NONE},
@@ -145,6 +148,8 @@ ui::Accelerator LocalHotkeyManager::GetDefaultAccelerator(Command command) {
   switch (command) {
     case Command::kFocusToggle:
       return ui::Accelerator{ui::VKEY_G, kFocusToggleAcceleratorModifiers};
+    case Command::kCaptureRegion:
+      return GlicLauncherConfiguration::GetDefaultSelectionHotkey();
     default:
       NOTREACHED();
   }

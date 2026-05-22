@@ -12,7 +12,7 @@
 
 namespace glic {
 
-class GlicInstanceCoordinatorImpl;
+class GlicInstanceCoordinator;
 
 // Manages instance-independent hotkeys that are active application-wide.
 // These hotkeys are registered globally across all browser windows and are
@@ -24,7 +24,8 @@ class InstanceIndependentHotkeyManager
     : public LocalHotkeyManager::EventHandler {
  public:
   explicit InstanceIndependentHotkeyManager(
-      GlicInstanceCoordinatorImpl* coordinator);
+      GlicInstanceCoordinator* coordinator,
+      Profile* profile);
   ~InstanceIndependentHotkeyManager() override;
 
   // LocalHotkeyManager::EventHandler:
@@ -32,8 +33,13 @@ class InstanceIndependentHotkeyManager
   bool CanHandleAccelerators() const override;
 
  private:
+#if !BUILDFLAG(IS_ANDROID)
+  void RequestCaptureRegion();
+#endif
+
+  raw_ptr<GlicInstanceCoordinator> coordinator_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<LocalHotkeyManager> hotkey_manager_;
-  raw_ptr<GlicInstanceCoordinatorImpl> coordinator_;
 };
 
 }  // namespace glic

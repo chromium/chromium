@@ -151,8 +151,7 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
       status_tray_(status_tray),
       enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
       expected_registered_hotkeys_(
-          {GlicLauncherConfiguration::GetGlobalHotkey(),
-           GlicLauncherConfiguration::GetSelectionGlobalHotkey()}) {
+          {GlicLauncherConfiguration::GetGlobalHotkey()}) {
   g_browser_process->profile_manager()->AddObserver(this);
   // Start tracking any profiles that already exist.
   for (auto* profile :
@@ -187,8 +186,7 @@ void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
 
 void GlicBackgroundModeManager::OnGlobalHotkeyChanged() {
   std::vector<ui::Accelerator> new_hotkeys = {
-      GlicLauncherConfiguration::GetGlobalHotkey(),
-      GlicLauncherConfiguration::GetSelectionGlobalHotkey()};
+      GlicLauncherConfiguration::GetGlobalHotkey()};
 
   if (expected_registered_hotkeys_ == new_hotkeys) {
     return;
@@ -215,10 +213,6 @@ void GlicBackgroundModeManager::HandleHotkey(
                                     accelerator == default_hotkey
                                         ? glic::HotkeyUsage::kDefault
                                         : glic::HotkeyUsage::kCustom);
-      break;
-    }
-    case HotkeyIndex::kSelectionKey: {
-      controller_->RequestCaptureRegion();
       break;
     }
   }

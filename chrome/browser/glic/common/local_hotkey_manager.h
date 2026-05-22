@@ -46,6 +46,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     kZoomOut,
     // Reset zoom level of the web client.
     kZoomReset,
+    // Capture a region of the screen.
+    kCaptureRegion,
 #if BUILDFLAG(IS_WIN)
     // Show the title bar context menu
     kTitleBarContextMenu,
@@ -81,6 +83,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
         return "kZoomOut";
       case Command::kZoomReset:
         return "kZoomReset";
+      case Command::kCaptureRegion:
+        return "kCaptureRegion";
 #if BUILDFLAG(IS_WIN)
       case Command::kTitleBarContextMenu:
         return "kTitleBarContextMenu";

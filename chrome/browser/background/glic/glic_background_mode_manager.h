@@ -71,7 +71,6 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
 
   enum class HotkeyIndex : uint8_t {
     kPanelKey,
-    kSelectionKey,
   };
 
   const std::vector<ui::Accelerator>& RegisteredHotkeyForTesting() {

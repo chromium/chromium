@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/public/glic_close_options.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -75,6 +76,8 @@ class GlicInstanceCoordinator {
   virtual void UnpinTabsFromAllInstances(
       base::span<const tabs::TabHandle> tab_handles,
       GlicUnpinTrigger trigger) = 0;
+
+  virtual base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
