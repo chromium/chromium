@@ -9795,3 +9795,7 @@ crbug.com/475867727 [ Mac15-arm64 ] http/tests/devtools/network/font-face.js [ F
 crbug.com/515519537 external/wpt/xml/xslt/xslt-mutation-crash.xhtml [ Crash Timeout ]
 crbug.com/515519537 virtual/xslt-disabled/external/wpt/xml/xslt/xslt-mutation-crash.xhtml [ Crash Timeout ]
 
+# Gardener 2026-05-22
+crbug.com/515670908 [ Release Win11-arm64 ] inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Failure Pass ]
+crbug.com/515194597 [ Release Win11-arm64 ] virtual/text-antialias/font-fallback.html [ Failure Pass ]
+crbug.com/513985436 [ Release Win11-arm64 ] virtual/text-antialias/selection/khmer-selection.html [ Failure Pass ]
