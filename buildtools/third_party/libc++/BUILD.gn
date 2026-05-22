@@ -494,6 +494,12 @@ target(libcxx_target_type, "libc++") {
     ]
   }
 
+  if (is_chromeos) {
+    # filesystem_clock is needed for LiteRT on ChromeOS.
+    sources +=
+        [ "//third_party/libc++/src/src/filesystem/filesystem_clock.cpp" ]
+  }
+
   include_dirs = [ "//third_party/libc++/src/src" ]
   if (is_win) {
     sources += [

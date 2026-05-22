@@ -54,7 +54,6 @@ group("litert") {
   public_deps = [ ":litert_headers" ]
   deps = [
     ":litert_c",
-    ":litert_cc",
     ":litert_compiler",
     ":litert_core",
     ":litert_runtime",
@@ -330,6 +329,12 @@ source_set("litert_headers") {
         [ "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.h" ]
   }
 
+  if (is_win) {
+    public += [ "src/litert/cc/internal/scoped_file_win.h" ]
+  } else {
+    public += [ "src/litert/cc/internal/scoped_file_posix.h" ]
+  }
+
   public_deps = [
     ":mutable_tflite_schema",
     "//third_party/abseil-cpp:absl",
@@ -361,7 +366,6 @@ source_set("litert_headers") {
   visibility = [
     ":litert",
     ":litert_c",
-    ":litert_cc",
     ":litert_compiler",
     ":litert_core",
     ":litert_runtime",
@@ -383,7 +387,6 @@ static_library("litert_c") {
     "src/litert/c/internal/litert_external_litert_buffer_context.cc",
     "src/litert/c/internal/litert_logging.cc",
     "src/litert/c/internal/litert_runtime_context.cc",
-    "src/litert/c/internal/litert_static_accelerator_registry.cc",
     "src/litert/c/internal/litert_tensor_buffer_registry.cc",
     "src/litert/c/litert_builder.cc",
     "src/litert/c/litert_common.cc",
@@ -417,41 +420,6 @@ static_library("litert_c") {
   visibility = [ ":litert" ]
 }
 
-static_library("litert_cc") {
-  sources = [
-    "src/litert/cc/internal/litert_op_options.cc",
-    "src/litert/cc/internal/litert_runtime_builtin.cc",
-    "src/litert/cc/internal/litert_shared_library.cc",
-    "src/litert/cc/internal/litert_tensor_buffer_utils.cc",
-    "src/litert/cc/internal/scoped_file.cc",
-    "src/litert/cc/litert_compiled_model.cc",
-    "src/litert/cc/litert_macros.cc",
-    "src/litert/cc/litert_model.cc",
-    "src/litert/cc/litert_options.cc",
-    "src/litert/cc/litert_tensor_buffer.cc",
-    "src/litert/cc/options/litert_compiler_options.cc",
-    "src/litert/cc/options/litert_cpu_options.cc",
-    "src/litert/cc/options/litert_google_tensor_options.cc",
-    "src/litert/cc/options/litert_gpu_options.cc",
-    "src/litert/cc/options/litert_intel_openvino_options.cc",
-    "src/litert/cc/options/litert_magic_number_options.cc",
-    "src/litert/cc/options/litert_mediatek_options.cc",
-    "src/litert/cc/options/litert_qualcomm_options.cc",
-    "src/litert/cc/options/litert_runtime_options.cc",
-    "src/litert/cc/options/litert_samsung_options.cc",
-    "src/litert/cc/options/litert_webnn_options.cc",
-  ]
-  if (is_win) {
-    sources += [ "src/litert/cc/internal/scoped_file_win.cc" ]
-  } else {
-    sources += [ "src/litert/cc/internal/scoped_file_posix.cc" ]
-  }
-  deps = [ ":litert_headers" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  visibility = [ ":litert" ]
-}
-
 static_library("litert_compiler") {
   sources = [
     "src/litert/compiler/plugin/algo.cc",
@@ -470,7 +438,19 @@ static_library("litert_compiler") {
 }
 
 static_library("litert_runtime_accelerators") {
-  sources = [ "src/litert/runtime/accelerators/auto_registration.cc" ]
+  sources = [
+    "src/litert/runtime/accelerators/auto_registration.cc",
+    "src/litert/runtime/accelerators/cpu_registry.cc",
+    "src/litert/runtime/accelerators/cpu_registry.h",
+    "src/litert/runtime/accelerators/gpu_registry.cc",
+    "src/litert/runtime/accelerators/gpu_registry.h",
+    "src/litert/runtime/accelerators/npu_registry.cc",
+    "src/litert/runtime/accelerators/npu_registry.h",
+    "src/litert/runtime/accelerators/registration_helper.cc",
+    "src/litert/runtime/accelerators/registration_helper.h",
+    "src/litert/runtime/accelerators/webnn_registry.cc",
+    "src/litert/runtime/accelerators/webnn_registry.h",
+  ]
 
   if (build_litert_with_xnnpack) {
     sources +=
