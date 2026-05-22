@@ -10,14 +10,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.DropdownItemBase;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
 
 /** A container representing a single entry in an Autofill UI (e.g. keyboard accessory). */
 @NullMarked
-public class AutofillSuggestion extends DropdownItemBase {
+public class AutofillSuggestion {
     private final @Nullable String mLabel;
     private final @Nullable String mSecondaryLabel;
     private final String mSublabel;
@@ -86,40 +85,26 @@ public class AutofillSuggestion extends DropdownItemBase {
         mPayload = payload;
     }
 
-    @Override
     public @Nullable String getLabel() {
         return mLabel;
     }
 
-    @Override
     public @Nullable String getSecondaryLabel() {
         return mSecondaryLabel;
     }
 
-    @Override
     public String getSublabel() {
         return mSublabel;
     }
 
-    @Override
     public @Nullable String getSecondarySublabel() {
         return mSecondarySublabel;
     }
 
-    @Override
     public int getIconId() {
         return mIconId;
     }
 
-    @Override
-    public int getLabelFontColorResId() {
-        if (mSuggestionType == SuggestionType.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE) {
-            return R.color.insecure_context_payment_disabled_message_text;
-        }
-        return super.getLabelFontColorResId();
-    }
-
-    @Override
     public @Nullable GURL getCustomIconUrl() {
         return mCustomIconUrl;
     }

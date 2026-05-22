@@ -115,7 +115,6 @@ found in the LICENSE file.
 
     <!--  Dropdown divier  -->
     <color name="dropdown_divider_color">@color/baseline_neutral_70</color>
-    <color name="dropdown_dark_divider_color">@color/white_alpha_12</color>
 
     <!-- Ripple Colors -->
     <color name="ripple_color_blue_dark">@color/baseline_primary_40</color>

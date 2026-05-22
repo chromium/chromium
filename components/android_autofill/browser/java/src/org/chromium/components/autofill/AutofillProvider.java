@@ -35,6 +35,7 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.AutofillPopup.AutofillDropdownItem;
 import org.chromium.components.autofill.AutofillRequest.FocusField;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -89,7 +90,7 @@ public class AutofillProvider {
     private long mAutofillTriggeredTimeMillis;
     private WeakReference<Context> mContextRef; // Use `getContext()` to access the Context.
     private AutofillPopup mDatalistPopup;
-    private AutofillSuggestion[] mDatalistSuggestions;
+    private @Nullable AutofillDropdownItem[] mDatalistSuggestions;
     private WebContentsAccessibility mWebContentsAccessibility;
     private View mAnchorView;
     private PrefillRequest mPrefillRequest;
@@ -667,15 +668,10 @@ public class AutofillProvider {
      */
     private void showDatalistPopup(
             String[] datalistValues, String[] datalistLabels, RectF bounds, boolean isRtl) {
-        mDatalistSuggestions = new AutofillSuggestion[datalistValues.length];
+        mDatalistSuggestions = new AutofillDropdownItem[datalistValues.length];
         for (int i = 0; i < mDatalistSuggestions.length; i++) {
             mDatalistSuggestions[i] =
-                    new AutofillSuggestion.Builder()
-                            .setLabel(datalistValues[i])
-                            .setSubLabel(datalistLabels[i])
-                            .setSuggestionType(SuggestionType.DATALIST_ENTRY)
-                            .setFeatureForIph("")
-                            .build();
+                    new AutofillDropdownItem(datalistValues[i], datalistLabels[i]);
         }
         if (mWebContentsAccessibility == null) {
             mWebContentsAccessibility = WebContentsAccessibility.fromWebContents(mWebContents);
