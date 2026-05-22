@@ -11,6 +11,12 @@ import type {OmniboxComposeboxElement} from './omnibox_composebox.js';
 export function getHtml(this: OmniboxComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+    <ntp-error-scrim id="errorScrim" part="error-scrim"
+        ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
+                         this.files.size === 0}"
+        .errorMessage="${this.errorMessage}"
+        @dismiss-error-scrim="${this.onDismissErrorScrim}">
+    </ntp-error-scrim>
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
       @keydown="${this.onKeydown}">
       <div id="inputContainer" part="input-container">
@@ -28,58 +34,66 @@ export function getHtml(this: OmniboxComposeboxElement) {
             @input-focusin="${this.onInputFocusin}">
         </cr-composebox-input>
         <div id="context" part="context-entrypoint">
-          <!-- TODO(crbug.com/486706573): Add back shouldDisableFileInputs_ when added to mixin-->
-          <cr-composebox-file-inputs id="fileInputs"
-              @file-change="${this.onFileChange}">
-            <!-- TODO(crbug.com/508287630): Add carousel. -->
-                          ${this.shouldShowDivider() ? html`
-            <div class="carousel-divider" part="carousel-divider"></div>
-            ` : ''}
-            <cr-composebox-dropdown
-                id="matches"
-                part="dropdown"
-                exportparts="match-text-container"
-                role="listbox"
-                .result="${this.result}"
-                .selectedMatchIndex="${this.selectedMatchIndex}"
-                .maxSuggestions="${this.maxSuggestions}"
-                .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
-                @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-                @match-focusin="${this.onMatchFocusin}"
-                @match-click="${this.onMatchClick}"
-                ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
-                .lastQueriedInput="${this.lastQueriedInput}">
-            </cr-composebox-dropdown>
-            ${this.contextMenuEnabled ? html`
-              <div class="context-menu-container" id="contextMenuContainer"
-                  part="context-menu-and-tools"
-                  @mousedown="${this.onContextMenuContainerMousedown}"
-                  @click="${this.onContextMenuContainerClick}">
-                ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
-                  <cr-composebox-contextual-entrypoint-button
-                      id="contextEntrypoint"
-                      part="composebox-entrypoint"
-                      exportparts="context-menu-entrypoint-icon, entrypoint-button"
-                      class="upload-button no-overlap"
-                      .inputState="${this.inputState}"
-                      .applyContextButtonBackground="${this.applyContextButtonBackground}"
-                      .isOblongShape="${this.isOblongShape}"
-                      ?upload-button-disabled="${this.uploadButtonDisabled}"
-                      ?show-context-menu-description="${this.showContextMenuDescription}">
-                  </cr-composebox-contextual-entrypoint-button>
-                ` : ''}
-                ${this.searchboxLayoutMode !== 'Compact' &&
-                  this.inToolMode ? html`
-                  <cr-composebox-tool-chip
-                    exportparts="tool-chip-label"
+          <div id="carouselContainer" part="carousel-container">
+            <div class="carousel-container-inner">
+              ${this.showFileCarousel ? html`
+                <cr-composebox-file-carousel
+                  part="cr-composebox-file-carousel"
+                  exportparts="thumbnail, thumbnail-title"
+                  id="carousel"
+                  .files="${this.getFilteredCarouselFiles()}"
+                  ?enable-scrolling="${this.enableCarouselScrolling}"
+                  @delete-file="${this.onDeleteFile}">
+                </cr-composebox-file-carousel> ` : ''}
+            </div>
+          </div>
+          ${this.shouldShowDivider() ? html`
+          <div class="carousel-divider" part="carousel-divider"></div>
+          ` : ''}
+          <cr-composebox-dropdown
+              id="matches"
+              part="dropdown"
+              exportparts="match-text-container"
+              role="listbox"
+              .result="${this.result}"
+              .selectedMatchIndex="${this.selectedMatchIndex}"
+              .maxSuggestions="${this.maxSuggestions}"
+              .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
+              @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+              @match-focusin="${this.onMatchFocusin}"
+              @match-click="${this.onMatchClick}"
+              ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
+              .lastQueriedInput="${this.lastQueriedInput}">
+          </cr-composebox-dropdown>
+          ${this.contextMenuEnabled ? html`
+            <div class="context-menu-container" id="contextMenuContainer"
+                part="context-menu-and-tools"
+                @mousedown="${this.onContextMenuContainerMousedown}"
+                @click="${this.onContextMenuContainerClick}">
+              ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
+                <cr-composebox-contextual-entrypoint-button
+                    id="contextEntrypoint"
+                    part="composebox-entrypoint"
+                    exportparts="context-menu-entrypoint-icon, entrypoint-button"
+                    class="upload-button no-overlap"
                     .inputState="${this.inputState}"
-                    .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
-                    @tool-click="${this.onToolClick}">
-                  </cr-composebox-tool-chip>
-                ` : ''}
-              </div>
-            ` : ''}
-          </cr-composebox-file-inputs>
+                    .applyContextButtonBackground="${this.applyContextButtonBackground}"
+                    .isOblongShape="${this.isOblongShape}"
+                    ?upload-button-disabled="${this.uploadButtonDisabled}"
+                    ?show-context-menu-description="${this.showContextMenuDescription}">
+                </cr-composebox-contextual-entrypoint-button>
+              ` : ''}
+              ${this.searchboxLayoutMode !== 'Compact' &&
+                this.inToolMode ? html`
+                <cr-composebox-tool-chip
+                  exportparts="tool-chip-label"
+                  .inputState="${this.inputState}"
+                  .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+                  @tool-click="${this.onToolClick}">
+                </cr-composebox-tool-chip>
+              ` : ''}
+            </div>
+          ` : ''}
         </div>
       </div>
     </div>

@@ -26,7 +26,8 @@ import type {ComposeboxInputElement} from './composebox_input.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from './composebox_voice_search.js';
-import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
+import {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import {WindowProxy} from './window_proxy.js';
 
 export enum VoiceSearchAction {
@@ -478,7 +479,8 @@ export const ComposeboxEmbedderMixin =
           assertNotReached();
         }
 
-        getContextEntrypointElement(): HTMLElement|null {
+        getContextEntrypointElement(): ContextualEntrypointButtonElement|
+            ContextualEntrypointAndMenuElement|null {
           assertNotReached();
         }
 
@@ -1051,10 +1053,42 @@ export const ComposeboxEmbedderMixin =
           });
         }
 
-        addTabContextHandleCallback(
-            _tabUpload: TabUpload,
-            _replaceAutoActiveTabToken: boolean = false): Promise<void> {
-          assertNotReached();
+        async addTabContextHandleCallback(
+            tabUpload: TabUpload, _replaceAutoActiveTabToken: boolean = false,
+            onBeforeUpdateFiles?: (attachment: ComposeboxFile) =>
+                void): Promise<ComposeboxFile|null> {
+          try {
+            const token = await this.getSearchboxHandler().addTabContext(
+                tabUpload.tabId, tabUpload.delayUpload);
+            if (!token) {
+              return null;
+            }
+            const attachment = ComposeboxFile.createFromTab(
+                token, tabUpload.tabId, tabUpload.title, tabUpload.url,
+                {supportsUnimodal: true});
+
+            if (onBeforeUpdateFiles) {
+              onBeforeUpdateFiles(attachment);
+            }
+
+            this.files = new Map([
+              ...this.files.entries(),
+              [attachment.uuid, attachment],
+            ]);
+            this.addedTabsIds = new Map([
+              ...this.addedTabsIds.entries(),
+              [tabUpload.tabId, attachment.uuid],
+            ]);
+            this.focusInput();
+            return attachment;
+          } catch (e) {
+            const err = e as ContextUploadErrorType;
+            if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
+              this.errorMessage =
+                  this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
+            }
+            return null;
+          }
         }
 
         keepMenuOpenForMultiSelection() {
@@ -1219,6 +1253,11 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        onDeleteFile(
+            e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
+          this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
+        }
+
         onCancelClick() {
           if (this.hasContent()) {
             this.resetModes();
@@ -1260,7 +1299,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         closeMenu() {
-          assertNotReached();
+          const entrypointAndMenu = this.getContextEntrypointElement();
+          if (entrypointAndMenu instanceof ContextualEntrypointAndMenuElement) {
+            entrypointAndMenu.closeMenu();
+          }
         }
 
         deleteFileContext(
@@ -1276,12 +1318,13 @@ export const ComposeboxEmbedderMixin =
 
         deleteFile(
             uuidToDelete: UnguessableToken, fromUserAction?: boolean,
-            fromAutoSuggestedChip: boolean = false) {
-          if (!uuidToDelete || !this.files.has(uuidToDelete)) {
-            return;
+            fromAutoSuggestedChip: boolean = false): ComposeboxFile | null {
+          const file = uuidToDelete ? this.files.get(uuidToDelete) : null;
+
+          if (!file) {
+            return null;
           }
 
-          const file = this.files.get(uuidToDelete);
           if (file?.tabId) {
             this.addedTabsIds = new Map([...this.addedTabsIds.entries()].filter(
                 ([id, _]) => id !== file.tabId));
@@ -1308,6 +1351,7 @@ export const ComposeboxEmbedderMixin =
 
           this.deleteFileContext(uuidToDelete, fromAutoSuggestedChip);
           this.focusInput();
+          return file;
         }
 
         focusInput() {
@@ -2244,9 +2288,10 @@ export interface ComposeboxEmbedderMixinInterface extends
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
+  // TODO(crbug.com/486705728): Remove fromAutoSuggestedChip usages.
   deleteFile(
       uuidToDelete: UnguessableToken, fromUserAction?: boolean,
-      fromAutoSuggestedChip?: boolean): void;
+      fromAutoSuggestedChip?: boolean): ComposeboxFile | null;
   deleteFileContext(
       uuidToDelete: UnguessableToken, fromAutoSuggestedChip?: boolean): void;
   closeMenu(): void;
@@ -2259,9 +2304,11 @@ export interface ComposeboxEmbedderMixinInterface extends
   getPageHandler(): PageHandlerRemote;
   getSearchboxCallbackRouter(): SearchboxPageCallbackRouter;
   getSearchboxHandler(): SearchboxPageHandlerRemote;
-  getContextEntrypointElement(): HTMLElement|null;
+  getContextEntrypointElement(): ContextualEntrypointButtonElement
+      |ContextualEntrypointAndMenuElement|null;
   addTabContextHandleCallback(
-      tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean): Promise<void>;
+      tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean,
+      onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void): Promise<ComposeboxFile|null>;
   getFilteredCarouselFiles(): ComposeboxFile[];
   getSharedTabs(): TabInfo[];
   getRestoredTabs(): TabInfo[];
@@ -2322,6 +2369,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   onCancelClick(): void;
   onSubmitFocusin(e: FocusEvent): void;
   onSubmitClick(e: MouseEvent): void;
+  onDeleteFile(
+      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>): void;
 
   // Common helper methods
   addToPendingUploads(token: UnguessableToken): void;

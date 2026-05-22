@@ -28,7 +28,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, getLoadTimeBoolean, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
 import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -38,8 +38,10 @@ import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ComposeboxEmbedderMixin, VoiceSearchAction} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadErrorType, ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
+import type {ContextUploadErrorType} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
@@ -250,8 +252,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.searchboxHandler_;
   }
 
-  override getContextEntrypointElement(): HTMLElement|null {
-    return this.shadowRoot?.querySelector('#contextEntrypoint') || null;
+  override getContextEntrypointElement(): ContextualEntrypointButtonElement|
+      ContextualEntrypointAndMenuElement|null {
+    return this.shadowRoot?.querySelector<ContextualEntrypointButtonElement|
+                                          ContextualEntrypointAndMenuElement>(
+               '#contextEntrypoint') ||
+        null;
   }
 
   constructor() {
@@ -469,12 +475,17 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   // TODO(crbug.com/486706573): common logic moved to mixin. Move embedder
   // specific logic to the embedder class (contextual_tasks).
-  override deleteFile(
-      uuidToDelete: UnguessableToken, fromUserAction?: boolean) {
+  override deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean):
+      ComposeboxFile|null {
     const fromAutoSuggestedChip =
         uuidToDelete === this.automaticActiveTab_?.uuid &&
         (fromUserAction === true);
-    super.deleteFile(uuidToDelete, fromUserAction, fromAutoSuggestedChip);
+    const file =
+        super.deleteFile(uuidToDelete, fromUserAction, fromAutoSuggestedChip);
+
+    if (!file) {
+      return null;
+    }
 
     if (fromAutoSuggestedChip) {
       // TODO(crbug.com/492797638): Consider folding this into the
@@ -497,6 +508,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // uploads.
       this.clearAutocompleteMatches();
     }
+    return file;
   }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {
@@ -613,52 +625,44 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  protected onDeleteFile_(
-      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
-    this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
-  }
-
   override async addTabContextHandleCallback(
-      tabUpload: TabUpload, replaceAutoActiveTabToken: boolean = false) {
-    try {
-      const token = await this.searchboxHandler_.addTabContext(
-          tabUpload.tabId, tabUpload.delayUpload);
-      if (!token) {
-        return;
-      }
-      // Adding a tab is asynchronous. For auto active tabs, a title update
-      // might be received after the upload process has been started. In order
-      // to prevent adding duplicate chips from this update, simply update the
-      // title of the initial upload instead based on whatever the latest
-      // title update received is.
-      const attachment = ComposeboxFile.createFromTab(
-          token, tabUpload.tabId,
-          replaceAutoActiveTabToken ? this.pendingAutomaticActiveTabTitle_ :
-                                      tabUpload.title,
-          tabUpload.url, {supportsUnimodal: true});
+      tabUpload: TabUpload, replaceAutoActiveTabToken: boolean = false):
+      Promise<ComposeboxFile|null> {
+    const attachment = await super.addTabContextHandleCallback(
+        tabUpload, replaceAutoActiveTabToken, (attachment) => {
+          // Do not reset pending active tab to avoid overwriting
+          // synchronous "pending statuses" that are queued (since this
+          // function is asynchronous and can run much later).
+          if (replaceAutoActiveTabToken) {
+            this.automaticActiveTab_ =
+                Object.assign(attachment, {uuid: attachment.uuid});
+          }
+        });
 
-      this.files =
-          new Map([...this.files.entries(), [attachment.uuid, attachment]]);
-      this.addedTabsIds = new Map(
-          [...this.addedTabsIds.entries(), [tabUpload.tabId, attachment.uuid]]);
-
-      // Do not reset pending active tab to avoid overwriting
-      // synchronous "pending statuses" that are queued (since this function
-      // is asynchronous and can run much later).
-      if (replaceAutoActiveTabToken) {
-        this.automaticActiveTab_ =
-            Object.assign(attachment, {uuid: attachment.uuid});
-      }
-
-      this.focusInput();
-
-    } catch (e) {
-      const err = e as ContextUploadErrorType;
-      if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
-        this.errorMessage = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
-      }
-      return;
+    if (!attachment) {
+      return null;
     }
+    // Adding a tab is asynchronous. For auto active tabs, a title update
+    // might be received after the upload process has been started. In order
+    // to prevent adding duplicate chips from this update, simply update the
+    // title of the initial upload instead based on whatever the latest
+    // title update received is.
+    if (replaceAutoActiveTabToken && this.automaticActiveTab_) {
+      if (this.automaticActiveTab_.name !==
+          this.pendingAutomaticActiveTabTitle_) {
+        const updatedFile = new ComposeboxFile(
+            this.automaticActiveTab_.uuid,
+            this.pendingAutomaticActiveTabTitle_,
+            this.automaticActiveTab_.type,
+            this.automaticActiveTab_.inputType,
+            this.automaticActiveTab_);
+        this.automaticActiveTab_ = updatedFile;
+        const fileMap = new Map(this.files);
+        fileMap.set(updatedFile.uuid, updatedFile);
+        this.files = fileMap;
+      }
+    }
+    return attachment;
   }
 
   protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
@@ -893,33 +897,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.entrypointName === 'ContextualTasks';
   }
 
-  private mapUploadErrorToProcessFilesError_(errorType: ContextUploadErrorType):
-      ProcessFilesError {
-    switch (errorType) {
-      case ContextUploadErrorType.kBrowserProcessingFileTooLargeError:
-        return ProcessFilesError.FILE_TOO_LARGE;
-      case ContextUploadErrorType.kBrowserProcessingFileEmptyError:
-        return ProcessFilesError.FILE_EMPTY;
-      case ContextUploadErrorType.kBrowserProcessingMaxFilesExceededError:
-        return ProcessFilesError.MAX_FILES_EXCEEDED;
-      case ContextUploadErrorType.kBrowserProcessingUnsupportedFileTypeError:
-        return ProcessFilesError.INVALID_TYPE;
-      case ContextUploadErrorType.kBrowserProcessingFileUploadNotAllowedError:
-        return ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED;
-      case ContextUploadErrorType.kBrowserProcessingMaxImagesExceededError:
-        return ProcessFilesError.MAX_IMAGES_EXCEEDED;
-      case ContextUploadErrorType.kBrowserProcessingMaxPdfsExceededError:
-        return ProcessFilesError.MAX_PDFS_EXCEEDED;
-      default:
-        return ProcessFilesError.NONE;
-    }
-  }
-
   // TODO(crbug.com/486707998): Move this to omnibox composebox.
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
     const errorType = fileAttachment.errorType ?? null;
     if (errorType) {
-      const processFilesError = this.mapUploadErrorToProcessFilesError_(
+      const processFilesError = mapUploadErrorToProcessFilesError(
           errorType as ContextUploadErrorType);
       if (processFilesError !== ProcessFilesError.NONE) {
         this.handleProcessFilesError(processFilesError);
@@ -946,19 +928,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       delayUpload: /*delay_upload=*/ false,
       origin: TabUploadOrigin.OTHER,
     } as TabUpload);
-  }
-
-  override closeMenu() {
-    if (!this.showMenuOnClick) {
-      return;
-    }
-
-    const entrypointAndMenu =
-        this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#contextEntrypoint');
-    if (entrypointAndMenu) {
-      entrypointAndMenu.closeMenu();
-    }
   }
 
   addFileContextForTesting(file: ComposeboxFile) {
