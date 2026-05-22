@@ -175,11 +175,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void FlushIfRecordingLimitExceededForCanvas2D();
 
   const MemoryManagedPaintRecorder& RecorderForCanvas2D() const {
-    CHECK(IsCanvas2D());
     return *recorder_for_canvas_2d_;
   }
   MemoryManagedPaintRecorder& RecorderForCanvas2D() {
-    CHECK(IsCanvas2D());
     return *recorder_for_canvas_2d_;
   }
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorderForCanvas2D();
@@ -202,7 +200,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   }
 
   const std::optional<cc::PaintRecord>& LastRecordingForCanvas2D() {
-    CHECK(IsCanvas2D());
     return last_recording_for_canvas2d_;
   }
 
@@ -258,14 +255,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
-  virtual void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {
-    CHECK(IsCanvas2D());
-  }
+  virtual void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {}
 
  protected:
-  // Whether this CanvasResourceProvider is for Canvas2D.
-  virtual bool IsCanvas2D() const = 0;
-
   // Should only be called from static Create*() methods.
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
   // callsites.
@@ -316,7 +308,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
-  bool IsCanvas2D() const override { return true; }
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
                               size_t row_bytes,
@@ -438,7 +429,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
-  bool IsCanvas2D() const override { return true; }
   bool IsValid() const override;
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;

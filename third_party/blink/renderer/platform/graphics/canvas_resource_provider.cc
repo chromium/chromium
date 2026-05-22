@@ -1705,7 +1705,6 @@ CanvasResourceProvider::~CanvasResourceProvider() {
 
 std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
-  CHECK(IsCanvas2D());
   // When releasing the recorder, we swap it with a new, valid one. This way,
   // the `recorder_for_canvas_2d_` member is guarantied to be always valid.
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
@@ -1717,14 +1716,12 @@ CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
 
 void CanvasResourceProvider::SetRecorderForCanvas2D(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
-  CHECK(IsCanvas2D());
   recorder->SetClient(this);
   recorder_for_canvas_2d_ = std::move(recorder);
   DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
 }
 
 void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
-  CHECK(IsCanvas2D());
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
   if (IsPrinting() && clear_frame_for_canvas2d_) {
@@ -1754,7 +1751,6 @@ void CanvasResourceProvider::NotifyWillTransfer(
 
 CanvasResourceProvider::CanvasImageProvider*
 CanvasResourceProvider::GetOrCreateSWCanvasImageProviderForCanvas2D() {
-  CHECK(IsCanvas2D());
   if (canvas_2d_image_provider_) {
     return canvas_2d_image_provider_.get();
   }
@@ -1784,7 +1780,6 @@ void CanvasResourceProvider::InitializeForRecording(
 }
 
 void CanvasResourceProvider::RecordingCleared() {
-  CHECK(IsCanvas2D());
 
   // Since the recording has been cleared, it contains no draw commands and it
   // is now safe to discard the old copy of canvas content on a subsequent
@@ -1795,14 +1790,12 @@ void CanvasResourceProvider::RecordingCleared() {
 
 MemoryManagedPaintCanvas&
 CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
-  CHECK(IsCanvas2D());
   return recorder_for_canvas_2d_->getRecordingCanvas();
 }
 
 scoped_refptr<UnacceleratedStaticBitmapImage>
 CanvasResourceProvider::UnacceleratedSnapshotForCanvas2D(
     ImageOrientation orientation) {
-  CHECK(IsCanvas2D());
   if (!IsValid())
     return nullptr;
 
@@ -1841,7 +1834,6 @@ SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
 }
 
 ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimerForCanvas2D() {
-  CHECK(IsCanvas2D());
   return ScopedRasterTimer(nullptr, *this,
                            always_enable_raster_timers_for_testing_);
 }
@@ -1946,7 +1938,6 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
     FlushReason reason /*=FlushReason::kOther*/) {
-  CHECK(IsCanvas2D());
   if (!recorder_for_canvas_2d_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
@@ -1977,7 +1968,6 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
 void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
     cc::PaintRecord last_recording) {
   CHECK(!IsAccelerated());
-  CHECK(IsCanvas2D());
 
   if (!skia_canvas_for_canvas_2d_) {
     skia_canvas_for_canvas_2d_ = std::make_unique<cc::SkiaPaintCanvas>(
@@ -2531,7 +2521,6 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
     size_t row_bytes,
     int x,
     int y) {
-  CHECK(IsCanvas2D());
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
   CHECK(!IsAccelerated());
 
@@ -2557,7 +2546,6 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
 }
 
 void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
-  CHECK(IsCanvas2D());
   // Clear the background transparent or opaque, as required. This should only
   // be called when a new resource provider is created to ensure that we're
   // not leaking data or displaying bad pixels (in the case of kOpaque
@@ -2577,7 +2565,6 @@ void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
 
 void CanvasResourceProvider::RestoreBackBufferForCanvas2D(
     const cc::PaintImage& image) {
-  CHECK(IsCanvas2D());
 
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
