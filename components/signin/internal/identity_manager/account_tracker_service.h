@@ -79,7 +79,11 @@ class AccountTrackerService {
   };
 #endif
 
-  AccountTrackerService();
+  // Initializes the list of accounts from `pref_service` and loads images from
+  // `user_data_dir`. If `user_data_dir` is empty, images will not be saved to
+  // nor loaded from disk.
+  AccountTrackerService(PrefService* pref_service,
+                        base::FilePath user_data_dir);
 
   AccountTrackerService(const AccountTrackerService&) = delete;
   AccountTrackerService& operator=(const AccountTrackerService&) = delete;
@@ -88,11 +92,6 @@ class AccountTrackerService {
 
   // Registers the preferences used by AccountTrackerService.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Initializes the list of accounts from |pref_service| and load images from
-  // |user_data_dir|. If |user_data_dir| is empty, images will not be saved to
-  // nor loaded from disk.
-  void Initialize(PrefService* pref_service, base::FilePath user_data_dir);
 
   // Returns the list of known accounts and for which gaia IDs
   // have been fetched.
@@ -152,10 +151,6 @@ class AccountTrackerService {
   // Flushes the account changes to disk. The flush happens asynchronously and
   // this function does not block on disk IO.
   void CommitPendingAccountChanges();
-
-  // Only used in tests to simulate a restart of the service. Accounts are
-  // reloaded.
-  void ResetForTesting();
 
  protected:
   // Available to be called in tests.
@@ -250,9 +245,10 @@ class AccountTrackerService {
   bool UpdateAccountInfoChildStatus(AccountInfo& account_info,
                                     bool is_child_account);
 
-  raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned.
+  const raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned.
+  const base::FilePath user_data_dir_;
+
   std::map<CoreAccountId, AccountInfo> accounts_;
-  base::FilePath user_data_dir_;
 
   AccountInfoCallback on_account_updated_callback_;
   AccountInfoCallback on_account_removed_callback_;

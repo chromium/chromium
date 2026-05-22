@@ -219,6 +219,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     AccountManager::RegisterPrefs(pref_service_.registry());
 
+    account_tracker_service_ = std::make_unique<AccountTrackerService>(
+        &pref_service_, base::FilePath());
+
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
 
     account_manager_ = ash::AccountManagerFactory::Get()->GetAccountManager(
@@ -234,11 +237,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     task_environment_.RunUntilIdle();
 
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
-
-    account_info_ = CreateAccountInfoTestFixture(account_tracker_service_,
+    account_info_ = CreateAccountInfoTestFixture(*account_tracker_service_,
                                                  kGaiaId, kUserEmail);
-    account_tracker_service_.SeedAccountInfo(account_info_);
+    account_tracker_service_->SeedAccountInfo(account_info_);
     ResetProfileOAuth2TokenServiceDelegateChromeOS();
   }
 
@@ -246,7 +247,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     delegate_.reset();
     delegate_ =
         std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-            client_.get(), &account_tracker_service_,
+            client_.get(), account_tracker_service_.get(),
             network::TestNetworkConnectionTracker::GetInstance(),
             account_manager_facade_.get(),
             /*is_regular_profile=*/true);
@@ -309,7 +310,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
   base::ScopedTempDir profile_dir_;
   AccountInfo account_info_;
-  AccountTrackerService account_tracker_service_;
+  std::unique_ptr<AccountTrackerService> account_tracker_service_;
 
   raw_ptr<AccountManager> account_manager_ = nullptr;
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
@@ -330,7 +331,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
   auto delegate =
       std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-          client_.get(), &account_tracker_service_,
+          client_.get(), account_tracker_service_.get(),
           network::TestNetworkConnectionTracker::GetInstance(),
           account_manager_facade_.get(),
           /*is_regular_profile=*/false);
@@ -594,8 +595,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
   account_manager::AccountKey gaia_account_key2 =
       account_manager::AccountKey::FromGaiaId(GaiaId("random-gaia-id"));
-  account_tracker_service_.SeedAccountInfo(CreateAccountInfoTestFixture(
-      account_tracker_service_, GaiaId(gaia_account_key2.id()), kUserEmail2));
+  account_tracker_service_->SeedAccountInfo(CreateAccountInfoTestFixture(
+      *account_tracker_service_, GaiaId(gaia_account_key2.id()), kUserEmail2));
   UpsertAccountAndWaitForCompletion(gaia_account_key2, kUserEmail2,
                                     AccountManager::kInvalidToken);
 
@@ -832,7 +833,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSObserverTest
     AccountManager::RegisterPrefs(pref_service_.registry());
 
     client_ = std::make_unique<TestSigninClient>(ProfilePrefs());
-    account_tracker_service_.Initialize(ProfilePrefs(), base::FilePath());
+    account_tracker_service_ = std::make_unique<AccountTrackerService>(
+        ProfilePrefs(), base::FilePath());
   }
 
  protected:
@@ -845,7 +847,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSObserverTest
   base::ScopedTempDir profile_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestSigninClient> client_;
-  AccountTrackerService account_tracker_service_;
+  std::unique_ptr<AccountTrackerService> account_tracker_service_;
 };
 
 // If observers register themselves with |ProfileOAuth2TokenServiceDelegate|
@@ -855,12 +857,12 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSObserverTest,
        BatchChangeObserversAreNotifiedOncePerBatch) {
   // Setup
   AccountInfo account1 = CreateAccountInfoTestFixture(
-      account_tracker_service_, GaiaId("1"), "user1@example.com");
+      *account_tracker_service_, GaiaId("1"), "user1@example.com");
   AccountInfo account2 = CreateAccountInfoTestFixture(
-      account_tracker_service_, GaiaId("2"), "user2@example.com");
+      *account_tracker_service_, GaiaId("2"), "user2@example.com");
 
-  account_tracker_service_.SeedAccountInfo(account1);
-  account_tracker_service_.SeedAccountInfo(account2);
+  account_tracker_service_->SeedAccountInfo(account1);
+  account_tracker_service_->SeedAccountInfo(account2);
 
   {
     auto* account_manager =
@@ -894,7 +896,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSObserverTest,
   // Register callbacks before AccountManager has been fully initialized.
   auto delegate =
       std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-          client_.get(), &account_tracker_service_,
+          client_.get(), account_tracker_service_.get(),
           network::TestNetworkConnectionTracker::GetInstance(),
           ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
               ProfilePath().value()),

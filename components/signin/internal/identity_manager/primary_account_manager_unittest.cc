@@ -69,8 +69,8 @@ class PrimaryAccountManagerTest : public testing::Test,
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());
     SigninPrefs::RegisterProfilePrefs(user_prefs_.registry());
-    account_tracker_ = std::make_unique<AccountTrackerService>();
-    account_tracker_->Initialize(&user_prefs_, base::FilePath());
+    account_tracker_ =
+        std::make_unique<AccountTrackerService>(&user_prefs_, base::FilePath());
     token_service_ = std::make_unique<ProfileOAuth2TokenService>(
         &user_prefs_,
         std::make_unique<FakeProfileOAuth2TokenServiceDelegate>());
@@ -486,7 +486,9 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   dict.Set("gaia", gaia_id.ToString());
   update->Append(std::move(dict));
 
-  account_tracker()->ResetForTesting();
+  // Re-create account tracker to trigger migration.
+  account_tracker_ =
+      std::make_unique<AccountTrackerService>(&user_prefs_, base::FilePath());
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, email);
   client_prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
@@ -516,7 +518,9 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   dict.Set("gaia", gaia_id.ToString());
   update->Append(std::move(dict));
 
-  account_tracker()->ResetForTesting();
+  // Re-create account tracker to trigger migration.
+  account_tracker_ =
+      std::make_unique<AccountTrackerService>(&user_prefs_, base::FilePath());
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, gaia_id.ToString());
   client_prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);

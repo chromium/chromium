@@ -120,11 +120,23 @@ std::string AccountsToString(
 
 }  // namespace
 
-AccountTrackerService::AccountTrackerService() {}
+AccountTrackerService::AccountTrackerService(PrefService* pref_service,
+                                             base::FilePath user_data_dir)
+    : pref_service_(pref_service), user_data_dir_(std::move(user_data_dir)) {
+  CHECK(pref_service_);
+  LoadFromPrefs();
+  if (!user_data_dir_.empty()) {
+    // |image_storage_task_runner_| is a sequenced runner because we want to
+    // avoid read and write operations to the same file at the same time.
+    image_storage_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    LoadAccountImagesFromDisk();
+  }
+}
 
 AccountTrackerService::~AccountTrackerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_ = nullptr;
   accounts_.clear();
 }
 
@@ -135,23 +147,6 @@ void AccountTrackerService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAccountIdMigrationState,
                                 AccountTrackerService::MIGRATION_NOT_STARTED);
 #endif
-}
-
-void AccountTrackerService::Initialize(PrefService* pref_service,
-                                       base::FilePath user_data_dir) {
-  DCHECK(pref_service);
-  DCHECK(!pref_service_);
-  pref_service_ = pref_service;
-  LoadFromPrefs();
-  user_data_dir_ = std::move(user_data_dir);
-  if (!user_data_dir_.empty()) {
-    // |image_storage_task_runner_| is a sequenced runner because we want to
-    // avoid read and write operations to the same file at the same time.
-    image_storage_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-    LoadAccountImagesFromDisk();
-  }
 }
 
 std::vector<AccountInfo> AccountTrackerService::GetAccounts() const {
@@ -405,13 +400,6 @@ void AccountTrackerService::SetOnAccountRemovedCallback(
 
 void AccountTrackerService::CommitPendingAccountChanges() {
   pref_service_->CommitPendingWrite();
-}
-
-void AccountTrackerService::ResetForTesting() {
-  PrefService* prefs = pref_service_;
-  pref_service_ = nullptr;
-  accounts_.clear();
-  Initialize(prefs, base::FilePath());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

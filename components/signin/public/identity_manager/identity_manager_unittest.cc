@@ -351,9 +351,8 @@ class IdentityManagerTest : public testing::Test {
 
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
 
-    auto account_tracker_service = std::make_unique<AccountTrackerService>();
-    account_tracker_service->Initialize(&pref_service_,
-                                        temp_profile_dir_.GetPath());
+    auto account_tracker_service = std::make_unique<AccountTrackerService>(
+        &pref_service_, temp_profile_dir_.GetPath());
 
 #if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManager::RegisterPrefs(pref_service_.registry());

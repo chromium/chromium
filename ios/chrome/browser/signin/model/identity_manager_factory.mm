@@ -66,9 +66,8 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   params.pref_service = profile->GetPrefs();
   params.profile_path = base::FilePath();
   params.signin_client = SigninClientFactory::GetForProfile(profile);
-  params.account_tracker_service = std::make_unique<AccountTrackerService>();
-  params.account_tracker_service->Initialize(params.pref_service,
-                                             params.profile_path);
+  params.account_tracker_service = std::make_unique<AccountTrackerService>(
+      params.pref_service, params.profile_path);
   params.profile_metrics_service =
       IOSProfileMetricsServiceFactory::GetForProfile(profile);
 

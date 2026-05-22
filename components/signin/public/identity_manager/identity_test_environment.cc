@@ -226,8 +226,8 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
     PrefService* pref_service,
     metrics::ProfileMetricsService* profile_metrics_service,
     base::FilePath user_data_dir) {
-  auto account_tracker_service = std::make_unique<AccountTrackerService>();
-  account_tracker_service->Initialize(pref_service, user_data_dir);
+  auto account_tracker_service =
+      std::make_unique<AccountTrackerService>(pref_service, user_data_dir);
 
   auto* account_manager_factory = ash::AccountManagerFactory::Get();
   CHECK(account_manager_factory);
@@ -290,8 +290,8 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
 #if BUILDFLAG(IS_ANDROID)
   SetUpFakeAccountManagerFacade();
 #endif
-  auto account_tracker_service = std::make_unique<AccountTrackerService>();
-  account_tracker_service->Initialize(pref_service, user_data_dir);
+  auto account_tracker_service =
+      std::make_unique<AccountTrackerService>(pref_service, user_data_dir);
   auto token_service =
       std::make_unique<FakeProfileOAuth2TokenService>(pref_service);
   return FinishBuildIdentityManagerForTests(

@@ -71,14 +71,14 @@ class AccessTokenFetcherTest
         token_service_(&pref_service_),
         access_token_info_("access token",
                            base::Time::Now() + base::Hours(1),
-                           std::string(kIdTokenEmptyServices)),
-        account_tracker_(CreateAccountTrackerService()) {
+                           std::string(kIdTokenEmptyServices)) {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
+    account_tracker_ = CreateAccountTrackerService();
+
     ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
 
-    account_tracker_->Initialize(&pref_service_, base::FilePath());
     primary_account_manager_ = std::make_unique<PrimaryAccountManager>(
         &signin_client_, &token_service_, account_tracker_.get(),
         &profile_metrics_service_);
@@ -204,7 +204,8 @@ class AccessTokenFetcherTest
 #if BUILDFLAG(IS_ANDROID)
     SetUpFakeAccountManagerFacade();
 #endif
-    return std::make_unique<AccountTrackerService>();
+    return std::make_unique<AccountTrackerService>(&pref_service_,
+                                                   base::FilePath());
   }
 
   // OAuth2AccessTokenManager::DiagnosticsObserver:

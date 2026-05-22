@@ -61,8 +61,6 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
-    AccountTrackerService::RegisterPrefs(pref_service_.registry());
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
     SetUpFakeAccountManagerFacade();
     delegate_ = std::make_unique<OAuth2TokenServiceDelegateAndroidForTest>(
         &account_tracker_service_);
@@ -88,10 +86,11 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
   }
 
   AccountTrackerService CreateAccountTrackerService() {
+    AccountTrackerService::RegisterPrefs(pref_service_.registry());
 #if BUILDFLAG(IS_ANDROID)
     SetUpFakeAccountManagerFacade();
 #endif
-    return AccountTrackerService();
+    return AccountTrackerService(&pref_service_, base::FilePath());
   }
 
   AccountInfo CreateAccountInfo(const GaiaId& gaia_id,
@@ -124,8 +123,8 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     delegate_->SetAccounts(account_ids);
   }
 
-  AccountTrackerService account_tracker_service_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  AccountTrackerService account_tracker_service_;
   std::unique_ptr<OAuth2TokenServiceDelegateAndroidForTest> delegate_;
   std::unique_ptr<StrictMock<MockProfileOAuth2TokenServiceObserver>> observer_;
 

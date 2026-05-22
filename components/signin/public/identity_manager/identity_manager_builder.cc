@@ -47,14 +47,6 @@ namespace signin {
 
 namespace {
 
-std::unique_ptr<AccountTrackerService> BuildAccountTrackerService(
-    PrefService* pref_service,
-    base::FilePath profile_path) {
-  auto account_tracker_service = std::make_unique<AccountTrackerService>();
-  account_tracker_service->Initialize(pref_service, profile_path);
-  return account_tracker_service;
-}
-
 std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     SigninClient* client,
     AccountTrackerService* account_tracker_service,
@@ -101,8 +93,8 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   std::unique_ptr<AccountTrackerService> account_tracker_service =
       std::move(params->account_tracker_service);
   if (!account_tracker_service) {
-    account_tracker_service =
-        BuildAccountTrackerService(params->pref_service, params->profile_path);
+    account_tracker_service = std::make_unique<AccountTrackerService>(
+        params->pref_service, params->profile_path);
   }
 
   std::unique_ptr<ProfileOAuth2TokenService> token_service =

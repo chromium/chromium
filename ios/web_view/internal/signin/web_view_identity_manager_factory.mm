@@ -75,9 +75,8 @@ WebViewIdentityManagerFactory::BuildServiceInstanceFor(
   params.profile_path = base::FilePath();
   params.signin_client = client;
 
-  params.account_tracker_service = std::make_unique<AccountTrackerService>();
-  params.account_tracker_service->Initialize(params.pref_service,
-                                             params.profile_path);
+  params.account_tracker_service = std::make_unique<AccountTrackerService>(
+      params.pref_service, params.profile_path);
 
   auto delegate = std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(
       client, std::make_unique<WebViewDeviceAccountsProviderImpl>(),

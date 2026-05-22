@@ -171,16 +171,17 @@ class MutableProfileOAuth2TokenServiceDelegateTest
       public ProfileOAuth2TokenServiceObserver,
       public WebDataServiceConsumer {
  public:
+  MutableProfileOAuth2TokenServiceDelegateTest()
+      : account_tracker_service_(CreateAccountTrackerService()) {}
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_revoke_url().spec(), "");
     LoadTokenDatabase();
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
   }
 
   void TearDown() override {
@@ -367,19 +368,24 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   }
 
  protected:
+  AccountTrackerService CreateAccountTrackerService() {
+    AccountTrackerService::RegisterPrefs(pref_service_.registry());
+    return AccountTrackerService(&pref_service_, base::FilePath());
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC};
   std::unique_ptr<TestSigninClient> client_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  AccountTrackerService account_tracker_service_;
   std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate>
       oauth2_service_delegate_;
   base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
                           ProfileOAuth2TokenServiceObserver>
       test_service_observation_{this};
   TestingOAuth2AccessTokenManagerConsumer consumer_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  AccountTrackerService account_tracker_service_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_{
       os_crypt_async::GetTestOSCryptAsyncForTesting(
