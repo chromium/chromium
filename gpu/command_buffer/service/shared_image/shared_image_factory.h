@@ -11,8 +11,10 @@
 
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -42,6 +44,42 @@ struct GpuPreferences;
 #if BUILDFLAG(IS_ANDROID)
 class AHardwareBufferImageBackingFactory;
 #endif
+
+class SharedImageFactory;
+
+// A thread-safe reference holder for SharedImageFactory. This allows
+// CompoundImageBacking to safely access the factory from any thread without
+// risking a use-after-free.
+class GPU_GLES2_EXPORT SharedImageFactoryRef
+    : public base::RefCountedThreadSafe<SharedImageFactoryRef> {
+ public:
+  explicit SharedImageFactoryRef(SharedImageFactory* factory);
+
+  // Called by SharedImageFactory in its destructor to safely invalidate the
+  // pointer.
+  void Invalidate() {
+    base::AutoLock lock(lock_);
+    factory_ = nullptr;
+  }
+
+  // Executes the provided callback with the factory if it's still valid.
+  // The callback is executed while holding the lock, ensuring the factory
+  // is not destroyed during the operation.
+  template <typename F>
+  void Execute(F callback) {
+    base::AutoLock lock(lock_);
+    if (factory_) {
+      callback(factory_);
+    }
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<SharedImageFactoryRef>;
+  ~SharedImageFactoryRef();
+
+  base::Lock lock_;
+  raw_ptr<SharedImageFactory> factory_ GUARDED_BY(lock_);
+};
 
 class GPU_GLES2_EXPORT SharedImageFactory {
   // TODO(crbug.com/497136403): Remove this macro once the bug gets fixed.
@@ -172,6 +210,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                       const gfx::GpuExtraInfo& gpu_extra_info);
 
   base::WeakPtr<SharedImageFactory> GetWeakPtr();
+  scoped_refptr<SharedImageFactoryRef> GetFactoryRef();
 
  private:
   friend class CompoundImageBacking;
@@ -244,6 +283,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #endif
 
   raw_ptr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;
+
+  scoped_refptr<SharedImageFactoryRef> factory_ref_;
   base::WeakPtrFactory<SharedImageFactory> weak_ptr_factory_{this};
 };
 

@@ -161,6 +161,23 @@ class CompoundImageBackingTest : public testing::Test {
     return false;
   }
 
+  // Construct a CompoundImageBacking via the WrapExternalBacking constructor
+  // (private). This mirrors CompoundImageBacking::WrapExternalBacking exactly,
+  // minus the SharedImageFactory consultation.
+  std::unique_ptr<CompoundImageBacking> WrapExternal(
+      std::unique_ptr<SharedImageBacking> backing) {
+    backing->SetNotRefCounted();
+    return std::unique_ptr<CompoundImageBacking>(new CompoundImageBacking(
+        /*is_thread_safe=*/false,
+        /*buffer_usage=*/std::nullopt, std::move(backing), copy_manager_,
+        /*shared_image_factory=*/nullptr));
+  }
+
+  const std::vector<SkPixmap>& CallGetSharedMemoryPixmaps(
+      CompoundImageBacking* backing) {
+    return backing->GetSharedMemoryPixmaps();
+  }
+
   // Create a compound backing containing shared memory + GPU backing.
   std::unique_ptr<SharedImageBacking> CreateCompoundBacking(
       SharedImageUsageSet usage) {
