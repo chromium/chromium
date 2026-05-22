@@ -589,6 +589,9 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 // The size of in-memory cache of SQLite database. 0 invokes SQLite's default.
 // See https://sqlite.org/pragma.html#pragma_cache_size for more details.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheCacheSize);
+// Whether to use consolidated in memory index.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kSqlDiskCacheConsolidatedInMemoryIndex);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.

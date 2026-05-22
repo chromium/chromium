@@ -4,6 +4,8 @@
 
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,41 +20,55 @@ const SqlPersistentStoreResId kResId2(2);
 
 }  // namespace
 
-TEST(SqlPersistentStoreInMemoryIndexTest, Insert) {
+class SqlPersistentStoreInMemoryIndexTest
+    : public testing::TestWithParam<bool> {
+ public:
+  SqlPersistentStoreInMemoryIndexTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheConsolidatedInMemoryIndex",
+          GetParam() ? "true" : "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest, Insert) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
   EXPECT_TRUE(index.Contains(kHash1));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, InsertDuplicateResId) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, InsertDuplicateResId) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
   EXPECT_TRUE(index.Insert(kHash2, kResId1));
   EXPECT_TRUE(index.Contains(kHash1));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, InsertSameHash) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, InsertSameHash) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
   EXPECT_TRUE(index.Insert(kHash1, kResId2));
   EXPECT_TRUE(index.Contains(kHash1));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, RemoveWithHashAndResId) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, RemoveWithHashAndResId) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
   EXPECT_TRUE(index.Remove(kHash1, kResId1));
   EXPECT_FALSE(index.Contains(kHash1));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, RemoveWithResId) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, RemoveWithResId) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
   EXPECT_TRUE(index.Remove(kHash1, kResId1));
   EXPECT_FALSE(index.Contains(kHash1));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, RemoveNonExistent) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, RemoveNonExistent) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
   EXPECT_FALSE(index.Remove(kHash2, kResId2));
@@ -61,7 +77,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, RemoveNonExistent) {
   EXPECT_TRUE(index.Contains(kHash1));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, Clear) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, Clear) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
   index.Insert(kHash2, kResId2);
@@ -70,7 +86,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, Clear) {
   EXPECT_FALSE(index.Contains(kHash2));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, MultipleEntries) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, MultipleEntries) {
   SqlPersistentStoreInMemoryIndex index;
   index.Insert(kHash1, kResId1);
   index.Insert(kHash2, kResId2);
@@ -86,7 +102,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MultipleEntries) {
   EXPECT_FALSE(index.Contains(kHash2));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, BehavesCorrectlyWithBothMaps) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, BehavesCorrectlyWithBothMaps) {
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
@@ -140,7 +156,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, BehavesCorrectlyWithBothMaps) {
   EXPECT_FALSE(index.Contains(kHashLarge));
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperations) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, MoveOperations) {
   // Test move constructor.
   SqlPersistentStoreInMemoryIndex index1;
   index1.Insert(kHash1, kResId1);
@@ -159,7 +175,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperations) {
   EXPECT_EQ(2u, index3.size());
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperationsWithResId64) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, MoveOperationsWithResId64) {
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
@@ -182,18 +198,18 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperationsWithResId64) {
   EXPECT_EQ(2u, index3.size());
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdNoEntry) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdNoEntry) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_EQ(index.TryGetSingleResId(kHash1), std::nullopt);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntrySmall) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntrySmall) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
   EXPECT_THAT(index.TryGetSingleResId(kHash1), kResId1);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntryLarge) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntryLarge) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge(
@@ -203,8 +219,8 @@ TEST(SqlPersistentStoreInMemoryIndexTest, TryGetSingleResIdOneEntryLarge) {
   EXPECT_THAT(index.TryGetSingleResId(kHashLarge), kResIdLarge);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest,
-     TryGetSingleResIdCollisionSmallSmall) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest,
+       TryGetSingleResIdCollisionSmallSmall) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
   EXPECT_TRUE(index.Insert(kHash1, kResId2));
@@ -217,8 +233,8 @@ TEST(SqlPersistentStoreInMemoryIndexTest,
   EXPECT_THAT(index.TryGetSingleResId(kHash1), kResId1);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest,
-     TryGetSingleResIdCollisionLargeLarge) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest,
+       TryGetSingleResIdCollisionLargeLarge) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge1(
@@ -236,8 +252,8 @@ TEST(SqlPersistentStoreInMemoryIndexTest,
   EXPECT_THAT(index.TryGetSingleResId(kHashLarge), kResIdLarge1);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest,
-     TryGetSingleResIdCollisionSmallLarge) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest,
+       TryGetSingleResIdCollisionSmallLarge) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashCollision(10);
   const SqlPersistentStoreResId kResIdSmall(100);
@@ -254,7 +270,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest,
   EXPECT_THAT(index.TryGetSingleResId(kHashCollision), kResIdSmall);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntrySmall) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntrySmall) {
   SqlPersistentStoreInMemoryIndex index;
   const MemoryEntryDataHints kHints(1);
 
@@ -264,12 +280,12 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntrySmall) {
   EXPECT_THAT(index.GetEntryDataHints(kHash1), kHints);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntryLarge) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntryLarge) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
-  const MemoryEntryDataHints kHints(5);
+  const MemoryEntryDataHints kHints(3);
 
   EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
   index.SetEntryDataHints(kHashLarge, kResIdLarge, kHints);
@@ -277,7 +293,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsOneEntryLarge) {
   EXPECT_THAT(index.GetEntryDataHints(kHashLarge), kHints);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallSmall) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallSmall) {
   SqlPersistentStoreInMemoryIndex index;
   const MemoryEntryDataHints kHints1(1);
 
@@ -294,14 +310,14 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallSmall) {
   EXPECT_THAT(index.GetEntryDataHints(kHash1), kHints1);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionLargeLarge) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionLargeLarge) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge1(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
   const SqlPersistentStoreResId kResIdLarge2(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 2);
-  const MemoryEntryDataHints kHints(5);
+  const MemoryEntryDataHints kHints(3);
 
   EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge1));
   index.SetEntryDataHints(kHashLarge, kResIdLarge1, kHints);
@@ -313,7 +329,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionLargeLarge) {
   EXPECT_THAT(index.GetEntryDataHints(kHashLarge), kHints);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallLarge) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallLarge) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashCollision(10);
   const SqlPersistentStoreResId kResIdSmall(100);
@@ -331,13 +347,13 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollisionSmallLarge) {
   EXPECT_THAT(index.GetEntryDataHints(kHashCollision), kHints);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsNoHint) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsNoHint) {
   SqlPersistentStoreInMemoryIndex index;
   EXPECT_TRUE(index.Insert(kHash1, kResId1));
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision32Unique64) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision32Unique64) {
   SqlPersistentStoreInMemoryIndex index;
   const SqlPersistentStoreResId kResId32_1(100);
   const SqlPersistentStoreResId kResId32_2(101);
@@ -354,7 +370,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision32Unique64) {
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision64Unique32) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision64Unique32) {
   SqlPersistentStoreInMemoryIndex index;
   const SqlPersistentStoreResId kResId32(100);
   const SqlPersistentStoreResId kResId64_1(
@@ -372,7 +388,7 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision64Unique32) {
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
-TEST(SqlPersistentStoreInMemoryIndexTest, GetResIdsWithHints) {
+TEST_P(SqlPersistentStoreInMemoryIndexTest, GetResIdsWithHints) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashLarge(3);
   const SqlPersistentStoreResId kResIdLarge(
@@ -409,5 +425,30 @@ TEST(SqlPersistentStoreInMemoryIndexTest, GetResIdsWithHints) {
                   MemoryEntryDataHints(kHint1.value() | kHint2.value())),
               testing::UnorderedElementsAre(kResIdBoth));
 }
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest, ConsolidatedFlag) {
+  SqlPersistentStoreInMemoryIndex index;
+  EXPECT_EQ(index.IsConsolidatedInMemoryIndexEnabled(), GetParam());
+}
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest,
+       GetEntryDataHintsReturnsNulloptOnCollision) {
+  SqlPersistentStoreInMemoryIndex index;
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  EXPECT_TRUE(index.Insert(kHash1, kResId2));
+
+  // Case 1: No entries for the hash.
+  EXPECT_EQ(index.GetEntryDataHints(kHash2), std::nullopt);
+
+  // Case 2: Multiple entries for the hash (collision).
+  EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SqlPersistentStoreInMemoryIndexTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Consolidated" : "Original";
+                         });
 
 }  // namespace disk_cache

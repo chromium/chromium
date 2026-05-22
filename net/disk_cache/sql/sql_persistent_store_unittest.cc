@@ -5654,7 +5654,7 @@ TEST_P(SqlPersistentStoreTest, SetAndGetEntryInMemoryData) {
   EXPECT_TRUE(LoadInMemoryIndex());
 
   // 3. Set in-memory data hints.
-  const uint8_t hints_value = 42;
+  const uint8_t hints_value = 3;
   store_->SetInMemoryEntryDataHints(kKey.hash(), res_id,
                                     MemoryEntryDataHints(hints_value));
 
