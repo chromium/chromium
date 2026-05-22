@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -42,7 +43,9 @@ public class ViewResizerUtil {
         // devices with wide displays show side UI components, which should not be included in the
         // padding calculations. Also, on floating windows, screen width is unlikely to be a good
         // proxy for window or view width.
-        if (DisplayUtil.isUiScaled() && view != null) {
+        if (view != null
+                && (DisplayUtil.isUiScaled()
+                        || UiAndroidFeatureList.sUpdatePaddingForDisplayCalculation.isEnabled())) {
             containerWidthDp =
                     ViewUtils.pxToDp(resources.getDisplayMetrics(), view.getMeasuredWidth());
         }

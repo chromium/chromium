@@ -5334,6 +5334,12 @@ inline constexpr char kHomeButtonRemovalName[] = "Home Button Removal";
 inline constexpr char kHomeButtonRemovalDescription[] =
     "Enables the Home Button Removal feature.";
 
+inline constexpr char kUpdatePaddingForDisplayCalculationName[] =
+    "Update Padding For Display Calculation";
+inline constexpr char kUpdatePaddingForDisplayCalculationDescription[] =
+    "When this is enabled, padding for display style calculations will use the "
+    "width of the containing view, not the entire screen width.";
+
 inline constexpr char kUpdateTabGroupColorsName[] = "Update Tab Group Colors";
 inline constexpr char kUpdateTabGroupColorsDescription[] =
     "Enable updating tab group colors.";

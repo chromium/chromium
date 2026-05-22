@@ -550,6 +550,7 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_android_features_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_junit_test_support",

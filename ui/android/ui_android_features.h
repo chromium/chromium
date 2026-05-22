@@ -88,6 +88,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckHitEligibility);
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
     kAndroidTouchpadOverscrollHistoryNavigation);
 
+// Update padding for display calculations to use view width instead of screen
+// width.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUpdatePaddingForDisplayCalculation);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_

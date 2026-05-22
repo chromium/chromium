@@ -9205,6 +9205,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "update-padding-for-display-calculation",
+    "owners": ["clhager@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "update-tab-group-colors",
     "owners": [
       "hitarthkothari@google.com",

@@ -33,6 +33,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kAndroidUpdateDisplayForContext,
     &ui::kSupportKeyboard,
     &ui::kAndroidTouchpadOverscrollHistoryNavigation,
+    &ui::kUpdatePaddingForDisplayCalculation,
 };
 
 // static

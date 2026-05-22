@@ -55,4 +55,7 @@ BASE_FEATURE(kCheckHitEligibility, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTouchpadOverscrollHistoryNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUpdatePaddingForDisplayCalculation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace ui
