@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://open-ui.org/components/interest-invokers.explainer">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<div class="example customcontent">
+  <button interestfor="target"><span>Button</span></button>
+</div>
+<div class="example customcontent">
+  <a href="#" interestfor="target"><span>Link</span></a>
+</div>
+
+<div class="example defaultcontent">
+  <button interestfor="target"><span>Button</span></button>
+</div>
+<div class="example defaultcontent">
+  <a href="#" interestfor="target"><span>Link</span></a>
+</div>
+
+<div id="target" popover></div>
+
+<style>
+  .example.customcontent [interestfor]::interest-button {
+    content: "::interest-button";
+  }
+  .example {
+    width: 400px;
+    height: 50px;
+  }
+</style>
+
+<script>
+async function invalidateStylesHack() {
+  // TODO(crbug.com/515514021): This is a hack to work around
+  // pseudo style invalidation issues when media query states
+  // change. See this comment for more context:
+  // https://crrev.com/c/7850916/comment/9bac96bb_6bd76d9f/
+  document.documentElement.style.display = 'none';
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  document.documentElement.style.display = '';
+}
+
+function setHoverType(val) {
+  internals.settings.setPrimaryHoverType(val);
+  internals.settings.setAvailableHoverTypes(val);
+}
+function assertPseudoDisplay(invoker, value) {
+  const style = getComputedStyle(invoker, '::interest-button');
+  assert_equals(style.display, value, `${invoker.tagName} ::interest-button should be display: ${value}`);
+}
+
+promise_test(async (t) => {
+  assert_true(!!window.internals, 'This test requires window.internals');
+  t.add_cleanup(() => setHoverType('hover'));
+
+  const invokers = document.querySelectorAll('.example [interestfor]');
+  assert_equals(invokers.length, 4);
+
+  // 1. When hover media query matches (desktop default: hover)
+  setHoverType('hover');
+  await invalidateStylesHack();
+  assert_true(window.matchMedia('(hover: hover)').matches, 'Hover media query should match');
+  for (const invoker of invokers) {
+    assertPseudoDisplay(invoker, 'none');
+  }
+
+  // 2. When hover media query does not match (hover: none)
+  setHoverType('none');
+  await invalidateStylesHack();
+  assert_false(window.matchMedia('(hover: hover)').matches, 'Hover media query should not match');
+  for (const invoker of invokers) {
+    assertPseudoDisplay(invoker, 'inline-block');
+  }
+}, 'Interest button pseudo element appearance when hover matches and does not match');
+</script>
