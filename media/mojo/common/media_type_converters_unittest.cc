@@ -278,6 +278,29 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
   CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
 }
 
+TEST(MediaTypeConvertersTest, ConvertAudioBuffer_PlanarWithChannelPadding) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannelCount = 2;
+  constexpr int kSampleRate = 48000;
+  constexpr int kFrameCount = 3;
+  constexpr size_t kPayloadSize =
+      kChannelCount * kFrameCount *
+      SampleFormatToBytesPerChannel(kSampleFormatPlanarF32);
+  const base::TimeDelta start_time = base::Seconds(1000.0);
+  scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
+      kSampleFormatPlanarF32, kChannelLayout, kChannelCount, kSampleRate, 0.0f,
+      1.0f, kFrameCount, start_time);
+
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
+
+  // Planar channel allocations are aligned, so this payload uses padding in
+  // the serialized data between channel starts.
+  EXPECT_GT(ptr->data.size(), kPayloadSize);
+
+  scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
+  CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
+}
+
 TEST(MediaTypeConvertersTest, ConvertAudioBuffer_DISCRETE) {
   // Original.
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_DISCRETE;

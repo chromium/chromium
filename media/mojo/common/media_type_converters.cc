@@ -254,11 +254,9 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
   }
 
   if (IsBitstream(input->sample_format)) {
-    uint8_t* data = input->data.data();
     return media::AudioBuffer::CopyBitstreamFrom(
         input->sample_format, input->channel_layout, input->channel_count,
-        input->sample_rate, input->frame_count, &data, input->data.size(),
-        input->timestamp);
+        input->sample_rate, input->frame_count, input->data, input->timestamp);
   }
 
   // Safe to cast, since we already checked `sample_format` doesn't exceed
@@ -266,31 +264,46 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
   const size_t bytes_per_channel = SampleFormatToBytesPerChannel(
       static_cast<media::SampleFormat>(input->sample_format));
 
+  // `copy_size_per_channel` is the exact payload size expected by
+  // AudioBuffer::CopyFrom().
+  const size_t copy_size_per_channel =
+      base::CheckMul(input->frame_count, bytes_per_channel).ValueOrDefault(0u);
+
   // `bytes_per_channel` could be 0 if we received a kUnknownFormat. In that
   // case, and in the case of a overflow below, `min_data_size` will be 0,
   // and we will return an EOS below.
   const size_t min_data_size =
-      base::CheckMul(input->frame_count,
-                     base::CheckMul(input->channel_count, bytes_per_channel))
+      base::CheckMul(input->channel_count, copy_size_per_channel)
           .ValueOrDefault(0u);
-  if (input->data.size() < min_data_size ||
+  if (!copy_size_per_channel || !min_data_size ||
+      input->data.size() < min_data_size ||
       input->data.size() % input->channel_count != 0) {
     DLOG(ERROR) << "Received invalid AudioBuffer, replace it with EOS.";
     return media::AudioBuffer::CreateEOSBuffer();
   }
 
-  // Setup channel pointers.  AudioBuffer::CopyFrom() will only use the first
+  // Setup channel spans. AudioBuffer::CopyFrom() will only use the first
   // one in the case of interleaved data.
-  std::vector<const uint8_t*> channel_ptrs(input->channel_count, nullptr);
-  const size_t size_per_channel = input->data.size() / input->channel_count;
-  for (int i = 0; i < input->channel_count; ++i) {
-    channel_ptrs[i] = UNSAFE_TODO(input->data.data() + i * size_per_channel);
-  }
+  const auto input_data = base::as_byte_span(input->data);
+  std::vector<base::span<const uint8_t>> channel_spans;
+  if (media::IsInterleaved(input->sample_format)) {
+    channel_spans.push_back(input_data.first(min_data_size));
+  } else {
+    // `source_size_per_channel` is the stride in the
+    // serialized buffer, which may include alignment padding.
+    const size_t source_size_per_channel =
+        input->data.size() / input->channel_count;
+    channel_spans.resize(input->channel_count);
 
+    for (int i = 0; i < input->channel_count; ++i) {
+      channel_spans[i] =
+          base::as_byte_span(input->data)
+              .subspan(i * source_size_per_channel, copy_size_per_channel);
+    }
+  }
   return media::AudioBuffer::CopyFrom(
       input->sample_format, input->channel_layout, input->channel_count,
-      input->sample_rate, input->frame_count, &channel_ptrs[0],
-      input->timestamp);
+      input->sample_rate, input->frame_count, channel_spans, input->timestamp);
 }
 
 }  // namespace mojo

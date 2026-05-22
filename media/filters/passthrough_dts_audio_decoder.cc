@@ -105,11 +105,9 @@ void PassthroughDTSAudioDecoder::EncapsulateFrame(const DecoderBuffer& buffer) {
   // Encapsulated a compressed DTS frame per IEC61937
   dts::WrapDTSWithIEC61937(buffer, output_buffer, config_.codec());
 
-  // Create a mono channel "buffer" to hold IEC encapsulated bitstream
-  uint8_t* output_channels[1] = {output_buffer.data()};
   scoped_refptr<AudioBuffer> output = AudioBuffer::CopyBitstreamFrom(
       kSampleFormatIECDts, CHANNEL_LAYOUT_MONO, 1, config_.samples_per_second(),
-      samples_per_frame, output_channels, dts_frame_size, buffer.timestamp());
+      samples_per_frame, output_buffer, buffer.timestamp());
   output_cb_.Run(output);
 }
 
