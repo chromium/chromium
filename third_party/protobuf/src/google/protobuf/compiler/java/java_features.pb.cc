@@ -41,7 +41,7 @@ struct JavaFeatures_NestInFileClassFeatureDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 JavaFeatures_NestInFileClassFeatureDefaultTypeInternal _JavaFeatures_NestInFileClassFeature_default_instance_;
 
 inline constexpr JavaFeatures::Impl_::Impl_(
@@ -70,7 +70,7 @@ struct JavaFeaturesDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 JavaFeaturesDefaultTypeInternal _JavaFeatures_default_instance_;
 }  // namespace pb
 static const ::_pb::EnumDescriptor* PROTOBUF_NONNULL
@@ -235,7 +235,7 @@ constexpr auto JavaFeatures_NestInFileClassFeature::InternalGenerateClassData_()
   };
 }
 
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
     ::google::protobuf::internal::ClassDataFull JavaFeatures_NestInFileClassFeature_class_data_ =
         JavaFeatures_NestInFileClassFeature::InternalGenerateClassData_();
 
@@ -245,7 +245,7 @@ JavaFeatures_NestInFileClassFeature::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(JavaFeatures_NestInFileClassFeature_class_data_.tc_table);
   return JavaFeatures_NestInFileClassFeature_class_data_.base();
 }
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<0, 0, 0, 0, 2>
 JavaFeatures_NestInFileClassFeature::_table_ = {
   {
@@ -372,7 +372,7 @@ constexpr auto JavaFeatures::InternalGenerateClassData_() {
   };
 }
 
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
     ::google::protobuf::internal::ClassDataFull JavaFeatures_class_data_ =
         JavaFeatures::InternalGenerateClassData_();
 
@@ -382,7 +382,7 @@ JavaFeatures::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(JavaFeatures_class_data_.tc_table);
   return JavaFeatures_class_data_.base();
 }
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<3, 5, 2, 0, 2>
 JavaFeatures::_table_ = {
   {

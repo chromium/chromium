@@ -1,0 +1,170 @@
+diff --git a/src/google/protobuf/compiler/java/java_features.pb.cc b/src/google/protobuf/compiler/java/java_features.pb.cc
+index c727b08cacd73..fb9bbe7210cce 100644
+--- a/src/google/protobuf/compiler/java/java_features.pb.cc
++++ b/src/google/protobuf/compiler/java/java_features.pb.cc
+@@ -41,7 +41,7 @@ struct JavaFeatures_NestInFileClassFeatureDefaultTypeInternal {
+   };
+ };
+ 
+-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
++PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
+     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 JavaFeatures_NestInFileClassFeatureDefaultTypeInternal _JavaFeatures_NestInFileClassFeature_default_instance_;
+ 
+ inline constexpr JavaFeatures::Impl_::Impl_(
+@@ -70,7 +70,7 @@ struct JavaFeaturesDefaultTypeInternal {
+   };
+ };
+ 
+-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
++PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
+     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 JavaFeaturesDefaultTypeInternal _JavaFeatures_default_instance_;
+ }  // namespace pb
+ static const ::_pb::EnumDescriptor* PROTOBUF_NONNULL
+@@ -235,7 +235,7 @@ constexpr auto JavaFeatures_NestInFileClassFeature::InternalGenerateClassData_()
+   };
+ }
+ 
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+     ::google::protobuf::internal::ClassDataFull JavaFeatures_NestInFileClassFeature_class_data_ =
+         JavaFeatures_NestInFileClassFeature::InternalGenerateClassData_();
+ 
+@@ -245,7 +245,7 @@ JavaFeatures_NestInFileClassFeature::GetClassData() const {
+   ::google::protobuf::internal::PrefetchToLocalCache(JavaFeatures_NestInFileClassFeature_class_data_.tc_table);
+   return JavaFeatures_NestInFileClassFeature_class_data_.base();
+ }
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+ const ::_pbi::TcParseTable<0, 0, 0, 0, 2>
+ JavaFeatures_NestInFileClassFeature::_table_ = {
+   {
+@@ -372,7 +372,7 @@ constexpr auto JavaFeatures::InternalGenerateClassData_() {
+   };
+ }
+ 
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+     ::google::protobuf::internal::ClassDataFull JavaFeatures_class_data_ =
+         JavaFeatures::InternalGenerateClassData_();
+ 
+@@ -382,7 +382,7 @@ JavaFeatures::GetClassData() const {
+   ::google::protobuf::internal::PrefetchToLocalCache(JavaFeatures_class_data_.tc_table);
+   return JavaFeatures_class_data_.base();
+ }
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+ const ::_pbi::TcParseTable<3, 5, 2, 0, 2>
+ JavaFeatures::_table_ = {
+   {
+diff --git a/src/google/protobuf/compiler/plugin.pb.cc b/src/google/protobuf/compiler/plugin.pb.cc
+index b71e153e545ee..3325896a57bf1 100644
+--- a/src/google/protobuf/compiler/plugin.pb.cc
++++ b/src/google/protobuf/compiler/plugin.pb.cc
+@@ -55,7 +55,7 @@ struct VersionDefaultTypeInternal {
+   };
+ };
+ 
+-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
++PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
+     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 VersionDefaultTypeInternal _Version_default_instance_;
+ 
+ inline constexpr CodeGeneratorResponse_File::Impl_::Impl_(
+@@ -89,7 +89,7 @@ struct CodeGeneratorResponse_FileDefaultTypeInternal {
+   };
+ };
+ 
+-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
++PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
+     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CodeGeneratorResponse_FileDefaultTypeInternal _CodeGeneratorResponse_File_default_instance_;
+ 
+ inline constexpr CodeGeneratorResponse::Impl_::Impl_(
+@@ -120,7 +120,7 @@ struct CodeGeneratorResponseDefaultTypeInternal {
+   };
+ };
+ 
+-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
++PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
+     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CodeGeneratorResponseDefaultTypeInternal _CodeGeneratorResponse_default_instance_;
+ 
+ inline constexpr CodeGeneratorRequest::Impl_::Impl_(
+@@ -151,7 +151,7 @@ struct CodeGeneratorRequestDefaultTypeInternal {
+   };
+ };
+ 
+-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
++PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
+     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CodeGeneratorRequestDefaultTypeInternal _CodeGeneratorRequest_default_instance_;
+ }  // namespace compiler
+ }  // namespace protobuf
+@@ -395,7 +395,7 @@ constexpr auto Version::InternalGenerateClassData_() {
+   };
+ }
+ 
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+     ::google::protobuf::internal::ClassDataFull Version_class_data_ =
+         Version::InternalGenerateClassData_();
+ 
+@@ -405,7 +405,7 @@ Version::GetClassData() const {
+   ::google::protobuf::internal::PrefetchToLocalCache(Version_class_data_.tc_table);
+   return Version_class_data_.base();
+ }
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+ const ::_pbi::TcParseTable<2, 4, 0, 0, 2>
+ Version::_table_ = {
+   {
+@@ -776,7 +776,7 @@ constexpr auto CodeGeneratorRequest::InternalGenerateClassData_() {
+   };
+ }
+ 
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+     ::google::protobuf::internal::ClassDataFull CodeGeneratorRequest_class_data_ =
+         CodeGeneratorRequest::InternalGenerateClassData_();
+ 
+@@ -786,7 +786,7 @@ CodeGeneratorRequest::GetClassData() const {
+   ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorRequest_class_data_.tc_table);
+   return CodeGeneratorRequest_class_data_.base();
+ }
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+ const ::_pbi::TcParseTable<3, 5, 3, 0, 2>
+ CodeGeneratorRequest::_table_ = {
+   {
+@@ -1206,7 +1206,7 @@ constexpr auto CodeGeneratorResponse_File::InternalGenerateClassData_() {
+   };
+ }
+ 
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+     ::google::protobuf::internal::ClassDataFull CodeGeneratorResponse_File_class_data_ =
+         CodeGeneratorResponse_File::InternalGenerateClassData_();
+ 
+@@ -1216,7 +1216,7 @@ CodeGeneratorResponse_File::GetClassData() const {
+   ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorResponse_File_class_data_.tc_table);
+   return CodeGeneratorResponse_File_class_data_.base();
+ }
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+ const ::_pbi::TcParseTable<2, 4, 1, 0, 2>
+ CodeGeneratorResponse_File::_table_ = {
+   {
+@@ -1580,7 +1580,7 @@ constexpr auto CodeGeneratorResponse::InternalGenerateClassData_() {
+   };
+ }
+ 
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+     ::google::protobuf::internal::ClassDataFull CodeGeneratorResponse_class_data_ =
+         CodeGeneratorResponse::InternalGenerateClassData_();
+ 
+@@ -1590,7 +1590,7 @@ CodeGeneratorResponse::GetClassData() const {
+   ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorResponse_class_data_.tc_table);
+   return CodeGeneratorResponse_class_data_.base();
+ }
+-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
++PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+ const ::_pbi::TcParseTable<3, 5, 1, 0, 2>
+ CodeGeneratorResponse::_table_ = {
+   {

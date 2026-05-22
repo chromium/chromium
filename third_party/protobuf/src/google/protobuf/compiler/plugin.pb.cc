@@ -55,7 +55,7 @@ struct VersionDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 VersionDefaultTypeInternal _Version_default_instance_;
 
 inline constexpr CodeGeneratorResponse_File::Impl_::Impl_(
@@ -89,7 +89,7 @@ struct CodeGeneratorResponse_FileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CodeGeneratorResponse_FileDefaultTypeInternal _CodeGeneratorResponse_File_default_instance_;
 
 inline constexpr CodeGeneratorResponse::Impl_::Impl_(
@@ -120,7 +120,7 @@ struct CodeGeneratorResponseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CodeGeneratorResponseDefaultTypeInternal _CodeGeneratorResponse_default_instance_;
 
 inline constexpr CodeGeneratorRequest::Impl_::Impl_(
@@ -151,7 +151,7 @@ struct CodeGeneratorRequestDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CodeGeneratorRequestDefaultTypeInternal _CodeGeneratorRequest_default_instance_;
 }  // namespace compiler
 }  // namespace protobuf
@@ -395,7 +395,7 @@ constexpr auto Version::InternalGenerateClassData_() {
   };
 }
 
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
     ::google::protobuf::internal::ClassDataFull Version_class_data_ =
         Version::InternalGenerateClassData_();
 
@@ -405,7 +405,7 @@ Version::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(Version_class_data_.tc_table);
   return Version_class_data_.base();
 }
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<2, 4, 0, 0, 2>
 Version::_table_ = {
   {
@@ -776,7 +776,7 @@ constexpr auto CodeGeneratorRequest::InternalGenerateClassData_() {
   };
 }
 
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
     ::google::protobuf::internal::ClassDataFull CodeGeneratorRequest_class_data_ =
         CodeGeneratorRequest::InternalGenerateClassData_();
 
@@ -786,7 +786,7 @@ CodeGeneratorRequest::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorRequest_class_data_.tc_table);
   return CodeGeneratorRequest_class_data_.base();
 }
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<3, 5, 3, 0, 2>
 CodeGeneratorRequest::_table_ = {
   {
@@ -1206,7 +1206,7 @@ constexpr auto CodeGeneratorResponse_File::InternalGenerateClassData_() {
   };
 }
 
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
     ::google::protobuf::internal::ClassDataFull CodeGeneratorResponse_File_class_data_ =
         CodeGeneratorResponse_File::InternalGenerateClassData_();
 
@@ -1216,7 +1216,7 @@ CodeGeneratorResponse_File::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorResponse_File_class_data_.tc_table);
   return CodeGeneratorResponse_File_class_data_.base();
 }
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<2, 4, 1, 0, 2>
 CodeGeneratorResponse_File::_table_ = {
   {
@@ -1580,7 +1580,7 @@ constexpr auto CodeGeneratorResponse::InternalGenerateClassData_() {
   };
 }
 
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
     ::google::protobuf::internal::ClassDataFull CodeGeneratorResponse_class_data_ =
         CodeGeneratorResponse::InternalGenerateClassData_();
 
@@ -1590,7 +1590,7 @@ CodeGeneratorResponse::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorResponse_class_data_.tc_table);
   return CodeGeneratorResponse_class_data_.base();
 }
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+PROTOBUF_CONSTINIT_WITH_PTR PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
 const ::_pbi::TcParseTable<3, 5, 1, 0, 2>
 CodeGeneratorResponse::_table_ = {
   {
