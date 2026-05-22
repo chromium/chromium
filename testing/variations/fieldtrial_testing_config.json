@@ -9519,6 +9519,21 @@
             ]
         }
     ],
+    "EnableASLRBeaconMitigation": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableASLRBeaconMitigation"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableASWebAuthenticationSession": [
         {
             "platforms": [

@@ -143,6 +143,7 @@ bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
 
 void RendererSandboxedProcessLauncherDelegateWin::PostSpawnTarget(
     base::ProcessHandle process) {
+  SandboxedProcessLauncherDelegate::PostSpawnTarget(process);
   FILETIME creation_time, exit_time, kernel_time, user_time;
   // Should never fail. If it does, then something really bad has happened, such
   // as something external unsuspending the renderer process.
