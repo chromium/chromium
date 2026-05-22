@@ -597,6 +597,10 @@ void HTMLConstructionSite::MergeAttributesFromTokenIntoElement(
       element->setAttribute(token_attribute.GetName(), token_attribute.Value());
   }
 
+  if (sanitizer_) {
+    sanitizer_->Sanitize(element);
+  }
+
   element->HideNonce();
 }
 
