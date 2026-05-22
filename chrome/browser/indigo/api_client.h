@@ -42,6 +42,7 @@ struct GenerateImageError {
 
 struct StatusResult {
   bool has_user_image = false;
+  bool is_service_supported_for_account = false;
 };
 
 struct StatusError {

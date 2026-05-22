@@ -221,9 +221,10 @@ void IndigoService::TriggerRemoteEligibilityFetch() {
           std::move(callback).Run(base::unexpected(result.error().message));
           return;
         }
-        std::move(callback).Run(
-            RemoteEligibility{.is_service_supported_for_account = true,
-                              .has_user_image = result.value().has_user_image});
+        std::move(callback).Run(RemoteEligibility{
+            .is_service_supported_for_account =
+                result.value().is_service_supported_for_account,
+            .has_user_image = result.value().has_user_image});
       },
       std::move(on_rpc_status_received)));
 }
