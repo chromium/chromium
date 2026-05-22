@@ -359,7 +359,15 @@ cr-icon-button {
   --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-background);
 }
 
-/* Overrides for the contextual entrypoint button for OB simplification */
+:host([is-lens-searchbox_]) #entrypoint {
+  --composebox-favicon-border-color: var(--color-sys-surface-container, #f2f2f2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([is-lens-searchbox_]) #entrypoint {
+    --composebox-favicon-border-color: var(--color-composebox-context-entrypoint-background, #4e5059);
+  }
+}
 /* TODO: (crbug.com/510905121) - Move this override to css variables
  if needed once the design is finalized. */
 :host([apply-context-button-background]) #entrypoint:hover,

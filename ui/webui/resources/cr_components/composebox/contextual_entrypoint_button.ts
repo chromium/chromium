@@ -60,6 +60,10 @@ export class ContextualEntrypointButtonElement extends
       restoredTabs: {type: Array},
       tabFaviconChipsToCoinsEnabled_: {type: Boolean},
       energyEffectAnimationEnabled: {type: Boolean, reflect: true},
+      isLensSearchbox_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -76,6 +80,9 @@ export class ContextualEntrypointButtonElement extends
   accessor isOblongShape: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
+  protected accessor isLensSearchbox_: boolean =
+      loadTimeData.valueExists('isLensSearchbox') &&
+      loadTimeData.getBoolean('isLensSearchbox');
   protected accessor tabFaviconChipsToCoinsEnabled_: boolean =
       loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
   private showContextMenuDescriptionEnabled_: boolean =
