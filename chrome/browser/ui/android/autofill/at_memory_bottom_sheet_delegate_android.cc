@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_delegate_android.h"
 
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 
@@ -19,7 +20,8 @@ AtMemoryBottomSheetDelegateAndroid::~AtMemoryBottomSheetDelegateAndroid() =
 
 void AtMemoryBottomSheetDelegateAndroid::OnDismissed() {
   if (client_) {
-    client_->HideAutofillSuggestions(SuggestionHidingReason::kUserAborted);
+    client_->HideSuggestions(SuggestionHidingReason::kUserAborted,
+                             FillingProduct::kAtMemory);
   }
 }
 

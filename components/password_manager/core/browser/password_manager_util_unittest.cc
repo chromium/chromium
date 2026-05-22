@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -668,9 +669,12 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
   base::test::TaskEnvironment task_environment;
   password_manager::StubPasswordManagerClient stub_password_client;
   autofill::TestAutofillClient test_autofill_client;
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
+  ON_CALL(mock_delegate, GetMainFillingProduct)
+      .WillByDefault(testing::Return(autofill::FillingProduct::kPassword));
 
   test_autofill_client.ShowAutofillSuggestions(
-      autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
+      autofill::AutofillClient::PopupOpenArgs(), mock_delegate.GetWeakPtr());
   test_autofill_client.ShowAutofillFieldIphForFeature(
       autofill::FormFieldData(),
       autofill::AutofillClient::IphFeature::kAutofillAi);

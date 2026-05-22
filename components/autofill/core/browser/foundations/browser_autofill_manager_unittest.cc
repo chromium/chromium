@@ -825,8 +825,9 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (const override));
   MOCK_METHOD(void,
-              HideAutofillSuggestions,
-              (SuggestionHidingReason reason),
+              HideSuggestions,
+              (SuggestionHidingReason reason,
+               std::optional<FillingProduct> product),
               (override));
   MOCK_METHOD(void,
               TriggerUserPerceptionOfAutofillSurvey,
@@ -7045,9 +7046,10 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
 }
 
 // Tests that both Autofill popup and TTF are hidden on renderer event.
-TEST_F(BrowserAutofillManagerTest, HideAutofillSuggestionsAndOtherPopups) {
+TEST_F(BrowserAutofillManagerTest, HideSuggestionsAndOtherPopups) {
   EXPECT_CALL(autofill_client(),
-              HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent));
+              HideSuggestions(SuggestionHidingReason::kRendererEvent,
+                              Eq(std::nullopt)));
   EXPECT_CALL(autofill_client(), HideAutofillFieldIph);
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
   autofill_manager().OnHidePopup();
@@ -7055,8 +7057,9 @@ TEST_F(BrowserAutofillManagerTest, HideAutofillSuggestionsAndOtherPopups) {
 
 // Tests that only Autofill popup is hidden on editing end, but not TTF.
 TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
-  EXPECT_CALL(autofill_client(),
-              HideAutofillSuggestions(SuggestionHidingReason::kEndEditing));
+  EXPECT_CALL(
+      autofill_client(),
+      HideSuggestions(SuggestionHidingReason::kEndEditing, Eq(std::nullopt)));
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill).Times(0);
   autofill_manager().OnDidEndTextFieldEditing();
 }

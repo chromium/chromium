@@ -583,8 +583,11 @@ class AutofillClient {
       AutofillSuggestionTriggerSource trigger_source,
       AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss);
 
-  // Hides the Autofill suggestions UI if it is currently showing.
-  virtual void HideAutofillSuggestions(SuggestionHidingReason reason) = 0;
+  // Hides the suggestions UI if it is currently showing.
+  // If `product` is specified, only hides suggestions if they belong to that
+  // specific `FillingProduct`.
+  virtual void HideSuggestions(SuggestionHidingReason reason,
+                               std::optional<FillingProduct> product) = 0;
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with

@@ -91,8 +91,9 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   MOCK_METHOD(void,
-              HideAutofillSuggestions,
-              (SuggestionHidingReason reason),
+              HideSuggestions,
+              (SuggestionHidingReason reason,
+               std::optional<FillingProduct> product),
               (override));
 };
 
@@ -2415,7 +2416,7 @@ TEST_F(
           test::GetTestUnlinkedBnplIssuer());
 
   EXPECT_CALL(autofill_client(),
-              HideAutofillSuggestions(SuggestionHidingReason::kHiddenByCaller));
+              HideSuggestions(SuggestionHidingReason::kHiddenByCaller, _));
   EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi).Times(0);
   EXPECT_CALL(GetBnplUiDelegate(), ShowBnplTosUi);
 
@@ -2441,7 +2442,7 @@ TEST_F(
           test::GetTestUnlinkedBnplIssuer());
 
   EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi());
-  EXPECT_CALL(autofill_client(), HideAutofillSuggestions).Times(0);
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
   EXPECT_CALL(GetBnplUiDelegate(), ShowBnplTosUi);
 
   test_api(*bnpl_manager_)
@@ -2464,7 +2465,7 @@ TEST_F(
           test::GetTestLinkedBnplIssuer());
 
   EXPECT_CALL(autofill_client(),
-              HideAutofillSuggestions(SuggestionHidingReason::kHiddenByCaller));
+              HideSuggestions(SuggestionHidingReason::kHiddenByCaller, _));
   EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi).Times(0);
   EXPECT_CALL(*static_cast<MockPaymentsWindowManager*>(
                   payments_autofill_client().GetPaymentsWindowManager()),
@@ -2496,7 +2497,7 @@ TEST_F(
           test::GetTestLinkedBnplIssuer());
 
   EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi());
-  EXPECT_CALL(autofill_client(), HideAutofillSuggestions).Times(0);
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
   EXPECT_CALL(*static_cast<MockPaymentsWindowManager*>(
                   payments_autofill_client().GetPaymentsWindowManager()),
               InitBnplFlow);

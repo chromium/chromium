@@ -1133,8 +1133,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
               FormControlType::kInputPassword &&
           !autofill_field->value().empty() &&
           autofill_field->last_modifier() != FieldModifier::kAutofill) {
-        client().HideAutofillSuggestions(
-            SuggestionHidingReason::kFieldValueChanged);
+        client().HideSuggestions(SuggestionHidingReason::kFieldValueChanged,
+                                 /*product=*/std::nullopt);
         return;
       }
 #if !BUILDFLAG(IS_ANDROID)
@@ -2321,7 +2321,8 @@ void BrowserAutofillManager::DidShowSuggestions(
 
 void BrowserAutofillManager::OnHidePopupImpl() {
   client().GetSingleFieldFillRouter().CancelPendingQueries();
-  client().HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent);
+  client().HideSuggestions(SuggestionHidingReason::kRendererEvent,
+                           /*product=*/std::nullopt);
   client().HideAutofillFieldIph();
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->HideTouchToFill();

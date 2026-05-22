@@ -18,7 +18,9 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -39,6 +41,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
@@ -86,6 +89,7 @@
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -813,6 +817,26 @@ TEST_F(ChromeAutofillClientTest, GetPersonalContextEnablementState_HappyPath) {
   EXPECT_EQ(client()->GetPersonalContextEnablementState(),
             personal_context::PersonalContextEnablementState::kEnabled);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeAutofillClientTest, HideSuggestions_ProductFilter) {
+  testing::NiceMock<MockAutofillPopupController> mock_controller;
+  ON_CALL(mock_controller, GetMainFillingProduct)
+      .WillByDefault(Return(FillingProduct::kAddress));
+  client()->set_suggestion_controller_for_testing(mock_controller.GetWeakPtr());
+
+  // Attempt to hide with a non-matching product filter should be ignored.
+  EXPECT_CALL(mock_controller, Hide).Times(0);
+  client()->HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                            FillingProduct::kPassword);
+  testing::Mock::VerifyAndClearExpectations(&mock_controller);
+
+  // Attempt to hide with a matching product filter should succeed.
+  EXPECT_CALL(mock_controller, Hide(SuggestionHidingReason::kAcceptSuggestion));
+  client()->HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                            FillingProduct::kAddress);
+}
+#endif
 
 }  // namespace
 }  // namespace autofill

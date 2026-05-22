@@ -1103,10 +1103,10 @@ TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
       menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
 }
 
-class RenderViewContextMenuHideAutofillSuggestionsTest
+class RenderViewContextMenuHideSuggestionsTest
     : public RenderViewContextMenuPrefsTest {
  public:
-  RenderViewContextMenuHideAutofillSuggestionsTest() = default;
+  RenderViewContextMenuHideSuggestionsTest() = default;
 
  protected:
   autofill::TestContentAutofillClient* autofill_client() {
@@ -1119,8 +1119,7 @@ class RenderViewContextMenuHideAutofillSuggestionsTest
 };
 
 // Always hide the autofill popup when the context menu opens.
-TEST_F(RenderViewContextMenuHideAutofillSuggestionsTest,
-       HideAutofillSuggestions) {
+TEST_F(RenderViewContextMenuHideSuggestionsTest, HideSuggestions) {
   NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
   params.form_control_type = blink::mojom::FormControlType::kInputText;

@@ -250,8 +250,8 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
-    main_autofill_manager().client().HideAutofillSuggestions(
-        SuggestionHidingReason::kTabGone);
+    main_autofill_manager().client().HideSuggestions(
+        SuggestionHidingReason::kTabGone, /*product=*/std::nullopt);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 

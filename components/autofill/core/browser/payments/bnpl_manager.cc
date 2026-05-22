@@ -1261,8 +1261,8 @@ void BnplManager::ReplaceIssuerSuggestionsWithLoadingThrobber() {
 void BnplManager::HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
-    browser_autofill_manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kHiddenByCaller);
+    browser_autofill_manager_->client().HideSuggestions(
+        SuggestionHidingReason::kHiddenByCaller, /*product=*/std::nullopt);
   } else {
     payments_autofill_client()
         .GetBnplUiDelegate()

@@ -385,7 +385,7 @@ TEST_F(AutofillAgentContentEditableInteractionTest, LeftClick) {
 // Tests that unfocusing a contenteditable triggers a call to
 // `AutofillDriver::HidePopup()`.
 TEST_F(AutofillAgentContentEditableInteractionTest,
-       LossOfFocusOfContentEditableTriggersHideAutofillSuggestions) {
+       LossOfFocusOfContentEditableTriggersHideSuggestions) {
   MockFunction<void()> check;
   {
     InSequence s;

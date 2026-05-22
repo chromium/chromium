@@ -152,8 +152,9 @@ void ChromeComposeClient::FieldChangeObserver::HideComposeNudges() {
          autofill::GetFillingProductFromSuggestionType(suggestions[0].type) ==
              autofill::FillingProduct::kCompose) ||
         skip_suggestion_type_for_test_) {
-      autofill_client->HideAutofillSuggestions(
-          autofill::SuggestionHidingReason::kFieldValueChanged);
+      autofill_client->HideSuggestions(
+          autofill::SuggestionHidingReason::kFieldValueChanged,
+          autofill::FillingProduct::kCompose);
     }
   }
 }
