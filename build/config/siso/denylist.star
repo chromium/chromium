@@ -19,6 +19,8 @@ def __step_config(ctx, step_config):
     # 3. If the build fails due to missing inputs on RBE (e.g., helper scripts or assets):
     #    - Fix this in the corresponding `BUILD.gn` (not in Siso star files) by adding the
     #      missing files to the `inputs` list of the action target.
+    #      If the missing inputs are imported Python scripts, consider using
+    #      `action_with_pydeps` instead of manually listing them in `inputs`.
     # 4. Re-build and verify the action succeeds remotely.
     python_scripts = [
         "base/win/embedded_i18n/create_string_rc.py",
