@@ -122,6 +122,9 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
 
   // The constraint for the trailing edge of the main stack.
   NSLayoutConstraint* _mainStackTrailingConstraint;
+
+  // The horizontal constraint ensuring the 75/25 ratio.
+  NSLayoutConstraint* _horizontalTextWidthConstraint;
 }
 
 - (instancetype)initWithConfiguration:
@@ -296,6 +299,8 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
     _mainStack.alignment = UIStackViewAlignmentLeading;
 
     _trailingLabel.textAlignment = NSTextAlignmentNatural;
+    [NSLayoutConstraint
+        deactivateConstraints:@[ _horizontalTextWidthConstraint ]];
     [NSLayoutConstraint activateConstraints:_accessibilityTextConstraints];
   } else {
     _allTextStack.axis = UILayoutConstraintAxisHorizontal;
@@ -309,6 +314,8 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
             ? NSTextAlignmentRight
             : NSTextAlignmentLeft;
     [NSLayoutConstraint deactivateConstraints:_accessibilityTextConstraints];
+    [NSLayoutConstraint
+        activateConstraints:@[ _horizontalTextWidthConstraint ]];
   }
 
   [self updateNumberOfLines];
@@ -361,11 +368,10 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
 
   // The constraint ensuring the 75/25 ratio. It is higher priority than the
   // compression resistance but lower than the content hugging.
-  NSLayoutConstraint* trailingTextWidthConstraint =
-      [_titleSubtitleContainer.widthAnchor
-          constraintEqualToAnchor:_trailingLabel.widthAnchor
-                       multiplier:kTitleSubtitleToTrailingWidthRatio];
-  trailingTextWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+  _horizontalTextWidthConstraint = [_titleSubtitleContainer.widthAnchor
+      constraintEqualToAnchor:_trailingLabel.widthAnchor
+                   multiplier:kTitleSubtitleToTrailingWidthRatio];
+  _horizontalTextWidthConstraint.priority = UILayoutPriorityDefaultHigh;
 
   [_titleSubtitleContainer
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -399,7 +405,6 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
     [self.heightAnchor
         constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight],
     height,
-    trailingTextWidthConstraint,
   ]];
 }
 
