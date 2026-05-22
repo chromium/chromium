@@ -442,6 +442,14 @@ void StoreSharedTab(syncer::DataTypeStore::WriteBatch& write_batch,
     // Unique position is stored in the sync metadata, so it should not be
     // stored in specifics on the disk.
     specifics.mutable_tab()->clear_unique_position();
+
+    // Enforce defense-in-depth by sanitizing the URL and title centrally before
+    // disk write.
+    GURL url(specifics.tab().url());
+    if (!IsURLValidForSavedTabGroups(url)) {
+      specifics.mutable_tab()->set_url(kChromeSavedTabGroupUnsupportedURL);
+      specifics.mutable_tab()->clear_title();
+    }
   }
   std::string storage_key = specifics.guid();
   proto::SharedTabGroupData local_proto;
