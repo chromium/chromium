@@ -412,6 +412,7 @@ public class TouchToFillIntegrationTest {
 
         // Wait for TTF to open.
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        pollUiThread(() -> getCredentials().getChildAt(1) != null);
         // Click on the credential and verify that the credential was selected.
         TouchCommon.singleClickView(getCredentials().getChildAt(1));
         waitForEvent(mMockBridge).onCredentialSelected(sAna);
