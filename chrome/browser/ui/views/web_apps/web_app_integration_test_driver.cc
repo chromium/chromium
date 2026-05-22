@@ -706,10 +706,10 @@ class UninstallCompleteWaiter final : public BrowserCollectionObserver,
     if (app_browser != nullptr) {
       LOG(INFO) << base::StringPrintf(
           "An app browser is still open at %p: IsAttemptingToClose(): %v, "
-          "is_delete_scheduled(): %v",
+          "IsDeleteScheduled(): %v",
           app_browser,
           app_browser->capabilities()->IsAttemptingToCloseBrowser(),
-          app_browser->GetBrowserForMigrationOnly()->is_delete_scheduled());
+          app_browser->IsDeleteScheduled());
       return;
     }
 

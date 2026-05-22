@@ -27,7 +27,7 @@ TEST_F(BrowserFinderTest, ScheduledForDeletion) {
   // BrowserView::OnWindowCloseRequested). Pending delete browsers are not
   // included in browser counts.
   browser->OnWindowClosing();
-  EXPECT_TRUE(browser->is_delete_scheduled());
+  EXPECT_TRUE(browser->IsDeleteScheduled());
   EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(nullptr, ProfileBrowserCollection::GetForProfile(profile())
                          ->GetLastActiveBrowser());

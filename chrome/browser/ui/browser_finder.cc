@@ -131,7 +131,7 @@ bool BrowserMatches(BrowserWindowInterface* browser,
   }
 
   if ((match_types & kIncludeBrowsersScheduledForDeletion) == 0 &&
-      browser->GetBrowserForMigrationOnly()->is_delete_scheduled()) {
+      browser->IsDeleteScheduled()) {
     return false;
   }
 

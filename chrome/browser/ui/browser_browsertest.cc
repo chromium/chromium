@@ -1107,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
   base::CallbackListSubscription subscription =
       browser()->RegisterBrowserDidClose(browser_did_close_callback.Get());
   browser()->window()->Close();
-  EXPECT_FALSE(browser()->is_delete_scheduled());
+  EXPECT_FALSE(browser()->IsDeleteScheduled());
   testing::Mock::VerifyAndClearExpectations(&browser_did_close_callback);
 
   // Close the browser skipping unload handlers, ensure the did close
@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
   EXPECT_CALL(browser_did_close_callback, Run).Times(1);
   UnloadController::From(browser())->set_force_skip_warning_user_on_close(true);
   browser()->window()->Close();
-  EXPECT_TRUE(browser()->is_delete_scheduled());
+  EXPECT_TRUE(browser()->IsDeleteScheduled());
 }
 
 // TODO(crbug.com/40641945): Test this with implicitly-created links.

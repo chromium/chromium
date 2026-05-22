@@ -128,7 +128,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
   // This is normally invoked when the tab strip is empty (specifically from
   // BrowserView::OnWindowCloseRequested).
   browser2->OnWindowClosing();
-  EXPECT_TRUE(browser2->is_delete_scheduled());
+  EXPECT_TRUE(browser2->IsDeleteScheduled());
   browser3->tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
 
   tab_counts.clear();

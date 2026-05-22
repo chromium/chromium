@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
 
   // Should return NoMatch - either because the browser is filtered out by
-  // is_delete_scheduled(), or because it's no longer in a valid state to
+  // IsDeleteScheduled(), or because it's no longer in a valid state to
   // be focused.
   EXPECT_EQ(FocusStatus::kNoMatch, result.status);
 }

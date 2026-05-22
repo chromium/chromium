@@ -203,7 +203,7 @@ base::DictValue CreateProfileState(const ProfileAttributesEntry* entry,
 void OpenLearnMoreURL(bool is_profile_list_empty, Browser* browser) {
   // Browser may be closing if the Profile was locked after being loaded for
   // example.
-  if (!browser || browser->is_delete_scheduled()) {
+  if (!browser || browser->IsDeleteScheduled()) {
     return;
   }
 

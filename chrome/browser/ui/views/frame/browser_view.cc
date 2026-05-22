@@ -2330,7 +2330,7 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   // No need to re-layout if the browser has already closed. This is unnecessary
   // and dangerous. For tab modal, its modal dialog manager have already gone.
   // Layout will cause CHECK failure due to missing modal dialog manager.
-  if (browser()->is_delete_scheduled()) {
+  if (browser()->IsDeleteScheduled()) {
     return;
   }
 
@@ -5880,7 +5880,7 @@ const WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() const {
 void BrowserView::PaintAsActiveChanged() {
   // Do not propagate Browser active state changes if the Browser has already
   // been scheduled for destruction.
-  if (browser_->is_delete_scheduled()) {
+  if (browser_->IsDeleteScheduled()) {
     return;
   }
 

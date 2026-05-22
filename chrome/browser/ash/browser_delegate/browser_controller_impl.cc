@@ -197,7 +197,7 @@ BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
   BrowserDelegate* browser_delegate = nullptr;
   GlobalBrowserCollection::GetInstance()->ForEach(
       [&](BrowserWindowInterface* browser) {
-        if (!browser->GetBrowserForMigrationOnly()->is_delete_scheduled() &&
+        if (!browser->IsDeleteScheduled() &&
             BrowserMatches(browser, profile, app_id, internal_type, url)) {
           browser_delegate = GetDelegate(browser);
           return false;  // stop iterating

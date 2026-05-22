@@ -751,7 +751,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
     bool exit_flow_after_profile_picked,
     base::OnceCallback<void(bool)> pick_profile_complete_callback,
     Browser* browser) {
-  if (!browser || browser->is_delete_scheduled()) {
+  if (!browser || browser->IsDeleteScheduled()) {
     // The browser is destroyed or about to be destroyed.
     if (pick_profile_complete_callback) {
       std::move(pick_profile_complete_callback).Run(false);

@@ -550,8 +550,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  if (params->browser &&
-      params->browser->GetBrowserForMigrationOnly()->is_delete_scheduled()) {
+  if (params->browser && params->browser->IsDeleteScheduled()) {
     return nullptr;
   }
 

@@ -52,7 +52,7 @@ OmniboxPopupCloser::~OmniboxPopupCloser() = default;
 
 void OmniboxPopupCloser::OnMouseEvent(ui::MouseEvent* event) {
   // Close the omnibox popup if the click is outside the omnibox view.
-  if (!browser_view_->browser()->is_delete_scheduled()) {
+  if (!browser_view_->browser()->IsDeleteScheduled()) {
     LocationBar* location_bar = browser_view_->GetLocationBar();
     CHECK(location_bar);
     if (location_bar->ShouldCloseOmniboxPopup(event)) {
