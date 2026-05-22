@@ -1,0 +1,196 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tab_bottom_sheet.peek_view;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.view.View.OnClickListener;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+@RunWith(BaseRobolectricTestRunner.class)
+public class TabBottomSheetPeekViewBinderTest {
+    private static final String TEST_STRING = "TEST_STRING";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabBottomSheetPeekView mView;
+
+    private PropertyModel mModel;
+    private PropertyModelChangeProcessor mChangeProcessor;
+
+    private OnClickListener mActionButtonClickListener;
+    private OnClickListener mCloseClickListener;
+    private OnClickListener mPeekViewClickListener;
+
+    private boolean mClicked;
+
+    @Before
+    public void setUp() {
+        mModel = new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS).build();
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+
+        doAnswer(
+                        invocation -> {
+                            mActionButtonClickListener = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mView)
+                .setActionButtonClickListener(any());
+
+        doAnswer(
+                        invocation -> {
+                            mCloseClickListener = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mView)
+                .setCloseClickListener(any());
+
+        doAnswer(
+                        invocation -> {
+                            mPeekViewClickListener = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mView)
+                .setPeekViewClickListener(any());
+    }
+
+    @Test
+    public void testTitleText() {
+        mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, TEST_STRING);
+        verify(mView).setTitle(TEST_STRING);
+    }
+
+    @Test
+    public void testTitleTextAppearance() {
+        int styleRes = 456;
+        mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE, styleRes);
+        verify(mView).setTitleTextAppearance(styleRes);
+    }
+
+    @Test
+    public void testDescriptionText() {
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, TEST_STRING);
+        verify(mView).setDescriptionText(TEST_STRING);
+    }
+
+    @Test
+    public void testDescriptionVisibility() {
+        int visibility = 8;
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY, visibility);
+        verify(mView).setDescriptionVisibility(visibility);
+    }
+
+    @Test
+    public void testActionButtonText() {
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT, TEST_STRING);
+        verify(mView).setActionButtonText(TEST_STRING);
+    }
+
+    @Test
+    public void testActionButtonVisibility() {
+        int visibility = 0;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY, visibility);
+        verify(mView).setActionButtonVisibility(visibility);
+    }
+
+    @Test
+    public void testActionButtonIcon() {
+        int iconRes = 789;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON, iconRes);
+        verify(mView).setActionButtonIcon(iconRes);
+    }
+
+    @Test
+    public void testActionButtonBackgroundTint() {
+        ColorStateList colors = ColorStateList.valueOf(Color.RED);
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT, colors);
+        verify(mView).setActionButtonBackgroundTint(colors);
+    }
+
+    @Test
+    public void testActionButtonIconTint() {
+        ColorStateList colors = ColorStateList.valueOf(Color.RED);
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT, colors);
+        verify(mView).setActionButtonIconTint(colors);
+    }
+
+    @Test
+    public void testActionButtonHorizontalPadding() {
+        int padding = 24;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING, padding);
+        verify(mView).setActionButtonHorizontalPadding(padding);
+    }
+
+    @Test
+    public void testOnActionButtonClicked() {
+        mClicked = false;
+        mModel =
+                new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                        .with(
+                                TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED,
+                                () -> mClicked = true)
+                        .build();
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+
+        assertNotNull(mActionButtonClickListener);
+        mActionButtonClickListener.onClick(null);
+        assertTrue(mClicked);
+    }
+
+    @Test
+    public void testOnCloseClicked() {
+        mClicked = false;
+        mModel =
+                new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                        .with(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED, () -> mClicked = true)
+                        .build();
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+
+        assertNotNull(mCloseClickListener);
+        mCloseClickListener.onClick(null);
+        assertTrue(mClicked);
+    }
+
+    @Test
+    public void testOnPeekViewClicked() {
+        mClicked = false;
+        mModel =
+                new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                        .with(
+                                TabBottomSheetPeekProperties.ON_PEEK_VIEW_CLICKED,
+                                () -> mClicked = true)
+                        .build();
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+
+        assertNotNull(mPeekViewClickListener);
+        mPeekViewClickListener.onClick(null);
+        assertTrue(mClicked);
+    }
+}
