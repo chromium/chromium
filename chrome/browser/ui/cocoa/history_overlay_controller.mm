@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 
 // Constants ///////////////////////////////////////////////////////////////////
@@ -109,10 +110,17 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 }
 
 - (void)loadView {
+  int resourceId = 0;
+  if (features::IsRoundedIconsEnabled()) {
+    resourceId = (_mode == kHistoryOverlayModeBack) ? IDR_ARROW_BACKWARD
+                                                    : IDR_ARROW_FORWARD;
+  } else {
+    resourceId =
+        (_mode == kHistoryOverlayModeBack) ? IDR_SWIPE_BACK : IDR_SWIPE_FORWARD;
+  }
+
   const gfx::Image& image =
-      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-          _mode == kHistoryOverlayModeBack ? IDR_SWIPE_BACK
-                                           : IDR_SWIPE_FORWARD);
+      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(resourceId);
   _contentView = [[HistoryOverlayView alloc] initWithMode:_mode
                                                     image:image.ToNSImage()];
   self.view = _contentView;

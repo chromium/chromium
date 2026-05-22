@@ -323,6 +323,8 @@
       <if expr="is_macosx">
         <structure type="chrome_scaled_image" name="IDR_SWIPE_BACK" file="mac/back_large.png" />
         <structure type="chrome_scaled_image" name="IDR_SWIPE_FORWARD" file="mac/forward_large.png" />
+        <structure type="chrome_scaled_image" name="IDR_ARROW_BACKWARD" file="mac/arrow_back.png" />
+        <structure type="chrome_scaled_image" name="IDR_ARROW_FORWARD" file="mac/arrow_forward.png" />
       </if>
       <!-- Used by ChromeOS login page. -->
       <if expr="is_chromeos">
