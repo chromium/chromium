@@ -39,6 +39,7 @@ function getTransitionEndPromise(
 
 class MockSpeechRecognition {
   voiceSearchInProgress: boolean = false;
+  startCount: number = 0;
   onresult:
       ((this: MockSpeechRecognition,
         ev: SpeechRecognitionEvent) => void)|null = null;
@@ -56,6 +57,7 @@ class MockSpeechRecognition {
   }
   start() {
     this.voiceSearchInProgress = true;
+    this.startCount++;
   }
   stop() {
     this.voiceSearchInProgress = false;
@@ -1045,6 +1047,38 @@ suite('ComposeboxVoiceSearch', () => {
         voiceSearchElement['voiceModeEndCleanup_']();
         await microtasksFinished();
       });
+
+  test(
+      'clicking voice search twice does not start speech recognition twice',
+      async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        assertEquals(mockSpeechRecognition.startCount, 1);
+
+        // Click again.
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        // Should still be 1.
+        assertEquals(mockSpeechRecognition.startCount, 1);
+      });
+
+  test('calling start() when already started does nothing', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    assertEquals(mockSpeechRecognition.startCount, 1);
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    // Call start again directly on the element.
+    voiceSearchElement.start();
+
+    // Should still be 1.
+    assertEquals(mockSpeechRecognition.startCount, 1);
+  });
 
   test('on result updates the searchbox input', async () => {
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
