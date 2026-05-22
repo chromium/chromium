@@ -5565,7 +5565,6 @@ TEST_F(BrowserAutofillManagerTest,
   // upload.
   FormsSeen({form});
 
-  std::vector<std::u16string> expected_values = {u"Elvis", u"Aaron", u"A"};
   // These fields should all match.
   std::vector<FieldTypeSet> expected_types = {
       {NAME_FIRST}, {NAME_MIDDLE}, {NAME_MIDDLE_INITIAL}};
