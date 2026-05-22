@@ -13,7 +13,9 @@
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/native_window_tracker/native_window_tracker.h"
+#include "ui/views/widget/widget.h"
 
 namespace eye_dropper {
 namespace {
@@ -204,13 +206,4 @@ void EyeDropperView::ShowCursor() {
   aura::client::GetCursorClient(GetWidget()->GetNativeWindow()->GetRootWindow())
       ->UnlockCursor();
 }
-
-gfx::Size EyeDropperView::GetSize() const {
-  return gfx::Size(100, 100);
-}
-
-float EyeDropperView::GetDiameter() const {
-  return 90;
-}
-
 }  // namespace eye_dropper

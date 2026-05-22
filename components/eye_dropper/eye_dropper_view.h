@@ -14,26 +14,37 @@
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #endif
 
+namespace ui {
+class EventHandler;
+}  // namespace ui
+
+namespace views {
+class Widget;
+class WidgetDelegate;
+}  // namespace views
+
 namespace eye_dropper {
+
+class EyeDropperContentsView;
 
 // EyeDropperView is used on Aura platforms.
 class EyeDropperView : public content::EyeDropper,
+                       public views::WidgetObserver
 #if BUILDFLAG(IS_CHROMEOS)
-                       public aura::WindowObserver,
+    ,
+                       public aura::WindowObserver
 #endif
-                       public views::WidgetDelegateView {
-  METADATA_HEADER(EyeDropperView, views::WidgetDelegateView)
-
+{
  public:
   EyeDropperView(gfx::NativeView parent,
                  gfx::NativeView event_handler,
@@ -50,11 +61,11 @@ class EyeDropperView : public content::EyeDropper,
     return pre_dispatch_handler_.get();
   }
 
- protected:
-  // views::WidgetDelegateView:
-  void OnPaint(gfx::Canvas* canvas) override;
-  void WindowClosing() override;
-  void OnWidgetMove() override;
+  views::Widget* GetWidget() const { return widget_.get(); }
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // aura::WindowObserver:
@@ -63,6 +74,7 @@ class EyeDropperView : public content::EyeDropper,
 #endif
 
  private:
+  friend class EyeDropperContentsView;
   class ViewPositionHandler;
   class ScreenCapturer;
 
@@ -104,12 +116,11 @@ class EyeDropperView : public content::EyeDropper,
   void OnColorSelected();
   void OnColorSelectionCanceled();
 
-  gfx::Size GetSize() const;
-  float GetDiameter() const;
-
   // Receives the color selection.
   raw_ptr<content::EyeDropperListener> listener_;
 
+  std::unique_ptr<views::WidgetDelegate> delegate_;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<PreEventDispatchHandler> pre_dispatch_handler_;
   std::unique_ptr<ViewPositionHandler> view_position_handler_;
   std::unique_ptr<ScreenCapturer> screen_capturer_;

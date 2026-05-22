@@ -9,6 +9,8 @@
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/event.h"
+#include "ui/views/widget/widget.h"
 
 class EyeDropperViewAuraInteractiveTest : public InProcessBrowserTest {
  public:
