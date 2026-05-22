@@ -140,6 +140,9 @@ class ManualFillingController {
 
   // The web page view containing the focused field.
   virtual gfx::NativeView container_view() const = 0;
+
+  // Returns true if the device is a large form factor.
+  virtual bool IsLargeFormFactor() const = 0;
 };
 
 #endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_MANUAL_FILLING_CONTROLLER_H_

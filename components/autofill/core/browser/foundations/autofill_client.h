@@ -687,6 +687,11 @@ class AutofillClient {
   // to the use of a large keyboard accessory view. See b/40942168.
   virtual bool ShouldFormatForLargeKeyboardAccessory() const;
 
+  // Returns true if the device is considered a large form factor for the
+  // purposes of the keyboard accessory. On Android, this considers screen
+  // dimensions and physical keyboard status.
+  virtual bool IsAndroidLargeFormFactor() const;
+
   // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
   // platform is not supported.
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>

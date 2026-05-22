@@ -3973,6 +3973,32 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
                                           SuggestionPosition{.row = 0});
 }
 
+TEST_F(AutofillExternalDelegateTest,
+       ExternalDelegateHidesSuggestionsWhenNoSuggestionsReturned) {
+  IssueOnQuery();
+
+  EXPECT_CALL(autofill_client(),
+              HideAutofillSuggestions(SuggestionHidingReason::kNoSuggestions));
+
+  // Return empty suggestions.
+  OnSuggestionsReturned(queried_field().global_id(), {});
+}
+
+TEST_F(AutofillExternalDelegateTest,
+       ExternalDelegateDoesNotHideSuggestionsOnLargeFormFactor) {
+  IssueOnQuery();
+
+  autofill_client().set_is_device_large_form_factor(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillAndroidKeyboardAccessoryDynamicPositioning);
+
+  EXPECT_CALL(autofill_client(), HideAutofillSuggestions).Times(0);
+
+  // Return empty suggestions.
+  OnSuggestionsReturned(queried_field().global_id(), {});
+}
+
 }  // namespace
 
 }  // namespace autofill

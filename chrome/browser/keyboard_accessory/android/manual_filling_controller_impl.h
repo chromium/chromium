@@ -67,6 +67,7 @@ class ManualFillingControllerImpl
       base::OnceCallback<void(autofill::AccessorySheetData)> callback) override;
 
   gfx::NativeView container_view() const override;
+  bool IsLargeFormFactor() const override;
 
   // Returns a weak pointer for this object.
   base::WeakPtr<ManualFillingController> AsWeakPtr();

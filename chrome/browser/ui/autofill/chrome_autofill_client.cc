@@ -177,6 +177,7 @@
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
 #include "chrome/browser/autofill/android/at_memory_bottom_sheet_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_delegate_android.h"
@@ -1031,6 +1032,16 @@ ChromeAutofillClient::GetFormInteractionsUkmLogger() {
 
 const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
   return ablation_study_;
+}
+
+bool ChromeAutofillClient::IsAndroidLargeFormFactor() const {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::WeakPtr<ManualFillingController> controller =
+          ManualFillingController::Get(web_contents())) {
+    return controller->IsLargeFormFactor();
+  }
+#endif
+  return false;
 }
 
 #if BUILDFLAG(IS_ANDROID)

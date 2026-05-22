@@ -64,6 +64,7 @@ class MockManualFillingController : public ManualFillingController {
                base::OnceCallback<void(autofill::AccessorySheetData)>),
               (override));
   MOCK_METHOD((gfx::NativeView), container_view, (), (const, override));
+  MOCK_METHOD(bool, IsLargeFormFactor, (), (const, override));
 
   base::WeakPtr<MockManualFillingController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

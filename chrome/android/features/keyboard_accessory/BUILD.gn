@@ -135,6 +135,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
       [ "//chrome/android/junit:libchrome_junit_tests($robolectric_toolchain)" ]
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/keyboard_accessory/KeyboardAccessoryUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipGroupTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryControllerTest.java",

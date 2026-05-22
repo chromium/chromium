@@ -182,6 +182,11 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
   return j_tab_data;
 }
 
+bool IsLargeFormFactor(content::WebContents* web_contents) {
+  return Java_ManualFillingComponentBridge_isLargeFormFactor(
+      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
+}
+
 }  // namespace
 
 ManualFillingViewAndroid::ManualFillingViewAndroid(
@@ -250,6 +255,11 @@ void ManualFillingViewAndroid::ShowAccessorySheetTab(
         base::android::AttachCurrentThread(), obj, static_cast<int>(tab_type));
   }
 }
+
+bool ManualFillingViewAndroid::IsLargeFormFactor() const {
+  return ::IsLargeFormFactor(web_contents_);
+}
+
 void ManualFillingViewAndroid::OnAccessoryActionAvailabilityChanged(
     ShouldShowAction shouldShowAction,
     autofill::AccessoryAction action) {

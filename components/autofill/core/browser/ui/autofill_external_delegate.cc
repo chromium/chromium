@@ -357,7 +357,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
-    if (!base::FeatureList::IsEnabled(
+    if (!manager_->client().IsAndroidLargeFormFactor() ||
+        !base::FeatureList::IsEnabled(
             features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
       manager_->client().HideAutofillSuggestions(
           SuggestionHidingReason::kNoSuggestions);

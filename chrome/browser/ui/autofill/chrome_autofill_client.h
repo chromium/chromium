@@ -226,6 +226,9 @@ class ChromeAutofillClient : public ContentAutofillClient {
       final;
 
   const AutofillAblationStudy& GetAblationStudy() const final;
+
+  bool IsAndroidLargeFormFactor() const final;
+
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.

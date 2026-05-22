@@ -91,6 +91,25 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
+    private static boolean isLargeFormFactor(WebContents webContents) {
+        if (webContents == null) {
+            return false;
+        }
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) {
+            return false;
+        }
+
+        android.app.Activity activity = windowAndroid.getActivity().get();
+        if (activity == null) {
+            return false;
+        }
+
+        return KeyboardAccessoryUtils.isLargeFormFactor(
+                activity, windowAndroid.getKeyboardDelegate());
+    }
+
+    @CalledByNative
     private void onItemsAvailable(AccessorySheetData accessorySheetData) {
         assertOnUiThread();
         Provider<AccessorySheetData> provider =
