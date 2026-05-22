@@ -440,7 +440,8 @@ void JumpList::ProcessTabRestoreServiceNotification() {
                  profile_dir, kRecentlyClosedItems);
         break;
       case sessions::tab_restore::Type::SPLIT:
-        // TODO(crbug.com/509527278): Support Split Tabs in Window's Jumplist.
+        AddSplit(static_cast<const sessions::tab_restore::Split&>(*entry),
+                 profile_dir, kRecentlyClosedItems);
         break;
     }
   }
@@ -531,6 +532,19 @@ void JumpList::AddGroup(const sessions::tab_restore::Group& group,
   for (const auto& tab : group.tabs) {
     if (!AddTab(*tab, cmd_line_profile_dir, max_items))
       return;
+  }
+}
+
+void JumpList::AddSplit(const sessions::tab_restore::Split& split,
+                        const base::FilePath& cmd_line_profile_dir,
+                        size_t max_items) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!split.tabs.empty());
+
+  for (const auto& tab : split.tabs) {
+    if (!AddTab(*tab, cmd_line_profile_dir, max_items)) {
+      return;
+    }
   }
 }
 
