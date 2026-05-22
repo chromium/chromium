@@ -770,6 +770,21 @@
             ]
         }
     ],
+    "AlwaysRegisterSessionsInvalidationsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260522",
+                    "enable_features": [
+                        "AlwaysRegisterSessionsInvalidationsAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AlwaysUseAudioManagerOutputFramesPerBuffer": [
         {
             "platforms": [
