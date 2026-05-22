@@ -2702,8 +2702,6 @@ BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
 #endif  // BUILDFLAG(IS_ANDROID)
 );
 
-// Enable borderless mode for desktop PWAs. go/borderless-mode
-BASE_FEATURE(kWebAppBorderless, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls scope extensions feature in web apps. Enables parsing of "site"
 // entries in "scope_extensions" field in web app manifests. See explainer for

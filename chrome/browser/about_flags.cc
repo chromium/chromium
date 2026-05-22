@@ -5484,11 +5484,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-sub-apps", flag_descriptions::kSubAppsName,
      flag_descriptions::kSubAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kSubApps)},
-    // TODO(crbug.com/466441366): Remove "borderless".
-    {"enable-desktop-pwas-borderless",
-     flag_descriptions::kDesktopPWAsBorderlessName,
-     flag_descriptions::kDesktopPWAsBorderlessDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kWebAppBorderless)},
     {"enable-desktop-pwas-additional-windowing-controls",
      flag_descriptions::kDesktopPWAsAdditionalWindowingControlsName,
      flag_descriptions::kDesktopPWAsAdditionalWindowingControlsDescription,

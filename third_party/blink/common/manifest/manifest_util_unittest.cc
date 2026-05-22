@@ -38,10 +38,6 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
   EXPECT_EQ(blink::mojom::DisplayMode::kFullscreen,
             DisplayModeFromString("Fullscreen"));
 
-  // TODO(crbug.com/466441366): Stop accepting "borderless".
-  EXPECT_EQ(blink::mojom::DisplayMode::kUnframed,
-            DisplayModeFromString("borderless"));
-
   // DisplayModeFromString() should return
   // DisplayMode::kUndefined if the string isn't known.
   EXPECT_EQ(blink::mojom::DisplayMode::kUndefined,

@@ -59,8 +59,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
                                          CSSValueID ident,
                                          const CSSParserContext& context) {
   if (media_feature == media_feature_names::kDisplayModeMediaFeature) {
-    return ident == CSSValueID::kFullscreen ||
-           ident == CSSValueID::kBorderless || ident == CSSValueID::kUnframed ||
+    return ident == CSSValueID::kFullscreen || ident == CSSValueID::kUnframed ||
            ident == CSSValueID::kStandalone ||
            ident == CSSValueID::kMinimalUi ||
            ident == CSSValueID::kWindowControlsOverlay ||

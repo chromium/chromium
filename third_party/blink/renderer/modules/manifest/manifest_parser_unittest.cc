@@ -1148,26 +1148,6 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
     EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
   }
 
-  // TODO(crbug.com/466441366): Stop accepting 'borderless'.
-  // Parsing fails for 'borderless' when Borderless flag is disabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(blink::features::kWebAppBorderless);
-    auto& manifest = ParseManifest(R"({ "display": "borderless" })");
-    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
-  }
-
-  // Parsing fails for 'borderless' when Borderless flag is enabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
-    auto& manifest = ParseManifest(R"({ "display": "borderless" })");
-    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
-  }
 
   // Parsing fails for 'tabbed' when flag is disabled.
   {
@@ -1316,28 +1296,6 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // TODO(crbug.com/466441366): Stop accepting 'borderless'.
-  // Reject 'borderless' when Borderless flag is disabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(blink::features::kWebAppBorderless);
-    auto& manifest =
-        ParseManifest(R"({ "display_override": [ "borderless" ] })");
-    EXPECT_TRUE(manifest->display_override.empty());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Accept 'borderless' as an alias for `kUnframed` when flag is enabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
-    auto& manifest =
-        ParseManifest(R"({ "display_override": [ "borderless" ] })");
-    EXPECT_THAT(manifest->display_override,
-                ElementsAre(DisplayOverrideItemIs(
-                    blink::mojom::DisplayMode::kUnframed)));
-    EXPECT_EQ(0u, GetErrorCount());
-  }
 
   // Reject 'unframed' when flag is disabled.
   {
@@ -1402,26 +1360,6 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // Accept 'borderless' with url_patterns when flag is enabled.
-  {
-    base::test::ScopedFeatureList feature_list(
-        blink::features::kWebAppBorderless);
-    auto& manifest = ParseManifest(R"({
-      "display_override": [
-        {
-          "display": "borderless",
-          "url_patterns": [ {"pathname": "/bar"} ]
-        }
-      ]
-    })");
-    EXPECT_THAT(manifest->display_override,
-                ElementsAre(DisplayOverrideItemIs(
-                    blink::mojom::DisplayMode::kUnframed,
-                    {PatternDataEq({.protocol = {"http"},
-                                    .hostname = {"foo.com"},
-                                    .pathname = {"/bar"}})})));
-    EXPECT_EQ(0u, GetErrorCount());
-  }
 
   // Ignore object without 'display' field.
   {

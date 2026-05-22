@@ -1787,11 +1787,6 @@ inline constexpr char kDevToolsWebMCPSupportName[] =
 inline constexpr char kDevToolsWebMCPSupportDescription[] =
     "Enables WebMCP support in DevTools.";
 
-inline constexpr char kDesktopPWAsBorderlessName[] = "Desktop PWA Borderless";
-inline constexpr char kDesktopPWAsBorderlessDescription[] =
-    "Enable web app manifests to declare borderless mode as a display "
-    "override. Prototype implementation of: go/borderless-mode.";
-
 inline constexpr char kDomStorageSqliteName[] = "DOM Storage SQLite Backend";
 inline constexpr char kDomStorageSqliteDescription[] =
     "Uses a SQLite-powered backing store for local and session storage. No "

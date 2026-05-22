@@ -10878,6 +10878,7 @@ from previous Chrome versions.
       label="WebIdentityDigitalCredentialsCreation:disabled"/>
   <int value="-1075156797" label="enable-brotli"/>
   <int value="-1075089382" label="enable-physical-web"/>
+  <int value="-1074952970" label="(Obsolete) WebAppBorderless:disabled"/>
   <int value="-1074257709" label="ScalableAppList:enabled"/>
   <int value="-1074254048" label="ShimlessRMAHardwareValidationSkip:disabled"/>
   <int value="-1074138544" label="WebFeedKillSwitch:enabled"/>
@@ -14983,7 +14984,6 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:enabled"/>
   <int value="282582564" label="DisableCameraFrameRotationAtSource:enabled"/>
   <int value="282636212" label="VideoPlayerNativeControls:disabled"/>
-  <int value="282647662" label="WebAppBorderless:enabled"/>
   <int value="282692100" label="SubframeShutdownDelay:disabled"/>
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
@@ -15792,7 +15792,6 @@ from previous Chrome versions.
   <int value="550378029" label="reset-app-list-install-state"/>
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
   <int value="550411207" label="enable-webgpu-developer-features"/>
-  <int value="550741462" label="WebAppBorderless:disabled"/>
   <int value="551314032" label="ChangeUnfocusedPriority:enabled"/>
   <int value="551358869" label="TabCollectionAndroid:enabled"/>
   <int value="552143503"
@@ -18698,6 +18697,7 @@ from previous Chrome versions.
   <int value="1496571153" label="enable-webapk"/>
   <int value="1496846973"
       label="EnableNearbyBleV2ExtendedAdvertising:disabled"/>
+  <int value="1497193691" label="(Obsolete) WebAppBorderless:enabled"/>
   <int value="1497284913" label="WASAPIRawAudioCapture:enabled"/>
   <int value="1497609106" label="ContextualNudges:enabled"/>
   <int value="1497924954" label="js-flags"/>

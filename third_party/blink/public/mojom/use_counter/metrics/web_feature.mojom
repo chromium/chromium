@@ -3495,7 +3495,7 @@ enum WebFeature {
   kOBSOLETE_FedCmLogoutRps = 4226,
   kV8Navigator_DeprecatedReplaceInURN_Method = 4227,
   // The items above roughly this point are available in the M103 branch.
-  kWebAppBorderless = 4228,
+  kOBSOLETE_WebAppBorderless = 4228,
   kPaymentInstruments = 4229,
   kV8PaymentInstruments_Clear_Method = 4230,
   kV8PaymentInstruments_Delete_Method = 4231,

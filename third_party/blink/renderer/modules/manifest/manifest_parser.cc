@@ -409,11 +409,7 @@ bool ManifestParser::Parse() {
                           WebFeature::kWebAppWindowControlsOverlay);
         break;
       case mojom::blink::DisplayMode::kUnframed:
-        UseCounter::Count(
-            execution_context_,
-            base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)
-                ? WebFeature::kWebAppBorderless
-                : WebFeature::kUnframedIwa);
+        UseCounter::Count(execution_context_, WebFeature::kUnframedIwa);
         break;
       case mojom::blink::DisplayMode::kTabbed:
         UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
@@ -1006,8 +1002,7 @@ Vector<blink::Manifest::DisplayOverride> ManifestParser::ParseDisplayOverride(
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }
 
-    if (!base::FeatureList::IsEnabled(blink::features::kWebAppBorderless) &&
-        !base::FeatureList::IsEnabled(blink::features::kUnframedIwa) &&
+    if (!base::FeatureList::IsEnabled(blink::features::kUnframedIwa) &&
         display_enum == mojom::blink::DisplayMode::kUnframed) {
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }

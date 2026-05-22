@@ -3214,11 +3214,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-desktop-pwas-borderless",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-desktop-pwas-elided-extensions-menu",
     "owners": [ "cmp@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
