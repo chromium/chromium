@@ -361,9 +361,10 @@ AddressSorterPosix::~AddressSorterPosix() {
 void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
                               CallbackType callback) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  sort_contexts_.insert(std::make_unique<SortContext>(
+  auto [it, inserted] = sort_contexts_.insert(std::make_unique<SortContext>(
       endpoints.size(), std::move(callback), this));
-  auto* sort_context = sort_contexts_.rbegin()->get();
+  CHECK(inserted);
+  auto* sort_context = it->get();
   for (const IPEndPoint& endpoint : endpoints) {
     DestinationInfo info;
     info.endpoint = endpoint;
