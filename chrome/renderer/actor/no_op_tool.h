@@ -7,8 +7,8 @@
 
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
+#include "components/actor/core/task_id.h"
 
 namespace content {
 class RenderFrame;

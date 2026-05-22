@@ -24,6 +24,7 @@ static_library("actor") {
     "//chrome/browser/profiles",
     "//chrome/browser/ui/autofill",
     "//chrome/common:chrome_features",
+    "//components/actor/core:task_id",
     "//components/autofill/content/browser",
     "//components/one_time_tokens/core/browser",
     "//components/tabs:public",

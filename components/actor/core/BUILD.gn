@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("task_id") {
+  sources = [ "task_id.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("core") {
   sources = [
     "actor_features.cc",

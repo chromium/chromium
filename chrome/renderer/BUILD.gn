@@ -123,6 +123,7 @@ static_library("renderer") {
     "//chrome/common/search:mojo_bindings",
     "//chrome/renderer/actor",
     "//chrome/services/speech/buildflags",
+    "//components/actor/core:task_id",
     "//components/autofill/content/renderer",
     "//components/autofill/core/common:features",
     "//components/base32",

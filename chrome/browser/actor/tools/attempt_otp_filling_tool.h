@@ -13,8 +13,8 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "chrome/common/actor/task_id.h"
 #include "components/actor/core/shared_types.h"
+#include "components/actor/core/task_id.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace actor {

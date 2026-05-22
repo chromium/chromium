@@ -351,6 +351,7 @@ source_set("ui_event_types") {
   ]
   public_deps = [
     "//base",
+    "//components/actor/core:task_id",
 
     # ActorTask::State isn't in actor:types
     "//chrome/browser/actor",

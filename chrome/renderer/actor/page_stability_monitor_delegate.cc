@@ -8,10 +8,10 @@
 #include <variant>
 
 #include "chrome/common/actor/journal_details_builder.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/page_stability_metrics.h"
+#include "components/actor/core/task_id.h"
 #include "components/page_content_annotations/core/page_stability_state.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"

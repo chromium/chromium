@@ -14,7 +14,6 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/glic/glic_enums.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_change_registrar.h"

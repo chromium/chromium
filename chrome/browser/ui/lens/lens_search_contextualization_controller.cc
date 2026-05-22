@@ -27,6 +27,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/gfx/skia_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)

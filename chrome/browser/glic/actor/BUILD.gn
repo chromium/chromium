@@ -32,7 +32,10 @@ source_set("actor") {
     "//mojo/public/mojom/base:protobuf_support",
   ]
 
-  public_deps = [ "//chrome/browser/profiles:profile" ]
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/actor/core:task_id",
+  ]
 }
 
 source_set("browser_tests") {

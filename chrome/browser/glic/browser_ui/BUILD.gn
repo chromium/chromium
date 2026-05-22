@@ -42,6 +42,7 @@ source_set("browser_ui") {
       "//chrome/browser/actor",
       "//chrome/browser/actor:types",
       "//chrome/browser/actor/ui",
+      "//components/actor/core:task_id",
       "//ui/base/unowned_user_data",
     ]
   }

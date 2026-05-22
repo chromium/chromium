@@ -42,6 +42,7 @@ source_set("actor") {
 
   public_deps = [
     "//base",
+    "//components/actor/core:task_id",
     "//content/public/renderer",
   ]
 

@@ -100,6 +100,7 @@ source_set("glic") {
     ":private_types",
     "//chrome/browser/ui/side_panel",
     "//chrome/common",
+    "//components/actor/core:task_id",
     "//components/skills/public:mojo_bindings",
     "//components/tabs:public",
     "//components/user_education/common",
@@ -957,7 +958,7 @@ if (is_android) {
   source_set("actor_types_for_migration") {
     sources = [
       "//chrome/browser/actor/actor_task_delegate.h",
-      "//chrome/common/actor/task_id.h",
+      "//components/actor/core/task_id.h",
     ]
     deps = [
       "//base",

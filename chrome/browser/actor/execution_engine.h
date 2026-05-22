@@ -27,7 +27,6 @@
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/actor/core/origin_checker.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"

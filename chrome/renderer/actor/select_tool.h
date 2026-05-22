@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
+#include "components/actor/core/task_id.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_select_element.h"
 

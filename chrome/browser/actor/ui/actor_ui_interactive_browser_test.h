@@ -9,8 +9,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/actor/core/task_id.h"
 
 // TODO(chrstne): Move interactive tests to a new tests/ folder
 class ActorUiInteractiveBrowserTest : public InteractiveBrowserTest {

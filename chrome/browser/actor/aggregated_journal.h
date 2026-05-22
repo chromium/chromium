@@ -18,7 +18,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/task_id.h"
+#include "components/actor/core/task_id.h"
 #include "url/gurl.h"
 
 namespace content {

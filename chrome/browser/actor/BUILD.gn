@@ -70,6 +70,7 @@ source_set("actor") {
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
     "//components/actor/core",
+    "//components/actor/core:task_id",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/download/content/public",
     "//components/optimization_guide/content/browser",
@@ -275,6 +276,7 @@ source_set("types") {
     "//base",
     "//chrome/common:actor_webui_mojom",
     "//chrome/common:mojo_bindings",
+    "//components/actor/core:task_id",
     "//ui/gfx/geometry",
   ]
   deps = [

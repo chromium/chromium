@@ -9,8 +9,8 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
+#include "components/actor/core/task_id.h"
 
 namespace actor::ui {
 using UiCompleteCallback =

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_ACTOR_MOJOM_TRAITS_H_
-#define CHROME_COMMON_ACTOR_MOJOM_TRAITS_H_
+#ifndef COMPONENTS_ACTOR_PUBLIC_MOJOM_ACTOR_TYPES_MOJOM_TRAITS_H_
+#define COMPONENTS_ACTOR_PUBLIC_MOJOM_ACTOR_TYPES_MOJOM_TRAITS_H_
 
-#include "chrome/common/actor.mojom-data-view.h"
-#include "chrome/common/actor/task_id.h"
+#include "components/actor/core/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -23,4 +23,4 @@ struct StructTraits<actor::mojom::TaskIdDataView, actor::TaskId> {
 
 }  // namespace mojo
 
-#endif  // CHROME_COMMON_ACTOR_MOJOM_TRAITS_H_
+#endif  // COMPONENTS_ACTOR_PUBLIC_MOJOM_ACTOR_TYPES_MOJOM_TRAITS_H_

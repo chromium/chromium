@@ -44,6 +44,7 @@ source_set("password_change") {
     "//chrome/browser/translate",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//components/actor/core:task_id",
     "//components/autofill/content/browser",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",

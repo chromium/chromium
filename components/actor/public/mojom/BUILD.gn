@@ -12,4 +12,19 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
   generate_legacy_js_bindings = true
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "actor.mojom.TaskId"
+          cpp = "::actor::TaskId"
+        },
+      ]
+      traits_headers = [ "actor_types_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//components/actor/core:task_id",
+      ]
+    },
+  ]
 }

@@ -10,7 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "chrome/common/actor/task_id.h"
+#include "components/actor/core/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor {

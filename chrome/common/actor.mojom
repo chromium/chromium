@@ -139,11 +139,6 @@ union ToolAction {
   ScrollToAction scroll_to;
 };
 
-// The task ID associated with the tool invocation.
-struct TaskId {
-  int32 id;
-};
-
 // All information required to invoke a tool in the renderer.
 struct ToolInvocation {
   // The task ID owning this invocation.

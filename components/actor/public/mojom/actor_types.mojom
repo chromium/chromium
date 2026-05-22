@@ -466,3 +466,8 @@ enum ActionResultCode {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)
+
+// The task ID associated with the tool invocation.
+struct TaskId {
+  int32 id;
+};

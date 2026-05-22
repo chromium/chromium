@@ -10,8 +10,8 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
+#include "components/actor/core/task_id.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
 

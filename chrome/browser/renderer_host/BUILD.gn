@@ -11,6 +11,7 @@ source_set("renderer_host") {
   ]
   public_deps = [
     "//chrome/common",
+    "//components/actor/core:task_id",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
     "//content/public/browser",

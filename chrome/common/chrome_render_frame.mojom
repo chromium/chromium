@@ -5,6 +5,7 @@
 module chrome.mojom;
 
 import "chrome/common/actor.mojom";
+import "components/actor/public/mojom/actor_types.mojom";
 import "components/lens/lens_metadata.mojom";
 import "components/page_content_annotations/content/mojom/page_stability.mojom";
 import "mojo/public/mojom/base/string16.mojom";

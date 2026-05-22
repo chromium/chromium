@@ -18,7 +18,7 @@
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 #include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
-#include "chrome/common/actor/task_id.h"
+#include "components/actor/core/task_id.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 namespace tabs {

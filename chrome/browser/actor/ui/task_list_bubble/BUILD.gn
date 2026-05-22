@@ -39,6 +39,7 @@ source_set("controller") {
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:chrome_features",
+    "//components/actor/core:task_id",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
     "//ui/views",
