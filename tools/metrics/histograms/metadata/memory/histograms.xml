@@ -576,6 +576,9 @@ chromium-metrics-reviews@google.com.
       summary="Total memory that is lazily allocated by clients from the
                Vulkan Memory Allocator. Only reported when Vulkan is used for
                rendering."/>
+  <variant name=".WebGL"
+      summary="Only counting memory used by WebGL contexts. Includes an
+               estimate of GPU memory used."/>
 </variants>
 
 <variants name="ProcessMemoryAllocatorCustom2">

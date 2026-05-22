@@ -1922,14 +1922,6 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
 bool WebGLRenderingContextBase::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  // This is used for local data gathering for now. Allow it in background once
-  // it's confirmed that it's cheap enough (which also requires updating the
-  // background allowlist, this is just an extra check).
-  if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
-    return true;
-  }
-
   std::string context_name =
       Host()->IsOffscreenCanvas()
           ? base::StringPrintf("webgl/offscreen_context_0x%" PRIXPTR,
@@ -1937,6 +1929,31 @@ bool WebGLRenderingContextBase::OnMemoryDump(
           : base::StringPrintf("webgl/context_0x%" PRIXPTR,
                                reinterpret_cast<uintptr_t>(this));
 
+  if (args.level_of_detail ==
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
+    auto* dump = pmd->CreateAllocatorDump(context_name);
+    uint64_t total_size = 0;
+    for (auto& buffer : buffers_) {
+      if (buffer && buffer->HasObject()) {
+        total_size += buffer->GetSize();
+      }
+    }
+    if (GetDrawingBuffer()) {
+      total_size += GetDrawingBuffer()->EstimatedSizeInBytes().InBytes();
+    }
+    if (resource_provider_) {
+      total_size += resource_provider_->EstimatedSizeInBytes().InBytes();
+    }
+    if (cached_snapshot_) {
+      total_size += cached_snapshot_->EstimatedSizeInBytes().InBytes();
+    }
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    total_size);
+    return true;
+  }
+
+  // Detailed dump below.
   for (auto& buffer : buffers_) {
     if (buffer && buffer->HasObject()) {
       uint64_t buffer_size = buffer->GetSize();

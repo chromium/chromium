@@ -768,6 +768,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      &Memory_Experimental::SetWebCache_OtherResources},
     {"webnn", "WebNN", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetWebNN},
+    {"webgl", "WebGL", MetricSize::kLarge, kEffectiveSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
 #if BUILDFLAG(IS_ANDROID)
     {base::android::MeminfoDumpProvider::kDumpName, "AndroidOtherPss",
      MetricSize::kLarge, base::android::MeminfoDumpProvider::kPssMetricName,

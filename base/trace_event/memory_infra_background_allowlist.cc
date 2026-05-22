@@ -97,6 +97,7 @@ constexpr auto kDumpProviderAllowlist =
         "TextureOwner"
         "URLRequestContext",
         "V8Isolate",
+        "WebGL",
         "WebMediaPlayer_MainThread",
         "WebMediaPlayer_MediaThread",
         // clang-format on
@@ -252,6 +253,8 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "web_cache/Code_cache",
         "web_cache/Encoded_size_duplicated_in_data_urls",
         "web_cache/Other_resources",
+        "webgl/context_0x?",
+        "webgl/offscreen_context_0x?",
         "partition_alloc/allocated_objects",
         "partition_alloc/address_space",
         "partition_alloc/partitions",
