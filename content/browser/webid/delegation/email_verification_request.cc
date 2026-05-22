@@ -108,7 +108,10 @@ void EmailVerificationRequest::Send(
     const std::string& email,
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback) {
-  if (render_frame_host_->GetLastCommittedOrigin().opaque()) {
+  if (render_frame_host_->GetLastCommittedOrigin().opaque() ||
+      render_frame_host_->IsNestedWithinFencedFrame() ||
+      !IsSameOriginWithAncestors(render_frame_host_->GetLastCommittedOrigin(),
+                                 &(*render_frame_host_))) {
     CompleteRequest(std::move(callback), std::nullopt,
                     EvpRequestStatus::kRpOriginIsOpaque);
     return;

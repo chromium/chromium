@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/dns_request.h"
@@ -19,11 +20,13 @@
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "crypto/sha2.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -420,6 +423,149 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
   EXPECT_FALSE(token.has_value());
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.Request", EvpRequestStatus::kTokenInvalidResponse, 1);
+}
+
+TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  RenderFrameHost* fenced_frame =
+      RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+  ASSERT_TRUE(fenced_frame);
+
+  GURL fenced_frame_url = GURL("https://fencedframe.com");
+  std::unique_ptr<NavigationSimulator> navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                   fenced_frame);
+  navigation_simulator->Commit();
+  fenced_frame = navigation_simulator->GetFinalRenderFrameHost();
+  ASSERT_TRUE(fenced_frame);
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(fenced_frame)->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  RenderFrameHost* cross_origin_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://other-rp.com"),
+          RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("cross_origin_iframe"));
+  ASSERT_TRUE(cross_origin_iframe);
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(cross_origin_iframe)->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  RenderFrameHost* same_origin_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://rp.example.com/iframe.html"),
+          RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("same_origin_iframe"));
+  ASSERT_TRUE(same_origin_iframe);
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(same_origin_iframe)->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+
+  EXPECT_CALL(*mock_dns_request_,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            std::move(callback).Run(
+                FetchStatus{ParseStatus::kInvalidResponseError}, well_known);
+          }));
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(EmailVerificationRequestTest,
+       SameOriginFrameNestedInCrossOriginFrameRejected) {
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  // Main Frame: https://rp.example.com
+  // Subframe B: https://other-rp.com (cross-origin)
+  RenderFrameHost* iframe_b =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://other-rp.com"),
+          RenderFrameHostTester::For(main_rfh())->AppendChild("iframe_b"));
+  ASSERT_TRUE(iframe_b);
+
+  // Subframe A (nested inside B): https://rp.example.com (same-origin with main
+  // frame)
+  RenderFrameHost* iframe_a =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://rp.example.com"),
+          RenderFrameHostTester::For(iframe_b)->AppendChild("iframe_a"));
+  ASSERT_TRUE(iframe_a);
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(iframe_a)->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {

@@ -51,6 +51,17 @@ bool IsSameSiteWithAncestors(const url::Origin& origin,
   return true;
 }
 
+bool IsSameOriginWithAncestors(const url::Origin& origin,
+                               RenderFrameHost* render_frame_host) {
+  while (render_frame_host) {
+    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin())) {
+      return false;
+    }
+    render_frame_host = render_frame_host->GetParentOrOuterDocument();
+  }
+  return true;
+}
+
 void SetIdpSigninStatus(base::WeakPtr<content::BrowserContext> context,
                         network::mojom::RequestDestination destination,
                         FrameTreeNodeId frame_tree_node_id,

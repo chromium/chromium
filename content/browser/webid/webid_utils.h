@@ -43,6 +43,9 @@ enum class RequesterFrameType;
 bool IsSameSiteWithAncestors(const url::Origin& origin,
                              RenderFrameHost* render_frame_host);
 
+bool IsSameOriginWithAncestors(const url::Origin& origin,
+                               RenderFrameHost* render_frame_host);
+
 void SetIdpSigninStatus(base::WeakPtr<BrowserContext> context,
                         network::mojom::RequestDestination destination,
                         FrameTreeNodeId frame_tree_node_id,
