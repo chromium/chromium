@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+components/account_settings",
   "+components/plus_addresses/core/browser",
+  "+ios/chrome/browser/autofill/bnpl/public",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h",
   "+ios/chrome/browser/device_reauth/model",
