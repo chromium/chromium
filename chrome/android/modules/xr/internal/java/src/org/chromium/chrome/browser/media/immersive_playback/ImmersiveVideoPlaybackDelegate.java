@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.media.immersive_playback;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Delegate for controlling media playback. */
+/** Delegate for controlling media playback in XR, shared between components. */
 @NullMarked
-public interface ImmersiveVideoControlDelegate {
+public interface ImmersiveVideoPlaybackDelegate {
     /**
      * Toggles the playback state between playing and paused.
      *
@@ -22,4 +22,7 @@ public interface ImmersiveVideoControlDelegate {
      * @param positionMs The position to seek to, in milliseconds.
      */
     void seekTo(long positionMs);
+
+    /** Called when the activity should be exited. */
+    void onExitImmersivePlayback();
 }

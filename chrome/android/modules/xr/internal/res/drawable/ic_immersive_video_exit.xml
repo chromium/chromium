@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="21dp"
+    android:height="21dp"
+    android:viewportWidth="21"
+    android:viewportHeight="21">
+    <path
+        android:pathData="M3.5 21V17.5H0V15.1667H5.83333V21H3.5ZM15.1667 21V15.1667H21V17.5H17.5V21H15.1667ZM0 5.83333V3.5H3.5V-1.66893e-06H5.83333V5.83333H0ZM15.1667 5.83333V-1.66893e-06H17.5V3.5H21V5.83333H15.1667Z"
+        android:fillColor="@color/immersive_video_theme_foreground" />
+</vector>

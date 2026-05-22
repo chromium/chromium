@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="ImmersiveVideoButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">@drawable/immersive_video_control_button_background</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:tint">@color/immersive_video_button_tint</item>
+    </style>
+
+    <style name="ImmersiveVideoControlLabel" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium</item>
+        <item name="android:textColor">@color/immersive_video_theme_foreground</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ImmersiveVideoRadioGroupTheme" parent="ImmersiveVideoControlLabel">
+        <item name="android:textColorPrimary">@color/immersive_video_theme_foreground</item>
+    </style>
+</resources>

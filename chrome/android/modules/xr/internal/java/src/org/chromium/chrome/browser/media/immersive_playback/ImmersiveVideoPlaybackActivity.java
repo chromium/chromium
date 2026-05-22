@@ -17,6 +17,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnguessableToken;
+import org.chromium.blink.mojom.ImmersiveProjectionType;
+import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,8 +27,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 
 /**
  * An immersive video playback activity which get created when requesting fullscreen from web API on
@@ -50,14 +50,15 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         public @Nullable Long mDurationMs;
         public @Nullable Long mPositionMs;
         public @Nullable Double mPlaybackRate;
-        public @Nullable @XrSurfaceEntityStereoMode Integer mStereoMode;
-        public @Nullable @XrSurfaceEntityShape Integer mShape;
+        public @Nullable @ImmersiveStereoMode.EnumType Integer mStereoMode;
+        public @Nullable @ImmersiveProjectionType.EnumType Integer mProjectionType;
 
         void apply(ImmersiveVideoPlaybackActivity activity) {
-            if (mStereoMode != null || mShape != null) {
-                int stereo = mStereoMode != null ? mStereoMode : XrSurfaceEntityStereoMode.MONO;
-                int shape = mShape != null ? mShape : XrSurfaceEntityShape.QUAD;
-                activity.setImmersiveVideoOptions(stereo, shape);
+            if (mStereoMode != null || mProjectionType != null) {
+                int stereoMode = mStereoMode != null ? mStereoMode : ImmersiveStereoMode.MONO;
+                int projectionType =
+                        mProjectionType != null ? mProjectionType : ImmersiveProjectionType.QUAD;
+                activity.setImmersiveVideoOptions(stereoMode, projectionType);
             }
             if (mVideoWidth != null && mVideoHeight != null) {
                 activity.updateVideoSize(mVideoWidth, mVideoHeight);
@@ -79,25 +80,11 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
             mPositionMs = null;
             mPlaybackRate = null;
             mStereoMode = null;
-            mShape = null;
+            mProjectionType = null;
         }
     }
 
     private final PendingState mPendingState = new PendingState();
-
-    /** Delegate for media control events. */
-    private final ImmersiveVideoControlDelegate mVideoControlDelegate =
-            new ImmersiveVideoControlDelegate() {
-                @Override
-                public void togglePlayPause(boolean isPlaying) {
-                    ImmersiveVideoPlaybackActivity.this.togglePlayPause(!isPlaying);
-                }
-
-                @Override
-                public void seekTo(long positionMs) {
-                    ImmersiveVideoPlaybackActivity.this.seekTo(positionMs);
-                }
-            };
 
     @Override
     @Initializer
@@ -135,27 +122,31 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         } else {
             mPlaybackCoordinator =
                     new ImmersiveVideoPlaybackCoordinator(
-                            this, assumeNonNull(getWindowAndroid()), mVideoControlDelegate);
+                            this,
+                            assumeNonNull(getWindowAndroid()),
+                            new ImmersiveVideoPlaybackDelegate() {
+                                @Override
+                                public void togglePlayPause(boolean isPlaying) {
+                                    ImmersiveVideoPlaybackActivity.this.togglePlayPause(!isPlaying);
+                                }
 
-            CompositorView compositorView =
-                    mPlaybackCoordinator.createXrCompositorView(
-                            XrSurfaceEntityStereoMode.MONO, XrSurfaceEntityShape.QUAD);
+                                @Override
+                                public void seekTo(long positionMs) {
+                                    ImmersiveVideoPlaybackActivity.this.seekTo(positionMs);
+                                }
+
+                                @Override
+                                public void onExitImmersivePlayback() {
+                                    finishOverlay(/* closeByNative= */ false);
+                                }
+                            });
+
+            CompositorView compositorView = mPlaybackCoordinator.show();
             addContentView(compositorView.getView(), new ViewGroup.LayoutParams(0, 0));
             setCompositorView(compositorView);
         }
 
         mPendingState.apply(this);
-    }
-
-    @Override
-    public void setImmersiveVideoOptions(
-            @XrSurfaceEntityStereoMode int stereoMode, @XrSurfaceEntityShape int shape) {
-        if (mPlaybackCoordinator != null) {
-            mPlaybackCoordinator.updateVideoLayout(stereoMode, shape);
-        } else {
-            mPendingState.mStereoMode = stereoMode;
-            mPendingState.mShape = shape;
-        }
     }
 
     @Override
@@ -182,6 +173,18 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
             finishOverlay(/* closeByNative= */ false);
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void setImmersiveVideoOptions(
+            @ImmersiveStereoMode.EnumType int stereoMode,
+            @ImmersiveProjectionType.EnumType int projectionType) {
+        if (mPlaybackCoordinator != null) {
+            mPlaybackCoordinator.updateVideoLayout(stereoMode, projectionType);
+        } else {
+            mPendingState.mStereoMode = stereoMode;
+            mPendingState.mProjectionType = projectionType;
+        }
     }
 
     @Override
@@ -230,6 +233,12 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         ResettersForTesting.register(() -> sPlaybackCoordinatorForTesting = null);
     }
 
+    /**
+     * Creates and starts the {@link ImmersiveVideoPlaybackActivity}.
+     *
+     * @param nativeToken The native token for communication.
+     * @param initiatorTab The tab that initiated the playback.
+     */
     public static void createActivity(UnguessableToken nativeToken, Object initiatorTab) {
         Activity activity = TabUtils.getActivity((Tab) initiatorTab);
         Context context = activity != null ? activity : ContextUtils.getApplicationContext();

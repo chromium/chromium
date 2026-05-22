@@ -36,6 +36,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.blink.mojom.ImmersiveProjectionType;
+import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.VideoOverlayActivity;
 import org.chromium.chrome.browser.media.VideoOverlayActivityJni;
@@ -45,8 +47,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
@@ -74,9 +74,9 @@ public class ImmersiveVideoPlaybackActivityTest {
     private static final float PLAYBACK_RATE = 1.0f;
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 360;
-    private static final @XrSurfaceEntityStereoMode int STEREO_MODE =
-            XrSurfaceEntityStereoMode.MONO;
-    private static final @XrSurfaceEntityShape int SURFACE_ENTITY_SHAPE = XrSurfaceEntityShape.QUAD;
+    private static final @ImmersiveStereoMode.EnumType int STEREO_MODE = ImmersiveStereoMode.MONO;
+    private static final @ImmersiveProjectionType.EnumType int PROJECTION_TYPE =
+            ImmersiveProjectionType.QUAD;
 
     private final UnguessableToken mNativeWindowToken = UnguessableToken.createForTesting();
 
@@ -141,7 +141,7 @@ public class ImmersiveVideoPlaybackActivityTest {
                     ImmersiveVideoPlaybackActivity activity = new ImmersiveVideoPlaybackActivity();
                     activity.setPlaybackState(PlaybackState.PLAYING);
                     activity.updateVideoSize(VIDEO_WIDTH, VIDEO_HEIGHT);
-                    activity.setImmersiveVideoOptions(STEREO_MODE, SURFACE_ENTITY_SHAPE);
+                    activity.setImmersiveVideoOptions(STEREO_MODE, PROJECTION_TYPE);
                     activity.setMediaPosition(DURATION_MS, POSITION_MS, PLAYBACK_RATE);
 
                     ImmersiveVideoPlaybackActivity.PendingState pendingState =
@@ -163,9 +163,9 @@ public class ImmersiveVideoPlaybackActivityTest {
                             STEREO_MODE,
                             pendingState.mStereoMode.intValue());
                     Assert.assertEquals(
-                            "Surface entity shape mismatch",
-                            SURFACE_ENTITY_SHAPE,
-                            pendingState.mShape.intValue());
+                            "Projection type mismatch",
+                            PROJECTION_TYPE,
+                            pendingState.mProjectionType.intValue());
                     Assert.assertEquals(
                             "Duration mismatch", DURATION_MS, pendingState.mDurationMs.longValue());
                     Assert.assertEquals(
@@ -184,8 +184,8 @@ public class ImmersiveVideoPlaybackActivityTest {
     public void testSetImmersiveVideoOptionsForwardsToCoordinatorMock() throws Throwable {
         ImmersiveVideoPlaybackActivity activity = startImmersiveVideoPlaybackActivity();
 
-        activity.setImmersiveVideoOptions(STEREO_MODE, SURFACE_ENTITY_SHAPE);
-        verify(mCoordinatorMock).updateVideoLayout(STEREO_MODE, SURFACE_ENTITY_SHAPE);
+        activity.setImmersiveVideoOptions(STEREO_MODE, PROJECTION_TYPE);
+        verify(mCoordinatorMock).updateVideoLayout(STEREO_MODE, PROJECTION_TYPE);
 
         testExitOn(activity, () -> activity.close());
     }

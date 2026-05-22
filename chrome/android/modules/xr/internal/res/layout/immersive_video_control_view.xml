@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/immersive_video_orbiter_background"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:baselineAligned="false"
+    android:clickable="true"
+    android:padding="12dp">
+
+        <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp">
+
+        <ImageButton
+            android:id="@+id/play_button"
+            style="@style/ImmersiveVideoButton"
+            android:src="@drawable/ic_play_arrow_white_24dp"
+            android:contentDescription="@string/accessibility_play_video" />
+
+        <ImageButton
+            android:id="@+id/pause_button"
+            style="@style/ImmersiveVideoButton"
+            android:src="@drawable/ic_pause_white_24dp"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_pause_video" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/position_label"
+        style="@style/ImmersiveVideoControlLabel"
+        android:layout_width="60dp"
+        android:layout_marginEnd="8dp" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/seek_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:layout_marginEnd="8dp"
+        android:value="0"
+        android:valueFrom="0"
+        android:valueTo="1"
+        app:labelBehavior="gone"
+        app:trackHeight="4dp"
+        app:trackCornerRadius="2dp"
+        app:trackInsideCornerSize="2dp"
+        app:trackColorActive="?attr/colorPrimary"
+        app:trackColorInactive="@color/immersive_video_track_inactive"
+        app:trackStopIndicatorSize="0dp"
+        app:thumbWidth="4dp"
+        app:thumbHeight="32dp"
+        app:thumbRadius="2dp"
+        app:thumbTrackGapSize="6dp"
+        app:thumbColor="?attr/colorPrimary"
+        app:haloRadius="24dp"
+        app:haloColor="?attr/colorSecondaryContainer" />
+
+    <TextView
+        android:id="@+id/duration_label"
+        style="@style/ImmersiveVideoControlLabel"
+        android:layout_width="60dp"
+        android:layout_marginEnd="16dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/format_button"
+            style="@style/ImmersiveVideoButton"
+            android:src="@drawable/ic_panorama_horizontal"
+            android:contentDescription="@string/accessibility_immersive_video_format"
+            android:layout_marginEnd="8dp" />
+
+        <ImageButton
+            android:id="@+id/exit_button"
+            style="@style/ImmersiveVideoButton"
+            android:src="@drawable/ic_immersive_video_exit"
+            android:contentDescription="@string/accessibility_exit_immersive_playback" />
+    </LinearLayout>
+
+</LinearLayout>

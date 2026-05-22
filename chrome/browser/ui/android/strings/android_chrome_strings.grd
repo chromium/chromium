@@ -7627,6 +7627,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_CANCEL" desc="Text for the negative button in the format selection dialog." translateable="false">
         Cancel
       </message>
+      <message name="IDS_ACCESSIBILITY_IMMERSIVE_VIDEO_FORMAT" desc="Content description for a button that opens the format selection popup in immersive video playback." translateable="false">
+        Select video format
+      </message>
+      <message name="IDS_ACCESSIBILITY_EXIT_IMMERSIVE_PLAYBACK" desc="Content description for a button that exits immersive video playback." translateable="false">
+        Exit immersive playback
+      </message>
     </messages>
   </release>
 </grit>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <color name="immersive_video_theme_foreground">#E1E2E8</color>
+    <color name="immersive_video_panel_background">#EB101418</color>
+    <color name="immersive_video_panel_border">#33ECEEF4</color>
+    <color name="immersive_video_track_inactive">#61E1E2E8</color>
+</resources>

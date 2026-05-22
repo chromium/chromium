@@ -5,270 +5,121 @@
 package org.chromium.chrome.browser.media.immersive_playback;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackTypeUtils.mapProjectionType;
+import static org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackTypeUtils.mapStereoMode;
 
 import android.app.Activity;
 import android.os.Build;
-import android.util.Rational;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.blink.mojom.ImmersiveProjectionType;
+import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlAutoHideManager;
+import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlCoordinator;
+import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoFormatCoordinator;
+import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoPlayerCoordinator;
+import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoPoseManager;
 import org.chromium.chrome.browser.xr.scenecore.XrModule;
 import org.chromium.components.thinwebview.CompositorView;
-import org.chromium.components.thinwebview.CompositorViewFactory;
-import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
-import org.chromium.ui.xr.scenecore.XrMovableComponent;
-import org.chromium.ui.xr.scenecore.XrMovableComponent.OnMoveListener;
-import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
-import org.chromium.ui.xr.scenecore.XrResizableComponent;
-import org.chromium.ui.xr.scenecore.XrResizableComponent.OnResizeListener;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
-import org.chromium.ui.xr.scenecore.XrSpace;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
-import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 
-/** A coordinator for XR specific Picture-in-Picture functionality. */
+/** Coordinator for the XR immersive video player. */
 @NullMarked
-public class ImmersiveVideoPlaybackCoordinator {
-    private static final float PLAYER_PANEL_MIN_WIDTH_METERS = 0.5f;
-    private static final float PLAYER_PANEL_MAX_WIDTH_METERS = 3.0f;
-    private static final float PLAYER_PANEL_INITIAL_WIDTH_METERS = 2.0f;
-    private static final float PLAYER_PANEL_INITIAL_CURVE_RADIUS_METERS = 10.0f;
-    private static final float[] PLAYER_PANEL_INITIAL_TRANSLATION = {0.0f, 0.0f, -1.75f};
-    private static final float[] PLAYER_PANEL_INITIAL_ROTATION = {0.0f, 0.0f, 0.0f, 1.0f};
+public class ImmersiveVideoPlaybackCoordinator
+        implements ImmersiveVideoControlCoordinator.Delegate,
+                ImmersiveVideoFormatCoordinator.Delegate,
+                ImmersiveVideoPlayerCoordinator.Delegate,
+                ImmersiveVideoPoseManager.Delegate {
+    private final ImmersiveVideoPlaybackDelegate mPlaybackDelegate;
+    private final ImmersiveVideoPlayerCoordinator mPlayerCoordinator;
+    private final ImmersiveVideoControlCoordinator mControlCoordinator;
+    private final ImmersiveVideoFormatCoordinator mFormatCoordinator;
+    private final ImmersiveVideoControlAutoHideManager mAutoHideManager;
+    private final ImmersiveVideoPoseManager mPoseManager;
+    private @ImmersiveStereoMode.EnumType int mStereoMode = ImmersiveStereoMode.MONO;
+    private @ImmersiveProjectionType.EnumType int mProjectionType = ImmersiveProjectionType.QUAD;
 
-    private static final float[] MEDIA_CONTROL_PANEL_INITIAL_TRANSLATION = {0.0f, -1f, -1.75f};
-    private static final float[] MEDIA_CONTROL_PANEL_INITIAL_ROTATION = {0.0f, 0.0f, 0.0f, 1.0f};
-    private static final float MEDIA_CONTROL_PANEL_WIDTH_METERS = 1.0f;
-    private static final float MEDIA_CONTROL_PANEL_HEIGHT_METERS = 0.25f;
-    private static final float MEDIA_CONTROL_PANEL_VERTICAL_SPACING_METERS = 0.25f;
-    private static final float MEDIA_CONTROL_PANEL_Z_OFFSET_METERS = 0.01f;
-
-    private final Activity mActivity;
-    private final WindowAndroid mWindowAndroid;
-    private final LazyOneshotSupplier<XrSceneCoreSessionManager> mXrSceneCoreSessionManagerSupplier;
-    private final ImmersiveVideoControlPanel mControlPanel;
-
-    private @Nullable CompositorView mCompositorView;
-    private @Nullable XrSurfaceEntityHolder mSurfaceHolder;
-    private @Nullable XrPanelEntityHolder mControlPanelHolder;
-    private @Nullable OnMoveListener mPlayerPanelMoveListener;
-    private @Nullable OnResizeListener mPlayerPanelResizeListener;
-    private Rational mAspectRatio = new Rational(16, 9);
+    private static XrSceneCoreSessionManager getXrSceneCoreSessionManager(Activity activity) {
+        assert DeviceInfo.isXr();
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        assert XrModule.isInstalled() : "XR module must be installed on XR devices.";
+        return assumeNonNull(XrModule.getImpl().getXrSceneCoreSessionManager(activity));
+    }
 
     /**
-     * @param activity The activity that will contain the XR compositor view.
-     * @param windowAndroid The window android for the activity.
-     * @param videoControlDelegate The delegate for media controls.
+     * Creates a new {@link ImmersiveVideoPlaybackCoordinator}.
+     *
+     * @param activity The {@link Activity} context.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
+     * @param delegate The {@link ImmersiveVideoPlaybackDelegate} for media controls.
      */
     public ImmersiveVideoPlaybackCoordinator(
             Activity activity,
             WindowAndroid windowAndroid,
-            ImmersiveVideoControlDelegate videoControlDelegate) {
-        mActivity = activity;
-        mWindowAndroid = windowAndroid;
-        mXrSceneCoreSessionManagerSupplier =
-                LazyOneshotSupplier.fromSupplier(this::createXrSceneCoreSessionManager);
-        mControlPanel = new ImmersiveVideoControlPanel(activity, videoControlDelegate);
+            ImmersiveVideoPlaybackDelegate delegate) {
+        this(activity, windowAndroid, delegate, getXrSceneCoreSessionManager(activity));
     }
 
     @VisibleForTesting
-    protected XrSceneCoreSessionManager createXrSceneCoreSessionManager() {
-        assert DeviceInfo.isXr();
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
-        assert XrModule.isInstalled() : "XR module must be installed on XR devices.";
-        return assumeNonNull(XrModule.getImpl().getXrSceneCoreSessionManager(mActivity));
+    ImmersiveVideoPlaybackCoordinator(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ImmersiveVideoPlaybackDelegate playbackDelegate,
+            XrSceneCoreSessionManager xrSessionManager) {
+        mPlayerCoordinator = createPlayerCoordinator(activity, windowAndroid, xrSessionManager);
+        mPoseManager = new ImmersiveVideoPoseManager(this);
+        mControlCoordinator =
+                new ImmersiveVideoControlCoordinator(activity, xrSessionManager, this);
+        mFormatCoordinator = new ImmersiveVideoFormatCoordinator(activity, xrSessionManager, this);
+        mAutoHideManager = new ImmersiveVideoControlAutoHideManager(this::hideControlPanel);
+        mPlaybackDelegate = playbackDelegate;
     }
 
+    // =========================================================================
+    // Public API / Lifecycle
+    // =========================================================================
+
     /**
-     * Creates an XR compositor view and adds it to the activity.
+     * Shows the immersive player and returns the {@link CompositorView}.
      *
-     * @param layout The video layout to use.
      * @return The created compositor view.
      */
-    public CompositorView createXrCompositorView(
-            @XrSurfaceEntityStereoMode int stereoMode, @XrSurfaceEntityShape int shape) {
-        assumeNonNull(mXrSceneCoreSessionManagerSupplier.get())
-                .getMainPanelEntity()
-                .setEntityEnabled(false);
-
-        mControlPanelHolder =
-                mXrSceneCoreSessionManagerSupplier
-                        .get()
-                        .createPanelEntity(mControlPanel, "MediaControlPanel");
-
-        mPlayerPanelMoveListener =
-                new XrMovableComponent.OnMoveListener() {
-                    @Override
-                    public void onMoveUpdate(float[] translation, float[] rotation, float scale) {
-                        if (mSurfaceHolder != null
-                                && mSurfaceHolder.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
-                            float height = mSurfaceHolder.getEntitySize().getHeight();
-                            updateMediaControlPanelPose(translation, rotation, height);
-                        }
-                    }
-                };
-
-        mPlayerPanelResizeListener =
-                new XrResizableComponent.OnResizeListener() {
-                    @Override
-                    public void onResizeUpdate(float width, float height, float depth) {
-                        if (mSurfaceHolder != null) {
-                            float[] translation =
-                                    mSurfaceHolder.getEntityTranslation(XrSpace.ACTIVITY);
-                            float[] rotation = mSurfaceHolder.getEntityRotation(XrSpace.ACTIVITY);
-                            updateMediaControlPanelPose(translation, rotation, height);
-                        }
-                    }
-                };
-
-        mCompositorView = createCompositorView(shape);
-
-        if (mCompositorView.getView() instanceof XrSurfaceEntityView view) {
-            mSurfaceHolder = view.getHolder();
-            updateVideoLayout(stereoMode, shape);
-        }
-
-        return mCompositorView;
+    public CompositorView show() {
+        mPlayerCoordinator.show();
+        showControlPanel();
+        return mPlayerCoordinator.getCompositorView();
     }
 
-    @VisibleForTesting
-    protected CompositorView createCompositorView(int shape) {
-        return CompositorViewFactory.create(
-                mActivity,
-                mWindowAndroid,
-                new ThinWebViewConstraints(),
-                assumeNonNull(mXrSceneCoreSessionManagerSupplier.get()),
-                shape);
+    /** Destroys the coordinator and its components. */
+    public void destroy() {
+        mAutoHideManager.stopTimer();
+        mControlCoordinator.dismiss();
+        mFormatCoordinator.dismiss();
+        mPlayerCoordinator.dismiss();
     }
 
     /**
-     * Updates the video layout.
+     * Updates the video layout based on stereo mode and projection type.
      *
-     * @param layout The video layout to use.
+     * @param stereoMode The stereo mode to use.
+     * @param projectionType The projection type to use.
      */
     public void updateVideoLayout(
-            @XrSurfaceEntityStereoMode int stereoMode, @XrSurfaceEntityShape int shape) {
-        assumeNonNull(mSurfaceHolder);
-        updateShapeIfNeeded(shape);
-        updateStereoModeIfNeeded(stereoMode);
-    }
+            @ImmersiveStereoMode.EnumType int stereoMode,
+            @ImmersiveProjectionType.EnumType int projectionType) {
+        mStereoMode = stereoMode;
+        mProjectionType = projectionType;
 
-    private void updateStereoModeIfNeeded(@XrSurfaceEntityStereoMode int stereoMode) {
-        XrSurfaceEntityHolder surfaceHolder = assumeNonNull(mSurfaceHolder);
-        if (stereoMode != surfaceHolder.getSurfaceStereoMode()) {
-            surfaceHolder.setSurfaceStereoMode(stereoMode);
-        }
-    }
-
-    private void updateShapeIfNeeded(@XrSurfaceEntityShape int shape) {
-        XrSurfaceEntityHolder surfaceHolder = assumeNonNull(mSurfaceHolder);
-
-        if (surfaceHolder.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
-            resetQuadSurface(surfaceHolder);
-        }
-
-        surfaceHolder.setSurfaceShape(shape);
-        surfaceHolder.setEntityPose(
-                PLAYER_PANEL_INITIAL_TRANSLATION, PLAYER_PANEL_INITIAL_ROTATION, XrSpace.ACTIVITY);
-
-        switch (shape) {
-            case XrSurfaceEntityShape.QUAD:
-                configureMediaControlPanel(false);
-                configureQuadSurface(surfaceHolder);
-                break;
-            case XrSurfaceEntityShape.SPHERE:
-            case XrSurfaceEntityShape.HEMISPHERE:
-                configureMediaControlPanel(true);
-                if (surfaceHolder instanceof XrCurvedSurfaceEntityHolder) {
-                    configureCurvedSurface((XrCurvedSurfaceEntityHolder) surfaceHolder);
-                }
-                break;
-        }
-    }
-
-    private void configureMediaControlPanel(boolean isMovable) {
-        if (mControlPanelHolder == null) {
-            return;
-        }
-
-        mControlPanelHolder.setEntitySize(
-                MEDIA_CONTROL_PANEL_WIDTH_METERS, MEDIA_CONTROL_PANEL_HEIGHT_METERS);
-        mControlPanelHolder.getMovableComponent().setMovable(isMovable, false);
-    }
-
-    private void configureQuadSurface(XrSurfaceEntityHolder quadHolder) {
-        float initialWidth = PLAYER_PANEL_INITIAL_WIDTH_METERS;
-        float initialHeight = calculateHeight(initialWidth);
-        float minWidth = PLAYER_PANEL_MIN_WIDTH_METERS;
-        float minHeight = calculateHeight(minWidth);
-        float maxWidth = PLAYER_PANEL_MAX_WIDTH_METERS;
-        float maxHeight = calculateHeight(maxWidth);
-
-        XrResizableComponent resizable = quadHolder.getResizableComponent();
-        XrMovableComponent movable = quadHolder.getMovableComponent();
-
-        quadHolder.setEntitySize(initialWidth, initialHeight);
-        resizable.setMinSize(minWidth, minHeight, 0f);
-        resizable.setMaxSize(maxWidth, maxHeight, 0f);
-        resizable.setResizable(true, true);
-        movable.setMovable(true, false);
-        movable.addMoveListener(assumeNonNull(mPlayerPanelMoveListener));
-        resizable.addResizeListener(assumeNonNull(mPlayerPanelResizeListener));
-
-        updateMediaControlPanelPose(
-                PLAYER_PANEL_INITIAL_TRANSLATION, PLAYER_PANEL_INITIAL_ROTATION, initialHeight);
-    }
-
-    private void resetQuadSurface(XrSurfaceEntityHolder quadHolder) {
-        XrResizableComponent resizable = quadHolder.getResizableComponent();
-        XrMovableComponent movable = quadHolder.getMovableComponent();
-
-        quadHolder.setEntitySize(1f, 1f);
-        resizable.setMinSize(1f, 1f, 0f);
-        resizable.setMaxSize(1f, 1f, 0f);
-        resizable.setResizable(false, false);
-        movable.setMovable(false, false);
-        movable.removeMoveListener(assumeNonNull(mPlayerPanelMoveListener));
-        resizable.removeResizeListener(assumeNonNull(mPlayerPanelResizeListener));
-    }
-
-    private void configureCurvedSurface(XrCurvedSurfaceEntityHolder curvedHolder) {
-        curvedHolder.setEntityRadius(PLAYER_PANEL_INITIAL_CURVE_RADIUS_METERS);
-        if (mControlPanelHolder != null) {
-            mControlPanelHolder.setEntityPose(
-                    MEDIA_CONTROL_PANEL_INITIAL_TRANSLATION,
-                    MEDIA_CONTROL_PANEL_INITIAL_ROTATION,
-                    XrSpace.ACTIVITY);
-        }
-    }
-
-    private float calculateHeight(float width) {
-        Rational aspect = mAspectRatio;
-        if (aspect.floatValue() == 0) {
-            return width * 9f / 16f;
-        }
-        return width / aspect.floatValue();
-    }
-
-    private void updateMediaControlPanelPose(float[] translation, float[] rotation, float height) {
-        if (mControlPanelHolder != null) {
-            float[] newTranslation = translation.clone();
-            // Move the media control panel under the player panel.
-            newTranslation[1] -= height / 2 + MEDIA_CONTROL_PANEL_VERTICAL_SPACING_METERS;
-            // Keep the media control panel slightly above the player panel.
-            newTranslation[2] += MEDIA_CONTROL_PANEL_Z_OFFSET_METERS;
-            mControlPanelHolder.setEntityPose(newTranslation, rotation, XrSpace.ACTIVITY);
-        }
+        mPlayerCoordinator.updateVideoLayout(
+                mapStereoMode(stereoMode), mapProjectionType(projectionType));
+        mPlayerCoordinator.updatePose(
+                mPoseManager.getPlayerPanelTranslation(projectionType),
+                mPoseManager.getPlayerPanelRotation(projectionType));
+        updateControlPanel();
     }
 
     /**
@@ -279,56 +130,177 @@ public class ImmersiveVideoPlaybackCoordinator {
      * @param playbackRate The current playback rate of the media.
      */
     public void updateMediaPosition(long durationMs, long positionMs, double playbackRate) {
-        mControlPanel.updateMediaPosition(durationMs, positionMs, playbackRate);
+        mControlCoordinator.updateMediaPosition(durationMs, positionMs, playbackRate);
     }
 
     /**
-     * Updates the playback state of the control panel.
+     * Updates the playback state.
      *
-     * @param isPlaying Whether the media is currently playing.
+     * @param isPlaying True if playing, false otherwise.
      */
     public void updatePlaybackState(boolean isPlaying) {
-        mControlPanel.updatePlaybackState(isPlaying);
+        mControlCoordinator.updatePlaybackState(isPlaying);
     }
 
     /**
-     * Updates XR specific Picture-in-Picture parameters.
+     * Updates the player size.
      *
-     * @param width The current width.
-     * @param height The current height.
+     * @param width The width in pixels.
+     * @param height The height in pixels.
      */
     public void updatePlayerSize(int width, int height) {
-        mAspectRatio = new Rational(width, height);
-        if (mSurfaceHolder != null) {
-            mSurfaceHolder.setSurfacePixelDimensions(width, height);
+        mPlayerCoordinator.updatePlayerSize(width, height);
+    }
+
+    // =========================================================================
+    // Delegate Implementations
+    // =========================================================================
+
+    // ImmersiveVideoPlayerCoordinator.Delegate
+
+    @Override
+    public void onPlayerPanelClicked() {
+        toggleControlPanel();
+    }
+
+    @Override
+    public void onPlayerPanelPoseChanged(float[] translation, float[] rotation) {
+        mPoseManager.onPlayerPanelPoseChanged(translation, rotation, mProjectionType);
+    }
+
+    @Override
+    public void onPlayerPanelResized(float width, float height) {
+        updateControlPanel();
+    }
+
+    @Override
+    public float getLayoutHeight() {
+        return mPlayerCoordinator.getLayoutHeight();
+    }
+
+    // ImmersiveVideoControlCoordinator.Delegate
+
+    @Override
+    public void onControlPanelMoveChanged(boolean isMoving) {
+        mAutoHideManager.onControlPanelMoveChanged(isMoving);
+    }
+
+    @Override
+    public void onControlPanelPoseChanged(float[] translation, float[] rotation) {
+        mPoseManager.onControlPanelPoseChanged(translation, rotation, mProjectionType);
+    }
+
+    @Override
+    public void onControlPanelHoverChanged(boolean hovered) {
+        mAutoHideManager.onControlPanelHoverChanged(hovered);
+    }
+
+    @Override
+    public void togglePlayPause(boolean isPlaying) {
+        mPlaybackDelegate.togglePlayPause(isPlaying);
+    }
+
+    @Override
+    public void seekTo(long positionMs) {
+        mPlaybackDelegate.seekTo(positionMs);
+    }
+
+    @Override
+    public void onFormatClicked() {
+        if (mFormatCoordinator.isShowing()) {
+            hideFormatSelectionPanel();
+        } else {
+            showFormatSelectionPanel();
         }
     }
 
-    public ImmersiveVideoControlPanel getControlPanelForTesting() {
-        return mControlPanel;
+    @Override
+    public void onExitImmersivePlayback() {
+        mPlaybackDelegate.onExitImmersivePlayback();
     }
 
-    /** Cleans up the coordinator and the compositor view. */
-    public void destroy() {
-        if (mCompositorView != null) {
-            View view = mCompositorView.getView();
-            if (view.getParent() instanceof ViewGroup parent) {
-                parent.removeView(view);
-            }
-            mCompositorView.destroy();
-            mCompositorView = null;
+    // ImmersiveVideoFormatCoordinator.Delegate
+
+    @Override
+    public void onFormatSelected(int stereoMode, int projectionType) {
+        updateVideoLayout(stereoMode, projectionType);
+        hideFormatSelectionPanel();
+    }
+
+    @Override
+    public void onFormatPanelHoverChanged(boolean hovered) {
+        mAutoHideManager.onFormatPanelHoverChanged(hovered);
+    }
+
+    // =========================================================================
+    // Private Helpers - Panel Management
+    // =========================================================================
+
+    private void toggleControlPanel() {
+        if (mControlCoordinator.isShowing()) {
+            hideControlPanel();
+        } else {
+            showControlPanel();
         }
-        if (mControlPanel.getParent() instanceof ViewGroup parent) {
-            parent.removeView(mControlPanel);
+    }
+
+    private void showControlPanel() {
+        mControlCoordinator.show(assumeNonNull(mPlayerCoordinator.getHolder()));
+        // TODO(crbug.com/515422620): The player panel should be interactable all the time and
+        // should toggle the visibility of the control panel.
+        mPlayerCoordinator.setInteractable(false);
+        updateControlPanel();
+        mAutoHideManager.startTimer();
+    }
+
+    private void hideControlPanel() {
+        hideFormatSelectionPanel();
+        mControlCoordinator.dismiss();
+        mPlayerCoordinator.setInteractable(true);
+        mAutoHideManager.stopTimer();
+    }
+
+    private void updateControlPanel() {
+        boolean isQuad = mProjectionType == ImmersiveProjectionType.QUAD;
+        mControlCoordinator.setMovable(!isQuad);
+        if (mControlCoordinator.isShowing()) {
+            mControlCoordinator.updatePose(
+                    mPoseManager.getControlPanelTranslation(mProjectionType),
+                    mPoseManager.getControlPanelRotation(mProjectionType));
         }
-        if (mControlPanelHolder != null) {
-            mControlPanelHolder.dispose();
-            mControlPanelHolder = null;
-        }
-        // Listeners are cleaned up automatically during mCompositorView.destroy(), which
-        // disposes the surface holder and its components.
-        mPlayerPanelMoveListener = null;
-        mPlayerPanelResizeListener = null;
-        mSurfaceHolder = null;
+    }
+
+    private void showFormatSelectionPanel() {
+        mFormatCoordinator.show(
+                assumeNonNull(mControlCoordinator.getHolder()),
+                mControlCoordinator.getSize(),
+                mStereoMode,
+                mProjectionType);
+        mControlCoordinator.setFormatButtonSelected(true);
+    }
+
+    private void hideFormatSelectionPanel() {
+        mFormatCoordinator.dismiss();
+        mControlCoordinator.setFormatButtonSelected(false);
+    }
+
+    // =========================================================================
+    // Factory & Testing Helpers
+    // =========================================================================
+
+    @VisibleForTesting
+    protected ImmersiveVideoPlayerCoordinator createPlayerCoordinator(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            XrSceneCoreSessionManager sessionManager) {
+        return new ImmersiveVideoPlayerCoordinator(activity, windowAndroid, sessionManager, this);
+    }
+
+    public ImmersiveVideoFormatCoordinator getFormatCoordinatorForTesting() {
+        return mFormatCoordinator;
+    }
+
+    public ImmersiveVideoControlCoordinator getControlCoordinatorForTesting() {
+        return mControlCoordinator;
     }
 }
