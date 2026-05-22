@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum UmaName {
+export enum UmaName {
   HIGHLIGHT_GRANULARITY =
       'Accessibility.ReadAnything.ReadAloud.HighlightGranularity',
   LANGUAGE = 'Accessibility.ReadAnything.ReadAloud.Language',
   LINE_FOCUS_TOGGLE = 'Accessibility.ReadAnything.LineFocusKeyboardToggle',
   NEW_PAGE = 'Accessibility.ReadAnything.NewPage',
+  NUMBER_PARAGRAPHS =
+      'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
   SPEECH_ERROR = 'Accessibility.ReadAnything.SpeechError',
   SPEECH_PLAYBACK = 'Accessibility.ReadAnything.SpeechPlaybackSession',
   SPEECH_SETTINGS_CHANGE =
       'Accessibility.ReadAnything.ReadAloud.SettingsChange',
   TEXT_SETTINGS_CHANGE = 'Accessibility.ReadAnything.SettingsChange',
+  TOTAL_HEADER_COUNT =
+      'Accessibility.ReadAnything.DistilledPageStructure.TotalHeaderCount',
+  UNIQUE_HEADER_TAGS =
+      'Accessibility.ReadAnything.DistilledPageStructure.UniqueHeaderTags',
   VOICE = 'Accessibility.ReadAnything.ReadAloud.Voice',
   VOICE_LANGUAGE_CHANGE =
       'Accessibility.ReadAnything.ReadAloud.VoiceLanguageChange',

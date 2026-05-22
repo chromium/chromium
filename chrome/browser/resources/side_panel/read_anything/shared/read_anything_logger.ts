@@ -4,7 +4,7 @@
 
 import {hasEspeakIdentifier, hasNaturalIdentifier} from '../read_aloud/voice_language_conversions.js';
 
-import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType, UmaName} from './metrics_browser_proxy.js';
 import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 
 export enum TimeFrom {
@@ -218,24 +218,18 @@ export class ReadAnythingLogger {
 
     // Log the number of paragraphs.
     const paragraphs = wordCountContainer.querySelectorAll('p');
-    this.metrics.recordCount(
-        'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
-        paragraphs.length);
+    this.metrics.recordCount(UmaName.NUMBER_PARAGRAPHS, paragraphs.length);
 
     const headerCounts = ReadAnythingLogger.getHeaderCounts(wordCountContainer);
 
     // The total number of distilled headers.
     const totalHeaderCount =
         headerCounts.reduce((sum, item) => sum + item.count, 0);
-    this.metrics.recordCount(
-        'Accessibility.ReadAnything.DistilledPageStructure.TotalHeaderCount',
-        totalHeaderCount);
+    this.metrics.recordCount(UmaName.TOTAL_HEADER_COUNT, totalHeaderCount);
 
     // The number of unique header tags present.
     const uniqueHeaderTags = headerCounts.filter(item => item.count > 0).length;
-    this.metrics.recordCount(
-        'Accessibility.ReadAnything.DistilledPageStructure.UniqueHeaderTags',
-        uniqueHeaderTags);
+    this.metrics.recordCount(UmaName.UNIQUE_HEADER_TAGS, uniqueHeaderTags);
   }
 
   static getHeaderCounts(wordCountContainer: Element):
