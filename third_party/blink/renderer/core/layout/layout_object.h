@@ -1281,10 +1281,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual gfx::RectF ObjectBoundingBox() const;
 
   // Returns the smallest rectangle enclosing all of the painted content
-  // respecting clipping, masking, filters, opacity, stroke-width and markers.
-  // The local SVG coordinate space is the space where localSVGTransform
-  // applies. For SVG objects defining viewports (e.g.
-  // LayoutSVGViewportContainer and  LayoutSVGResourceMarker), the local SVG
+  // respecting clipping, masking, opacity, stroke-width, and markers (but not
+  // filters). The local SVG coordinate space is the space where
+  // `LocalSVGTransform` applies. For SVG objects defining viewports (e.g.
+  // `LayoutSVGViewportContainer` and `LayoutSVGResourceMarker`), the local SVG
   // coordinate space is the viewport space.
   virtual gfx::RectF VisualRectInLocalSVGCoordinates() const;
 
@@ -1307,7 +1307,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns the full transform mapping from local coordinates to parent's local
   // coordinates. For most SVG objects, this is the same as localSVGTransform.
-  // For SVG objects defining viewports (see visualRectInLocalSVGCoordinates),
+  // For SVG objects defining viewports (see VisualRectInLocalSVGCoordinates),
   // this includes any viewport transforms and x/y offsets as well as
   // localSVGTransform.
   virtual AffineTransform LocalToSVGParentTransform() const {
