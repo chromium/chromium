@@ -89,7 +89,7 @@ static const std::array<DateTimeFormat::FieldType, 26>
         DateTimeFormat::kFieldTypeWeekOfMonth,        // W
         DateTimeFormat::kFieldTypeZoneIso8601Z,       // X
         DateTimeFormat::kFieldTypeYearOfWeekOfYear,   // Y
-        DateTimeFormat::kFieldTypeRFC822Zone,         // Z
+        DateTimeFormat::kFieldTypeRfc822Zone,         // Z
 };
 
 static DateTimeFormat::FieldType MapCharacterToFieldType(const UChar ch) {

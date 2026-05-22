@@ -100,7 +100,7 @@ class PLATFORM_EXPORT DateTimeFormat {
     kFieldTypeZoneLocalized = 'O',
     kFieldTypeNonLocationZone = 'v',
     kFieldTypeZoneId = 'V',
-    kFieldTypeRFC822Zone = 'Z',
+    kFieldTypeRfc822Zone = 'Z',
     kFieldTypeZoneIso8601Z = 'X',
     kFieldTypeZoneIso8601 = 'x',
   };

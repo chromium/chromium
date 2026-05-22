@@ -285,7 +285,7 @@ TEST_F(DateTimeFormatTest, SingleUpperCaseCharacter) {
   EXPECT_EQ(DateTimeFormat::kFieldTypeWeekOfYear, Single('w'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeZoneIso8601Z, Single('X'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeYearOfWeekOfYear, Single('Y'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeRFC822Zone, Single('Z'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeRfc822Zone, Single('Z'));
 }
 
 TEST_F(DateTimeFormatTest, SingleUpperCaseInvalid) {
