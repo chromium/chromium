@@ -703,6 +703,10 @@ int SSLServerContextImpl::SocketImpl::Init() {
   BIO_up_ref(transport_bio);  // SSL_set0_wbio takes ownership.
   SSL_set0_wbio(ssl_.get(), transport_bio);
 
+  if (context_->ssl_server_config_.server_padding_enabled) {
+    SSL_set_server_padding_enabled(ssl_.get(), 1);
+  }
+
   return OK;
 }
 
