@@ -51,7 +51,10 @@
         graphBuilder: graphBuilder,
         tracingOptions: {
           targetCategory: 'disabled-by-default-webaudio.audionode',
-          targetEvents: ['ConvolverHandler::Process'],
+          targetEvents: [
+            'ConvolverHandler::Process',
+            'FFTConvolver::ExecuteFFT',
+          ],
         }
       });
     </script>

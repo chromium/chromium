@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -81,10 +82,14 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
 
     // Check if it's time to perform the next FFT
     if (read_write_index_ == half_size) {
-      // The input buffer is now filled (get frequency-domain version)
-      frame_.DoFFT(input_buffer_span);
-      frame_.Multiply(*fft_kernel);
-      frame_.DoInverseFFT(output_buffer_span);
+      {
+        TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+                     "FFTConvolver::ExecuteFFT");
+        // The input buffer is now filled (get frequency-domain version)
+        frame_.DoFFT(input_buffer_span);
+        frame_.Multiply(*fft_kernel);
+        frame_.DoInverseFFT(output_buffer_span);
+      }
 
       // Overlap-add 1st half from previous time
       vector_math::Vadd(output_buffer_.as_span(),
