@@ -9790,3 +9790,8 @@ crbug.com/514075904 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html
 
 # TODO(crbug.com/475867727): Flaky. Reenable it.
 crbug.com/475867727 [ Mac15-arm64 ] http/tests/devtools/network/font-face.js [ Failure Pass ]
+
+# Gardener 2026-05-22
+crbug.com/515519537 external/wpt/xml/xslt/xslt-mutation-crash.xhtml [ Crash Timeout ]
+crbug.com/515519537 virtual/xslt-disabled/external/wpt/xml/xslt/xslt-mutation-crash.xhtml [ Crash Timeout ]
+
