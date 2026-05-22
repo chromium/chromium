@@ -87,6 +87,10 @@ void VttCueLayoutAlgorithm::Layout() {
 PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
     const LayoutBox& cue_box) {
   InlineCursor cursor(To<LayoutBlockFlow>(cue_box));
+  // Avoid NOTREACHED() in MoveToFirstLine(). See crbug.com/514956430.
+  if (!cursor.HasRoot()) {
+    return {};
+  }
   cursor.MoveToFirstLine();
   if (cursor.IsNull())
     return {};
