@@ -76,3 +76,7 @@ source_set("language_code") {
     "//base:*",
   ]
 }
+
+source_set("time_formatting_types") {
+  sources = [ "time_formatting_types.h" ]
+}
