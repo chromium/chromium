@@ -211,7 +211,7 @@ void PageActionControllerImpl::DoShowAnchoredMessage(
       /*show=*/true);
   active_anchored_message_ = action_id;
   anchored_message_timeout_.Start(
-      FROM_HERE, base::Seconds(12),
+      FROM_HERE, base::Seconds(15),
       base::BindRepeating(&PageActionControllerImpl::DowngradeAnchoredMessage,
                           base::Unretained(this), action_id));
 }
