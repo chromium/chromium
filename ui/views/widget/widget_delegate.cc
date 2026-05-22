@@ -18,6 +18,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
@@ -78,11 +79,12 @@ bool WidgetDelegate::OnCloseRequested(Widget::ClosedReason close_reason) {
 }
 
 View* WidgetDelegate::GetInitiallyFocusedView() {
-  return params_.initially_focused_view.value_or(nullptr);
+  return params_.initially_focused_view ? params_.initially_focused_view->view()
+                                        : nullptr;
 }
 
 bool WidgetDelegate::HasConfiguredInitiallyFocusedView() const {
-  return params_.initially_focused_view.has_value();
+  return params_.initially_focused_view != nullptr;
 }
 
 BubbleDialogDelegate* WidgetDelegate::AsBubbleDialogDelegate() {
@@ -466,7 +468,10 @@ void WidgetDelegate::SetAppIcon(ui::ImageModel icon) {
 
 void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
   DCHECK(!GetWidget());
-  params_.initially_focused_view = initially_focused_view;
+  if (!params_.initially_focused_view) {
+    params_.initially_focused_view = std::make_unique<ViewTracker>();
+  }
+  params_.initially_focused_view->SetView(initially_focused_view);
 }
 
 void WidgetDelegate::SetModalType(ui::mojom::ModalType modal_type) {
