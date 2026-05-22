@@ -865,7 +865,6 @@ TokenPreloadScanner::TokenPreloadScanner(
       in_script_web_bundle_(false),
       seen_body_(false),
       seen_img_(false),
-      template_count_(0),
       document_parameters_(std::move(document_parameters)),
       media_values_cached_data_(std::move(media_values_cached_data)),
       scanner_type_(scanner_type),
@@ -969,8 +968,15 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       const StringImpl* tag_impl = TagImplFor(token.Data());
       lcp_element_matcher_.ObserveEndTag(tag_impl);
       if (Match(tag_impl, html_names::kTemplateTag)) {
-        if (template_count_)
+        if (template_count_) {
+          // This is an end tag for a non-DSD <template> or a DSD <template>
+          // that is inside a non-DSD <template>.
           --template_count_;
+        } else if (dsd_count_) {
+          // This is an end tag for a DSD <template> that is not inside any
+          // regular <template>.
+          --dsd_count_;
+        }
         return;
       }
       if (template_count_) {
@@ -1011,10 +1017,14 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
               EqualIgnoringAsciiCase(shadowrootmode_value, "open") ||
               EqualIgnoringAsciiCase(shadowrootmode_value, "closed");
         }
-        // If this is a declarative shadow root <template shadowrootmode>
-        // element *and* we're not already inside a non-DSD <template> element,
-        // then we leave the template count at zero. Otherwise, increment it.
-        if (!(is_declarative_shadow_root && !template_count_)) {
+        if (is_declarative_shadow_root && !template_count_) {
+          // This is a <template> start tag for a DSD <template> *and* it's
+          // not nested inside of a regular (non-DSD) <template>.
+          ++dsd_count_;
+        } else {
+          // This is either a regular <template> start tag or a <template>
+          // start tag for a DSD <template> that has a regular template
+          // ancestor.
           ++template_count_;
         }
       }
@@ -1039,14 +1049,18 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
           in_script_web_bundle_ = true;
         }
       }
-      if (Match(tag_impl, html_names::kBaseTag)) {
+      // Check dsd_count_ since <base> elements are not processed inside of
+      // shadow DOM.
+      if (Match(tag_impl, html_names::kBaseTag) && !dsd_count_) {
         // The first <base> element is the one that wins.
         if (!predicted_base_element_url_.IsEmpty())
           return;
         UpdatePredictedBaseURL(token);
         return;
       }
-      if (Match(tag_impl, html_names::kMetaTag)) {
+      // Check dsd_count_ since <meta> elements are not processed inside of
+      // shadow DOM.
+      if (Match(tag_impl, html_names::kMetaTag) && !dsd_count_) {
         const HTMLToken::Attribute* equiv_attribute =
             token.GetAttributeItem(html_names::kHttpEquivAttr);
         if (equiv_attribute) {
