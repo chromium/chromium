@@ -56,7 +56,7 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
                 mTemplateUrlService.getTemplateUrlsByCategory(
                         TemplateUrlCategory.ACTIVE_SITE_SEARCH);
 
-        populateTemplateUrls(filterTemplateUrls(urls));
+        populateTemplateUrls(urls);
         setUpAddButton();
         setUpMoreButtonIfNeeded(
                 mContext.getString(R.string.site_search_additional_sites_button_label));

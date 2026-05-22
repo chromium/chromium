@@ -28,8 +28,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactory;
-import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactoryJni;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.favicon.LargeIconBridgeJni;
@@ -52,7 +50,6 @@ public class ExpandableSiteSearchMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
-    @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
 
     private Context mContext;
     private ModelList mModelList;
@@ -67,7 +64,6 @@ public class ExpandableSiteSearchMediatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        AimEligibilityServiceFactoryJni.setInstanceForTesting(mAimEligibilityNativesMock);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
         mModelList = new ModelList();
 
