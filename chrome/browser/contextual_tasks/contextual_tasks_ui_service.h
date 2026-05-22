@@ -138,7 +138,7 @@ class ContextualTasksUiService : public KeyedService {
   // thread occurred in the contextual tasks WebUI while being viewed in a tab
   // (as opposed to side panel).
   virtual void OnNonThreadNavigationInTab(
-      const GURL& url,
+      content::OpenURLParams url_params,
       base::WeakPtr<tabs::TabInterface> tab);
 
   // A notification that a navigation to the search results page occurred in the
@@ -457,7 +457,7 @@ class ContextualTasksUiService : public KeyedService {
           session_handle);
 
   // Navigates to a share URL.
-  virtual void OnShareUrlNavigation(const GURL& url);
+  virtual void OpenUrlInNewTab(const GURL& url);
 
   // Sets the initial thread URL for a given task and runs any pending
   // callbacks.

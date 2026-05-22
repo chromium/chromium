@@ -490,6 +490,18 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->GetPageRemote()->LockInput();
   } else if (aim_to_client_message.has_unlock_input()) {
     web_ui_controller_->GetPageRemote()->UnlockInput();
+  } else if (aim_to_client_message.has_notify_link_clicked()) {
+    auto behavior = aim_to_client_message.notify_link_clicked().link_behavior();
+    if (behavior == lens::NotifyLinkClicked::LINK_BEHAVIOR_COBROWSE) {
+      tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+          web_ui_controller_->GetWebUIWebContents());
+      BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
+      ui_service_->OnThreadLinkClicked(
+          GURL(aim_to_client_message.notify_link_clicked().url()),
+          web_ui_controller_->GetTaskId().value_or(base::Uuid()),
+          tab ? tab->GetWeakPtr() : nullptr,
+          browser ? browser->GetWeakPtr() : nullptr);
+    }
   }
 }
 

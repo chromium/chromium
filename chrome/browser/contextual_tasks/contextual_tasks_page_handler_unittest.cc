@@ -84,6 +84,33 @@ class TestContextualTasksUI : public ContextualTasksUI {
   MOCK_METHOD(BrowserWindowInterface*, GetBrowser, (), (override));
 };
 
+class MockContextualTasksUiServiceForThreadLink
+    : public MockContextualTasksUiService {
+ public:
+  MockContextualTasksUiServiceForThreadLink(
+      Profile* profile,
+      ContextualTasksService* service,
+      signin::IdentityManager* identity_manager,
+      AimEligibilityService* aim_eligibility_service,
+      std::unique_ptr<ContextualTasksEligibilityManager> eligibility_manager,
+      std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer)
+      : MockContextualTasksUiService(profile,
+                                     service,
+                                     identity_manager,
+                                     aim_eligibility_service,
+                                     std::move(eligibility_manager),
+                                     std::move(cookie_synchronizer)) {}
+  ~MockContextualTasksUiServiceForThreadLink() override = default;
+
+  MOCK_METHOD(void,
+              OnThreadLinkClicked,
+              (const GURL& url,
+               base::Uuid task_id,
+               base::WeakPtr<tabs::TabInterface> tab,
+               base::WeakPtr<BrowserWindowInterface> browser),
+              (override));
+};
+
 class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -104,7 +131,8 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
         profile(), base::BindOnce([](content::BrowserContext* context) {
           Profile* profile = Profile::FromBrowserContext(context);
           return std::unique_ptr<KeyedService>(
-              std::make_unique<NiceMock<MockContextualTasksUiService>>(
+              std::make_unique<
+                  NiceMock<MockContextualTasksUiServiceForThreadLink>>(
                   profile,
                   ContextualTasksServiceFactory::GetForProfile(profile),
                   /*identity_manager=*/nullptr,
@@ -127,7 +155,7 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     mock_contextual_tasks_service_ = static_cast<MockContextualTasksService*>(
         ContextualTasksServiceFactory::GetForProfile(profile()));
     mock_contextual_tasks_ui_service_ =
-        static_cast<MockContextualTasksUiService*>(
+        static_cast<MockContextualTasksUiServiceForThreadLink*>(
             ContextualTasksUiServiceFactory::GetForBrowserContext(profile()));
 
     profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
@@ -157,7 +185,8 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<NiceMock<TestContextualTasksUI>> contextual_tasks_ui_;
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
   raw_ptr<MockContextualTasksService> mock_contextual_tasks_service_;
-  raw_ptr<MockContextualTasksUiService> mock_contextual_tasks_ui_service_;
+  raw_ptr<MockContextualTasksUiServiceForThreadLink>
+      mock_contextual_tasks_ui_service_;
   NiceMock<MockContextualTasksPage> page_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -722,6 +751,25 @@ TEST_F(ContextualTasksPageHandlerTest,
   message.SerializeToArray(serialized.data(), size);
 
   EXPECT_CALL(page_, OnZeroStateChange(false)).Times(1);
+
+  page_handler_->OnWebviewMessage(serialized);
+}
+
+TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_NotifyLinkClicked) {
+  lens::AimToClientMessage message;
+  auto* notify_link_clicked = message.mutable_notify_link_clicked();
+  notify_link_clicked->set_url("https://example.com");
+  notify_link_clicked->set_link_behavior(
+      lens::NotifyLinkClicked::LINK_BEHAVIOR_COBROWSE);
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  message.SerializeToArray(serialized.data(), size);
+
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
+              OnThreadLinkClicked(GURL("https://example.com"), base::Uuid(),
+                                  testing::Eq(nullptr), testing::Eq(nullptr)))
+      .Times(1);
 
   page_handler_->OnWebviewMessage(serialized);
 }
