@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -132,6 +133,7 @@ public class WebShareTest {
     @Test
     @MediumTest
     @Feature({"WebShare"})
+    @DisabledTest(message = "https://crbug.com/515530862")
     public void testWebShareDex() throws Exception {
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_DEX));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
