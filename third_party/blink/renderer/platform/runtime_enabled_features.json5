@@ -4148,7 +4148,7 @@
     },
     {
       name: "OnDeviceWebSpeechQuality",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The OpaqueRange interface provides a live AbstractRange subtype
