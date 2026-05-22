@@ -2880,6 +2880,82 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(VISIBLE_TO_USER_ERROR, button1NodeInfo.isVisibleToUser());
     }
 
+    /** Test that handleHover does not fire events for occluded nodes. */
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
+    public void testHandleHover_occludedNode() throws Throwable {
+        setupTestWithHTML(
+                """
+                <button id="button1"
+                    style="position: absolute; left: 10px; top: 10px; width: 100px; height: 50px">
+                  Button 1
+                </button>
+                """);
+
+        int button1VvId = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
+        AccessibilityNodeInfoCompat button1NodeInfo = createAccessibilityNodeInfo(button1VvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, button1NodeInfo);
+
+        // Get bounds for button 1 to occlude it.
+        Rect button1Bounds = new Rect();
+        button1NodeInfo.getBoundsInScreen(button1Bounds);
+
+        int occluderViewId = 1;
+
+        // Set hover state to true so handleHover can process events.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.onHoverEventNoRenderer(
+                            android.view.MotionEvent.obtain(
+                                    0, 0, android.view.MotionEvent.ACTION_HOVER_ENTER, 0, 0, 0));
+                });
+
+        // Test hover when not occluded.
+        mTestData.setReceivedHoverEvent(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.handleHover(button1VvId);
+                });
+        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedHoverEvent());
+
+        // Clear events.
+        mTestData.setReceivedHoverEvent(false);
+
+        // Hover another node to clear mLastHoverId
+        int rootId = mActivityTestRule.mWcax.getRootIdForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.handleHover(rootId);
+                });
+        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedHoverEvent());
+        mTestData.setReceivedHoverEvent(false);
+
+        // Occlude button 1.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.setOccludingRect(button1Bounds, occluderViewId);
+                });
+
+        // Hover button 1 again.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.handleHover(button1VvId);
+                });
+
+        // We shouldn't receive any event.
+        // Check for a short time to verify no event was received.
+        long startTime = System.currentTimeMillis();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Hover event should not be received for an occluded node",
+                            mTestData.hasReceivedHoverEvent(),
+                            Matchers.is(false));
+                    return System.currentTimeMillis() - startTime >= 3000;
+                });
+    }
+
     /** Test that partially occluded views are handled correctly by accessibility. */
     @Test
     @SmallTest

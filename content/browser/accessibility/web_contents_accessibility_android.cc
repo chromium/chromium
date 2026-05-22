@@ -1437,12 +1437,25 @@ int32_t WebContentsAccessibilityAndroid::GetEditableTextSelectionEnd(
   return node->GetSelectionEnd();
 }
 
+gfx::Rect WebContentsAccessibilityAndroid::GetAbsoluteBoundsForNode(
+    BrowserAccessibilityAndroid* node,
+    ui::AXOffscreenResult* offscreen_result) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager || !node) {
+    return gfx::Rect();
+  }
+
+  float dip_scale = 1 / root_manager->device_scale_factor();
+  return gfx::ScaleToEnclosingRect(
+      node->GetUnclippedRootFrameBoundsRect(offscreen_result), dip_scale,
+      dip_scale);
+}
+
 ScopedJavaLocalRef<jintArray>
 WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(JNIEnv* env,
                                                             int32_t unique_id) {
-  BrowserAccessibilityManagerAndroid* root_manager =
-      GetRootBrowserAccessibilityManager();
-  if (!root_manager) {
+  if (!GetRootBrowserAccessibilityManager()) {
     return nullptr;
   }
 
@@ -1451,9 +1464,7 @@ WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(JNIEnv* env,
     return nullptr;
   }
 
-  float dip_scale = 1 / root_manager->device_scale_factor();
-  gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
-      node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
+  gfx::Rect absolute_rect = GetAbsoluteBoundsForNode(node);
   int rect[] = {absolute_rect.x(), absolute_rect.y(), absolute_rect.right(),
                 absolute_rect.bottom()};
   return ToJavaIntArray(env, rect);
@@ -1477,22 +1488,16 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     const JavaRef<jobject>& info,
     int32_t unique_id,
     BrowserAccessibilityAndroid* node) {
-  BrowserAccessibilityManagerAndroid* root_manager =
-      GetRootBrowserAccessibilityManager();
-  if (!root_manager) {
+  if (!GetRootBrowserAccessibilityManager()) {
     return;
   }
 
   ui::AXOffscreenResult offscreen_result = ui::AXOffscreenResult::kOnscreen;
-  float dip_scale = 1 / root_manager->device_scale_factor();
-  gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
-      node->GetUnclippedRootFrameBoundsRect(&offscreen_result), dip_scale,
-      dip_scale);
+  gfx::Rect absolute_rect = GetAbsoluteBoundsForNode(node, &offscreen_result);
   gfx::Rect parent_relative_rect = absolute_rect;
-  if (node->PlatformGetParent()) {
-    gfx::Rect parent_rect = gfx::ScaleToEnclosingRect(
-        node->PlatformGetParent()->GetUnclippedRootFrameBoundsRect(), dip_scale,
-        dip_scale);
+  if (auto* parent = static_cast<BrowserAccessibilityAndroid*>(
+          node->PlatformGetParent())) {
+    gfx::Rect parent_rect = GetAbsoluteBoundsForNode(parent);
     parent_relative_rect.Offset(-parent_rect.OffsetFromOrigin());
   }
   bool is_offscreen = offscreen_result == ui::AXOffscreenResult::kOffscreen;

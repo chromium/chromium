@@ -25,82 +25,82 @@ public class AccessibilityNodeInfoUtilsTest {
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
-    public void testResizedRectOnOcclusion_fullyOccluded() {
+    public void testcomputeUnoccludedRect_fullyOccluded() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
 
         SparseArray<Rect> occludingRects = new SparseArray<>();
         occludingRects.put(1, new Rect(0, 0, 100, 100));
 
         Assert.assertNull(
-                AccessibilityNodeInfoUtils.resizedRectOnOcclusion(nodeBounds, occludingRects));
+                AccessibilityNodeInfoUtils.computeUnoccludedRect(nodeBounds, occludingRects));
     }
 
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
-    public void testResizedRectOnOcclusion_partiallyOccluded_rightSide() {
+    public void testcomputeUnoccludedRect_partiallyOccluded_rightSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
 
         SparseArray<Rect> occludingRects = new SparseArray<>();
         occludingRects.put(1, new Rect(50, 0, 100, 100));
 
         Rect newBounds =
-                AccessibilityNodeInfoUtils.resizedRectOnOcclusion(nodeBounds, occludingRects);
+                AccessibilityNodeInfoUtils.computeUnoccludedRect(nodeBounds, occludingRects);
         Assert.assertEquals(new Rect(0, 0, 50, 100), newBounds);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
-    public void testResizedRectOnOcclusion_partiallyOccluded_leftSide() {
+    public void testcomputeUnoccludedRect_partiallyOccluded_leftSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
 
         SparseArray<Rect> occludingRects = new SparseArray<>();
         occludingRects.put(1, new Rect(0, 0, 50, 100));
 
         Rect newBounds =
-                AccessibilityNodeInfoUtils.resizedRectOnOcclusion(nodeBounds, occludingRects);
+                AccessibilityNodeInfoUtils.computeUnoccludedRect(nodeBounds, occludingRects);
         Assert.assertEquals(new Rect(50, 0, 100, 100), newBounds);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
-    public void testResizedRectOnOcclusion_partiallyOccluded_topSide() {
+    public void testcomputeUnoccludedRect_partiallyOccluded_topSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
 
         SparseArray<Rect> occludingRects = new SparseArray<>();
         occludingRects.put(1, new Rect(0, 0, 100, 50));
 
         Rect newBounds =
-                AccessibilityNodeInfoUtils.resizedRectOnOcclusion(nodeBounds, occludingRects);
+                AccessibilityNodeInfoUtils.computeUnoccludedRect(nodeBounds, occludingRects);
         Assert.assertEquals(new Rect(0, 50, 100, 100), newBounds);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
-    public void testResizedRectOnOcclusion_partiallyOccluded_bottomSide() {
+    public void testcomputeUnoccludedRect_partiallyOccluded_bottomSide() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
 
         SparseArray<Rect> occludingRects = new SparseArray<>();
         occludingRects.put(1, new Rect(0, 50, 100, 100));
 
         Rect newBounds =
-                AccessibilityNodeInfoUtils.resizedRectOnOcclusion(nodeBounds, occludingRects);
+                AccessibilityNodeInfoUtils.computeUnoccludedRect(nodeBounds, occludingRects);
         Assert.assertEquals(new Rect(0, 0, 100, 50), newBounds);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
-    public void testResizedRectOnOcclusion_notOccluded() {
+    public void testcomputeUnoccludedRect_notOccluded() {
         Rect nodeBounds = new Rect(0, 0, 100, 100);
 
         SparseArray<Rect> occludingRects = new SparseArray<>();
 
         Rect newBounds =
-                AccessibilityNodeInfoUtils.resizedRectOnOcclusion(nodeBounds, occludingRects);
+                AccessibilityNodeInfoUtils.computeUnoccludedRect(nodeBounds, occludingRects);
         Assert.assertEquals(nodeBounds, newBounds);
     }
 }
