@@ -282,18 +282,16 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     // The Glic button visibility is dynamic and depends on profile state
     // (e.g., sign-in status, enterprise policies, recoverable errors).
-    if (glic::GlicEnabling::ShouldShowGlicButton(profile_)) {
+    // We instantiate the action container if the profile is eligible (even if
+    // the button is not currently shown, e.g. when signed out) so that it can
+    // dynamically update its visibility when the profile state changes.
+    if (glic::GlicEnabling::IsProfileEligible(profile_)) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
           browser, browser->GetFeatures().glic_nudge_controller());
       tab_strip_action_container->SetProperty(views::kCrossAxisAlignmentKey,
                                               views::LayoutAlignment::kStart);
-    }
-
-    // The physical location of the Tab Search button must remain stable
-    // regardless of transient Glic errors. We only draw it here if the global
-    // feature state dictates it hasn't been moved to the pinned toolbar.
-    if (!base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton) &&
-        !features::HasTabSearchToolbarButton()) {
+    } else if (!base::FeatureList::IsEnabled(
+                   tabs::kHorizontalTabStripComboButton)) {
       tab_search_button =
           std::make_unique<TabSearchButton>(browser, Edge::kNone, Edge::kNone);
       tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,

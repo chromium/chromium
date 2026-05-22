@@ -133,6 +133,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // profile is one where Glic could potentially be enabled, regardless of
   // whether it is currently enabled or not.
   //
+  // NOTE: This only represents static structural suitability (i.e., the client
+  // device is globally capable and the profile type is suitable). It does NOT
+  // check active user account status (such as sign-in state or GAIA account
+  // capabilities).
+  //
   // This is a foundational, static check that does not change at runtime. It
   // controls whether Glic infrastructure (e.g., `GlicKeyedService`, UI
   // controllers) is created for the profile.
@@ -274,6 +279,12 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       return feature_enabled && is_regular_profile;
     }
 
+    // Returns true if Glic is fully enabled and allowed to run on this profile.
+    // Unlike `GlicEnabling::IsProfileEligible()`, this is a dynamic check that
+    // can change at runtime. It evaluates dynamic profile state such as whether
+    // the user is signed in, active user account capabilities (e.g.,
+    // GAIA/Gemini capabilities), rollout groups, enterprise policies, and
+    // location filters.
     bool IsEnabled() const {
       bool base_checks = IsProfileEligible() && is_rolled_out &&
                          primary_account_is_capable && !DisallowedByAdmin() &&
@@ -306,6 +317,21 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
               fre_is_consented);
     }
 
+    // Returns true if the Glic button/entrypoint should be dynamically visible
+    // in the UI at the current moment.
+    //
+    // NOTE: This represents dynamic, runtime visibility, not static structural
+    // capability. During window startup construction (such as in
+    // `HorizontalTabStripRegionView` or `ToolbarView`), the parent view
+    // container must be created if Glic could potentially become active
+    // (meaning `GlicEnabling::IsProfileEligible()` is true, even if the user
+    // starts signed out). Once the container is created, this method is used by
+    // `GlicButtonController` to dynamically show or hide the button inside the
+    // container at runtime (e.g., rendering it immediately after sign-in
+    // completes).
+    //
+    // Always returns false if the Glic feature is disabled by feature flag,
+    // enterprise admin policy, or if the user is not in the rollout group.
     bool ShouldShowGlicButton() const {
       if (!feature_flag_enabled) {
         return false;
