@@ -11,6 +11,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "ui/base/interaction/element_highlighter.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -20,13 +22,19 @@
 namespace ui {
 
 TrackedElementHandler::TrackedElementHandler(
+    content::WebUIController* controller,
+    const std::vector<ui::ElementIdentifier>& identifiers)
+    : TrackedElementHandler(
+          controller->web_ui()->GetWebContents(),
+          ui::ElementContext(controller,
+                             base::PassKey<TrackedElementHandler>()),
+          identifiers) {}
+
+TrackedElementHandler::TrackedElementHandler(
     content::WebContents* web_contents,
-    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-        receiver,
     ui::ElementContext context,
     const std::vector<ui::ElementIdentifier>& identifiers)
-    : context_(context),
-      receiver_(this, std::move(receiver)) {
+    : context_(context), receiver_(this) {
   ui::ElementHighlighter::GetElementHighlighter()
       ->MaybeRegisterBackend<ElementHighlighterWebUI>();
 
@@ -43,6 +51,12 @@ TrackedElementHandler::TrackedElementHandler(
 }
 
 TrackedElementHandler::~TrackedElementHandler() = default;
+
+void TrackedElementHandler::BindInterface(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        receiver) {
+  receiver_.Bind(std::move(receiver));
+}
 
 void TrackedElementHandler::OnVisibilityChanged(
     content::Visibility new_visibility) {
@@ -271,6 +285,15 @@ TrackedElementHandler::LockVisible(const std::string& identifier_name) {
     return nullptr;
   }
   return element->LockVisible();
+}
+
+std::vector<std::string> TrackedElementHandler::GetIdentifiers() {
+  std::vector<std::string> identifiers;
+  identifiers.reserve(elements_.size());
+  for (const auto& [identifier, _] : elements_) {
+    identifiers.emplace_back(identifier);
+  }
+  return identifiers;
 }
 
 TrackedElementWebUI* TrackedElementHandler::GetElement(

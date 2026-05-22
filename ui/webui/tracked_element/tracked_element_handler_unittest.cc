@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -30,11 +31,16 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/native_ui_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
-#include "ui/webui/tracked_element/tracked_element_web_ui.h"
+#endif
 
 namespace ui {
 
@@ -119,39 +125,30 @@ class TestTrackedElementManager
 
 }  // namespace
 
-class TrackedElementHandlerTest : public views::test::WidgetTest {
+class TrackedElementHandlerTest : public content::RenderViewHostTestHarness {
  public:
-  TrackedElementHandlerTest()
-      : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>())) {}
+  TrackedElementHandlerTest() = default;
   ~TrackedElementHandlerTest() override = default;
 
   void SetUp() override {
     content::SetBrowserClientForTesting(&test_browser_client_);
-    rvh_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
-    views::test::WidgetTest::SetUp();
-
-    browser_context_ = std::make_unique<content::TestBrowserContext>();
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        browser_context_.get(), nullptr);
+    content::RenderViewHostTestHarness::SetUp();
 
     mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler> remote;
     handler_ = std::make_unique<TrackedElementHandler>(
-        web_contents_.get(), remote.InitWithNewPipeAndPassReceiver(),
+        web_contents(),
         // When there is a consistent way of assigning contexts, use that.
-        ui::ElementContext::CreateFakeContextForTesting(web_contents_.get()),
+        ui::ElementContext::CreateFakeContextForTesting(web_contents()),
         std::vector<ui::ElementIdentifier>{kTestElementIdentifier1,
                                            kTestElementIdentifier2});
+    handler_->BindInterface(remote.InitWithNewPipeAndPassReceiver());
     tracked_element_handler_remote_.Bind(std::move(remote));
   }
 
   void TearDown() override {
     tracked_element_handler_remote_.reset();
     handler_.reset();
-    web_contents_.reset();
-    browser_context_.reset();
-    rvh_enabler_.reset();
-    views::test::WidgetTest::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
  protected:
@@ -162,10 +159,6 @@ class TrackedElementHandlerTest : public views::test::WidgetTest {
   TrackedElementHandler* handler() { return handler_.get(); }
 
   content::ContentBrowserClient test_browser_client_;
-  std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
-  std::unique_ptr<content::BrowserContext> browser_context_;
-  std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TrackedElementHandler> handler_;
   mojo::Remote<tracked_element::mojom::TrackedElementHandler>
       tracked_element_handler_remote_;
@@ -397,35 +390,6 @@ TEST_F(TrackedElementHandlerTest, DestroyHandlerCleansUpElement) {
       kTestElementIdentifier1, context));
 }
 
-TEST_F(TrackedElementHandlerTest, GetNativeView) {
-  handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
-  tracked_element_handler_remote_.FlushForTesting();
-
-  auto* const element =
-      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-          kTestElementIdentifier1);
-  ASSERT_TRUE(element);
-  EXPECT_TRUE(element->IsA<TrackedElementWebUI>());
-
-  auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-  params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
-  widget->Init(std::move(params));
-  widget->Show();
-
-  auto* webview = widget->SetClientContentsView(
-      std::make_unique<views::WebView>(browser_context_.get()));
-  webview->SetWebContents(web_contents_.get());
-
-  // The element should return the native view of the widget.
-  EXPECT_EQ(widget->GetNativeView(), element->GetNativeView());
-
-  webview->SetWebContents(nullptr);
-  widget->CloseNow();
-}
-
 TEST_F(TrackedElementHandlerTest, CanHighlight) {
   handler_remote()->TrackedElementVisibilityChanged(
       kTestElementIdentifier1.GetName(), true, kElementBounds);
@@ -558,6 +522,11 @@ TEST_F(TrackedElementHandlerTest, Interaction) {
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("EnterText:" + name + ":hello:2"));
 
+  EXPECT_TRUE(handler()->EnterText(
+      name, u"hello", tracked_element::mojom::TextEntryMode::kReplaceAll));
+  EXPECT_THAT(manager.TakeInteractionEvents(),
+              testing::ElementsAre("EnterText:" + name + ":hello:0"));
+
   EXPECT_TRUE(handler()->Confirm(name));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("Confirm:" + name));
@@ -651,6 +620,121 @@ TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
 
   lock2.reset();
   EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+class TrackedElementHandlerWidgetTest : public views::test::WidgetTest {
+ public:
+  TrackedElementHandlerWidgetTest()
+      : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>())) {}
+  ~TrackedElementHandlerWidgetTest() override = default;
+
+  void SetUp() override {
+    content::SetBrowserClientForTesting(&test_browser_client_);
+    rvh_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
+    views::test::WidgetTest::SetUp();
+
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        browser_context_.get(), nullptr);
+
+    mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler> remote;
+    handler_ = std::make_unique<TrackedElementHandler>(
+        web_contents_.get(),
+        // When there is a consistent way of assigning contexts, use that.
+        ui::ElementContext::CreateFakeContextForTesting(web_contents_.get()),
+        std::vector<ui::ElementIdentifier>{kTestElementIdentifier1,
+                                           kTestElementIdentifier2});
+    handler_->BindInterface(remote.InitWithNewPipeAndPassReceiver());
+    tracked_element_handler_remote_.Bind(std::move(remote));
+  }
+
+  void TearDown() override {
+    tracked_element_handler_remote_.reset();
+    handler_.reset();
+    web_contents_.reset();
+    browser_context_.reset();
+    rvh_enabler_.reset();
+    views::test::WidgetTest::TearDown();
+  }
+
+ protected:
+  tracked_element::mojom::TrackedElementHandler* handler_remote() {
+    return tracked_element_handler_remote_.get();
+  }
+
+  TrackedElementHandler* handler() { return handler_.get(); }
+
+  content::ContentBrowserClient test_browser_client_;
+  std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
+  std::unique_ptr<content::BrowserContext> browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::TestWebUI> test_web_ui_;
+  std::unique_ptr<TrackedElementHandler> handler_;
+  mojo::Remote<tracked_element::mojom::TrackedElementHandler>
+      tracked_element_handler_remote_;
+};
+
+TEST_F(TrackedElementHandlerWidgetTest, GetNativeView) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  EXPECT_TRUE(element->IsA<TrackedElementWebUI>());
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
+  widget->Init(std::move(params));
+  widget->Show();
+
+  auto* webview = widget->SetClientContentsView(
+      std::make_unique<views::WebView>(browser_context_.get()));
+  webview->SetWebContents(web_contents_.get());
+
+  // The element should return the native view of the widget.
+  EXPECT_EQ(widget->GetNativeView(), element->GetNativeView());
+
+  webview->SetWebContents(nullptr);
+  widget->CloseNow();
+}
+#endif
+
+class TestWebUIController : public content::WebUIController {
+ public:
+  explicit TestWebUIController(content::WebUI* web_ui)
+      : content::WebUIController(web_ui) {}
+  ~TestWebUIController() override = default;
+};
+
+TEST_F(TrackedElementHandlerTest, DocumentSingleton) {
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  auto controller = std::make_unique<TestWebUIController>(&test_web_ui);
+
+  // Initially should return null.
+  EXPECT_FALSE(TrackedElementHandlerDocumentSingleton::GetOrCreate(main_rfh()));
+
+  // Register.
+  TrackedElementHandlerDocumentSingleton::Register(controller.get(),
+                                                   {kTestElementIdentifier1});
+
+  // Now should return a valid handler.
+  auto handler =
+      TrackedElementHandlerDocumentSingleton::GetOrCreate(main_rfh());
+  ASSERT_TRUE(handler);
+  EXPECT_EQ(web_contents(), handler->web_contents());
+
+  // Retrieving again should return the same handler.
+  EXPECT_EQ(
+      handler.get(),
+      TrackedElementHandlerDocumentSingleton::GetOrCreate(main_rfh()).get());
 }
 
 // TODO(crbug.com/40243115): add tests for element screen bounds. This requires

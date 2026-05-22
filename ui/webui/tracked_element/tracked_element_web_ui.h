@@ -12,6 +12,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

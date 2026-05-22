@@ -377,8 +377,10 @@ void HelpBubbleHandlerBase::BindTrackedElementHandler(
     identifiers.emplace_back(id);
   }
   tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-      GetWebContents(), std::move(handler), context_, identifiers);
-  tracked_element_handler_->set_help_bubble_helper(this);
+      GetWebContents(), context_, identifiers);
+  tracked_element_handler_->BindInterface(std::move(handler));
+  tracked_element_handler_->set_help_bubble_handler(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 bool HelpBubbleHandlerBase::ToggleHelpBubbleFocusForAccessibility(

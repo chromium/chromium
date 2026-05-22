@@ -97,6 +97,8 @@ class HelpBubbleHandler;
 }
 
 namespace ui {
+class TrackedElementHandler;
+class TrackedElementHandlerDocumentSingleton;
 
 namespace internal {
 class ElementIdentifierPropertyCasterHelper;
@@ -135,7 +137,9 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementContext {
   // contexts. All other code should defer to these classes.
   template <class T, class U>
     requires std::same_as<U, views::ElementTrackerViews> ||
-             std::same_as<U, user_education::HelpBubbleHandler>
+             std::same_as<U, user_education::HelpBubbleHandler> ||
+             std::same_as<U, ui::TrackedElementHandler> ||
+             std::same_as<U, ui::TrackedElementHandlerDocumentSingleton>
   explicit ElementContext(T* value, base::PassKey<U>)
       : value_(reinterpret_cast<uintptr_t>(value)) {}
 

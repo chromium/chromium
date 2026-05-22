@@ -8,6 +8,8 @@ source_set("tracked_element") {
     "element_highlighter_webui.h",
     "tracked_element_handler.cc",
     "tracked_element_handler.h",
+    "tracked_element_handler_document_singleton.cc",
+    "tracked_element_handler_document_singleton.h",
     "tracked_element_web_ui.cc",
     "tracked_element_web_ui.h",
   ]
@@ -20,9 +22,13 @@ source_set("tracked_element") {
 
   deps = [
     "//base",
+    "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/views",
   ]
+
+  if (!is_android) {
+    deps += [ "//ui/views" ]
+  }
 }
 
 source_set("test_support") {
@@ -56,7 +62,12 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/base/interaction:test_support",
-    "//ui/views:test_support",
-    "//ui/views/controls/webview",
   ]
+  if (!is_android) {
+    deps += [
+      "//ui/views",
+      "//ui/views:test_support",
+      "//ui/views/controls/webview",
+    ]
+  }
 }

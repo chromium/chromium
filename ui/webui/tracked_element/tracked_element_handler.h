@@ -25,6 +25,7 @@
 
 namespace content {
 class WebContents;
+class WebUIController;
 }
 
 namespace user_education {
@@ -41,24 +42,33 @@ class TrackedElementHandler
     : public tracked_element::mojom::TrackedElementHandler,
       public content::WebContentsObserver {
  public:
+  TrackedElementHandler(content::WebUIController* controller,
+                        const std::vector<ui::ElementIdentifier>& identifiers);
   TrackedElementHandler(
       content::WebContents* web_contents,
-      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-          receiver,
       ui::ElementContext context,
       const std::vector<ui::ElementIdentifier>& identifiers);
   ~TrackedElementHandler() override;
   TrackedElementHandler(const TrackedElementHandler&) = delete;
   TrackedElementHandler& operator=(const TrackedElementHandler&) = delete;
 
-  bool is_web_contents_visible() const { return is_web_contents_visible_; }
-  user_education::HelpBubbleHandlerBase* help_bubble_handler() const {
-    return help_bubble_handler_;
+  base::WeakPtr<TrackedElementHandler> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
-  void set_help_bubble_helper(
-      user_education::HelpBubbleHandlerBase* help_bubble_handler) {
+
+  bool is_web_contents_visible() const { return is_web_contents_visible_; }
+  user_education::HelpBubbleHandlerBase* GetHelpBubbleHandler() const {
+    return help_bubble_handler_.get();
+  }
+  void set_help_bubble_handler(
+      base::WeakPtr<user_education::HelpBubbleHandlerBase>
+          help_bubble_handler) {
     help_bubble_handler_ = help_bubble_handler;
   }
+
+  void BindInterface(
+      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+          receiver);
 
   // Asks the WebUI side to change highlighting of the given element.
   void SetHighlightState(const std::string& identifier_name, bool highlight);
@@ -66,6 +76,9 @@ class TrackedElementHandler
   // Returns a visibility lock for the given element.
   std::unique_ptr<TrackedElementVisibilityLock> LockVisible(
       const std::string& identifier_name);
+
+  std::vector<std::string> GetIdentifiers();
+  ui::ElementContext context() { return context_; }
 
   // Flushes the C++ -> WebUI mojo pipe.
   void FlushManagerRemoteForTesting();
@@ -105,7 +118,7 @@ class TrackedElementHandler
       elements_;
 
   bool is_web_contents_visible_ = false;
-  raw_ptr<user_education::HelpBubbleHandlerBase> help_bubble_handler_;
+  base::WeakPtr<user_education::HelpBubbleHandlerBase> help_bubble_handler_;
   mojo::Receiver<tracked_element::mojom::TrackedElementHandler> receiver_;
   mojo::Remote<tracked_element::mojom::TrackedElementManager> manager_remote_;
 

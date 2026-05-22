@@ -219,8 +219,8 @@ void WebUIBrowserUI::BindInterface(
   const ui::ElementContext context =
       BrowserElements::From(browser_)->GetContext();
   tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-      web_ui()->GetWebContents(), std::move(receiver), context,
-      GetKnownElementIdentifiers());
+      web_ui()->GetWebContents(), context, GetKnownElementIdentifiers());
+  tracked_element_handler_->BindInterface(std::move(receiver));
 }
 
 base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {

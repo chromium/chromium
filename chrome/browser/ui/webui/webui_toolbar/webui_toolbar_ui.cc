@@ -150,8 +150,9 @@ void WebUIToolbarUI::BindInterface(
         BrowserElements::From(browser_interface)->GetContext();
 
     tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-        web_ui()->GetWebContents(), std::move(receiver), element_context,
+        web_ui()->GetWebContents(), element_context,
         GetKnownElementIdentifiers());
+    tracked_element_handler_->BindInterface(std::move(receiver));
   }
 }
 

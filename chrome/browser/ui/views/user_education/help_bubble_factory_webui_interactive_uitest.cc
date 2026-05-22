@@ -170,7 +170,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
             [](ui::TrackedElement* el) {
               return el->AsA<ui::TrackedElementWebUI>()
                   ->handler()
-                  ->help_bubble_handler()
+                  ->GetHelpBubbleHandler()
                   ->IsHelpBubbleShowingForTesting(el->identifier());
             },
             has_help_bubble)

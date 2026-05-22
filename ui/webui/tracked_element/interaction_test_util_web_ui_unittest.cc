@@ -28,7 +28,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
-#include "ui/views/test/widget_test.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
@@ -106,27 +105,22 @@ class MockTrackedElementManager
 
 }  // namespace
 
-class InteractionTestUtilSimulatorWebUITest : public views::test::WidgetTest {
+class InteractionTestUtilSimulatorWebUITest
+    : public content::RenderViewHostTestHarness {
  public:
-  InteractionTestUtilSimulatorWebUITest()
-      : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>())) {}
+  InteractionTestUtilSimulatorWebUITest() = default;
   ~InteractionTestUtilSimulatorWebUITest() override = default;
 
   void SetUp() override {
     content::SetBrowserClientForTesting(&test_browser_client_);
-    rvh_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
-    views::test::WidgetTest::SetUp();
-
-    browser_context_ = std::make_unique<content::TestBrowserContext>();
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        browser_context_.get(), nullptr);
+    content::RenderViewHostTestHarness::SetUp();
 
     mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler> remote;
     handler_ = std::make_unique<TrackedElementHandler>(
-        web_contents_.get(), remote.InitWithNewPipeAndPassReceiver(),
-        ui::ElementContext::CreateFakeContextForTesting(web_contents_.get()),
+        web_contents(),
+        ui::ElementContext::CreateFakeContextForTesting(web_contents()),
         std::vector<ui::ElementIdentifier>{kTestElementIdentifier});
+    handler_->BindInterface(remote.InitWithNewPipeAndPassReceiver());
     tracked_element_handler_remote_.Bind(std::move(remote));
 
     mojo::Remote<tracked_element::mojom::TrackedElementManager> manager_remote;
@@ -147,10 +141,7 @@ class InteractionTestUtilSimulatorWebUITest : public views::test::WidgetTest {
     manager_.reset();
     tracked_element_handler_remote_.reset();
     handler_.reset();
-    web_contents_.reset();
-    browser_context_.reset();
-    rvh_enabler_.reset();
-    views::test::WidgetTest::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
  protected:
@@ -162,9 +153,6 @@ class InteractionTestUtilSimulatorWebUITest : public views::test::WidgetTest {
   }
 
   content::ContentBrowserClient test_browser_client_;
-  std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
-  std::unique_ptr<content::BrowserContext> browser_context_;
-  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<TrackedElementHandler> handler_;
   mojo::Remote<tracked_element::mojom::TrackedElementHandler>
       tracked_element_handler_remote_;
