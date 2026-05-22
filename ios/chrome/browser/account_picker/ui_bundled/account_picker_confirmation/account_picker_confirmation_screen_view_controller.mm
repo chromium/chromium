@@ -154,7 +154,9 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
 
 - (void)stopSpinner {
   // Remove spinner.
-  DCHECK(_activityIndicatorView);
+  if (!_activityIndicatorView) {
+    return;
+  }
   [_activityIndicatorView removeFromSuperview];
   _activityIndicatorView = nil;
   if (!_identityButtonControlShouldBeHidden) {

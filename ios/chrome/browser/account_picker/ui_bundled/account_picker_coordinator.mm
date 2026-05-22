@@ -289,6 +289,8 @@
                       askEveryTime:_accountPickerConfirmationScreenCoordinator
                                        .askEveryTime];
     }
+  } else {
+    [self stopValidationSpinner];
   }
 }
 
