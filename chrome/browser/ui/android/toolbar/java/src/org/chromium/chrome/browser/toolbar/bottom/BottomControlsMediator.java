@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import android.content.Context;
+
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.CallbackController;
@@ -26,6 +28,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -255,6 +258,16 @@ class BottomControlsMediator
         updateAndroidViewVisibility();
     }
 
+    private boolean shouldShowShadow() {
+        if (mWindowAndroid.getContext() != null) {
+            Context context = mWindowAndroid.getContext().get();
+            if (context != null && BottomBarConfigUtils.isBottomBarEnabled(context)) {
+                return false;
+            }
+        }
+        return mBottomControlsStacker.isTopmostVisibleLayer(mLayerType);
+    }
+
     /**
      * The composited view is the composited version of the Android View. It is used to be able to
      * scroll the bottom controls off-screen synchronously. Since the bottom controls live below the
@@ -266,9 +279,7 @@ class BottomControlsMediator
         final boolean isCompositedViewVisible = isCompositedViewVisible();
         mModel.set(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, isCompositedViewVisible);
         mBottomControlsStacker.requestLayerUpdate(false);
-        mModel.set(
-                BottomControlsProperties.SHOW_SHADOW,
-                mBottomControlsStacker.isTopmostVisibleLayer(mLayerType));
+        mModel.set(BottomControlsProperties.SHOW_SHADOW, shouldShowShadow());
     }
 
     private int getAndroidViewHeight() {
@@ -345,16 +356,14 @@ class BottomControlsMediator
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         setYOffset(layerYOffset);
-        mModel.set(
-                BottomControlsProperties.SHOW_SHADOW,
-                mBottomControlsStacker.isTopmostVisibleLayer(mLayerType));
+        mModel.set(BottomControlsProperties.SHOW_SHADOW, shouldShowShadow());
     }
 
     @Override
     public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         mModel.set(
                 BottomControlsProperties.OFFSET_TAG, offsetTagsInfo.getBottomControlsOffsetTag());
-        return mModel.get(BottomControlsProperties.SHOW_SHADOW) ? mBottomControlsShadowHeight : 0;
+        return shouldShowShadow() ? mBottomControlsShadowHeight : 0;
     }
 
     @Override

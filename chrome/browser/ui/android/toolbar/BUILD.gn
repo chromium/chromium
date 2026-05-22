@@ -269,6 +269,7 @@ android_library("core_java") {
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/bars_common:java",
+    "//chrome/browser/ui/android/bottombar:config_java",
     "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/extensions:java",

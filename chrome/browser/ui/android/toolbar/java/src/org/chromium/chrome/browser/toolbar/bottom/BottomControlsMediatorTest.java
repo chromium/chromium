@@ -41,6 +41,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -337,5 +339,24 @@ public class BottomControlsMediatorTest {
 
         mMediator.clearOffsetTag();
         assertNull(mModel.get(BottomControlsProperties.OFFSET_TAG));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void testShowShadow_DisabledWhenBottomBarEnabled() {
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        when(mWindowAndroid.getContext()).thenReturn(new java.lang.ref.WeakReference<>(activity));
+
+        when(mBottomControlsStacker.isTopmostVisibleLayer(LayerType.TABSTRIP_TOOLBAR))
+                .thenReturn(true);
+
+        // With bottom bar enabled, SHOW_SHADOW must be false, regardless of layers
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertFalse(mModel.get(BottomControlsProperties.SHOW_SHADOW));
+
+        // updateOffsetTag must also return 0 shadow height
+        BrowserControlsOffsetTagsInfo offsetTagsInfo =
+                new BrowserControlsOffsetTagsInfo(null, null, null);
+        assertEquals(0, mMediator.updateOffsetTag(offsetTagsInfo));
     }
 }
