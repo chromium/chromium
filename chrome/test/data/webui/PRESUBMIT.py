@@ -38,3 +38,35 @@ def CheckTestFilename(input_api, output_api):
     ]
 
   return results
+
+def CheckPreferDisablingTestCasesOverSuites(input_api, output_api):
+  """Checks that test suites aren't marked as DISABLED_."""
+  results = []
+
+  # Allow bypassing with a tag in the CL description.
+  if input_api.change.tags.get("SKIP_DISABLING_SUITES_CHECK"):
+    return results
+
+  def IsCppTestFile(affected_file):
+    path = affected_file.LocalPath()
+    return path.endswith("test.cc")
+
+  disabled_test_re = input_api.re.compile(r"\bDISABLED_")
+
+  for f in input_api.AffectedFiles(
+      include_deletes=False, file_filter=IsCppTestFile):
+    old_contents = f.OldContents()
+    for line_num, line in enumerate(f.NewContents(), start=1):
+      if disabled_test_re.search(line) and line not in old_contents:
+        results.append(
+            output_api.PresubmitWarning(
+                f'New "DISABLED_" test found in {f.LocalPath()}:{line_num}. '
+                "Prefer disabling individual test cases in the Mocha test file "
+                "using test.skip() or <if expr> instead of disabling the entire "
+                "C++ test suite. See https://chromium.googlesource.com/chromium/src/+/main/docs/webui/testing_webui.md#disabling-tests "
+                "for more information. This can be bypassed by adding "
+                '"SKIP_DISABLING_SUITES_CHECK: <reason>" to the CL description.'
+            )
+        )
+
+  return results

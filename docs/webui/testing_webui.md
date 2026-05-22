@@ -362,6 +362,109 @@ figure out what is happening. Use the `launchDebugger` helper function to do
 that. Detailed instructions on how to use it exist in the source code
 documentation [here](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/data/webui/test_util.ts;l=107-144;drc=b1866df4398a971088ba287d4c7efe704f6bc4b1).
 
+### Disabling tests
+
+Tests can be disabled at the GTest (C++) level or the Mocha (TypeScript)
+level. Disabling at the Mocha level is preferred as it allows for more
+granular control (skipping individual test cases rather than entire suites)
+and provides better visibility into which specific tests are failing. If the
+entire suite is flaky or failing, then disabling the GTest might be
+appropriate.
+
+If your team receives a flaky test bug and you notice that the whole C++ GTest
+suite is disabled, before deflaking you should first land a CL to disable the
+specific test cases that are causing problems. After that lands, you can
+investigate the flakes or failures. This will reduce the chance that other
+tests in the suite start failing while they are disabled.
+
+#### Determining which test cases are failing
+Test cases can fail or entire suites can time out if they take too long to run.
+You can expand the "Summary" that appears below the "Failure Reason" and
+search for the cases marked "failed" or the last test case marked "started" if
+there is a timeout. Here is an example where the "RenamesBookmark" case failed.
+
+```
+[ RUN      ] SidePanelBookmarksAppTest.General2
+[25749:440407:0512/171449.559368:INFO:components/enterprise/browser/controller/chrome_browser_cloud_management_controller.cc:239] No machine level policy manager exists.
+Trying to load the allocator multiple times. This is *not* supported.
+[25749:440407:0512/171449.854681:INFO:CONSOLE:35] "start", source: chrome://webui-test/mocha_adapter_simple.js (35)
+...
+[25749:440407:0512/171450.076260:INFO:CONSOLE:44] "    started: General Part2 SetsExpandedSearchResultDescription", source: chrome://webui-test/mocha_adapter_simple.js (44)
+[25749:440407:0512/171450.101585:INFO:CONSOLE:47] "     passed: General Part2 SetsExpandedSearchResultDescription", source: chrome://webui-test/mocha_adapter_simple.js (47)
+[25749:440407:0512/171450.102566:INFO:CONSOLE:44] "    started: General Part2 RenamesBookmark", source: chrome://webui-test/mocha_adapter_simple.js (44)
+[25749:440407:0512/171450.114796:INFO:CONSOLE:58] "     failed: General Part2 RenamesBookmark
+AssertionError: expected false to be true
+    at assertTrue (chrome://webui-test/chai_assert.js:14:12)
+    at Context.<anonymous> (chrome://webui-test/side_panel/bookmarks/power_bookmarks_app_test.js:587:13)", source: chrome://webui-test/mocha_adapter_simple.js (58)
+[25749:440407:0512/171450.115013:INFO:CONSOLE:44] "    started: General Part2 BlursRenameInput", source: chrome://webui-test/mocha_adapter_simple.js (44)
+[25749:440407:0512/171450.132939:INFO:CONSOLE:47] "     passed: General Part2 BlursRenameInput", source: chrome://webui-test/mocha_adapter_simple.js (47)
+...
+[25749:440407:0512/171450.385904:INFO:CONSOLE:62] "end: 18/19 ok", source: chrome://webui-test/mocha_adapter_simple.js (62)
+[25749:440407:0512/171450.385944:INFO:CONSOLE:64] "TEST all complete, status=FAIL, duration=531ms", source: chrome://webui-test/mocha_adapter_simple.js (64)
+```
+
+Individual test cases also appear as an additional test result. See the
+[below section](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/testing_webui.md#reporting-webui-test-results-to-luci)
+on how test cases show up in LUCI.
+
+If there is a timeout, it is helpful to look at a few of the failures to see if
+the same test case is always timing out or different tests (especially ones
+near the end) are flaking. If different cases are flaking each run, the entire
+suite will likely need to be disabled while an owner of the tests splits it
+into two test suites. If the same case is always timing out, then that can be
+disabled.
+
+#### Disabling in Mocha (Preferred)
+
+To disable a single test case for all platforms, use `test.skip()` instead of
+`test()`:
+
+```ts
+// TODO(crbug.com/511960512): Flaky test.
+test.skip('MyTestcase', function() {...});
+```
+
+To disable an entire suite, use `suite.skip()` instead of `suite()`:
+
+```ts
+// TODO(crbug.com/511960512): Flaky test.
+suite.skip('MySuite', function() {...});
+```
+
+To disable a test for a specific platform, use `<if expr>`:
+
+```ts
+// TODO(crbug.com/511960512): Flaky test.
+// <if expr="not is_macosx">
+test('LogsBookmarkCountMetric', async () => {
+  ...
+}
+// </if>
+```
+
+#### Disabling in GTest (Discouraged)
+
+Disabling a C++ GTest suite using the `DISABLED_` prefix is discouraged. There
+are often dozens of individual test cases under a single C++ GTest suite.
+Disabling the whole suite when a single test is failing results in decreased
+test coverage and a higher change that regressions could be introduced.
+
+Here is how to disable a test in GTest if that is required:
+
+```c++
+// TODO(crbug.com/511960512): Flaky test.
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, DISABLED_General2) {
+  SidePanelBookmarksTest::RunTest(
+      "side_panel/bookmarks/power_bookmarks_app_test.js",
+      "runMochaSuite('General Part2');");
+}
+```
+
+A presubmit check enforced in `chrome/test/data/webui/` will trigger if
+`DISABLED_` is added to C++ test files. This can be bypassed by adding
+`SKIP_DISABLING_SUITES_CHECK: <reason>` to the CL description if disabling at the
+C++ level is truly necessary (e.g., the entire test suite is flaky or failing).
+
 ### Reporting WebUI test results to LUCI
 
 WebUI test results are automatically reported to LUCI. No special handling is
