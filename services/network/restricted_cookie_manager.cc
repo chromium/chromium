@@ -956,6 +956,9 @@ void RestrictedCookieManager::SetCookieFromString(
     const std::string& cookie) {
   TRACE_EVENT("net", "RestrictedCookieManager::SetCookieFromString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Note: `ValidateAccessToCookiesAt` is checked in `SetCanonicalCookie` below
+  // in the happy path, and in the `if (!parsed_cookie)` block in this function
+  // for the unhappy path.
   base::ElapsedTimer timer;
 
   // The cookie is about to be set. Proactively increment the version so it's
@@ -970,6 +973,9 @@ void RestrictedCookieManager::SetCookieFromString(
           url, cookie, base::Time::Now(), /*server_time=*/std::nullopt,
           cookie_partition_key_, net::CookieSourceType::kScript, &status);
   if (!parsed_cookie) {
+    if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
+      return;
+    }
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
           result_with_access_result;
