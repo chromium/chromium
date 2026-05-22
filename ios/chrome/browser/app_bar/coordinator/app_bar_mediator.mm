@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
@@ -50,6 +51,8 @@
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -59,6 +62,7 @@
 #import "url/gurl.h"
 
 @interface AppBarMediator () <GeminiBrowserAgentObserving,
+                              IdentityManagerObserverBridgeDelegate,
                               IncognitoStateObserver,
                               SearchEngineObserving,
                               TabGridStateObserver,
@@ -89,6 +93,9 @@
       _incognitoFullscreenObserver;
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   raw_ptr<GeminiService> _geminiService;
   raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
   std::unique_ptr<GeminiBrowserAgentObserverBridge> _geminiObserver;
@@ -121,6 +128,7 @@
                  templateURLService:(TemplateURLService*)templateURLService
               authenticationService:
                   (AuthenticationService*)authenticationService
+                    identityManager:(signin::IdentityManager*)identityManager
                       geminiService:(GeminiService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader
@@ -145,6 +153,12 @@
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
 
     _authenticationService = authenticationService;
+    _identityManager = identityManager;
+    if (_identityManager) {
+      _identityManagerObserver =
+          std::make_unique<signin::IdentityManagerObserverBridge>(
+              _identityManager, self);
+    }
 
     _geminiService = geminiService;
     _geminiBrowserAgent = geminiBrowserAgent;
@@ -300,6 +314,8 @@
   _URLLoader = nullptr;
   _incognitoState = nil;
   _tabGridState = nil;
+  _identityManagerObserver.reset();
+  _identityManager = nullptr;
 }
 
 #pragma mark - WebStateListObserving
@@ -483,7 +499,8 @@
   [self createNewTabGroupWithTabs:{}];
 }
 
-- (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state {
+- (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state
+                              fromView:(UIView*)sender {
   switch (state) {
     case AppBarAssistantButtonState::kAsk: {
       __weak __typeof(self) weakSelf = self;
@@ -505,8 +522,12 @@
       [self.sceneHandler showAssistant];
       break;
     }
-    case AppBarAssistantButtonState::kFallback:
-      // TODO(crbug.com/484000888): Handle fallback action.
+    case AppBarAssistantButtonState::kAccount:
+      if (_authenticationService->HasPrimaryIdentity()) {
+        [self.delegate showAccountMenu:sender];
+      } else {
+        [self.delegate showSignin:sender];
+      }
       break;
   }
 }
@@ -646,8 +667,7 @@
 
 // Updates the consumer with the latest state of the assistant button.
 - (void)updateAssistantButton {
-  AppBarAssistantButtonState state = AppBarAssistantButtonState::kFallback;
-
+  AppBarAssistantButtonState state = AppBarAssistantButtonState::kAccount;
   if (IsPageActionMenuEnabled()) {
     state = AppBarAssistantButtonState::kAsk;
   } else if (IsAimCobrowseEnabled() && IsAssistantContainerEnabled()) {
@@ -662,9 +682,25 @@
     highlighted = enabled && _geminiBrowserAgent &&
                   _geminiBrowserAgent->is_floaty_invoked();
   }
+
+  UIImage* avatar = nil;
+  if (state == AppBarAssistantButtonState::kAccount) {
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
+    ApplicationContext* context = GetApplicationContext();
+    signin::AvatarProvider* avatarProvider =
+        context ? context->GetIdentityAvatarProvider() : nullptr;
+    if (avatarProvider && identity) {
+      avatar = avatarProvider->GetIdentityAvatar(
+          identity, IdentityAvatarSize::TableViewIcon);
+    }
+  }
+
+  BOOL signedIn = _authenticationService->HasPrimaryIdentity();
   [self.consumer setAssistantButtonState:state
                              highlighted:highlighted
-                                 enabled:enabled];
+                                 enabled:enabled
+                                  avatar:avatar
+                                signedIn:signedIn];
 }
 
 // Updates for `incognito` being visible.
@@ -817,4 +853,16 @@
       break;
   }
 }
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  [self updateAssistantButton];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  [self updateAssistantButton];
+}
+
 @end

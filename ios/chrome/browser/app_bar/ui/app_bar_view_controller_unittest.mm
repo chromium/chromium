@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface AppBarViewController (Testing) <UIContextMenuInteractionDelegate>
 - (void)setButtonsTitleAlpha:(CGFloat)buttonsTitleAlpha
@@ -220,7 +222,9 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   // Initially not highlighted.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                 highlighted:NO
-                                    enabled:YES];
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
 
@@ -233,7 +237,9 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   // Highlighted.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                 highlighted:YES
-                                    enabled:YES];
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
 
@@ -249,7 +255,9 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   // Not highlighted again.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                 highlighted:NO
-                                    enabled:YES];
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
 
@@ -333,6 +341,53 @@ TEST_F(AppBarViewControllerTest, TestTitleVisibilityDuringContextMenu) {
     [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
   }
   EXPECT_EQ(titleAlpha, 0.0);
+}
+
+// Tests that the assistant button in kAccount state sets the correct image and
+// no title.
+TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccount) {
+  UIButton* button = assistantButton();
+  ASSERT_NE(button, nil);
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  UIButtonConfiguration* config = button.configuration;
+  EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN));
+  EXPECT_NE(config.image, nil);
+}
+
+// Tests that the assistant button in kAccount state sets the avatar image if
+// available.
+TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccountWithAvatar) {
+  UIButton* button = assistantButton();
+  ASSERT_NE(button, nil);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(10, 10)];
+  UIImage* mock_avatar =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context){
+          // Draw nothing, just want an empty image with size 10x10.
+      }];
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:mock_avatar
+                                   signedIn:YES];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  UIButtonConfiguration* config = button.configuration;
+  EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
+  ASSERT_NE(config.image, nil);
+  EXPECT_EQ(config.image.size.width, 10);
+  EXPECT_EQ(config.image.size.height, 10);
 }
 
 }  // namespace

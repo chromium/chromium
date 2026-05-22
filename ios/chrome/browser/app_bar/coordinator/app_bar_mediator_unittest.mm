@@ -117,7 +117,7 @@ class AppBarMediatorTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     // Initialize VariationsService with a default country to prevent crashes
     // in IsGeminiLocationEligible().
-    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
+    SetLocationEligible(true);
 
     regular_profile_ = std::move(builder).Build();
     incognito_profile_ = TestProfileIOS::Builder().Build();
@@ -218,6 +218,8 @@ class AppBarMediatorTest : public PlatformTest {
                      templateURLService:search_engines_test_environment_
                                             .template_url_service()
                   authenticationService:auth_service_
+                        identityManager:IdentityManagerFactory::GetForProfile(
+                                            regular_profile_.get())
                           geminiService:gemini_service_ptr_.get()
                      geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(
                                             regular_browser_.get())
@@ -743,7 +745,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
   // Expect highlighted to be YES when floaty is invoked.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:YES
-                                       enabled:YES]);
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:NO]);
 
   InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
 
@@ -752,7 +756,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
   // Expect highlighted to be NO when floaty is dismissed.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:YES]);
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:NO]);
 
   agent->DismissFloaty();
 
@@ -766,7 +772,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAskLocationEligible) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO]);
+                                       enabled:NO
+                                        avatar:nil
+                                      signedIn:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -779,7 +787,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO]);
+                                       enabled:NO
+                                        avatar:nil
+                                      signedIn:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -801,7 +811,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiAvailable) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:YES]);
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -823,7 +835,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
                                                kIosAppBar
                   showSnackbarOnCompletion:YES
                                 completion:[OCMArg any]]);
-  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk];
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk
+                                   fromView:nil];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
 
@@ -837,7 +850,9 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAIM
                                    highlighted:NO
-                                       enabled:YES]);
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -851,6 +866,77 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAIM) {
   [mediator_ updateAssistantButton];
 
   OCMExpect([mock_scene_handler_ showAssistant]);
-  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM];
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM
+                                   fromView:nil];
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that the assistant button is in the kAccount state by default.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAccountDefault) {
+  SetLocationEligible(false);
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:nil
+                     signedIn:NO]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that tapping the assistant button in the kAccount state calls the
+// delegate to show sign-in when signed out.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccountSignedOut) {
+  id mock_delegate = OCMProtocolMock(@protocol(AppBarMediatorDelegate));
+  mediator_.delegate = mock_delegate;
+
+  UIView* dummy_view = [[UIView alloc] init];
+  OCMExpect([mock_delegate showSignin:dummy_view]);
+
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAccount
+                                   fromView:dummy_view];
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+}
+
+// Tests that tapping the assistant button in the kAccount state calls the
+// delegate to show account menu when signed in.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccountSignedIn) {
+  SignInAndSetCapability(true);
+
+  id mock_delegate = OCMProtocolMock(@protocol(AppBarMediatorDelegate));
+  mediator_.delegate = mock_delegate;
+
+  UIView* dummy_view = [[UIView alloc] init];
+  OCMExpect([mock_delegate showAccountMenu:dummy_view]);
+
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAccount
+                                   fromView:dummy_view];
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+}
+
+// Tests that the assistant button is in the kAccount state with an avatar when
+// signed in.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAccountWithAvatar) {
+  SetLocationEligible(false);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(regular_profile_.get());
+  GeminiBrowserAgent* agent =
+      GeminiBrowserAgent::FromBrowser(regular_browser_.get());
+  if (identity_manager && agent) {
+    identity_manager->RemoveObserver(agent);
+  }
+
+  SignInAndSetCapability(true);
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:[OCMArg checkWithBlock:^BOOL(id value) {
+                         return value != nil;
+                       }]
+                     signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

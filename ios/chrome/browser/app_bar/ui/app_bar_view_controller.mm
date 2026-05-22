@@ -157,6 +157,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   BOOL _buttonsEnabled;
   // Whether the assistant button is enabled.
   BOOL _assistantButtonEnabled;
+  // Whether the user is signed in.
+  BOOL _signedIn;
   // Container view for the Tab Grid button's custom preview.
   UIView* _tabGridContentView;
   // The alpha for the titles of the buttons.
@@ -406,10 +408,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 - (void)setAssistantButtonState:(AppBarAssistantButtonState)state
                     highlighted:(BOOL)highlighted
-                        enabled:(BOOL)enabled {
+                        enabled:(BOOL)enabled
+                         avatar:(UIImage*)avatar
+                       signedIn:(BOOL)signedIn {
   _assistantButtonState = state;
   _assistantButtonHighlighted = highlighted;
   _assistantButtonEnabled = enabled;
+  _assistantButtonAvatar = avatar;
+  _signedIn = signedIn;
 
   [self updateAssistantButton];
 }
@@ -516,9 +522,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                     truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK)];
     case AppBarAssistantButtonState::kAIM:
       return l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
-    case AppBarAssistantButtonState::kFallback:
-      // TODO:(crbug.com/484000888): Update with fallback text.
-      return @"";
+    case AppBarAssistantButtonState::kAccount:
+      return _signedIn ? l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT)
+                       : l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN);
   }
 }
 
@@ -595,8 +601,12 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     case AppBarAssistantButtonState::kAIM:
       image = CustomAppBarSymbol(kMagnifyingglassSparkSymbol);
       break;
-    case AppBarAssistantButtonState::kFallback:
-      // TODO:(crbug.com/484000888): Update with fallback image.
+    case AppBarAssistantButtonState::kAccount:
+      image =
+          _assistantButtonAvatar
+              ? [_assistantButtonAvatar
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+              : DefaultAppBarSymbol(kPersonCropCircleSymbol);
       break;
   }
 
@@ -737,12 +747,20 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
   CGFloat activeAlpha = isAssistantButtonHighlighted ? 1.0 : highlightAlpha;
 
-  config.imageColorTransformer = ^UIColor*(UIColor* color) {
-    UIColor* baseColor = isAssistantButtonHighlighted
-                             ? [UIColor whiteColor]
-                             : ButtonsForegroundColor();
-    return [baseColor colorWithAlphaComponent:activeAlpha];
-  };
+  BOOL isAssistantButtonWithAvatar =
+      (button == _assistantButton &&
+       _assistantButtonState == AppBarAssistantButtonState::kAccount &&
+       _assistantButtonAvatar != nil);
+  if (isAssistantButtonWithAvatar) {
+    config.imageColorTransformer = nil;
+  } else {
+    config.imageColorTransformer = ^UIColor*(UIColor* color) {
+      UIColor* baseColor = isAssistantButtonHighlighted
+                               ? [UIColor whiteColor]
+                               : ButtonsForegroundColor();
+      return [baseColor colorWithAlphaComponent:activeAlpha];
+    };
+  }
 
   [self updateButtonTitleConfiguration:config
                         highlightAlpha:activeAlpha
@@ -1028,7 +1046,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {
   base::RecordAction(base::UserMetricsAction("MobileToolbarAssistant"));
-  [self.mutator assistantButtonTappedWithState:_assistantButtonState];
+  [self.mutator assistantButtonTappedWithState:_assistantButtonState
+                                      fromView:_assistantButton];
 }
 
 // Called when the New Tab button is tapped.

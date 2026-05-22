@@ -3,5 +3,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/grit/ios_strings.h",
+  "+ui/base/l10n/l10n_util_mac.h",
   # keep-sorted end
 ]

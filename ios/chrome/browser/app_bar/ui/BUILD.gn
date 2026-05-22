@@ -55,6 +55,8 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//base",
+    "//ios/chrome/app/strings",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 
 @protocol AppBarConsumer;
+namespace signin {
+class IdentityManager;
+}
 class AuthenticationService;
 class GeminiBrowserAgent;
 class GeminiService;
@@ -36,10 +39,16 @@ class WebStateList;
 // Indicates to the delegate to show the account menu anchored to `anchorView`.
 - (void)showAccountMenu:(UIView*)anchorView;
 
+// Indicates to the delegate to show the sign-in flow anchored to `anchorView`.
+- (void)showSignin:(UIView*)anchorView;
+
 @end
 
 // Mediator for the App Bar coordinator.
 @interface AppBarMediator : NSObject <AppBarMutator>
+
+// The delegate for this mediator.
+@property(nonatomic, weak) id<AppBarMediatorDelegate> delegate;
 
 // The base view controller for presenting modals.
 @property(nonatomic, weak) UIViewController* baseViewController;
@@ -92,6 +101,7 @@ class WebStateList;
                  templateURLService:(TemplateURLService*)templateURLService
               authenticationService:
                   (AuthenticationService*)authenticationService
+                    identityManager:(signin::IdentityManager*)identityManager
                       geminiService:(GeminiService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader

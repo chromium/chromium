@@ -303,6 +303,7 @@ void OnListFamilyMembersResponse(
     _appBarCoordinator = [[AppBarCoordinator alloc]
         initWithRegularBrowser:_regularBrowser.get()
               incognitoBrowser:_incognitoBrowser.get()];
+    _appBarCoordinator.baseViewController = _viewController;
     [_appBarCoordinator start];
     [_viewController setAppBar:_appBarCoordinator.viewController];
     _viewController.appBarHandler = HandlerForProtocol(

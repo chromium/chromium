@@ -19,7 +19,8 @@
 - (void)createNewTabGroupFromView:(UIView*)sender;
 
 // Handles the assistant button tap with the given `state`.
-- (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state;
+- (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state
+                              fromView:(UIView*)sender;
 
 @end
 
