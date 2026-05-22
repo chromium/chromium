@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -535,6 +536,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 
 + (NSUInteger)indexOfActiveNormalTab {
   return chrome_test_util::GetIndexOfActiveNormalTab();
+}
+
++ (BOOL)isCurrentTabNTP {
+  return IsVisibleURLNewTabPage(chrome_test_util::GetCurrentWebState());
 }
 
 #pragma mark - Window utilities (EG2)

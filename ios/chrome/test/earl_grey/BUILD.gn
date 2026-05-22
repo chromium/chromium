@@ -187,6 +187,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics/model:eg_app_support+eg2",
     "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp/ui_bundled:component_factory",
     "//ios/chrome/browser/ntp/ui_bundled:coordinator",

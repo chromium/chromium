@@ -456,6 +456,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the index of active tab in normal (non-incognito) mode.
 - (NSUInteger)indexOfActiveNormalTab;
 
+// Returns YES if the current active WebState is showing a new tab page.
+- (BOOL)isCurrentTabNTP [[nodiscard]];
+
 // Simulates a backgrounding and raises an EarlGrey exception if simulation not
 // succeeded.
 - (void)simulateTabsBackgrounding;

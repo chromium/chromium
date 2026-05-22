@@ -217,6 +217,9 @@ enum class TipsNotificationType;
 // Returns the index of active tab in normal mode.
 + (NSUInteger)indexOfActiveNormalTab;
 
+// Returns YES if the current active WebState is showing a new tab page.
++ (BOOL)isCurrentTabNTP;
+
 #pragma mark - Window utilities (EG2)
 
 // Returns screen position of the given `windowNumber`
