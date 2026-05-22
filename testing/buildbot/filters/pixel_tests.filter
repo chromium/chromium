@@ -64,6 +64,7 @@ FeaturePromoDialogTest.InvokeUi_*
 FileSystemAccessUsageBubbleViewTest.*
 FirstRunDefaultBrowserPixelTest.*
 FirstRunDialogTest.*
+FirstRunFeatureShowcasePixelTest.*
 FirstRunIntroPixelTest.*
 FirstRunSignInCelebrationPixelTest.*
 GlobalErrorBubbleTest.*
