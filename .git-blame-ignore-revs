@@ -921,3 +921,6 @@ cbf3d6770d4f83fea7f21d0c2f55ea49e85dd69e
 982cfb705f41d5af228552a479ecdbfc465ee6c7
 f526edd21b6d46ac591d58f766a5a4b54e9c8029
 025a94257380eadfad2d705129e5863fca0bf89e
+
+# Run `gn format` on all BUILD.gn files.
+ad14f9bebfdee678ba25da9430c2d5c3b00d6a11
