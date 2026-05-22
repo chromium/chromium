@@ -268,6 +268,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       entity_id(match.entity_id),
       website_uri(match.website_uri),
       document_type(match.document_type),
+      starter_pack_id(match.starter_pack_id),
       enterprise_search_aggregator_type(
           match.enterprise_search_aggregator_type),
       tail_suggest_common_prefix(match.tail_suggest_common_prefix),
@@ -386,6 +387,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   history_embeddings_answer_header_loading =
       std::move(match.history_embeddings_answer_header_loading);
   feedback_type = std::move(match.feedback_type);
+  starter_pack_id = std::move(match.starter_pack_id);
   matching_tab_group_uuid = std::move(match.matching_tab_group_uuid);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
@@ -470,6 +472,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   history_embeddings_answer_header_loading =
       match.history_embeddings_answer_header_loading;
   feedback_type = match.feedback_type;
+  starter_pack_id = match.starter_pack_id;
   matching_tab_group_uuid = match.matching_tab_group_uuid;
 
 #if BUILDFLAG(IS_ANDROID)

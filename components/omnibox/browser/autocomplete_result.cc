@@ -1126,27 +1126,29 @@ void AutocompleteResult::ConvertOpenTabMatches(
       // Do not attach the action for iOS since they have separate UI treatment
       // for tab matches (no button row as on desktop and realbox).
       if (!is_ios && match.has_tab_match.value()) {
-        // The default action for suggestions from the open tab provider in
-        // keyword mode is to switch to the open tab so no button is necessary.
-        if (!match.from_keyword ||
-            match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
-          if constexpr (is_android) {
-            // On Android, attach the action as ActionInSuggest that will be
-            // interpreted as either action button or chip per the form factor.
-            TemplateAction template_action;
-            template_action.set_action_type(TemplateAction::CHROME_TAB_SWITCH);
-            template_action.set_action_uri(match.destination_url.spec());
-            auto action_in_suggest =
-                base::MakeRefCounted<OmniboxActionInSuggest>(
-                    std::move(template_action), std::nullopt);
+        if constexpr (is_android) {
+          // On Android, we always attach the action to allow switching to tab.
+          // This ensures the "Switch to Tab" button/chip is always available,
+          // and provides the necessary tab ID to the Java layer.
+          // Attach the action as ActionInSuggest that will be
+          // interpreted as either action button or chip per the form factor.
+          TemplateAction template_action;
+          template_action.set_action_type(TemplateAction::CHROME_TAB_SWITCH);
+          template_action.set_action_uri(match.destination_url.spec());
+          auto action_in_suggest = base::MakeRefCounted<OmniboxActionInSuggest>(
+              std::move(template_action), std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
-            action_in_suggest->tab_id = tab_info->second.android_tab_id;
+          action_in_suggest->tab_id = tab_info->second.android_tab_id;
 #endif
-            match.actions.push_back(action_in_suggest);
-          } else {
-            match.actions.push_back(
-                base::MakeRefCounted<TabSwitchAction>(match.destination_url));
-          }
+          match.actions.push_back(action_in_suggest);
+        } else if (!match.from_keyword ||
+                   match.provider->type() !=
+                       AutocompleteProvider::TYPE_OPEN_TAB) {
+          // The default action for suggestions from the open tab provider in
+          // keyword mode is to switch to the open tab so no button is
+          // necessary.
+          match.actions.push_back(
+              base::MakeRefCounted<TabSwitchAction>(match.destination_url));
         }
       }
     }
