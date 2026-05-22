@@ -5,8 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_CAPTURE_CLIENT_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_CAPTURE_CLIENT_H_
 
-#include <set>
-
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client.h"
@@ -53,15 +52,12 @@ class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
   void RemoveObserver(aura::client::CaptureClientObserver* observer) override;
 
  private:
-  using Comparator = bool (*)(const base::WeakPtr<DesktopCaptureClient>&,
-                              const base::WeakPtr<DesktopCaptureClient>&);
-  using ClientSet = std::set<base::WeakPtr<DesktopCaptureClient>, Comparator>;
+  void OnCaptureChanged(DesktopCaptureClient* client);
 
   raw_ptr<aura::Window> root_;
   raw_ptr<aura::Window> capture_window_ = nullptr;
 
-  // The global set of DesktopCaptureClients.
-  static ClientSet* clients_;
+  base::CallbackListSubscription subscription_;
 
   base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
 
