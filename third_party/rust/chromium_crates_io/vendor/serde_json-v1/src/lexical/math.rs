@@ -152,14 +152,14 @@ trait Hi64<T>: AsRef<[T]> {
 impl Hi64<u32> for [u32] {
     #[inline]
     fn hi64_1(&self) -> (u64, bool) {
-        debug_assert!(self.len() == 1);
+        debug_assert_eq!(self.len(), 1);
         let r0 = self[0] as u64;
         u64_to_hi64_1(r0)
     }
 
     #[inline]
     fn hi64_2(&self) -> (u64, bool) {
-        debug_assert!(self.len() == 2);
+        debug_assert_eq!(self.len(), 2);
         let r0 = (self[1] as u64) << 32;
         let r1 = self[0] as u64;
         u64_to_hi64_1(r0 | r1)
@@ -179,7 +179,7 @@ impl Hi64<u32> for [u32] {
 impl Hi64<u64> for [u64] {
     #[inline]
     fn hi64_1(&self) -> (u64, bool) {
-        debug_assert!(self.len() == 1);
+        debug_assert_eq!(self.len(), 1);
         let r0 = self[0];
         u64_to_hi64_1(r0)
     }

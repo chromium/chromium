@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [beta, 1.82.0, 1.68.0]
+        rust: [beta, 1.85.0, 1.71.0]
         os: [ubuntu]
         include:
           - rust: stable
@@ -68,9 +68,9 @@ jobs:
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,arbitrary_precision
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,raw_value
       - run: cargo check --manifest-path tests/crate/Cargo.toml --features serde_json/preserve_order
-        if: matrix.rust != '1.68.0'
+        if: matrix.rust != '1.71.0'
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,serde_json/preserve_order
-        if: matrix.rust != '1.68.0'
+        if: matrix.rust != '1.71.0'
       - name: Build without std
         run: cargo check --manifest-path tests/crate/Cargo.toml --target
           ${{matrix.target}} --no-default-features --features alloc

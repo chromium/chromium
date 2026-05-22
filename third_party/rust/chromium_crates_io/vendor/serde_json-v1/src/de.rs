@@ -2052,7 +2052,17 @@ impl<'de, 'a, R: Read<'de> + 'a> de::EnumAccess<'de> for VariantAccess<'a, R> {
     where
         V: de::DeserializeSeed<'de>,
     {
-        let val = tri!(seed.deserialize(&mut *self.de));
+        match tri!(self.de.parse_whitespace()) {
+            Some(b'"') => {}
+            Some(b'}') => return Err(self.de.peek_error(ErrorCode::ExpectedSomeValue)),
+            Some(_) => return Err(self.de.peek_error(ErrorCode::KeyMustBeAString)),
+            None => return Err(self.de.peek_error(ErrorCode::EofWhileParsingObject)),
+        }
+
+        let val = match seed.deserialize(MapKey { de: &mut *self.de }) {
+            Ok(value) => value,
+            Err(err) => return Err(self.de.fix_position(err)),
+        };
         tri!(self.de.parse_object_colon());
         Ok((val, self))
     }
