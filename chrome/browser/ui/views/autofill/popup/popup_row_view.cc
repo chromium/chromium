@@ -306,20 +306,16 @@ void PopupRowView::OnMouseReleased(const ui::MouseEvent& event) {
   }
 
   if (event.IsOnlyLeftMouseButton() &&
-      content_view_->HitTestPoint(event.location()) && controller_ &&
-      IsViewVisibleEnough()) {
-    controller_->AcceptSuggestion(
-        line_number_, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      content_view_->HitTestPoint(event.location())) {
+    Accept(AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   }
 }
 
 void PopupRowView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTap:
-      if (content_view_->HitTestPoint(event->location()) && controller_ &&
-          IsViewVisibleEnough()) {
-        controller_->AcceptSuggestion(
-            line_number_, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      if (content_view_->HitTestPoint(event->location())) {
+        Accept(AutofillMetrics::SuggestionAcceptedMethod::kTap);
       }
       break;
     default:
@@ -440,11 +436,8 @@ bool PopupRowView::HandleKeyPressEvent(
     case ui::VKEY_RETURN: {
       const bool kHasKeyModifierPressed =
           event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
-      if (*GetSelectedCell() == CellType::kContent && controller_ &&
-          !kHasKeyModifierPressed && IsViewVisibleEnough()) {
-        controller_->AcceptSuggestion(
-            line_number_, AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
-        return true;
+      if (*GetSelectedCell() == CellType::kContent && !kHasKeyModifierPressed) {
+        return Accept(AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
       }
       return false;
     }
@@ -456,6 +449,15 @@ bool PopupRowView::HandleKeyPressEvent(
 bool PopupRowView::IsSelectable() const {
   return controller_ && line_number_ < controller_->GetLineCount() &&
          !controller_->GetSuggestionAt(line_number_).HasDeactivatedStyle();
+}
+
+bool PopupRowView::Accept(
+    AutofillMetrics::SuggestionAcceptedMethod method) const {
+  if (controller_ && IsViewVisibleEnough()) {
+    controller_->AcceptSuggestion(line_number_, method);
+    return true;
+  }
+  return false;
 }
 
 void PopupRowView::OnCellSelected(std::optional<CellType> type,

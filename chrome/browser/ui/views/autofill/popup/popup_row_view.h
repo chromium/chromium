@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
@@ -117,6 +118,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Returns if the popup row is available for selection.
   bool IsSelectable() const;
+
+  // Accepts the suggestion that corresponds to this view's line number.
+  bool Accept(AutofillMetrics::SuggestionAcceptedMethod method) const;
 
   // Returns the view representing the content area of the row.
   PopupRowContentView& GetContentView() { return *content_view_; }
