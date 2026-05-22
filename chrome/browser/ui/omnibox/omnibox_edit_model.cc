@@ -885,12 +885,14 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   }
 
   // Queries from the AI mode button will never have tab context.
-  base::RecordAction(base::UserMetricsAction(
-      "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox"));
-  base::UmaHistogramEnumeration(
-      "ContextualSearch.UserAction.SubmitQueryV2.Omnibox",
-      contextual_search::ContextualSearchContextState::kWithoutContext,
-      contextual_search::ContextualSearchContextState::kMaxValue);
+  if (!query_text.empty()) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox"));
+    base::UmaHistogramEnumeration(
+        "ContextualSearch.UserAction.SubmitQueryV2.Omnibox",
+        contextual_search::ContextualSearchContextState::kWithoutContext,
+        contextual_search::ContextualSearchContextState::kMaxValue);
+  }
 
   if (!query_contextualizer_initialized_) {
     query_contextualizer_initialized_ = true;

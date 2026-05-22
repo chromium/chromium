@@ -1904,6 +1904,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client(), OpenUrl(_)).Times(1);
 
+  model()->SetUserText(u"query");
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
 
   EXPECT_EQ(OmniboxPopupState::kNone,

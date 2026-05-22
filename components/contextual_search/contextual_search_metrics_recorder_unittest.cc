@@ -178,7 +178,7 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithoutContext) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
                                  /*has_non_tab_context=*/false,
-                                 /*query_text_length=*/0,
+                                 /*query_text_length=*/10,
                                  /*file_count=*/0,
                                  /*has_drive_context=*/false);
 
@@ -283,7 +283,7 @@ TEST_F(ContextualSearchMetricsRecorderTest, SessionCompleted) {
   task_environment().FastForwardBy(base::Seconds(10));
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
                                  /*has_non_tab_context=*/false,
-                                 /*query_text_length=*/0,
+                                 /*query_text_length=*/10,
                                  /*file_count=*/0,
                                  /*has_drive_context=*/false);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
@@ -319,7 +319,7 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultiQuerySubmissionSession) {
   task_environment().FastForwardBy(base::Seconds(60));
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
                                  /*has_non_tab_context=*/false,
-                                 /*query_text_length=*/0,
+                                 /*query_text_length=*/10,
                                  /*file_count=*/0,
                                  /*has_drive_context=*/false);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);

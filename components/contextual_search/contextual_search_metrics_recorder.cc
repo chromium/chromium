@@ -356,6 +356,9 @@ void ContextualSearchMetricsRecorder::NotifyQuerySubmitted(
     int query_text_length,
     int file_count,
     bool has_drive_context) {
+  if (query_text_length == 0 && file_count == 0) {
+    return;
+  }
   NotifySessionStateChanged(SessionState::kQuerySubmitted);
   RecordQueryMetrics(has_tab_context, has_non_tab_context, query_text_length,
                      file_count, has_drive_context);

@@ -606,7 +606,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     }
     const queryText = isSearch ? this.$.input.inputElement.value.trim() : '';
 
-    if (!this.composeboxEnabled || queryText) {
+    if (queryText) {
       const histogramName =
           'ContextualSearch.UserAction.SubmitQueryV2.NewTabPage';
       // LINT.IfChange(ContextualSearchContextState)
@@ -618,7 +618,9 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       const userActionName =
           'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
       chrome.histograms.recordUserAction(userActionName);
+    }
 
+    if (!this.composeboxEnabled || queryText) {
       this.pageHandler().notifySessionStarted();
       this.pageHandler().submitQuery(
           queryText, e.detail.button, false, /* altKey */
