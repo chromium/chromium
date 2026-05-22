@@ -246,6 +246,10 @@ class CORE_EXPORT LineInfo {
     block_in_inline_layout_result_ = std::move(layout_result);
   }
 
+  // True if this line has unsuccessful block-in-inline children that need to
+  // propagate the results.
+  bool HasUnsuccessfulBlockInInline() const;
+
   // |MayHaveTextCombineOrRubyItem()| is a flag for special text handling
   // during "text-align:justify".
   bool MayHaveTextCombineOrRubyItem() const {

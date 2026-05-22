@@ -265,6 +265,13 @@ bool LineInfo::IsHyphenated() const {
   return false;
 }
 
+bool LineInfo::HasUnsuccessfulBlockInInline() const {
+  if (const LayoutResult* result = BlockInInlineLayoutResult()) {
+    return result->Status() != LayoutResult::kSuccess;
+  }
+  return false;
+}
+
 void LineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
 

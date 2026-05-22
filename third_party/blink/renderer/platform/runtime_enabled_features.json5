@@ -5066,6 +5066,10 @@
       status: "stable"
     },
     {
+      name: "ScoreLineBreakerAbort",
+      status: "stable",
+    },
+    {
       // https://github.com/w3c/window-management/issues/149
       name: "ScreenDetailedHdrHeadroom",
       status: "experimental",

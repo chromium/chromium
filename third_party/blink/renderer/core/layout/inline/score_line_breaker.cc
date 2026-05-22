@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_info_list.h"
 #include "third_party/blink/renderer/core/layout/inline/line_widths.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -100,6 +101,11 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
     LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
     break_token_ = line_info.GetBreakToken();
+    if (RuntimeEnabledFeatures::ScoreLineBreakerAbortEnabled() &&
+        line_info.HasUnsuccessfulBlockInInline()) {
+      context.SuspendUntilEndParagraph();
+      return;
+    }
     if (line_breaker.ShouldDisableScoreLineBreak()) [[unlikely]] {
       context.SuspendUntilEndParagraph();
       return;
