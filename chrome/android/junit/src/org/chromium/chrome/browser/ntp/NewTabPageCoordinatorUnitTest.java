@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,12 +47,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationTestHelper;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -83,19 +78,17 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
-import java.time.Duration;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabPageCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
@@ -300,66 +293,6 @@ public class NewTabPageCoordinatorUnitTest {
         assertNull(model.get(NewTabPageLayoutProperties.DELEGATE));
         assertNull(model.get(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER));
         assertNull(model.get(NewTabPageLayoutProperties.SEARCH_BOX_VIEW));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testCanTriggerCustomizationBottomSheet() {
-        mFakeTimeTestRule.advanceMillis(Duration.ofDays(10).toMillis());
-        EdgeToEdgeStateProvider edgeToEdgeStateProvider =
-                NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
-
-        assertTrue(
-                NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
-                        mWindowAndroid, /* isTablet= */ false));
-
-        // Case 1: Feature flag is disabled.
-        assertFalse(ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue());
-        assertFalse(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(true);
-        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
-        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
-        configManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
-
-        // Case 2: Background type is not DEFAULT.
-        assertFalse(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        // Case 3: Background type is DEFAULT, but sCount is 1.
-        configManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
-        NewTabPageCoordinator.setCountForTesting(1);
-        assertFalse(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        // Case 4: Background type is DEFAULT, sCount is 2, and not shown before.
-        NewTabPageCoordinator.setCountForTesting(2);
-        assertTrue(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        // Case 5: Background type is DEFAULT, sCount is 2, but already shown.
-        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(100);
-        assertFalse(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        // Case 6: Force show enabled.
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
-        assertTrue(mCoordinator.canTriggerCustomizationBottomSheet());
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
-
-        NtpCustomizationUtils
-                .resetThemeTipBottomSheetShownTimestampFromSharedPreferenceForTesting();
-
-        // Case 7: Within cool down period (last applied 6 days ago).
-        long sixDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(6).toMillis();
-        NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(sixDaysAgo);
-        assertFalse(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        // Case 8: Outside cool down period (last applied 8 days ago).
-        long eightDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(8).toMillis();
-        NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(eightDaysAgo);
-        assertTrue(mCoordinator.canTriggerCustomizationBottomSheet());
-
-        // Reset force show for other tests.
-        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(false);
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        edgeToEdgeStateProvider.detach();
     }
 
     @Test

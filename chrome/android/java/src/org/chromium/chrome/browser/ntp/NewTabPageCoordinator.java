@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchBoxHintTextObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
@@ -103,7 +103,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.url.GURL;
 
-import java.time.Duration;
 import java.util.function.Supplier;
 
 /**
@@ -967,7 +966,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (!mHasShownView) {
             mHasShownView = true;
             onInitializationProgressChanged();
-            if (canTriggerCustomizationBottomSheet()) {
+            if (NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
+                    mWindowAndroid, mIsTablet, sCount)) {
                 triggerCustomizationBottomSheet();
             }
             TraceEvent.instant("NewTabPageSearchAvailable");
@@ -1180,37 +1180,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             // Updates the mHomeSurfaceTracker since the Tab of the NTP is closed.
             mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
         }
-    }
-
-    /** Returns whether to trigger the NTP theme tip bottom sheet showing. */
-    boolean canTriggerCustomizationBottomSheet() {
-        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled(mWindowAndroid, mIsTablet)) {
-            return false;
-        }
-
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue()
-                || (NtpCustomizationConfigManager.getInstance().getBackgroundType()
-                        != NtpBackgroundType.DEFAULT)) {
-            return false;
-        }
-
-        if (ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue()) {
-            return true;
-        }
-
-        // Triggers the bottom sheet if this bottom sheet hasn't been shown before and this isn't
-        // the first time that a NTP is open. The bottom sheet is shown once per lifetime.
-        if (sCount <= 1 || NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference()) {
-            return false;
-        }
-
-        long lastApplyTime = NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference();
-        if (lastApplyTime > 0
-                && (TimeUtils.uptimeMillis() - lastApplyTime) < Duration.ofDays(7).toMillis()) {
-            return false;
-        }
-
-        return true;
     }
 
     /** Shows the NTP theme tip bottom sheet. */

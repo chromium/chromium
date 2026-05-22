@@ -213,6 +213,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -709,7 +710,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private TipsPromoCoordinator mTipsPromoCoordinator;
     private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
     private FindsManager mFindsManager;
-    private @Nullable Boolean mCanEnableEdgeToEdgeForCustomizedThemeOnPhone;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -3604,15 +3604,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             @Override
             public boolean supportCustomizedNtpTheme() {
-                if (getTabletMode().isTablet) return true;
-
-                // On phones, we need to check if edge-to-edge is enabled.
-                if (mCanEnableEdgeToEdgeForCustomizedThemeOnPhone == null) {
-                    mCanEnableEdgeToEdgeForCustomizedThemeOnPhone =
-                            NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
-                                    getWindowAndroid(), /* isTablet= */ false);
-                }
-                return mCanEnableEdgeToEdgeForCustomizedThemeOnPhone;
+                return NtpCustomizationPromoManager.canTriggerCustomizationPromo(
+                        getWindowAndroid(), getTabletMode().isTablet);
             }
         };
     }

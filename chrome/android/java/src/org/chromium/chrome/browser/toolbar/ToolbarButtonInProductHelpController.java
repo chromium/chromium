@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -184,17 +183,12 @@ public class ToolbarButtonInProductHelpController {
 
     /** Attempts to show an IPH for New Tab Page theme customization. */
     private void maybeShowNewTabPageThemeCustomizationIph(Tab tab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)) {
-            return;
+        if (NtpCustomizationPromoManager.canShowCustomizationIph(
+                tab,
+                mWindowAndroid,
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity))) {
+            showNewTabPageThemeCustomizationIph();
         }
-        if (tab.isIncognitoBranded()
-                || !UrlUtilities.isNtpUrl(tab.getUrl())
-                || NtpCustomizationUtils.getNtpBackgroundType()
-                        != NtpCustomizationUtils.NtpBackgroundType.DEFAULT) {
-            return;
-        }
-
-        showNewTabPageThemeCustomizationIph();
     }
 
     private void showNewTabPageThemeCustomizationIph() {
