@@ -3407,6 +3407,21 @@
             ]
         }
     ],
+    "AutofillThrottleOptionalSuggestionRefresh": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260130",
+                    "enable_features": [
+                        "AutofillThrottleOptionalSuggestionRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillTrackSelectFieldEdits": [
         {
             "platforms": [
