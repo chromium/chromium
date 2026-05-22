@@ -2,16 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
-#include "content/public/test/browser_test.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+using WebrtcLoggingPrivateExtensionApiTest = extensions::ExtensionApiTest;
+
+IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateExtensionApiTest,
+                       TestNoGetLogsDirectoryPermissionsFromHangoutsExtension) {
+  ASSERT_TRUE(RunExtensionTest(
+      "webrtc_logging_private/no_get_logs_directory_permissions", {},
+      {.load_as_component = true}))
+      << message_;
+}
+
+// The following tests are executed as Chrome Apps, which are only supported on
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 
 class WebrtcLoggingPrivateApiBrowserTest
     : public extensions::PlatformAppBrowserTest {
@@ -32,17 +53,6 @@ class WebrtcLoggingPrivateApiBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
-                       TestNoGetLogsDirectoryPermissionsFromHangoutsExtension) {
-  ASSERT_TRUE(RunExtensionTest(
-      "api_test/webrtc_logging_private/no_get_logs_directory_permissions", {},
-      {.load_as_component = true}))
-      << message_;
-}
-
-// The following tests are executed as Chrome Apps, which are only supported on
-// ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestGetLogsDirectoryCreatesWebRtcLogsDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -96,4 +106,5 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest, TestStartStopStart) {
                        {.launch_as_platform_app = true}))
       << message_;
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
