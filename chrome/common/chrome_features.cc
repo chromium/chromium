@@ -1780,6 +1780,11 @@ BASE_FEATURE(kWebUIHomeButton, base::FEATURE_DISABLED_BY_DEFAULT);
 // from chrome://webui-toolbar.top-chrome. crbug.com/503821930
 BASE_FEATURE(kWebUIBatterySaverButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the performance intervention button will be replaced with WebUI
+// loaded from chrome://webui-toolbar.top-chrome. crbug.com/503822129
+BASE_FEATURE(kWebUIPerformanceInterventionButton,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the app menu button will be replaced with WebUI loaded from
 // chrome://webui-toolbar.top-chrome.
 BASE_FEATURE(kWebUIAppMenuButton, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -336,6 +336,8 @@ bool IsWebUISplitTabsButtonEnabled();
 BASE_DECLARE_FEATURE(kWebUIAvatarButton);
 bool IsWebUIAvatarButtonEnabled();
 
+bool IsWebUIPerformanceInterventionButtonEnabled();
+
 bool IsWebUIAppMenuButtonEnabled();
 
 bool IsWebUILocationBarEnabled();

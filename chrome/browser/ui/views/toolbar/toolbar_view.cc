@@ -544,8 +544,10 @@ void ToolbarView::Init() {
         AddChildView(std::make_unique<BatterySaverButton>(browser_view_));
   }
 
-  performance_intervention_button_ = AddChildView(
-      std::make_unique<PerformanceInterventionButton>(browser_view_));
+  if (!features::IsWebUIPerformanceInterventionButtonEnabled()) {
+    performance_intervention_button_ = AddChildView(
+        std::make_unique<PerformanceInterventionButton>(browser_view_));
+  }
 
   if (media_button) {
     media_button_ = AddChildView(std::move(media_button));
