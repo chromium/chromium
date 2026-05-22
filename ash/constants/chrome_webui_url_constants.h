@@ -47,6 +47,7 @@ inline constexpr char kChromeUITermsURL[] = "chrome://terms/";
 // entries in the lexicographical order.
 // These need to be consistent with ones that Chrome provides.
 // See //chrome/common/webui_url_constants.cc for the check.
+inline constexpr char kAccountSubPage[] = "account";
 inline constexpr char kAppearanceSubPage[] = "appearance";
 inline constexpr char kAutofillSubPage[] = "autofill";
 inline constexpr char kClearBrowserDataSubPage[] = "clearBrowserData";

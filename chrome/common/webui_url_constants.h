@@ -558,6 +558,7 @@ inline constexpr char kChromeUITabStripInternalsURL[] =
 // AutocompleteProvider.
 
 inline constexpr char kAccessibilitySubPage[] = "accessibility";
+inline constexpr char kAccountSubPage[] = "account";
 inline constexpr char kAddressesSubPage[] = "addresses";
 inline constexpr char kAdPrivacySubPage[] = "adPrivacy";
 inline constexpr char kAllSitesSettingsSubpage[] = "content/all";

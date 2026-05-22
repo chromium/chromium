@@ -52,6 +52,8 @@ static_assert(std::string_view(kChromeUITermsHost) ==
 static_assert(std::string_view(kChromeUITermsURL) ==
               ash::chrome_urls::kChromeUITermsURL);
 
+static_assert(std::string_view(kAccountSubPage) ==
+              ash::chrome_urls::kAccountSubPage);
 static_assert(std::string_view(kAppearanceSubPage) ==
               ash::chrome_urls::kAppearanceSubPage);
 static_assert(std::string_view(kAutofillSubPage) ==

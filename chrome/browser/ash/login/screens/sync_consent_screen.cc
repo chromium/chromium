@@ -15,6 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,10 +36,12 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -157,7 +160,13 @@ void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
               profile->GetPrefs()->ClearPref(
                   ::prefs::kShowSyncSettingsOnSessionStart);
               chrome::ShowSettingsSubPageForProfile(
-                  profile, ash::chrome_urls::kSyncSetupSubPage);
+                  profile,
+                  (base::FeatureList::IsEnabled(
+                       syncer::kReplaceSyncPromosWithSignInPromos) &&
+                   base::FeatureList::IsEnabled(
+                       ::switches::kChromeOsUseConsentLevelSigninForNewUsers))
+                      ? ash::chrome_urls::kAccountSubPage
+                      : ash::chrome_urls::kSyncSetupSubPage);
             },
             base::Unretained(profile)),
         kSyncConsentSettingsShowDelay);
