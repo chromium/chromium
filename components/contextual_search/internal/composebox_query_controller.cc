@@ -979,9 +979,22 @@ void ComposeboxQueryController::StartFileUploadFlow(
         current_file_info.request_id = *std::move(parsed_request_id);
       }
     }
-    UpdateContextUploadStatus(
-        file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
-        std::nullopt);
+    // Modality chips are pre-loaded by the server and do not need client-side
+    // uploads. However, they still require `cluster_info_` (specifically the
+    // search session ID) to be present to construct a valid multimodal query.
+    // If `cluster_info_` is not yet available, the status is set to
+    // `kProcessing` to ensure the query submission is stashed until
+    // `cluster_info_` is loaded, avoiding omitting the modality chip on the
+    // first query of a session.
+    if (cluster_info_.has_value()) {
+      UpdateContextUploadStatus(
+          file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
+          std::nullopt);
+    } else {
+      UpdateContextUploadStatus(
+          file_token, contextual_search::ContextUploadStatus::kProcessing,
+          std::nullopt);
+    }
     return;
   }
 
@@ -1623,21 +1636,54 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
   SetQueryControllerState(QueryControllerState::kClusterInfoReceived);
 
-  // Iterate through any existing files and send the upload requests if ready.
-  for (const auto& [file_token, file_info] : active_files_) {
-    // If the file is processing, set its state to suggest signals ready.
-    if (file_info->upload_status ==
-        contextual_search::ContextUploadStatus::kProcessing) {
-      UpdateContextUploadStatus(file_token,
-                                contextual_search::ContextUploadStatus::
-                                    kProcessingSuggestSignalsReady,
-                                std::nullopt);
-    }
+  // Collect the tokens and requests that need updating first to avoid iterator
+  // invalidation if observers synchronously mutate active_files_ during status
+  // updates.
+  std::vector<base::UnguessableToken> modality_chips_to_succeed;
+  std::vector<base::UnguessableToken> files_to_suggest_signals_ready;
+  std::vector<std::pair<base::UnguessableToken, size_t>>
+      upload_requests_to_send;
 
-    // Trigger pending upload requests.
-    for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
-      MaybeSendUploadNetworkRequest(file_token, i);
+  for (const auto& [file_token, file_info] : active_files_) {
+    if (file_info->input_data &&
+        file_info->input_data->modality_chip_props.has_value()) {
+      if (file_info->upload_status ==
+          contextual_search::ContextUploadStatus::kProcessing) {
+        modality_chips_to_succeed.push_back(file_token);
+      }
+    } else {
+      if (file_info->upload_status ==
+          contextual_search::ContextUploadStatus::kProcessing) {
+        files_to_suggest_signals_ready.push_back(file_token);
+      }
+      for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
+        upload_requests_to_send.emplace_back(file_token, i);
+      }
     }
+  }
+
+  for (const auto& file_token : modality_chips_to_succeed) {
+    // Modality chips that were held in `kProcessing` status waiting for
+    // `cluster_info_` are now marked as `kUploadSuccessful` because the
+    // required session tokens are available. This transitions them to a
+    // terminal status and triggers the query handler to resume any pending
+    // stashed queries.
+    UpdateContextUploadStatus(
+        file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
+        std::nullopt);
+  }
+
+  for (const auto& file_token : files_to_suggest_signals_ready) {
+    // If the file is processing, set its state to suggest signals ready.
+    UpdateContextUploadStatus(
+        file_token,
+        contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady,
+        std::nullopt);
+  }
+
+  for (const auto& [file_token, request_index] : upload_requests_to_send) {
+    // Trigger pending upload requests.
+    MaybeSendUploadNetworkRequest(file_token, request_index);
   }
 
   if (pending_search_url_request_) {
