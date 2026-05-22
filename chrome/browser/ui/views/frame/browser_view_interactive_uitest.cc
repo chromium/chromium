@@ -31,7 +31,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -559,26 +558,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFullscreenTest, MAYBE_Fullscreen) {
   }
 }
 
-class BrowserViewLoadingAnimationTest
-    : public BrowserViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  BrowserViewLoadingAnimationTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kCompositorLoadingThrobber);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kCompositorLoadingThrobber);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(CompositorDrivenThrobber,
-                         BrowserViewLoadingAnimationTest,
-                         testing::Bool());
-
 // TODO(b/342017720): Re-enable on Mac
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
@@ -587,7 +566,7 @@ INSTANTIATE_TEST_SUITE_P(CompositorDrivenThrobber,
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
   LoadingAnimationChangeOnMinimizeAndRestore
 #endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
                        MAYBE_LoadingAnimationChangeOnMinimizeAndRestore) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver navigation_watcher(
@@ -604,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
     browser_view()->SetLoadingAnimationStateChangeClosureForTesting(
         run_loop.QuitClosure());
 
-    // Loading animation is not rendered when browser view is hidden.
+    // Loading animation is not rendered when browser view is minimized.
     browser_view()->Minimize();
     run_loop.Run();
   }
@@ -617,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
     browser_view()->SetLoadingAnimationStateChangeClosureForTesting(
         run_loop.QuitClosure());
 
-    // Loading animation is rendered when browser view is shown.
+    // Loading animation is rendered when browser view is restored.
     browser_view()->Restore();
     run_loop.Run();
   }
