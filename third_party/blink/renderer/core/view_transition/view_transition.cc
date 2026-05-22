@@ -525,8 +525,7 @@ void ViewTransition::ProcessCurrentState() {
         // If this is a document view transition, we want to request the next
         // BeginMainFrame to trigger as soon as possible.
         if (IsForNavigationSnapshot() && document_->GetPage() &&
-            document_->GetFrame() &&
-            RuntimeEnabledFeatures::SendEarlyLastBeginMainFrameEnabled()) {
+            document_->GetFrame()) {
           document_->GetPage()
               ->GetChromeClient()
               .RequestFrameWithoutVSyncFromRoot(*document_->GetFrame());
