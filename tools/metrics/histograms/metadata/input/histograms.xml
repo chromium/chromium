@@ -2302,7 +2302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Touch.DevicePosture.{Instance}" enum="PostureMode"
-    expires_after="2026-06-20">
+    expires_after="2027-06-20">
   <owner>robliao@chromium.org</owner>
   <owner>wangsongjin@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
