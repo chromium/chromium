@@ -98,6 +98,37 @@ TEST_F(GLContextVirtualTest, CheckStickyGraphicsResetStatus) {
             base_context->CheckStickyGraphicsResetStatus());
 }
 
+// Tests that transform feedback is paused on the current context when
+// creating a new virtual context. The state restorer is not set up
+// when the new virtual context is made virtually current for the
+// first time, so transform feedback must be paused manually.
+TEST_F(GLContextVirtualTest, PauseTransformFeedbackOnSwitchToUninitialized) {
+  EXPECT_CALL(*gl_, GetError())
+      .Times(AnyNumber())
+      .WillRepeatedly(Return(GL_NO_ERROR));
+
+  auto base_context = base::MakeRefCounted<gl::GLContextStub>();
+  gl::GLShareGroup* share_group = base_context->share_group();
+  share_group->SetSharedContext(base_context.get());
+
+  auto contextA = base::MakeRefCounted<GLContextVirtual>(
+      share_group, base_context.get(), decoder_->AsWeakPtr());
+  EXPECT_TRUE(contextA->Initialize(GetGLSurface(), gl::GLContextAttribs()));
+  EXPECT_TRUE(contextA->MakeCurrent(GetGLSurface()));
+
+  auto decoderC = std::make_unique<MockGLES2Decoder>(
+      &client_, &command_buffer_service_, &outputter_);
+  auto contextC = base::MakeRefCounted<GLContextVirtual>(
+      share_group, base_context.get(), decoderC->AsWeakPtr());
+
+  EXPECT_CALL(*decoder_, initialized()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*decoderC, initialized()).WillRepeatedly(Return(false));
+
+  EXPECT_CALL(*decoder_, PauseTransformFeedback()).Times(1);
+
+  EXPECT_TRUE(contextC->Initialize(GetGLSurface(), gl::GLContextAttribs()));
+}
+
 }  // anonymous namespace
 }  // namespace gles2
 }  // namespace gpu

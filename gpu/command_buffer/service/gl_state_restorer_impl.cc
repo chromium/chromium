@@ -69,6 +69,11 @@ void GLStateRestorerImpl::RestoreVertexAttribArray(unsigned int index) {
   delegate_->RestoreVertexAttribArray(index);
 }
 
+void GLStateRestorerImpl::PauseTransformFeedback() {
+  DCHECK(delegate_.get());
+  delegate_->PauseTransformFeedback();
+}
+
 void GLStateRestorerImpl::PauseQueries() {
   DCHECK(delegate_.get());
   if (auto* query_manager = delegate_->GetQueryManager())

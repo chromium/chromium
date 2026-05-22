@@ -442,12 +442,24 @@ bool GLContext::MakeVirtuallyCurrent(
 #endif
 
     // Set all state that is different from the real state
+    GLStateRestorer* current_state =
+        current_virtual_context_ && !current_virtual_context_->context_lost_
+            ? current_virtual_context_->GetGLStateRestorer()
+            : nullptr;
+
+    // Newly created virtual contexts call MakeVirtuallyCurrent before
+    // their command decoder and state restorer are fully initialized.
+    // Separately ensure that transform feedback is paused on the
+    // current context before switching to the newly created one.
+    // TransformFeedback::DoBindTransformFeedback will ensure it's
+    // resumed when coming back to the current context.
+    if (current_state &&
+        !virtual_context->GetGLStateRestorer()->IsInitialized()) {
+      current_state->PauseTransformFeedback();
+    }
+
     if (virtual_context->GetGLStateRestorer()->IsInitialized()) {
       GLStateRestorer* virtual_state = virtual_context->GetGLStateRestorer();
-      GLStateRestorer* current_state =
-          current_virtual_context_ && !current_virtual_context_->context_lost_
-              ? current_virtual_context_->GetGLStateRestorer()
-              : nullptr;
       if (current_state)
         current_state->PauseQueries();
       virtual_state->ResumeQueries();

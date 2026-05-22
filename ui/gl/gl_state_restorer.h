@@ -36,6 +36,7 @@ class GL_EXPORT GLStateRestorer {
   virtual void RestoreProgramBindings() = 0;
   virtual void RestoreBufferBinding(unsigned int target) = 0;
   virtual void RestoreVertexAttribArray(unsigned int index) = 0;
+  virtual void PauseTransformFeedback() = 0;
   virtual void PauseQueries() = 0;
   virtual void ResumeQueries() = 0;
 };
