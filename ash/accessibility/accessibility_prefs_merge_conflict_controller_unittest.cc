@@ -92,6 +92,48 @@ TEST_F(AccessibilityPrefsMergeConflictControllerTest,
 }
 
 TEST_F(AccessibilityPrefsMergeConflictControllerTest,
+       BuildConflictsNoConflictOnlyWithDefaultsLocked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kOsSyncAccessibilitySettingsBatch1);
+
+  auto* prefs = AccessibilityController::Get()->GetActiveUserPrefs();
+
+  base::DictValue locked;
+  base::DictValue pending;
+
+  locked.Set(kBatch1_LockablePref,
+             prefs->GetDefaultPrefValue(kBatch1_LockablePref)->GetBool());
+
+  auto conflicts =
+      AccessibilityPrefsMergeConflictController::BuildConflictsForTest(
+          std::move(locked), std::move(pending));
+
+  EXPECT_TRUE(conflicts.empty());
+}
+
+TEST_F(AccessibilityPrefsMergeConflictControllerTest,
+       BuildConflictsNoConflictOnlyWithDefaultsPending) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kOsSyncAccessibilitySettingsBatch1);
+
+  auto* prefs = AccessibilityController::Get()->GetActiveUserPrefs();
+
+  base::DictValue locked;
+  base::DictValue pending;
+
+  pending.Set(kBatch1_LockablePref,
+              prefs->GetDefaultPrefValue(kBatch1_LockablePref)->GetBool());
+
+  auto conflicts =
+      AccessibilityPrefsMergeConflictController::BuildConflictsForTest(
+          std::move(locked), std::move(pending));
+
+  EXPECT_TRUE(conflicts.empty());
+}
+
+TEST_F(AccessibilityPrefsMergeConflictControllerTest,
        BuildConflictsIgnoresNonLockablePrefs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

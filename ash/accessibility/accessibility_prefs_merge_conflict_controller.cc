@@ -37,14 +37,21 @@ std::vector<PrefConflict> BuildConflicts(base::DictValue locked_prefs,
           continue;
         }
         // Normalize the conflict.
-        conflicts.emplace_back(
-            pref.pref_name,
-            locked_value ? locked_value->Clone()
-                         : prefs->GetDefaultPrefValue(pref.pref_name)->Clone(),
-            pending_value ? pending_value->Clone()
-                          : prefs->GetDefaultPrefValue(pref.pref_name)->Clone(),
-            (pref.resolution_policy ==
-             ConflictResolutionPolicy::kDialogNeeded));
+        const base::Value* locked =
+            locked_value ? locked_value
+                         : prefs->GetDefaultPrefValue(pref.pref_name);
+        const base::Value* pending =
+            pending_value ? pending_value
+                          : prefs->GetDefaultPrefValue(pref.pref_name);
+
+        if (*locked == *pending) {
+          continue;
+        }
+
+        conflicts.emplace_back(pref.pref_name, locked->Clone(),
+                               pending->Clone(),
+                               (pref.resolution_policy ==
+                                ConflictResolutionPolicy::kDialogNeeded));
         continue;
       }
       case ConflictResolutionPolicy::kNone:
