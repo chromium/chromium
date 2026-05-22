@@ -211,11 +211,10 @@ interface Page {
   // Sets the title of the active thread in the UI.
   SetThreadTitle(string title);
 
-  // Sets the task ID for the active task.
-  SetTaskDetails(mojo_base.mojom.Uuid uuid);
-
-  // Preserve the aim URL to the search param of contextual tasks URL.
-  SetAimUrl(url.mojom.Url url);
+  // Sets the task ID, URL and whether to replace or append to the current
+  // navigation entry.
+  SetTaskDetails(mojo_base.mojom.Uuid uuid, url.mojom.Url url,
+                 bool replace_navigation_entry);
 
   // A notification that WebUI has moved into or out of the side panel. The UI
   // code should query the `IsShownInTab` method to get the current state.

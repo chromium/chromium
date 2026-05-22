@@ -23,8 +23,12 @@ class MockContextualTasksPage : public mojom::Page {
   mojo::PendingRemote<mojom::Page> BindAndGetRemote();
 
   MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
-  MOCK_METHOD(void, SetTaskDetails, (const base::Uuid& uuid), (override));
-  MOCK_METHOD(void, SetAimUrl, (const GURL& url), (override));
+  MOCK_METHOD(void,
+              SetTaskDetails,
+              (const base::Uuid& uuid,
+               const GURL& url,
+               bool replace_navigation_entry),
+              (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
   MOCK_METHOD(void,
               PostMessageToWebview,

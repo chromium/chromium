@@ -93,7 +93,12 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
     title_ = title;
   }
 
-  void SetAimUrl(const GURL& url) override { url_ = url; }
+  MOCK_METHOD(void,
+              PushTaskDetailsToPage,
+              (std::optional<base::Uuid> id,
+               const GURL& url,
+               bool replace_navigation_entry),
+              (override));
   MOCK_METHOD(void, UpdateModelModeFromUrl, (const GURL& url), (override));
 
   bool IsShownInTab() override { return is_shown_in_tab_; }
@@ -121,7 +126,6 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
   std::optional<base::Uuid> task_id_;
   std::optional<std::string> thread_id_;
   std::optional<std::string> title_;
-  GURL url_;
   bool is_shown_in_tab_ = false;
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
@@ -1170,6 +1174,122 @@ TEST_F(ContextualTasksUiTest, CanExpandToFullTab_BecomesEligibleMidSession) {
   // The cached eligibility value should remain false, keeping the button
   // hidden.
   EXPECT_FALSE(controller.CanExpandToFullTab());
+}
+
+TEST_F(ContextualTasksUiTest,
+       DidFinishNavigation_PushTaskDetails_InitialNavigation) {
+  MockTaskInfoDelegate delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL zero_state_url("https://www.google.com/search?udm=50");
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+
+  // During the initial navigation, last_committed_url_ is empty.
+  // We expect PushTaskDetailsToPage to be called with replace_navigation_entry
+  // = true.
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task));
+  EXPECT_CALL(delegate,
+              PushTaskDetailsToPage(std::make_optional(task_id), zero_state_url,
+                                    /*replace_navigation_entry=*/true))
+      .Times(1);
+
+  auto handle = CreateMockNavigationHandle(zero_state_url);
+  handle->set_has_committed(true);
+  observer->DidFinishNavigation(handle.get());
+}
+
+TEST_F(ContextualTasksUiTest,
+       DidFinishNavigation_PushTaskDetails_SameTaskUrlChange) {
+  MockTaskInfoDelegate delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+
+  // 1. Initial navigation (first load of a non-zero-state page with thread ID).
+  GURL first_url("https://www.google.com/search?udm=50&mtid=1234&q=first");
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, "1234"))
+      .WillOnce(Return(task));
+  EXPECT_CALL(delegate,
+              PushTaskDetailsToPage(std::make_optional(task_id), first_url,
+                                    /*replace_navigation_entry=*/false))
+      .Times(1);
+
+  auto handle1 = CreateMockNavigationHandle(first_url);
+  handle1->set_has_committed(true);
+  observer->DidFinishNavigation(handle1.get());
+
+  // 2. Subsequent navigation to a new URL with same task ID (thread ID is still
+  // "1234" and query is "second").
+  GURL same_task_url("https://www.google.com/search?udm=50&mtid=1234&q=second");
+  // Old task ID and new task ID are both `task_id`.
+  // We expect PushTaskDetailsToPage to be called with replace_navigation_entry
+  // = true (since old_task_id == new_task_id).
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, "1234"))
+      .WillOnce(Return(task));
+  EXPECT_CALL(delegate,
+              PushTaskDetailsToPage(std::make_optional(task_id), same_task_url,
+                                    /*replace_navigation_entry=*/true))
+      .Times(1);
+
+  auto handle2 = CreateMockNavigationHandle(same_task_url);
+  handle2->set_has_committed(true);
+  observer->DidFinishNavigation(handle2.get());
+}
+
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_PushTaskDetails_TaskChange) {
+  MockTaskInfoDelegate delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+
+  // 1. Initial navigation (first load of a non-zero-state page with thread ID).
+  GURL first_url("https://www.google.com/search?udm=50&mtid=1234&q=first");
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, "1234"))
+      .WillOnce(Return(task));
+  EXPECT_CALL(delegate,
+              PushTaskDetailsToPage(std::make_optional(task_id), first_url,
+                                    /*replace_navigation_entry=*/false))
+      .Times(1);
+
+  auto handle1 = CreateMockNavigationHandle(first_url);
+  handle1->set_has_committed(true);
+  observer->DidFinishNavigation(handle1.get());
+
+  // 2. Subsequent navigation that switches to a different task.
+  GURL new_task_url("https://www.google.com/search?udm=50&mtid=5678&q=second");
+  base::Uuid task_id2 =
+      base::Uuid::ParseCaseInsensitive("20000000-0000-0000-0000-000000000000");
+  ContextualTask task2(task_id2);
+
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, "5678"))
+      .WillOnce(Return(task2));
+
+  // Old task ID is `task_id` (from previous load), new task ID is `task_id2`.
+  // Since old_task_id != new_task_id, we expect PushTaskDetailsToPage to be
+  // called with replace_navigation_entry = false.
+  EXPECT_CALL(delegate,
+              PushTaskDetailsToPage(std::make_optional(task_id2), new_task_url,
+                                    /*replace_navigation_entry=*/false))
+      .Times(1);
+
+  auto handle2 = CreateMockNavigationHandle(new_task_url);
+  handle2->set_has_committed(true);
+  observer->DidFinishNavigation(handle2.get());
 }
 
 }  // namespace contextual_tasks

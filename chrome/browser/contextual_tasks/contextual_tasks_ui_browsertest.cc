@@ -102,8 +102,10 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               OnLensOverlayStateChanged,
               (bool is_showing, bool maybe_show_overlay_hint_text),
               (override));
-  MOCK_METHOD(void, SetTaskDetails, (const base::Uuid&), (override));
-  MOCK_METHOD(void, SetAimUrl, (const GURL&), (override));
+  MOCK_METHOD(void,
+              SetTaskDetails,
+              (const base::Uuid&, const GURL&, bool),
+              (override));
   MOCK_METHOD(void, ShowErrorPage, (), (override));
   MOCK_METHOD(void, HideErrorPage, (), (override));
   MOCK_METHOD(void, ShowOauthErrorDialog, (), (override));
@@ -671,14 +673,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   content::WebContents* web_contents =
       TabListInterface::From(browser())->GetActiveTab()->GetContents();
 
-  auto* controller = static_cast<ContextualTasksUI*>(
-      web_contents->GetWebUI()->GetController());
+  auto* controller = static_cast<contextual_tasks::ContextualTasksUIInterface*>(
+      static_cast<ContextualTasksUI*>(
+          web_contents->GetWebUI()->GetController()));
   ASSERT_TRUE(controller);
 
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
 
   // Set tracked host.
-  controller->SetAimUrl(GURL("https://google.com"));
+  controller->PushTaskDetailsToPage(std::nullopt, GURL("https://google.com"),
+                                    /*replace_navigation_entry=*/false);
 
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(browser()->profile());
