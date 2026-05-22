@@ -151,6 +151,7 @@ void ChangePasswordFormFiller::ChangePasswordFormFilled(
                 base::BindOnce(&ChangePasswordFormFiller::OnFormFillingFailed,
                                weak_ptr_factory_.GetWeakPtr()))
             .SetFieldsToIgnore(observed_fields_)
+            .SetLogsUploader(logs_uploader_)
             .Build();
     return;
   }

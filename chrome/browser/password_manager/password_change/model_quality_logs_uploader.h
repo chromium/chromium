@@ -25,6 +25,16 @@ struct PasswordForm;
 // logs to the Server.
 class ModelQualityLogsUploader {
  public:
+  enum class FormDiscardReason {
+    kUnknown = 0,
+    kNoNewPasswordField = 1,
+    kNewPasswordFieldDisabled = 2,
+    kUsernameFieldEmptyAndFocusable = 3,
+    kFieldToIgnore = 4,
+    kNoDriver = 5,
+    kFormNotVisible = 6,
+  };
+
   using LoggingData =
       optimization_guide::proto::PasswordChangeSubmissionLoggingData;
   using QualityStatus = optimization_guide::proto::
@@ -94,6 +104,10 @@ class ModelQualityLogsUploader {
   // information, e. g. form signature, fields & buttons texts.
   void SetChangePasswordFormData(
       const password_manager::PasswordForm& password_form);
+
+  // Called when APC flow discards a parsed form.
+  void RecordDiscardedForm(const password_manager::PasswordForm* password_form,
+                           FormDiscardReason discard_reason);
 
   void SetStepDuration(FlowStep step, base::TimeDelta duration);
 

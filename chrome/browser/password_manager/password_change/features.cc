@@ -12,4 +12,7 @@ BASE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter,
 BASE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRecordDiscardedFormsToModelQualityLogs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace password_change::features

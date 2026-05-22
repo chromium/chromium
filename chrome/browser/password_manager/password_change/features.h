@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter);
 // the check for ShouldModelExecutionBeAllowedForUser.
 BASE_DECLARE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange);
 
+// Controls whether the ModelQualityLogsUploader should log password change
+// forms.
+BASE_DECLARE_FEATURE(kRecordDiscardedFormsToModelQualityLogs);
+
 }  // namespace password_change::features
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_FEATURES_H_

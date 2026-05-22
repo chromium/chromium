@@ -129,6 +129,7 @@ void ChangePasswordFormFinder::OnPageStableInitially() {
               base::BindOnce(&ChangePasswordFormFinder::OnFormNotFoundInitially,
                              weak_ptr_factory_.GetWeakPtr()))
           .IgnoreHiddenForms()
+          .SetLogsUploader(logs_uploader_)
           .Build();
 }
 
@@ -273,6 +274,7 @@ void ChangePasswordFormFinder::OnPageStableAfterClick() {
           base::BindOnce(
               &ChangePasswordFormFinder::OnChangePasswordFormFoundAfterClick,
               weak_ptr_factory_.GetWeakPtr()))
+          .SetLogsUploader(logs_uploader_)
           .Build();
 }
 

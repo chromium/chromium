@@ -13,8 +13,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/features.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
@@ -22,6 +25,8 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -892,4 +897,59 @@ TEST_F(ChangePasswordFormWaiterTest, DisabledFieldNotIgnored_FeatureDisabled) {
 
   static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
       ->OnPasswordFormParsed(form_managers.back().get());
+}
+
+TEST_F(ChangePasswordFormWaiterTest, DiscardedFormLogged) {
+  // Setup a mock optimization guide service in the profile so
+  // ModelQualityLogsUploader can construct.
+  auto* mock_opt_service = static_cast<MockOptimizationGuideKeyedService*>(
+      OptimizationGuideKeyedServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindRepeating([](content::BrowserContext* context)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<MockOptimizationGuideKeyedService>();
+              })));
+  auto logs_uploader_service =
+      std::make_unique<optimization_guide::TestModelQualityLogsUploaderService>(
+          TestingBrowserProcess::GetGlobal()->local_state());
+  mock_opt_service->SetModelQualityLogsUploaderServiceForTesting(
+      std::move(logs_uploader_service));
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Username:", /*name=*/"username",
+      /*value=*/"", autofill::FormControlType::kInputEmail));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password",
+      /*value=*/"", autofill::FormControlType::kInputPassword, "new-password"));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  autofill::FormData form;
+  form.set_renderer_id(autofill::test::MakeFormRendererId());
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  auto form_manager = CreateFormManager(form);
+
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL("https://www.foo.com"));
+
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .SetLogsUploader(&logs_uploader)
+                    .Build();
+
+  EXPECT_CALL(completion_callback, Run).Times(0);
+  static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
+      ->OnPasswordFormParsed(form_manager.get());
+
+  const auto& quality =
+      logs_uploader.GetFinalLog().password_change_submission().quality();
+  ASSERT_EQ(quality.discarded_forms_data_size(), 1);
+  EXPECT_EQ(
+      quality.discarded_forms_data(0).discard_reason(),
+      optimization_guide::proto::
+          PasswordChangeQuality_FormData_DiscardReason_USERNAME_FIELD_EMPTY_AND_FOCUSABLE);
 }

@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 
 namespace password_manager {
 class PasswordFormManager;
@@ -49,6 +50,7 @@ class ChangePasswordFormWaiter
     Builder& SetFieldsToIgnore(
         const std::vector<autofill::FieldGlobalId>& fields_to_ignore);
     Builder& IgnoreHiddenForms();
+    Builder& SetLogsUploader(ModelQualityLogsUploader* logs_uploader);
 
     std::unique_ptr<ChangePasswordFormWaiter> Build();
 
@@ -89,6 +91,10 @@ class ChangePasswordFormWaiter
   void OnCheckViewAreaVisibleCallback(autofill::FieldGlobalId field_global_id,
                                       bool is_visible);
 
+  void RecordDiscardedForm(
+      const password_manager::PasswordFormManager* form_manager,
+      ModelQualityLogsUploader::FormDiscardReason discard_reason);
+
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   PasswordFormFoundCallback callback_;
 
@@ -106,6 +112,8 @@ class ChangePasswordFormWaiter
   // Subscription for model updates. Should be called when model has been
   // downloaded and available for use.
   base::CallbackListSubscription model_loaded_subscription_;
+
+  raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
 
   base::WeakPtrFactory<ChangePasswordFormWaiter> weak_ptr_factory_{this};
 };
