@@ -930,10 +930,10 @@ PermissionRequestManager::GetInitialGeolocationAccuracySelection() const {
   }
 }
 
-bool PermissionRequestManager::ShouldShowLocationPrecisionSelector() const {
+std::optional<GeolocationPromptType>
+PermissionRequestManager::GetGeolocationPromptType() const {
   CHECK_EQ(requests_.size(), 1u);
-  return requests_[0]->GetGeolocationPromptType() ==
-         GeolocationPromptType::kApproximateOrPrecise;
+  return requests_[0]->GetGeolocationPromptType();
 }
 
 bool PermissionRequestManager::

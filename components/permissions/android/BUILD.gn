@@ -155,6 +155,16 @@ java_cpp_enum("embedded_permission_prompt_enums_javagen") {
   sources = [ "../embedded_permission_prompt_flow_model.h" ]
 }
 
+java_cpp_enum("geolocation_prompt_type_enums_javagen") {
+  visibility = [ ":*" ]
+  sources = [ "../permission_request_data.h" ]
+}
+
+android_library("geolocation_prompt_type_enums_java") {
+  srcjar_deps = [ ":geolocation_prompt_type_enums_javagen" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -185,6 +195,7 @@ android_library("java") {
     ":content_settings_enums_java",
     ":core_java",
     ":embedded_permission_prompt_enums_java",
+    ":geolocation_prompt_type_enums_java",
     ":java_resources",
     ":prompt_options_enums_java",
     "//base:base_java",

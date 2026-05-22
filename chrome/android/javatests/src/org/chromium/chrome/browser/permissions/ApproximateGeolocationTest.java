@@ -309,5 +309,18 @@ public class ApproximateGeolocationTest {
 
         // The initial request (for precise) should have succeeded with approximate accuracy.
         checkAccuracyMode(/* precise= */ false);
+
+        // Verify that the location chip is displayed with "allowed" content description.
+        androidx.test.espresso.Espresso.onView(
+                        androidx.test.espresso.matcher.ViewMatchers.withId(
+                                R.id.location_bar_status_icon))
+                .check(
+                        androidx.test.espresso.assertion.ViewAssertions.matches(
+                                org.hamcrest.Matchers.allOf(
+                                        androidx.test.espresso.matcher.ViewMatchers.isDisplayed(),
+                                        androidx.test.espresso.matcher.ViewMatchers
+                                                .withContentDescription(
+                                                        R.string
+                                                                .permissions_geolocation_allowed_confirmation_screenreader_announcement))));
     }
 }

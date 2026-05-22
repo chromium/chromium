@@ -203,7 +203,8 @@ class PermissionRequestManager
   void SetDismissOnTabClose() override;
   void SetPromptShown() override;
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override;
-  bool ShouldShowLocationPrecisionSelector() const override;
+  std::optional<GeolocationPromptType> GetGeolocationPromptType()
+      const override;
   void SetDecisionTime() override;
   void SetManageClicked() override;
   void SetLearnMoreClicked() override;

@@ -242,8 +242,4 @@ PermissionPromptAndroid::GetInitialGeolocationAccuracySelection() const {
   return delegate_->GetInitialGeolocationAccuracySelection();
 }
 
-bool PermissionPromptAndroid::ShouldShowLocationPrecisionSelector() const {
-  return delegate_->ShouldShowLocationPrecisionSelector();
-}
-
 }  // namespace permissions

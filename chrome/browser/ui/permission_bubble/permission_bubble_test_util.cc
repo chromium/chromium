@@ -56,9 +56,9 @@ TestPermissionBubbleViewDelegate::GetAssociatedWebContents() {
   return nullptr;
 }
 
-bool TestPermissionBubbleViewDelegate::ShouldShowLocationPrecisionSelector()
-    const {
-  return false;
+std::optional<permissions::GeolocationPromptType>
+TestPermissionBubbleViewDelegate::GetGeolocationPromptType() const {
+  return std::nullopt;
 }
 
 base::WeakPtr<permissions::PermissionPrompt::Delegate>

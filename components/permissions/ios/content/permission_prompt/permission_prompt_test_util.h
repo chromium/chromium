@@ -32,7 +32,8 @@ class StubPermissionPromptDelegate : public PermissionPrompt::Delegate {
   void Ignore(const PromptOptions& prompt_options) override;
 
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override;
-  bool ShouldShowLocationPrecisionSelector() const override;
+  std::optional<GeolocationPromptType> GetGeolocationPromptType()
+      const override;
   void FinalizeCurrentRequests() override;
   void OpenHelpCenterLink(const ui::Event& event) override;
   void PreIgnoreQuietPrompt() override;

@@ -78,7 +78,10 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
   void SwitchToLoudPrompt() override {}
 
-  bool ShouldShowLocationPrecisionSelector() const override { return false; }
+  std::optional<permissions::GeolocationPromptType> GetGeolocationPromptType()
+      const override {
+    return std::nullopt;
+  }
 
   bool WasCurrentRequestAlreadyDisplayed() override { return false; }
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {

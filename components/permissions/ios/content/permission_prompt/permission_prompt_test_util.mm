@@ -42,8 +42,9 @@ GeolocationAccuracy
 StubPermissionPromptDelegate::GetInitialGeolocationAccuracySelection() const {
   return GeolocationAccuracy::kPrecise;
 }
-bool StubPermissionPromptDelegate::ShouldShowLocationPrecisionSelector() const {
-  return true;
+std::optional<GeolocationPromptType>
+StubPermissionPromptDelegate::GetGeolocationPromptType() const {
+  return GeolocationPromptType::kApproximateOrPrecise;
 }
 void StubPermissionPromptDelegate::FinalizeCurrentRequests() {}
 void StubPermissionPromptDelegate::OpenHelpCenterLink(const ui::Event& event) {}
