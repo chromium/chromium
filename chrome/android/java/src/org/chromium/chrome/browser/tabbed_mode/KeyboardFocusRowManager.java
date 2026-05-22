@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType.APP;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
@@ -15,6 +16,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.ui.accessibility.KeyboardFocusRow;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -37,6 +40,7 @@ import java.util.function.Supplier;
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
 
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final Supplier<@Nullable StripLayoutHelperManager> mStripLayoutHelperManagerSupplier;
     private final TabObscuringHandler mTabObscuringHandler;
     private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
@@ -55,6 +59,8 @@ import java.util.function.Supplier;
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager} that will be used
      *     to determine if an app modal dialog is showing (in which case the keyboard shortcuts
      *     should not do anything).
+     * @param sideUiStateProviderSupplier Supplies the {@link SideUiStateProvider} that will be used
+     *     to get/set keyboard focus on the side panel.
      * @param stripLayoutHelperManagerSupplier Supplies the {@link StripLayoutHelperManager} (or
      *     null, if the tab strip is not visible) that will be used to get/set keyboard focus on the
      *     tab strip.
@@ -67,12 +73,14 @@ import java.util.function.Supplier;
             Supplier<@Nullable BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier,
             Supplier<@Nullable StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
             TabObscuringHandler tabObscuringHandler,
             Supplier<@Nullable ToolbarManager> toolbarManagerSupplier) {
         mBookmarkBarCoordinatorSupplier = bookmarkBarCoordinatorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mStripLayoutHelperManagerSupplier = stripLayoutHelperManagerSupplier;
         mTabObscuringHandler = tabObscuringHandler;
         mToolbarManagerSupplier = toolbarManagerSupplier;
@@ -111,6 +119,10 @@ import java.util.function.Supplier;
             case KeyboardFocusRow.BOOKMARKS_BAR -> {
                 var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
                 if (bookmarkBarCoordinator != null) bookmarkBarCoordinator.requestFocus();
+            }
+
+            case KeyboardFocusRow.SIDE_PANEL -> {
+                // TODO(crbug.com/510025224): Implement logic to focus side panel.
             }
         }
     }
@@ -160,6 +172,17 @@ import java.util.function.Supplier;
             var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
             if (bookmarkBarCoordinator != null && bookmarkBarCoordinator.isVisible()) {
                 keyboardFocusRows.add(KeyboardFocusRow.BOOKMARKS_BAR);
+            }
+        }
+
+        // The next item in the focus cycle order is the SIDE_PANEL, if it is shown.
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
+            var sideUiStateProvider = mSideUiStateProviderSupplier.get();
+            if (sideUiStateProvider != null
+                    && sideUiStateProvider.getCurrentSideUiSpecs() != null) {
+                if (sideUiStateProvider.getCurrentSideUiSpecs().isEndContainerShowing()) {
+                    keyboardFocusRows.add(KeyboardFocusRow.SIDE_PANEL);
+                }
             }
         }
 

@@ -676,6 +676,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> mBookmarkBarCoordinator, // Gets current mBookmarkBarCoordinator
                         compositorViewHolderSupplier,
                         modalDialogManagerSupplier,
+                        mSideUiStateProviderSupplier,
                         () -> assumeNonNull(mLayoutManager).getStripLayoutHelperManager(),
                         mTabObscuringHandlerSupplier.get(),
                         () -> mToolbarManager // Gets current value of mToolbarManager
@@ -2589,10 +2590,5 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTrackerInitializedOneshotSupplier.set(true);
                     });
         }
-    }
-
-    /** Returns the {@link OneshotSupplier} for the {@link SideUiStateProvider}. */
-    public OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
-        return mSideUiStateProviderSupplier;
     }
 }

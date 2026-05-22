@@ -14,7 +14,8 @@ import org.chromium.build.annotations.NullMarked;
     KeyboardFocusRow.NONE,
     KeyboardFocusRow.TAB_STRIP,
     KeyboardFocusRow.TOOLBAR,
-    KeyboardFocusRow.BOOKMARKS_BAR
+    KeyboardFocusRow.BOOKMARKS_BAR,
+    KeyboardFocusRow.SIDE_PANEL
 })
 public @interface KeyboardFocusRow {
     /** The focus is not in one of the rows of top controls. */
@@ -28,4 +29,7 @@ public @interface KeyboardFocusRow {
 
     /** The focus is on the bookmarks bar (tab groups, bookmarks...). */
     int BOOKMARKS_BAR = 3;
+
+    /** The focus is on the Side Panel (e.g. GLiC, AIM, etc). */
+    int SIDE_PANEL = 4;
 }

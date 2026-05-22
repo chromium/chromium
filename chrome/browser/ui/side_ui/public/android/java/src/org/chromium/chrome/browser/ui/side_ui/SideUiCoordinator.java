@@ -73,6 +73,14 @@ public interface SideUiCoordinator extends SideUiStateProvider {
                     && (this.mEndContainerWidth == that.mEndContainerWidth);
         }
 
+        public boolean isStartContainerShowing() {
+            return mStartContainerWidth > 0;
+        }
+
+        public boolean isEndContainerShowing() {
+            return mEndContainerWidth > 0;
+        }
+
         @Override
         public String toString() {
             return String.format(
