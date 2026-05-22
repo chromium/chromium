@@ -363,6 +363,9 @@ SkPath FocusRing::GetPath() const {
 
 void FocusRing::Refresh() {
   RefreshLayer(ShouldPaint());
+  // TODO(b:507553991): Remove this once all components are migrated to
+  // FocusRing::Refresh().
+  SchedulePaint();
 }
 
 void FocusRing::RefreshLayer(bool should_paint) {
