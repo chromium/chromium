@@ -15,8 +15,18 @@
 
 namespace {
 
-// Margin for the progress card inside the view.
-const CGFloat kCardMargin = 16.0;
+// Spacing for layout margins and stacks.
+const CGFloat kLayoutSpacing = 16.0;
+// The size of the user avatar.
+const CGFloat kAvatarSize = 56.0;
+// The corner radius of the user avatar image view.
+const CGFloat kAvatarCornerRadius = 28.0;
+// Spacing within the welcome text container.
+const CGFloat kWelcomeTextSpacing = 4.0;
+// The line height multiple for the welcome title.
+const CGFloat kWelcomeTextLineHeightMultiple = 1.2;
+// The line height multiple for the user name.
+const CGFloat kUserNameLineHeightMultiple = 1.08;
 
 }  // namespace
 
@@ -27,6 +37,16 @@ const CGFloat kCardMargin = 16.0;
   LevelUpTableViewController* _tableViewController;
   // Height constraint for the tasks table view.
   NSLayoutConstraint* _tableHeightConstraint;
+  // View displaying the welcome user header profile.
+  UIView* _welcomeHeaderView;
+  // Image view containing user's sign-in avatar.
+  UIImageView* _userAvatarImageView;
+  // Label showing user's full name.
+  UILabel* _userNameLabel;
+  // User's full name.
+  NSString* _userFullName;
+  // User's avatar image.
+  UIImage* _userAvatar;
 }
 
 - (instancetype)init {
@@ -77,11 +97,17 @@ const CGFloat kCardMargin = 16.0;
   self.navigationItem.rightBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
 
-  UIStackView* mainContainer = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _progressView, tableView ]];
+  _welcomeHeaderView = [self createWelcomeHeaderView];
+  _userNameLabel.attributedText =
+      [self attributedUserNameStringWithName:_userFullName];
+  _userAvatarImageView.image = _userAvatar;
+
+  UIStackView* mainContainer = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _welcomeHeaderView, _progressView, tableView
+  ]];
   mainContainer.translatesAutoresizingMaskIntoConstraints = NO;
   mainContainer.axis = UILayoutConstraintAxisVertical;
-  mainContainer.spacing = kCardMargin;
+  mainContainer.spacing = kLayoutSpacing;
   mainContainer.alignment = UIStackViewAlignmentFill;
 
   [self.view addSubview:mainContainer];
@@ -95,13 +121,13 @@ const CGFloat kCardMargin = 16.0;
   [NSLayoutConstraint activateConstraints:@[
     [mainContainer.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:kCardMargin],
+                       constant:kLayoutSpacing],
     [mainContainer.leadingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kCardMargin],
+                       constant:kLayoutSpacing],
     [mainContainer.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kCardMargin],
+                       constant:-kLayoutSpacing],
   ]];
 }
 
@@ -112,6 +138,20 @@ const CGFloat kCardMargin = 16.0;
   [_tableViewController setLevel:level tasksForLevel:tasks];
 
   [self updateTableHeightConstraint];
+}
+
+#pragma mark - LevelUpProfileConsumer
+
+- (void)setUserFullName:(NSString*)userFullName
+             userAvatar:(UIImage*)userAvatar {
+  _userFullName = userFullName;
+  _userAvatar = userAvatar;
+
+  if (self.isViewLoaded) {
+    _userNameLabel.attributedText =
+        [self attributedUserNameStringWithName:userFullName];
+    _userAvatarImageView.image = userAvatar;
+  }
 }
 
 #pragma mark - Private
@@ -134,6 +174,80 @@ const CGFloat kCardMargin = 16.0;
 
 - (void)dismiss {
   [self.handler dismissLevelUp];
+}
+
+// Creates the welcome user header view.
+- (UIView*)createWelcomeHeaderView {
+  _userAvatarImageView = [[UIImageView alloc] init];
+  _userAvatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _userAvatarImageView.contentMode = UIViewContentModeScaleAspectFill;
+  _userAvatarImageView.layer.cornerRadius = kAvatarCornerRadius;
+  _userAvatarImageView.layer.masksToBounds = YES;
+  _userAvatarImageView.backgroundColor =
+      [UIColor colorNamed:kTextQuaternaryColor];
+  [NSLayoutConstraint activateConstraints:@[
+    [_userAvatarImageView.widthAnchor constraintEqualToConstant:kAvatarSize],
+    [_userAvatarImageView.heightAnchor constraintEqualToConstant:kAvatarSize],
+  ]];
+
+  UILabel* welcomeLabel = [[UILabel alloc] init];
+  welcomeLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.lineHeightMultiple = kWelcomeTextLineHeightMultiple;
+
+  NSDictionary<NSAttributedStringKey, id>* welcomeTextAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSParagraphStyleAttributeName : paragraphStyle
+  };
+
+  welcomeLabel.attributedText = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(IDS_IOS_LEVEL_UP_WELCOME)
+          attributes:welcomeTextAttributes];
+
+  _userNameLabel = [[UILabel alloc] init];
+  _userNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIStackView* textStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ welcomeLabel, _userNameLabel ]];
+  textStack.translatesAutoresizingMaskIntoConstraints = NO;
+  textStack.axis = UILayoutConstraintAxisVertical;
+  textStack.spacing = kWelcomeTextSpacing;
+
+  UIStackView* headerStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _userAvatarImageView, textStack ]];
+  headerStack.translatesAutoresizingMaskIntoConstraints = NO;
+  headerStack.axis = UILayoutConstraintAxisHorizontal;
+  headerStack.spacing = kLayoutSpacing;
+  headerStack.alignment = UIStackViewAlignmentCenter;
+
+  [headerStack.heightAnchor constraintEqualToConstant:kAvatarSize].active = YES;
+
+  return headerStack;
+}
+
+// Returns an attributed string for the user's full name.
+- (NSAttributedString*)attributedUserNameStringWithName:(NSString*)name {
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.lineHeightMultiple = kUserNameLineHeightMultiple;
+
+  UIFontDescriptor* bodyDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];
+  UIFontDescriptor* boldDescriptor = [bodyDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  UIFont* userNameFont = [UIFont fontWithDescriptor:boldDescriptor size:0.0];
+
+  NSDictionary<NSAttributedStringKey, id>* userNameTextAttributes = @{
+    NSFontAttributeName : userNameFont,
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
+    NSParagraphStyleAttributeName : paragraphStyle
+  };
+  return [[NSAttributedString alloc] initWithString:name
+                                         attributes:userNameTextAttributes];
 }
 
 @end

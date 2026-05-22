@@ -6,11 +6,12 @@
 #define IOS_CHROME_BROWSER_LEVEL_UP_UI_LEVEL_UP_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/level_up/ui/level_up_task.h"
 
 // Consumer for the Level Up bottom sheet.
-@protocol LevelUpConsumer
+@protocol LevelUpConsumer <NSObject>
 
 // Sets the active level and list of tasks.
 // - level: The user's current Chrome level number.

@@ -4297,6 +4297,9 @@
           =1 {Complete 1 more task to level up}
           other {Complete {count} more tasks to level up}}
       </message>
+      <message name="IDS_IOS_LEVEL_UP_WELCOME" desc="The welcome text displayed in the user profile header of the Level Up feature screen. [iOS only]">
+        Welcome
+      </message>
       <message name="IDS_IOS_LEVEL_UP_YOUR_TASKS" desc="Title for the tasks card displaying the user's available level-up tasks. [iOS only]">
         Your tasks
       </message>

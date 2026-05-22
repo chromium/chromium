@@ -7,8 +7,10 @@
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @interface LevelUpCoordinator ()
 
@@ -27,7 +29,11 @@
   self.viewController.handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
 
-  self.mediator = [[LevelUpMediator alloc] init];
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+  self.mediator =
+      [[LevelUpMediator alloc] initWithAuthenticationService:authService];
+  self.mediator.profileConsumer = self.viewController;
   self.mediator.consumer = self.viewController;
 
   self.navigationController = [[UINavigationController alloc]

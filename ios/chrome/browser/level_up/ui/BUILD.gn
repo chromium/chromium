@@ -5,6 +5,7 @@
 source_set("ui") {
   sources = [
     "level_up_consumer.h",
+    "level_up_profile_consumer.h",
     "level_up_progress_view.h",
     "level_up_progress_view.mm",
     "level_up_table_view_controller.h",
