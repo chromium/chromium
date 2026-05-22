@@ -423,8 +423,8 @@ void HTMLTreeBuilder::FragmentParsingContext::Init(
   DCHECK(fragment_target);
   DCHECK(!fragment_target->HasChildren());
   fragment_target_ = fragment_target;
-  context_element_stack_item_ = MakeGarbageCollected<HTMLStackItem>(
-      context_element, HTMLStackItem::kItemForContextElement);
+  context_element_stack_item_ =
+      HTMLStackItem::CreateForContextElement(context_element);
 }
 
 void HTMLTreeBuilder::FragmentParsingContext::Trace(Visitor* visitor) const {
