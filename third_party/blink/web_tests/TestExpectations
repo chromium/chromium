@@ -9756,9 +9756,7 @@ crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permi
 # Expected to be flaky while CompositorTimelineTrigger is being implemented.
 crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-calc-with-zoom.tentative.html [ Failure Pass ]
 crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-multiple-animations.tentative.html [ Failure Pass ]
-crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-multiple-triggers.tentative.html [ Failure Pass ]
 crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-range-px-roundtrip.tentative.html [ Failure Pass ]
-crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-repeat.tentative.html [ Failure Pass ]
 crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-replay.tentative.html [ Failure Pass ]
 crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
 crbug.com/451238244 virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-timeline-subject-removed.tentative.html [ Failure Pass ]
