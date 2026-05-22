@@ -5587,6 +5587,7 @@
       // Exposes speculation measurement data (preloads, prefetches, prerenders)
       // on performance.speculations.
       name: "SpeculationMeasurement",
+      origin_trial_feature_name: "SpeculationMeasurement",
       status: "experimental",
     },
     {

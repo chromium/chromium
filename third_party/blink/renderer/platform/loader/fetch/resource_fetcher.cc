@@ -1932,7 +1932,8 @@ Resource* ResourceFetcher::MatchPreload(
   preloads_.erase(it);
   matched_preloads_.push_back(resource);
 
-  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled()) {
+  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
+          context_->GetFeatureContext())) {
     auto record_it = preload_records_.find(resource->Url());
     if (record_it != preload_records_.end()) {
       record_it->value.used_time = base::TimeTicks::Now();
@@ -2028,7 +2029,8 @@ void ResourceFetcher::InsertAsPreloadIfNecessary(Resource* resource,
   // Only track <link rel=preload> in `preload_records_` for the
   // SpeculationMeasurement API. Speculative preloads from the HTML parser
   // are not developer-initiated and should not be reported.
-  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled() &&
+  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
+          context_->GetFeatureContext()) &&
       params.IsLinkPreload()) {
     const KURL& url = resource->Url();
     if (!preload_records_.Contains(url)) {
@@ -2444,7 +2446,8 @@ void ResourceFetcher::ClearPreloads(ClearPreloadsPolicy policy) {
 void ResourceFetcher::SetEarlyHintsPreloadedResources(
     HashMap<KURL, EarlyHintsPreloadEntry> resources) {
   // Also record early hints preloads for the SpeculationMeasurement API.
-  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled()) {
+  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
+          context_->GetFeatureContext())) {
     for (const auto& [url, entry] : resources) {
       if (!preload_records_.Contains(url)) {
         PreloadInfo info;
@@ -3381,7 +3384,8 @@ void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
   if (iter != unused_early_hints_preloaded_resources_.end()) {
     unused_early_hints_preloaded_resources_.erase(iter);
     // Mark as used in preload_records_ for the SpeculationMeasurement API.
-    if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled()) {
+    if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
+            context_->GetFeatureContext())) {
       auto record_it = preload_records_.find(initial_url);
       if (record_it != preload_records_.end()) {
         record_it->value.used_time = base::TimeTicks::Now();

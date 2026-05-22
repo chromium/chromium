@@ -78,7 +78,7 @@ interface Performance : EventTarget {
 
     // Speculation Measurement
     // https://github.com/yoavweiss/speculative_load_measurement
-    [Exposed=Window, RuntimeEnabled=SpeculationMeasurement] SpeculationData getSpeculations();
+    [Exposed=Window, RuntimeEnabled=SpeculationMeasurement, MeasureAs=SpeculationMeasurement] SpeculationData getSpeculations();
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
