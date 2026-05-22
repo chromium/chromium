@@ -5561,7 +5561,6 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = test::GetFormData({.fields = {{.label = u"", .name = u"1"},
                                                 {.label = u"", .name = u"2"},
                                                 {.label = u"", .name = u"3"}}});
-
   // Make sure the form is in the cache so that it is processed for Autofill
   // upload.
   FormsSeen({form});
@@ -5569,14 +5568,12 @@ TEST_F(BrowserAutofillManagerTest,
   std::vector<std::u16string> expected_values = {u"Elvis", u"Aaron", u"A"};
   // These fields should all match.
   std::vector<FieldTypeSet> expected_types = {
-      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_MIDDLE},
-      FieldTypeSet{NAME_MIDDLE_INITIAL}};
+      {NAME_FIRST}, {NAME_MIDDLE}, {NAME_MIDDLE_INITIAL}};
 
   // Once the form is cached, fill the values.
-  EXPECT_EQ(form.fields().size(), expected_values.size());
-  for (size_t i = 0; i < expected_values.size(); ++i) {
-    test_api(form).field(i).set_value(expected_values[i]);
-  }
+  test_api(form).field(0).set_value(u"Elvis");
+  test_api(form).field(1).set_value(u"Aaron");
+  test_api(form).field(2).set_value(u"A");
 
   autofill_client().GetVotesUploader().set_expected_submitted_field_types(
       expected_types);
@@ -5600,12 +5597,10 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldValueChangedAndUnfocus_Upload) {
   FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
                                                 {.role = NAME_LAST},
                                                 {.role = EMAIL_ADDRESS}}});
-
   FormsSeen({form});
 
   std::vector<FieldTypeSet> expected_types = {
-      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_LAST, NAME_LAST_SECOND},
-      FieldTypeSet{EMAIL_ADDRESS}};
+      {NAME_FIRST}, {NAME_LAST, NAME_LAST_SECOND}, {EMAIL_ADDRESS}};
 
   // We will expect these types in the upload and no observed submission (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
@@ -5634,12 +5629,10 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
                                                 {.role = NAME_LAST},
                                                 {.role = EMAIL_ADDRESS}}});
-
   FormsSeen({form});
 
   std::vector<FieldTypeSet> expected_types = {
-      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_LAST, NAME_LAST_SECOND},
-      FieldTypeSet{EMAIL_ADDRESS}};
+      {NAME_FIRST}, {NAME_LAST_SECOND, NAME_LAST}, {EMAIL_ADDRESS}};
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
@@ -5667,12 +5660,10 @@ TEST_F(BrowserAutofillManagerTest, OnDidAutofillFormAndUnfocus_Upload) {
   FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
                                                 {.role = NAME_LAST},
                                                 {.role = EMAIL_ADDRESS}}});
-
   FormsSeen({form});
 
   std::vector<FieldTypeSet> expected_types = {
-      FieldTypeSet{NAME_FIRST}, FieldTypeSet{NAME_LAST, NAME_LAST_SECOND},
-      FieldTypeSet{EMAIL_ADDRESS}};
+      {NAME_FIRST}, {NAME_LAST, NAME_LAST_SECOND}, {EMAIL_ADDRESS}};
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
@@ -5701,8 +5692,6 @@ TEST_F(BrowserAutofillManagerTest,
            {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
            // Set no autocomplete attribute on the card number.
            {.role = CREDIT_CARD_NUMBER},
-           // Set an unrecognized autocomplete attribute on the
-           // expiration month.
            {.role = CREDIT_CARD_EXP_MONTH,
             .autocomplete_attribute = "unrecognized"}}});
   FormsSeen({form});
@@ -5724,19 +5713,14 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
-  constexpr uint64_t kMaxLength = 4;
   FormData form = test::GetFormData(
-      {.fields = {
-           {.label = u"Name on Card", .name = u"nameoncard"},
-           // Add new 4 |card_number_field|s to the |form|.
-           {.label = u"Card Number",
-            .name = u"cardnumber_1",
-            .max_length = kMaxLength},
-           {.label = u"", .name = u"cardnumber_2", .max_length = kMaxLength},
-           {.label = u"", .name = u"cardnumber_3", .max_length = kMaxLength},
-           {.label = u"", .name = u"cardnumber_4", .max_length = kMaxLength},
-           {.label = u"Expiration Date", .name = u"ccmonth"},
-           {.label = u"", .name = u"ccyear"}}});
+      {.fields = {{.role = CREDIT_CARD_NAME_FULL},
+                  {.role = CREDIT_CARD_NUMBER, .max_length = 4},
+                  {.role = CREDIT_CARD_NUMBER, .max_length = 4},
+                  {.role = CREDIT_CARD_NUMBER, .max_length = 4},
+                  {.role = CREDIT_CARD_NUMBER, .max_length = 4},
+                  {.role = CREDIT_CARD_EXP_MONTH},
+                  {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR}}});
 
   FormsSeen({form});
 
@@ -6294,21 +6278,12 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   // Create a form with name and address fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                                {.role = NAME_LAST},
+                                                {.role = ADDRESS_HOME_LINE1}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6338,21 +6313,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressOnlyWithoutName) {
   // Create a form with address fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                                {.role = ADDRESS_HOME_LINE2},
+                                                {.role = ADDRESS_HOME_ZIP}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 2", "addr2", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Postal Code", "zipcode", "",
-                                       FormControlType::kInputText)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6381,21 +6347,14 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
   // Create a form with name and contact fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST},
+                  {.role = NAME_LAST},
+                  {.role = EMAIL_ADDRESS,
+                   .form_control_type = FormControlType::kInputEmail}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Email", "email", "",
-                                       FormControlType::kInputEmail)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6424,23 +6383,19 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_ContactOnlyWithoutName) {
   // Create a form with contact fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = PHONE_HOME_COUNTRY_CODE,
+                   .autocomplete_attribute = "tel-country-code",
+                   .form_control_type = FormControlType::kInputTelephone},
+                  {.role = PHONE_HOME_CITY_AND_NUMBER,
+                   .autocomplete_attribute = "tel-national",
+                   .form_control_type = FormControlType::kInputTelephone},
+                  {.role = EMAIL_ADDRESS,
+                   .autocomplete_attribute = "email",
+                   .form_control_type = FormControlType::kInputEmail}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields(
-      {CreateTestFormField("Phone Number", "phonenumber1", "",
-                           FormControlType::kInputTelephone,
-                           "tel-country-code"),
-       CreateTestFormField("Phone Number", "phonenumber2", "",
-                           FormControlType::kInputTelephone, "tel-national"),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail,
-                           "email")});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6468,23 +6423,19 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   // Create a form with phone field.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = PHONE_HOME_COUNTRY_CODE,
+                   .autocomplete_attribute = "tel-country-code",
+                   .form_control_type = FormControlType::kInputTelephone},
+                  {.role = PHONE_HOME_CITY_CODE,
+                   .autocomplete_attribute = "tel-area-code",
+                   .form_control_type = FormControlType::kInputTelephone},
+                  {.role = PHONE_HOME_NUMBER,
+                   .autocomplete_attribute = "tel-local",
+                   .form_control_type = FormControlType::kInputTelephone}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields(
-      {CreateTestFormField("Phone Number", "phonenumber", "",
-                           FormControlType::kInputTelephone,
-                           "tel-country-code"),
-       CreateTestFormField("Phone Number", "phonenumber", "",
-                           FormControlType::kInputTelephone, "tel-area-code"),
-       CreateTestFormField("Phone Number", "phonenumber", "",
-                           FormControlType::kInputTelephone, "tel-local")});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6512,21 +6463,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
 
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
   // Create a form with name fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST}, {.role = NAME_MIDDLE}, {.role = NAME_LAST}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Middle Name", "middlename", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6555,23 +6497,15 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmail) {
   // Create a form with name, address, and email fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST},
+                  {.role = NAME_LAST},
+                  {.role = ADDRESS_HOME_LINE1},
+                  {.role = EMAIL_ADDRESS,
+                   .form_control_type = FormControlType::kInputEmail}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Email", "email", "",
-                                       FormControlType::kInputEmail)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6605,21 +6539,14 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailWithoutName) {
   // Create a form with address and email fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1},
+                  {.role = ADDRESS_HOME_LINE2},
+                  {.role = EMAIL_ADDRESS,
+                   .form_control_type = FormControlType::kInputEmail}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 2", "addr2", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Email", "email", "",
-                                       FormControlType::kInputEmail)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6653,23 +6580,15 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusPhone) {
   // Create a form with name fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST},
+                  {.role = NAME_LAST},
+                  {.role = ADDRESS_HOME_LINE1},
+                  {.role = PHONE_HOME_WHOLE_NUMBER,
+                   .form_control_type = FormControlType::kInputTelephone}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Phone Number", "phonenumber", "",
-                                       FormControlType::kInputTelephone)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6703,21 +6622,14 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusPhoneWithoutName) {
   // Create a form with name, address, and phone fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1},
+                  {.role = ADDRESS_HOME_LINE2},
+                  {.role = PHONE_HOME_WHOLE_NUMBER,
+                   .form_control_type = FormControlType::kInputTelephone}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 2", "addr2", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Phone Number", "phonenumber", "",
-                                       FormControlType::kInputTelephone)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6751,25 +6663,17 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhone) {
   // Create a form with name, address, phone, and email fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST},
+                  {.role = NAME_LAST},
+                  {.role = ADDRESS_HOME_LINE1},
+                  {.role = PHONE_HOME_WHOLE_NUMBER,
+                   .form_control_type = FormControlType::kInputTelephone},
+                  {.role = EMAIL_ADDRESS,
+                   .form_control_type = FormControlType::kInputEmail}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Phone Number", "phonenumber", "",
-                                       FormControlType::kInputTelephone),
-                   CreateTestFormField("Email", "email", "",
-                                       FormControlType::kInputEmail)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -6802,21 +6706,15 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhoneWithoutName) {
   // Create a form with address, phone, and email fields.
-  FormData form;
-  form.set_name(u"MyForm");
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1},
+                  {.role = PHONE_HOME_WHOLE_NUMBER,
+                   .form_control_type = FormControlType::kInputTelephone},
+                  {.role = EMAIL_ADDRESS,
+                   .form_control_type = FormControlType::kInputEmail}}});
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
   form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
-  form.set_fields({CreateTestFormField("Address Line 1", "addr1", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Phone Number", "phonenumber", "",
-                                       FormControlType::kInputTelephone),
-                   CreateTestFormField("Email", "email", "",
-                                       FormControlType::kInputEmail)});
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -7837,17 +7735,10 @@ class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
 };
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {// Set a valid autocomplete attribute for the first name.
-       CreateTestFormField("First name", "firstname", "",
-                           FormControlType::kInputText, "given-name"),
-       // Set an unrecognized autocomplete attribute for the last name.
-       CreateTestFormField("Last Name", "lastname", "",
-                           FormControlType::kInputText, "unrecognized")});
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_LAST, .autocomplete_attribute = "unrecognized"}}});
   FormsSeen({form});
 
   // Suggestions should be returned for the first field.
@@ -8114,15 +8005,10 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     BrowserAutofillManagerTest::SetUp();
 
     // Set up a CC form.
-    FormData form;
-    form.set_url(GURL("https://myform.com/form.html"));
-    form.set_action(GURL("https://myform.com/submit.html"));
-    form.set_fields({CreateTestFormField("Name on Card", "nameoncard", "",
-                                         FormControlType::kInputText),
-                     CreateTestFormField("Card Number", "cardnumber", "",
-                                         FormControlType::kInputText),
-                     CreateTestFormField("Expiration date", "exp_date", "",
-                                         FormControlType::kInputText)});
+    FormData form = test::GetFormData(
+        {.fields = {{.role = CREDIT_CARD_NAME_FULL},
+                    {.role = CREDIT_CARD_NUMBER},
+                    {.role = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}});
 
     // Notify BrowserAutofillManager of the form.
     FormsSeen({form});
@@ -8131,11 +8017,12 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     fill_data_ =
         AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(4));
     ASSERT_EQ(3u, fill_data_.fields().size());
-    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley",
+    ExpectFilledField("Credit card full name", "cc_name_full", "Elvis Presley",
                       FormControlType::kInputText, fill_data_.fields()[0]);
-    ExpectFilledField("Card Number", "cardnumber", "4234567890123456",
+    ExpectFilledField("Credit card number", "cardNumber", "4234567890123456",
                       FormControlType::kInputText, fill_data_.fields()[1]);
-    ExpectFilledField("Expiration date", "exp_date", "04/2999",
+    ExpectFilledField("Credit card expiration date 4-digit year",
+                      "cc_exp_date_4_digit_year", "04/2999",
                       FormControlType::kInputText, fill_data_.fields()[2]);
   }
 
