@@ -69,6 +69,10 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/views/user_education/ios_promo_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
+#include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
+#endif
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -1944,6 +1948,59 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(148, "charlesmeng@chromium.org",
                        "Triggered when the vertical tabs is enabled and the "
                        "user has not enabled expand on hover before.")));
+
+#if BUILDFLAG(IS_WIN)
+  // kIPHSearchPromotionFeature:
+  // Query the Finch experiment arm at registration time to decide which
+  // localized strings (Arm A or Arm B) should populate this promo bubble.
+  //
+  // TODO(b/467255671): Re-evaluate tracking feature usage to suppress
+  // the promo once experiments are complete. Similarly if launch
+  // occurs the values may need changing to re-show.
+  std::string arm_str = feature_engagement::kSearchPromotionArm.Get();
+
+  int body_id = IDS_SEARCH_PROMOTION_IPH_BODY_ARM_A;
+  int cta_id = IDS_SEARCH_PROMOTION_IPH_CTA_ARM_A;
+  int dismiss_id = IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_A;
+  int title_id = IDS_SEARCH_PROMOTION_IPH_TITLE_ARM_A;
+
+  if (arm_str == feature_engagement::kSearchPromotionArmB) {
+    body_id = IDS_SEARCH_PROMOTION_IPH_BODY_ARM_B;
+    cta_id = IDS_SEARCH_PROMOTION_IPH_CTA_ARM_B;
+    dismiss_id = IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_B;
+    title_id = IDS_SEARCH_PROMOTION_IPH_TITLE_ARM_B;
+  }
+
+  // Register the Search Promotion IPH as a custom action promo. The bubble
+  // anchors to the App Menu (three dots) button on the main browser toolbar.
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHSearchPromotionFeature,
+          kToolbarAppMenuButtonElementId, body_id, cta_id,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle /*promo_handle*/) {
+                Browser* browser = GetBrowser(ctx);
+                if (browser) {
+                  // Delegate execution to the active SearchPromotionManager
+                  // service to trigger the relevant promotion action
+                  // corresponding to the Finch arm.
+                  SearchPromotionManager* manager =
+                      SearchPromotionManagerFactory::GetForProfile(
+                          browser->profile());
+                  if (manager) {
+                    manager->OnPromoAccepted();
+                  }
+                }
+              }))
+          .SetBubbleTitleText(title_id)
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(dismiss_id)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(150, "qlucyk@chromium.org",
+                       "Triggered when user performs Google searches and is "
+                       "eligible for the promo.")));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void MaybeRegisterChromeFeaturePromos(

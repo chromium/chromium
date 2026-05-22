@@ -463,6 +463,8 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionArm);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionStoreUrl);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionExtensionId);
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionInstructionsUrl);
 
 inline constexpr char kSearchPromotionArmDefault[] = "disabled";

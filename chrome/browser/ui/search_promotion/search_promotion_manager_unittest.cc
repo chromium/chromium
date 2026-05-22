@@ -11,10 +11,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_navigation_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -35,7 +37,10 @@ class MockSearchPromotionManager : public SearchPromotionManager {
  public:
   explicit MockSearchPromotionManager(Profile& profile)
       : SearchPromotionManager(profile) {}
-  MOCK_METHOD(void, OnTargetURLVisited, (const GURL& url), (override));
+  MOCK_METHOD(void,
+              OnTargetURLVisited,
+              (BrowserUserEducationInterface & user_education),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockSearchPromotionManager(
@@ -73,8 +78,9 @@ TEST_F(SearchPromotionManagerTest, IsPromoAllowedGuardedByFeature) {
   }
 
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      feature_engagement::kIPHSearchPromotionFeature);
+  feature_list_.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"arm", feature_engagement::kSearchPromotionArmA}});
   {
     SearchPromotionManager manager(*profile());
     EXPECT_TRUE(IsPromoAllowed(manager));
@@ -161,16 +167,29 @@ TEST_F(SearchPromotionManagerTest, ObserverCallsManagerOnGoogleSearch) {
 
   // Attach the observer.
   tabs::MockTabInterface tab_interface;
-  ui::UnownedUserDataHost user_data_host;
+  ui::UnownedUserDataHost tab_user_data_host;
   ON_CALL(tab_interface, GetUnownedUserDataHost())
-      .WillByDefault(testing::ReturnRef(user_data_host));
+      .WillByDefault(testing::ReturnRef(tab_user_data_host));
   ON_CALL(tab_interface, GetContents())
       .WillByDefault(testing::Return(web_contents()));
 
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(window_user_data_host));
+
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface);
+
+  ON_CALL(tab_interface, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window_interface));
+
   SearchPromotionNavigationObserver observer(tab_interface);
 
+  // Verify that navigating to a Google Search URL successfully triggers
+  // OnTargetURLVisited with the mock user education interface.
   EXPECT_CALL(*mock_manager,
-              OnTargetURLVisited(GURL("http://www.google.com/search?q=test")));
+              OnTargetURLVisited(testing::Ref(mock_user_education)));
 
   // Simulate navigation.
   content::WebContentsTester::For(web_contents())

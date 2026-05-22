@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
+class BrowserUserEducationInterface;
 class Profile;
 
 // SearchPromotionManager coordinates promotional states and actions for
@@ -27,7 +28,10 @@ class SearchPromotionManager : public KeyedService {
   ~SearchPromotionManager() override;
 
   // Called by the navigation observer when the target URL is visited.
-  virtual void OnTargetURLVisited(const GURL& url);
+  // We pass the `BrowserUserEducationInterface` reference to trigger the User
+  // Education promo bubble.
+  virtual void OnTargetURLVisited(
+      BrowserUserEducationInterface& user_education);
 
   // Called when the IPH promo is accepted.
   void OnPromoAccepted();

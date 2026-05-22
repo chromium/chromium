@@ -1054,6 +1054,9 @@ constinit const base::FeatureParam<std::string> kSearchPromotionStoreUrl{
     &kIPHSearchPromotionFeature, "store_url",
     "https://microsoftedge.microsoft.com/addons/detail/google-search-for-edge/"
     "dakcooigljlhlgibgdfadgphfnoooacj"};
+constinit const base::FeatureParam<std::string> kSearchPromotionExtensionId{
+    &kIPHSearchPromotionFeature, "extension_id",
+    "dakcooigljlhlgibgdfadgphfnoooacj"};
 constinit const base::FeatureParam<std::string> kSearchPromotionInstructionsUrl{
     &kIPHSearchPromotionFeature, "instructions_url", ""};
 #endif  // BUILDFLAG(IS_WIN)

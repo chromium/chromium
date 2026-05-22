@@ -7,10 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
@@ -45,13 +47,17 @@ SearchPromotionManager::SearchPromotionManager(Profile& profile)
       arm_ = feature_engagement::kSearchPromotionArmA;
     } else if (arm_str == feature_engagement::kSearchPromotionArmB) {
       arm_ = feature_engagement::kSearchPromotionArmB;
+    } else {
+      // If no valid experiment arm is specified, disable the promotion.
+      is_promo_allowed_ = false;
     }
   }
 }
 
 SearchPromotionManager::~SearchPromotionManager() = default;
 
-void SearchPromotionManager::OnTargetURLVisited(const GURL& url) {
+void SearchPromotionManager::OnTargetURLVisited(
+    BrowserUserEducationInterface& user_education) {
   if (!is_promo_allowed_) {
     return;
   }
@@ -60,15 +66,16 @@ void SearchPromotionManager::OnTargetURLVisited(const GURL& url) {
     return;
   }
 
+  user_education.MaybeShowFeaturePromo(
+      feature_engagement::kIPHSearchPromotionFeature);
+}
+
+void SearchPromotionManager::OnPromoAccepted() {
   if (arm_ == feature_engagement::kSearchPromotionArmA) {
     PerformArmA();
   } else if (arm_ == feature_engagement::kSearchPromotionArmB) {
     PerformArmB();
   }
-}
-
-void SearchPromotionManager::OnPromoAccepted() {
-  NOTIMPLEMENTED();
 }
 
 bool SearchPromotionManager::IsPromoAllowedForTesting() {

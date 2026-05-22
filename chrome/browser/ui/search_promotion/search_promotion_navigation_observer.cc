@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/search_promotion/search_promotion_navigation_observer.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/google/core/common/google_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
@@ -45,7 +47,19 @@ void SearchPromotionNavigationObserver::DidFinishNavigation(
 
   SearchPromotionManager* manager = GetManager();
   if (manager) {
-    manager->OnTargetURLVisited(navigation_handle->GetURL());
+    BrowserWindowInterface* browser = tab().GetBrowserWindowInterface();
+    // `browser` can be null if the tab is currently detached (e.g. during drag
+    // and drop or tab reparenting) or in unit tests.
+    if (browser) {
+      BrowserUserEducationInterface* user_education =
+          BrowserUserEducationInterface::From(browser);
+      // `user_education` can be null for browser windows that
+      // do not support user education (e.g. Pip or app windows) or in unit
+      // tests.
+      if (user_education) {
+        manager->OnTargetURLVisited(*user_education);
+      }
+    }
   }
 }
 

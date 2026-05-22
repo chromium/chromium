@@ -379,6 +379,31 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_BACKGROUND_APP_INSTALLED_BALLOON_BODY" desc="The contents of the balloon that is displayed when a background app is installed">
           <ph name="APP_NAME">$1<ex>Background App</ex></ph> will launch at system startup and continue to run in the background even once you've closed all other <ph name="PRODUCT_NAME">$2<ex>Google Chrome</ex></ph> windows.
         </message>
+        <!-- Search Promotion specific strings -->
+        <message name="IDS_SEARCH_PROMOTION_IPH_TITLE_ARM_A" desc="Title of the search promotion IPH bubble for Arm A.">
+          Bring Google Search to Edge
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_BODY_ARM_A" desc="Body text of the search promotion IPH bubble for Arm A.">
+          Use Google Search right from your browser's address bar and when you open a new tab.
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_CTA_ARM_A" desc="Custom CTA button text of the search promotion IPH bubble for Arm A.">
+          Open Edge
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_A" desc="Custom Dismiss button text of the search promotion IPH bubble for Arm A.">
+          No Thanks
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_TITLE_ARM_B" desc="Title of the search promotion IPH bubble for Arm B.">
+          Install Google Search for Microsoft Edge extension
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_BODY_ARM_B" desc="Body text of the search promotion IPH bubble for Arm B.">
+          Use Google Search right from your browser's address bar and when you open a new tab.
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_CTA_ARM_B" desc="Custom CTA button text of the search promotion IPH bubble for Arm B.">
+          Install for Edge
+        </message>
+        <message name="IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_B" desc="Custom Dismiss button text of the search promotion IPH bubble for Arm B.">
+          No Thanks
+        </message>
       </if>
       <message name="IDS_BACKGROUND_CRASHED_APP_BALLOON_MESSAGE" desc="The contents of the balloon that is displayed when a background app crashes">
         <ph name="APP_NAME">$1<ex>Background App</ex></ph> has crashed. Click this balloon to restart the app.

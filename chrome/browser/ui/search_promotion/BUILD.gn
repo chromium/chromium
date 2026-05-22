@@ -31,6 +31,7 @@ source_set("search_promotion") {
   deps = [
     "//chrome/browser/feature_engagement",
     "//chrome/browser/segmentation_platform",
+    "//chrome/browser/ui/user_education",
     "//components/feature_engagement/public",
     "//components/google/core/common",
     "//components/segmentation_platform/public",
