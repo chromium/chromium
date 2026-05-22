@@ -2003,6 +2003,21 @@ export const ComposeboxEmbedderMixin =
         async refreshTabSuggestions() {
           const {tabs} = await this.getSearchboxHandler().getRecentTabs();
           this.recentTabId = tabs[0]?.tabId ?? null;
+
+          const openTabIds = new Set(tabs.map(t => t.tabId));
+          // Gather UUIDs in a temporary array to prevent modifying `this.files`
+          // mid-iteration, since `deleteFile()` replaces the Map reference.
+          const uuidsToDelete: UnguessableToken[] = [];
+
+          this.files.forEach((file, uuid) => {
+            if (file.tabId && !openTabIds.has(file.tabId)) {
+              uuidsToDelete.push(uuid);
+            }
+          });
+          uuidsToDelete.forEach(uuid => {
+            this.deleteFile(uuid, /*fromUserAction=*/ false);
+          });
+
           if (!this.contextMenuOpened) {
             this.tabSuggestions = [...tabs];
             return;

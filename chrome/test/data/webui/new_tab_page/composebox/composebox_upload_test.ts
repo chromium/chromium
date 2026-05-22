@@ -434,6 +434,56 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
             histogramName, ContextualSearchInputStateDeletionType.TAB));
   });
 
+  test(
+      'closing tab automatically clears its context from files and counter',
+      async () => {
+        loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+        testSupport.createComposeboxElement(testProxy);
+        await microtasksFinished();
+
+        // Add a tab context using the test helper.
+        const uuid = await testSupport.addTab(testProxy);
+        await testProxy.element.updateComplete;
+
+        const tabFile: ComposeboxFile = {
+          uuid: uuid,
+          name: 'Google Search',
+          type: 'tab',
+          inputType: InputType.kBrowserTab,
+          status: ContextUploadStatus.kUploadSuccessful,
+          url: 'https://google.com',
+          tabId: 1,
+          isDeletable: true,
+          supportsUnimodal: true,
+          objectUrl: null,
+          dataUrl: null,
+          iconName: null,
+        };
+
+        // Manually populate frontend state variables with the tab file.
+        testProxy.element.files = new Map([[uuid, tabFile]]);
+        testProxy.element.addedTabsIds = new Map([[1, uuid]]);
+        await testProxy.element.updateComplete;
+
+        // Verify that the tab is initially selected.
+        assertEquals(testProxy.element.files.size, 1);
+        assertTrue(testProxy.element.files.has(uuid));
+
+        // Mock getRecentTabs to return empty list (simulates tab closure).
+        testProxy.searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: []}));
+
+        // Trigger suggestion refresh to run the automatic tab cleanup.
+        await testProxy.element.refreshTabSuggestions();
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        // Verify the closed tab context has been removed.
+        assertEquals(testProxy.element.files.size, 0);
+        assertEquals(testProxy.element.addedTabsIds.size, 0);
+        assertFalse(testProxy.element.files.has(uuid));
+      });
+
   test('image upload button clicks file input', () => {
     loadTimeData.overrideValues({
       'composeboxShowContextMenu': true,
