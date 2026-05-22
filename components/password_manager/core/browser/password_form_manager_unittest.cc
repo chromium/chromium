@@ -760,8 +760,9 @@ TEST_P(PasswordFormManagerTest, Autofill) {
   EXPECT_EQ(observed_form_.url(), fill_data.url);
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
-  // On iOS bio-metric reauth will prevent autofilling as well.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On iOS bio-metric reauth will prevent autofilling as well. On Linux
+  // kFillOnAccountSelect feature is enabled.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(fill_data.wait_for_username);
 #else
   EXPECT_FALSE(fill_data.wait_for_username);

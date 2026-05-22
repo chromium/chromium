@@ -55,6 +55,11 @@ class PasswordManagerInteractiveTest
     // in PasswordFormManager unit tests.
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
+
+    // TODO(504600482): Remove this and update tests when the bug is closed.
+    // Disable kFillOnAccountSelect by default to match test assumptions.
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::kFillOnAccountSelect);
   }
   ~PasswordManagerInteractiveTest() override = default;
 
@@ -64,6 +69,9 @@ class PasswordManagerInteractiveTest
     // deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
