@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +20,8 @@ namespace record_replay {
 class RecordingDataManager;
 class TaskData;
 class TaskDefinition;
+class TaskObservation;
+class TaskObserver;
 
 // Temporary type alias until TaskParameterValues is defined separately.
 // Currently the values are the same as the TaskData.
@@ -36,14 +41,19 @@ class TaskService : public KeyedService {
   // start observing a task. If necessary, it will create a TaskObserver.
   void OnURLVisited(const GURL& visited_url);
 
-  // Triggered when we land on the task-end URL, receives a TaskDefinition
+  // Triggered when we land on the task-end URL, receives a TaskObservation
   // populated with TabParameterValues. The TaskObserver will receive this
   // as a callback and call it when it recognizes that the task ended.
-  void OnTaskCompleted(const TaskDefinition& definition);
+  void OnTaskCompleted(const TaskObservation& observation);
 
   // This will be given as a callback to the UI that offers task execution.
   void OnExecutionAccepted(const TaskDefinition& definition,
                            const TaskParameterValues& values);
+
+  // For testing purposes only.
+  const std::unique_ptr<TaskObserver>& getObserverForTesting() const {
+    return observer_;
+  }
 
  private:
   void OnTaskDefinitionsRetrieved(
@@ -51,6 +61,9 @@ class TaskService : public KeyedService {
       std::vector<std::pair<int64_t, TaskDefinition>> task_definitions);
 
   raw_ptr<RecordingDataManager> recording_data_manager_;
+  // For simplification, we assume there is just one task to be observed at one
+  // time, and therefore there is just one observer.
+  std::unique_ptr<TaskObserver> observer_;
 
   base::WeakPtrFactory<TaskService> weak_ptr_factory_{this};
 };

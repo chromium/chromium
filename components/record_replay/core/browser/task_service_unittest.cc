@@ -10,14 +10,15 @@
 
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
+#include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
+#include "components/record_replay/core/browser/task_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace record_replay {
-namespace {
 
 using ::testing::NiceMock;
 
@@ -75,11 +76,12 @@ class MockRecordingDataManager : public RecordingDataManager {
 };
 
 class TaskServiceTest : public testing::Test {
- public:
-  TaskServiceTest() = default;
+ protected:
+  TaskServiceTest() : task_service_(&mock_data_manager_) {}
   ~TaskServiceTest() override = default;
 
- protected:
+  NiceMock<MockRecordingDataManager> mock_data_manager_;
+  TaskService task_service_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -112,5 +114,82 @@ TEST_F(TaskServiceTest, OnURLVisitedRetrievesTaskDefinitions) {
   task_service.OnURLVisited(url);
 }
 
-}  // namespace
+TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
+  // 1. Verify that initially there are no observers.
+  EXPECT_EQ(task_service_.getObserverForTesting(), nullptr);
+
+  // 2. Set up mock recording data manager expectations.
+  TaskDefinition definition;
+  definition.set_title("Test Journey");
+  definition.set_url("https://example.com/start");
+
+  EXPECT_CALL(
+      mock_data_manager_,
+      GetTaskDefinitionsByUrl("https://example.com/unrelated", ::testing::_))
+      .WillRepeatedly(
+          [](std::string url,
+             base::OnceCallback<void(
+                 std::vector<std::pair<int64_t, TaskDefinition>>)> callback) {
+            std::move(callback).Run({});
+          });
+
+  EXPECT_CALL(
+      mock_data_manager_,
+      GetTaskDefinitionsByUrl("https://example.com/start", ::testing::_))
+      .WillRepeatedly(
+          [definition](
+              std::string url,
+              base::OnceCallback<void(
+                  std::vector<std::pair<int64_t, TaskDefinition>>)> callback) {
+            std::vector<std::pair<int64_t, TaskDefinition>> task_definitions;
+            task_definitions.emplace_back(42, definition);
+            std::move(callback).Run(std::move(task_definitions));
+          });
+
+  // 3. Visit a different URL and verify no observer is created.
+  GURL unrelated_url("https://example.com/unrelated");
+  task_service_.OnURLVisited(unrelated_url);
+  EXPECT_EQ(task_service_.getObserverForTesting(), nullptr);
+
+  // 4. Visit the start URL and verify a TaskObserver is created and owned by
+  // TaskService.
+  GURL start_url("https://example.com/start");
+  task_service_.OnURLVisited(start_url);
+  ASSERT_NE(task_service_.getObserverForTesting(), nullptr);
+
+  // Verify matched/copied task definition details.
+  const TaskObserver* observer = task_service_.getObserverForTesting().get();
+  ASSERT_NE(observer, nullptr);
+  EXPECT_EQ(observer->observation().definition().title(), "Test Journey");
+  EXPECT_EQ(observer->observation().definition().url(),
+            "https://example.com/start");
+
+  // 5. Complete the task and check that task completed details are propagated
+  // correctly.
+  TaskDefinition completed_def;
+  completed_def.set_title("Test Journey");
+  completed_def.set_url("https://example.com/start");
+  completed_def.set_description("Completed successfully");
+
+  EXPECT_CALL(mock_data_manager_,
+              SaveTaskDefinition(::testing::Eq(std::nullopt), ::testing::_,
+                                 "https://example.com/start",
+                                 ::testing::Eq(std::nullopt), ::testing::_))
+      .WillOnce([completed_def](std::optional<int64_t> task_definition_id,
+                                TaskDefinition task_definition,
+                                std::string target_url,
+                                std::optional<int64_t> recording_id,
+                                base::OnceClosure callback) {
+        EXPECT_EQ(task_definition.description(), "Completed successfully");
+        EXPECT_EQ(task_definition.title(), "Test Journey");
+        EXPECT_EQ(task_definition.url(), "https://example.com/start");
+      });
+
+  TaskObservation completed_obs;
+  *completed_obs.mutable_definition() = completed_def;
+
+  task_service_.OnTaskCompleted(completed_obs);
+  EXPECT_EQ(task_service_.getObserverForTesting(), nullptr);
+}
+
 }  // namespace record_replay

@@ -5,9 +5,11 @@
 #include "components/record_replay/core/browser/task_service.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
+#include "components/record_replay/core/browser/task_observer.h"
 #include "url/gurl.h"
 
 namespace record_replay {
@@ -22,6 +24,13 @@ void TaskService::OnURLVisited(const GURL& visited_url) {
     return;
   }
 
+  // If there is already an observer, we don't need to get task definitions and
+  // create a new one as we only support one task at a time.
+  if (observer_) {
+    observer_->OnURLVisited(visited_url);
+    return;
+  }
+
   recording_data_manager_->GetTaskDefinitionsByUrl(
       visited_url.spec(),
       base::BindOnce(&TaskService::OnTaskDefinitionsRetrieved,
@@ -31,12 +40,27 @@ void TaskService::OnURLVisited(const GURL& visited_url) {
 void TaskService::OnTaskDefinitionsRetrieved(
     const GURL& visited_url,
     std::vector<std::pair<int64_t, TaskDefinition>> task_definitions) {
-  // TODO(crbug.com/514303197): Check whether or not to start observing a task,
-  // and create a TaskObserver if necessary.
+  for (const auto& pair : task_definitions) {
+    const auto& definition = pair.second;
+    if (definition.url() == visited_url.spec()) {
+      observer_ = std::make_unique<TaskObserver>(
+          definition, base::BindRepeating(&TaskService::OnTaskCompleted,
+                                          weak_ptr_factory_.GetWeakPtr()));
+      observer_->StartObserving(visited_url);
+      observer_->OnURLVisited(visited_url);
+    }
+  }
 }
 
-void TaskService::OnTaskCompleted(const TaskDefinition& definition) {
-  // TODO(crbug.com/514303497): Handle landing on a task-end URL.
+void TaskService::OnTaskCompleted(const TaskObservation& observation) {
+  recording_data_manager_->SaveTaskDefinition(
+      /*task_definition_id=*/std::nullopt, observation.definition(),
+      observation.definition().url(),
+      /*recording_id=*/std::nullopt,
+      // TODO(crbug.com/515729820): Implement a callback that uses the newly
+      // stored observation.
+      base::DoNothing());
+  observer_.reset();
 }
 
 void TaskService::OnExecutionAccepted(const TaskDefinition& definition,

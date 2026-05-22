@@ -31,6 +31,8 @@ static_library("browser") {
     "task_discovery_service.h",
     "task_discovery_service_impl.cc",
     "task_discovery_service_impl.h",
+    "task_observer.cc",
+    "task_observer.h",
     "task_parameters_extractor.cc",
     "task_parameters_extractor.h",
     "task_provider.cc",
