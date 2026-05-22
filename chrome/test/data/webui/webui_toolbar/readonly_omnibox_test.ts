@@ -274,12 +274,11 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('es/1/', getStringSelection());
 
     // Now a mismatching one should be handled as any key press.
+    // (And as it's not something the browser end cares about, it doesn't
+    // get sent over mojo).
     fakeKeyDown('o');
     await microtasksFinished();
-    assertEquals(2, uiHandler.getCallCount('onOmniboxAction'));
-    args = uiHandler.getArgs('onOmniboxAction');
-    assertTrue(!!args[1].key);
-    assertEquals('o', args[1].key.key);
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
 
     // Since it's a fake key, the <input> doesn't actually update, so we
     // have to simulate it.
@@ -289,13 +288,13 @@ suite('ReadonlyOmnibox', function() {
     input.selectionEnd = kExpectedInput1.length + 1;
     input.dispatchEvent(new InputEvent('input'));
     await microtasksFinished();
-    assertEquals(3, uiHandler.getCallCount('onOmniboxAction'));
+    assertEquals(2, uiHandler.getCallCount('onOmniboxAction'));
     args = uiHandler.getArgs('onOmniboxAction');
-    assertTrue(!!args[2].textInput);
-    assertEquals(kExpectedInput1 + 'o', args[2].textInput.text);
-    assertEquals(kExpectedInput1.length + 1, args[2].textInput.selection.start);
-    assertEquals(kExpectedInput1.length + 1, args[2].textInput.selection.end);
-    assertEquals('', args[2].textInput.inlineAutocompletion);
+    assertTrue(!!args[1].textInput);
+    assertEquals(kExpectedInput1 + 'o', args[1].textInput.text);
+    assertEquals(kExpectedInput1.length + 1, args[1].textInput.selection.start);
+    assertEquals(kExpectedInput1.length + 1, args[1].textInput.selection.end);
+    assertEquals('', args[1].textInput.inlineAutocompletion);
     assertEquals('example.com/articlo', omnibox.$.textContainer.textContent);
     assertEquals('example.com/articlo', omnibox.$.textInput.value);
     assertEquals('', getStringSelection());

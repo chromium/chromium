@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/mojom/base/error.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/range/range.h"
 
@@ -110,7 +112,11 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnKey(
       const toolbar_ui_api::mojom::OmniboxActionKey& key);
 
+  ui::DomKey LookupAndCacheDomKey(std::string_view key_str);
+
   raw_ref<UpdatePropagator> update_propagator_;
+
+  absl::flat_hash_map<std::string, ui::DomKey> key_code_cache_;
 
   // Text and selection (or caret) we were asked to display (e.g. via
   // SetWindowTextAndCaretPos()) by either the base class or OmniboxEditModel.

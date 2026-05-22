@@ -19,6 +19,8 @@
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace {
 
@@ -416,7 +418,8 @@ WebUIReadOnlyOmnibox::OnKey(
       (event_flags & ui::EF_ALT_DOWN) || (event_flags & ui::EF_ALTGR_DOWN);
   const bool command = event_flags & ui::EF_COMMAND_DOWN;
 
-  if (key.key == "Control") {
+  ui::DomKey dom_key = LookupAndCacheDomKey(key.key);
+  if (dom_key == ui::DomKey::CONTROL) {
     controller()->edit_model()->OnControlKeyChanged(key.is_key_down);
     return base::ok(std::monostate());
   }
@@ -426,34 +429,59 @@ WebUIReadOnlyOmnibox::OnKey(
     return base::ok(std::monostate());
   }
 
-  // TODO(crbug.com/500653057): Convert to DomKey (with some caching
-  // since the converter is slow) once the JS end is more selective about
-  // what it sends.
-  if (key.key == "Enter") {
-    WindowOpenDisposition disposition =
-        ComputeOpenDispositionFromModifiersAndLogToUma(shift, control, alt,
-                                                       command);
-    // TODO(crbug.com/503784580): Views impl has some special handling of
-    // AIM button here. We may or may not need it depending on how we
-    // implement its focus behavior.
-    if (!control) {
-      controller()->edit_model()->OpenCurrentSelection(base::TimeTicks::Now(),
-                                                       disposition,
-                                                       /*via_keyboard=*/true);
-    } else {
-      // Ctrl+Enter has special magic behavior where it can append www. and
-      // .com if needed.
-      controller()->edit_model()->OpenSelection(
-          OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                                OmniboxPopupSelection::LineState::NORMAL),
-          base::TimeTicks::Now(), disposition, /*via_keyboard=*/true);
+  switch (dom_key) {
+    case ui::DomKey::ENTER: {
+      WindowOpenDisposition disposition =
+          ComputeOpenDispositionFromModifiersAndLogToUma(shift, control, alt,
+                                                         command);
+      // TODO(crbug.com/503784580): Views impl has some special handling of
+      //   AIM button here. We may or may not need it depending on how we
+      //   implement its focus behavior.
+      if (!control) {
+        controller()->edit_model()->OpenCurrentSelection(base::TimeTicks::Now(),
+                                                         disposition,
+                                                         /*via_keyboard=*/true);
+      } else {
+        // Ctrl+Enter has special magic behavior where it can append www. and
+        // .com if needed.
+        controller()->edit_model()->OpenSelection(
+            OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
+                                  OmniboxPopupSelection::LineState::NORMAL),
+            base::TimeTicks::Now(), disposition, /*via_keyboard=*/true);
+      }
+      break;
     }
-  } else if (key.key == "Escape") {
-    controller()->edit_model()->OnEscapeKeyPressed();
-  } else if (key.key == "ArrowUp") {
-    controller()->edit_model()->OnUpOrDownPressed(false, false);
-  } else if (key.key == "ArrowDown") {
-    controller()->edit_model()->OnUpOrDownPressed(true, false);
+
+    case ui::DomKey::ESCAPE:
+      controller()->edit_model()->OnEscapeKeyPressed();
+      break;
+
+    case ui::DomKey::ARROW_UP:
+      controller()->edit_model()->OnUpOrDownPressed(/*down=*/false,
+                                                    /*page=*/false);
+      break;
+
+    case ui::DomKey::ARROW_DOWN:
+      controller()->edit_model()->OnUpOrDownPressed(/*down=*/true,
+                                                    /*page=*/false);
+      break;
+
+    default:
+      break;
   }
   return base::ok(std::monostate());
+}
+
+ui::DomKey WebUIReadOnlyOmnibox::LookupAndCacheDomKey(
+    std::string_view key_str) {
+  // ui::KeycodeConverter is quite slow for looking up by KeyEvent.Key strings,
+  // (well, primarily ' '), but it's unclear for most usages it makes sense to
+  // make it more sophisticated... So instead cache what we use, which is a tiny
+  // number of keys, so should be quite cheap.
+  if (auto it = key_code_cache_.find(key_str); it != key_code_cache_.end()) {
+    return it->second;
+  }
+  ui::DomKey dom_key = ui::KeycodeConverter::KeyStringToDomKey(key_str);
+  key_code_cache_.insert(std::pair(std::string(key_str), dom_key));
+  return dom_key;
 }

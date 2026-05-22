@@ -57,6 +57,21 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  // Keys that may need to be forwarded to the browser.
+  private maybeForwardKeys: Set<string>;
+
+  constructor() {
+    super();
+    this.maybeForwardKeys = new Set([
+      'Control',
+      'Enter',
+      'Escape',
+      'ArrowUp',
+      'ArrowDown',
+      ' ',
+    ]);
+  }
+
   override firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this.$.textContainerWrap.addEventListener(
@@ -176,11 +191,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private onInputKeyDown(event: KeyboardEvent): void {
-    // TODO(crbug.com/500653057): shouldn't do this if shift is down.
-    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-      event.preventDefault();
-    }
-
     const inlineAutocompletion = this.omniboxViewState.inlineAutocompletion;
     if (inlineAutocompletion.length > 0) {
       // If the current input state (its value and selection) matches its last
@@ -219,14 +229,21 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       }
     }
 
-    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      key: {
-        key: event.key,
-        isKeyDown: true,
-        selection: this.getSelection(),
-        modifiers: getEventDispositionFlags(event),
-      },
-    });
+    if (this.maybeForwardKeys.has(event.key)) {
+      // TODO(crbug.com/503785596): shouldn't do this if shift is down.
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        event.preventDefault();
+      }
+
+      this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+        key: {
+          key: event.key,
+          isKeyDown: true,
+          selection: this.getSelection(),
+          modifiers: getEventDispositionFlags(event),
+        },
+      });
+    }
   }
 
   private onInputKeyUp(event: KeyboardEvent): void {
