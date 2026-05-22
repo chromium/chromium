@@ -292,7 +292,7 @@ export class CrLottieElement extends CrLitElement {
    */
   private isValidUrl_(maybeValidUrl: string): boolean {
     const url = new URL(maybeValidUrl, document.location.href);
-    return url.protocol === 'chrome:' ||
+    return url.protocol === 'chrome:' || url.protocol === 'chrome-extension:' ||
         (url.protocol === 'data:' &&
          url.pathname.startsWith('application/json;'));
   }
