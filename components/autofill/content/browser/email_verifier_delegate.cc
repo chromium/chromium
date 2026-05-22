@@ -34,12 +34,31 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
     return nullptr;
   }
 
-  // EmailVerificationProtocol is enabled by default in the browser process,
-  // but must also be enabled on the blink side (e.g. via Origin Trial token).
+  std::optional<bool> overridden_state =
+      base::FeatureList::GetStateIfOverridden(
+          ::features::kEmailVerificationProtocol);
+  if (overridden_state == std::make_optional(false)) {
+    // If the flag is overridden to be disabled (e.g. via Finch), respect that.
+    return nullptr;
+  }
+
+  if (overridden_state == std::make_optional(true)) {
+    // If the flag is overridden to enabled, we enable no matter what the
+    // OT status is.
+    return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
+  }
+
+  // In the non-overridden experiment state, EVT is enabled if the feature
+  // is enabled globally (via the default state) and the web site opts in
+  // via Origin trial token.
+  bool globally_enabled =
+      base::FeatureList::IsEnabled(::features::kEmailVerificationProtocol);
   content::RuntimeFeatureStateDocumentData* document_data =
       content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
-  if (!document_data || !document_data->runtime_feature_state_read_context()
-                             .IsEmailVerificationProtocolEnabled()) {
+  bool enabled_for_page =
+      document_data && document_data->runtime_feature_state_read_context()
+                           .IsEmailVerificationProtocolEnabled();
+  if (!globally_enabled || !enabled_for_page) {
     return nullptr;
   }
 

@@ -181,8 +181,10 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
-// Verifies that if the feature is disabled, no verification is triggered.
-TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
+// Verifies that if the base feature is explicitly overridden to disabled,
+// no verification is triggered even if the Blink-side Origin Trial is enabled.
+TEST_F(EmailVerifierDelegateTest,
+       FeatureOverriddenToDisabledButOriginTrialEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kEmailVerificationProtocol);
 
@@ -322,12 +324,10 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
-// Verifies that even if the base feature is enabled, no verification is
-// triggered if the Blink-side Origin Trial is not enabled.
-TEST_F(EmailVerifierDelegateTest, OriginTrialNotEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      ::features::kEmailVerificationProtocol};
-
+// Verifies that if the base feature is in its default state (enabled by
+// default, not overridden) but the Blink-side Origin Trial is not enabled,
+// no verification is triggered.
+TEST_F(EmailVerifierDelegateTest, OriginTrialNotEnabledWithoutOverride) {
   // Replace the document data with the default context where the Origin Trial
   // is disabled.
   if (content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(
@@ -388,6 +388,49 @@ TEST_F(EmailVerifierDelegateTest, NotEmailTriggerField) {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(1)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+}
+
+// Verifies that if the base feature is explicitly overridden to enabled,
+// verification is triggered even if the Blink-side Origin Trial is not
+// enabled.
+TEST_F(EmailVerifierDelegateTest,
+       OriginTrialNotEnabledButFeatureOverriddenToEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  // Replace the document data with the default context where the Origin Trial
+  // is disabled.
+  if (content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          main_rfh())) {
+    content::RuntimeFeatureStateDocumentData::DeleteForCurrentDocument(
+        main_rfh());
+  }
+  content::RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      main_rfh(), blink::RuntimeFeatureStateContext());
+
+  FormData form_data = ValidForm();
+
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
+  FormStructure* form =
+      test_api(manager()).FindCachedFormById(form_data.global_id());
+  ASSERT_TRUE(form);
+  form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
+
+  EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>("test_token"));
+
+  EXPECT_CALL(driver(), SendEmailVerificationToken(
+                            form->field(0)->global_id(), "test@example.com",
+                            form->field(1)->global_id(), "test_token"));
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id(), form->field(1)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 }
 
