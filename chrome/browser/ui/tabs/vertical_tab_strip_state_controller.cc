@@ -372,7 +372,7 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
                                     ? features::IsRoundedIconsEnabled()
                                           ? views::kMenuOpenIcon
                                           : views::kMenuOpenOldIcon
-                                    : views::kMenuCloseIcon;
+                                    : views::kMenuCloseCustomIcon;
 
   const auto& text =
       is_collapsed ? IDS_EXPAND_VERTICAL_TABS : IDS_COLLAPSE_VERTICAL_TABS;

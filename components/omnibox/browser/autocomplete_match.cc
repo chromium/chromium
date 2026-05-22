@@ -686,23 +686,23 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::DOCUMENT_SUGGESTION:
       switch (document_type) {
         case DocumentType::DRIVE_DOCS:
-          return omnibox::kDriveDocsIcon;
+          return omnibox::kDriveDocsCustomIcon;
         case DocumentType::DRIVE_FORMS:
-          return omnibox::kDriveFormsIcon;
+          return omnibox::kDriveFormsCustomIcon;
         case DocumentType::DRIVE_SHEETS:
-          return omnibox::kDriveSheetsIcon;
+          return omnibox::kDriveSheetsCustomIcon;
         case DocumentType::DRIVE_SLIDES:
-          return omnibox::kDriveSlidesIcon;
+          return omnibox::kDriveSlidesCustomIcon;
         case DocumentType::DRIVE_IMAGE:
-          return omnibox::kDriveImageIcon;
+          return omnibox::kDriveImageCustomIcon;
         case DocumentType::DRIVE_PDF:
-          return omnibox::kDrivePdfIcon;
+          return omnibox::kDrivePdfCustomIcon;
         case DocumentType::DRIVE_VIDEO:
-          return omnibox::kDriveVideoIcon;
+          return omnibox::kDriveVideoCustomIcon;
         case DocumentType::DRIVE_FOLDER:
-          return omnibox::kDriveFolderIcon;
+          return omnibox::kDriveFolderCustomIcon;
         case DocumentType::DRIVE_OTHER:
-          return omnibox::kDriveLogoIcon;
+          return omnibox::kDriveLogoCustomIcon;
         default:
           return features::IsRoundedIconsEnabled()
                      ? omnibox::kPublicIcon

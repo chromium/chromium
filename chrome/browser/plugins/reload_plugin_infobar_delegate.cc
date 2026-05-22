@@ -35,7 +35,7 @@ ReloadPluginInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& ReloadPluginInfoBarDelegate::GetVectorIcon() const {
-  return kExtensionCrashedIcon;
+  return kExtensionCrashedCustomIcon;
 }
 
 std::u16string ReloadPluginInfoBarDelegate::GetMessageText() const {

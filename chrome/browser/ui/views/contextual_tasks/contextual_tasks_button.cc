@@ -356,8 +356,8 @@ void ContextualTasksButton::OnSidePanelAlignmentChanged() {
 
     const gfx::VectorIcon& contextual_tasks_icon =
         pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
-            ? kDockToRightSparkIcon
-            : kDockToLeftSparkIcon;
+            ? kDockToRightSparkCustomIcon
+            : kDockToLeftSparkCustomIcon;
     SetVectorIcon(contextual_tasks_icon);
   }
 }

@@ -158,7 +158,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     item_icon->SetImage(ui::ImageModel::FromVectorIcon(
         *item.image, ui::kColorLabelForeground,
         GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
-        item.has_blocked_badge ? &vector_icons::kBlockedBadgeIcon
+        item.has_blocked_badge ? &vector_icons::kBlockedBadgeCustomIcon
                                : &gfx::VectorIcon::EmptyIcon()));
   }
 

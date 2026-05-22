@@ -363,8 +363,8 @@ void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
   std::u16string title_text = l10n_util::GetStringUTF16(
       IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTED_TITLE);
   auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      ui::ImageModel::FromVectorIcon(kPasskeyPhoneIcon),
-      ui::ImageModel::FromVectorIcon(kPasskeyPhoneDarkIcon),
+      ui::ImageModel::FromVectorIcon(kPasskeyPhoneCustomIcon),
+      ui::ImageModel::FromVectorIcon(kPasskeyPhoneDarkCustomIcon),
       base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
                           base::Unretained(dialog_.get())));
 

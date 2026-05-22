@@ -74,7 +74,7 @@ void LensRegionSearchInstructionsView::Init() {
 
   // Add the leading drag selection icon.
   auto selection_icon_view = std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(views::kDragGeneralSelectionIcon,
+      ui::ImageModel::FromVectorIcon(views::kDragGeneralSelectionCustomIcon,
                                      kColorFeatureLensPromoBubbleForeground,
                                      layout_params_.vector_icon_size));
   AddChildView(std::move(selection_icon_view));

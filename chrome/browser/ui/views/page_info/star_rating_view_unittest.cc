@@ -40,7 +40,8 @@ class StarRatingViewTest : public views::ViewsTestBase {
   bool IsHalfStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
-    return model.vector_icon()->name == vector_icons::kStarHalfIcon.name &&
+    return model.vector_icon()->name ==
+               vector_icons::kStarHalfCustomIcon.name &&
            model.color() == kColorStarRatingFullIcon;
   }
 

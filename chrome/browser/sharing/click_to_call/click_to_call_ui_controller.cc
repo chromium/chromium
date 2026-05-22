@@ -191,8 +191,9 @@ SharingDialogData ClickToCallUiController::CreateDialogData(
 
   // Do not add the header image for error dialogs.
   if (dialog_type != SharingDialogType::kErrorDialog) {
-    data.header_icons = SharingDialogData::HeaderIcons(
-        &kClickToCallIllustrationIcon, &kClickToCallIllustrationDarkIcon);
+    data.header_icons =
+        SharingDialogData::HeaderIcons(&kClickToCallIllustrationCustomIcon,
+                                       &kClickToCallIllustrationDarkCustomIcon);
   }
 
   data.help_text_id =

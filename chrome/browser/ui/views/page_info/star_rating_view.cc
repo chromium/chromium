@@ -77,7 +77,7 @@ ui::ImageModel StarRatingView::GetImageModel(double rating, int index) {
                                           kColorStarRatingFullIcon, icon_size);
   } else if (rating >= index && std::modf(rating, &rest) >= 0.5) {
     // Half icon.
-    return ui::ImageModel::FromVectorIcon(vector_icons::kStarHalfIcon,
+    return ui::ImageModel::FromVectorIcon(vector_icons::kStarHalfCustomIcon,
                                           kColorStarRatingFullIcon, icon_size);
   }
   // Empty icon.

@@ -128,11 +128,12 @@ void WebauthnDialogModel::SetIllustrationsFromState() {
     case WebauthnDialogState::kOffer:
     case WebauthnDialogState::kOfferPending:
     case WebauthnDialogState::kVerifyPending:
-      vector_illustrations_.emplace(kWebauthnDialogHeaderIcon,
-                                    kWebauthnDialogHeaderDarkIcon);
+      vector_illustrations_.emplace(kWebauthnDialogHeaderCustomIcon,
+                                    kWebauthnDialogHeaderDarkCustomIcon);
       break;
     case WebauthnDialogState::kOfferError:
-      vector_illustrations_.emplace(kWebauthnErrorIcon, kWebauthnErrorDarkIcon);
+      vector_illustrations_.emplace(kWebauthnErrorCustomIcon,
+                                    kWebauthnErrorDarkCustomIcon);
       break;
     case WebauthnDialogState::kInactive:
     case WebauthnDialogState::kUnknown:

@@ -351,11 +351,11 @@ const gfx::VectorIcon& GetMechanismIcon(
             if (ui_presentation == UIPresentation::kModalImmediate) {
               switch (credential.value().source) {
                 case AuthenticatorType::kICloudKeychain:
-                  return kIcloudKeychainColorIcon;
+                  return kIcloudKeychainColorCustomIcon;
                 case AuthenticatorType::kEnclave:
                   return GooglePasswordManagerVectorIcon();
                 case AuthenticatorType::kWinNative:
-                  return kWindowsHelloColorIcon;
+                  return kWindowsHelloColorCustomIcon;
                 case AuthenticatorType::kTouchID:
                   return vector_icons::kProductRefreshIcon;
                 default:
@@ -378,10 +378,10 @@ const gfx::VectorIcon& GetMechanismIcon(
           },
           [](const Mechanism::ICloudKeychain&) -> const gfx::VectorIcon& {
             // Always use the standard iCloud Keychain icon here.
-            return kIcloudKeychainIcon;
+            return kIcloudKeychainCustomIcon;
           },
           [](const Mechanism::Hybrid&) -> const gfx::VectorIcon& {
-            return kQrcodeGeneratorIcon;
+            return kQrcodeGeneratorCustomIcon;
           },
           [](const Mechanism::Enclave&) -> const gfx::VectorIcon& {
             // Always use the standard password manager icon here.

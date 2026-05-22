@@ -658,7 +658,7 @@ void TabGroupHeader::UpdateAttentionIndicatorView() {
   attention_indicator_->SetVisible(should_show_attention_indicator);
   if (should_show_attention_indicator) {
     attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
-        kDefaultTouchFaviconMaskIcon,
+        kDefaultTouchFaviconMaskCustomIcon,
         color_utils::GetColorWithMaxContrast(color_),
         group_style_->GetAttentionIndicatorWidth()));
   }

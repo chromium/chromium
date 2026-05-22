@@ -82,8 +82,8 @@ class DefaultHeaderImage : public NonAccessibleImageView {
     SetImage(ui::ImageModel::FromVectorIcon(
         GetNativeTheme()->preferred_color_scheme() ==
                 ui::NativeTheme::PreferredColorScheme::kDark
-            ? kSecurePaymentConfirmationHeaderDarkIcon
-            : kSecurePaymentConfirmationHeaderIcon,
+            ? kSecurePaymentConfirmationHeaderDarkCustomIcon
+            : kSecurePaymentConfirmationHeaderCustomIcon,
         ui::kColorDialogBackground));
   }
 };

@@ -478,7 +478,7 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
       attention_indicator_->SetVisible(true);
       attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
-          kDefaultTouchFaviconMaskIcon, foreground_color,
+          kDefaultTouchFaviconMaskCustomIcon, foreground_color,
           kAttentionIndicatorWidth));
     } else {
       attention_indicator_->SetVisible(false);
@@ -547,7 +547,7 @@ void VerticalTabGroupHeaderView::UpdateAttentionState(bool needs_attention) {
   if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
     attention_indicator_->SetVisible(true);
     attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
-        kDefaultTouchFaviconMaskIcon, GetForegroundColor(),
+        kDefaultTouchFaviconMaskCustomIcon, GetForegroundColor(),
         kAttentionIndicatorWidth));
   } else {
     attention_indicator_->SetVisible(false);

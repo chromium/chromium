@@ -8,9 +8,9 @@ aggregate_vector_icons("touch_selection_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "text_selection_handle_center.icon",
-    "text_selection_handle_left.icon",
-    "text_selection_handle_right.icon",
+    "text_selection_handle_center_custom.icon",
+    "text_selection_handle_left_custom.icon",
+    "text_selection_handle_right_custom.icon",
   ]
 }
 

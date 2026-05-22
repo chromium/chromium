@@ -4383,7 +4383,7 @@ bool RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
   if (draw_icon) {
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, string_id,
-        ui::ImageModel::FromVectorIcon(kQrcodeGeneratorIcon));
+        ui::ImageModel::FromVectorIcon(kQrcodeGeneratorCustomIcon));
   } else {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
                                     string_id);

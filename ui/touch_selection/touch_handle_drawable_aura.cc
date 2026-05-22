@@ -41,13 +41,13 @@ ImageModel GetHandleVectorIcon(TouchHandleOrientation orientation) {
   const gfx::VectorIcon* icon = nullptr;
   switch (orientation) {
     case TouchHandleOrientation::LEFT:
-      icon = &kTextSelectionHandleLeftIcon;
+      icon = &kTextSelectionHandleLeftCustomIcon;
       break;
     case TouchHandleOrientation::CENTER:
-      icon = &kTextSelectionHandleCenterIcon;
+      icon = &kTextSelectionHandleCenterCustomIcon;
       break;
     case TouchHandleOrientation::RIGHT:
-      icon = &kTextSelectionHandleRightIcon;
+      icon = &kTextSelectionHandleRightCustomIcon;
       break;
     case TouchHandleOrientation::UNDEFINED:
       NOTREACHED() << "Invalid touch handle bound type.";

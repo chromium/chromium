@@ -757,7 +757,7 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
                  "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kDriveDocsIcon;
+    return omnibox::kDriveDocsCustomIcon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
@@ -813,7 +813,7 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
                  "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kDriveSheetsIcon;
+    return omnibox::kDriveSheetsCustomIcon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
@@ -869,7 +869,7 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
                  "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kDriveSlidesIcon;
+    return omnibox::kDriveSlidesCustomIcon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
@@ -1096,7 +1096,7 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
                  "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return omnibox::kDriveFormsIcon;
+    return omnibox::kDriveFormsCustomIcon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(

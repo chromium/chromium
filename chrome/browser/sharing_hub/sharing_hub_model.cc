@@ -119,7 +119,7 @@ void SharingHubModel::PopulateFirstPartyActions() {
   first_party_action_list_.emplace_back(
       IDC_QRCODE_GENERATOR,
       l10n_util::GetStringUTF16(IDS_SHARING_HUB_GENERATE_QR_CODE_LABEL),
-      &kQrcodeGeneratorIcon, "SharingHubDesktop.QRCodeSelected", 0);
+      &kQrcodeGeneratorCustomIcon, "SharingHubDesktop.QRCodeSelected", 0);
 
   if (media_router::MediaRouterEnabled(context_)) {
     first_party_action_list_.emplace_back(

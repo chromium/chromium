@@ -276,7 +276,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
                  ? vector_icons::kMouseLockOffIcon
                  : vector_icons::kPointerLockOffOldIcon;
     case RequestType::kWebAppInstallation:
-      return vector_icons::kInstallDesktopOffIcon;
+      return vector_icons::kInstallDesktopOffCustomIcon;
     default:
       NOTREACHED();
   }

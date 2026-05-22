@@ -292,7 +292,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : kTabSearchTabStripOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch;
     case kActionSidePanelShowContextualTasks:
-      CHECK_EQ(icon, &kDockToRightSparkIcon);
+      CHECK_EQ(icon, &kDockToRightSparkCustomIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowContextualTasks;
     case kActionSidePanelShowLens:

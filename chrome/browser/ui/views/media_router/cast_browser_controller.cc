@@ -189,7 +189,7 @@ void CastBrowserController::LogIconChange(const gfx::VectorIcon* icon) {
         mojom::LogCategory::kUi, kLoggerComponent,
         "Cast toolbar icon indicates no active session nor issues.", "", "",
         "");
-  } else if (icon == &vector_icons::kMediaRouterErrorIcon) {
+  } else if (icon == &vector_icons::kMediaRouterErrorCustomIcon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a fatal issue.", "", "", "");
   } else if (icon ==

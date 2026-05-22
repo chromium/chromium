@@ -609,7 +609,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                          : vector_icons::kTouchpadMouseOldIcon);
       break;
     case ContentSettingsType::WEB_APP_INSTALLATION:
-      icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffIcon
+      icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffCustomIcon
                                 : &(features::IsRoundedIconsEnabled()
                                         ? vector_icons::kInstallDesktopIcon
                                         : vector_icons::kInstallDesktopOldIcon);
@@ -706,7 +706,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      icon = &vector_icons::kProtectedContentIcon;
+      icon = &vector_icons::kProtectedContentCustomIcon;
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
@@ -833,7 +833,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
 
   return ui::ImageModel::FromVectorIcon(
       *icon, ui::kColorIcon, GetIconSize(),
-      show_blocked_badge ? &vector_icons::kBlockedBadgeIcon : nullptr);
+      show_blocked_badge ? &vector_icons::kBlockedBadgeCustomIcon : nullptr);
 }
 
 // static
@@ -878,7 +878,7 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
 
   return ui::ImageModel::FromVectorIcon(
       *icon, ui::kColorIcon, GetIconSize(),
-      deleted ? &vector_icons::kBlockedBadgeIcon : nullptr);
+      deleted ? &vector_icons::kBlockedBadgeCustomIcon : nullptr);
 }
 
 // static

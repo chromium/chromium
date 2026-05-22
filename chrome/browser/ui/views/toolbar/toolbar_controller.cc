@@ -255,7 +255,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
           ToolbarController::ElementIdInfo{
               ContextualTasksButton::kContextualTasksToolbarButton,
               IDS_OVERFLOW_MENU_ITEM_TEXT_CONTEXTUAL_TASKS,
-              &kDockToRightSparkIcon,
+              &kDockToRightSparkCustomIcon,
               ContextualTasksButton::kContextualTasksToolbarButton},
           /*is_section_end=*/false),
   };

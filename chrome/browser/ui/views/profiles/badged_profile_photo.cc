@@ -88,24 +88,25 @@ class BadgeView : public views::ImageView {
         break;
       case BadgedProfilePhoto::BadgeType::kSyncComplete:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSyncCircleIcon, ui::kColorAlertLowSeverity, kBadgeIconSize));
+            kSyncCircleCustomIcon, ui::kColorAlertLowSeverity, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kSyncError:
-        SetImage(ui::ImageModel::FromVectorIcon(
-            kSyncErrorCircleIcon, ui::kColorAlertHighSeverity, kBadgeIconSize));
+        SetImage(ui::ImageModel::FromVectorIcon(kSyncErrorCircleCustomIcon,
+                                                ui::kColorAlertHighSeverity,
+                                                kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kSyncPaused:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSyncPausedCircleIcon, ui::kColorButtonBackgroundProminent,
+            kSyncPausedCircleCustomIcon, ui::kColorButtonBackgroundProminent,
             kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kSyncDisabled:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSyncCircleIcon, ui::kColorIconDisabled, kBadgeIconSize));
+            kSyncCircleCustomIcon, ui::kColorIconDisabled, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kSyncOff:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSyncPausedCircleIcon, ui::kColorIcon, kBadgeIconSize));
+            kSyncPausedCircleCustomIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kNone:
         NOTREACHED();

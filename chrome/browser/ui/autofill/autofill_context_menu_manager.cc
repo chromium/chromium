@@ -576,3 +576,4 @@ void AutofillContextMenuManager::MaybeMarkLastItemAsNewFeature(
 }
 
 }  // namespace autofill
+   // namespace autofill

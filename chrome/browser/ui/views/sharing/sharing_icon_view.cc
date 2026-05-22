@@ -160,7 +160,7 @@ bool SharingIconView::IsTriggerableEvent(const ui::Event& event) {
 }
 
 const gfx::VectorIcon& SharingIconView::GetVectorIconBadge() const {
-  return should_show_error_ ? vector_icons::kBlockedBadgeIcon
+  return should_show_error_ ? vector_icons::kBlockedBadgeCustomIcon
                             : gfx::VectorIcon::EmptyIcon();
 }
 
