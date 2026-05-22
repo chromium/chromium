@@ -692,17 +692,15 @@ struct AutocompleteMatch {
   // providers.
   bool IsOnDeviceSearchSuggestion() const;
 
-  // Returns the top-level sorting order of the suggestion.
-  // Suggestions should be sorted by this value first, and by Relevance score
-  // next.
+  // Returns the top-level sorting order of the suggestion. Suggestions should
+  // be sorted by this value first, and by Relevance score next.
   int GetSortingOrder() const;
 
-  // Whether this autocomplete match supports custom descriptions.
-  // Matches with custom descriptions (such as calculator results, entities, or
-  // inline location signaling suggestions) will retain their custom description
-  // text and will not have it cleared or overwritten by the search engine's
-  // keyword description during
-  // `AutocompleteController::UpdateKeywordDescriptions()`.
+  // Whether this autocomplete match supports custom descriptions. Matches with
+  // custom descriptions (such as calculator results, entities, or inline
+  // location signaling suggestions) will retain their custom description text
+  // and will not have it cleared or overwritten by the search engine's keyword
+  // description during `AutocompleteController::UpdateKeywordDescriptions()`.
   bool HasCustomDescription() const;
 
   // Returns true if the match is eligible for ML scoring signal logging.
@@ -711,8 +709,8 @@ struct AutocompleteMatch {
   // Returns true if the match is eligible to be re-scored by ML scoring.
   bool IsMlScoringEligible() const;
 
-  // Filter OmniboxActions based on the supplied qualifiers.
-  // The order of the supplied qualifiers determines the preference.
+  // Filter `OmniboxActions` based on the supplied qualifiers. The order of the
+  // supplied qualifiers determines the preference.
   void FilterOmniboxActions(
       const std::vector<OmniboxActionId>& allowed_action_ids);
 

@@ -1156,7 +1156,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
       // this isn't a server-scored suggestion we can add, skip it.
       // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
       //   non-debugging purposes.
-      if ((num_suggestions >= provider_max_matches_) &&
+      if (num_suggestions >= provider_max_matches_ &&
           (i->GetAdditionalInfoForDebugging(kRelevanceFromServerKey) !=
            kTrue)) {
         continue;

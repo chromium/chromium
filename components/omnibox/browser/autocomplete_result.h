@@ -241,13 +241,6 @@ class AutocompleteResult {
   static ACMatches::iterator FindTopMatch(const AutocompleteInput& input,
                                           ACMatches* matches);
 
-  // If the top match is a Search Entity, and it was deduplicated with a
-  // non-entity match, splits off the non-entity match from the list of
-  // duplicates and returns true. Otherwise returns false.
-  // The non-entity duplicate is promoted to the top, unless the entity match
-  // has Action in Suggest where it remains at the top.
-  static bool UndedupTopSearchEntityMatch(ACMatches* matches);
-
   // Just a helper function to encapsulate the logic of deciding how many
   // matches to keep, with respect to configured maximums, URL limits,
   // and relevancies.
@@ -502,6 +495,16 @@ class AutocompleteResult {
       ACMatches* matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
+  // If the top match is a Search Entity, and it was deduplicated with a
+  // non-entity match, splits off the non-entity match from the list of
+  // duplicates and returns true. Otherwise returns false.
+  // The non-entity duplicate is promoted to the top, unless the entity match
+  // has Action in Suggest where it remains at the top.
+  static bool UndedupeTopSearchEntityMatch(ACMatches* matches);
+
+  // Positions inline location matches relative to their parents.
+  void ArrangeInlineLocationSignalingMatch();
+
   // Populates |provider_to_matches| from |matches_|. This AutocompleteResult
   // should not be used after the 'move' version.
   void BuildProviderToMatchesCopy(ProviderToMatches* provider_to_matches) const;
@@ -518,13 +521,10 @@ class AutocompleteResult {
   static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
 
-  // Positions inline location matches relative to their parents.
-  void ArrangeInlineLocationSignalingMatch();
-
   // This method reduces the number of navigation suggestions to that of
   // `max_url_matches_` but will allow more if there are no other types to
   // replace them.
-  void LimitNumberOfURLsShown(
+  void LimitNumberOfUrlsShown(
       size_t max_matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 

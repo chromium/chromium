@@ -389,56 +389,21 @@ void AutocompleteResult::Sort(
   // `stripped_destination_url` to detect result changes. If
   // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
   // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
-  if (UndedupTopSearchEntityMatch(&matches_)) {
+  if (UndedupeTopSearchEntityMatch(&matches_)) {
     matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
   }
 
+  // Users can opt into sharing geo location headers with DSE search
+  // suggestions. If they don't opt in to automatically include the header, they
+  // may see a duplicate search suggestion of their (top|verbatim|?) search
+  // suggestion: one without the header; and one with the header. These
+  // with/without geo location header search duplicates should be ranked
+  // adjacent; the without-header search above the with-header search.
+  // TODO(crbug.com/507036994, andypaicu) Fill in the ? above.
+  // TODO(crbug.com/507036994, andypaicu) Add explanation why
+  //   `DeduplicateMatches()` above did not remove the inline location signaling
+  //   match making this call a no-op.
   ArrangeInlineLocationSignalingMatch();
-}
-
-void AutocompleteResult::ArrangeInlineLocationSignalingMatch() {
-  if (base::FeatureList::IsEnabled(omnibox::kInlineLocationSignaling)) {
-    const omnibox::InlineLocationSignalingDisplayOrder order =
-        omnibox::kInlineLocationSignalingDisplayOrder.Get();
-
-    for (auto it = matches_.begin(); it != matches_.end(); ++it) {
-      if (it->extra_headers.contains(kXGeoHeader)) {
-        AutocompleteMatch match = *it;
-        auto parent_it = std::find_if(
-            matches_.begin(), matches_.end(), [&](const auto& candidate) {
-              return candidate.destination_url == match.destination_url &&
-                     !candidate.extra_headers.contains(kXGeoHeader);
-            });
-
-        if (parent_it != matches_.end()) {
-          it = matches_.erase(it);
-          parent_it = std::find_if(
-              matches_.begin(), matches_.end(), [&](const auto& candidate) {
-                return candidate.destination_url == match.destination_url &&
-                       !candidate.extra_headers.contains(kXGeoHeader);
-              });
-
-          // Reinsert at configured relative index.
-          switch (order) {
-            case omnibox::InlineLocationSignalingDisplayOrder::kDisplayBelow:
-              it = matches_.insert(parent_it + 1, std::move(match));
-              break;
-            case omnibox::InlineLocationSignalingDisplayOrder::kDisplayAbove:
-              // Safely de-escalate to Below if the parent is the default match
-              // (index 0) to ensure we do not displace it or place a
-              // non-default suggestion at index 0.
-              if (parent_it == matches_.begin()) {
-                it = matches_.insert(parent_it + 1, std::move(match));
-              } else {
-                it = matches_.insert(parent_it, std::move(match));
-              }
-              break;
-          }
-          break;
-        }
-      }
-    }
-  }
 }
 
 void AutocompleteResult::SortAndCull(
@@ -781,7 +746,7 @@ void AutocompleteResult::SortAndCull(
     // Limit URL matches.
     if (input.GetFeaturedKeywordMode() !=
         AutocompleteInput::FeaturedKeywordMode::kExact) {
-      LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), comparing_object);
+      LimitNumberOfUrlsShown(GetMaxMatches(is_zero_suggest), comparing_object);
     }
 
     // Limit total matches accounting for suggestions score <= 0, sub matches,
@@ -1250,95 +1215,6 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
 }
 
 // static
-bool AutocompleteResult::UndedupTopSearchEntityMatch(ACMatches* matches) {
-  if (matches->empty())
-    return false;
-
-  auto top_match = matches->begin();
-  if (top_match->type != ACMatchType::SEARCH_SUGGEST_ENTITY)
-    return false;
-
-  // We define an iterator to capture the non-entity duplicate match (if any)
-  // so that we can later use it with duplicate_matches.erase().
-  auto non_entity_it = top_match->duplicate_matches.end();
-
-  // Search the duplicates for an equivalent non-entity search suggestion.
-  for (auto it = top_match->duplicate_matches.begin();
-       it != top_match->duplicate_matches.end(); ++it) {
-    // Reject any ineligible duplicates.
-    if (it->type == ACMatchType::SEARCH_SUGGEST_ENTITY ||
-        !AutocompleteMatch::IsSearchType(it->type) ||
-        !it->allowed_to_be_default_match) {
-      continue;
-    }
-
-    // Capture the first eligible non-entity duplicate we find, but continue the
-    // search for a potential server-provided duplicate, which is considered to
-    // be an even better candidate for the reasons outlined below.
-    if (non_entity_it == top_match->duplicate_matches.end()) {
-      non_entity_it = it;
-    }
-
-    // When an entity suggestion (SEARCH_SUGGEST_ENTITY) is received from
-    // google.com, we also receive a non-entity version of the same suggestion
-    // which (a) gets placed in the |duplicate_matches| list of the entity
-    // suggestion (as part of the deduplication process) and (b) has the same
-    // |deletion_url| as the entity suggestion.
-    // When the user attempts to remove the SEARCH_SUGGEST_ENTITY suggestion
-    // from the omnibox, the suggestion removal code will fire off network
-    // requests to the suggestion's own |deletion_url| as well as to any
-    // deletion_url's present on matches in the associated |duplicate_matches|
-    // list, which in this case would result in redundant network calls to the
-    // same URL.
-    // By prioritizing the "undeduping" (i.e. moving a duplicate match out of
-    // the |duplicate_matches| list) and promotion of the non-entity
-    // SEARCH_SUGGEST (or any other "specialized search") duplicate as the
-    // top match, we are deliberately separating the two matches that have the
-    // same |deletion_url|, thereby eliminating any redundant network calls
-    // upon suggestion removal.
-    if (it->type == ACMatchType::SEARCH_SUGGEST ||
-        AutocompleteMatch::IsSpecializedSearchType(it->type)) {
-      non_entity_it = it;
-      break;
-    }
-  }
-
-  if (non_entity_it != top_match->duplicate_matches.end()) {
-    // Move out the non-entity match, then erase it from the list of duplicates.
-    // We do this first, because the insertion operation invalidates all
-    // iterators, including |top_match|.
-    AutocompleteMatch non_entity_match_copy{std::move(*non_entity_it)};
-    top_match->duplicate_matches.erase(non_entity_it);
-
-    // When we spawn our non-entity match copy, we still want to preserve any
-    // entity ID that was provided by the server for logging purposes, even if
-    // we don't display it.
-    if (non_entity_match_copy.entity_id.empty()) {
-      non_entity_match_copy.entity_id = top_match->entity_id;
-    }
-
-    // Unless the entity match has Actions in Suggest, promote the non-entity
-    // match to the top. Otherwise keep the entity match at the top followed by
-    // the non-entity match.
-    bool top_match_has_actions =
-        !!top_match->GetActionWhere([](const auto& action) {
-          return action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST;
-        });
-
-    if (top_match_has_actions) {
-      matches->insert(std::next(matches->begin()),
-                      std::move(non_entity_match_copy));
-    } else {
-      matches->insert(matches->begin(), std::move(non_entity_match_copy));
-    }
-    // Immediately return as all our iterators are invalid after the insertion.
-    return true;
-  }
-
-  return false;
-}
-
-// static
 size_t AutocompleteResult::CalculateNumMatches(
     bool is_zero_suggest,
     AutocompleteInput::FeaturedKeywordMode featured_keyword_mode,
@@ -1705,6 +1581,134 @@ void AutocompleteResult::MaybeCullTailSuggestions(
   }
 }
 
+// static
+bool AutocompleteResult::UndedupeTopSearchEntityMatch(ACMatches* matches) {
+  if (matches->empty())
+    return false;
+
+  auto top_match = matches->begin();
+  if (top_match->type != ACMatchType::SEARCH_SUGGEST_ENTITY)
+    return false;
+
+  // We define an iterator to capture the non-entity duplicate match (if any)
+  // so that we can later use it with duplicate_matches.erase().
+  auto non_entity_it = top_match->duplicate_matches.end();
+
+  // Search the duplicates for an equivalent non-entity search suggestion.
+  for (auto it = top_match->duplicate_matches.begin();
+       it != top_match->duplicate_matches.end(); ++it) {
+    // Reject any ineligible duplicates.
+    if (it->type == ACMatchType::SEARCH_SUGGEST_ENTITY ||
+        !AutocompleteMatch::IsSearchType(it->type) ||
+        !it->allowed_to_be_default_match) {
+      continue;
+    }
+
+    // Capture the first eligible non-entity duplicate we find, but continue the
+    // search for a potential server-provided duplicate, which is considered to
+    // be an even better candidate for the reasons outlined below.
+    if (non_entity_it == top_match->duplicate_matches.end()) {
+      non_entity_it = it;
+    }
+
+    // When an entity suggestion (SEARCH_SUGGEST_ENTITY) is received from
+    // google.com, we also receive a non-entity version of the same suggestion
+    // which (a) gets placed in the |duplicate_matches| list of the entity
+    // suggestion (as part of the deduplication process) and (b) has the same
+    // |deletion_url| as the entity suggestion.
+    // When the user attempts to remove the SEARCH_SUGGEST_ENTITY suggestion
+    // from the omnibox, the suggestion removal code will fire off network
+    // requests to the suggestion's own |deletion_url| as well as to any
+    // deletion_url's present on matches in the associated |duplicate_matches|
+    // list, which in this case would result in redundant network calls to the
+    // same URL.
+    // By prioritizing the "undeduping" (i.e. moving a duplicate match out of
+    // the |duplicate_matches| list) and promotion of the non-entity
+    // SEARCH_SUGGEST (or any other "specialized search") duplicate as the
+    // top match, we are deliberately separating the two matches that have the
+    // same |deletion_url|, thereby eliminating any redundant network calls
+    // upon suggestion removal.
+    if (it->type == ACMatchType::SEARCH_SUGGEST ||
+        AutocompleteMatch::IsSpecializedSearchType(it->type)) {
+      non_entity_it = it;
+      break;
+    }
+  }
+
+  if (non_entity_it != top_match->duplicate_matches.end()) {
+    // Move out the non-entity match, then erase it from the list of duplicates.
+    // We do this first, because the insertion operation invalidates all
+    // iterators, including |top_match|.
+    AutocompleteMatch non_entity_match_copy{std::move(*non_entity_it)};
+    top_match->duplicate_matches.erase(non_entity_it);
+
+    // When we spawn our non-entity match copy, we still want to preserve any
+    // entity ID that was provided by the server for logging purposes, even if
+    // we don't display it.
+    if (non_entity_match_copy.entity_id.empty()) {
+      non_entity_match_copy.entity_id = top_match->entity_id;
+    }
+
+    // Unless the entity match has Actions in Suggest, promote the non-entity
+    // match to the top. Otherwise keep the entity match at the top followed by
+    // the non-entity match.
+    bool top_match_has_actions =
+        !!top_match->GetActionWhere([](const auto& action) {
+          return action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST;
+        });
+
+    if (top_match_has_actions) {
+      matches->insert(std::next(matches->begin()),
+                      std::move(non_entity_match_copy));
+    } else {
+      matches->insert(matches->begin(), std::move(non_entity_match_copy));
+    }
+    // Immediately return as all our iterators are invalid after the insertion.
+    return true;
+  }
+
+  return false;
+}
+
+void AutocompleteResult::ArrangeInlineLocationSignalingMatch() {
+  if (!base::FeatureList::IsEnabled(omnibox::kInlineLocationSignaling)) {
+    return;
+  }
+
+  // Find the inline location signaling match. There's usually at most 1. Result
+  // transferring can lead to multiple signaling matches, but we don't handle
+  // that case since the effect of a temporarily incorrectly positioned location
+  // match doesn't seem significant.
+  auto location_it = std::ranges::find_if(matches_, [](const auto& m) {
+    return m.extra_headers.contains(kXGeoHeader);
+  });
+  if (location_it == matches_.end()) {
+    return;
+  }
+
+  // Find its parent match.
+  auto parent_it = std::ranges::find_if(matches_, [&](const auto& m) {
+    return m.destination_url == location_it->destination_url &&
+           !m.extra_headers.contains(kXGeoHeader);
+  });
+  if (parent_it == matches_.end()) {
+    return;
+  }
+  // Compute the parent index before `erase()` below invalidates the iterator.
+  size_t parent_index = std::distance(matches_.begin(), parent_it);
+
+  // Move the location match 1 above or below its parent.
+  AutocompleteMatch geo_match = std::move(*location_it);
+  matches_.erase(location_it);
+  const auto order = omnibox::kInlineLocationSignalingDisplayOrder.Get();
+  bool insert_above =
+      order == omnibox::InlineLocationSignalingDisplayOrder::kDisplayAbove &&
+      // Don't displace the parent if it's the default match.
+      parent_index > 0;
+  size_t insert_idx = insert_above ? parent_index : parent_index + 1;
+  matches_.insert(matches_.begin() + insert_idx, std::move(geo_match));
+}
+
 void AutocompleteResult::BuildProviderToMatchesCopy(
     ProviderToMatches* provider_to_matches) const {
   for (const auto& match : *this)
@@ -1781,7 +1785,7 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
   return std::make_tuple(match.stripped_destination_url.spec(), type);
 }
 
-void AutocompleteResult::LimitNumberOfURLsShown(
+void AutocompleteResult::LimitNumberOfUrlsShown(
     size_t max_matches,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
   size_t search_count =

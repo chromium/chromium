@@ -121,6 +121,7 @@ class AutocompleteResultForTesting : public AutocompleteResult {
   using AutocompleteResult::matches_;
   using AutocompleteResult::max_url_matches_;
   using AutocompleteResult::MaybeCullTailSuggestions;
+  using AutocompleteResult::UndedupeTopSearchEntityMatch;
 };
 
 class AutocompleteResultTest : public testing::Test {
@@ -3282,7 +3283,7 @@ TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
   // matches we want to see.
   for (const auto& test_case : test_cases) {
     auto result = test_case.input;
-    AutocompleteResult::UndedupTopSearchEntityMatch(&result);
+    AutocompleteResultForTesting::UndedupeTopSearchEntityMatch(&result);
 
     EXPECT_EQ(result.size(), test_case.expected_result.size());
     for (size_t index = 0u; index < result.size(); ++index) {
