@@ -2809,6 +2809,8 @@ static_library("browser") {
       "android/media_state_observer.cc",
       "android/media_state_observer.h",
       "android/messages_resource_mapper_initializer.cc",
+      "android/metrics/android_atoms_logger.cc",
+      "android/metrics/android_atoms_logger.h",
       "android/metrics/android_session_durations_service.cc",
       "android/metrics/android_session_durations_service.h",
       "android/metrics/android_session_durations_service_factory.cc",
