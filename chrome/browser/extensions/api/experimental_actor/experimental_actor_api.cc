@@ -311,7 +311,8 @@ ExperimentalActorPerformActionsFunction::Run() {
         base::BindOnce(
             &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
             task_id, start_time, skip_async_observation_information,
-            std::nullopt, std::move(action_results)));
+            std::nullopt, std::move(action_results),
+            actor::TabObservationStrategy()));
     return RespondLater();
   }
 
@@ -332,7 +333,8 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
     std::optional<page_content_annotations::ScreenshotOptions::
                       ScreenshotCollectionOptions>
         screenshot_collection_options,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results) {
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    actor::TabObservationStrategy observation_strategy) {
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor::ActorTask* task = actor_service->GetTask(task_id);
 

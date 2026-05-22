@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -548,9 +549,10 @@ void ActorKeyedService::PerformActions(
                          .Add("task_id", task_id)
                          .AddError("Invalid Task")
                          .Build());
-    RunLater(base::BindOnce(
-        std::move(callback),
-        MakeResultVector(mojom::ActionResultCode::kTaskWentAway)));
+    RunLater(
+        base::BindOnce(std::move(callback),
+                       MakeResultVector(mojom::ActionResultCode::kTaskWentAway),
+                       TabObservationStrategy()));
     return;
   }
 
@@ -560,7 +562,8 @@ void ActorKeyedService::PerformActions(
         JournalDetailsBuilder().AddError("Empty Actions List").Build());
     RunLater(base::BindOnce(
         std::move(callback),
-        MakeResultVector(mojom::ActionResultCode::kEmptyActionSequence)));
+        MakeResultVector(mojom::ActionResultCode::kEmptyActionSequence),
+        TabObservationStrategy()));
     return;
   }
 
@@ -577,16 +580,19 @@ void ActorKeyedService::PerformActions(
 
 void ActorKeyedService::OnActionsFinished(
     PerformActionsCallback callback,
-    std::vector<ActionResultWithLatencyInfo> action_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results,
+    TabObservationStrategy observation_strategy) {
   TRACE_EVENT0("actor", "ActorKeyedService::OnActionsFinished");
 
   if (base::FeatureList::IsEnabled(
           actor::kGlicPerformActionsReturnsBeforeStateChange)) {
-    std::move(callback).Run(std::move(action_results));
+    std::move(callback).Run(std::move(action_results),
+                            std::move(observation_strategy));
   } else {
     // RunLater is load bearing. See:
     // https://chromium-review.googlesource.com/c/chromium/src/+/7552225/comment/b0b7f011_71da3233/
-    RunLater(base::BindOnce(std::move(callback), std::move(action_results)));
+    RunLater(base::BindOnce(std::move(callback), std::move(action_results),
+                            std::move(observation_strategy)));
   }
 }
 

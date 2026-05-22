@@ -7,6 +7,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/task_id.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -81,7 +82,8 @@ class ExperimentalActorPerformActionsFunction
       std::optional<page_content_annotations::ScreenshotOptions::
                         ScreenshotCollectionOptions>
           screenshot_collection_options,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results);
+      std::vector<actor::ActionResultWithLatencyInfo> action_results,
+      actor::TabObservationStrategy observation_strategy);
   void OnObservationResult(
       base::TimeTicks start_time,
       std::vector<actor::ActionResultWithLatencyInfo> action_results,

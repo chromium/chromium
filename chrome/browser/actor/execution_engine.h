@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
@@ -182,7 +183,8 @@ class ExecutionEngine : public ToolDelegate,
 
   // Performs the given tool actions and invokes the callback when completed.
   using ActCallback =
-      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>)>;
+      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>,
+                              TabObservationStrategy)>;
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
@@ -471,6 +473,8 @@ class ExecutionEngine : public ToolDelegate,
   // This will allow us to store already-recorded origins to avoid duplication
   // of dark launch metrics.
   OriginChecker dark_launch_origin_checker_;
+
+  TabObservationStrategy observation_strategy_;
 
   // Manages the container config settings that have been sent by the server.
   ActorContainerConfig actor_container_config_;

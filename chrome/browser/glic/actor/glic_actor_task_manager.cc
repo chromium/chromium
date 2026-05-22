@@ -268,7 +268,8 @@ void GlicActorClientSession::PerformActionsFinished(
     std::optional<page_content_annotations::ScreenshotOptions::
                       ScreenshotCollectionOptions>
         screenshot_collection_options,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results) {
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    actor::TabObservationStrategy observation_strategy) {
   actor::mojom::ActionResultCode result_code =
       actor::mojom::ActionResultCode::kOk;
   std::optional<size_t> index_of_failed_action;
@@ -325,7 +326,8 @@ void GlicActorClientSession::PerformActionsFinished(
 
     auto controller = std::make_unique<actor::TabObservationController>(
         &profile(), task_id, start_time, skip_async_observation_information,
-        action_results, std::move(done_callback));
+        action_results, std::move(observation_strategy),
+        std::move(done_callback));
 
     controller->set_screenshot_collection_options(
         std::move(screenshot_collection_options));
@@ -350,7 +352,8 @@ void GlicActorClientSession::PerformActionsFinished(
           &GlicActorClientSession::PerformActionsFinished,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), task_id,
           start_time, skip_async_observation_information,
-          std::move(screenshot_collection_options), std::move(action_results));
+          std::move(screenshot_collection_options), std::move(action_results),
+          std::move(observation_strategy));
       ReloadCrashedTab(*crashed_tab, task->id(),
                        std::move(retry_perform_actions_finished));
       return;
@@ -482,8 +485,8 @@ void GlicActorClientSession::DidFinishBuildObservation(
             &GlicActorClientSession::PerformActionsFinished,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback), task_id,
             start_time, skip_async_observation_information,
-            std::move(screenshot_collection_options),
-            std::move(action_results));
+            std::move(screenshot_collection_options), std::move(action_results),
+            actor::TabObservationStrategy());
 
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, std::move(retry_perform_actions_finished),

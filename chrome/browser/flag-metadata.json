@@ -38,6 +38,22 @@
     "expiry_milestone": 110
   },
   {
+    "name": "actor-observe-page-content-default",
+    "owners": [
+      "mfoltz@chromium.org",
+      "chrome-actor@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
+    "name": "actor-observe-screenshot-default",
+    "owners": [
+      "mfoltz@chromium.org",
+      "chrome-actor@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "actor-service-logging",
     "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160
