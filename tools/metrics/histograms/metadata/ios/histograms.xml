@@ -5540,6 +5540,17 @@ chromium-metrics-reviews@google.com.
   <token key="Feature" variants="PictureInPictureFeature"/>
 </histogram>
 
+<histogram name="IOS.PictureInPicture.{Feature}.StartSuccessful" enum="Boolean"
+    expires_after="2027-01-28">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs whether a Picture in Picture session started successfully for a given
+    feature.
+  </summary>
+  <token key="Feature" variants="PictureInPictureFeature"/>
+</histogram>
+
 <histogram name="IOS.PostDefaultAbandonmentPromo.UserAction"
     enum="IOSPostRestoreDefaultBrowserActionOnPrompt"
     expires_after="2024-12-31">
