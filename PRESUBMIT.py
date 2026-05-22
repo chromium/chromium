@@ -2597,6 +2597,7 @@ _GENERIC_PYDEPS_FILES = [
     'chrome/test/media/performance/openscreen_remoting_performance_test.pydeps',
     'chrome/test/media/performance/videostack_performance_test.pydeps',
     'chromecast/resource_sizes/chromecast_resource_sizes.pydeps',
+    'components/autofill/core/browser/data_model/autofill_ai/transpile_entity_schema.pydeps',
     'components/cronet/tools/check_combined_proguard_file.pydeps',
     'components/cronet/tools/generate_proguard_file.pydeps',
     'components/cronet/tools/jar_src.pydeps',
