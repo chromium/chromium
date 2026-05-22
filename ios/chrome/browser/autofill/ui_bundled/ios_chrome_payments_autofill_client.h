@@ -56,6 +56,7 @@ namespace payments {
 
 struct BnplIssuerContext;
 struct BnplTosModel;
+class IosBnplUiDelegate;
 class MandatoryReauthManager;
 
 // Chrome iOS implementation of PaymentsAutofillClient. Owned by the
@@ -283,6 +284,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   // the infobar for uploading the card to server.
   bool show_save_card_bottom_sheet_for_upload_;
 
+  // The BnplUiDelegate used to handle the UI in the BNPL flow depending on the
+  // platform.
+  // Lazily initialized: access only through `GetBnplUiDelegate()`.
+  std::unique_ptr<IosBnplUiDelegate> bnpl_ui_delegate_;
 };
 
 }  // namespace payments

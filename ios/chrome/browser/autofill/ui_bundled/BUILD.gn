@@ -38,6 +38,7 @@ source_set("coordinator") {
     "//google_apis",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/model",
+    "//ios/chrome/browser/autofill/bnpl/ui",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
