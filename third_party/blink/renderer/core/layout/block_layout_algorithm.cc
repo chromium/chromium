@@ -679,16 +679,21 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       // implement a production-ready solution. Ideally we should introduce a
       // new phase separate from minmax and layout to skip unnecessary
       // processing.
-      // Additionally, this feature is not currently intended to be used with
-      // multi-column layouts.
+      const ConstraintSpace& space = GetConstraintSpace();
+      ConstraintSpace space_without_fragmentation =
+          space.HasBlockFragmentation() ? space.CloneWithoutFragmentation()
+                                        : ConstraintSpace(space);
       LayoutAlgorithmParams cloned_param(
           Node(), container_builder_.InitialFragmentGeometry(),
-          GetConstraintSpace());
-      cloned_param.break_token = GetBreakToken();
-      cloned_param.early_break = early_break_;
-      cloned_param.additional_early_breaks = additional_early_breaks_;
-      cloned_param.column_spanner_path = column_spanner_path_;
+          space_without_fragmentation);
       cloned_param.previous_result = previous_result_;
+      // We don't set fields of `cloned_param` for block-fragmentation. We'd
+      // like to take into account of all lines in the block.
+      //
+      // TODO(crbug.com/417306102): With this approach, we lay out the whole
+      // block multiple times to measure a scaling factor. We should do it only
+      // for the first column, and pass the scaling factor via a BreakToken.
+
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);
       const LayoutResult* result =
           cloned_algorithm.LayoutInlineChild(node, nullptr);
