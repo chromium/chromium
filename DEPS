@@ -3005,53 +3005,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  # The Linux binary is always downloaded regardless of host os and architecture
-  # since remote node actions run on Linux worker.
-  # See also //third_party/typescript/tsgo.gni
-  'src/third_party/typescript/linux-amd64/src': {
-      'dep_type': 'cipd',
-      'condition': 'non_git_source',
-      'packages': [
-          {
-              'package': 'chromium/third_party/typescript/linux-amd64',
-              'version': 'version:2@7.0.0-dev.20260421.2',
-          },
-      ],
-  },
-
-  'src/third_party/typescript/mac-amd64/src': {
-      'dep_type': 'cipd',
-      'condition': 'host_os == "mac" and host_cpu == "x64" and non_git_source',
-      'packages': [
-          {
-              'package': 'chromium/third_party/typescript/mac-amd64',
-              'version': 'version:2@7.0.0-dev.20260421.2',
-          },
-      ],
-  },
-
-  'src/third_party/typescript/mac-arm64/src': {
-      'dep_type': 'cipd',
-      'condition': 'host_os == "mac" and host_cpu == "arm64" and non_git_source',
-      'packages': [
-          {
-              'package': 'chromium/third_party/typescript/mac-arm64',
-              'version': 'version:2@7.0.0-dev.20260421.2',
-          },
-      ],
-  },
-
-  'src/third_party/typescript/windows-amd64/src': {
-      'dep_type': 'cipd',
-      'condition': 'checkout_win and non_git_source',
-      'packages': [
-          {
-              'package': 'chromium/third_party/typescript/windows-amd64',
-              'version': 'version:2@7.0.0-dev.20260421.2',
-          },
-      ],
-  },
-
   'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@26c4192d920dbf0b767c5063c32cab33e0ccbd8f',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@5313f0a5b1ef12450fc4b70435a1d03a4de23ddd',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
