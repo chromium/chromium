@@ -175,9 +175,8 @@ class MockAutofillClient : public TestAutofillClient {
 
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(void,
-              HideSuggestions,
-              (SuggestionHidingReason reason,
-               std::optional<FillingProduct> product),
+              HideAutofillSuggestions,
+              (SuggestionHidingReason reason),
               (override));
 };
 
@@ -323,9 +322,8 @@ class TouchToFillDelegateAndroidImplUnitTest
 
   void TryToShowTouchToFill(bool expected_success) {
     EXPECT_CALL(autofill_client(),
-                HideSuggestions(
-                    SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
-                    testing::Eq(std::nullopt)))
+                HideAutofillSuggestions(
+                    SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
         .Times(expected_success ? 1 : 0);
 
     OnFormsSeen();
@@ -337,9 +335,8 @@ class TouchToFillDelegateAndroidImplUnitTest
 
   void TryShowTouchToFillForAllLoyaltyCards(bool expected_success) {
     EXPECT_CALL(autofill_client(),
-                HideSuggestions(
-                    SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
-                    testing::Eq(std::nullopt)))
+                HideAutofillSuggestions(
+                    SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
         .Times(expected_success ? 1 : 0);
 
     OnFormsSeen();
@@ -588,9 +585,8 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
                                        /*should_reshow=*/false);
 
   EXPECT_CALL(autofill_client(),
-              HideSuggestions(
-                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
-                  testing::Eq(std::nullopt)))
+              HideAutofillSuggestions(
+                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   TryToShowTouchToFill(/*expected_success=*/false);
 
@@ -655,9 +651,8 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(autofill_client(),
-              HideSuggestions(
-                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
-                  testing::Eq(std::nullopt)))
+              HideAutofillSuggestions(
+                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   EXPECT_FALSE(
       touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields()[0]));

@@ -297,9 +297,8 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   }
 
   ttf_payment_method_state_ = TouchToFillState::kIsShowing;
-  manager_->client().HideSuggestions(
-      SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
-      /*product=*/std::nullopt);
+  manager_->client().HideAutofillSuggestions(
+      SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
   if (std::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
     manager_->DidShowSuggestions({Suggestion(SuggestionType::kCreditCardEntry)},
                                  form.global_id(), field.global_id(),
@@ -336,9 +335,8 @@ bool TouchToFillDelegateAndroidImpl::ShowTouchToFillForAllLoyaltyCards(
     return false;
   }
   ttf_payment_method_state_ = TouchToFillState::kIsShowing;
-  manager_->client().HideSuggestions(
-      SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
-      /*product=*/std::nullopt);
+  manager_->client().HideAutofillSuggestions(
+      SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
   manager_->DidShowSuggestions({Suggestion(SuggestionType::kLoyaltyCardEntry)},
                                form.global_id(), field.global_id(),
                                /*update_suggestions_callback=*/{});

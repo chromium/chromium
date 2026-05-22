@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
-
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -121,8 +119,7 @@ class AutocompleteTest : public InProcessBrowserTest {
         web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager()
         .client()
-        .HideSuggestions(SuggestionHidingReason::kTabGone,
-                         /*product=*/std::nullopt);
+        .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
     active_browser_ = nullptr;
   }
 

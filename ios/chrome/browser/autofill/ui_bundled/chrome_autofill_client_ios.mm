@@ -32,7 +32,6 @@
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
-#import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
@@ -159,7 +158,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
 }
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
-  HideSuggestions(SuggestionHidingReason::kTabGone, /*product=*/std::nullopt);
+  HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
 void ChromeAutofillClientIOS::SetBaseViewController(
@@ -441,9 +440,7 @@ AutofillClient::SuggestionUiSessionId
 ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
-  active_suggestion_delegate_ = std::move(delegate);
-  [bridge_ showAutofillPopup:open_args.suggestions
-          suggestionDelegate:active_suggestion_delegate_];
+  [bridge_ showAutofillPopup:open_args.suggestions suggestionDelegate:delegate];
   return SuggestionUiSessionId();
 }
 
@@ -452,17 +449,8 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-void ChromeAutofillClientIOS::HideSuggestions(
-    SuggestionHidingReason reason,
-    std::optional<FillingProduct> product) {
-  // If a `product` filter is specified, only hide if it matches the active
-  // popup.
-  if (product && active_suggestion_delegate_ &&
-      product != active_suggestion_delegate_->GetMainFillingProduct()) {
-    return;
-  }
-
-  active_suggestion_delegate_.reset();
+void ChromeAutofillClientIOS::HideAutofillSuggestions(
+    SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];
   if (reason == SuggestionHidingReason::kAcceptSuggestion) {
     [commands_handler_ resetAutofillSuggestionsLoadingStates];

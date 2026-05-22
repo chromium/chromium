@@ -1450,9 +1450,8 @@ void RenderViewContextMenu::InitMenu() {
   autofill::AutofillClient* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
   if (autofill_client) {
-    autofill_client->HideSuggestions(
-        autofill::SuggestionHidingReason::kContextMenuOpened,
-        /*product=*/std::nullopt);
+    autofill_client->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kContextMenuOpened);
   }
 
   if (features::IsReadAnythingMenuShuffleExperimentEnabled() &&

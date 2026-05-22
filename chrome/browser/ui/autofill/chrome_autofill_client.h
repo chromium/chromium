@@ -198,8 +198,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       FillingProduct main_filling_product,
       AutofillSuggestionTriggerSource trigger_source,
       AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) final;
-  void HideSuggestions(SuggestionHidingReason reason,
-                       std::optional<FillingProduct> product) final;
+  void HideAutofillSuggestions(SuggestionHidingReason reason) final;
   void OpenGeminiInSidebar(const std::u16string& prompt) final;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
@@ -276,10 +275,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
     return suggestion_controller_;
   }
 #if defined(UNIT_TEST)
-  void set_suggestion_controller_for_testing(
-      base::WeakPtr<AutofillSuggestionController> controller) {
-    suggestion_controller_ = controller;
-  }
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) {
     keep_popup_open_for_testing_ = keep_popup_open_for_testing;
     if (suggestion_controller_) {

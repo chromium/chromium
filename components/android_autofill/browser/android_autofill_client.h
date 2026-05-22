@@ -6,7 +6,6 @@
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +19,6 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/credential_management/content_credential_manager.h"
@@ -127,8 +125,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) final;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) final;
-  void HideSuggestions(autofill::SuggestionHidingReason reason,
-                       std::optional<autofill::FillingProduct> product) final;
+  void HideAutofillSuggestions(autofill::SuggestionHidingReason reason) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsWalletPublicPassStorageEnabled() const final;

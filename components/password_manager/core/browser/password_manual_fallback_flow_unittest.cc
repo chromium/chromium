@@ -90,8 +90,8 @@ class MockAutofillClient : public TestAutofillClient {
                base::WeakPtr<AutofillSuggestionDelegate>),
               (override));
   MOCK_METHOD(void,
-              HideSuggestions,
-              (SuggestionHidingReason, std::optional<autofill::FillingProduct>),
+              HideAutofillSuggestions,
+              (SuggestionHidingReason),
               (override));
 };
 
@@ -609,8 +609,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
                         _));
   EXPECT_CALL(
       autofill_client(),
-      HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
-                      std::optional(autofill::FillingProduct::kPassword)));
+      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kPasswordFieldByFieldFilling,
                               u"username@example.com"),

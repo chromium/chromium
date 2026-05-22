@@ -8,7 +8,6 @@
 
 DEFINE_USER_DATA(DownloadToolbarUIController);
 
-#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -1125,9 +1124,8 @@ void DownloadToolbarUIController::CloseAutofillPopup() {
   }
   if (auto* autofill_client =
           autofill::ContentAutofillClient::FromWebContents(web_contents)) {
-    autofill_client->HideSuggestions(
-        autofill::SuggestionHidingReason::kOverlappingWithAnotherPrompt,
-        /*product=*/std::nullopt);
+    autofill_client->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kOverlappingWithAnotherPrompt);
   }
 }
 

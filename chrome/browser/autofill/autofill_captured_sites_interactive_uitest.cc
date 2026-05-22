@@ -267,8 +267,8 @@ class AutofillCapturedSitesInteractiveTest
       translate::test_utils::CloseCurrentBubble(browser());
       TryToCloseAllPrompts(web_contents);
 
-      autofill_manager.client().HideSuggestions(
-          SuggestionHidingReason::kViewDestroyed, /*product=*/std::nullopt);
+      autofill_manager.client().HideAutofillSuggestions(
+          SuggestionHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
           focus_element_css_selector, iframe_path, frame);
@@ -320,8 +320,8 @@ class AutofillCapturedSitesInteractiveTest
       return true;
     }
 
-    autofill_manager.client().HideSuggestions(
-        SuggestionHidingReason::kViewDestroyed, /*product=*/std::nullopt);
+    autofill_manager.client().HideAutofillSuggestions(
+        SuggestionHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;
   }

@@ -339,9 +339,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       // Other suggestion types are not supported.
       NOTREACHED();
   }
-  autofill_client_->HideSuggestions(
-      autofill::SuggestionHidingReason::kAcceptSuggestion,
-      GetMainFillingProduct());
+  autofill_client_->HideAutofillSuggestions(
+      autofill::SuggestionHidingReason::kAcceptSuggestion);
 }
 
 void PasswordManualFallbackFlow::DidPerformButtonActionForSuggestion(

@@ -848,19 +848,11 @@ void ChromeAutofillClient::UpdateAutofillSuggestions(
       ignore_focus_loss);
 }
 
-void ChromeAutofillClient::HideSuggestions(
-    SuggestionHidingReason reason,
-    std::optional<FillingProduct> product) {
-  if (!suggestion_controller_) {
-    return;
+void ChromeAutofillClient::HideAutofillSuggestions(
+    SuggestionHidingReason reason) {
+  if (suggestion_controller_) {
+    suggestion_controller_->Hide(reason);
   }
-
-  // If a product filter is specified, only hide if it matches the active popup.
-  if (product && product != suggestion_controller_->GetMainFillingProduct()) {
-    return;
-  }
-
-  suggestion_controller_->Hide(reason);
 }
 
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(

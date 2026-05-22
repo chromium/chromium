@@ -436,9 +436,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           ->HasPendingPasskeySelection() ||
       suggestion.type == autofill::SuggestionType::kIdentityCredential;
   if (!enter_loading_state) {
-    autofill_client_->HideSuggestions(
-        autofill::SuggestionHidingReason::kAcceptSuggestion,
-        GetMainFillingProduct());
+    autofill_client_->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kAcceptSuggestion);
   }
 }
 
@@ -511,8 +510,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
 void PasswordAutofillManager::DeleteFillData() {
   fill_data_.reset();
   if (autofill_client_) {
-    autofill_client_->HideSuggestions(
-        autofill::SuggestionHidingReason::kStaleData, GetMainFillingProduct());
+    autofill_client_->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kStaleData);
   }
   CancelBiometricReauthIfOngoing();
 }
@@ -693,9 +692,8 @@ bool PasswordAutofillManager::ShowPopup(
     return false;
   }
   if (!ContainsOtherThanManagePasswords(suggestions)) {
-    autofill_client_->HideSuggestions(
-        autofill::SuggestionHidingReason::kNoSuggestions,
-        GetMainFillingProduct());
+    autofill_client_->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kNoSuggestions);
     return false;
   }
 
@@ -729,9 +727,8 @@ void PasswordAutofillManager::UpdatePopup(std::vector<Suggestion> suggestions) {
     return;
   }
   if (!ContainsOtherThanManagePasswords(suggestions)) {
-    autofill_client_->HideSuggestions(
-        autofill::SuggestionHidingReason::kNoSuggestions,
-        GetMainFillingProduct());
+    autofill_client_->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kNoSuggestions);
     return;
   }
   autofill_client_->UpdateAutofillSuggestions(
@@ -904,9 +901,8 @@ void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
 }
 
 void PasswordAutofillManager::HidePopup() {
-  autofill_client_->HideSuggestions(
-      autofill::SuggestionHidingReason::kAcceptSuggestion,
-      GetMainFillingProduct());
+  autofill_client_->HideAutofillSuggestions(
+      autofill::SuggestionHidingReason::kAcceptSuggestion);
 }
 
 void PasswordAutofillManager::FocusedInputChanged() {

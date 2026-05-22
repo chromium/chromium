@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -23,11 +21,6 @@ class AtMemoryBottomSheetDelegateAndroidTest : public ::testing::Test {
 
 TEST_F(AtMemoryBottomSheetDelegateAndroidTest, OnDismissedHidesSuggestions) {
   AtMemoryBottomSheetDelegateAndroid delegate(&client_);
-  testing::NiceMock<MockAutofillSuggestionDelegate> mock_suggestion_delegate;
-  ON_CALL(mock_suggestion_delegate, GetMainFillingProduct)
-      .WillByDefault(testing::Return(FillingProduct::kAtMemory));
-  client_.ShowAutofillSuggestions(AutofillClient::PopupOpenArgs(),
-                                  mock_suggestion_delegate.GetWeakPtr());
 
   delegate.OnDismissed();
 

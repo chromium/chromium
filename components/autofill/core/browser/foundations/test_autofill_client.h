@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
@@ -61,7 +60,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -342,7 +340,6 @@ class TestAutofillClientTemplate : public T {
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override {
     is_showing_popup_ = true;
-    active_suggestion_delegate_ = std::move(delegate);
     static AutofillClient::SuggestionUiSessionId::Generator generator;
     suggestion_ui_session_id_ = generator.GenerateNextId();
     return *suggestion_ui_session_id_;
@@ -370,16 +367,7 @@ class TestAutofillClientTemplate : public T {
     return suggestion_ui_session_id_;
   }
 
-  void HideSuggestions(SuggestionHidingReason reason,
-                       std::optional<FillingProduct> product) override {
-    // If a `product` filter is specified, only hide if it matches the active
-    // popup.
-    if (product && active_suggestion_delegate_ &&
-        product != active_suggestion_delegate_->GetMainFillingProduct()) {
-      return;
-    }
-
-    active_suggestion_delegate_.reset();
+  void HideAutofillSuggestions(SuggestionHidingReason reason) override {
     popup_hidden_reason_ = reason;
     is_showing_popup_ = false;
     suggestion_ui_session_id_.reset();
@@ -822,8 +810,6 @@ class TestAutofillClientTemplate : public T {
 
   std::optional<AutofillClient::SuggestionUiSessionId>
       suggestion_ui_session_id_;
-
-  base::WeakPtr<AutofillSuggestionDelegate> active_suggestion_delegate_;
 
   std::optional<base::RepeatingCallback<void(AutofillClient::IphFeature)>>
       notify_iph_feature_used_mock_callback_;

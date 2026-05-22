@@ -4,7 +4,6 @@
 
 #include "components/android_autofill/browser/android_autofill_client.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -58,8 +57,7 @@ AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
               web_contents)) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
-  HideSuggestions(autofill::SuggestionHidingReason::kTabGone,
-                  /*product=*/std::nullopt);
+  HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
 }
 
 // From this point on, the ContentCredentialManager will service API calls
@@ -237,9 +235,8 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // APIs.
 }
 
-void AndroidAutofillClient::HideSuggestions(
-    autofill::SuggestionHidingReason reason,
-    std::optional<autofill::FillingProduct> product) {
+void AndroidAutofillClient::HideAutofillSuggestions(
+    autofill::SuggestionHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.
 }
 

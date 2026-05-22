@@ -4,7 +4,6 @@
 
 #include "chrome/browser/autofill/autofill_uitest.h"
 
-#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -177,8 +176,8 @@ void AutofillUiTest::TearDownOnMainThread() {
   // Make sure to close any showing popups prior to tearing down the UI.
   BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
   if (autofill_manager)
-    autofill_manager->client().HideSuggestions(SuggestionHidingReason::kTabGone,
-                                               /*product=*/std::nullopt);
+    autofill_manager->client().HideAutofillSuggestions(
+        SuggestionHidingReason::kTabGone);
   current_main_rfh_ = nullptr;
   InProcessBrowserTest::TearDownOnMainThread();
 }
