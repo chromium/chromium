@@ -10,6 +10,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/search_engines/AimEligibilityServiceFactory.java",
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelper.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java",
@@ -107,7 +108,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/search_engines/AimEligibilityServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
+  ]
   if (enable_extensions_core) {
     sources += [ "java/src/org/chromium/chrome/browser/search_engines/ExtensionControlHandler.java" ]
   }

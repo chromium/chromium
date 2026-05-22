@@ -187,6 +187,11 @@ source_set("aim_eligibility_service") {
     "//services/network/public/cpp",
     "//third_party/blink/public/common:headers",
   ]
+
+  if (is_android) {
+    sources += [ "aim_eligibility_service_factory_android.cc" ]
+    deps += [ "//chrome/browser/search_engines/android:jni_headers" ]
+  }
 }
 
 if (!is_android) {
