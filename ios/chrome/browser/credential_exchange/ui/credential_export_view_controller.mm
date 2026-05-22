@@ -237,7 +237,6 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
                   completion:completion];
 }
 
-// TODO(crbug.com/454566693): Add EGTest.
 // Updates the title and button states based on the selected items.
 - (void)updateUIForSelection {
   CHECK_GT(_affiliatedGroups.size(), 0U);
