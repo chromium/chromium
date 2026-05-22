@@ -1,0 +1,18 @@
+// This video file is specifically for harnesses which send media remotely
+// from a host to a receiver device with no internet connection. The
+// disconnected receivers don't properly intercept javascript playback
+// commands or on-screen touch effects for media, so we inject an autoplaying
+// video instead to circumvent the need for a start action.
+// This autoplay breaks other media tests by cutting off the first ~.5s of
+// recorded frames, explaining the need for a second similar video file.
+
+<!DOCTYPE html>
+<html>
+<video id="video" height="720" width="1024" autoplay />
+
+<script>
+  let file = new URLSearchParams(window.location.search).get("file");
+  document.getElementById("video").src = "videos/" + file
+</script>
+
+</html>

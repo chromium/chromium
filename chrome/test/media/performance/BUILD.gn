@@ -57,6 +57,7 @@ python_library("openscreen_remoting_performance_test") {
     "//build/util/lib/proto",
     "//fuchsia_web/av_testing/server.py",
     "//fuchsia_web/av_testing/video.html",
+    "//fuchsia_web/av_testing/remoting_video.html",
     "//fuchsia_web/av_testing/cast_starter.html",
     "//build/fuchsia/test/common.py",
     "//build/fuchsia/test/compatible_utils.py",

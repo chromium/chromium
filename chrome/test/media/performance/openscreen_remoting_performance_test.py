@@ -48,6 +48,7 @@ CHROME_OPTIONS = [
     "--disable-gpu",
     "--disable-dev-shm-usage",
     "--remote-allow-origins=*",
+    "--autoplay-policy=no-user-gesture-required",
 ]
 
 ADB_PATH = '/opt/infra-android/tools/platform-tools/adb'
@@ -225,7 +226,13 @@ def install_chrome_on_android(version):
         subprocess.run([ADB_PATH, 'shell', 'am', 'set-debug-app',
                        '--persistent', 'com.android.chrome'], check=False,
                        timeout=10)
-        flags = "chrome --disable-fre --no-default-browser-check --no-first-run"
+        flags = " ".join([
+            "chrome",
+            "--disable-fre",
+            "--no-default-browser-check",
+            "--no-first-run",
+            "--autoplay-policy=no-user-gesture-required"
+        ])
         subprocess.run([ADB_PATH, 'shell',
                        f'echo "{flags}" > /data/local/tmp/chrome-command-line'],
                        check=False, timeout=5)
@@ -251,7 +258,7 @@ def run_performance_test(video_file: str, driver: webdriver, args,
 
     # Start the local video player.
     driver.get(f'http://{common.LOCAL_HOST_IP}:'
-               f'{SERVER_PORT}/video.html?file={video_file}')
+               f'{SERVER_PORT}/remoting_video.html?file={video_file}')
 
     # Wait for the video element to be present.
     wait = WebDriverWait(driver, 30)
@@ -339,7 +346,7 @@ def run_performance_test(video_file: str, driver: webdriver, args,
 
             # Step 4: Load the actual video URL into the browser.
             remote_url = (f'http://127.0.0.1:{SERVER_PORT}/'
-                          f'video.html?file={video_file}')
+                          f'remoting_video.html?file={video_file}')
             logging.info("Loading video page into landscape browser...")
             subprocess.run([
                 ADB_PATH, 'shell', 'am', 'start',

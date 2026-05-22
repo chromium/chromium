@@ -23,5 +23,6 @@ python_library("av_sync_tests") {
     "//.vpython3",
     "//fuchsia_web/av_testing/server.py",
     "//fuchsia_web/av_testing/video.html",
+    "//fuchsia_web/av_testing/remoting_video.html",
   ]
 }
