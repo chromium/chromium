@@ -281,6 +281,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "components/credential_management/android/features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/messages/android/messages_feature.h"
@@ -4777,6 +4778,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingSyncCheckerCheckAllowlistDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSyncCheckerCheckAllowlist)},
+    {"enable-download-enterprise-scan",
+     flag_descriptions::kEnableDownloadEnterpriseScanName,
+     flag_descriptions::kEnableDownloadEnterpriseScanDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::kEnableDownloadEnterpriseScanOnClank)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

@@ -10021,6 +10021,7 @@ from previous Chrome versions.
   <int value="-1357154773" label="HideAimEntrypointForUrlSuggestions:disabled"/>
   <int value="-1357008397" label="ContextualSuggestionsCarousel:disabled"/>
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
+  <int value="-1355908985" label="EnableDownloadEnterpriseScanOnClank:enabled"/>
   <int value="-1355886577" label="ReleaseNotesNotificationAllChannels:enabled"/>
   <int value="-1355717940" label="WebViewPowerSchedulerThrottleIdle:enabled"/>
   <int value="-1355349150" label="AppLaunchShortcut:disabled"/>
@@ -10358,6 +10359,8 @@ from previous Chrome versions.
   <int value="-1248232229"
       label="UsernameFirstFlowWithIntermediateValuesPredictions:enabled"/>
   <int value="-1247919270" label="SyncGeminiThread:enabled"/>
+  <int value="-1247069079"
+      label="EnableDownloadEnterpriseScanOnClank:disabled"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
   <int value="-1246477455" label="ClipboardUnsanitizedContent:disabled"/>
   <int value="-1246125067" label="SearchInSettings:enabled"/>

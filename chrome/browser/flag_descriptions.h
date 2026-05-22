@@ -1669,6 +1669,11 @@ inline constexpr char
         "allowed "
         "for enterprise users on Android.";
 
+inline constexpr char kEnableDownloadEnterpriseScanName[] =
+    "Enable enterprise download scanning on Android";
+inline constexpr char kEnableDownloadEnterpriseScanDescription[] =
+    "Enables enterprise deep scanning of downloads on Android.";
+
 inline constexpr char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 inline constexpr char kEnableExperimentalCookieFeaturesDescription[] =
