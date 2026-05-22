@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 
@@ -228,6 +229,12 @@ void InlineItemSegments::Split(unsigned index, unsigned offset) {
   segment.end_offset_ = offset;
   segments_.insert(index + 1,
                    InlineItemSegment(end_offset, segment.segment_data_));
+}
+
+void InlineItemSegments::AdjustOffsets(const TextOffsetMap& offset_map) {
+  for (auto& segment : segments_) {
+    segment.end_offset_ = offset_map.MapOffset(segment.end_offset_);
+  }
 }
 
 void InlineItemSegments::ComputeItemIndex(const InlineItems& items) {

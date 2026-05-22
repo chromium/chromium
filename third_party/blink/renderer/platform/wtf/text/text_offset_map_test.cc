@@ -116,4 +116,20 @@ TEST(TextOffsetMapTest, CreateLengthMapCombiningMark) {
   EXPECT_EQ(1000u, length_map[0]);
 }
 
+TEST(TextOffsetMapTest, MapOffset) {
+  TextOffsetMap map;
+  EXPECT_EQ(0u, map.MapOffset(0));
+  EXPECT_EQ(10u, map.MapOffset(10));
+
+  map.Append(3, 4);
+  map.Append(5, 7);
+  EXPECT_EQ(0u, map.MapOffset(0));
+  EXPECT_EQ(1u, map.MapOffset(1));
+  EXPECT_EQ(2u, map.MapOffset(2));
+  EXPECT_EQ(4u, map.MapOffset(3));
+  EXPECT_EQ(5u, map.MapOffset(4));
+  EXPECT_EQ(7u, map.MapOffset(5));
+  EXPECT_EQ(8u, map.MapOffset(6));
+}
+
 }  // namespace blink

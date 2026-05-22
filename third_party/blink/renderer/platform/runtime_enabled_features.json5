@@ -2888,6 +2888,10 @@
       name: "FirstLineTextMetrics",
       status: "stable",
     },
+    {
+      name: "FirstLineTextTransform",
+      status: "stable",
+    },
     // When enabled, HTMLFormControlElement::IsReadOnly() returns false for
     // types that don't support readonly.
     {

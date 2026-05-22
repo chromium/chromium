@@ -27,6 +27,7 @@ namespace blink {
 
 class HarfBuzzShaper;
 class InlineItem;
+class TextOffsetMap;
 
 // Represents a segment produced by |RunSegmenter|.
 //
@@ -120,6 +121,9 @@ class CORE_EXPORT InlineItemSegments {
                                       unsigned start_offset,
                                       unsigned end_offset,
                                       unsigned segment_index);
+
+  // Adjust offsets according to the `offset_map`.
+  void AdjustOffsets(const TextOffsetMap& offset_map);
 
   // Compute an internal items-to-segments index for faster access.
   void ComputeItemIndex(const HeapVector<Member<InlineItem>>& items);

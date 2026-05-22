@@ -66,6 +66,8 @@ class WTF_EXPORT TextOffsetMap {
   Vector<Length> CreateLengthMap(wtf_size_t old_length,
                                  wtf_size_t new_length) const;
 
+  wtf_size_t MapOffset(wtf_size_t offset) const;
+
  private:
   Vector<Entry> entries_;
 };

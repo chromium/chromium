@@ -142,4 +142,18 @@ Vector<TextOffsetMap::Length> TextOffsetMap::CreateLengthMap(
   return map;
 }
 
+wtf_size_t TextOffsetMap::MapOffset(wtf_size_t offset) const {
+  if (IsEmpty()) {
+    return offset;
+  }
+  const Entry* last_entry = nullptr;
+  for (const Entry& entry : entries_) {
+    if (entry.source > offset) {
+      break;
+    }
+    last_entry = &entry;
+  }
+  return last_entry ? offset + last_entry->target - last_entry->source : offset;
+}
+
 }  // namespace blink

@@ -1840,19 +1840,29 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
   auto* first_line_items = MakeGarbageCollected<InlineItemsData>();
   String text_content = data->text_content;
   bool needs_reshape = false;
+  TextOffsetMap offset_map;
   if (first_line_style->TextTransform() != block_style->TextTransform()) {
     // TODO(kojii): This logic assumes that text-transform is applied only to
     // ::first-line, and does not work when the base style has text-transform
     // and ::first-line has different text-transform.
-    text_content = first_line_style->ApplyTextTransform(text_content);
-    if (text_content != data->text_content) {
-      // TODO(kojii): When text-transform changes the length, we need to adjust
-      // offset in InlineItem, or re-collect inlines. Other classes such as
-      // line breaker need to support the scenario too. For now, we force the
-      // string to be the same length to prevent them from crashing. This may
-      // result in a missing or a duplicate character if the length changes.
-      TruncateOrPadText(&text_content, data->text_content.length());
-      needs_reshape = true;
+    if (RuntimeEnabledFeatures::FirstLineTextTransformEnabled()) {
+      text_content =
+          first_line_style->ApplyTextTransform(text_content, ' ', &offset_map);
+      if (text_content != data->text_content) {
+        needs_reshape = true;
+      }
+    } else {
+      text_content = first_line_style->ApplyTextTransform(text_content);
+      if (text_content != data->text_content) {
+        // TODO(kojii): When text-transform changes the length, we need to
+        // adjust offset in InlineItem, or re-collect inlines. Other classes
+        // such as line breaker need to support the scenario too. For now, we
+        // force the string to be the same length to prevent them from crashing.
+        // This may result in a missing or a duplicate character if the length
+        // changes.
+        TruncateOrPadText(&text_content, data->text_content.length());
+        needs_reshape = true;
+      }
     }
   }
   first_line_items->text_content = text_content;
@@ -1862,10 +1872,23 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
   for (const Member<InlineItem>& item : data->items) {
     InlineItem* first_line_item = MakeGarbageCollected<InlineItem>(*item);
     first_line_item->SetStyleVariant(StyleVariant::kFirstLine);
+    if (RuntimeEnabledFeatures::FirstLineTextTransformEnabled()) {
+      if (needs_reshape && !offset_map.IsEmpty()) [[unlikely]] {
+        unsigned new_start =
+            offset_map.MapOffset(first_line_item->StartOffset());
+        unsigned new_end = offset_map.MapOffset(first_line_item->EndOffset());
+        first_line_item->SetOffset(new_start, new_end);
+      }
+    }
     first_line_items->items.push_back(first_line_item);
   }
   if (data->segments) {
     first_line_items->segments = data->segments->Clone();
+    if (RuntimeEnabledFeatures::FirstLineTextTransformEnabled()) {
+      if (needs_reshape && !offset_map.IsEmpty()) [[unlikely]] {
+        first_line_items->segments->AdjustOffsets(offset_map);
+      }
+    }
   }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
