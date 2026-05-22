@@ -6,7 +6,9 @@
 
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/backend_promo/model/backend_promo_service.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
 BackendPromoService* BackendPromoServiceFactory::GetForProfile(
@@ -22,11 +24,16 @@ BackendPromoServiceFactory* BackendPromoServiceFactory::GetInstance() {
 }
 
 BackendPromoServiceFactory::BackendPromoServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BackendPromoService") {}
+    : ProfileKeyedServiceFactoryIOS("BackendPromoService") {
+  DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 BackendPromoServiceFactory::~BackendPromoServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 BackendPromoServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
-  return ios::provider::CreateBackendPromoService();
+  return ios::provider::CreateBackendPromoService(
+      IdentityManagerFactory::GetForProfile(profile),
+      BrowserListFactory::GetForProfile(profile));
 }

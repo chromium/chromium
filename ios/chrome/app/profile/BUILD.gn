@@ -63,6 +63,7 @@ source_set("profile_controller") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:metrics_mediator",
     "//ios/chrome/app/spotlight",
+    "//ios/chrome/browser/backend_promo/model:backend_promo_profile_agent",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/credential_provider/model:buildflags",

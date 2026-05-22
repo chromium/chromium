@@ -20,10 +20,17 @@ class BackendPromoService : public KeyedService {
   ~BackendPromoService() override = default;
 };
 
+class BrowserList;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ios::provider {
 
 // Creates a new instance of BackendPromoService.
-std::unique_ptr<BackendPromoService> CreateBackendPromoService();
+std::unique_ptr<BackendPromoService> CreateBackendPromoService(
+    signin::IdentityManager* identity_manager,
+    BrowserList* browser_list);
 
 // Shows the backend promo debug tools.
 void ShowBackendPromoDebugTools();

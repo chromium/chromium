@@ -10,7 +10,22 @@ source_set("model") {
   ]
   deps = [
     "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
+source_set("backend_promo_profile_agent") {
+  sources = [
+    "backend_promo_profile_agent.h",
+    "backend_promo_profile_agent.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }

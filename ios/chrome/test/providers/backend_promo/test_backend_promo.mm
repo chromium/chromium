@@ -11,9 +11,16 @@ class TestBackendPromoService final : public BackendPromoService {
   ~TestBackendPromoService() override = default;
 };
 
+class BrowserList;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ios::provider {
 
-std::unique_ptr<BackendPromoService> CreateBackendPromoService() {
+std::unique_ptr<BackendPromoService> CreateBackendPromoService(
+    signin::IdentityManager* identity_manager,
+    BrowserList* browser_list) {
   return std::make_unique<TestBackendPromoService>();
 }
 

@@ -54,6 +54,7 @@
 #import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/backend_promo/model/backend_promo_profile_agent.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
@@ -658,6 +659,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   if (IsSyncedSetUpEnabled()) {
     [_state addAgent:[[SyncedSetUpProfileAgent alloc] init]];
+  }
+
+  if (IsIOSBackendPromoServiceIntegrationEnabled()) {
+    [_state addAgent:[[BackendPromoProfileAgent alloc] init]];
   }
 
   [_state addAgent:[[HomeBackgroundCustomizationPromoProfileAgent alloc] init]];
