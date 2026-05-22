@@ -1762,9 +1762,16 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PrivacySandboxServiceM1DelayCreation : public PrivacySandboxServiceTest {
  public:
-  void SetUp() override {
-    // Prevent service from being created by base class.
+  // Override SetUp to prevent the service from being created by base class.
+  void SetUp() override { InitializeFeaturesBeforeStart(); }
+
+  void InitializeFeaturesBeforeStart() override {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PrivacySandboxServiceM1DelayCreation,
@@ -1850,7 +1857,8 @@ TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
 
 TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
        RestrictedEnabledDoesntClearAdMeasurementPref) {
-  feature_list()->InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
       {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
         "true"}});
