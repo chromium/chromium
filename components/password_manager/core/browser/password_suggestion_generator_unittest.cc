@@ -315,6 +315,12 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
                        PasswordForm::MatchType::kExact);
   }
 
+  PasswordForm grouped_password_form() const {
+    return CreateEntry("username@example.com", "password",
+                       GURL("https://google.com/"),
+                       PasswordForm::MatchType::kGrouped);
+  }
+
   PasswordForm password_form_no_username() const {
     return CreateEntry("", "password", GURL("https://google.com/"),
                        PasswordForm::MatchType::kExact);
@@ -859,6 +865,49 @@ TEST_F(PasswordSuggestionGeneratorTest,
        ManualFallback_SuggestedPasswords_SuggestionContent) {
   std::vector<Suggestion> suggestions = GenerateSuggestedPasswordsSection(
       {password_form()}, IsTriggeredOnPasswordForm(true));
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"google.com",
+                              u"username@example.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://google.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"username@example.com", u"password",
+                                  "https://google.com/", u"google.com",
+                                  /*is_cross_domain=*/false)),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_GroupedCredential_IsCrossDomain) {
+  std::vector<Suggestion> suggestions = GenerateSuggestedPasswordsSection(
+      {grouped_password_form()}, IsTriggeredOnPasswordForm(true));
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"google.com",
+                              u"username@example.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://google.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"username@example.com", u"password",
+                                  "https://google.com/", u"google.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_GroupedCredential_IsNotCrossDomainWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kShowConfirmationForGroupedCredentials);
+  std::vector<Suggestion> suggestions = GenerateSuggestedPasswordsSection(
+      {grouped_password_form()}, IsTriggeredOnPasswordForm(true));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsManualFallbackSuggestion(
