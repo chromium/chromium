@@ -7,6 +7,8 @@
 const char kPageContextHistogramPrefix[] = "IOS.PageContext";
 const char kPageContextLatencyHistogramSuffix[] = ".Latency";
 const char kPageContextByteSizeHistogramSuffix[] = ".ByteSize";
+const char kPageContextHighRangeSizeInKbHistogramSuffix[] =
+    ".HighRangeSizeInKB";
 
 const char kPageContextHistogramOverallTask[] = ".Overall";
 const char kPageContextHistogramScreenshotTask[] = ".Screenshot";

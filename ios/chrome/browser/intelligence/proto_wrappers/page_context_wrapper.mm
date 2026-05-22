@@ -1300,7 +1300,10 @@ result.links = linksArray;
     [_pageContextMetrics
         executionFinishedForTask:PageContextTask::kAnnotatedPageContent
             withCompletionStatus:PageContextCompletionStatus::kSuccess];
-    [_pageContextMetrics logAnnotatedPageContentSize:sizeInBytes];
+    int sizeInBytesInt = base::saturated_cast<int>(sizeInBytes);
+    [_pageContextMetrics logAnnotatedPageContentSize:sizeInBytesInt];
+    [_pageContextMetrics
+        logAnnotatedPageContentHighRangeSizeInKb:sizeInBytesInt];
   }
 }
 

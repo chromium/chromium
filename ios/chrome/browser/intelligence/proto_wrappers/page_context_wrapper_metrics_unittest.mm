@@ -201,19 +201,62 @@ TEST_F(PageContextWrapperMetricsTest, TestConfigVariants) {
   }
 }
 
-// Tests that LogAnnotatedPageContentMetricsWithSize sets the correct values.
-TEST_F(PageContextWrapperMetricsTest, TestSizeMetrics) {
+// Tests that LogAnnotatedPageContentMetricsWithSize (ByteSize) sets correct
+// values.
+TEST_F(PageContextWrapperMetricsTest, TestByteSizeMetric) {
   PageContextWrapperConfig config =
       PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
   PageContextWrapperMetrics* metrics_with_config =
       [[PageContextWrapperMetrics alloc]
           initWithAPCConfigVariant:config.GetApcConfigVariant()];
 
-  size_t test_size = 12000;
-  [metrics_with_config logAnnotatedPageContentSize:test_size];
-
+  // 1. Underflow size: 0 bytes. Since min is 1 byte, this lands in the
+  // underflow bucket (0).
+  [metrics_with_config logAnnotatedPageContentSize:0];
   histogram_tester()->ExpectUniqueSample(
-      "IOS.PageContext.AnnotatedPageContent.Rich.ByteSize", test_size, 1);
+      "IOS.PageContext.AnnotatedPageContent.Rich.ByteSize", 0, 1);
+
+  // 2. Regular size: 12 KB (12288 bytes).
+  int size_bytes = 12288;
+  [metrics_with_config logAnnotatedPageContentSize:size_bytes];
+  histogram_tester()->ExpectBucketCount(
+      "IOS.PageContext.AnnotatedPageContent.Rich.ByteSize", size_bytes, 1);
+
+  // 3. Overflow size: 12 MB (exceeds 10 MB max). Lands in the overflow bucket.
+  int overflow_bytes = 12 * 1024 * 1024;
+  [metrics_with_config logAnnotatedPageContentSize:overflow_bytes];
+  histogram_tester()->ExpectBucketCount(
+      "IOS.PageContext.AnnotatedPageContent.Rich.ByteSize", overflow_bytes, 1);
+}
+
+// Tests that logAnnotatedPageContentHighRangeSizeInKb sets correct values.
+TEST_F(PageContextWrapperMetricsTest, TestHighRangeSizeInKbMetric) {
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+  PageContextWrapperMetrics* metrics_with_config =
+      [[PageContextWrapperMetrics alloc]
+          initWithAPCConfigVariant:config.GetApcConfigVariant()];
+
+  // 1. Underflow size: 500 bytes (0 KB). Since min is 1 KB, this lands in the
+  // underflow bucket (0).
+  [metrics_with_config logAnnotatedPageContentHighRangeSizeInKb:500];
+  histogram_tester()->ExpectUniqueSample(
+      "IOS.PageContext.AnnotatedPageContent.Rich.HighRangeSizeInKB", 0, 1);
+
+  // 2. Regular medium size: 10 MB (10240 KB).
+  int medium_size = 10 * 1024 * 1024;
+  [metrics_with_config logAnnotatedPageContentHighRangeSizeInKb:medium_size];
+  histogram_tester()->ExpectBucketCount(
+      "IOS.PageContext.AnnotatedPageContent.Rich.HighRangeSizeInKB",
+      medium_size / 1024, 1);
+
+  // 3. Overflow size: 600 MB (614400 KB). Exceeds max 500 MB, lands in the
+  // overflow bucket.
+  int overflow_size = 600 * 1024 * 1024;
+  [metrics_with_config logAnnotatedPageContentHighRangeSizeInKb:overflow_size];
+  histogram_tester()->ExpectBucketCount(
+      "IOS.PageContext.AnnotatedPageContent.Rich.HighRangeSizeInKB",
+      overflow_size / 1024, 1);
 }
 
 using PageContextWrapperMetricsDeathTest = PageContextWrapperMetricsTest;

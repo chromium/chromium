@@ -7,11 +7,22 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/strcat.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/metrics_constants.h"
 
 namespace {
+
+// Number of bytes in a single Kilobyte (KB). Used to convert payload sizes from
+// bytes.
+constexpr int kBytesInKb = 1024;
+
+// Number of Kilobytes (KB) in a single Megabyte (MB).
+constexpr int kKbsInMb = 1024;
+
+// Maximum expected size of the Page Context APC proto (500 MB in KB).
+constexpr int kMaxApcSizeKB = 500 * kKbsInMb;
 
 // Maps a `PageContextTask` to its corresponding histogram string constant.
 const char* PageContextTaskToString(PageContextTask task) {
@@ -159,11 +170,20 @@ void LogTaskExecutionLatency(PageContextTask task,
   }
 }
 
-- (void)logAnnotatedPageContentSize:(size_t)sizeInBytes {
+- (void)logAnnotatedPageContentSize:(int)sizeInBytes {
   base::UmaHistogramCounts10M(
       base::StrCat({kPageContextHistogramPrefix, kPageContextHistogramAPCTask,
                     _apcConfigVariant, kPageContextByteSizeHistogramSuffix}),
       sizeInBytes);
+}
+
+- (void)logAnnotatedPageContentHighRangeSizeInKb:(int)sizeInBytes {
+  base::UmaHistogramCustomCounts(
+      base::StrCat({kPageContextHistogramPrefix, kPageContextHistogramAPCTask,
+                    _apcConfigVariant,
+                    kPageContextHighRangeSizeInKbHistogramSuffix}),
+      sizeInBytes / kBytesInKb,
+      /*min=*/1, /*max=*/kMaxApcSizeKB, /*buckets=*/50);
 }
 
 @end

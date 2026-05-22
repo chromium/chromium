@@ -63,8 +63,14 @@ enum class PageContextCompletionStatus {
 - (void)executionFinishedForTask:(PageContextTask)task
             withCompletionStatus:(PageContextCompletionStatus)completionStatus;
 
-// Logs the byte size of the AnnotatedPageContent proto extracted.
-- (void)logAnnotatedPageContentSize:(size_t)sizeInBytes;
+// Logs the byte size of the AnnotatedPageContent proto in bytes. Capped at
+// 10,000,000 bytes (~10MB) by the underlying base::UmaHistogramCounts10M
+// helper.
+- (void)logAnnotatedPageContentSize:(int)sizeInBytes;
+
+// Logs the high-range size of the AnnotatedPageContent proto extracted in KB
+// (up to 500MB).
+- (void)logAnnotatedPageContentHighRangeSizeInKb:(int)sizeInBytes;
 
 @end
 

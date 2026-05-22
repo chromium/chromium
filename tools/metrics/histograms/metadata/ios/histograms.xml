@@ -5104,12 +5104,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageContext.AnnotatedPageContent.{Config}.ByteSize"
-    units="bytes" expires_after="2026-10-31">
+    units="bytes" expires_after="2027-05-01">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     The total size of the AnnotatedPageContent proto in bytes, broken down by
     configuration extraction mode. Logged when extraction finishes successfully.
+
+    This metric is capped at 10 MB (recorded in raw bytes), providing high
+    resolution for typical/small payloads (in the kilobyte range).
+  </summary>
+  <token key="Config" variants="PageContextConfigVariants"/>
+</histogram>
+
+<histogram
+    name="IOS.PageContext.AnnotatedPageContent.{Config}.HighRangeSizeInKB"
+    units="KB" expires_after="2026-11-22">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The total size of the AnnotatedPageContent proto in Kilobytes, broken down
+    by configuration extraction mode. Logged when extraction finishes
+    successfully.
+
+    This metric has a wide range capped at 500 MB (recorded in KB units). It
+    provides coarser resolution but covers outlier big payloads, allowing us to
+    detect potential IPC drop-offs or OOMs.
   </summary>
   <token key="Config" variants="PageContextConfigVariants"/>
 </histogram>

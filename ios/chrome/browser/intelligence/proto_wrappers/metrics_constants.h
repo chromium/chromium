@@ -9,6 +9,7 @@
 extern const char kPageContextHistogramPrefix[];
 extern const char kPageContextLatencyHistogramSuffix[];
 extern const char kPageContextByteSizeHistogramSuffix[];
+extern const char kPageContextHighRangeSizeInKbHistogramSuffix[];
 
 extern const char kPageContextHistogramOverallTask[];
 extern const char kPageContextHistogramScreenshotTask[];
