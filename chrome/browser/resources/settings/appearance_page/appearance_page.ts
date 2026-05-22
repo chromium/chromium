@@ -267,6 +267,13 @@ export class SettingsAppearancePageElement extends
         type: Boolean,
         value: false,
       },
+
+      showCtrlTabMru_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showCtrlTabMru');
+        },
+      },
     };
   }
 
@@ -298,6 +305,7 @@ export class SettingsAppearancePageElement extends
   declare private isForcedTheme_: boolean;
   declare private showHoverCardImagesOption_: boolean;
   declare private showResetPinnedActionsButton_: boolean;
+  declare private showCtrlTabMru_: boolean;
 
   // <if expr="is_linux">
   declare private showCustomChromeFrame_: boolean;

@@ -8,14 +8,18 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/resource_coordinator/tab_helper.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -95,6 +99,48 @@ TEST_F(BrowserCommandsTest, TabNavigationAccelerators) {
   // Navigate to the last tab using the select last accelerator.
   updater->ExecuteCommand(IDC_SELECT_LAST_TAB);
   ASSERT_EQ(2, browser()->tab_strip_model()->active_index());
+}
+
+// Tests IDC_SELECT_NEXT_TAB with MRU enabled.
+TEST_F(BrowserCommandsTest, SelectNextTab_MRU) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCtrlTabMru);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
+
+  GURL about_blank(url::kAboutBlankURL);
+
+  // Create three tabs.
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+
+  // For MRU tracking to work in unit tests, we need
+  // ResourceCoordinatorTabHelper.
+  for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetWebContentsAt(i);
+    resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
+        contents);
+  }
+
+  // Set times to simulate MRU order: Tab 2 (most recent) -> Tab 0 -> Tab 1
+  browser()->tab_strip_model()->GetWebContentsAt(2)->SetTabSwitchStartTime(
+      base::TimeTicks::Now(), false, false);
+
+  browser()->tab_strip_model()->GetWebContentsAt(0)->SetTabSwitchStartTime(
+      base::TimeTicks::Now() - base::Seconds(1), false, false);
+
+  browser()->tab_strip_model()->GetWebContentsAt(1)->SetTabSwitchStartTime(
+      base::TimeTicks::Now() - base::Seconds(2), false, false);
+
+  // We are currently on tab 2.
+  browser()->tab_strip_model()->ActivateTabAt(2);
+
+  CommandUpdater* updater = browser()->command_controller();
+
+  // If MRU is active, the most recently used tab before 2 is 0.
+  updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 
 // Tests IDC_DUPLICATE_TAB.

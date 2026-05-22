@@ -3738,6 +3738,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.Tab.KeyboardTabSwitchMode"
+    enum="KeyboardTabSwitchMode" expires_after="2027-04-28">
+  <owner>markchang@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The keyboard tab switch mode (Standard vs MRU) for each profile. This is
+    recorded once per day for each loaded profile that has at least one tab
+    open. Recorded only for non-Android desktop clients.
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.Tab.ReloadCount" units="tabs"
     expires_after="2026-09-27">
   <owner>agale@chromium.org</owner>

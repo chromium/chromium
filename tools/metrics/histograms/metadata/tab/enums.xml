@@ -205,6 +205,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="More than 30 days"/>
 </enum>
 
+<enum name="KeyboardTabSwitchMode">
+  <int value="0" label="Standard"/>
+  <int value="1" label="MRU"/>
+</enum>
+
 <enum name="NewTabType">
   <int value="0" label="New tab button"/>
   <int value="1" label="Regular menu option"/>

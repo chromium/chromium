@@ -32,6 +32,7 @@ BASE_FEATURE(kCreateNewTabGroupAppMenuTopLevel,
 
 BASE_FEATURE(kEnableExtensionsMenuTeardownFix,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCtrlTabMru, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);
 

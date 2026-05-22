@@ -137,6 +137,9 @@ class TabStatsTracker :
     // is collapsed.
     static const char kVerticalTabStripCollapseStateHistogramName[];
 
+    // The name of the histogram that records the keyboard tab switch mode.
+    static const char kKeyboardTabSwitchModeHistogramName[];
+
     // The names of the histograms that record daily discard/reload counts
     // caused for each discard reason.
     static const char kDailyDiscardsExternalHistogramName[];
@@ -178,6 +181,17 @@ class TabStatsTracker :
 
     // Called once per day to report the metrics.
     void ReportDailyMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+
+    // Enumerates the keyboard tab switch mode.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(KeyboardTabSwitchMode)
+    enum class KeyboardTabSwitchMode {
+      kStandard = 0,
+      kMRU = 1,
+      kMaxValue = kMRU,
+    };
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:KeyboardTabSwitchMode)
 
     // Report the tab heartbeat metrics.
     void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);

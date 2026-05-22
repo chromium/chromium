@@ -236,6 +236,13 @@
             hidden="[[showProjectsPanelEnabled_]]">
         </settings-toggle-button>
 
+        <template is="dom-if" if="[[showCtrlTabMru_]]">
+          <settings-toggle-button class="hr" id="ctrlTabMru"
+              pref="{{prefs.browser.ctrl_tab_mru}}"
+              label="$i18n{ctrlTabMru}">
+          </settings-toggle-button>
+        </template>
+
         <div class="cr-row">
           <div class="flex cr-padded-text" aria-hidden="true">
             $i18n{sidePanelPosition}

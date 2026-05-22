@@ -692,6 +692,10 @@ inline constexpr char kSplitViewDragAndDropNudgeShownCount[] =
 inline constexpr char kSplitViewDragAndDropNudgeUsedCount[] =
     "browser.split_view_drag_and_drop_nudge_used_count";
 
+// A boolean pref set to true if Ctrl-Tab should switch between the two most
+// recently used tabs.
+inline constexpr char kCtrlTabMru[] = "browser.ctrl_tab_mru";
+
 // A boolean pref set to true if Gemini integration be enabled. This is managed
 // by enterprise policy.
 inline constexpr char kGeminiSettings[] = "browser.gemini_settings";

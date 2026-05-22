@@ -1118,4 +1118,39 @@ TEST_F(TabStatsTrackerTest, VideoPlayingInTab) {
       << "No video is playing";
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(TabStatsTrackerTest, RecordKeyboardTabSwitchModeDaily) {
+  base::HistogramTester histogram_tester;
+
+  // Add a tab to make sure the profile is considered active and the daily
+  // event triggers (ReportDailyMetrics returns early if max tab count is 0).
+  tab_stats_tracker_->AddTabs(1, this, tab_strip_modifier_.get());
+
+  // Set the preference to true (MRU).
+  profile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
+
+  // Trigger the daily event.
+  tab_stats_tracker_->TriggerDailyEvent();
+
+  histogram_tester.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kKeyboardTabSwitchModeHistogramName,
+      static_cast<int>(UmaStatsReportingDelegate::KeyboardTabSwitchMode::kMRU),
+      1);
+
+  // Set the preference to false (Standard).
+  profile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, false);
+
+  // Trigger the daily event again.
+  tab_stats_tracker_->TriggerDailyEvent();
+
+  histogram_tester.ExpectBucketCount(
+      UmaStatsReportingDelegate::kKeyboardTabSwitchModeHistogramName,
+      static_cast<int>(
+          UmaStatsReportingDelegate::KeyboardTabSwitchMode::kStandard),
+      1);
+  histogram_tester.ExpectTotalCount(
+      UmaStatsReportingDelegate::kKeyboardTabSwitchModeHistogramName, 2);
+}
+#endif
+
 }  // namespace metrics
