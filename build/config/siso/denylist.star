@@ -31,8 +31,9 @@ def __step_config(ctx, step_config):
         "chrome/test/chromedriver/embed_mobile_devices_in_cpp.py",
         "components/language/content/browser/ulp_language_code_locator/ulp_serialized_to_static_c.py",
         "components/optimization_guide/tools/gen_on_device_proto_descriptors.py",
+        # Requires dynamic globbing of hundreds of policy definition YAML files
+        # under components/policy/resources/templates/ directory.
         "components/policy/resources/policy_templates.py",
-        "components/policy/tools/template_writers/template_formatter.py",
         "components/resources/ssl/ssl_error_assistant/gen_ssl_error_assistant_proto.py",
         "components/safe_browsing/content/resources/gen_file_type_proto.py",
         "components/safe_browsing/content/resources/real_time_url_checks_allowlist/gen_real_time_url_allowlist_proto.py",

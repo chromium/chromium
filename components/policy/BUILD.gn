@@ -4,6 +4,7 @@
 
 import("//build/apple/convert_plist.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/python.gni")
 import("//build/timestamp.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
@@ -123,7 +124,7 @@ grit("translate_policy_templates") {
 }
 
 # Generate the various templates and docs (admx, doc, json, etc.)
-action("policy_templates") {
+action_with_pydeps("policy_templates") {
   script = "tools/template_writers/template_formatter.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)

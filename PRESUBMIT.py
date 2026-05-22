@@ -2602,6 +2602,7 @@ _GENERIC_PYDEPS_FILES = [
     'components/cronet/tools/generate_proguard_file.pydeps',
     'components/cronet/tools/jar_src.pydeps',
     'components/module_installer/android/module_desc_java.pydeps',
+    'components/policy/tools/template_writers/template_formatter.pydeps',
     'content/public/android/generate_child_service.pydeps',
     'fuchsia_web/av_testing/av_sync_tests.pydeps',
     'testing/scripts/run_isolated_script_test.pydeps',
