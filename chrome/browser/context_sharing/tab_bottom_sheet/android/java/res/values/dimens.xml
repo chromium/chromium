@@ -20,4 +20,15 @@ found in the LICENSE file.
     <dimen name="tab_bottom_sheet_handle_area_height">12dp</dimen>
     <dimen name="tab_bottom_sheet_peek_container_bottom_padding">4dp</dimen>
     <dimen name="tab_bottom_sheet_peek_corner_radius">@dimen/bottom_sheet_corner_radius</dimen>
+
+    <!-- Tab Bottom Sheet Peek View Dimensions -->
+    <dimen name="tab_bottom_sheet_peek_button_margin_end">4dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_padding_start">12dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_padding_end">3dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_padding_top">3dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_icon_size">24dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_icon_margin_start">6dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_icon_margin_end">12dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_text_container_margin_end">8dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_description_margin_top">-2dp</dimen>
 </resources>

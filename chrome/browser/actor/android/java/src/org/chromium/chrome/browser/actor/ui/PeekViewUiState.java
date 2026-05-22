@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-/** Represents the visual state of the Actor Control UI. */
+/** Represents Glic/Actor's visual state of the Peek View UI. */
 @NullMarked
 public class PeekViewUiState {
 

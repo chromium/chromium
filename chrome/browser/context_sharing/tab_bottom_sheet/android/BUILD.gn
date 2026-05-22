@@ -37,6 +37,7 @@ java_cpp_enum("client_type_java_enum") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/tab_bottom_sheet.xml",
+    "java/res/layout/tab_bottom_sheet_peek_layout.xml",
     "java/res/layout/tab_bottom_sheet_resizing_view.xml",
     "java/res/values-night/colors.xml",
     "java/res/values/colors.xml",
@@ -58,6 +59,23 @@ android_library("manager_public_java") {
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("peek_view_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/peek_view/TabBottomSheetPeekProperties.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/peek_view/TabBottomSheetPeekView.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/peek_view/TabBottomSheetPeekViewBinder.java",
+  ]
+  resources_package = "org.chromium.chrome.browser.context_sharing"
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
   ]
 }
 
@@ -87,6 +105,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     ":manager_public_java",
+    ":peek_view_java",
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",

@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.glic.GlicInstanceHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
+import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekView;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -135,31 +137,60 @@ public class ActorControlCoordinatorTest {
         ShadowLooper.idleMainLooper();
     }
 
+    private void assertModelPropertiesMatchState(PeekViewUiState state) {
+        assertEquals(
+                state.getTitleTextAppearanceResId(),
+                mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE));
+        assertEquals(
+                state.getDescription(mActivity),
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                state.getDescriptionVisibility(),
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY));
+        assertEquals(
+                state.getButtonText(mActivity),
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT));
+        assertEquals(
+                state.getButtonVisibility(),
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY));
+        assertEquals(
+                state.buttonIconResId, mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON));
+        assertEquals(
+                state.getButtonBackgroundTint(mActivity),
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT));
+        assertEquals(
+                state.getIconTint(mActivity),
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT));
+        assertEquals(
+                state.getButtonHorizontalPadding(mActivity),
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING));
+    }
+
     private void performActorControlClick() {
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
         assertNotNull("Peek view should be attached", view);
-        MaterialButton actorControlButton = view.findViewById(R.id.actor_control_button);
+        MaterialButton actorControlButton = view.findViewById(R.id.peek_action_button);
         actorControlButton.performClick();
     }
 
     private void performPeekViewClick() {
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
         assertNotNull("Peek view should be attached", view);
         view.performClick();
     }
 
     private void performCloseClick() {
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
         assertNotNull("Peek view should be attached", view);
-        ChromeImageButton closeButton = view.findViewById(R.id.actor_control_close_button);
+        ChromeImageButton closeButton = view.findViewById(R.id.peek_close_button);
         closeButton.performClick();
     }
 
     @Test
     public void testInitialization() {
         assertNotNull(mModel);
-        assertNotNull(mModel.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
-        assertNotNull(mModel.get(ActorControlProperties.ON_CLOSE_CLICKED));
+        assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED));
+        assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED));
         verify(mTabBottomSheetManager).setPeekView(any());
     }
 
@@ -170,10 +201,10 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.ACTING);
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertModelPropertiesMatchState(PeekViewUiState.ACTING);
         assertEquals(
                 view.getStepDescriptionForTesting(),
                 PeekViewUiState.ACTING.getDescription(view.getContext()));
@@ -186,10 +217,10 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.PAUSED);
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.PAUSED, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertModelPropertiesMatchState(PeekViewUiState.PAUSED);
         assertEquals(
                 view.getStepDescriptionForTesting(),
                 PeekViewUiState.PAUSED.getDescription(view.getContext()));
@@ -202,11 +233,10 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.WAITING);
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertModelPropertiesMatchState(PeekViewUiState.WAITING);
         assertEquals(
                 view.getStepDescriptionForTesting(),
                 PeekViewUiState.WAITING.getDescription(view.getContext()));
@@ -219,11 +249,10 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.DEFAULT);
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        TabBottomSheetPeekView view = (TabBottomSheetPeekView) mCoordinator.getPeekViewForTesting();
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertModelPropertiesMatchState(PeekViewUiState.DEFAULT);
         assertEquals(
                 view.getStepDescriptionForTesting(),
                 PeekViewUiState.DEFAULT.getDescription(view.getContext()));
@@ -238,9 +267,8 @@ public class ActorControlCoordinatorTest {
         mTabSupplier.set(mTab);
 
         verify(mGlicInstanceHelper).addObserver(mCoordinator);
-        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -257,7 +285,7 @@ public class ActorControlCoordinatorTest {
 
         captor.getValue().onInstanceChanged();
 
-        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
 
     @Test
@@ -271,9 +299,8 @@ public class ActorControlCoordinatorTest {
 
         mTabSupplier.set(null);
         verify(mGlicInstanceHelper).removeObserver(mCoordinator);
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -282,7 +309,7 @@ public class ActorControlCoordinatorTest {
         mProfileSupplier.set(mProfile);
 
         verify(mActorKeyedService, never()).addObserver(any());
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
 
     @Test
@@ -293,8 +320,8 @@ public class ActorControlCoordinatorTest {
 
         mProfileSupplier.set(mProfile);
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -304,9 +331,8 @@ public class ActorControlCoordinatorTest {
 
         mProfileSupplier.set(mProfile);
 
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     private void setUpForOnTaskStateChanged() {
@@ -318,69 +344,64 @@ public class ActorControlCoordinatorTest {
     public void testOnTaskStateChanged_acting() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_pausedByUser() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.PAUSED_BY_USER);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.PAUSED, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.PAUSED, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_pausedByActor() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.PAUSED_BY_ACTOR);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.WAITING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_waitingOnUser() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.WAITING_ON_USER);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.WAITING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_cancelled() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.CANCELLED);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_reflecting() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.REFLECTING);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_created() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.CREATED);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
     public void testOnTaskStateChanged_finished() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.WAITING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -391,9 +412,8 @@ public class ActorControlCoordinatorTest {
 
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
 
-        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -401,15 +421,14 @@ public class ActorControlCoordinatorTest {
         setUpProfileSupplier();
         expectValidActorTask();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
 
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
 
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.WAITING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -422,9 +441,8 @@ public class ActorControlCoordinatorTest {
 
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.CANCELLED);
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -432,7 +450,7 @@ public class ActorControlCoordinatorTest {
         setUpProfileSupplier();
         when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_1);
         mCoordinator.onInstanceChanged();
-        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
 
     @Test
@@ -513,16 +531,15 @@ public class ActorControlCoordinatorTest {
     public void testOnActorControlClick_noActiveTask_waitingState_hidesPeekView() {
         setUpProfileSupplier();
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
-        mModel.set(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.WAITING);
-        mModel.set(ActorControlProperties.TASK_TITLE, TASK_TITLE);
+        mCoordinator.setPeekViewContentForTesting(TASK_TITLE, PeekViewUiState.WAITING);
+        mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, TASK_TITLE);
 
         performActorControlClick();
 
 
         verify(mTabBottomSheetManager).setSheetExpanded(true);
-        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -539,8 +556,7 @@ public class ActorControlCoordinatorTest {
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
 
-        assertEquals(
-                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(PeekViewUiState.WAITING, mCoordinator.getPeekViewUiStateForTesting());
         performActorControlClick();
 
         verify(mTabSelectionDelegate).switchToTab(TAB_ID);
@@ -566,14 +582,13 @@ public class ActorControlCoordinatorTest {
     public void testOnActorControlClick_noActiveTask_notInWaitingState_clearsContent() {
         setUpProfileSupplier();
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
-        mModel.set(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.ACTING);
-        mModel.set(ActorControlProperties.TASK_TITLE, TASK_TITLE);
+        mCoordinator.setPeekViewContentForTesting(TASK_TITLE, PeekViewUiState.ACTING);
+        mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, TASK_TITLE);
 
         performActorControlClick();
 
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -615,8 +630,8 @@ public class ActorControlCoordinatorTest {
         expectValidActorTask();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
 
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -628,7 +643,7 @@ public class ActorControlCoordinatorTest {
         expectValidActorTask();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
 
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
 
         // Change active instance ID
         expectValidGlicInstance2();
@@ -638,9 +653,8 @@ public class ActorControlCoordinatorTest {
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.WAITING_ON_USER);
 
         // Content should not be updated to WAITING
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
-        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
 
     @Test
@@ -653,23 +667,22 @@ public class ActorControlCoordinatorTest {
         when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
 
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
 
         // Switch to non-matching instance
         expectValidGlicInstance2();
         mCoordinator.onInstanceChanged();
 
         // Should switch to non-matching instance content
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
-        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
 
         // Switch back to matching instance
         expectValidGlicInstance1();
         mCoordinator.onInstanceChanged();
 
         // Should update to ACTING again
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
     }
 
     @Test
@@ -682,7 +695,7 @@ public class ActorControlCoordinatorTest {
 
         mTabSupplier.set(mTab);
         verify(helper1).addObserver(mCoordinator);
-        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
 
         Tab tab2 = org.mockito.Mockito.mock(Tab.class);
 
@@ -696,7 +709,7 @@ public class ActorControlCoordinatorTest {
         verify(helper1).removeObserver(mCoordinator);
         verify(helper2).addObserver(mCoordinator);
 
-        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
     }
 
     @Test
@@ -711,8 +724,7 @@ public class ActorControlCoordinatorTest {
 
         verify(mGlicInstanceHelperNatives, never()).getForTab(incognitoTab);
 
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(
-                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
     }
 }
