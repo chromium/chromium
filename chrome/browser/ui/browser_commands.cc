@@ -272,14 +272,14 @@ void CreateAndShowNewWindowWithContents(
   }
   // Preserve the size of the original window. The new window has already
   // been given an offset by the OS, so we shouldn't copy the old bounds.
-  BrowserWindow* new_window = new_browser->window();
+  ui::BaseWindow* new_window = new_browser->GetWindow();
   new_window->SetBounds(
       gfx::Rect(new_window->GetRestoredBounds().origin(),
                 original_browser->GetWindow()->GetRestoredBounds().size()));
 
   // We need to show the browser now.  Otherwise ContainerWin assumes the
   // WebContents is invisible and won't size it.
-  new_browser->window()->Show();
+  new_window->Show();
 
   // The page transition below is only for the purpose of inserting the tab.
   new_browser->tab_strip_model()->AddWebContents(std::move(contents), -1,
@@ -523,7 +523,7 @@ WebContents* GetTabAndRevertIfNecessaryHelper(BrowserWindowInterface* browser,
       new_browser->tab_strip_model()->AddWebContents(std::move(new_tab), -1,
                                                      ui::PAGE_TRANSITION_LINK,
                                                      AddTabTypes::ADD_ACTIVE);
-      new_browser->window()->Show();
+      new_browser->GetWindow()->Show();
       return raw_new_tab;
     }
     default:
@@ -772,7 +772,7 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
     AddTabAt(browser, GURL(), -1, true);
   }
 
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   return browser;
 }
 

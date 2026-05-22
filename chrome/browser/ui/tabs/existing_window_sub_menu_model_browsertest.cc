@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -25,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/base_window.h"
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -111,7 +111,7 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
   // instead convert this to an interactive browser test and directly activate
   // the browser's backing ui::BaseWindow.
   void ActivateBrowser(BrowserWindowInterface* browser) {
-    browser->GetBrowserForMigrationOnly()->window()->ShowInactive();
+    browser->GetWindow()->ShowInactive();
 
     // We must fake deactivation the previously activated browser first.
     GetLastActiveBrowserWindowInterfaceWithAnyProfile()

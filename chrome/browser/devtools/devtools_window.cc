@@ -1094,8 +1094,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     RegisterModalDialogManager(inspected_browser);
 
     // Tell inspected browser to update splitter and switch to inspected panel.
-    BrowserWindow* inspected_window =
-        inspected_browser->GetBrowserForMigrationOnly()->window();
+    ui::BaseWindow* inspected_window = inspected_browser->GetWindow();
     main_web_contents_->SetDelegate(this);
     main_web_contents_->SetIgnoreZoomGestures(true);
 

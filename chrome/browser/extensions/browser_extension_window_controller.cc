@@ -38,7 +38,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #endif
@@ -106,9 +105,6 @@ BrowserExtensionWindowController::BrowserExtensionWindowController(
     BrowserWindowInterface* browser)
     : WindowController(browser->GetWindow(), browser->GetProfile()),
       browser_(CHECK_DEREF(browser)),
-#if !BUILDFLAG(IS_ANDROID)
-      window_(CHECK_DEREF(browser->GetBrowserForMigrationOnly()->window())),
-#endif  // !BUILDFLAG(IS_ANDROID)
       tab_list_(CHECK_DEREF(TabListInterface::From(browser))),
       session_id_(browser->GetSessionID()),
       window_type_(GetTabsWindowType(browser)),
@@ -140,7 +136,7 @@ void BrowserExtensionWindowController::SetFullscreenMode(
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
-  if (window_->IsFullscreen() != is_fullscreen) {
+  if (window()->IsFullscreen() != is_fullscreen) {
     GetBrowser()->ToggleFullscreenModeWithExtension(extension_url);
   }
 #endif

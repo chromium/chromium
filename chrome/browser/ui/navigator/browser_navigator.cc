@@ -436,8 +436,7 @@ class ScopedBrowserShower {
   ScopedBrowserShower& operator=(const ScopedBrowserShower&) = delete;
 
   ~ScopedBrowserShower() {
-    BrowserWindow* window =
-        params_->browser->GetBrowserForMigrationOnly()->window();
+    ui::BaseWindow* window = params_->browser->GetWindow();
     if (params_->window_action ==
         NavigateParams::WindowAction::kShowWindowInactive) {
       // TODO(crbug.com/40284685): investigate if SHOW_WINDOW_INACTIVE needs to
@@ -449,7 +448,9 @@ class ScopedBrowserShower {
       if (params_->is_tab_modal_popup_deprecated) {
         CHECK_EQ(params_->disposition, WindowOpenDisposition::NEW_POPUP);
         CHECK_NE(source_contents_, nullptr);
-        window->SetIsTabModalPopupDeprecated(true);
+        params_->browser->GetBrowserForMigrationOnly()
+            ->window()
+            ->SetIsTabModalPopupDeprecated(true);
         constrained_window::ShowModalDialog(window->GetNativeWindow(),
                                             source_contents_);
       } else {
