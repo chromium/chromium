@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_sdk.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -490,8 +491,28 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
 void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
     const gpu::SyncToken& sync_token,
     const std::vector<gpu::SyncToken>& camera_sync_tokens) {
-  cardboard_image_transport_->CreateGpuFenceForSyncToken(
-      sync_token, camera_sync_tokens,
+  // The current function is run immediately after the animating frame is
+  // moved to processing, so GetProcessingFrame() is guaranteed to be valid.
+  WebXrFrame* frame = webxr_->GetProcessingFrame();
+  CHECK(frame);
+
+  // For Cardboard, the camera image shared buffer is always empty and
+  // therefore is not included in this shared_images vector.
+  std::vector<scoped_refptr<gpu::ClientSharedImage>> shared_images{
+      frame->shared_buffer->shared_image};
+
+  std::vector<gpu::SyncToken> combined_sync_tokens;
+  combined_sync_tokens.reserve(camera_sync_tokens.size() + 1);
+  combined_sync_tokens.push_back(sync_token);
+  for (auto& camera_sync_token : camera_sync_tokens) {
+    combined_sync_tokens.push_back(camera_sync_token);
+  }
+
+  viz::ContextProvider* context_provider =
+      cardboard_image_transport_->GetContextProvider();
+  gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
+      std::move(shared_images), std::move(combined_sync_tokens),
+      context_provider->ContextGL(), context_provider->ContextSupport(),
       base::BindOnce(&CardboardRenderLoop::OnWebXrTokenSignaled, GetWeakPtr()));
 
   if (pending_getframedata_) {

@@ -238,6 +238,10 @@ void XrImageTransportBase::ServerWaitForGpuFence(
   local_fence->ServerWait();
 }
 
+viz::ContextProvider* XrImageTransportBase::GetContextProvider() {
+  return mailbox_bridge_->GetContextProvider();
+}
+
 LocalTexture XrImageTransportBase::GetRenderingTexture(
     WebXrPresentationState* webxr) {
   CHECK(IsOnGlThread());

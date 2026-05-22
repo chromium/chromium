@@ -21,6 +21,7 @@ struct SyncToken;
 }  // namespace gpu
 
 namespace viz {
+class ContextProvider;
 class SharedImageFormat;
 }  // namespace viz
 
@@ -71,6 +72,8 @@ class MailboxToSurfaceBridge {
   virtual void DestroySharedImage(
       const gpu::SyncToken& sync_token,
       scoped_refptr<gpu::ClientSharedImage> shared_image) = 0;
+
+  virtual viz::ContextProvider* GetContextProvider() = 0;
 };
 
 class MailboxToSurfaceBridgeFactory {

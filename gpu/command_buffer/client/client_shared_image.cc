@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
@@ -34,6 +35,7 @@
 #include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
+#include "ui/gfx/gpu_fence.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "gpu/command_buffer/client/internal/mappable_buffer_io_surface.h"
@@ -611,6 +613,23 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
     ExportedSharedImage exported_shared_image) {
   return base::WrapRefCounted<ClientSharedImage>(
       new ClientSharedImage(std::move(exported_shared_image)));
+}
+
+void ClientSharedImage::CreateGpuFenceForSyncTokens(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    gles2::GLES2Interface* gl,
+    ContextSupport* context_support,
+    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
+  CHECK(gl && context_support);
+
+  for (auto& sync_token : sync_tokens) {
+    gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  }
+
+  GLuint id = gl->CreateGpuFenceCHROMIUM();
+  context_support->GetGpuFence(id, std::move(callback));
+  gl->DestroyGpuFenceCHROMIUM(id);
 }
 
 gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(

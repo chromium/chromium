@@ -39,6 +39,10 @@ class ProcessMemoryDump;
 class MemoryAllocatorDumpGuid;
 }  // namespace base::trace_event
 
+namespace gfx {
+class GpuFence;
+}  // namespace gfx
+
 namespace media {
 class VideoFrame;
 }  // namespace media
@@ -58,6 +62,8 @@ struct BufferDescriptor;
 }  // namespace wgpu::dawn::wire::client
 
 namespace gpu {
+
+class ContextSupport;
 
 namespace gles2 {
 class GLES2Interface;
@@ -268,6 +274,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // process even if original ClientSharedImage goes away.
   static scoped_refptr<ClientSharedImage> ImportUnowned(
       ExportedSharedImage exported_shared_image);
+
+  static void CreateGpuFenceForSyncTokens(
+      std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+      std::vector<SyncToken> sync_tokens,
+      gles2::GLES2Interface* gl,
+      ContextSupport* context_support,
+      base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback);
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
     destruction_sync_token_ = sync_token;

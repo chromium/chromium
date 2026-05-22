@@ -24,6 +24,10 @@ namespace gpu {
 struct SyncToken;
 }  // namespace gpu
 
+namespace viz {
+class ContextProvider;
+}  // namespace viz
+
 namespace device {
 
 class MailboxToSurfaceBridge;
@@ -83,6 +87,8 @@ class XrImageTransportBase {
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token);
 
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
+
+  viz::ContextProvider* GetContextProvider();
 
  protected:
   bool IsOnGlThread() const;

@@ -72,6 +72,8 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
       const gpu::SyncToken& sync_token,
       scoped_refptr<gpu::ClientSharedImage> shared_image) override;
 
+  viz::ContextProvider* GetContextProvider() override;
+
  private:
   void BindContextProviderToCurrentThread();
   void OnContextAvailableOnUiThread(

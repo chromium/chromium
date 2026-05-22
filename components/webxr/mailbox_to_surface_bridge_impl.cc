@@ -175,6 +175,10 @@ void MailboxToSurfaceBridgeImpl::DestroySharedImage(
   shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
+viz::ContextProvider* MailboxToSurfaceBridgeImpl::GetContextProvider() {
+  return context_provider_.get();
+}
+
 std::unique_ptr<device::MailboxToSurfaceBridge>
 MailboxToSurfaceBridgeFactoryImpl::Create() const {
   return std::make_unique<MailboxToSurfaceBridgeImpl>();
