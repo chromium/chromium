@@ -19,9 +19,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -81,8 +84,6 @@ class PageCaptureApiUnitTest : public ExtensionServiceTestBase {
     ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
   }
-
-  void TearDown() override { ExtensionServiceTestBase::TearDown(); }
 };
 
 // Tests that if a page navigates during a call to pageCature.saveAsMHTML(), the
