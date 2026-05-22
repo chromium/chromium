@@ -563,8 +563,11 @@ views::DialogDelegate* AvatarToolbarButton::GetDialogDelegate() {
 }
 
 void AvatarToolbarButton::UpdateLayoutInsets() {
-  SetLayoutInsets(::GetLayoutInsets(
-      IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));
+  const bool is_label_visible = IsLabelPresentAndVisible();
+  SetLayoutInsets(::GetLayoutInsets(is_label_visible ? AVATAR_CHIP_PADDING
+                                                     : TOOLBAR_BUTTON));
+  SetHorizontalAlignment(is_label_visible ? gfx::ALIGN_LEFT
+                                          : gfx::ALIGN_CENTER);
 }
 
 void AvatarToolbarButton::OnInkDropHighlightedChanged() {
