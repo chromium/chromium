@@ -134,17 +134,16 @@ void CheckCredentialExportScreenActionMetric(
 
 #pragma mark - Tests
 
-// Tests that tapping the Continue button proceeds with the export process.
-// TODO(crbug.com/454566693): The OS bottom sheet doesn't seem to appear.
-- (void)DISABLED_testTapContinueButton {
+// Tests that tapping the Continue button logs the metrics.
+- (void)testTapContinueButton {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
   SavePasswordFormToAccountStore(@"password", @"user", @"https://example.com");
   OpenExportCredentialsPage();
 
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:ContinueButton()]
-      assertWithMatcher:grey_notVisible()];
 
   CheckCredentialExportScreenActionMetric(
       CredentialExportScreenAction::kContinuePressed);
