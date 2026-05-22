@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -233,7 +234,7 @@ class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
       mojo::ScopedDataPipeConsumerHandle body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override {
     scoped_refptr<net::HttpResponseHeaders> headers = response_head->headers;
-    size_t original_size = headers->raw_headers().size();
+    const base::ByteSize original_size(headers->raw_headers().size());
 
     std::string csp_header =
         csp_override_.has_value() ? csp_override_.value() : GetDefaultCsp();
@@ -246,7 +247,8 @@ class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
     headers->SetHeader("Cross-Origin-Embedder-Policy", "require-corp");
     headers->SetHeader("Cross-Origin-Resource-Policy", "same-origin");
 
-    header_size_delta_ = headers->raw_headers().size() - original_size;
+    header_size_delta_ = base::ByteSize(headers->raw_headers().size());
+    header_size_delta_ -= original_size;
 
     // The Network Service will have already parsed the headers for
     // proxy-based IWAs, and navigation code will try to reuse the already
@@ -261,12 +263,14 @@ class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     network::URLLoaderCompletionStatus adjusted_status = status;
-    adjusted_status.encoded_data_length += header_size_delta_;
+    adjusted_status.encoded_data_length += header_size_delta_.InBytes();
     url_loader_client()->OnComplete(adjusted_status);
   }
 
   std::optional<std::string> csp_override_ = std::nullopt;
-  int header_size_delta_ = 0;
+
+  // The length of added headers.
+  base::ByteSize header_size_delta_;
 
   base::WeakPtrFactory<HeaderInjectionURLLoaderClient> weak_factory_{this};
 };

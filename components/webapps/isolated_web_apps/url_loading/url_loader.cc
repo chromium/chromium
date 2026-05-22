@@ -10,8 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -102,11 +104,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
       return;
     }
 
-    std::string header_string =
-        web_package::CreateHeaderString(response->head());
-    auto response_head =
-        web_package::CreateResourceResponseFromHeaderString(header_string);
-    response_head->content_length = response->head()->payload_length;
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoCreateDataPipeOptions options;
@@ -124,8 +121,17 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
           network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
       return;
     }
-    header_length_ = header_string.size();
-    body_length_ = response_head->content_length;
+
+    std::string header_string =
+        web_package::CreateHeaderString(response->head());
+    header_length_ = base::ByteSize(header_string.size());
+    body_length_ = base::ByteSize(response->head()->payload_length);
+
+    auto response_head =
+        web_package::CreateResourceResponseFromHeaderString(header_string);
+    // Copying `payload_length` into `body_length_` (a ByteSize) first ensures
+    // it fits into `content_length` (an int64_t).
+    response_head->content_length = body_length_.InBytes();
     loader_client_->OnReceiveResponse(std::move(response_head),
                                       std::move(consumer_handle), std::nullopt);
 
@@ -143,9 +149,9 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
     network::URLLoaderCompletionStatus status(net_error);
     // For these values we use the same `body_length_` as we don't currently
     // provide encoding in Web Bundles.
-    status.encoded_data_length = body_length_ + header_length_;
-    status.encoded_body_length = body_length_;
-    status.decoded_body_length = body_length_;
+    status.encoded_data_length = (body_length_ + header_length_).InBytes();
+    status.encoded_body_length = body_length_.InBytes();
+    status.decoded_body_length = body_length_.InBytes();
     loader_client_->OnComplete(status);
   }
 
@@ -161,8 +167,8 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
                    int intra_priority_value) override {}
 
   mojo::Remote<network::mojom::URLLoaderClient> loader_client_;
-  int64_t header_length_;
-  int64_t body_length_;
+  base::ByteSize header_length_;
+  base::ByteSize body_length_;
   const network::ResourceRequest resource_request_;
   std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
   const base::FilePath web_bundle_path_;
