@@ -72,9 +72,6 @@ BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
 // Enables hiding the close button when in vertical tabs or immersive mode.
 BASE_DECLARE_FEATURE(kContextualTasksHideCloseButtonInVerticalTabs);
 
-// Enables updating the model from URL parameters on every inner navigation.
-BASE_DECLARE_FEATURE(kContextualTasksUpdateModelOnNavigation);
-
 // Enables intercepting YouTube links with timestamps to seek video instead of
 // navigating.
 BASE_DECLARE_FEATURE(kContextualTasksVideoCitations);
@@ -103,9 +100,6 @@ BASE_DECLARE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen);
 // When enabled, AIM must send the browser a message to initiate the cobrowse
 // experience for link clicks.
 BASE_DECLARE_FEATURE(kAimTriggeredThreadLinks);
-
-bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
-
 bool GetIsContextualTasksPdfCitationsEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();

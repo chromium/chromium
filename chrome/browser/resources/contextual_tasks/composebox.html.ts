@@ -63,7 +63,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .enableCarouselScrolling="${true}"
           .isFollowupQuery="${!this.isZeroState}"
           .enableFileHint="${this.enableFileHint_}"
-          .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+          .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted()}"
           .clearAllInputsWhenSubmittingQuery="${true}"
           .showVoiceSearch="${true}"
           .usePecApi="${this.usePecApi_}"

@@ -34,8 +34,9 @@ class ContextualTasksComposeboxHandlerInterface {
   // Initializes the input state model.
   virtual void InitializeInputStateModel() = 0;
 
-  // Updates the active model mode based on the given URL parameters.
-  virtual void UpdateModelFromUrl(const GURL& url) = 0;
+  // Updates the active model mode and tool mode based on the given URL
+  // parameters.
+  virtual void UpdateStateFromUrl(const GURL& url) = 0;
 };
 
 }  // namespace contextual_tasks

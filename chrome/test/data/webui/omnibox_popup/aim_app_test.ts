@@ -42,6 +42,7 @@ function createDefaultInputState(): InputState {
     hintText: '',
     maxInputsByType: {},
     maxTotalInputs: 0,
+    isCanvasQuerySubmitted: false,
   };
 }
 

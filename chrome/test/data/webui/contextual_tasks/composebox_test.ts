@@ -1031,18 +1031,14 @@ suite('ContextualTasksComposeboxTest', () => {
         toolChip.classList.contains('unremovable'),
         'Canvas chip should not be unremovable initially');
 
-    // Simulate navigation without rc=1.
-    const loadStartEventNoRc = new Event('loadstart');
-    Object.assign(
-        loadStartEventNoRc, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadStartForTesting(
-        loadStartEventNoRc as chrome.webviewTag.LoadStartEvent);
-
-    const loadCommitEventNoRc = new Event('loadcommit');
-    Object.assign(
-        loadCommitEventNoRc, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadCommitForTesting(
-        loadCommitEventNoRc as chrome.webviewTag.LoadCommitEvent);
+    // Simulate C++ sending InputState with isCanvasQuerySubmitted = false.
+    const inputStateNoRc = new MockInputState({
+      allowedTools: [ToolMode.kCanvas],
+      activeTool: ToolMode.kCanvas,
+      isCanvasQuerySubmitted: false,
+    });
+    searchboxCallbackRouterRemote.onInputStateChanged(inputStateNoRc);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await contextualTasksApp.updateComplete;
     await contextualTasksApp.$.composebox.updateComplete;
@@ -1062,19 +1058,14 @@ suite('ContextualTasksComposeboxTest', () => {
         toolChipNoRc.classList.contains('unremovable'),
         'Canvas chip should not be unremovable after non-query navigation');
 
-    // Simulate navigation with rc=1.
-    const loadStartEventWithRc = new Event('loadstart');
-    Object.assign(
-        loadStartEventWithRc,
-        {url: 'http://example.com?rc=1', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadStartForTesting(
-        loadStartEventWithRc as chrome.webviewTag.LoadStartEvent);
-
-    const loadCommitEventWithRc = new Event('loadcommit');
-    Object.assign(
-        loadCommitEventWithRc, {url: 'http://example.com?rc=1', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadCommitForTesting(
-        loadCommitEventWithRc as chrome.webviewTag.LoadCommitEvent);
+    // Simulate C++ sending InputState with isCanvasQuerySubmitted = true.
+    const inputStateWithRc = new MockInputState({
+      allowedTools: [ToolMode.kCanvas],
+      activeTool: ToolMode.kCanvas,
+      isCanvasQuerySubmitted: true,
+    });
+    searchboxCallbackRouterRemote.onInputStateChanged(inputStateWithRc);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await contextualTasksApp.updateComplete;
     await contextualTasksApp.$.composebox.updateComplete;
@@ -1112,7 +1103,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await contextualTasksApp.$.composebox.updateComplete;
 
     // Verify state reset.
-    assertFalse(contextualTasksApp.$.composebox.isCanvasQuerySubmitted);
+    assertFalse(contextualTasksApp.$.composebox.isCanvasQuerySubmitted());
   });
 
   test('SidePanelComposeboxAlignsStart', async () => {
