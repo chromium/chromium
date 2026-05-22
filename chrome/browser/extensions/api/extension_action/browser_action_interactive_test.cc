@@ -408,12 +408,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 // (crbug.com/40401189)
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupIncognitoFromBackground) {
-#if defined(MEMORY_SANITIZER)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
+    GTEST_SKIP()
+        << "Skipping test because it's flaky with InitialWebUI enabled. "
+           "See crbug.com/477426026.";
   }
-#endif
 
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action")
