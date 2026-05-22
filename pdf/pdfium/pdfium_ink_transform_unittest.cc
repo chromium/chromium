@@ -12,6 +12,9 @@
 #include "pdf/pdfium/pdfium_test_helpers.h"
 #include "pdf/test/test_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace chrome_pdf {
 
@@ -56,6 +59,48 @@ TEST_P(PDFiumInkTransformTest, GetCanonicalToPdfTransformForHelloWorldCropped) {
             transform.MapPoint(kCanonicalTopLeftPoint));
   EXPECT_EQ(gfx::PointF(130.0f, 59.5f),
             transform.MapPoint(kCanonicalMiddlePoint));
+}
+
+TEST(PDFiumInkTransformCalculateTest, CalculateTextBoxTransform) {
+  gfx::Transform identity;
+  gfx::RectF rect(10.0f, 20.0f, 100.0f, 50.0f);
+
+  {
+    FS_MATRIX matrix = CalculateTextBoxTransform(rect, 0, identity);
+    EXPECT_FLOAT_EQ(matrix.a, 1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.b, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.c, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.d, -1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.e, 10.0f);
+    EXPECT_FLOAT_EQ(matrix.f, 20.0f);
+  }
+  {
+    FS_MATRIX matrix = CalculateTextBoxTransform(rect, 1, identity);
+    EXPECT_FLOAT_EQ(matrix.a, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.b, 1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.c, 1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.d, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.e, 110.0f);
+    EXPECT_FLOAT_EQ(matrix.f, 20.0f);
+  }
+  {
+    FS_MATRIX matrix = CalculateTextBoxTransform(rect, 2, identity);
+    EXPECT_FLOAT_EQ(matrix.a, -1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.b, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.c, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.d, 1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.e, 110.0f);
+    EXPECT_FLOAT_EQ(matrix.f, 70.0f);
+  }
+  {
+    FS_MATRIX matrix = CalculateTextBoxTransform(rect, 3, identity);
+    EXPECT_FLOAT_EQ(matrix.a, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.b, -1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.c, -1.3333333f);
+    EXPECT_FLOAT_EQ(matrix.d, 0.0f);
+    EXPECT_FLOAT_EQ(matrix.e, 10.0f);
+    EXPECT_FLOAT_EQ(matrix.f, 70.0f);
+  }
 }
 
 // There are no rendering concerns for doing transforms, so only one variation

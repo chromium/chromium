@@ -7,15 +7,26 @@
 
 #include "pdf/buildflags.h"
 #include "third_party/pdfium/public/fpdfview.h"
-#include "ui/gfx/geometry/transform.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
+
+namespace gfx {
+class RectF;
+class Transform;
+}  // namespace gfx
 
 namespace chrome_pdf {
 
 // Wrapper function that returns the GetCanonicalToPdfTransform() result for a
 // given `page`. Takes the page's MediaBox and CropBox into account.
 gfx::Transform GetCanonicalToPdfTransformForPage(FPDF_PAGE page);
+
+// Returns the transformation matrix that converts a textbox in canonical page
+// coordinates (top-left origin) to PDF coordinates (bottom-left origin).
+FS_MATRIX CalculateTextBoxTransform(
+    const gfx::RectF& textbox_page_rect,
+    int orientation,
+    const gfx::Transform& canonical_to_pdf_transform);
 
 }  // namespace chrome_pdf
 
