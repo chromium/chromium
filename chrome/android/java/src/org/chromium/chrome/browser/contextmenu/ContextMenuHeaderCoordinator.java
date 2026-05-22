@@ -123,7 +123,7 @@ class ContextMenuHeaderCoordinator {
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, altText)
                         .with(
-                                ContextMenuHeaderProperties.TITLE_MAX_LINES,
+                                ContextMenuHeaderProperties.ALT_TEXT_MAX_LINES,
                                 TextUtils.isEmpty(url) ? 2 : 1)
                         .with(ContextMenuHeaderProperties.URL, url)
                         .with(
@@ -166,6 +166,9 @@ class ContextMenuHeaderCoordinator {
 
             modelBuilder
                     .with(ContextMenuHeaderProperties.PAGE_TITLE, pageTitle)
+                    .with(
+                            ContextMenuHeaderProperties.PAGE_TITLE_MAX_LINES,
+                            TextUtils.isEmpty(url) ? 2 : 1)
                     .with(ContextMenuHeaderProperties.SECONDARY_URL, secondaryUrl)
                     .with(
                             ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,

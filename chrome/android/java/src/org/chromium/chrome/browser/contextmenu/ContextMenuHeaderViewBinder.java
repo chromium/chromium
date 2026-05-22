@@ -30,6 +30,15 @@ class ContextMenuHeaderViewBinder {
                     TextUtils.isEmpty(model.get(ListMenuItemProperties.TITLE))
                             ? View.GONE
                             : View.VISIBLE);
+        } else if (propertyKey == ContextMenuHeaderProperties.ALT_TEXT_MAX_LINES) {
+            final int maxLines = model.get(ContextMenuHeaderProperties.ALT_TEXT_MAX_LINES);
+            final TextView altText = view.findViewById(R.id.menu_header_alt_text);
+            altText.setMaxLines(maxLines);
+            if (maxLines == Integer.MAX_VALUE) {
+                altText.setEllipsize(null);
+            } else {
+                altText.setEllipsize(TextUtils.TruncateAt.END);
+            }
         } else if (propertyKey == ContextMenuHeaderProperties.PAGE_TITLE) {
             final TextView pageTitleText = view.findViewById(R.id.menu_header_page_title);
             pageTitleText.setText(model.get(ContextMenuHeaderProperties.PAGE_TITLE));
@@ -38,14 +47,14 @@ class ContextMenuHeaderViewBinder {
                             ? View.GONE
                             : View.VISIBLE);
 
-        } else if (propertyKey == ContextMenuHeaderProperties.TITLE_MAX_LINES) {
-            final int maxLines = model.get(ContextMenuHeaderProperties.TITLE_MAX_LINES);
-            final TextView altText = view.findViewById(R.id.menu_header_alt_text);
-            altText.setMaxLines(maxLines);
+        } else if (propertyKey == ContextMenuHeaderProperties.PAGE_TITLE_MAX_LINES) {
+            final int maxLines = model.get(ContextMenuHeaderProperties.PAGE_TITLE_MAX_LINES);
+            final TextView pageTitle = view.findViewById(R.id.menu_header_page_title);
+            pageTitle.setMaxLines(maxLines);
             if (maxLines == Integer.MAX_VALUE) {
-                altText.setEllipsize(null);
+                pageTitle.setEllipsize(null);
             } else {
-                altText.setEllipsize(TextUtils.TruncateAt.END);
+                pageTitle.setEllipsize(TextUtils.TruncateAt.END);
             }
         } else if (propertyKey == ContextMenuHeaderProperties.URL) {
             TextView urlText = view.findViewById(R.id.menu_header_url);

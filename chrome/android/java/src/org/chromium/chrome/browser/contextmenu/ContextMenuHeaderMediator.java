@@ -117,7 +117,9 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         // 1. Determine the current state and what properties are visible.
         final boolean isCurrentlyExpanded =
                 mModel.get(ContextMenuHeaderProperties.URL_MAX_LINES) == Integer.MAX_VALUE;
-        final boolean isTitleEmpty = TextUtils.isEmpty(mModel.get(ListMenuItemProperties.TITLE));
+        final boolean isPageTitleEmpty =
+                TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.PAGE_TITLE));
+        final boolean isAltTextEmpty = TextUtils.isEmpty(mModel.get(ListMenuItemProperties.TITLE));
         final boolean isUrlEmpty = TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.URL));
         final boolean isSecondaryUrlPresent =
                 !TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.SECONDARY_URL));
@@ -126,7 +128,8 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
 
         // 2. Handle the "expand" action. This is the simple case.
         if (!isCurrentlyExpanded) {
-            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE);
+            mModel.set(ContextMenuHeaderProperties.PAGE_TITLE_MAX_LINES, Integer.MAX_VALUE);
+            mModel.set(ContextMenuHeaderProperties.ALT_TEXT_MAX_LINES, Integer.MAX_VALUE);
             mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
             if (isSecondaryUrlPresent) {
                 mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, Integer.MAX_VALUE);
@@ -141,19 +144,28 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         // 3. Handle the "collapse" action. This logic distributes a total of 2 or 3 lines.
         mModel.set(ContextMenuHeaderProperties.IS_EXPANDED, false);
 
-        // Case A: No secondary/tertiary URLs. Distribute 2 lines between Title and URL.
+        // Case A: No secondary/tertiary URLs. Distribute 2 lines between page title, alt text, and
+        // URL.
         if (!isSecondaryUrlPresent) {
-            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, isTitleEmpty ? 2 : 1);
-            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, isUrlEmpty ? 2 : 1);
+            mModel.set(
+                    ContextMenuHeaderProperties.PAGE_TITLE_MAX_LINES,
+                    isUrlEmpty && isAltTextEmpty ? 2 : 1);
+            mModel.set(
+                    ContextMenuHeaderProperties.URL_MAX_LINES,
+                    isAltTextEmpty && isPageTitleEmpty ? 2 : 1);
+            mModel.set(
+                    ContextMenuHeaderProperties.ALT_TEXT_MAX_LINES,
+                    isUrlEmpty && isPageTitleEmpty ? 2 : 1);
             // Reset secondary/tertiary lines for consistency, though they are not visible.
             mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, 1);
             mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, 1);
             return;
         }
 
-        // Case B: Secondary URL is present. Distribute 3 lines among all visible properties.
+        // Case B: Secondary URL is present. Distribute 4 lines among all visible properties.
         int visibleProperties = 0;
-        if (!isTitleEmpty) visibleProperties++;
+        if (!isPageTitleEmpty) visibleProperties++;
+        if (!isAltTextEmpty) visibleProperties++;
         if (!isUrlEmpty) visibleProperties++;
         visibleProperties++; // Secondary is guaranteed present here.
         if (isTertiaryUrlPresent) visibleProperties++;
@@ -166,7 +178,8 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         }
         // If 3 or more properties are visible, they all get 1 line.
 
-        mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
+        mModel.set(ContextMenuHeaderProperties.PAGE_TITLE_MAX_LINES, 1);
+        mModel.set(ContextMenuHeaderProperties.ALT_TEXT_MAX_LINES, 1);
         mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
         mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, secondaryLines);
         mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, 1);
