@@ -28,6 +28,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .disabledTabIds="${this.disabledTabIds}"
         .restoredTabIds="${this.restoredTabIds}"
         .tabSuggestions="${this.tabSuggestions}"
+        .recentTabId="${this.recentTabId}"
         .inputState="${this.inputState}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .disableAutoReposition="${this.disableAutoReposition}"

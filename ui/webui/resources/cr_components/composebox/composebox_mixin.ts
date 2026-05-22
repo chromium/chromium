@@ -139,6 +139,7 @@ export const ComposeboxEmbedderMixin =
             webuiOmniboxSimplificationEnabled: {type: Boolean},
             smartComposeInlineHint: {type: String},
             smartComposeStats: {type: Object},
+            recentTabId: {type: Number},
             state: {type: Object},
             submitEnabled: {
               reflect: true,
@@ -175,6 +176,7 @@ export const ComposeboxEmbedderMixin =
         accessor shouldShowGhostFiles: boolean = false;
         accessor showMenuOnClick: boolean = true;
         accessor isCanvasQuerySubmitted: boolean = false;
+        accessor recentTabId: number|null = null;
         // If voice search error scrim is showing:
         accessor hasVoiceSearchError: boolean = false;
         // Voice search is listening if there is no error and voice search
@@ -1997,7 +1999,7 @@ export const ComposeboxEmbedderMixin =
 
         async refreshTabSuggestions() {
           const {tabs} = await this.getSearchboxHandler().getRecentTabs();
-
+          this.recentTabId = tabs[0]?.tabId ?? null;
           if (!this.contextMenuOpened) {
             this.tabSuggestions = [...tabs];
             return;
@@ -2235,6 +2237,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   composeboxSource: string;
   maxFileCount: number;
   maxFileSize: number;
+  recentTabId: number|null;
   attachmentFileTypes: string[];
   imageFileTypes: string[];
   showTypedSuggestWithContext: boolean;

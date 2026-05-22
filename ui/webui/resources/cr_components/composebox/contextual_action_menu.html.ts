@@ -69,7 +69,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                 </cr-composebox-tab-favicon>
                 <span class="tab-title-group">
                   <span class="tab-title">${tab.title}</span>
-                  ${this.isRecentTab_(index) ? html`
+                  ${this.isRecentTab_(tab.tabId) ? html`
                     <span class="recent-tabs-suffix"
                         ?disabled="${this.isTabDisabled_(tab)}">${
                         this.i18n('recentTabsSuffix')}</span>

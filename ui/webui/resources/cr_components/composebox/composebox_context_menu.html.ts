@@ -37,6 +37,7 @@ export function getHtml(this: ComposeboxElement) {
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
+        .recentTabId="${this.recentTabId}"
         .hasImageFiles="${this.hasImageFiles()}"
         .disabledTabIds="${this.addedTabsIds}"
         .restoredTabIds="${this.restoredTabIds}"

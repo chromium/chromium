@@ -175,6 +175,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       //========================================================================
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
+      recentTabId_: {type: Number},
 
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
@@ -220,6 +221,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor placeholderText: string = '';
+  accessor recentTabId_: number|null = null;
 
   accessor inVoiceSearchMode: boolean = false;
   // If voice search error scrim is showing:
@@ -487,6 +489,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       return;
     }
     const {tabs} = await this.pageHandler().getRecentTabs();
+    this.recentTabId_ = tabs[0]?.tabId ?? null;
     this.tabSuggestions_ = [...tabs];
 
     if (this.contextMenuOpened_ && this.inputState_) {
