@@ -48,10 +48,10 @@ export class PrivacyIndicatorAppElement extends PolymerElement {
     };
   }
 
-  private appid: string;
-  private name: string;
-  private useCamera: boolean;
-  private useMicrophone: boolean;
+  declare private appid: string;
+  declare private name: string;
+  declare private useCamera: boolean;
+  declare private useMicrophone: boolean;
 
   onTriggerPrivacyIndicators(e: Event) {
     e.stopPropagation();

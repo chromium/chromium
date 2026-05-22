@@ -39,8 +39,8 @@ export class PrivacyIndicatorAppManagerElement extends PolymerElement {
     };
   }
 
-  private idLatest: number = 0;
-  private appList: string[] = [];
+  declare private idLatest: number;
+  declare private appList: string[];
 
   onAddPrivacyIndicatorsApp(e: Event) {
     e.stopPropagation();
