@@ -727,6 +727,8 @@ should be able to be added at any place in this file.
       summary="For reading mode keyboard shortcut feature."/>
   <variant name="_ReadingModePageActionLabel"
       summary="For reading mode omnibox entrypoint."/>
+  <variant name="_ReadingModePresentationMode"
+      summary="For changing reading mode presentation mode onboarding."/>
   <variant name="_ReadingModeSidePanel"
       summary="For reading mode side panel feature."/>
   <variant name="_ReadLaterAppMenuBookmarks"

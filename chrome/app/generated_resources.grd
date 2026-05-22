@@ -10137,6 +10137,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINKS_LABEL" desc="Accessibility label for the links menu item in reading mode.">
         Links
       </message>
+      <message name="IDS_READING_MODE_PRESENTATION_MODE_IPH_BODY" desc="Text for the help bubble describing how to toggle reading mode from immersive mode to side panel mode.">
+        Switch back to the side-by-side view by opening Settings, then View, and select Side Panel.
+      </message>
+      <message name="IDS_READING_MODE_PRESENTATION_MODE_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Text for the help bubble describing how to toggle reading mode from immersive mode to side panel mode.">
+        Switch back to the side-by-side view by opening Settings, then View, and select Side Panel.
+      </message>
 
       <!-- Google Lens side panel -->
       <message name="IDS_GOOGLE_LENS_TITLE" desc="Title of the Google Lens side panel">

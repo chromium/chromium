@@ -225,6 +225,10 @@ void ReadAnythingController::OnEntryShown(
       user_ed->MaybeShowFeaturePromo(
           feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
     }
+    if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+      user_ed->MaybeShowFeaturePromo(
+          feature_engagement::kIPHReadingModePresentationModeFeature);
+    }
   }
 
   MaybeUpdateFindBarController();

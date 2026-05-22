@@ -461,12 +461,14 @@ DEFINE_VARIATION_PARAM(kIPHReadingListEntryPointFeature,
                        "IPH_ReadingListEntryPoint");
 DEFINE_VARIATION_PARAM(kIPHReadingListInSidePanelFeature,
                        "IPH_ReadingListInSidePanel");
-DEFINE_VARIATION_PARAM(kIPHReadingModeSidePanelFeature,
-                       "IPH_ReadingModeSidePanel");
 DEFINE_VARIATION_PARAM(kIPHReadingModeKeyboardShortcutFeature,
                        "IPH_ReadingModeKeyboardShortcut");
 DEFINE_VARIATION_PARAM(kIPHReadingModePageActionLabelFeature,
                        "IPH_ReadingModePageActionLabel");
+DEFINE_VARIATION_PARAM(kIPHReadingModePresentationModeFeature,
+                       "IPH_ReadingModePresentationMode");
+DEFINE_VARIATION_PARAM(kIPHReadingModeSidePanelFeature,
+                       "IPH_ReadingModeSidePanel");
 DEFINE_VARIATION_PARAM(kIPHShoppingCollectionFeature,
                        "IPH_ShoppingCollectionFeature");
 DEFINE_VARIATION_PARAM(kIPHSideBySidePinnableFeature,
@@ -846,6 +848,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadingListInSidePanelFeature),
         VARIATION_ENTRY(kIPHReadingModeKeyboardShortcutFeature),
         VARIATION_ENTRY(kIPHReadingModePageActionLabelFeature),
+        VARIATION_ENTRY(kIPHReadingModePresentationModeFeature),
         VARIATION_ENTRY(kIPHReadingModeSidePanelFeature),
         VARIATION_ENTRY(kIPHResumptionRailFeature),
         VARIATION_ENTRY(kIPHShoppingCollectionFeature),

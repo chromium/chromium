@@ -428,3 +428,79 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingKeyboardShortcutCUJTest, ShowAndHideIph) {
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
+
+class ReadAnythingPresentationModeCUJTest
+    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
+ public:
+  template <typename... Args>
+  explicit ReadAnythingPresentationModeCUJTest(Args&&... args)
+      : PageActionInteractiveTestMixin(
+            UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {}
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
+    non_distillable_url_ = GURL("chrome://blank");
+    a11y::SetDistillableDomainsForTesting({distillable_url_.GetHost()});
+
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kImmersiveReadAnything, features::kReadAnythingOmniboxChip,
+        features::kPageActionsMigration,
+        feature_engagement::kIPHReadingModePresentationModeFeature};
+    feature_list_.InitAndEnableFeatures(enabled_features);
+    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
+
+    InteractiveFeaturePromoTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+        ->AddHintForTesting(
+            distillable_url_, optimization_guide::proto::READER_MODE_ELIGIBLE,
+            std::optional<optimization_guide::OptimizationMetadata>());
+  }
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
+  }
+
+  using PageActionInteractiveTestMixin::InvokePageAction;
+
+  auto WaitForPageActionChipVisible() {
+    return PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
+        kActionSidePanelShowReadAnything);
+  }
+
+  auto WaitForPageActionChipNotVisible() {
+    return PageActionInteractiveTestMixin::WaitForPageActionChipNotVisible(
+        kActionSidePanelShowReadAnything);
+  }
+
+  auto InvokePageAction() {
+    return PageActionInteractiveTestMixin::InvokePageAction(
+        kActionSidePanelShowReadAnything);
+  }
+
+  GURL distillable_url_;
+  GURL non_distillable_url_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingPresentationModeCUJTest, ShowAndHideIph) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+
+      // Open Reading Mode.
+      WaitForPageActionChipVisible(), InvokePageAction(),
+
+      // Wait for the promo to show.
+      WaitForPromo(feature_engagement::kIPHReadingModePresentationModeFeature),
+
+      // Hide the Iph by navigating away.
+      NavigateWebContents(kActiveTab, non_distillable_url_),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}

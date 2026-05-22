@@ -280,6 +280,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     super.firstUpdated(_changedProperties);
     this.registerHelpBubble(
         'kReadAnythingViewModeElementId', '#toolbarContainer');
+    this.registerHelpBubble('kReadAnythingSettingsButtonElementId', '#more');
   }
 
   override updated(changedProperties: PropertyValues<this>) {

@@ -1207,6 +1207,20 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to educate users about the keyboard shortcut "
                        "for Reading Mode.")));
 
+  // kIPHReadingModePresentationModeFeature:
+  registry.RegisterFeature(std::move(
+      user_education::FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHReadingModePresentationModeFeature,
+          kReadAnythingSettingsButtonElementId,
+          IDS_READING_MODE_PRESENTATION_MODE_IPH_BODY,
+          IDS_READING_MODE_PRESENTATION_MODE_IPH_SCREENREADER,
+          user_education::FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetInAnyContext(true)
+          .SetMetadata(150, "martinglopez@google.com",
+                       "Triggered to educate users about switching from "
+                       "immersive mode to side panel mode in Reading Mode.")));
+
   // kIPHReadingModeSidePanelFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(
