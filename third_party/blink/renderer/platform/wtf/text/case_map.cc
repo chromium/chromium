@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -70,6 +71,7 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
   DCHECK(source);
   CHECK_LE(source->length(),
            static_cast<wtf_size_t>(std::numeric_limits<int32_t>::max()));
+  int32_t int_source_length = static_cast<int32_t>(source->length());
 
   scoped_refptr<StringImpl> upconverted = source->UpconvertedString();
   const base::span<const UChar> source16 = upconverted->Span16();
@@ -84,20 +86,18 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
     switch (type) {
       case CaseMapType::kLower:
         target_length = icu::CaseMap::toLower(
-            locale, /* options */ 0,
-            reinterpret_cast<const char16_t*>(source16.data()), source16.size(),
-            reinterpret_cast<char16_t*>(data16.data()), data16.size(), &edits,
+            locale, /* options */ 0, source16.data(), int_source_length,
+            data16.data(), base::checked_cast<int32_t>(data16.size()), &edits,
             status);
         break;
       case CaseMapType::kUpper:
         target_length = icu::CaseMap::toUpper(
-            locale, /* options */ 0,
-            reinterpret_cast<const char16_t*>(source16.data()), source16.size(),
-            reinterpret_cast<char16_t*>(data16.data()), data16.size(), &edits,
+            locale, /* options */ 0, source16.data(), int_source_length,
+            data16.data(), base::checked_cast<int32_t>(data16.size()), &edits,
             status);
         break;
       case CaseMapType::kTitle: {
-        unsigned source_length = source16.size();
+        wtf_size_t source_length = static_cast<wtf_size_t>(source16.size());
         StringBuffer<UChar> string_buffer(source_length + 1);
         base::span<UChar> string_with_previous = string_buffer.Span();
         bool is_previous_alpha = u_isalpha(previous_character);
@@ -115,10 +115,11 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
 
         target_length = icu::CaseMap::toTitle(
             locale, U_TITLECASE_NO_LOWERCASE, /* iter */ nullptr,
-            reinterpret_cast<const char16_t*>(string_with_previous.data()),
-            string_with_previous.size(),
-            reinterpret_cast<char16_t*>(data_with_previous.data()),
-            data_with_previous.size(), &edits, status);
+            string_with_previous.data(),
+            base::checked_cast<int32_t>(string_with_previous.size()),
+            data_with_previous.data(),
+            base::checked_cast<int32_t>(data_with_previous.size()), &edits,
+            status);
 
         if (U_FAILURE(status)) {
           break;
@@ -349,8 +350,10 @@ scoped_refptr<StringImpl> CaseMap::ToUpperInvariant(StringImpl* source,
     new_impl = StringImpl::CreateUninitialized(
         source8.size() + count_sharp_s_characters, data8);
 
-    size_t dest_index = 0;
-    for (size_t i = 0; i < source8.size(); ++i) {
+    // The CHECK_LE above ensures this cast is safe.
+    const wtf_size_t source8_size = static_cast<wtf_size_t>(source8.size());
+    wtf_size_t dest_index = 0;
+    for (wtf_size_t i = 0; i < source8_size; ++i) {
       const LChar c = source8[i];
       if (c == blink::uchar::kLatinSmallLetterSharpS) {
         data8[dest_index++] = 'S';
