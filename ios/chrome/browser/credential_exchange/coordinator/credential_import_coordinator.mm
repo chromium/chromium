@@ -460,7 +460,6 @@
 // Starts reauthCoordinator. Once started, it observes scene state changes and
 // requires authentication when the scene is backgrounded and then foregrounded
 // while credential import is opened.
-// TODO(crbug.com/458733320): Explore EG test feasibility.
 - (void)startReauthCoordinator {
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_navigationController
