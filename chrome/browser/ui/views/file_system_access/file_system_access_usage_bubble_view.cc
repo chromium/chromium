@@ -48,6 +48,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_elider.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
@@ -137,6 +139,27 @@ int ComputeHeadingMessageFromUsage(
 // Displays a (one-column) table model as a one-line summary showing the
 // first few items, with a toggle button to expand a table below to contain the
 // full list of items.
+//
+// Visual representation (Collapsed - unelided text fits):
+//   +----------------------------------------------------------+
+//   | [Icon] file_name_1.txt, file_name_2.png, and 1 more  [v] |
+//   +----------------------------------------------------------+
+//
+// Visual representation (Collapsed - with middle elision fallback):
+//   +--------------------------------------------------------+
+//   | [Icon] file_..._1.txt, file_..._2.png, and 1 more  [v] |
+//   +--------------------------------------------------------+
+//
+// Visual representation (Expanded):
+//   +----------------------------------------------------------+
+//   | [Icon] file_name_1.txt, file_name_2.png, and 1 more  [^] |
+//   |                                                          |
+//   |   +--------------------------------------------------+   |
+//   |   | [Icon] file_name_1.txt                           |   |
+//   |   | [Icon] file_name_2.png                           |   |
+//   |   | [Icon] folder_name                               |   |
+//   |   +--------------------------------------------------+   |
+//   +----------------------------------------------------------+
 class CollapsibleListView : public views::View {
   METADATA_HEADER(CollapsibleListView, views::View)
 
@@ -144,68 +167,171 @@ class CollapsibleListView : public views::View {
   // How many rows to show in the expanded table without having to scroll.
   static constexpr int kExpandedTableRowCount = 3;
 
-  explicit CollapsibleListView(ui::TableModel* model) {
+  explicit CollapsibleListView(
+      FileSystemAccessUsageBubbleView::FilePathListModel* model) {
     const views::LayoutProvider* provider = ChromeLayoutProvider::Get();
+
+    CHECK_GT(model->RowCount(), 0u);
 
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(0),
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-    auto label_container = std::make_unique<views::View>();
-    int indent =
+    auto summary_row_view = std::make_unique<views::View>();
+    int row_horizontal_padding =
         provider->GetDistanceMetric(DISTANCE_SUBSECTION_HORIZONTAL_INDENT);
-    auto* label_layout =
-        label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+    int between_child_spacing =
+        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+    auto* row_layout =
+        summary_row_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets::VH(0, indent),
-            provider->GetDistanceMetric(
-                views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-    std::u16string label_text;
-    if (model->RowCount() > 0) {
-      auto icon = std::make_unique<views::ImageView>();
-      icon->SetImage(model->GetIcon(0));
-      label_container->AddChildView(std::move(icon));
+            gfx::Insets::VH(0, row_horizontal_padding), between_child_spacing));
 
-      std::u16string first_item = model->GetText(0, 0);
-      std::u16string second_item =
-          model->RowCount() > 1 ? model->GetText(1, 0) : std::u16string();
+    std::u16string tooltip_text;
 
-      label_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
-          base::checked_cast<int64_t>(model->RowCount()), first_item,
-          second_item);
-    }
-    auto* label = label_container->AddChildView(std::make_unique<views::Label>(
-        label_text, CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_PRIMARY));
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label_layout->SetFlexForView(label, 1);
+    auto icon = std::make_unique<views::ImageView>();
+    icon->SetImage(model->GetIcon(0));
+    int icon_width = icon->GetPreferredSize().width();
+
     auto button = views::CreateVectorToggleImageButton(base::BindRepeating(
         &CollapsibleListView::ButtonPressed, base::Unretained(this)));
     button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_EXPAND));
     button->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
-    expand_collapse_button_ = label_container->AddChildView(std::move(button));
     views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_,
+        button.get(),
         features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowDownIcon
                                           : vector_icons::kCaretDownOldIcon,
         ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
     views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_,
+        button.get(),
         features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowUpIcon
                                           : vector_icons::kCaretUpOldIcon,
         ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
 
-    if (model->RowCount() < 3) {
-      expand_collapse_button_->SetVisible(false);
+    int button_width = button->GetPreferredSize().width();
+    bool show_button = model->RowCount() >= 3;
+    if (!show_button) {
+      button->SetVisible(false);
     }
-    int preferred_width = label_container->GetPreferredSize().width();
-    AddChildView(std::move(label_container));
 
-    std::vector<ui::TableColumn> table_columns{ui::TableColumn()};
+    int bubble_width =
+        provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+
+    gfx::Insets dialog_insets =
+        provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
+
+    // Width consumed by the non-text elements in the row:
+    // - Parent dialog horizontal insets
+    // - Left and right horizontal padding: 2 * row_horizontal_padding
+    // - Icon width
+    // - Spacing between icon and label
+    int non_text_width = dialog_insets.width() + 2 * row_horizontal_padding +
+                         icon_width + between_child_spacing;
+
+    if (show_button) {
+      // - Button width
+      // - Spacing between label and button
+      non_text_width += button_width + between_child_spacing;
+    }
+
+    int available_text_width = bubble_width - non_text_width;
+
+    auto label = std::make_unique<views::Label>(
+        u"", CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetElideBehavior(gfx::NO_ELIDE);
+
+    const gfx::FontList& font_list = label->font_list();
+
+    // Get unelided names for the first two displayed items.
+    base::FilePath first_displayed_path = model->GetPath(0);
+    std::u16string first_displayed_name_unelided =
+        first_displayed_path.BaseName().LossyDisplayName();
+
+    std::u16string second_displayed_name_unelided;
+    base::FilePath second_displayed_path;
+    if (model->RowCount() > 1) {
+      second_displayed_path = model->GetPath(1);
+      second_displayed_name_unelided =
+          second_displayed_path.BaseName().LossyDisplayName();
+    }
+
+    // Construct the unelided label text to check if it fits.
+    std::u16string label_text_unelided =
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
+            base::checked_cast<int64_t>(model->RowCount()),
+            first_displayed_name_unelided, second_displayed_name_unelided);
+
+    int unelided_width = gfx::GetStringWidth(label_text_unelided, font_list);
+
+    std::u16string first_displayed_name;
+    std::u16string second_displayed_name;
+
+    if (unelided_width <= available_text_width) {
+      // If the entire unelided text fits, use it as-is.
+      first_displayed_name = first_displayed_name_unelided;
+      second_displayed_name = second_displayed_name_unelided;
+    } else {
+      // Otherwise, fall back to equal-budget middle elision for each item.
+      std::u16string boilerplate_text =
+          base::i18n::MessageFormatter::FormatWithNumberedArgs(
+              l10n_util::GetStringUTF16(
+                  IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
+              base::checked_cast<int64_t>(model->RowCount()), std::u16string(),
+              std::u16string());
+      int boilerplate_width = gfx::GetStringWidth(boilerplate_text, font_list);
+
+      int max_items = std::min(static_cast<size_t>(2), model->RowCount());
+      int item_width =
+          std::max(0, (available_text_width - boilerplate_width) / max_items);
+
+      first_displayed_name = file_system_access_ui_helper::ElidePath(
+          first_displayed_path.BaseName(), font_list, item_width);
+
+      if (model->RowCount() > 1) {
+        second_displayed_name = file_system_access_ui_helper::ElidePath(
+            second_displayed_path.BaseName(), font_list, item_width);
+      }
+    }
+
+    std::u16string label_text =
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
+            base::checked_cast<int64_t>(model->RowCount()),
+            first_displayed_name, second_displayed_name);
+    label->SetText(label_text);
+
+    // Construct an unelided tooltip for the collapsed label.
+    std::u16string first_item_full_path = model->GetTooltip(0);
+    if (model->RowCount() == 1) {
+      tooltip_text = first_item_full_path;
+    } else {
+      tooltip_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
+          base::checked_cast<int64_t>(model->RowCount()), first_item_full_path,
+          model->GetTooltip(1));
+    }
+    label->SetTooltipText(tooltip_text);
+
+    summary_row_view->AddChildView(std::move(icon));
+    auto* label_ptr = summary_row_view->AddChildView(std::move(label));
+    row_layout->SetFlexForView(label_ptr, 1);
+
+    expand_collapse_button_ = summary_row_view->AddChildView(std::move(button));
+
+    int preferred_width = summary_row_view->GetPreferredSize().width();
+    AddChildView(std::move(summary_row_view));
+
+    ui::TableColumn column;
+    column.elide_behavior = gfx::ELIDE_MIDDLE;
+    column.percent = 1.0f;
+    std::vector<ui::TableColumn> table_columns{column};
     auto table_view = std::make_unique<views::TableView>(
         model, std::move(table_columns), views::TableType::kIconAndText,
         /*single_selection=*/true);

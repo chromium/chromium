@@ -8,6 +8,14 @@
 #include <memory>
 #include <string>
 
+namespace base {
+class FilePath;
+}
+
+namespace gfx {
+class FontList;
+}
+
 class Profile;
 class GURL;
 
@@ -16,6 +24,14 @@ struct PathInfo;
 }
 
 namespace file_system_access_ui_helper {
+
+// Elides a path to fit within `available_pixel_width`.
+// If the path represents a directory or has no extension, it is middle-elided.
+// Otherwise, it is middle-elided preserving the extension (via
+// gfx::ElideFilename).
+std::u16string ElidePath(const base::FilePath& path,
+                         const gfx::FontList& font_list,
+                         float available_pixel_width);
 
 // Returns a human-readable string for use in titles of dialogs. Uses
 // `path_info.display_name` if it is non-empty and does not match

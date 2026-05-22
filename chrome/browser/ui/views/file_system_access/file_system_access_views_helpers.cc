@@ -59,7 +59,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(
     int text_context,
     bool show_emphasis) {
   std::u16string formatted_path =
-      GetPathForDisplayAsParagraph(content::PathInfo(path));
+      GetElidedPathForDisplayAsTitle(content::PathInfo(path));
 
   Profile* profile =
       web_contents

@@ -78,6 +78,23 @@ class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
       origin = url::Origin::Create(GURL(
           "https://"
           "some-really-long-origin-chrome-test-foo-bar-sample.appspot.com"));
+    } else if (name == "VeryLongMultiple") {
+      usage.writable_files.emplace_back(FILE_PATH_LITERAL(
+          "/foo/bar/"
+          "some_incredibly_long_filename_that_will_definitely_be_truncated_"
+          "because_it_exceeds_the_normal_width_of_a_dialog_bubble_view_by_"
+          "a_wide_margin_to_force_middle_elision_verification.sketch"));
+      usage.writable_files.emplace_back(FILE_PATH_LITERAL(
+          "/foo/bar/"
+          "some_incredibly_long_filename_that_will_definitely_be_truncated_"
+          "because_it_exceeds_the_normal_width_of_a_dialog_bubble_view_by_"
+          "a_wide_margin_to_force_middle_elision_verification.txt"));
+    } else if (name == "VeryLongSingle") {
+      usage.writable_files.emplace_back(FILE_PATH_LITERAL(
+          "/foo/bar/"
+          "some_incredibly_long_filename_that_will_definitely_be_truncated_"
+          "because_it_exceeds_the_normal_width_of_a_dialog_bubble_view_by_"
+          "a_wide_margin_to_force_middle_elision_verification.sketch"));
     } else {
       CHECK_EQ(name, "default");
       usage.readable_directories.emplace_back(
@@ -164,5 +181,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
                        InvokeUi_LongOrigin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
+                       InvokeUi_VeryLongMultiple) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleViewTest,
+                       InvokeUi_VeryLongSingle) {
   ShowAndVerifyUi();
 }
