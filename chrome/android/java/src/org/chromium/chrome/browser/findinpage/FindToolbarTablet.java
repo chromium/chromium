@@ -16,7 +16,6 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -32,9 +31,6 @@ public class FindToolbarTablet extends FindToolbar {
 
     private ObjectAnimator mAnimationEnter;
     private ObjectAnimator mAnimationLeave;
-
-    private int mBaseStartMargin;
-    private int mBaseEndMargin;
 
     private final int mYInsetPx;
 
@@ -95,19 +91,6 @@ public class FindToolbarTablet extends FindToolbar {
                         mCurrentAnimation = null;
                     }
                 });
-
-        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        mBaseStartMargin = params.getMarginStart();
-        mBaseEndMargin = params.getMarginEnd();
-    }
-
-    @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        params.setMarginStart(mBaseStartMargin + sideUiSpecs.mStartContainerWidth);
-        params.setMarginEnd(mBaseEndMargin + sideUiSpecs.mEndContainerWidth);
-        // Ensure the view updates for the new params.
-        setLayoutParams(params);
     }
 
     @Override
@@ -188,7 +171,7 @@ public class FindToolbarTablet extends FindToolbar {
         ObjectAnimator nextAnimator = null;
 
         if (show && getVisibility() != View.VISIBLE && mCurrentAnimation != mAnimationEnter) {
-            View anchorView = getRootView().findViewById(R.id.toolbar);
+            View anchorView = getRootView().findViewById(R.id.control_container);
             var lp = (MarginLayoutParams) getLayoutParams();
             lp.topMargin = anchorView.getBottom() - mYInsetPx;
             setLayoutParams(lp);
