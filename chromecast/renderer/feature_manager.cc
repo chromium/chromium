@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"
-#include "chromecast/renderer/assistant_bindings.h"
 #include "chromecast/renderer/cast_demo_bindings.h"
 #include "chromecast/renderer/cast_window_manager_bindings.h"
 #include "chromecast/renderer/settings_ui_bindings.h"
@@ -114,12 +113,6 @@ void FeatureManager::ConfigureFeaturesInternal() {
       new shell::CastWindowManagerBindings(render_frame(), this));
   if (FeatureEnabled(feature::kEnableDemoStandaloneMode)) {
     v8_bindings_.insert(new shell::CastDemoBindings(render_frame()));
-  }
-
-  if (FeatureEnabled(feature::kEnableAssistantMessagePipe)) {
-    auto& feature = GetFeature(feature::kEnableAssistantMessagePipe);
-    v8_bindings_.insert(
-        new shell::AssistantBindings(render_frame(), feature->config));
   }
 }
 

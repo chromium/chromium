@@ -18,7 +18,7 @@ const char kEnableSettingsUiMojo[] = "enable_settings_ui_mojo";
 const char kDisableBackgroundTabTimerThrottle[] =
     "disable_background_tab_timer_throttle";
 const char kDisableBackgroundSuspend[] = "disable_background_suspend";
-const char kEnableAssistantMessagePipe[] = "enable_assistant_message_pipe";
+
 const char kEnableDemoStandaloneMode[] = "enable_demo_standalone_mode";
 
 const char kKeyAppId[] = "app_id";

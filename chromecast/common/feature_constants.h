@@ -39,8 +39,7 @@ extern const char kDisableBackgroundTabTimerThrottle[];
 // false.
 extern const char kDisableBackgroundSuspend[];
 
-// Enable sending/receiving messages to/from libassistant
-extern const char kEnableAssistantMessagePipe[];
+
 
 // Enable a standalone demo app to control privileged features.
 extern const char kEnableDemoStandaloneMode[];

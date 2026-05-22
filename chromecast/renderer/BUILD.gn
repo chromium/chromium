@@ -9,8 +9,6 @@ cast_source_set("renderer") {
   sources = [
     "activity_filtering_websocket_handshake_throttle.cc",
     "activity_filtering_websocket_handshake_throttle.h",
-    "assistant_bindings.cc",
-    "assistant_bindings.h",
     "cast_activity_url_filter_manager.cc",
     "cast_activity_url_filter_manager.h",
     "cast_content_renderer_client.cc",

@@ -218,7 +218,7 @@ cast_test_group("cast_tests") {
           ]
         }
 
-        if (!is_cast_desktop_build && !enable_assistant) {
+        if (!is_cast_desktop_build) {
           # TODO(mbjorge): The VideoPlaybackMp4 test is failing on v1 devices.
           # Temporarily disable it as part of an effort to re-green the
           # unittests. Re-enable once the tests have been fixed. Limitations in
@@ -228,14 +228,6 @@ cast_test_group("cast_tests") {
           gtest_excludes += [ "CastNavigationBrowserTest.VideoPlaybackMp4" ]
         }
 
-        # TODO(mbjorge): Temporarily disable AudioPlaybackWavPcm because it is
-        # failing on device. As part of an effort to re-green the unittests,
-        # current (2017-03-15) failures are being disabled to get back to a
-        # green state. Re-enable once the tests have been fixed.
-        # b/36239152, hotlist/461351
-        if (enable_assistant && !is_cast_desktop_build) {
-          gtest_excludes += [ "CastNavigationBrowserTest.AudioPlaybackWavPcm" ]
-        }
       }
       filters += [ cast_shell_browsertests_filter ]
     }
@@ -344,15 +336,6 @@ cast_test_group("cast_tests") {
           "PepperGamepadHostTest.WaitForReply",
           "RenderWidgetHostTest.Background",
         ]
-      }
-      if (enable_assistant && !is_cast_desktop_build) {
-        # Temporarily disable DefaultConstructor on assistant device builds.
-        # Cause of failure is unclear, but it's highly likely it's related to
-        # them being DEATH tests. These were passing until the is_official_build
-        # flag was enabled. These tests are considered non-critical in this
-        # context.
-        # (b/62469368)
-        gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
       }
     }
     filters += [ content_unittests_filter ]
@@ -603,7 +586,6 @@ buildflag_header("chromecast_buildflags") {
   _command_line_flags = string_join(",", default_command_line_flags)
   flags = [
     "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
-    "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",

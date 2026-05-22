@@ -32,8 +32,6 @@ declare_args() {
   # when the default value is used.
   cast_build_incremental = "999999"
 
-  # Set true to enable assistant features.
-  enable_assistant = false
 
 
 
