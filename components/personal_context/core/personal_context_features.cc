@@ -31,4 +31,22 @@ BASE_FEATURE_PARAM(
 
 BASE_FEATURE(kPersonalContextFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPersonalContextFirstRunNoticePhase2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPersonalContextFirstRunOptIn, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPersonalContextFirstRunEnabled() {
+  return base::FeatureList::IsEnabled(kPersonalContextFirstRun) ||
+         base::FeatureList::IsEnabled(kPersonalContextFirstRunNoticePhase2) ||
+         base::FeatureList::IsEnabled(kPersonalContextFirstRunOptIn);
+}
+
+bool IsPersonalContextFirstRunNoticePhase2Enabled() {
+  return base::FeatureList::IsEnabled(kPersonalContextFirstRunNoticePhase2);
+}
+
+bool IsPersonalContextFirstRunOptInEnabled() {
+  return base::FeatureList::IsEnabled(kPersonalContextFirstRunOptIn);
+}
 }  // namespace personal_context::features

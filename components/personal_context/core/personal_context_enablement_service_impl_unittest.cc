@@ -403,6 +403,78 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEnablementState::kEnabled);
 }
 
+TEST_F(PersonalContextEnablementServiceImplTest,
+       DisabledWhenAccountSettingsServiceNotAvailableAndOptInEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kPersonalContext,
+                            features::kPersonalContextFirstRun,
+                            features::kPersonalContextFirstRunOptIn},
+      /*disabled_features=*/{});
+
+  service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
+      nullptr, identity_test_env_.identity_manager(),
+      subscription_eligibility_service_.get(), &pref_service_,
+      GeoIpCountryCode("US"));
+
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(PersonalContextEnablementServiceImplTest,
+       PendingSetupWhenAccountOptedOutOfContextAndOptInEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kPersonalContext,
+                            features::kPersonalContextFirstRun,
+                            features::kPersonalContextFirstRunOptIn},
+      /*disabled_features=*/{});
+
+  PersonalContextEnablementServiceImplTestApi(&service())
+      .ComputeEnablementState();
+
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillOnce(Return(false));
+
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContext.name);
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::kDisabledPendingSetup);
+}
+
+TEST_F(PersonalContextEnablementServiceImplTest,
+       PendingSetupWhenNoContextSourcesEnabledAndOptInEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kPersonalContext,
+                            features::kPersonalContextFirstRun,
+                            features::kPersonalContextFirstRunOptIn},
+      /*disabled_features=*/{});
+
+  PersonalContextEnablementServiceImplTestApi(&service())
+      .ComputeEnablementState();
+
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextWorkspace.name)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextPhotos.name)))
+      .WillOnce(Return(false));
+
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContext.name);
+  EXPECT_EQ(service().GetEnablementState(),
+            PersonalContextEnablementState::kDisabledPendingSetup);
+}
+
 class PersonalContextEnablementServiceImplGeolocationTest
     : public PersonalContextEnablementServiceImplTest,
       public testing::WithParamInterface<

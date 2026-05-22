@@ -17,6 +17,7 @@
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -256,12 +257,18 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
     return kDisabledNotEligible;
   }
 
-  if (!SatisfiesOptInRequirements(account_settings_service_.get())) {
+  if (!SatisfiesMiscellaneousRequirements(country_code_)) {
     return kDisabledNotEligible;
   }
 
-  if (!SatisfiesMiscellaneousRequirements(country_code_)) {
+  if (!account_settings_service_) {
     return kDisabledNotEligible;
+  }
+
+  if (!SatisfiesOptInRequirements(account_settings_service_.get())) {
+    return personal_context::features::IsPersonalContextFirstRunOptInEnabled()
+               ? kDisabledPendingSetup
+               : kDisabledNotEligible;
   }
 
   return SatisfiesPreferenceRequirements(pref_service_.get());

@@ -85,14 +85,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "accessibility_annotation_ttl",
                    base::Days(7));
 
-BASE_FEATURE(kAccessibilityAnnotatorFirstRun,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAccessibilityAnnotatorFirstRunInfoPhase2,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAccessibilityAnnotatorFirstRunSetup,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -130,21 +122,5 @@ BASE_FEATURE_PARAM(std::string,
 // accessibility annotator backend to create the SQLite database.
 BASE_FEATURE(kAccessibilityAnnotatorDatabaseStorage,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAccessibilityAnnotatorFirstRunEnabled() {
-  return base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRun) ||
-         base::FeatureList::IsEnabled(
-             kAccessibilityAnnotatorFirstRunInfoPhase2) ||
-         base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRunSetup);
-}
-
-bool IsAccessibilityAnnotatorFirstRunInfoPhase2Enabled() {
-  return base::FeatureList::IsEnabled(
-      kAccessibilityAnnotatorFirstRunInfoPhase2);
-}
-
-bool IsAccessibilityAnnotatorFirstRunSetupEnabled() {
-  return base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRunSetup);
-}
 
 }  // namespace accessibility_annotator::features

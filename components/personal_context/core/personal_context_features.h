@@ -26,12 +26,27 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kPersonalContextEligibleTiers);
 // personal context data.
 BASE_DECLARE_FEATURE_PARAM(std::string, kContextMemoryFetchContextEndpointUrl);
 
-// TODO(crbug.com/403746095): Reuse this flag when the first_run logic is moved
-// into c/personal_context. Controls whether the First Run and onboarding
-// experience for Personal Context is enabled. When disabled, the service
-// remains in a "Not Eligible" state because the required user acknowledgment
-// or setup flow cannot be triggered.
+// Controls whether the First Run and onboarding experience for Personal Context
+// is enabled. When disabled, the service remains in a "Not Eligible" state
+// because the required user acknowledgment or setup flow cannot be triggered.
 BASE_DECLARE_FEATURE(kPersonalContextFirstRun);
+
+// Controls whether the further evolution of the notice UI for the first run
+// experience is enabled.
+BASE_DECLARE_FEATURE(kPersonalContextFirstRunNoticePhase2);
+
+// Controls whether the opt-in flow for the first run experience is enabled.
+BASE_DECLARE_FEATURE(kPersonalContextFirstRunOptIn);
+
+// Returns true if the first run experience or any of its phases/extensions are
+// enabled.
+bool IsPersonalContextFirstRunEnabled();
+
+// Returns true if the notice phase 2 of the first run experience is enabled.
+bool IsPersonalContextFirstRunNoticePhase2Enabled();
+
+// Returns true if the opt-in flow for the first run experience is enabled.
+bool IsPersonalContextFirstRunOptInEnabled();
 
 }  // namespace personal_context::features
 

@@ -12,8 +12,8 @@
 #include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/first_run/personal_context_first_run_service_impl.h"
+#include "components/personal_context/core/personal_context_features.h"
 
 // static
 accessibility_annotator::PersonalContextFirstRunService*
@@ -44,8 +44,7 @@ PersonalContextFirstRunServiceFactory::
 std::unique_ptr<KeyedService>
 PersonalContextFirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!accessibility_annotator::features::
-          IsAccessibilityAnnotatorFirstRunEnabled()) {
+  if (!personal_context::features::IsPersonalContextFirstRunEnabled()) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
