@@ -51,6 +51,7 @@ using EventListenerConstructor =
 class EmptyDelegate : public EventListenerMap::Delegate {
   void OnListenerAdded(const EventListener* listener) override {}
   void OnListenerRemoved(const EventListener* listener) override {}
+  void OnListenerUpdated(const EventListener* listener) override {}
 };
 
 class EventListenerMapTest : public ExtensionsTest {
@@ -620,6 +621,7 @@ class MultipleRemovalDelegate : public EventListenerMap::Delegate {
       final_removal_count_++;
     }
   }
+  void OnListenerUpdated(const EventListener* listener) override {}
   int final_removal_count() const { return final_removal_count_; }
 
  private:
@@ -653,6 +655,7 @@ class StateCheckingDelegate : public EventListenerMap::Delegate {
       is_stale_ = true;
     }
   }
+  void OnListenerUpdated(const EventListener* listener) override {}
   bool is_stale() const { return is_stale_; }
 
  private:

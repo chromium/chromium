@@ -119,6 +119,9 @@ class EventRouter : public KeyedService,
     virtual void OnListenerAdded(const EventListenerInfo& details) {}
     // Called when a listener is removed.
     virtual void OnListenerRemoved(const EventListenerInfo& details) {}
+    // Called when an existing listener's filter is updated. The listener is
+    // neither added nor removed; only its filter changed.
+    virtual void OnListenerUpdated(const EventListenerInfo& details) {}
 
    protected:
     ~Observer() override = default;
@@ -352,6 +355,11 @@ class EventRouter : public KeyedService,
   // `event_name`.
   bool HasLazyEventListenerForTesting(const std::string& event_name);
   bool HasNonLazyEventListenerForTesting(const std::string& event_name);
+
+  // Returns true if there is a registered lazy listener for `event_name` whose
+  // filter matches `filter`.
+  bool HasLazyEventListenerWithFilterForTesting(const std::string& event_name,
+                                                const base::DictValue& filter);
 
   void BindServiceWorkerEventDispatcher(
       int render_process_id,
@@ -597,6 +605,7 @@ class EventRouter : public KeyedService,
   // Implementation of EventListenerMap::Delegate.
   void OnListenerAdded(const EventListener* listener) override;
   void OnListenerRemoved(const EventListener* listener) override;
+  void OnListenerUpdated(const EventListener* listener) override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessExited(

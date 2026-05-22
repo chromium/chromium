@@ -209,6 +209,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // EventRouter::Observer overrides:
   void OnListenerAdded(const EventListenerInfo& details) override;
   void OnListenerRemoved(const EventListenerInfo& details) override;
+  void OnListenerUpdated(const EventListenerInfo& details) override;
 
   // If any WebRequest event listeners are currently active for this
   // BrowserContext, |*factory_request| is swapped out for a new request which

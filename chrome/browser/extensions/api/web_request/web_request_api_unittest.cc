@@ -351,8 +351,7 @@ TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
 
   // The defensive cleanup in the lazy path should collapse the duplicates into
   // a single inactive listener.
-  EXPECT_EQ(1u, event_router->GetInactiveListenerCountForTesting(&profile_,
-                                                                 kEventName));
+  EXPECT_EQ(1u, event_router->GetInactiveListenerCount(&profile_, kEventName));
 
   // Activate the listener (as it happens when the service worker spins up).
   // `DCHECK_LE(erased, 1u)` holds and activation should succeed.
@@ -364,8 +363,7 @@ TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
   EXPECT_EQ(1u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
   // The inactive entry should have been consumed by activation.
-  EXPECT_EQ(0u, event_router->GetInactiveListenerCountForTesting(&profile_,
-                                                                 kEventName));
+  EXPECT_EQ(0u, event_router->GetInactiveListenerCount(&profile_, kEventName));
 }
 
 // Regression test for ExtensionNavigationRegistry::CanRedirect logic bug.

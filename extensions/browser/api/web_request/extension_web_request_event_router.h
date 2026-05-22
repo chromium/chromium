@@ -357,9 +357,9 @@ class WebRequestEventRouter : public KeyedService {
   // Get the number of listeners - for testing only.
   size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
                                     const std::string& event_name);
-  size_t GetInactiveListenerCountForTesting(
-      content::BrowserContext* browser_context,
-      const std::string& event_name);
+
+  size_t GetInactiveListenerCount(content::BrowserContext* browser_context,
+                                  const std::string& event_name);
 
   // Get details of an inactive listener given event name - for testing only.
   bool GetInactiveListenerDetailsForTesting(

@@ -934,6 +934,25 @@ void EventRouter::OnListenerRemoved(const EventListener* listener) {
   }
 }
 
+void EventRouter::OnListenerUpdated(const EventListener* listener) {
+  // `UpdateFilter()` only updates lazy listeners, which have no process.
+  CHECK(listener->IsLazy());
+
+  const EventListenerInfo details(
+      listener->event_name(), listener->extension_id(),
+      listener->listener_url(), listener->filter(), listener->browser_context(),
+      content::ChildProcessId(), listener->worker_thread_id(),
+      listener->service_worker_version_id(), listener->IsLazy());
+
+  std::string base_event_name = GetBaseEventName(listener->event_name());
+  auto it = observer_map_.find(base_event_name);
+  if (it != observer_map_.end()) {
+    for (auto& observer : *it->second) {
+      observer.OnListenerUpdated(details);
+    }
+  }
+}
+
 void EventRouter::ObserveProcess(RenderProcessHost* process) {
   CHECK(process);
   bool inserted = observed_process_set_.insert(process).second;
@@ -1026,7 +1045,16 @@ void EventRouter::AddFilteredEventListener(
     // Only add the lazy listener if the extension is not unloaded.
     bool is_new = !listeners_.HasListener(lazy_listener.get());
     if (should_add_listener) {
-      listeners_.AddListener(std::move(lazy_listener));
+      // Sub-event-named listeners encode identity in the name itself, so the
+      // map holds at most one lazy listener per (event_name, extension_id,
+      // is_for_service_worker). If one is already registered, update its
+      // filter rather than accumulating a stale entry alongside the new one;
+      // this mirrors the prefs-side overwrite in `AddFilterToEvent`.
+      const bool updated_in_place =
+          IsSubEventName(event_name) && listeners_.UpdateFilter(*lazy_listener);
+      if (!updated_in_place) {
+        listeners_.AddListener(std::move(lazy_listener));
+      }
     }
     // We persist the lazy listener because, even if the context was shutting
     // down, we still want a record of the events for which to wake up the
@@ -1149,6 +1177,18 @@ bool EventRouter::HasNonLazyEventListenerForTesting(
       });
 }
 
+bool EventRouter::HasLazyEventListenerWithFilterForTesting(
+    const std::string& event_name,
+    const base::DictValue& filter) {
+  const EventListenerMap::ListenerList& listeners =
+      listeners_.GetEventListenersByName(event_name);
+  return std::ranges::any_of(
+      listeners, [&filter](const std::unique_ptr<EventListener>& listener) {
+        return listener->IsLazy() && listener->filter() &&
+               *listener->filter() == filter;
+      });
+}
+
 void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
                                         const ExtensionId& extension_id,
                                         bool is_for_service_worker,
@@ -1164,12 +1204,6 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
   }
   const base::DictValue& (base::Value::*get_dict)() const =
       &base::Value::GetDict;
-  // NOTE: The filter may be absent for sub-event listeners if an extension
-  // asynchronously registers the same sub-event with a different filter. In
-  // that case prefs keep only the latest filter while stale in-memory lazy
-  // listeners can still be removed later. See crbug.com/502402731.
-  // TODO(crbug.com/508672617): remove the stale sub-event from the
-  // in-memory lazy listeners.
   auto it = std::ranges::find(*filter_list, filter, get_dict);
   if (it != filter_list->end()) {
     filter_list->erase(it);

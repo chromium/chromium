@@ -2726,7 +2726,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
   // No service worker should be running yet.
   EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 0u);
   // But listener should have been restored.
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
@@ -2761,7 +2761,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   incognito_catcher.RestrictToBrowserContext(incognito_profile);
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     incognito_profile, "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     incognito_profile, "webRequest.onBeforeRequest"));
@@ -2779,7 +2779,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
   base::RunLoop().RunUntilIdle();
 
   // Ensure inactive listeners are cleaned up when the extension is disabled.
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
@@ -2806,7 +2806,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 
   // Listener should have been unregistered.
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
@@ -2819,7 +2819,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
   EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 0u);
 
   // Listener should NOT have been restored.
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));

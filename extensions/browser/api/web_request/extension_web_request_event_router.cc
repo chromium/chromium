@@ -2569,7 +2569,7 @@ size_t WebRequestEventRouter::GetListenerCountForTesting(
       .size();
 }
 
-size_t WebRequestEventRouter::GetInactiveListenerCountForTesting(
+size_t WebRequestEventRouter::GetInactiveListenerCount(
     content::BrowserContext* browser_context,
     const std::string& event_name) {
   return data_[GetBrowserContextID(browser_context)]

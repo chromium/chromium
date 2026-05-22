@@ -6891,7 +6891,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // A single webRequest listener should be registered.
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Stop the service worker.
@@ -6905,7 +6905,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // inactive listener.
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Navigate to block.example. The request should be blocked by the extension.
@@ -6978,9 +6978,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onHeadersReceived"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onHeadersReceived"));
 
   // Navigate to block.example. The worker will start, and register the
@@ -7005,9 +7005,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onHeadersReceived"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onHeadersReceived"));
 
   // Navigate to block.example. The worker will start, but NOT register the
@@ -7089,7 +7089,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // A single listener should be registered.
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Navigate to a URL. The request should be seen by the extension.
@@ -7117,7 +7117,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // inactive listener.
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   {
@@ -7137,7 +7137,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // The inactive listener should have been reactivated...
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // ... and the extension should have seen the request.
@@ -7263,7 +7263,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // An extension with a non-blocking listener that registers the first
@@ -7303,7 +7303,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(2u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Stop the non-blocking extension's service worker, making its listener
@@ -7318,7 +7318,7 @@ IN_PROC_BROWSER_TEST_F(
   // listener (non-blocking).
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Stop the blocking extension's service worker too.
@@ -7461,7 +7461,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
@@ -7472,7 +7472,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   DisableExtension(extension->id());
@@ -7480,7 +7480,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 }
 
@@ -7523,7 +7523,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // the service worker is active).
   EXPECT_EQ(2u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Manually remove one of the listeners. This should result in the listener
@@ -7542,7 +7542,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Navigate to a page and verify that only the second listener fires.
@@ -7633,7 +7633,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   {
@@ -7744,7 +7744,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   {
@@ -8167,7 +8167,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   // A single webRequest listener should be registered.
   EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   const GURL url =
@@ -8192,7 +8192,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   // inactive listener.
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
                     profile(), "webRequest.onBeforeRequest"));
 
   // Reset the "will register" listener. However, we'll never reply this time,

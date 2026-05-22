@@ -59,6 +59,7 @@ class NullDelegate : public EventListenerMap::Delegate {
  public:
   void OnListenerAdded(const EventListener* listener) override {}
   void OnListenerRemoved(const EventListener* listener) override {}
+  void OnListenerUpdated(const EventListener* listener) override {}
 };
 
 // Testing subclass of MDnsAPI which replaces calls to core browser components

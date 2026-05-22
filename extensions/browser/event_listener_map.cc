@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -85,7 +86,7 @@ std::unique_ptr<EventListener> EventListener::CreateLazyListener(
 
 EventListener::~EventListener() = default;
 
-bool EventListener::Equals(const EventListener* other) const {
+bool EventListener::EqualsIgnoringFilter(const EventListener* other) const {
   // TODO(richardzh): compare browser_context_. We are making a change with two
   // steps here. The first step is simply add the browser_context_ member. The
   // next step is to compare this member and create separate lazy listeners for
@@ -99,8 +100,11 @@ bool EventListener::Equals(const EventListener* other) const {
          listener_url_ == other->listener_url_ && process_ == other->process_ &&
          is_for_service_worker_ == other->is_for_service_worker_ &&
          service_worker_version_id_ == other->service_worker_version_id_ &&
-         worker_thread_id_ == other->worker_thread_id_ &&
-         filter_ == other->filter_;
+         worker_thread_id_ == other->worker_thread_id_;
+}
+
+bool EventListener::Equals(const EventListener* other) const {
+  return EqualsIgnoringFilter(other) && filter_ == other->filter_;
 }
 
 std::unique_ptr<EventListener> EventListener::Copy() const {
@@ -219,6 +223,70 @@ bool EventListenerMap::RemoveListener(const EventListener* listener) {
       return true;
     }
   }
+  return false;
+}
+
+bool EventListenerMap::UpdateFilter(const EventListener& listener) {
+  // Only lazy listeners are updated in place.
+  CHECK(listener.IsLazy());
+  // With the current logic, a filterless replacement would leave
+  // `filtered_events_` stale. Handling that correctly needs bookkeeping similar
+  // to `CleanupListener()`. But in practice, this method is only reached via
+  // `AddFilteredEventListener()` which always provides a filter object, even if
+  // it's empty, so we simply CHECK here.
+  CHECK(listener.filter());
+
+  auto listener_it = listeners_.find(listener.event_name());
+  if (listener_it == listeners_.end()) {
+    return false;
+  }
+
+  // The prefs-side overwrite for sub-events (crrev.com/c/7859497) keeps each
+  // sub-event key to a single filter, so at most one listener can match
+  // (ignoring filter).
+  CHECK_LE(std::ranges::count_if(listener_it->second,
+                                 [&](const auto& e) {
+                                   return e->EqualsIgnoringFilter(&listener);
+                                 }),
+           1);
+
+  for (std::unique_ptr<EventListener>& existing : listener_it->second) {
+    if (!existing->EqualsIgnoringFilter(&listener)) {
+      continue;
+    }
+    CHECK(existing->IsLazy());
+    if (existing->Equals(&listener)) {
+      // Same registration, same filter: nothing to update.
+      return true;
+    }
+
+    // Tear down the old event matcher, if any. Unlike `RemoveListener()`, the
+    // entry stays in the list (with the same event name and a filter), so
+    // `filtered_events_` membership is unchanged and `CleanupListener()` is not
+    // used here.
+    if (existing->matcher_id() != -1) {
+      event_filter_.RemoveEventMatchers({existing->matcher_id()});
+      CHECK_EQ(1u, listeners_by_matcher_id_.erase(existing->matcher_id()));
+    }
+
+    // Replace the stored listener with a copy carrying the new filter,
+    // preserving its position in the list.
+    existing = listener.Copy();
+    EventListener* listener_ptr = existing.get();
+    // Set up the new event matcher, if any.
+    if (listener_ptr->filter()) {
+      MatcherID id = event_filter_.AddEventMatcher(
+          listener_ptr->event_name(),
+          ParseEventMatcher(*listener_ptr->filter()));
+      listener_ptr->set_matcher_id(id);
+      listeners_by_matcher_id_[id] = listener_ptr;
+      filtered_events_.insert(listener_ptr->event_name());
+    }
+
+    delegate_->OnListenerUpdated(listener_ptr);
+    return true;
+  }
+
   return false;
 }
 

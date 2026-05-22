@@ -94,6 +94,7 @@ class EventListener {
   ~EventListener();
 
   bool Equals(const EventListener* other) const;
+  bool EqualsIgnoringFilter(const EventListener* other) const;
 
   std::unique_ptr<EventListener> Copy() const;
 
@@ -171,6 +172,7 @@ class EventListenerMap {
     virtual ~Delegate() {}
     virtual void OnListenerAdded(const EventListener* listener) = 0;
     virtual void OnListenerRemoved(const EventListener* listener) = 0;
+    virtual void OnListenerUpdated(const EventListener* listener) = 0;
   };
 
   explicit EventListenerMap(Delegate* delegate);
@@ -190,6 +192,16 @@ class EventListenerMap {
   // Remove a listener that .Equals() `listener`.
   // Returns true if the listener was removed .
   bool RemoveListener(const EventListener* listener);
+
+  // Finds an existing listener that matches `listener` ignoring its filter
+  // (see `EqualsIgnoringFilter()`) and replaces that existing listener's filter
+  // with `listener`'s, re-parsing the event matcher. The same listener stays
+  // registered, so the delegate is notified via `OnListenerUpdated()` rather
+  // than `OnListenerRemoved()` / `OnListenerAdded()`.
+  //
+  // Returns true if such a listener was found (whether its filter was updated
+  // or already equal); false if there was none.
+  bool UpdateFilter(const EventListener& listener);
 
   // Get the map of all EventListeners.
   const ListenerMap& listeners() const { return listeners_; }
