@@ -558,20 +558,19 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
     audio_buffer =
         AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
                                   channel_count_, sample_rate_, frames, pool_);
-    auto channel_data = base::SpanWriter<uint8_t>(
-        // TODO(crbug.com/40284755): channel_data() should be an array of spans,
-        // not unbounded pointers. This span is constructed unsoundly.
-        UNSAFE_TODO(base::span(audio_buffer->channel_data()[0u],
-                               frames * channel_count_ * 4u)));
+    CHECK_EQ(audio_buffer->channels()[0u].size(),
+             frames * channel_count_ * sizeof(float));
+    auto channel_data = base::SpanWriter<uint8_t>(audio_buffer->channels()[0u]);
+    auto dts_source = destination;
     for (uint64_t i = 0; i < frames; i++) {
       for (uint64_t ch = 0; ch < channel_count_; ch++) {
-        auto a = static_cast<int8_t>(destination[0u]);
-        auto b = static_cast<int8_t>(destination[1u]);
-        auto c = static_cast<int8_t>(destination[2u]);
+        auto dts_bytes = dts_source.take_first<3u>();
+        auto a = static_cast<int8_t>(dts_bytes[0u]);
+        auto b = static_cast<int8_t>(dts_bytes[1u]);
+        auto c = static_cast<int8_t>(dts_bytes[2u]);
         int32_t pcmi = (int32_t{a} << 8) & 0xff00;
         pcmi |= (int32_t{b} << 16) & 0xff0000;
         pcmi |= (int32_t{c} << 24) & 0xff000000;
-        destination = destination.subspan(3u);
         CHECK(channel_data.Write(base::byte_span_from_ref(
             base::allow_nonunique_obj,
             SignedInt32SampleTypeTraits::ToFloat(pcmi))));
@@ -581,12 +580,14 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
   if (CodecSupportsFloatOutput(config_.codec())) {
+    const size_t data_size = frames * channel_count_ * sizeof(float);
+    const base::span<const uint8_t> destination_span[] = {
+        destination.first(data_size)};
     audio_buffer = AudioBuffer::CopyFrom(
         kSampleFormatF32, channel_layout_, channel_count_, sample_rate_, frames,
-        // Sample format `kSampleFormatF32` is not planar, so it only reads from
-        // the first pointer in the data array. Thus we give it a pointer to the
-        // `destination_ptr` and it won't go past it.
-        &destination_ptr, base::TimeDelta(), pool_);
+        // Sample format `kSampleFormatF32` is interleaved, so AudioBuffer reads
+        // only the first span. It contains all channels for `frames`.
+        destination_span, base::TimeDelta(), pool_);
   }
 
   RETURN_ON_FAILURE(!!audio_buffer, "Failed to create output buffer",
