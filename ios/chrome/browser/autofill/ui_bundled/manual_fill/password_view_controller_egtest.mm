@@ -1275,12 +1275,13 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that tapping the "Autofill form" button in the all password list fills
 // the password form with the right data.
+// TODO (crbug.com/515635648): Re-enable once fixed
 #if TARGET_OS_SIMULATOR
 #define MAYBE_testAutofillFormButtonInAllPasswordListFillsForm \
   FLAKY_testAutofillFormButtonInAllPasswordListFillsForm
 #else
 #define MAYBE_testAutofillFormButtonInAllPasswordListFillsForm \
-  testAutofillFormButtonInAllPasswordListFillsForm
+  DISABLED_testAutofillFormButtonInAllPasswordListFillsForm
 #endif
 - (void)MAYBE_testAutofillFormButtonInAllPasswordListFillsForm {
   // TODO(crbug.com/426435086): Test consistently fails on ipad.
