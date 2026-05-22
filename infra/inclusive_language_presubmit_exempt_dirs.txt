@@ -134,7 +134,7 @@ components/password_manager/core/browser
 components/payments/core
 components/permissions
 components/policy/core/browser
-components/policy/core/common
+components/policy/core/browser/url_list
 components/policy/proto
 components/policy/resources
 components/policy/resources/templates
@@ -148,7 +148,7 @@ components/signin/public/identity_manager
 components/soda
 components/strictmode/android/java/src/org/chromium/components/strictmode
 components/supervised_user/core/browser/proto
-components/sync/engine/nigori
+components/sync/nigori
 components/test/data/autofill/heuristics/input
 components/test/data/browsing_topics
 components/test/data/optimization_guide
