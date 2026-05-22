@@ -47,9 +47,9 @@
   box-sizing: border-box;
   display: inline-block;
   margin-right: 8px;
-  --cr-icon-size: 20px;
-  width: 20px;
-  height: 20px;
+  --cr-icon-size: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .chrome-logo-dark {

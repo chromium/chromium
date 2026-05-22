@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
@@ -41,11 +42,14 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -368,21 +372,7 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
 
   const int button_size = GetLayoutConstant(LayoutConstant::kLocationBarHeight);
   SetPreferredSize(gfx::Size(button_size, button_size));
-
-  const gfx::VectorIcon& contextual_tasks_icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      vector_icons::kGoogleGLogoIcon;
-#else
-      features::IsRoundedIconsEnabled() ? kChromeProductIcon
-                                        : kBrowserLogoOldIcon;
-#endif
-
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(contextual_tasks_icon, ui::kColorIcon,
-                                     ShouldApplyCircularBackgroundShadow()
-                                         ? kGLogoCircularShapeIconSize
-                                         : kGLogoPillShapeIconSize));
+  SetImageModel(views::Button::STATE_NORMAL, GetButtonImage());
 
   const auto* color_provider = GetColorProvider();
   if (!color_provider) {
@@ -500,6 +490,28 @@ void ContextualTasksButton::UpdateDropShadowLayerBounds() {
   layer_bounds.Outset(kShadowOutset);
   layer_bounds.Offset(layer()->bounds().OffsetFromOrigin());
   drop_shadow_painted_layer_->layer()->SetBounds(layer_bounds);
+}
+
+ui::ImageModel ContextualTasksButton::GetButtonImage() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    return ui::ImageModel::FromImageSkia(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GOOGLE_G_GRADIENT_16_ALT));
+  }
+#endif
+  const gfx::VectorIcon& contextual_tasks_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      vector_icons::kGoogleGLogoIcon;
+#else
+      features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                        : kBrowserLogoOldIcon;
+#endif
+  return ui::ImageModel::FromVectorIcon(contextual_tasks_icon, ui::kColorIcon,
+                                        ShouldApplyCircularBackgroundShadow()
+                                            ? kGLogoCircularShapeIconSize
+                                            : kGLogoPillShapeIconSize);
 }
 
 BEGIN_METADATA(ContextualTasksButton)

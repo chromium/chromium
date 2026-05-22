@@ -21,6 +21,7 @@
 class BrowserWindowInterface;
 
 namespace ui {
+class ImageModel;
 class LayerOwner;
 }
 
@@ -64,6 +65,7 @@ class ContextualTasksButton
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
   void UpdateDropShadowLayerBounds();
+  ui::ImageModel GetButtonImage();
 
   BooleanPrefMember pin_state_;
   BooleanPrefMember side_panel_alignment_;
