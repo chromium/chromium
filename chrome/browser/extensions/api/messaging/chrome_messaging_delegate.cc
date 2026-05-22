@@ -26,6 +26,10 @@
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/messaging/android/native_message_android_port.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -120,6 +124,12 @@ ChromeMessagingDelegate::CreateReceiverForNativeApp(
     const std::string& native_app_name,
     bool allow_user_level,
     std::string* error_out) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, `native_app_name` represents the target package name.
+  return std::make_unique<NativeMessageAndroidPort>(
+      browser_context, channel_delegate, receiver_port_id, extension_id,
+      native_app_name);
+#else
   DCHECK(error_out);
   gfx::NativeView native_view =
       source ? source->GetNativeView() : gfx::NativeView();
@@ -131,6 +141,7 @@ ChromeMessagingDelegate::CreateReceiverForNativeApp(
   }
   return std::make_unique<NativeMessagePort>(channel_delegate, receiver_port_id,
                                              std::move(native_host));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeMessagingDelegate::QueryIncognitoConnectability(

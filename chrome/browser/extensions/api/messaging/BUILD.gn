@@ -22,13 +22,6 @@ source_set("messaging") {
     "native_messaging_host_manifest.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "native_message_android_host.cc",
-      "native_message_android_host.h",
-    ]
-  }
-
   if (!is_chromeos) {
     sources += [
       "native_messaging_policy_handler.cc",
@@ -111,6 +104,10 @@ source_set("messaging") {
       "//components/app_launch_prefetch",
       "//ui/views",
     ]
+  }
+
+  if (is_android) {
+    deps += [ "android" ]
   }
 }
 
