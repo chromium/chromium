@@ -141,7 +141,7 @@
   position: relative;
 }
 
-:host([energy-effect-enabled])::after {
+:host([energy-effect-animation-enabled])::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -218,7 +218,7 @@ search-animated-glow {
   max-height: 254px;
 }
 
-:host([energy-effect-animation-enabled_][animation-state='expanding']) #composebox {
+:host([energy-effect-animation-enabled][animation-state='expanding']) #composebox {
   will-change: opacity;
   animation: zero-state-composebox-fade-in 50ms
       var(--emphasized-accelerate-curve) both;
