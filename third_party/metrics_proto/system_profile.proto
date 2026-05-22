@@ -272,7 +272,7 @@ message SystemProfileProto {
   OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 29
+  // Next tag: 30
   message Hardware {
     // OS CPU architecture. Common options are: x86, x86_64, arm64, armv7,
     // armv7l, armv8l and aarch64.
@@ -548,6 +548,10 @@ message SystemProfileProto {
     // RW Firmware version of the TPM on the device. This field is only filled
     // in on ChromeOS devices.
     string tpm_rw_firmware_version = 27;
+
+    // The hardware manufacturer of the device (e.g., "Google", "Samsung",
+    // "Xiaomi"). Only implemented on Android.
+    string manufacturer = 29;
   }
 
   Hardware hardware = 6;
