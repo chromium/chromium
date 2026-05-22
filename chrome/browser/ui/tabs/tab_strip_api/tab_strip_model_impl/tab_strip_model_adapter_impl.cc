@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tree_builder/mojo_tree_builder.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/types/tab_states.h"
+#include "components/browser_apis/tab_strip/types/tab_states.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"

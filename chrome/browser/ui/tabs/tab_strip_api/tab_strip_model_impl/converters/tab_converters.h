@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_CONVERTERS_TAB_CONVERTERS_H_
 
 #include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/types/tab_states.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/browser_apis/tab_strip/types/tab_states.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"

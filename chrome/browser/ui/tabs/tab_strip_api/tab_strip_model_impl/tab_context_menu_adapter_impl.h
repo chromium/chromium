@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/context_menu_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
+#include "components/browser_apis/tab_strip/adapters/context_menu_adapter.h"
 
 class BrowserWindowInterface;
 

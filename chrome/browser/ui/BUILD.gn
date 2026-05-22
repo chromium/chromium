@@ -1668,8 +1668,6 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/tabs/back_to_opener",
       "//chrome/browser/ui/tabs/tab_strip_api",
-      "//chrome/browser/ui/tabs/tab_strip_api/aggregation",
-      "//chrome/browser/ui/tabs/tab_strip_api/observation",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/toasts/api:toasts",
@@ -1736,6 +1734,8 @@ static_library("ui") {
       "//components/app_constants",
       "//components/app_icon_loader",
       "//components/autofill/core/browser",
+      "//components/browser_apis/tab_strip/aggregation",
+      "//components/browser_apis/tab_strip/observation",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:shopping_service",
@@ -4872,7 +4872,6 @@ static_library("ui") {
       "//chrome/browser/ui/side_search",
       "//chrome/browser/ui/tabs/projects:impl",
       "//chrome/browser/ui/tabs/tab_strip_api",
-      "//chrome/browser/ui/tabs/tab_strip_api/aggregation",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views",
@@ -4907,6 +4906,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/vertical:impl",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/web_dialogs",
+      "//components/browser_apis/tab_strip/aggregation",
 
       # TODO(crbug.com/432061436) Remove this dependency when the following
       # headers get

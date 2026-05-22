@@ -8,7 +8,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/event_bridge.h"
+#include "components/browser_apis/tab_strip/adapters/event_bridge.h"
 #include "components/tabs/public/tab_collection_observer.h"
 
 namespace tabs_api {

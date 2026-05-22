@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/types/expected.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/context_menu_adapter.h"
+#include "components/browser_apis/tab_strip/adapters/context_menu_adapter.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/gfx/geometry/point.h"
 

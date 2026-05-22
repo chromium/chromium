@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_TAB_STRIP_MODEL_EVENT_BRIDGE_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_TAB_STRIP_MODEL_EVENT_BRIDGE_H_
 
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/browser_apis/tab_strip/adapters/event_bridge.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_observer.h"
 

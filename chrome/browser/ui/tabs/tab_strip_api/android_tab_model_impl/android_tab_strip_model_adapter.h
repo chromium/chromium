@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ANDROID_TAB_MODEL_IMPL_ANDROID_TAB_STRIP_MODEL_ADAPTER_H_
 
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/types/tab_states.h"
+#include "components/browser_apis/tab_strip/adapters/tab_strip_model_adapter.h"
+#include "components/browser_apis/tab_strip/types/tab_states.h"
 
 namespace tabs_api {
 

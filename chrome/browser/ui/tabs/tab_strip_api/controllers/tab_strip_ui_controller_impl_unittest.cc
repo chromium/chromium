@@ -7,10 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_context_menu_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_browser_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
+#include "components/browser_apis/tab_strip/testing/toy_tab_context_menu_adapter.h"
+#include "components/browser_apis/tab_strip/testing/toy_tab_strip.h"
+#include "components/browser_apis/tab_strip/testing/toy_tab_strip_browser_adapter.h"
+#include "components/browser_apis/tab_strip/testing/toy_tab_strip_model_adapter.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

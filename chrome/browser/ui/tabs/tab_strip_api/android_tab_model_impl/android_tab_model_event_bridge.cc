@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_model_event_bridge.h"
 
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/translation_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
+#include "components/browser_apis/tab_strip/adapters/translation_adapter.h"
 
 namespace tabs_api {
 

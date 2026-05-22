@@ -2,76 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-#############################################################################
-# No platform specific build flags allowed in non-test actions.
-#############################################################################
 source_set("tab_strip_api") {
-  sources = [
-    "tab_strip_service.h",
-    "tab_strip_service_feature.h",
+  sources = [ "tab_strip_service_feature.h" ]
+
+  public_deps = [
+    "//components/browser_apis/tab_strip:mojom_experiment",
+    "//components/browser_apis/tab_strip:service",
   ]
-
-  public_deps = [ "//components/browser_apis/tab_strip:mojom" ]
-
-  deps = [ "//components/browser_apis/tab_strip:mojom_experiment" ]
 }
 
 source_set("impl") {
-  sources = [
-    "event_broadcaster.cc",
-    "event_broadcaster.h",
-    "tab_strip_service_feature.cc",
-    "tab_strip_service_impl.cc",
-    "tab_strip_service_impl.h",
-  ]
+  sources = [ "tab_strip_service_feature.cc" ]
 
   deps = [
     ":tab_strip_api",
-    "adapters",
-    "events",
-    "observation",
-    "utilities",
-    "//components/browser_apis/tab_strip:mojom_experiment",
-    "//components/browser_apis/tab_strip/types",
+    "//components/browser_apis/tab_strip:service",
+    "//components/browser_apis/tab_strip/adapters",
   ]
 }
 
-#############################################################################
-# End platform specific action restriction. Platform specific actions
-# allowed for tests.
-#############################################################################
-
 if (!is_android) {
-  # Unit tests use some desktop concepts to simplify fake implementations.
-  # It would be nice if we could move off of those, but not critical.
   source_set("unit_tests") {
     testonly = true
-
-    sources = [
-      "tab_strip_experiment_service_unittest.cc",
-      "tab_strip_service_impl_unittest.cc",
-    ]
 
     deps = [
       ":impl",
       ":tab_strip_api",
-      "adapters",
-      "aggregation:unit_tests",
       "controllers:unit_tests",
-      "events:unit_tests",
-      "observation:unit_tests",
       "tab_strip_model_impl:unit_tests",
-      "testing",
-      "utilities:unit_tests",
-      "//base/test:test_support",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/tabs:test_support",
       "//chrome/test:test_support",
-      "//components/browser_apis/tab_strip:mojom_experiment",
-      "//components/tabs:public",
-      "//content/test:test_support",
-      "//testing/gtest",
     ]
   }
 

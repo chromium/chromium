@@ -10,6 +10,7 @@ source_set("types") {
     "path.h",
     "position.cc",
     "position.h",
+    "tab_states.h",
   ]
 
   public_deps = [

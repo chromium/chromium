@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/split_tabs",
+  "+components/tab_groups",
+  "+components/tabs/public",
+  "+mojo/public",
+  "+ui/gfx",
+  "+ui/color",
+  "+url",
+]

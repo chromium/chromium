@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_TAB_STRIP_MODEL_INJECTOR_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_TAB_STRIP_MODEL_INJECTOR_H_
 
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_context_menu_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_event_bridge.h"
+#include "components/browser_apis/tab_strip/adapters/platform_adapters_provider.h"
 
 class TabStripModel;
 class BrowserWindowInterface;

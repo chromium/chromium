@@ -10,7 +10,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/aggregation/tab_strip_service_tracker.h"
+#include "components/browser_apis/tab_strip/aggregation/tab_strip_service_tracker.h"
 
 class Profile;
 class BrowserCollection;

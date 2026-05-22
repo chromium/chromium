@@ -18,10 +18,10 @@ source_set("converters") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/alert:tab_alert",
-    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
-    "//chrome/browser/ui/tabs/tab_strip_api/events",
-    "//chrome/browser/ui/tabs/tab_strip_api/types",
     "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/adapters",
+    "//components/browser_apis/tab_strip/events",
+    "//components/browser_apis/tab_strip/types",
     "//components/tabs:public",
     "//ui/color",
   ]

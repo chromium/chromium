@@ -31,10 +31,11 @@ source_set("tab_strip_model_impl") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
-    "//chrome/browser/ui/tabs/tab_strip_api/aggregation",
-    "//chrome/browser/ui/tabs/tab_strip_api/observation",
-    "//chrome/browser/ui/tabs/tab_strip_api/types",
+    "//components/browser_apis/tab_strip:service",
+    "//components/browser_apis/tab_strip/adapters",
+    "//components/browser_apis/tab_strip/aggregation",
+    "//components/browser_apis/tab_strip/observation",
+    "//components/browser_apis/tab_strip/types",
   ]
 }
 
@@ -71,13 +72,13 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/tabs/tab_strip_api:impl",
-    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
     "//chrome/browser/ui/tabs/tab_strip_api/controllers",
-    "//chrome/browser/ui/tabs/tab_strip_api/observation",
     "//chrome/test:test_support",
     "//components/browser_apis/tab_strip:mojom_experiment",
     "//components/browser_apis/tab_strip:mojom_ui_controller",
+    "//components/browser_apis/tab_strip:service",
+    "//components/browser_apis/tab_strip/adapters",
+    "//components/browser_apis/tab_strip/observation",
     "//content/test:test_support",
     "//testing/gtest",
   ]

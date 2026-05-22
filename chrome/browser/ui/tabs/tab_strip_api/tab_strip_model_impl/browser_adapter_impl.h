@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
+#include "components/browser_apis/tab_strip/adapters/browser_adapter.h"
 
 namespace tabs_api {
 

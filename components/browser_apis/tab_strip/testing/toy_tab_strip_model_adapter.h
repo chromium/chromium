@@ -1,0 +1,72 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TESTING_TOY_TAB_STRIP_MODEL_ADAPTER_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TESTING_TOY_TAB_STRIP_MODEL_ADAPTER_H_
+
+#include "base/memory/raw_ptr.h"
+#include "components/browser_apis/tab_strip/adapters/tab_strip_model_adapter.h"
+#include "components/browser_apis/tab_strip/testing/toy_tab_strip.h"
+#include "components/browser_apis/tab_strip/types/tab_states.h"
+#include "ui/color/color_provider.h"
+
+namespace tabs_api::testing {
+
+class ToyTabStripModelAdapter : public TabStripModelAdapter {
+ public:
+  explicit ToyTabStripModelAdapter(ToyTabStrip* tab_strip);
+  ToyTabStripModelAdapter(const ToyTabStripModelAdapter&) = delete;
+  ToyTabStripModelAdapter operator=(const ToyTabStripModelAdapter&&) = delete;
+  ~ToyTabStripModelAdapter() override = default;
+
+  std::string GetWindowId() const override { return "1"; }
+
+  std::vector<tabs::TabHandle> GetTabs() const override;
+  types::TabStates GetTabStates(tabs::TabHandle handle) const override;
+  const ui::ColorProvider& GetColorProvider() const override;
+  void CloseTab(size_t tab_index) override;
+  void CloseTabGroup(const tab_groups::TabGroupId& group_id) override;
+  std::optional<int> GetIndexForHandle(
+      tabs::TabHandle tab_handle) const override;
+  void ActivateTab(size_t index) override;
+  base::expected<void, mojo_base::mojom::ErrorPtr> MoveTab(
+      tabs::TabHandle handle,
+      const Position& position) override;
+  base::expected<void, mojo_base::mojom::ErrorPtr> MoveCollection(
+      const NodeId& id,
+      const Position& position) override;
+  mojom::ContainerPtr GetTabStripTopology(
+      tabs::TabCollection::Handle root) const override;
+  std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle) const override;
+  void UpdateTabGroupVisuals(
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visual_data) override;
+  void SetTabSelection(const std::vector<tabs::TabHandle>& handles_to_select,
+                       tabs::TabHandle to_activate) override;
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+      int index) const override;
+  tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
+      tab_groups::TabGroupId group_id) const override;
+  tabs::TabCollectionHandle GetCollectionHandleForSplitTabId(
+      split_tabs::SplitTabId split_id) const override;
+  tabs_api::Position GetPositionForAbsoluteIndex(
+      int absolute_index) const override;
+  tabs_api::Path GetPathForCollection(
+      tabs::TabCollectionHandle collection_handle) const override;
+  InsertionParams CalculateInsertionParams(
+      const std::optional<tabs_api::Position>& pos) const override;
+  base::expected<void, mojo_base::mojom::ErrorPtr> ReplaceTabInSplit(
+      tabs::TabHandle tab_to_replace,
+      int tab_to_insert_index) override;
+  const tabs::TabCollection* GetRoot() const override;
+
+ private:
+  raw_ptr<ToyTabStrip> tab_strip_;
+  ui::ColorProvider color_provider_;
+};
+
+}  // namespace tabs_api::testing
+
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TESTING_TOY_TAB_STRIP_MODEL_ADAPTER_H_

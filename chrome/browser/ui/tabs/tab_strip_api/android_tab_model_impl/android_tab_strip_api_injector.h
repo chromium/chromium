@@ -7,9 +7,9 @@
 
 #include "base/types/expected.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/event_bridge.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_model_event_bridge.h"
+#include "components/browser_apis/tab_strip/adapters/event_bridge.h"
+#include "components/browser_apis/tab_strip/adapters/platform_adapters_provider.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/mojom/base/error.mojom.h"

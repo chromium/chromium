@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/context_menu_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller.h"
+#include "components/browser_apis/tab_strip/adapters/browser_adapter.h"
+#include "components/browser_apis/tab_strip/adapters/context_menu_adapter.h"
+#include "components/browser_apis/tab_strip/adapters/tab_strip_model_adapter.h"
 
 class BrowserWindowInterface;
 class TabStripModel;

@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utilities") {
+  sources = [
+    "event_filters.cc",
+    "event_filters.h",
+    "tab_id_utils.cc",
+    "tab_id_utils.h",
+    "tab_strip_api_utilities.cc",
+    "tab_strip_api_utilities.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/adapters",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "event_filters_unittest.cc",
+    "tab_id_utils_unittest.cc",
+    "tab_strip_api_utilities_unittest.cc",
+  ]
+
+  deps = [
+    ":utilities",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/adapters",
+    "//components/browser_apis/tab_strip/testing",
+    "//components/browser_apis/tab_strip/types",
+    "//testing/gtest",
+  ]
+}
