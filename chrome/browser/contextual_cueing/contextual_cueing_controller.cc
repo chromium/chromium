@@ -483,6 +483,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
   if (!sync_service_ ||
       !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kHistory)) {
+    CUEING_LOG("History sync is off.");
     // If history sync is off, we cannot proceed to generate or show the cue.
     RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
     return false;
@@ -496,6 +497,9 @@ bool ContextualCueingController::IsAllowedToShowCue() {
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kContextualCueing)));
   if (opt_in_state == optimization_guide::prefs::FeatureOptInState::kDisabled) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because user has opted out of "
+        "contextual cues.");
     RecordContextualCueingDecision(ContextualCueingDecision::kUserOptedOut);
     return false;
   }
@@ -505,6 +509,9 @@ bool ContextualCueingController::IsAllowedToShowCue() {
           optimization_guide::prefs::kChromeSuggestionsSettings) ==
       static_cast<int>(
           contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled)) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because enterprise policy has "
+        "disabled contextual cues.");
     RecordContextualCueingDecision(
         ContextualCueingDecision::kDisabledByEnterprisePolicy);
     return false;
@@ -515,6 +522,9 @@ bool ContextualCueingController::IsAllowedToShowCue() {
       BrowserUserEducationInterface::From(browser_window_interface_);
   if (browser_user_education_interface &&
       browser_user_education_interface->IsAnyFeaturePromoActive()) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because a feature promo is "
+        "active.");
     RecordContextualCueingDecision(
         ContextualCueingDecision::kFeaturePromoActive);
     return false;
@@ -524,6 +534,8 @@ bool ContextualCueingController::IsAllowedToShowCue() {
   auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
       tab_list_interface_->GetActiveTab()->GetContents());
   if (infobar_manager && !infobar_manager->infobars().empty()) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because infobar is visible.");
     RecordContextualCueingDecision(ContextualCueingDecision::kInfobarVisible);
     return false;
   }
@@ -531,6 +543,8 @@ bool ContextualCueingController::IsAllowedToShowCue() {
   if (auto* side_panel_ui =
           SidePanelUIProvider::From(browser_window_interface_);
       side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because side panel is visible.");
     RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
     return false;
   }
