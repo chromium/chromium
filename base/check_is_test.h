@@ -34,9 +34,12 @@
 //     return;
 //   }
 //
-// `CHECK_IS_TEST` should not be used within functions named `*ForTesting`,
-// `*ForTests`, etc. because there is a presubmit check which warns against
-// calling such functions in production code.
+// `CHECK_IS_TEST` should not be used within trivial accessors such as
+// `member_name_for_testing()`.
+//
+// There is a presubmit check which warns against calling `*ForTesting` or
+// `*ForTests` functions in production code, however `CHECK_IS_TEST` may be used
+// in those functions to ensure correctness at runtime.
 //
 // `CHECK_IS_TEST` is thread safe.
 //
