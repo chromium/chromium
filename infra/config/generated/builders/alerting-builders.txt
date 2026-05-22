@@ -542,6 +542,7 @@ try/gpu-fyi-try-linux-amd-9900x-exp
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-5500xt-exp
 try/gpu-fyi-try-linux-amd-rx-7600-rel
+try/gpu-fyi-try-linux-amd-rx-9070xt-exp
 try/gpu-fyi-try-linux-intel-arc-140v-exp
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
@@ -550,6 +551,7 @@ try/gpu-fyi-try-linux-nvidia-dbg
 try/gpu-fyi-try-linux-nvidia-exp
 try/gpu-fyi-try-linux-nvidia-rel
 try/gpu-fyi-try-linux-nvidia-rtx-4070-super-rel
+try/gpu-fyi-try-linux-nvidia-rtx-5080-exp
 try/gpu-fyi-try-linux-nvidia-tsn
 try/gpu-fyi-try-linux-wayland-amd-rel
 try/gpu-fyi-try-linux-wayland-intel-rel
@@ -587,7 +589,9 @@ try/gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64
 try/gpu-fyi-try-win11-x64-amd-780m-exp
 try/gpu-fyi-try-win11-x64-amd-890m-exp
 try/gpu-fyi-try-win11-x64-amd-9900x-exp
+try/gpu-fyi-try-win11-x64-amd-rx-9070xt-exp
 try/gpu-fyi-try-win11-x64-intel-arc-140v-exp
+try/gpu-fyi-try-win11-x64-nvidia-rtx-5080-exp
 try/gpu-try-android-pixel-2-64
 try/gpu-try-linux-nvidia-rel
 try/gpu-try-mac-amd-retina-dbg

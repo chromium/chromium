@@ -222,6 +222,16 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-rx-9070xt-exp",
+    description_html = "Runs release GPU tests on experimental Linux/AMD RX 9070XT configs",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (AMD RX 9070XT)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-amd-rx-7600-rel",
     mirrors = [
         "ci/GPU FYI Linux Builder",
@@ -329,6 +339,16 @@ gpu_linux_builder(
     mirrors = [
         "ci/GPU FYI Linux Builder",
         "ci/Linux FYI Release (NVIDIA RTX 4070 Super)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
+    name = "gpu-fyi-try-linux-nvidia-rtx-5080-exp",
+    description_html = "Runs release GPU tests on experimental Linux/NVIDIA RTX 5080 configs",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (NVIDIA RTX 5080)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
 )
@@ -707,6 +727,16 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
+    name = "gpu-fyi-try-win11-x64-amd-rx-9070xt-exp",
+    description_html = "Runs release GPU tests on experimental Win/AMD 9070XT configs",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Experimental Release (AMD 9070XT)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+)
+
+gpu_win_builder(
     name = "gpu-fyi-try-win11-x64-intel-arc-140v-exp",
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
@@ -722,6 +752,16 @@ gpu_win_builder(
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
         "ci/Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win11-x64-nvidia-rtx-5080-exp",
+    description_html = "Runs release GPU tests on experimental Win/NVIDIA RTX 5080 configs",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Experimental Release (NVIDIA RTX 5080)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
 )
