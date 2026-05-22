@@ -937,7 +937,7 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
         button, this,
         TabStripNudgeAnimationSession::AnimationSessionType::kShow,
         base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
-                       base::Unretained(this)),
+                       weak_factory_.GetWeakPtr()),
         (button != glic_button_ && button != glic_actor_task_icon_));
     animation_session_->Start();
   }
@@ -992,7 +992,7 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
         button, this,
         TabStripNudgeAnimationSession::AnimationSessionType::kHide,
         base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
-                       base::Unretained(this)),
+                       weak_factory_.GetWeakPtr()),
         (button != glic_button_ && button != glic_actor_task_icon_));
     animation_session_->Start();
   }
