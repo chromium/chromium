@@ -115,7 +115,9 @@ class TestAutofillDriverTemplate : public T {
       uint32_t number_of_ancestor_levels_to_search,
       base::OnceCallback<void(const std::string& amount)> response_callback)
       override {}
-  void SendEmailVerificationToken(FieldGlobalId field_id,
+  void SendEmailVerificationToken(FieldGlobalId email_field_id,
+                                  const std::string& email,
+                                  FieldGlobalId token_field_id,
                                   const std::string& token) override {}
   void ScrollFieldIntoView(FieldGlobalId field_id) override {}
 

@@ -887,7 +887,9 @@ void AutofillDriverIOS::RecordTriggeredFormExtractionMetrics() {
 }
 
 void AutofillDriverIOS::SendEmailVerificationToken(
-    FieldGlobalId field_id,
+    FieldGlobalId email_field_id,
+    const std::string& email,
+    FieldGlobalId token_field_id,
     const std::string& presentation_token) {
   // TODO(crbug.com/380367784): Implement email verification on iOS.
   NOTIMPLEMENTED();

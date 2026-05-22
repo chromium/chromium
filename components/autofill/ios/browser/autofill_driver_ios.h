@@ -137,7 +137,9 @@ class AutofillDriverIOS final : public AutofillDriver,
       base::OnceCallback<void(const std::string& amount)> response_callback)
       override;
   void SendEmailVerificationToken(
-      FieldGlobalId field_id,
+      FieldGlobalId email_field_id,
+      const std::string& email,
+      FieldGlobalId token_field_id,
       const std::string& presentation_token) override;
 
   void RendererShouldSetSuggestionAvailability(

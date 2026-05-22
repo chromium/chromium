@@ -206,7 +206,10 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               (override));
   MOCK_METHOD(void,
               SendEmailVerificationToken,
-              (FieldRendererId, const std::string&),
+              (FieldRendererId email_field_id,
+               const std::string& email,
+               FieldRendererId token_field_id,
+               const std::string& token),
               (override));
 
  private:

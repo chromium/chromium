@@ -379,7 +379,9 @@ class AutofillDriver {
 
   // Sends an email verification token to the renderer to be used upon
   // form submission.
-  virtual void SendEmailVerificationToken(FieldGlobalId field_id,
+  virtual void SendEmailVerificationToken(FieldGlobalId email_field_id,
+                                          const std::string& email,
+                                          FieldGlobalId token_field_id,
                                           const std::string& token) = 0;
 
   // Scrolls the page containing the field corresponding to `field_id` until it

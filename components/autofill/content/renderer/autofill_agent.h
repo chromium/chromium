@@ -139,7 +139,9 @@ class AutofillAgent : public content::RenderFrameObserver,
    public:
     explicit EmailVerificationObserver(AutofillAgent* agent);
     ~EmailVerificationObserver() override;
-    void StoreEmailVerificationToken(FieldRendererId field_id,
+    void StoreEmailVerificationToken(FieldRendererId email_field_id,
+                                     const std::string& email,
+                                     FieldRendererId token_field_id,
                                      const std::string& token);
     // blink::WebLocalFrameObserver:
     void WillSendSubmitEvent(const blink::WebFormElement& form) override;
@@ -147,8 +149,14 @@ class AutofillAgent : public content::RenderFrameObserver,
     void Reset() { email_verification_tokens_.clear(); }
 
    private:
+    struct TokenInfo {
+      std::string token;
+      FieldRendererId email_field_id;
+      std::string email;
+    };
+
     const raw_ptr<AutofillAgent> agent_;
-    base::flat_map<FieldRendererId, std::string> email_verification_tokens_;
+    base::flat_map<FieldRendererId, TokenInfo> email_verification_tokens_;
   };
 
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
@@ -239,7 +247,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
-  void SendEmailVerificationToken(FieldRendererId field_id,
+  void SendEmailVerificationToken(FieldRendererId email_field_id,
+                                  const std::string& email,
+                                  FieldRendererId token_field_id,
                                   const std::string& token) override;
 
   // Fires Mojo messages for a given form submission.

@@ -207,6 +207,9 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   TestEmailVerificationAutofillClient* mock_client = client();
   EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
   ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('email').value = 'test@example.com';"));
+  ASSERT_TRUE(content::ExecJs(
       web_contents(), "document.getElementById('testform').requestSubmit();"));
 
   // 5. Verify the token was found in onsubmit WITHOUT any delay.

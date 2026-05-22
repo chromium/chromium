@@ -135,16 +135,19 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   verifier->Verify(
       base::UTF16ToUTF8(email), base::UTF16ToUTF8(challenge_field->challenge()),
       base::BindOnce(
-          [](base::WeakPtr<AutofillManager> manager, FieldGlobalId field_id,
+          [](base::WeakPtr<AutofillManager> manager,
+             FieldGlobalId email_field_id, const std::string& email,
+             FieldGlobalId token_field_id,
              std::optional<std::string> presentation_token) {
             if (!manager || !presentation_token) {
               return;
             }
 
-            manager->driver().SendEmailVerificationToken(field_id,
-                                                         *presentation_token);
+            manager->driver().SendEmailVerificationToken(
+                email_field_id, email, token_field_id, *presentation_token);
           },
-          manager.GetWeakPtr(), challenge_field->global_id()));
+          manager.GetWeakPtr(), triggering_email_field->global_id(),
+          base::UTF16ToUTF8(email), challenge_field->global_id()));
 }
 
 }  // namespace autofill

@@ -50,7 +50,10 @@ class MockAutofillDriver : public TestContentAutofillDriver {
   using TestContentAutofillDriver::TestContentAutofillDriver;
   MOCK_METHOD(void,
               SendEmailVerificationToken,
-              (FieldGlobalId field_id, const std::string& presentation_token),
+              (FieldGlobalId email_field_id,
+               const std::string& email,
+               FieldGlobalId token_field_id,
+               const std::string& presentation_token),
               (override));
 };
 
@@ -164,8 +167,9 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
       .WillOnce(RunOnceCallback<2>("test_token"));
 
-  EXPECT_CALL(driver(), SendEmailVerificationToken(form->field(1)->global_id(),
-                                                   "test_token"));
+  EXPECT_CALL(driver(), SendEmailVerificationToken(
+                            form->field(0)->global_id(), "test@example.com",
+                            form->field(1)->global_id(), "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");

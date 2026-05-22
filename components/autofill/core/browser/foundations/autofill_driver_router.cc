@@ -662,11 +662,17 @@ void AutofillDriverRouter::RendererShouldTriggerSuggestions(
 }
 
 void AutofillDriverRouter::SendEmailVerificationToken(
-    RoutedCallback<FieldRendererId, const std::string&> callback,
-    const FieldGlobalId& field_id,
+    RoutedCallback<FieldRendererId,
+                   const std::string&,
+                   FieldRendererId,
+                   const std::string&> callback,
+    const FieldGlobalId& email_field_id,
+    const std::string& email,
+    const FieldGlobalId& token_field_id,
     const std::string& token) {
-  if (AutofillDriver* target = DriverOfFrame(field_id.frame_token)) {
-    callback(*target, field_id.renderer_id, token);
+  if (AutofillDriver* target = DriverOfFrame(token_field_id.frame_token)) {
+    callback(*target, email_field_id.renderer_id, email,
+             token_field_id.renderer_id, token);
   }
 }
 

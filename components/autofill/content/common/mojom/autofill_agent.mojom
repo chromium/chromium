@@ -121,10 +121,14 @@ interface AutofillAgent {
   GetPotentialLastFourCombinationsForStandaloneCvc()
       => (array<string> potential_matches);
 
-  // Sends an email verification token to the renderer to be used upon
-  // form submission.
-  SendEmailVerificationToken(
-      FieldRendererId field_id, string token);
+  // Sends an email verification token along with the corresponding email
+  // address and field ID to the renderer. At form submission time, the
+  // renderer will verify that the email field's value still matches the verified
+  // email address before injecting the token.
+  SendEmailVerificationToken(FieldRendererId email_field_id,
+                             string email,
+                             FieldRendererId token_field_id,
+                             string token);
 };
 
 // There is one instance of this interface per render frame in the render

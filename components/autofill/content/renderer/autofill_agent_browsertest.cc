@@ -2504,6 +2504,114 @@ TEST_F(AutofillAgentAtMemoryInactivityNudgeTest, InactivityTriggersNudge) {
   task_environment_.FastForwardBy(base::Seconds(5));
 }
 
+class EmailVerificationObserverTest : public AutofillAgentTest {
+ public:
+  EmailVerificationObserverTest() = default;
+};
+
+// Tests that the verification token is injected into the token field if the
+// email field's current value still matches the verified email address.
+TEST_F(EmailVerificationObserverTest,
+       EmailVerificationObserverSharesTokenIfEmailMatches) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input type="hidden" id="verification" autocomplete="email-verification-token">
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormElement form_element =
+      GetWebElementById("form").DynamicTo<blink::WebFormElement>();
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement verification_element =
+      GetFormControlElementById("verification");
+
+  autofill_agent().SendEmailVerificationToken(
+      form_util::GetFieldRendererId(email_element), "a@example.com",
+      form_util::GetFieldRendererId(verification_element), "evt_token_123");
+
+  EXPECT_CALL(autofill_driver(), OnEmailVerificationTokenShared());
+
+  test_api(autofill_agent())
+      .email_verification_observer()
+      .WillSendSubmitEvent(form_element);
+
+  EXPECT_EQ(u"evt_token_123", verification_element.Value().Utf16());
+}
+
+// Tests that the verification token is NOT injected if the email field's
+// current value has changed since verification.
+TEST_F(EmailVerificationObserverTest,
+       EmailVerificationObserverDoesNotShareTokenIfEmailChanges) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input type="hidden" id="verification" autocomplete="email-verification-token">
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormElement form_element =
+      GetWebElementById("form").DynamicTo<blink::WebFormElement>();
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement verification_element =
+      GetFormControlElementById("verification");
+
+  autofill_agent().SendEmailVerificationToken(
+      form_util::GetFieldRendererId(email_element), "a@example.com",
+      form_util::GetFieldRendererId(verification_element), "evt_token_123");
+
+  email_element.SetValue(blink::WebString::FromUtf16(u"b@example.com"));
+
+  EXPECT_CALL(autofill_driver(), OnEmailVerificationTokenShared()).Times(0);
+
+  test_api(autofill_agent())
+      .email_verification_observer()
+      .WillSendSubmitEvent(form_element);
+
+  EXPECT_EQ(u"", verification_element.Value().Utf16());
+}
+
+// Tests that the verification token is NOT injected if the email field has
+// been cleared since verification.
+TEST_F(EmailVerificationObserverTest,
+       EmailVerificationObserverDoesNotShareTokenIfEmailIsCleared) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input type="hidden" id="verification" autocomplete="email-verification-token">
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormElement form_element =
+      GetWebElementById("form").DynamicTo<blink::WebFormElement>();
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement verification_element =
+      GetFormControlElementById("verification");
+
+  autofill_agent().SendEmailVerificationToken(
+      form_util::GetFieldRendererId(email_element), "a@example.com",
+      form_util::GetFieldRendererId(verification_element), "evt_token_123");
+
+  email_element.SetValue(blink::WebString::FromUtf16(u""));
+
+  EXPECT_CALL(autofill_driver(), OnEmailVerificationTokenShared()).Times(0);
+
+  test_api(autofill_agent())
+      .email_verification_observer()
+      .WillSendSubmitEvent(form_element);
+
+  EXPECT_EQ(u"", verification_element.Value().Utf16());
+}
+
 }  // namespace
 
 }  // namespace autofill

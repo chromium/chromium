@@ -571,11 +571,13 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
 }
 
 void ContentAutofillDriver::SendEmailVerificationToken(
-    FieldGlobalId field_id,
+    FieldGlobalId email_field_id,
+    const std::string& email,
+    FieldGlobalId token_field_id,
     const std::string& token) {
   RouteToAgent(router(), &AutofillDriverRouter::SendEmailVerificationToken,
-               &mojom::AutofillAgent::SendEmailVerificationToken, field_id,
-               token);
+               &mojom::AutofillAgent::SendEmailVerificationToken,
+               email_field_id, email, token_field_id, token);
 }
 
 void ContentAutofillDriver::OnEmailVerificationTokenShared() {

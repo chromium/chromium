@@ -60,6 +60,10 @@ class AutofillAgentTestApi {
     return agent_->process_forms_after_dynamic_change_timer_;
   }
 
+  AutofillAgent::EmailVerificationObserver& email_verification_observer() {
+    return agent_->email_verification_observer_;
+  }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };

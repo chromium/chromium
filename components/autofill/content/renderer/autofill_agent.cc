@@ -834,9 +834,12 @@ AutofillAgent::EmailVerificationObserver::~EmailVerificationObserver() =
     default;
 
 void AutofillAgent::EmailVerificationObserver::StoreEmailVerificationToken(
-    FieldRendererId field_id,
+    FieldRendererId email_field_id,
+    const std::string& email,
+    FieldRendererId token_field_id,
     const std::string& token) {
-  email_verification_tokens_[field_id] = token;
+  email_verification_tokens_[token_field_id] = TokenInfo{
+      .token = token, .email_field_id = email_field_id, .email = email};
 }
 
 void AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent(
@@ -845,11 +848,31 @@ void AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent(
     return;
   }
 
-  for (const auto& [field_id, token] : email_verification_tokens_) {
+  for (const auto& [field_id, info] : email_verification_tokens_) {
     WebFormControlElement element =
         form_util::GetFormControlByRendererId(field_id);
     if (element && element.GetOwningFormForAutofill() == form) {
-      element.SetValue(WebString::FromUtf8(token));
+      // To prevent sharing an Email Verification Token (EVT) generated for a
+      // different email address (e.g., if the user edited the email field,
+      // cleared it, or selected a different email address after the token was
+      // sent to the renderer), verify that the email field's current value
+      // still matches the email address used during verification.
+      WebFormControlElement email_element =
+          form_util::GetFormControlByRendererId(info.email_field_id);
+      if (email_element) {
+        std::u16string current_email = email_element.Value().Utf16();
+        std::u16string original_email = base::UTF8ToUTF16(info.email);
+        if (base::i18n::FoldCase(
+                base::TrimWhitespace(current_email, base::TRIM_ALL)) !=
+            base::i18n::FoldCase(
+                base::TrimWhitespace(original_email, base::TRIM_ALL))) {
+          continue;
+        }
+      } else {
+        continue;
+      }
+
+      element.SetValue(WebString::FromUtf8(info.token));
 
       if (auto* driver = agent_->unsafe_autofill_driver()) {
         driver->OnEmailVerificationTokenShared();
@@ -1662,9 +1685,12 @@ void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
   }
 }
 
-void AutofillAgent::SendEmailVerificationToken(FieldRendererId field_id,
+void AutofillAgent::SendEmailVerificationToken(FieldRendererId email_field_id,
+                                               const std::string& email,
+                                               FieldRendererId token_field_id,
                                                const std::string& token) {
-  email_verification_observer_.StoreEmailVerificationToken(field_id, token);
+  email_verification_observer_.StoreEmailVerificationToken(
+      email_field_id, email, token_field_id, token);
 }
 
 void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
