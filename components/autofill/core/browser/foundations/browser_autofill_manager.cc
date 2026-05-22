@@ -2199,7 +2199,13 @@ void BrowserAutofillManager::DidShowSuggestions(
     AutofillSuggestionTriggerSource trigger_source) {
   NotifyObservers(&Observer::OnSuggestionsShown, suggestions);
 
-  GetAtMemoryManager().OnPopupShown(trigger_source,
+  auto [form_structure, autofill_field] =
+      GetCachedFormAndField(form_id, field_id);
+
+  const bool is_context_secure =
+      form_structure ? !IsFormOrClientNonSecure(client(), *form_structure)
+                     : client().IsContextSecure();
+  GetAtMemoryManager().OnPopupShown(trigger_source, is_context_secure,
                                     update_suggestions_callback);
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
@@ -2212,9 +2218,6 @@ void BrowserAutofillManager::DidShowSuggestions(
         ->GetIbanManager()
         ->OnIbanSuggestionsShown(field_id);
   }
-
-  auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form_id, field_id);
 
   if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
       ai_manager && form_structure && autofill_field &&

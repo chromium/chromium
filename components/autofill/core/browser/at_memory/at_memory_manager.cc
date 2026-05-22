@@ -325,6 +325,89 @@ Suggestion TransformResultIntoSuggestion(
   return suggestion;
 }
 
+bool IsSpiiEntryType(accessibility_annotator::EntryType type) {
+  switch (type) {
+    case accessibility_annotator::EntryType::kIban:
+    case accessibility_annotator::EntryType::kCreditCardNumber:
+    case accessibility_annotator::EntryType::kCreditCardSecurityCode:
+    case accessibility_annotator::EntryType::kPassportNumber:
+    case accessibility_annotator::EntryType::kPassportFull:
+    case accessibility_annotator::EntryType::kNationalIdCardNumber:
+    case accessibility_annotator::EntryType::kNationalIdCardFull:
+    case accessibility_annotator::EntryType::kDriversLicenseNumber:
+    case accessibility_annotator::EntryType::kDriversLicenseFull:
+    case accessibility_annotator::EntryType::kRedressNumberNumber:
+    case accessibility_annotator::EntryType::kRedressNumberFull:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberFull:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberNumber:
+      return true;
+    case accessibility_annotator::EntryType::kNameFull:
+    case accessibility_annotator::EntryType::kAddressFull:
+    case accessibility_annotator::EntryType::kAddressStreetAddress:
+    case accessibility_annotator::EntryType::kAddressCity:
+    case accessibility_annotator::EntryType::kAddressState:
+    case accessibility_annotator::EntryType::kAddressZip:
+    case accessibility_annotator::EntryType::kAddressCountry:
+    case accessibility_annotator::EntryType::kPhone:
+    case accessibility_annotator::EntryType::kCompanyName:
+    case accessibility_annotator::EntryType::kEmail:
+    case accessibility_annotator::EntryType::kIbanNickname:
+    case accessibility_annotator::EntryType::kVehicle:
+    case accessibility_annotator::EntryType::kVehicleMake:
+    case accessibility_annotator::EntryType::kVehicleModel:
+    case accessibility_annotator::EntryType::kVehicleYear:
+    case accessibility_annotator::EntryType::kVehicleOwner:
+    case accessibility_annotator::EntryType::kVehiclePlateNumber:
+    case accessibility_annotator::EntryType::kVehiclePlateState:
+    case accessibility_annotator::EntryType::kVehicleVin:
+    case accessibility_annotator::EntryType::kPassportName:
+    case accessibility_annotator::EntryType::kPassportCountry:
+    case accessibility_annotator::EntryType::kPassportIssueDate:
+    case accessibility_annotator::EntryType::kPassportExpirationDate:
+    case accessibility_annotator::EntryType::kFlightReservationFull:
+    case accessibility_annotator::EntryType::kFlightReservationFlightNumber:
+    case accessibility_annotator::EntryType::kFlightReservationTicketNumber:
+    case accessibility_annotator::EntryType::kFlightReservationConfirmationCode:
+    case accessibility_annotator::EntryType::kFlightReservationPassengerName:
+    case accessibility_annotator::EntryType::kFlightReservationDepartureAirport:
+    case accessibility_annotator::EntryType::kFlightReservationArrivalAirport:
+    case accessibility_annotator::EntryType::kFlightReservationDepartureDate:
+    case accessibility_annotator::EntryType::kFlightReservationArrivalDate:
+    case accessibility_annotator::EntryType::kNationalIdCardName:
+    case accessibility_annotator::EntryType::kNationalIdCardCountry:
+    case accessibility_annotator::EntryType::kNationalIdCardIssueDate:
+    case accessibility_annotator::EntryType::kNationalIdCardExpirationDate:
+    case accessibility_annotator::EntryType::kDriversLicenseName:
+    case accessibility_annotator::EntryType::kDriversLicenseState:
+    case accessibility_annotator::EntryType::kDriversLicenseIssueDate:
+    case accessibility_annotator::EntryType::kDriversLicenseExpirationDate:
+    case accessibility_annotator::EntryType::kRedressNumberName:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberName:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberExpirationDate:
+    case accessibility_annotator::EntryType::kCreditCardExpirationDate:
+    case accessibility_annotator::EntryType::kCreditCardNameOnCard:
+    case accessibility_annotator::EntryType::kCreditCardNickname:
+    case accessibility_annotator::EntryType::kOrderFull:
+    case accessibility_annotator::EntryType::kOrderId:
+    case accessibility_annotator::EntryType::kOrderAccount:
+    case accessibility_annotator::EntryType::kOrderDate:
+    case accessibility_annotator::EntryType::kOrderMerchantName:
+    case accessibility_annotator::EntryType::kOrderMerchantDomain:
+    case accessibility_annotator::EntryType::kOrderProductNames:
+    case accessibility_annotator::EntryType::kOrderGrandTotal:
+    case accessibility_annotator::EntryType::kShipmentFull:
+    case accessibility_annotator::EntryType::kShipmentTrackingNumber:
+    case accessibility_annotator::EntryType::kShipmentAssociatedOrderId:
+    case accessibility_annotator::EntryType::kShipmentDeliveryAddress:
+    case accessibility_annotator::EntryType::kShipmentDeliveryZipCode:
+    case accessibility_annotator::EntryType::kShipmentCarrierName:
+    case accessibility_annotator::EntryType::kShipmentCarrierDomain:
+    case accessibility_annotator::EntryType::kShipmentEstimatedDeliveryDate:
+    case accessibility_annotator::EntryType::kUnknown:
+      return false;
+  }
+}
+
 // Creates a suggestion to display when the query is supported, but yields no
 // results.
 Suggestion CreateNoDataSuggestion() {
@@ -391,12 +474,14 @@ AtMemoryManager::~AtMemoryManager() = default;
 
 void AtMemoryManager::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
+    bool is_context_secure,
     UpdateSuggestionsCallback update_callback) {
   if (at_memory_funnel_metrics_ || !IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
 
   trigger_source_ = trigger_source;
+  is_context_secure_ = is_context_secure;
   update_callback_ = std::move(update_callback);
   at_memory_funnel_metrics_ = std::make_unique<AtMemoryFunnelMetrics>();
   at_memory_funnel_metrics_->OnPopupShown(trigger_source);
@@ -430,6 +515,7 @@ void AtMemoryManager::OnPopupHidden() {
   }
   is_searching_ = false;
   is_full_search_running_ = false;
+  is_context_secure_ = false;
   query_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -565,6 +651,21 @@ void AtMemoryManager::OnSearchResultsReceived(
   if (!IsAtMemoryTriggerSource(trigger_source_) || !update_callback_ ||
       !is_searching_) {
     return;
+  }
+
+  // If the context is insecure, filter out any SPII entries and metadata from
+  // the results.
+  if (!is_context_secure_) {
+    std::erase_if(result.entries,
+                  [](const accessibility_annotator::MemorySearchResult& entry) {
+                    return IsSpiiEntryType(entry.type);
+                  });
+    for (accessibility_annotator::MemorySearchResult& entry : result.entries) {
+      std::erase_if(entry.metadata_list,
+                    [](const accessibility_annotator::EntryMetadata& metadata) {
+                      return IsSpiiEntryType(metadata.type);
+                    });
+    }
   }
 
   bool expecting_more_data =

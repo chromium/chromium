@@ -42,8 +42,14 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Matcher;
 using ::testing::NiceMock;
+using ::testing::ResultOf;
 using ::testing::SaveArg;
 
 class MockAutofillClient : public TestAutofillClient {
@@ -141,6 +147,19 @@ class AtMemoryManagerTest : public testing::Test,
       std::make_unique<EntityTable>()};
 };
 
+Matcher<Suggestion> EqualsAtMemorySuggestion(
+    accessibility_annotator::EntryType entry_type,
+    Matcher<std::vector<Suggestion>> children_matcher = IsEmpty()) {
+  return AllOf(
+      Field(&Suggestion::type, SuggestionType::kAtMemorySearchResult),
+      ResultOf(
+          [](const Suggestion& s) {
+            return s.GetPayload<Suggestion::AtMemoryPayload>().entry_type;
+          },
+          entry_type),
+      Field(&Suggestion::children, children_matcher));
+}
+
 // Tests that attempting to start a subsequent incremental (type-ahead) search
 // does not cancel an ongoing full search query, and the full search can still
 // successfully complete.
@@ -148,7 +167,7 @@ TEST_F(AtMemoryManagerTest, IncrementalSearchBlockedByOngoingFullSearch) {
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
       update_callback;
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
-                         update_callback.Get());
+                         /*is_context_secure=*/true, update_callback.Get());
 
   // Trigger a full search.
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
@@ -324,6 +343,120 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
                                       field, suggestion);
+}
+
+// Tests that SPII entries and metadata are filtered out from the search
+// results when the context is insecure.
+TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
+  base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
+      update_callback;
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/false, update_callback.Get());
+
+  base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
+      search_callback;
+  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _, _))
+      .WillOnce(SaveArg<2>(&search_callback));
+
+  std::vector<Suggestion> resulting_suggestions;
+  EXPECT_CALL(update_callback,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillRepeatedly(SaveArg<0>(&resulting_suggestions));
+
+  manager().OnSearchSubmitted(u"query");
+
+  std::vector<accessibility_annotator::MemorySearchResult> entries;
+  // Non-SPII entry.
+  entries.emplace_back(accessibility_annotator::EntryType::kAddressFull,
+                       u"Address", u"Full Address");
+  // SPII entry.
+  entries.emplace_back(accessibility_annotator::EntryType::kPassportNumber,
+                       u"IBAN", u"1234");
+
+  // Non-SPII entry with mixed metadata.
+  accessibility_annotator::MemorySearchResult mixed_entry(
+      accessibility_annotator::EntryType::kPhone, u"Phone", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::EntryType::kPhone, u"Phone meta", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::EntryType::kPassportNumber, u"IBAN meta",
+      u"1234");
+  entries.push_back(std::move(mixed_entry));
+
+  accessibility_annotator::MemorySearchResults results(
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      std::move(entries));
+
+  search_callback.Run(std::move(results));
+
+  EXPECT_THAT(
+      resulting_suggestions,
+      ElementsAre(EqualsAtMemorySuggestion(
+                      accessibility_annotator::EntryType::kAddressFull),
+                  EqualsAtMemorySuggestion(
+                      accessibility_annotator::EntryType::kPhone,
+                      ElementsAre(EqualsAtMemorySuggestion(
+                          accessibility_annotator::EntryType::kPhone)))));
+}
+
+// Tests that SPII entries and metadata are retained in the search results
+// when the context is secure.
+TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
+  base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
+      update_callback;
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback.Get());
+
+  base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
+      search_callback;
+  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _, _))
+      .WillOnce(SaveArg<2>(&search_callback));
+
+  std::vector<Suggestion> resulting_suggestions;
+  EXPECT_CALL(update_callback,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillRepeatedly(SaveArg<0>(&resulting_suggestions));
+
+  manager().OnSearchSubmitted(u"query");
+
+  std::vector<accessibility_annotator::MemorySearchResult> entries;
+  // Non-SPII entry.
+  entries.emplace_back(accessibility_annotator::EntryType::kAddressFull,
+                       u"Address", u"Full Address");
+  // SPII entry.
+  entries.emplace_back(accessibility_annotator::EntryType::kPassportNumber,
+                       u"IBAN", u"1234");
+
+  // Non-SPII entry with mixed metadata.
+  accessibility_annotator::MemorySearchResult mixed_entry(
+      accessibility_annotator::EntryType::kPhone, u"Phone", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::EntryType::kPhone, u"Phone meta", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::EntryType::kPassportNumber, u"IBAN meta",
+      u"1234");
+  entries.push_back(std::move(mixed_entry));
+
+  accessibility_annotator::MemorySearchResults results(
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      std::move(entries));
+
+  search_callback.Run(std::move(results));
+
+  EXPECT_THAT(
+      resulting_suggestions,
+      ElementsAre(
+          EqualsAtMemorySuggestion(
+              accessibility_annotator::EntryType::kAddressFull),
+          EqualsAtMemorySuggestion(
+              accessibility_annotator::EntryType::kPassportNumber),
+          EqualsAtMemorySuggestion(
+              accessibility_annotator::EntryType::kPhone,
+              ElementsAre(
+                  EqualsAtMemorySuggestion(
+                      accessibility_annotator::EntryType::kPhone),
+                  EqualsAtMemorySuggestion(
+                      accessibility_annotator::EntryType::kPassportNumber)))));
 }
 
 }  // namespace

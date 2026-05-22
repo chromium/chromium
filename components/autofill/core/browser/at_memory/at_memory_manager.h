@@ -52,6 +52,7 @@ class AtMemoryManager {
   // session if the `trigger_source` is an @memory one.
   // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(AutofillSuggestionTriggerSource trigger_source,
+                    bool is_context_secure,
                     UpdateSuggestionsCallback update_callback);
 
   // Called when the user types in the filter/search bar. Returns true if
@@ -129,6 +130,8 @@ class AtMemoryManager {
 
   std::unique_ptr<AtMemoryFunnelMetrics> at_memory_funnel_metrics_;
 
+  // Indicates whether the current tab and the form uses a secure connection.
+  bool is_context_secure_ = false;
   // Flag indicating that a search query is in progress.
   bool is_searching_ = false;
   // Flag to distinguish if the ongoing query is a full search (explicit submit)
