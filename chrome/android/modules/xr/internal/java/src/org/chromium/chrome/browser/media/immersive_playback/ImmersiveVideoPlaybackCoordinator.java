@@ -27,11 +27,10 @@ import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent.OnMoveListener;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
-import org.chromium.ui.xr.scenecore.XrQuadSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrResizableComponent.OnResizeListener;
-import org.chromium.ui.xr.scenecore.XrResizableEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSpace;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
@@ -113,10 +112,7 @@ public class ImmersiveVideoPlaybackCoordinator {
                     public void onMoveUpdate(float[] translation, float[] rotation, float scale) {
                         if (mSurfaceHolder != null
                                 && mSurfaceHolder.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
-                            float height =
-                                    ((XrResizableEntityHolder) mSurfaceHolder)
-                                            .getEntitySize()
-                                            .getHeight();
+                            float height = mSurfaceHolder.getEntitySize().getHeight();
                             updateMediaControlPanelPose(translation, rotation, height);
                         }
                     }
@@ -127,8 +123,9 @@ public class ImmersiveVideoPlaybackCoordinator {
                     @Override
                     public void onResizeUpdate(float width, float height, float depth) {
                         if (mSurfaceHolder != null) {
-                            float[] translation = mSurfaceHolder.getEntityTranslation();
-                            float[] rotation = mSurfaceHolder.getEntityRotation();
+                            float[] translation =
+                                    mSurfaceHolder.getEntityTranslation(XrSpace.ACTIVITY);
+                            float[] rotation = mSurfaceHolder.getEntityRotation(XrSpace.ACTIVITY);
                             updateMediaControlPanelPose(translation, rotation, height);
                         }
                     }
@@ -176,20 +173,18 @@ public class ImmersiveVideoPlaybackCoordinator {
     private void updateShapeIfNeeded(@XrSurfaceEntityShape int shape) {
         XrSurfaceEntityHolder surfaceHolder = assumeNonNull(mSurfaceHolder);
 
-        if (surfaceHolder instanceof XrQuadSurfaceEntityHolder) {
-            resetQuadSurface((XrQuadSurfaceEntityHolder) surfaceHolder);
+        if (surfaceHolder.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
+            resetQuadSurface(surfaceHolder);
         }
 
         surfaceHolder.setSurfaceShape(shape);
         surfaceHolder.setEntityPose(
-                PLAYER_PANEL_INITIAL_TRANSLATION, PLAYER_PANEL_INITIAL_ROTATION);
+                PLAYER_PANEL_INITIAL_TRANSLATION, PLAYER_PANEL_INITIAL_ROTATION, XrSpace.ACTIVITY);
 
         switch (shape) {
             case XrSurfaceEntityShape.QUAD:
                 configureMediaControlPanel(false);
-                if (surfaceHolder instanceof XrQuadSurfaceEntityHolder) {
-                    configureQuadSurface((XrQuadSurfaceEntityHolder) surfaceHolder);
-                }
+                configureQuadSurface(surfaceHolder);
                 break;
             case XrSurfaceEntityShape.SPHERE:
             case XrSurfaceEntityShape.HEMISPHERE:
@@ -211,7 +206,7 @@ public class ImmersiveVideoPlaybackCoordinator {
         mControlPanelHolder.getMovableComponent().setMovable(isMovable, false);
     }
 
-    private void configureQuadSurface(XrQuadSurfaceEntityHolder quadHolder) {
+    private void configureQuadSurface(XrSurfaceEntityHolder quadHolder) {
         float initialWidth = PLAYER_PANEL_INITIAL_WIDTH_METERS;
         float initialHeight = calculateHeight(initialWidth);
         float minWidth = PLAYER_PANEL_MIN_WIDTH_METERS;
@@ -223,8 +218,8 @@ public class ImmersiveVideoPlaybackCoordinator {
         XrMovableComponent movable = quadHolder.getMovableComponent();
 
         quadHolder.setEntitySize(initialWidth, initialHeight);
-        resizable.setMinSize(minWidth, minHeight);
-        resizable.setMaxSize(maxWidth, maxHeight);
+        resizable.setMinSize(minWidth, minHeight, 0f);
+        resizable.setMaxSize(maxWidth, maxHeight, 0f);
         resizable.setResizable(true, true);
         movable.setMovable(true, false);
         movable.addMoveListener(assumeNonNull(mPlayerPanelMoveListener));
@@ -234,13 +229,13 @@ public class ImmersiveVideoPlaybackCoordinator {
                 PLAYER_PANEL_INITIAL_TRANSLATION, PLAYER_PANEL_INITIAL_ROTATION, initialHeight);
     }
 
-    private void resetQuadSurface(XrQuadSurfaceEntityHolder quadHolder) {
+    private void resetQuadSurface(XrSurfaceEntityHolder quadHolder) {
         XrResizableComponent resizable = quadHolder.getResizableComponent();
         XrMovableComponent movable = quadHolder.getMovableComponent();
 
         quadHolder.setEntitySize(1f, 1f);
-        resizable.setMinSize(1f, 1f);
-        resizable.setMaxSize(1f, 1f);
+        resizable.setMinSize(1f, 1f, 0f);
+        resizable.setMaxSize(1f, 1f, 0f);
         resizable.setResizable(false, false);
         movable.setMovable(false, false);
         movable.removeMoveListener(assumeNonNull(mPlayerPanelMoveListener));
@@ -251,7 +246,9 @@ public class ImmersiveVideoPlaybackCoordinator {
         curvedHolder.setEntityRadius(PLAYER_PANEL_INITIAL_CURVE_RADIUS_METERS);
         if (mControlPanelHolder != null) {
             mControlPanelHolder.setEntityPose(
-                    MEDIA_CONTROL_PANEL_INITIAL_TRANSLATION, MEDIA_CONTROL_PANEL_INITIAL_ROTATION);
+                    MEDIA_CONTROL_PANEL_INITIAL_TRANSLATION,
+                    MEDIA_CONTROL_PANEL_INITIAL_ROTATION,
+                    XrSpace.ACTIVITY);
         }
     }
 
@@ -270,7 +267,7 @@ public class ImmersiveVideoPlaybackCoordinator {
             newTranslation[1] -= height / 2 + MEDIA_CONTROL_PANEL_VERTICAL_SPACING_METERS;
             // Keep the media control panel slightly above the player panel.
             newTranslation[2] += MEDIA_CONTROL_PANEL_Z_OFFSET_METERS;
-            mControlPanelHolder.setEntityPose(newTranslation, rotation);
+            mControlPanelHolder.setEntityPose(newTranslation, rotation, XrSpace.ACTIVITY);
         }
     }
 

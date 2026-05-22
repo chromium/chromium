@@ -17,6 +17,7 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoPlaybackCoordinator.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactory.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProviderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrPanelEntityHolderImpl.java",
@@ -24,6 +25,7 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrTransformableEntityHolderImpl.java",
   ]
   deps = [
     "//base:build_info_java",
@@ -61,6 +63,7 @@ robolectric_binary("xr_junit_tests") {
 
   sources = [
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactoryTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrPanelEntityHolderImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrResizableComponentImplTest.java",

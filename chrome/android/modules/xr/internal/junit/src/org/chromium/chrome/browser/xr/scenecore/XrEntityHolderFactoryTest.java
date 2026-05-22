@@ -29,7 +29,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
-import org.chromium.ui.xr.scenecore.XrQuadSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
@@ -59,7 +58,6 @@ public class XrEntityHolderFactoryTest {
                 XrEntityHolderFactory.createSurfaceEntityHolder(
                         mSession, XrSurfaceEntityShape.QUAD);
         assertNotNull(holder);
-        assertTrue(holder instanceof XrQuadSurfaceEntityHolder);
 
         SurfaceEntity surfaceEntity = (SurfaceEntity) holder.getEntity();
         assertEquals(StereoMode.MONO, surfaceEntity.getStereoMode());

@@ -34,16 +34,20 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrEntityHolder;
+import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
-import org.chromium.ui.xr.scenecore.XrQuadSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSpace;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
@@ -182,7 +186,6 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         assertEquals(XrSurfaceEntityShape.SPHERE, mSurfaceEntityHolder.lastShape);
         assertEquals(XrSurfaceEntityStereoMode.TOP_BOTTOM, mSurfaceEntityHolder.lastStereoMode);
 
-        verify(mSurfaceMovableComponent).setMovable(false, false);
         verify(mControlPanelHolder.getMovableComponent()).setMovable(true, false);
 
         clearInvocations(mSurfaceMovableComponent);
@@ -232,7 +235,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
      * required by these interfaces.
      */
     private static class FakeSurfaceHolder
-            implements XrQuadSurfaceEntityHolder, XrCurvedSurfaceEntityHolder {
+            implements XrSurfaceEntityHolder<Object>, XrCurvedSurfaceEntityHolder<Object> {
         private final XrMovableComponent mMovableComponent;
         private final XrResizableComponent mResizableComponent;
 
@@ -320,26 +323,26 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         }
 
         @Override
-        public void setEntityPose(float[] translation) {}
+        public void setEntityPose(float[] translation, @XrSpace int space) {}
 
         @Override
-        public void setEntityPose(float[] translation, float[] rotation) {}
+        public void setEntityPose(float[] translation, float[] rotation, @XrSpace int space) {}
 
         @Override
-        public float[] getEntityTranslation() {
+        public float[] getEntityTranslation(@XrSpace int space) {
             return null;
         }
 
         @Override
-        public float[] getEntityRotation() {
+        public float[] getEntityRotation(@XrSpace int space) {
             return null;
         }
 
         @Override
-        public void setEntityScale(float scale) {}
+        public void setEntityScale(float scale, @XrSpace int space) {}
 
         @Override
-        public float getEntityScale() {
+        public float getEntityScale(@XrSpace int space) {
             return 1f;
         }
 
@@ -347,8 +350,29 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         public void setEntityAlpha(float alpha) {}
 
         @Override
-        public float getEntityAlpha() {
+        public float getEntityAlpha(@XrSpace int space) {
             return 1f;
+        }
+
+        @Override
+        public void addChild(XrEntityHolder<?> child) {}
+
+        @Override
+        public void setParent(@Nullable XrEntityHolder<?> parent) {}
+
+        @Override
+        public @Nullable XrEntityHolder<?> getParent() {
+            return null;
+        }
+
+        @Override
+        public XrInteractableComponent getInteractableComponent() {
+            return null;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return false;
         }
 
         @Override
@@ -363,7 +387,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         public void dispose() {}
     }
 
-    private static class FakePanelEntityHolder implements XrPanelEntityHolder {
+    private static class FakePanelEntityHolder implements XrPanelEntityHolder<Object> {
         private final XrMovableComponent mMovableComponent;
         public boolean isEnabled = true;
 
@@ -408,26 +432,26 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         }
 
         @Override
-        public void setEntityPose(float[] t) {}
+        public void setEntityPose(float[] t, @XrSpace int space) {}
 
         @Override
-        public void setEntityPose(float[] t, float[] r) {}
+        public void setEntityPose(float[] t, float[] r, @XrSpace int space) {}
 
         @Override
-        public float[] getEntityTranslation() {
+        public float[] getEntityTranslation(@XrSpace int space) {
             return null;
         }
 
         @Override
-        public float[] getEntityRotation() {
+        public float[] getEntityRotation(@XrSpace int space) {
             return null;
         }
 
         @Override
-        public void setEntityScale(float scale) {}
+        public void setEntityScale(float scale, @XrSpace int space) {}
 
         @Override
-        public float getEntityScale() {
+        public float getEntityScale(@XrSpace int space) {
             return 1f;
         }
 
@@ -435,8 +459,29 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         public void setEntityAlpha(float alpha) {}
 
         @Override
-        public float getEntityAlpha() {
+        public float getEntityAlpha(@XrSpace int space) {
             return 1f;
+        }
+
+        @Override
+        public void addChild(XrEntityHolder<?> child) {}
+
+        @Override
+        public void setParent(@Nullable XrEntityHolder<?> parent) {}
+
+        @Override
+        public @Nullable XrEntityHolder<?> getParent() {
+            return null;
+        }
+
+        @Override
+        public XrInteractableComponent getInteractableComponent() {
+            return null;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return false;
         }
 
         @Override

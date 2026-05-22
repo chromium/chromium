@@ -14,16 +14,28 @@ public interface XrResizableComponent {
      *
      * @param width The minimum width of the entity.
      * @param height The minimum height of the entity.
+     * @param depth The minimum depth of the entity.
      */
-    void setMinSize(float width, float height);
+    void setMinSize(float width, float height, float depth);
+
+    /**
+     * Returns the minimum allowed size for the entity as a 3-element array [width, height, depth].
+     */
+    float[] getMinSize();
 
     /**
      * Sets the maximum allowed size for the entity.
      *
-     * @param width The minimum width of the entity.
-     * @param height The minimum height of the entity.
+     * @param width The maximum width of the entity.
+     * @param height The maximum height of the entity.
+     * @param depth The maximum depth of the entity.
      */
-    void setMaxSize(float width, float height);
+    void setMaxSize(float width, float height, float depth);
+
+    /**
+     * Returns the maximum allowed size for the entity as a 3-element array [width, height, depth].
+     */
+    float[] getMaxSize();
 
     /**
      * Sets whether the entity is resizable.
@@ -47,9 +59,6 @@ public interface XrResizableComponent {
      * @param listener The listener to remove.
      */
     void removeResizeListener(OnResizeListener listener);
-
-    /** Disposes of the resizable component. */
-    void dispose();
 
     /** Interface for listening to resize events. */
     @FunctionalInterface

@@ -89,7 +89,7 @@ public class XrResizableComponentImplTest {
 
     @Test
     public void testSetMinSize() {
-        mResizableComponent.setMinSize(1f, 2f);
+        mResizableComponent.setMinSize(1f, 2f, 0f);
         mResizableComponent.setResizable(true, false);
 
         ResizableComponent resizableComponent = getResizableComponent();
@@ -100,7 +100,7 @@ public class XrResizableComponentImplTest {
 
     @Test
     public void testSetMaxSize() {
-        mResizableComponent.setMaxSize(10f, 20f);
+        mResizableComponent.setMaxSize(10f, 20f, 0f);
         mResizableComponent.setResizable(true, false);
 
         ResizableComponent resizableComponent = getResizableComponent();
@@ -172,5 +172,14 @@ public class XrResizableComponentImplTest {
         mResizableComponent.removeResizeListener(mListener);
 
         assertFalse(mResizableComponent.hasResizeListenerForTesting(mListener));
+    }
+
+    @Test
+    public void testCreateWithCustomResizeListener() {
+        XrResizableComponentImpl<PanelEntity> customResizableComponent =
+                new XrResizableComponentImpl<>(mSession, mEntity, mListener);
+        assertNotNull(customResizableComponent);
+        customResizableComponent.setResizable(true, false);
+        assertNotNull(getResizableComponent());
     }
 }

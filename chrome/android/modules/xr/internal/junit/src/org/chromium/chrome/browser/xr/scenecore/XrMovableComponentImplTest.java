@@ -144,4 +144,31 @@ public class XrMovableComponentImplTest {
         mMovableComponent.removeMoveListener(mListener);
         assertFalse(mMovableComponent.hasMoveListenerForTesting(mListener));
     }
+
+    @Test
+    public void testCreateWithCustomMoveListener() {
+        XrMovableComponentImpl<PanelEntity> customMovableComponent =
+                new XrMovableComponentImpl<>(mSession, mEntity);
+        customMovableComponent.setCustomMoveHandler(mListener);
+        assertEquals(mListener, customMovableComponent.getCustomMoveHandlerForTesting());
+    }
+
+    @Test
+    public void testSetSize() {
+        mMovableComponent.setSize(10f, 20f, 30f);
+        var size = mMovableComponent.getLastSetSizeForTesting();
+        assertNotNull(size);
+        assertEquals(10f, size.getWidth(), 0.01f);
+        assertEquals(20f, size.getHeight(), 0.01f);
+        assertEquals(30f, size.getDepth(), 0.01f);
+    }
+
+    @Test
+    public void testSetMovableReusesCustomMovable() {
+        mMovableComponent.setCustomMoveHandler(mListener);
+        assertEquals(mListener, mMovableComponent.getCustomMoveHandlerForTesting());
+
+        mMovableComponent.setMovable(true, false);
+        assertEquals(mListener, mMovableComponent.getCustomMoveHandlerForTesting());
+    }
 }

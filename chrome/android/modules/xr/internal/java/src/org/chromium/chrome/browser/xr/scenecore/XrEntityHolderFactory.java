@@ -19,7 +19,6 @@ import androidx.xr.scenecore.SurfaceEntity.SurfaceProtection;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
-import org.chromium.ui.xr.scenecore.XrQuadSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
@@ -54,7 +53,7 @@ public class XrEntityHolderFactory {
      * @param xrSession The XR session to use.
      * @return An XR quad surface entity holder.
      */
-    public static XrQuadSurfaceEntityHolder createQuadSurfaceEntityHolder(Session xrSession) {
+    public static XrSurfaceEntityHolder createQuadSurfaceEntityHolder(Session xrSession) {
         return XrSurfaceEntityHolderImpl.create(
                 xrSession,
                 SurfaceEntity.create(

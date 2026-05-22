@@ -9,10 +9,13 @@ import androidx.xr.runtime.math.Pose;
 import androidx.xr.runtime.math.Quaternion;
 import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.BaseEntity;
+import androidx.xr.scenecore.Entity;
 import androidx.xr.scenecore.Space;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
+import org.chromium.ui.xr.scenecore.XrSpace;
 
 /** Base class for {@link XrEntityHolder} implementations. */
 @NullMarked
@@ -23,10 +26,22 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
     protected final Session mXrSession;
     protected final EntityType mEntity;
     protected boolean mIsDisposed;
+    protected @Nullable XrEntityHolder<?> mParent;
 
     protected XrEntityHolderImpl(Session xrSession, EntityType entity) {
         mXrSession = xrSession;
         mEntity = entity;
+    }
+
+    private Space mapSpace(@XrSpace int space) {
+        switch (space) {
+            case XrSpace.ACTIVITY:
+                return Space.ACTIVITY;
+            case XrSpace.PARENT:
+                return Space.PARENT;
+            default:
+                throw new IllegalArgumentException("Unknown XrSpace: " + space);
+        }
     }
 
     @Override
@@ -35,18 +50,18 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
     }
 
     @Override
-    public void setEntityPose(float[] translation) {
+    public void setEntityPose(float[] translation, @XrSpace int space) {
         assertDisposed();
         if (translation.length != 3) {
             throw new IllegalArgumentException("Translation must be length 3");
         }
         mEntity.setPose(
                 new Pose(new Vector3(translation[0], translation[1], translation[2])),
-                Space.ACTIVITY);
+                mapSpace(space));
     }
 
     @Override
-    public void setEntityPose(float[] translation, float[] rotation) {
+    public void setEntityPose(float[] translation, float[] rotation, @XrSpace int space) {
         assertDisposed();
         if (translation.length != 3 || rotation.length != 4) {
             throw new IllegalArgumentException(
@@ -56,33 +71,33 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
                 new Pose(
                         new Vector3(translation[0], translation[1], translation[2]),
                         new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3])),
-                Space.ACTIVITY);
+                mapSpace(space));
     }
 
     @Override
-    public float[] getEntityTranslation() {
+    public float[] getEntityTranslation(@XrSpace int space) {
         assertDisposed();
-        Vector3 translation = mEntity.getPose(Space.ACTIVITY).getTranslation();
+        Vector3 translation = mEntity.getPose(mapSpace(space)).getTranslation();
         return new float[] {translation.getX(), translation.getY(), translation.getZ()};
     }
 
     @Override
-    public float[] getEntityRotation() {
+    public float[] getEntityRotation(@XrSpace int space) {
         assertDisposed();
-        Quaternion rotation = mEntity.getPose(Space.ACTIVITY).getRotation();
+        Quaternion rotation = mEntity.getPose(mapSpace(space)).getRotation();
         return new float[] {rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW()};
     }
 
     @Override
-    public float getEntityScale() {
+    public float getEntityScale(@XrSpace int space) {
         assertDisposed();
-        return mEntity.getScale(Space.ACTIVITY);
+        return mEntity.getScale(mapSpace(space));
     }
 
     @Override
-    public void setEntityScale(float scale) {
+    public void setEntityScale(float scale, @XrSpace int space) {
         assertDisposed();
-        mEntity.setScale(scale, Space.ACTIVITY);
+        mEntity.setScale(scale, mapSpace(space));
     }
 
     @Override
@@ -92,9 +107,9 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
     }
 
     @Override
-    public float getEntityAlpha() {
+    public float getEntityAlpha(@XrSpace int space) {
         assertDisposed();
-        return mEntity.getAlpha(Space.ACTIVITY);
+        return mEntity.getAlpha(mapSpace(space));
     }
 
     @Override
@@ -109,6 +124,30 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
         return mEntity.isEnabled(/* includeParents= */ true);
     }
 
+    @Override
+    public void addChild(XrEntityHolder<?> child) {
+        assertDisposed();
+        child.setParent(this);
+    }
+
+    @Override
+    public void setParent(@Nullable XrEntityHolder<?> parent) {
+        assertDisposed();
+        mParent = parent;
+        if (parent == null) {
+            mEntity.setParent(null);
+        } else {
+            assert parent.getEntity() instanceof Entity;
+            mEntity.setParent((Entity) parent.getEntity());
+        }
+    }
+
+    @Override
+    public @Nullable XrEntityHolder<?> getParent() {
+        assertDisposed();
+        return mParent;
+    }
+
     protected void assertDisposed() {
         if (mIsDisposed) {
             throw new IllegalStateException("Entity is already disposed");
@@ -121,5 +160,10 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
             mEntity.dispose();
             mIsDisposed = true;
         }
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return mIsDisposed;
     }
 }

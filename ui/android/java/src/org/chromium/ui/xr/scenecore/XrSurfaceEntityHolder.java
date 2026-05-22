@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
  * @param <EntityType> The type of the underlying XR entity.
  */
 @NullMarked
-public interface XrSurfaceEntityHolder<EntityType> extends XrEntityHolder<EntityType> {
+public interface XrSurfaceEntityHolder<EntityType> extends XrTransformableEntityHolder<EntityType> {
     /**
      * Adds a callback to be notified of surface lifecycle events.
      *

@@ -16,6 +16,7 @@ import androidx.activity.ComponentActivity;
 import androidx.xr.runtime.Session;
 import androidx.xr.runtime.SessionCreateResult;
 import androidx.xr.runtime.SessionCreateSuccess;
+import androidx.xr.runtime.math.FloatSize3d;
 import androidx.xr.scenecore.SurfaceEntity;
 import androidx.xr.scenecore.SurfaceEntity.Shape;
 import androidx.xr.scenecore.SurfaceEntity.StereoMode;
@@ -130,6 +131,20 @@ public class XrSurfaceEntityHolderImplTest {
         Shape shape = mSurfaceEntity.getShape();
         assertTrue(shape instanceof Shape.Quad);
         assertEquals(10f, ((Shape.Quad) shape).getExtents().getWidth(), DELTA);
+    }
+
+    @Test
+    public void testSetEntitySize_UpdatesMovableComponent() {
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.QUAD);
+        mHolder.setEntitySize(10f, 20f);
+
+        XrMovableComponentImpl movableComponent =
+                (XrMovableComponentImpl) mHolder.getMovableComponent();
+        FloatSize3d size = movableComponent.getLastSetSizeForTesting();
+        assertNotNull(size);
+        assertEquals(10f, size.getWidth(), DELTA);
+        assertEquals(20f, size.getHeight(), DELTA);
+        assertEquals(0f, size.getDepth(), DELTA);
     }
 
     @Test

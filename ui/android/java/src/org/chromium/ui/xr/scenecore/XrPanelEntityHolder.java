@@ -15,8 +15,7 @@ import org.chromium.build.annotations.NullMarked;
  * @param <EntityType> The type of the underlying XR entity.
  */
 @NullMarked
-public interface XrPanelEntityHolder<EntityType>
-        extends XrEntityHolder<EntityType>, XrMovableEntityHolder, XrResizableEntityHolder {
+public interface XrPanelEntityHolder<EntityType> extends XrTransformableEntityHolder<EntityType> {
 
     /** Returns the size of the panel in pixels. */
     Size getEntitySizeInPixels();

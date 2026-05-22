@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.xr.scenecore.XrSpace;
 
 /** Tests for {@link XrPanelEntityHolderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -105,7 +106,7 @@ public class XrPanelEntityHolderImplTest {
     @Test
     public void testSetEntityPose() {
         float[] translation = new float[] {1f, 2f, 3f};
-        mHolder.setEntityPose(translation);
+        mHolder.setEntityPose(translation, XrSpace.ACTIVITY);
         Pose pose = mPanelEntity.getPose(androidx.xr.scenecore.Space.ACTIVITY);
         assertEquals(1f, pose.getTranslation().getX(), DELTA);
     }
@@ -114,34 +115,35 @@ public class XrPanelEntityHolderImplTest {
     public void testSetEntityPose_WithRotation() {
         float[] translation = new float[] {1f, 2f, 3f};
         float[] rotation = new float[] {0f, 0f, 0f, 1f};
-        mHolder.setEntityPose(translation, rotation);
+        mHolder.setEntityPose(translation, rotation, XrSpace.ACTIVITY);
         Pose pose = mPanelEntity.getPose(androidx.xr.scenecore.Space.ACTIVITY);
         assertEquals(1f, pose.getTranslation().getX(), DELTA);
     }
 
     @Test
     public void testGetEntityTranslation() {
-        mHolder.setEntityPose(new float[] {1f, 2f, 3f});
-        float[] translation = mHolder.getEntityTranslation();
+        mHolder.setEntityPose(new float[] {1f, 2f, 3f}, XrSpace.ACTIVITY);
+        float[] translation = mHolder.getEntityTranslation(XrSpace.ACTIVITY);
         assertEquals(1f, translation[0], DELTA);
     }
 
     @Test
     public void testGetEntityRotation() {
-        mHolder.setEntityPose(new float[] {1f, 2f, 3f}, new float[] {0f, 0f, 0f, 1f});
-        float[] rotation = mHolder.getEntityRotation();
+        mHolder.setEntityPose(
+                new float[] {1f, 2f, 3f}, new float[] {0f, 0f, 0f, 1f}, XrSpace.ACTIVITY);
+        float[] rotation = mHolder.getEntityRotation(XrSpace.ACTIVITY);
         assertEquals(1f, rotation[3], DELTA);
     }
 
     @Test
     public void testGetEntityScale() {
-        mHolder.setEntityScale(2.0f);
-        assertEquals(2.0f, mHolder.getEntityScale(), DELTA);
+        mHolder.setEntityScale(2.0f, XrSpace.ACTIVITY);
+        assertEquals(2.0f, mHolder.getEntityScale(XrSpace.ACTIVITY), DELTA);
     }
 
     @Test
     public void testSetEntityScale() {
-        mHolder.setEntityScale(2.0f);
+        mHolder.setEntityScale(2.0f, XrSpace.ACTIVITY);
         assertEquals(2.0f, mPanelEntity.getScale(androidx.xr.scenecore.Space.ACTIVITY), DELTA);
     }
 
@@ -154,7 +156,7 @@ public class XrPanelEntityHolderImplTest {
     @Test
     public void testGetEntityAlpha() {
         mHolder.setEntityAlpha(0.5f);
-        assertEquals(0.5f, mHolder.getEntityAlpha(), DELTA);
+        assertEquals(0.5f, mHolder.getEntityAlpha(XrSpace.ACTIVITY), DELTA);
     }
 
     @Test
@@ -167,6 +169,11 @@ public class XrPanelEntityHolderImplTest {
     public void testIsEntityEnabled() {
         mHolder.setEntityEnabled(true);
         assertTrue(mHolder.isEntityEnabled());
+    }
+
+    @Test
+    public void testGetInteractableComponent() {
+        assertNotNull(mHolder.getInteractableComponent());
     }
 
     @Test

@@ -13,18 +13,13 @@ import androidx.xr.runtime.math.IntSize2d;
 import androidx.xr.scenecore.PanelEntity;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
-import org.chromium.ui.xr.scenecore.XrResizableComponent;
 
 /** Implementation of {@link XrPanelEntityHolder}. */
 @NullMarked
-public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
+public class XrPanelEntityHolderImpl extends XrTransformableEntityHolderImpl<PanelEntity>
         implements XrPanelEntityHolder<PanelEntity> {
     private static final String TAG = "XrPanelEntityHolderImpl";
-
-    private final XrMovableComponent mMovableComponent;
-    private final XrResizableComponent mResizableComponent;
 
     public static XrPanelEntityHolderImpl create(Session xrSession, PanelEntity panelEntity) {
         return new XrPanelEntityHolderImpl(xrSession, panelEntity);
@@ -32,28 +27,6 @@ public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
 
     private XrPanelEntityHolderImpl(Session xrSession, PanelEntity panelEntity) {
         super(xrSession, panelEntity);
-        mMovableComponent = new XrMovableComponentImpl<>(xrSession, panelEntity);
-        mResizableComponent = new XrResizableComponentImpl<>(xrSession, panelEntity);
-        mResizableComponent.addResizeListener(
-                new XrResizableComponent.OnResizeListener() {
-                    @Override
-                    public void onResizeUpdate(float width, float height, float depth) {}
-
-                    @Override
-                    public void onResizeEnd(float width, float height, float depth) {
-                        mEntity.setSize(new FloatSize2d(width, height));
-                    }
-                });
-    }
-
-    @Override
-    public XrMovableComponent getMovableComponent() {
-        return mMovableComponent;
-    }
-
-    @Override
-    public XrResizableComponent getResizableComponent() {
-        return mResizableComponent;
     }
 
     @Override
@@ -66,7 +39,17 @@ public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
     @Override
     public void setEntitySize(float width, float height) {
         assertDisposed();
+        if (width <= 0f || height <= 0f) return;
         mEntity.setSize(new FloatSize2d(width, height));
+        mMovableComponent.setSize(width, height, 0f);
+
+        if (mResizableComponent.shouldMaintainAspectRatio()) {
+            float aspectRatio = width / height;
+            float[] minSize = mResizableComponent.getMinSize();
+            float[] maxSize = mResizableComponent.getMaxSize();
+            mResizableComponent.setMinSize(minSize[0], minSize[0] / aspectRatio, minSize[2]);
+            mResizableComponent.setMaxSize(maxSize[0], maxSize[0] / aspectRatio, maxSize[2]);
+        }
     }
 
     @Override
@@ -79,6 +62,7 @@ public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
     @Override
     public void setEntitySizeInPixels(int width, int height) {
         assertDisposed();
+        if (width <= 0 || height <= 0) return;
         mEntity.setSizeInPixels(new IntSize2d(width, height));
     }
 
@@ -92,14 +76,5 @@ public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
     public void setEntityCornerRadius(float radius) {
         assertDisposed();
         mEntity.setCornerRadius(radius);
-    }
-
-    @Override
-    public void dispose() {
-        if (!mIsDisposed) {
-            mMovableComponent.dispose();
-            mResizableComponent.dispose();
-            super.dispose();
-        }
     }
 }

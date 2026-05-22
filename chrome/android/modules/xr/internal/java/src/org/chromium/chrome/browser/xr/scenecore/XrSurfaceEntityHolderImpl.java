@@ -18,9 +18,7 @@ import androidx.xr.scenecore.SurfaceEntity.StereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
-import org.chromium.ui.xr.scenecore.XrMovableComponent;
-import org.chromium.ui.xr.scenecore.XrQuadSurfaceEntityHolder;
-import org.chromium.ui.xr.scenecore.XrResizableComponent;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder.Callback;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
@@ -28,10 +26,10 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/** Implementation of {@link XrQuadSurfaceEntityHolder} and {@link XrCurvedSurfaceEntityHolder}. */
+/** Implementation of {@link XrSurfaceEntityHolder} and {@link XrCurvedSurfaceEntityHolder}. */
 @NullMarked
-public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
-        implements XrQuadSurfaceEntityHolder<SurfaceEntity>,
+public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<SurfaceEntity>
+        implements XrSurfaceEntityHolder<SurfaceEntity>,
                 XrCurvedSurfaceEntityHolder<SurfaceEntity> {
     protected static final String TAG = "XrSurfaceEntityHolderImpl";
     protected static final Map<Integer, StereoMode> STEREO_MODE_MAP =
@@ -46,8 +44,6 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
 
     private final CopyOnWriteArrayList<Callback> mCallbacks = new CopyOnWriteArrayList<>();
     private IntSize2d mCurrentSurfaceDimensions = new IntSize2d(1, 1);
-    private final XrMovableComponent mMovableComponent;
-    private final XrResizableComponent mResizableComponent;
 
     public static XrSurfaceEntityHolderImpl create(Session xrSession, SurfaceEntity surfaceEntity) {
         return new XrSurfaceEntityHolderImpl(xrSession, surfaceEntity);
@@ -55,20 +51,6 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
 
     protected XrSurfaceEntityHolderImpl(Session xrSession, SurfaceEntity surfaceEntity) {
         super(xrSession, surfaceEntity);
-        mMovableComponent = new XrMovableComponentImpl<>(xrSession, surfaceEntity);
-        mResizableComponent = new XrResizableComponentImpl<>(xrSession, surfaceEntity);
-        mResizableComponent.addResizeListener(
-                new XrResizableComponent.OnResizeListener() {
-                    @Override
-                    public void onResizeUpdate(float width, float height, float depth) {}
-
-                    @Override
-                    public void onResizeEnd(float width, float height, float depth) {
-                        if (mEntity.getShape() instanceof Shape.Quad) {
-                            mEntity.setShape(new Shape.Quad(new FloatSize2d(width, height)));
-                        }
-                    }
-                });
     }
 
     @Override
@@ -123,6 +105,7 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
     @Override
     public void setSurfacePixelDimensions(int width, int height) {
         assertDisposed();
+        if (width <= 0 || height <= 0) return;
         mCurrentSurfaceDimensions = new IntSize2d(width, height);
         mEntity.setSurfacePixelDimensions(mCurrentSurfaceDimensions);
         notifySurfaceChanged();
@@ -182,16 +165,6 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
     }
 
     @Override
-    public XrMovableComponent getMovableComponent() {
-        return mMovableComponent;
-    }
-
-    @Override
-    public XrResizableComponent getResizableComponent() {
-        return mResizableComponent;
-    }
-
-    @Override
     public SizeF getEntitySize() {
         assertDisposed();
         FloatSize3d dimensions = mEntity.getDimensions();
@@ -201,8 +174,18 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
     @Override
     public void setEntitySize(float width, float height) {
         assertDisposed();
+        if (width <= 0f || height <= 0f) return;
         if (mEntity.getShape() instanceof Shape.Quad) {
             mEntity.setShape(new Shape.Quad(new FloatSize2d(width, height)));
+        }
+        mMovableComponent.setSize(width, height, 0f);
+
+        if (mResizableComponent.shouldMaintainAspectRatio()) {
+            float aspectRatio = width / height;
+            float[] minSize = mResizableComponent.getMinSize();
+            float[] maxSize = mResizableComponent.getMaxSize();
+            mResizableComponent.setMinSize(minSize[0], minSize[0] / aspectRatio, minSize[2]);
+            mResizableComponent.setMaxSize(maxSize[0], maxSize[0] / aspectRatio, maxSize[2]);
         }
     }
 
@@ -220,6 +203,7 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
     @Override
     public void setEntityRadius(float radius) {
         assertDisposed();
+        if (radius <= 0f) return;
         if (mEntity.getShape() instanceof Shape.Sphere) {
             mEntity.setShape(new Shape.Sphere(radius));
         } else if (mEntity.getShape() instanceof Shape.Hemisphere) {
@@ -232,8 +216,6 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
         if (!mIsDisposed) {
             notifySurfaceDestroyed();
             mCallbacks.clear();
-            mMovableComponent.dispose();
-            mResizableComponent.dispose();
             super.dispose();
         }
     }
