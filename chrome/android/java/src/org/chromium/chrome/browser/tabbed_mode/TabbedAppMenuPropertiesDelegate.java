@@ -1895,6 +1895,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private @Nullable ListItem maybeBuildOpenGlicItem(@Nullable Tab currentTab) {
         if (currentTab == null
+                || currentTab.isIncognito()
                 || currentTab.getWebContents() == null
                 || !ChromeFeatureList.sGlic.isEnabled()) {
             return null;
