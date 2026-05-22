@@ -12,9 +12,7 @@ import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_compo
 import {ContextUploadErrorType, ContextUploadStatus, InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -279,13 +277,12 @@ suite('OmniboxComposeboxTest', () => {
       clearMatchesPassed = true;
     };
 
-    omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+    omniboxComposebox.addSearchContext(context);
     await microtasksFinished();
 
     assertEquals('test unimodal', omniboxComposebox.input);
     assertEquals(1, omniboxComposebox.files.size);
-    const addedFile =
-        omniboxComposebox.files.get(mockToken as unknown as UnguessableToken);
+    const addedFile = omniboxComposebox.files.get(mockToken);
     assertTrue(!!addedFile);
     assertEquals('test.pdf', addedFile.name);
     assertEquals('application/pdf', addedFile.type);
@@ -305,13 +302,13 @@ suite('OmniboxComposeboxTest', () => {
         tabAttachment: {
           tabId: 42,
           title: 'Google Search',
-          url: 'https://google.com' as unknown as Url,
+          url: 'https://google.com',
         },
       }],
       toolMode: 0,
     };
 
-    omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+    omniboxComposebox.addSearchContext(context);
     await microtasksFinished();
     await testProxy.handler.whenCalled('addTabContext');
     await microtasksFinished();
@@ -320,16 +317,14 @@ suite('OmniboxComposeboxTest', () => {
     assertEquals(42, args[0]);
     assertFalse(args[1]);
     assertEquals(1, omniboxComposebox.files.size);
-    const addedFile =
-        omniboxComposebox.files.get(mockToken as unknown as UnguessableToken);
+    const addedFile = omniboxComposebox.files.get(mockToken);
     assertTrue(!!addedFile);
     assertEquals('Google Search', addedFile.name);
     assertEquals('tab', addedFile.type);
     assertEquals(ContextUploadStatus.kUploadSuccessful, addedFile.status);
     // Verify tab ID mapping.
     assertTrue(omniboxComposebox.addedTabsIds.has(42));
-    assertEquals(
-        mockToken, omniboxComposebox.addedTabsIds.get(42) as unknown as string);
+    assertEquals(mockToken, omniboxComposebox.addedTabsIds.get(42));
   });
 
   test(
@@ -340,10 +335,8 @@ suite('OmniboxComposeboxTest', () => {
         assertFalse(!!carousel);
         const mockToken = 'mock-file-token-2';
         const file = new ComposeboxFile(
-            mockToken as unknown as UnguessableToken, 'test.png', 'image/png',
-            InputType.kLensImage);
-        omniboxComposebox.files.set(
-            mockToken as unknown as UnguessableToken, file);
+            mockToken, 'test.png', 'image/png', InputType.kLensImage);
+        omniboxComposebox.files.set(mockToken, file);
 
         omniboxComposebox.files =
             new Map(omniboxComposebox.files);  // Trigger Lit update
@@ -370,9 +363,8 @@ suite('OmniboxComposeboxTest', () => {
   test('Delete File Attachment', async () => {
     const mockToken = 'mock-delete-file-token';
     const file = new ComposeboxFile(
-        mockToken as unknown as UnguessableToken, 'delete_me.pdf', 'pdf',
-        InputType.kLensFile);
-    omniboxComposebox.files.set(mockToken as unknown as UnguessableToken, file);
+        mockToken, 'delete_me.pdf', 'pdf', InputType.kLensFile);
+    omniboxComposebox.files.set(mockToken, file);
     omniboxComposebox.files = new Map(omniboxComposebox.files);
     await microtasksFinished();
     let queryAutocompleteCalled = false;
@@ -383,14 +375,12 @@ suite('OmniboxComposeboxTest', () => {
       queryAutocompleteClearMatches = clearMatches;
     };
 
-    omniboxComposebox.deleteFile(
-        mockToken as unknown as UnguessableToken, /*fromUserAction=*/ true);
+    omniboxComposebox.deleteFile(mockToken, /*fromUserAction=*/ true);
     await microtasksFinished();
 
-    assertFalse(
-        omniboxComposebox.files.has(mockToken as unknown as UnguessableToken));
+    assertFalse(omniboxComposebox.files.has(mockToken));
     const deleteArgs = testProxy.handler.getArgs('deleteContext')[0];
-    assertEquals(mockToken, deleteArgs[0] as unknown as string);
+    assertEquals(mockToken, deleteArgs[0]);
     assertTrue(queryAutocompleteCalled);
     assertTrue(queryAutocompleteClearMatches);
   });
@@ -398,29 +388,25 @@ suite('OmniboxComposeboxTest', () => {
   test('Delete Tab Attachment clears index', async () => {
     const mockToken = 'mock-delete-tab-token';
     const file = new ComposeboxFile(
-        mockToken as unknown as UnguessableToken, 'tab.html', 'tab',
-        InputType.kBrowserTab, {tabId: 100});
-    omniboxComposebox.files.set(mockToken as unknown as UnguessableToken, file);
-    omniboxComposebox.addedTabsIds.set(
-        100, mockToken as unknown as UnguessableToken);
+        mockToken, 'tab.html', 'tab', InputType.kBrowserTab, {tabId: 100});
+    omniboxComposebox.files.set(mockToken, file);
+    omniboxComposebox.addedTabsIds.set(100, mockToken);
     omniboxComposebox.files = new Map(omniboxComposebox.files);
     await microtasksFinished();
 
-    omniboxComposebox.deleteFile(
-        mockToken as unknown as UnguessableToken, /*fromUserAction=*/ true);
+    omniboxComposebox.deleteFile(mockToken, /*fromUserAction=*/ true);
     await microtasksFinished();
 
-    assertFalse(
-        omniboxComposebox.files.has(mockToken as unknown as UnguessableToken));
+    assertFalse(omniboxComposebox.files.has(mockToken));
     assertFalse(omniboxComposebox.addedTabsIds.has(100));
     const deleteArgs = testProxy.handler.getArgs('deleteContext')[0];
-    assertEquals(mockToken, deleteArgs[0] as unknown as string);
+    assertEquals(mockToken, deleteArgs[0]);
   });
 
   test('Render Error Scrim on validation error', async () => {
     let scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
     assertTrue(!!scrim);
-    assertEquals('', (scrim as unknown as {errorMessage: string}).errorMessage);
+    assertEquals('', scrim.errorMessage);
     const composebox =
         omniboxComposebox.shadowRoot.querySelector('#composebox');
     assertFalse(composebox!.hasAttribute('inert'));
@@ -461,24 +447,20 @@ suite('OmniboxComposeboxTest', () => {
       toolMode: 0,
     };
 
-    omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+    omniboxComposebox.addSearchContext(context);
     await microtasksFinished();
 
-    assertFalse(
-        omniboxComposebox.files.has(mockToken as unknown as UnguessableToken));
+    assertFalse(omniboxComposebox.files.has(mockToken));
     // Verify errorMessage set (i18n lookup, will be blank in test if not
     // overridden but we verify the property is set to a string).
     assertTrue(omniboxComposebox.errorMessage.length > 0);
   });
 
-
-
   test('Carousel delete-file event triggers deletion', async () => {
     const mockToken = 'mock-delete-event-token';
     const file = new ComposeboxFile(
-        mockToken as unknown as UnguessableToken, 'test.png', 'image/png',
-        InputType.kLensImage);
-    omniboxComposebox.files.set(mockToken as unknown as UnguessableToken, file);
+        mockToken, 'test.png', 'image/png', InputType.kLensImage);
+    omniboxComposebox.files.set(mockToken, file);
     omniboxComposebox.files = new Map(omniboxComposebox.files);
     await microtasksFinished();
     const carousel = omniboxComposebox.shadowRoot.querySelector(
@@ -486,13 +468,12 @@ suite('OmniboxComposeboxTest', () => {
     assertTrue(!!carousel);
     let deleteFileCalled = false;
     const originalDeleteFile = omniboxComposebox.deleteFile;
-    omniboxComposebox.deleteFile =
-        (token, fromUserAction) => {
-          assertEquals(mockToken, token);
-          assertTrue(fromUserAction === true);
-          deleteFileCalled = true;
-          return null;
-        };
+    omniboxComposebox.deleteFile = (token, fromUserAction) => {
+      assertEquals(mockToken, token);
+      assertTrue(fromUserAction === true);
+      deleteFileCalled = true;
+      return null;
+    };
 
     carousel.dispatchEvent(new CustomEvent('delete-file', {
       detail: {uuid: mockToken, fromUserAction: true},
@@ -507,11 +488,10 @@ suite('OmniboxComposeboxTest', () => {
   test('addTabContextHandleCallback success adds tab to files', async () => {
     const testToken = 'mock-tab-token-101';
     testProxy.handler.setPromiseResolveFor('addTabContext', testToken);
-    // TODO(crbug.com/508287630): - Clean up type casts.
     const tabUpload = {
       tabId: 101,
       title: 'Tab 101',
-      url: 'https://tab101.com' as unknown as Url,
+      url: 'https://tab101.com',
       delayUpload: false,
       origin: TabUploadOrigin.OTHER,
     };
@@ -520,8 +500,7 @@ suite('OmniboxComposeboxTest', () => {
     await microtasksFinished();
 
     assertEquals(1, omniboxComposebox.files.size);
-    const addedFile =
-        omniboxComposebox.files.get(testToken as unknown as UnguessableToken);
+    const addedFile = omniboxComposebox.files.get(testToken);
     assertTrue(!!addedFile);
     assertEquals('Tab 101', addedFile.name);
     assertEquals(101, addedFile.tabId);
@@ -534,7 +513,7 @@ suite('OmniboxComposeboxTest', () => {
     const tabUpload = {
       tabId: 101,
       title: 'Tab 101',
-      url: 'https://tab101.com' as unknown as Url,
+      url: 'https://tab101.com',
       delayUpload: false,
       origin: TabUploadOrigin.OTHER,
     };
