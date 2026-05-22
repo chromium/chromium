@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -59,6 +60,16 @@ FilterStoreBackend::GetAnnotationsForTaskSortedByCreationTimestamp(
   return filter_annotation_table_
       .GetAnnotationsForTaskSortedByCreationTimestamp(task_type, max_count,
                                                       min_creation_time);
+}
+
+std::optional<int64_t> FilterStoreBackend::DeleteAnnotationsForTask(
+    std::string_view task_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsDatabaseInitialized()) {
+    return std::nullopt;
+  }
+  return filter_annotation_table_.DeleteAnnotationsForTask(task_type);
 }
 
 void FilterStoreBackend::ClearData() {

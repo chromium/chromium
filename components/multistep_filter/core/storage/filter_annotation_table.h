@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MULTISTEP_FILTER_CORE_STORAGE_FILTER_ANNOTATION_TABLE_H_
 #define COMPONENTS_MULTISTEP_FILTER_CORE_STORAGE_FILTER_ANNOTATION_TABLE_H_
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -68,6 +69,10 @@ class FilterAnnotationTable {
       std::string_view task_type,
       size_t max_count,
       base::Time min_creation_time);
+
+  // Deletes all annotations for the given `task_type`.
+  // Returns the number of annotations deleted, or std::nullopt on failure.
+  std::optional<int64_t> DeleteAnnotationsForTask(std::string_view task_type);
 
   void Shutdown();
 

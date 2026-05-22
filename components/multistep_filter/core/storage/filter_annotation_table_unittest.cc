@@ -21,6 +21,7 @@ namespace multistep_filter {
 namespace {
 
 using testing::ElementsAre;
+using testing::Optional;
 using testing::SizeIs;
 
 constexpr size_t kMaxCount = 10;
@@ -180,6 +181,49 @@ TEST_F(FilterAnnotationTableTest,
       table()->GetAnnotationsForTaskSortedByCreationTimestamp(
           "task2", kMaxCount, base::Time());
   ASSERT_THAT(annotations2, SizeIs(1));
+}
+TEST_F(FilterAnnotationTableTest, DeleteAnnotationsForTask) {
+  const base::Uuid id1 = base::Uuid::GenerateRandomV4();
+  const FilterAnnotation annotation1(id1, "task1", "example1.com",
+                                     base::Time::Now(), {});
+  const base::Uuid id2 = base::Uuid::GenerateRandomV4();
+  const FilterAnnotation annotation2(id2, "task1", "example2.com",
+                                     base::Time::Now(), {});
+  const base::Uuid id3 = base::Uuid::GenerateRandomV4();
+  const FilterAnnotation annotation3(id3, "task2", "example3.com",
+                                     base::Time::Now(), {});
+
+  ASSERT_TRUE(table()->StoreAnnotation(annotation1));
+  ASSERT_TRUE(table()->StoreAnnotation(annotation2));
+  ASSERT_TRUE(table()->StoreAnnotation(annotation3));
+
+  EXPECT_THAT(table()->DeleteAnnotationsForTask("task1"), Optional(2));
+
+  const std::vector<FilterAnnotation> annotations1 =
+      table()->GetAnnotationsForTaskSortedByCreationTimestamp(
+          "task1", kMaxCount, base::Time());
+  EXPECT_THAT(annotations1, SizeIs(0));
+
+  const std::vector<FilterAnnotation> annotations2 =
+      table()->GetAnnotationsForTaskSortedByCreationTimestamp(
+          "task2", kMaxCount, base::Time());
+  EXPECT_THAT(annotations2, SizeIs(1));
+}
+
+TEST_F(FilterAnnotationTableTest,
+       GetAnnotationsForTaskSortedByCreationTimestamp_ExcludesDeleted) {
+  const base::Uuid id = base::Uuid::GenerateRandomV4();
+  const FilterAnnotation annotation(id, "task1", "example.com",
+                                    base::Time::Now(), {});
+
+  ASSERT_TRUE(table()->StoreAnnotation(annotation));
+
+  EXPECT_THAT(table()->DeleteAnnotationsForTask("task1"), Optional(1));
+
+  const std::vector<FilterAnnotation> annotations =
+      table()->GetAnnotationsForTaskSortedByCreationTimestamp(
+          "task1", kMaxCount, base::Time());
+  EXPECT_THAT(annotations, SizeIs(0));
 }
 
 }  // namespace

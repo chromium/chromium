@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,6 +52,14 @@ void FilterStore::GetAnnotationsForTaskSortedByCreationTimestamp(
       .AsyncCall(
           &FilterStoreBackend::GetAnnotationsForTaskSortedByCreationTimestamp)
       .WithArgs(std::move(task_type), max_count, min_creation_time)
+      .Then(std::move(callback));
+}
+
+void FilterStore::DeleteAnnotationsForTask(
+    std::string task_type,
+    base::OnceCallback<void(std::optional<int64_t>)> callback) {
+  backend_.AsyncCall(&FilterStoreBackend::DeleteAnnotationsForTask)
+      .WithArgs(std::move(task_type))
       .Then(std::move(callback));
 }
 

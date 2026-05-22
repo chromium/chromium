@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -221,6 +222,44 @@ FilterAnnotationTable::GetAnnotationsForTaskSortedByCreationTimestamp(
   }
 
   return annotations;
+}
+
+std::optional<int64_t> FilterAnnotationTable::DeleteAnnotationsForTask(
+    std::string_view task_type) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return std::nullopt;
+  }
+
+  // Delete from attributes table first to avoid orphaning
+  sql::Statement delete_attributes(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StrCat({"DELETE FROM ", filter_annotation_attributes::kTableName,
+                    " WHERE ", filter_annotation_attributes::kAnnotationId,
+                    " IN (SELECT ", filter_annotations::kId, " FROM ",
+                    filter_annotations::kTableName, " WHERE ",
+                    filter_annotations::kTaskType, " = ?)"})));
+  delete_attributes.BindString(0, task_type);
+  if (!delete_attributes.Run()) {
+    return std::nullopt;
+  }
+
+  // Delete from annotations table
+  sql::Statement delete_annotations(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StrCat({"DELETE FROM ", filter_annotations::kTableName, " WHERE ",
+                    filter_annotations::kTaskType, " = ?"})));
+  delete_annotations.BindString(0, task_type);
+  if (!delete_annotations.Run()) {
+    return std::nullopt;
+  }
+
+  int64_t deleted_count = db_->GetLastChangeCount();
+  if (!transaction.Commit()) {
+    return std::nullopt;
+  }
+
+  return deleted_count;
 }
 
 void FilterAnnotationTable::Shutdown() {

@@ -6,6 +6,7 @@
 #define COMPONENTS_MULTISTEP_FILTER_CORE_STORAGE_FILTER_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -48,6 +49,11 @@ class FilterStore {
       base::OnceCallback<void(std::vector<FilterAnnotation>)> callback,
       size_t max_count,
       base::Time min_creation_time);
+
+  // Asynchronously deletes all active annotations for the given `task_type`.
+  virtual void DeleteAnnotationsForTask(
+      std::string task_type,
+      base::OnceCallback<void(std::optional<int64_t>)> callback);
 
   // Wipes the in-memory database mid-session (e.g., when the user clears
   // browsing data).

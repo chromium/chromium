@@ -6,6 +6,7 @@
 #define COMPONENTS_MULTISTEP_FILTER_CORE_STORAGE_FILTER_STORE_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -43,6 +44,10 @@ class FilterStoreBackend {
       std::string_view task_type,
       size_t max_count,
       base::Time min_creation_time);
+
+  // Deletes all annotations for the given `task_type`.
+  // Returns the number of annotations deleted, or std::nullopt on failure.
+  std::optional<int64_t> DeleteAnnotationsForTask(std::string_view task_type);
 
   // Clears all data from the database.
   void ClearData();
