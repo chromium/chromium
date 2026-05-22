@@ -1753,7 +1753,7 @@ PageImpl& WebContentsImpl::GetPrimaryPage() {
 RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   // If this method is called on an inner WebContents, don't return frames from
   // outside of the inner WebContents's subtree.
-  if (GetOuterWebContents() && !ContainsOrIsFocusedWebContents()) {
+  if (!ContainsOrIsFocusedWebContents()) {
     return nullptr;
   }
 
@@ -3535,6 +3535,8 @@ void WebContentsImpl::SetSurfaceEmbedConnector(
 void WebContentsImpl::ClearSurfaceEmbedConnector() {
   CHECK(surface_embed_connector_);
 
+  surface_embed_connector_->ClearFocusOnInnerWebContents();
+
   // Because there may be child frames, we need to unregister all RWHVs before
   // destroying main frames views which could prevent child frames from finding
   // the root view for unregistering observer from
@@ -4733,6 +4735,16 @@ RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
     return receiving_widget;
   }
 
+  // Return nullptr if the focused frame tree is outside of this WebContents.
+  // This function should be called mostly when the focused frame is inside this
+  // WebContents and we should drop events if it is not.
+  // DevTools code might call this function when the focused frame is outside of
+  // this WebContents, and it behaves the same whether we return nullptr or
+  // receiving_widget.
+  if (!GetFocusedFrameTree()) {
+    return nullptr;
+  }
+
   // If the focused WebContents is a guest WebContents, then get the focused
   // frame in the embedder WebContents instead.
   FrameTreeNode* focused_frame = GetFocusedFrameTree()->GetFocusedFrame();
@@ -4755,6 +4767,10 @@ RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
 
 RenderWidgetHostImpl* WebContentsImpl::GetRenderWidgetHostWithPageFocus() {
   FrameTree* focused_frame_tree = GetFocusedFrameTree();
+  if (!focused_frame_tree) {
+    return nullptr;
+  }
+
   return focused_frame_tree->root()
       ->current_frame_host()
       ->GetRenderWidgetHost();
@@ -9551,11 +9567,20 @@ WebContentsImpl* WebContentsImpl::GetResponsibleWebContents() {
 }
 
 WebContentsImpl* WebContentsImpl::GetFocusedWebContents() {
-  return WebContentsImpl::FromFrameTreeNode(GetFocusedFrameTree()->root());
+  if (auto* focused_frame_tree = GetFocusedFrameTree()) {
+    return WebContentsImpl::FromFrameTreeNode(focused_frame_tree->root());
+  }
+  return nullptr;
 }
 
 FrameTree* WebContentsImpl::GetFocusedFrameTree() {
-  return GetOutermostWebContents()->node_.focused_frame_tree();
+  if (surface_embed_connector_) {
+    return surface_embed_connector_->GetFocusFrameTreeIfContainsFocus();
+  }
+  if (GetOuterWebContents()) {
+    return GetOuterWebContents()->GetFocusedFrameTree();
+  }
+  return node_.focused_frame_tree();
 }
 
 void WebContentsImpl::SetFocusToLocationBar() {
@@ -9566,15 +9591,11 @@ void WebContentsImpl::SetFocusToLocationBar() {
 }
 
 bool WebContentsImpl::ContainsOrIsFocusedWebContents() {
-  for (WebContentsImpl* focused_contents = GetFocusedWebContents();
-       focused_contents;
-       focused_contents = focused_contents->GetOuterWebContents()) {
-    if (focused_contents == this) {
-      return true;
-    }
-  }
-
-  return false;
+  // Delegate to SurfaceEmbedConnectorImpl which knows how to find the parent
+  // WebContents for both SurfaceEmbed-based embedding and traditional outer
+  // WebContents embedding, allowing it to traverse the full parent chain to
+  // the root WebContents where the focused frame tree is tracked.
+  return SurfaceEmbedConnectorImpl::ContainsOrIsFocusedWebContents(this);
 }
 
 void WebContentsImpl::RemoveBrowserPluginEmbedder() {
@@ -10352,7 +10373,17 @@ void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
     return;
   }
 
-  GetOutermostWebContents()->node_.SetFocusedFrameTree(frame_tree_to_focus);
+  if (surface_embed_connector_) {
+    surface_embed_connector_->SetFocusedFrameTree(frame_tree_to_focus);
+    return;
+  }
+
+  if (GetOuterWebContents()) {
+    GetOuterWebContents()->SetFocusedFrameTree(frame_tree_to_focus);
+    return;
+  }
+
+  node_.SetFocusedFrameTree(frame_tree_to_focus);
 
   // Send a page level blur to the `old_focused_frame_tree` so that it displays
   // inactive UI and focus `frame_tree_to_focus` to activate it.
@@ -10393,7 +10424,7 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
                         "frame_tree_node", node, "source_site_instance_group",
                         source);
 
-  if (GetFocusedFrameTree()->GetFocusedFrame()) {
+  if (GetFocusedFrameTree() && GetFocusedFrameTree()->GetFocusedFrame()) {
     RenderFrameHostImpl* focused_rfh =
         GetFocusedFrameTree()->GetFocusedFrame()->current_frame_host();
     // This is only enforced for focus changes that cross a fenced frame
@@ -10457,6 +10488,10 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
     // its RenderFrameProxyHost (via FrameFocused mojo call, used to
     // implement the window.focus() API).
     if (GetFocusedWebContents() == GetOuterWebContents()) {
+      // OuterContentsFrameTreeNode() indicates that this WebContents is an
+      // inner WebContents, so it must have an outer WebContents. Otherwise, we
+      // have an inconsistent state.
+      CHECK(GetOuterWebContents());
       SetFocusedFrameTree(&node->frame_tree());
     }
   } else if (!GetOuterWebContents() || GetFocusedWebContents() == this) {

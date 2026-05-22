@@ -5588,6 +5588,104 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   EXPECT_EQ(outer_wc, inner_wc->GetOuterWebContents());
 }
 
+// Tests that GetFocusedFrame, GetFocusedWebContents, GetFocusedFrameTree,
+// ContainsOrIsFocusedWebContents, and GetFocusedRenderWidgetHost return the
+// correct values for inner WebContents attached via
+// AttachUnownedInnerWebContents. Uses FocusOwningWebContents() to move focus.
+IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
+                       FocusBehaviorWithInnerWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL inner_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+
+  // Setup inner WebContents.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+
+  // Attach inner WC to outer WC's iframe.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  RenderWidgetHostImpl* outer_main_rwh =
+      outer_wc->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  RenderWidgetHostImpl* inner_rwh =
+      inner_wc_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
+
+  // Focus is on the outer WebContents initially.
+  EXPECT_TRUE(outer_wc->ContainsOrIsFocusedWebContents());
+  EXPECT_FALSE(inner_wc_impl->ContainsOrIsFocusedWebContents());
+  // When embedded via inner WebContents, while there is restriction in
+  // GetFocusedFrame(), there is no restriction on access to focused FrameTree
+  // or WebContents from inner WebContents.
+  EXPECT_EQ(outer_wc->GetPrimaryMainFrame(), outer_wc->GetFocusedFrame());
+  EXPECT_EQ(nullptr, inner_wc_impl->GetFocusedFrame());
+  EXPECT_EQ(&outer_wc->GetPrimaryFrameTree(), outer_wc->GetFocusedFrameTree());
+  EXPECT_EQ(&outer_wc->GetPrimaryFrameTree(),
+            inner_wc_impl->GetFocusedFrameTree());
+  EXPECT_EQ(outer_wc, outer_wc->GetFocusedWebContents());
+  EXPECT_EQ(outer_wc, inner_wc_impl->GetFocusedWebContents());
+  EXPECT_EQ(outer_main_rwh,
+            outer_wc->GetFocusedRenderWidgetHost(outer_main_rwh));
+  EXPECT_EQ(outer_main_rwh,
+            inner_wc_impl->GetFocusedRenderWidgetHost(inner_rwh));
+
+  // Move focus to the inner WebContents using FocusOwningWebContents.
+  inner_wc_impl->FocusOwningWebContents(inner_rwh);
+
+  // Wait for async focus propagation.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return inner_wc_impl->GetFocusedFrame() != nullptr; }));
+
+  EXPECT_TRUE(outer_wc->ContainsOrIsFocusedWebContents());
+  EXPECT_TRUE(inner_wc_impl->ContainsOrIsFocusedWebContents());
+  EXPECT_EQ(inner_wc_impl->GetPrimaryMainFrame(), outer_wc->GetFocusedFrame());
+  EXPECT_EQ(inner_wc_impl->GetPrimaryMainFrame(),
+            inner_wc_impl->GetFocusedFrame());
+  EXPECT_EQ(&inner_wc_impl->GetPrimaryFrameTree(),
+            outer_wc->GetFocusedFrameTree());
+  EXPECT_EQ(&inner_wc_impl->GetPrimaryFrameTree(),
+            inner_wc_impl->GetFocusedFrameTree());
+  EXPECT_EQ(inner_wc_impl, outer_wc->GetFocusedWebContents());
+  EXPECT_EQ(inner_wc_impl, inner_wc_impl->GetFocusedWebContents());
+  EXPECT_EQ(inner_rwh, outer_wc->GetFocusedRenderWidgetHost(outer_main_rwh));
+  EXPECT_EQ(inner_rwh, inner_wc_impl->GetFocusedRenderWidgetHost(inner_rwh));
+
+  // Move focus back to the outer WebContents.
+  outer_wc->SetAsFocusedWebContentsIfNecessary();
+
+  EXPECT_TRUE(outer_wc->ContainsOrIsFocusedWebContents());
+  EXPECT_FALSE(inner_wc_impl->ContainsOrIsFocusedWebContents());
+  // When embedded via inner WebContents, while there is restriction in
+  // GetFocusedFrame(), there is no restriction on access to focused FrameTree
+  // or WebContents from inner WebContents.
+  EXPECT_EQ(outer_wc->GetPrimaryMainFrame(), outer_wc->GetFocusedFrame());
+  EXPECT_EQ(nullptr, inner_wc_impl->GetFocusedFrame());
+  EXPECT_EQ(&outer_wc->GetPrimaryFrameTree(), outer_wc->GetFocusedFrameTree());
+  EXPECT_EQ(&outer_wc->GetPrimaryFrameTree(),
+            inner_wc_impl->GetFocusedFrameTree());
+  EXPECT_EQ(outer_wc, outer_wc->GetFocusedWebContents());
+  EXPECT_EQ(outer_wc, inner_wc_impl->GetFocusedWebContents());
+  EXPECT_EQ(outer_main_rwh,
+            outer_wc->GetFocusedRenderWidgetHost(outer_main_rwh));
+  EXPECT_EQ(outer_main_rwh,
+            inner_wc_impl->GetFocusedRenderWidgetHost(inner_rwh));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // SurfaceEmbedConnectorWebContentsBrowserTest tests are similar to
@@ -6567,6 +6665,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
     EXPECT_TRUE(rwhv2->IsRenderWidgetHostViewChildFrame());
   }
 }
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        ShutdownDuringSpeculativeNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());

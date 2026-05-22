@@ -33,6 +33,7 @@ class RenderWidgetHostInputEventRouter;
 
 namespace content {
 
+class FrameTree;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderViewHostDelegateView;
@@ -46,6 +47,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
       public FrameConnector {
  public:
   ~SurfaceEmbedConnectorImpl() override;
+
+  static bool ContainsOrIsFocusedWebContents(WebContentsImpl* web_contents);
 
   WebContentsView* GetParentWebContentsView() const;
   RenderViewHostDelegateView* GetParentRenderViewHostDelegateView() const;
@@ -129,6 +132,12 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // associated with the child WebContents.
   void UpdateViewForCurrentRenderFrameHost();
 
+  // Returns nullptr if the focus is outside of this connector's child
+  // WebContents.
+  FrameTree* GetFocusFrameTreeIfContainsFocus();
+  void SetFocusedFrameTree(FrameTree* frame_tree_to_focus);
+  void ClearFocusOnInnerWebContents();
+
  private:
   class WCObserver;
 
@@ -142,6 +151,9 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
                             WebContents* parent_web_contents,
                             RenderFrameHost* embedder_rfh,
                             SurfaceEmbedConnector::Delegate* delegate);
+
+  static WebContentsImpl* GetParentWebContents(WebContentsImpl* web_contents);
+  static WebContentsImpl* GetRootWebContents(WebContentsImpl* web_contents);
 
   WebContentsImpl* parent_web_contents() const;
   WebContentsImpl* child_web_contents() const {

@@ -24,6 +24,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -744,20 +745,73 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByClick) {
                                                       "document.hasFocus()"));
   EXPECT_EQ("outer1", content::EvalJsAfterLifecycleUpdate(
                           web_contents(), "", "document.activeElement.id"));
+  // The outer WebContents should be the focused WebContents and child
+  // WebContents should not be able to see the focused frame.
+  EXPECT_EQ(web_contents(), content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
+  EXPECT_EQ(nullptr, content::GetFocusedWebContents(child_contents.get()));
+  EXPECT_EQ(nullptr, child_contents->GetFocusedFrame());
+  // The outer WebContents should receive keyboard events.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EQ("a",
+            content::EvalJsAfterLifecycleUpdate(
+                web_contents(), "", "document.getElementById('outer1').value"));
 
-  // Click an <input id="inner"> in the inner page. This should change focus to
-  // the embed element in the outer page.
-  content::SimulateMouseClickOrTapElementWithId(child_contents.get(), "inner");
-
+  // Wait for the child's hit test data to be available so the click can be
+  // properly handled by it.
+  content::WaitForHitTestData(child_contents.get());
+  // Click at the location of <input id="inner"> in the inner page. This should
+  // change focus to the embed element in the outer page.
+  auto inner_center_point = gfx::ToFlooredPoint(
+      GetCenterCoordinatesOfElementWithId(child_contents.get(), "inner"));
+  // Embed is at 10, 50 in parent.
+  inner_center_point.Offset(10, 50);
+  // Simulate a mouse click to parent web contents at the location of the inner
+  // input element. The simulated event will be dispatched to the child via the
+  // parent WebContents's input event router. This is the same as what happens
+  // in real production code.
+  content::SimulateMouseClickAt(web_contents(), 0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                inner_center_point);
   EXPECT_EQ(true, content::EvalJsAfterLifecycleUpdate(web_contents(), "",
                                                       "document.hasFocus()"));
   EXPECT_EQ("my_embed", content::EvalJsAfterLifecycleUpdate(
                             web_contents(), "", "document.activeElement.id"));
-  // TODO(crbug.com/508638062): add expectations for the following behavior.
-  //   1. the inner page should has page focus.
-  //   2. the inner page's "inner" element should be the active element.
-  //   3. the child WebContents should be the focused WebContents, and should
-  //      receive keyboard events.
+  // The inner page should has page focus.
+  EXPECT_EQ(true, content::EvalJsAfterLifecycleUpdate(child_contents.get(), "",
+                                                      "document.hasFocus()"));
+  // The inner page's "inner" element should become the active element.
+  EXPECT_EQ("inner",
+            content::EvalJsAfterLifecycleUpdate(child_contents.get(), "",
+                                                "document.activeElement.id"));
+  // The child WebContents should be the focused WebContents and child
+  // WebContents should be able to see the focused frame.
+  EXPECT_EQ(child_contents.get(),
+            content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(child_contents->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
+  EXPECT_EQ(child_contents.get(),
+            content::GetFocusedWebContents(child_contents.get()));
+  EXPECT_EQ(child_contents->GetPrimaryMainFrame(),
+            child_contents->GetFocusedFrame());
+
+  // The child WebContents should receive keyboard events.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('b'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EQ("b", content::EvalJsAfterLifecycleUpdate(
+                     child_contents.get(), "",
+                     "document.getElementById('inner').value"));
+
+  // Destroy the child WebContents and verify that the focus moves to outer
+  // WebContents.
+  child_contents.reset();
+  EXPECT_EQ(web_contents(), content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
 }
 
 }  // namespace surface_embed

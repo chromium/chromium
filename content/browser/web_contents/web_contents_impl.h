@@ -339,13 +339,15 @@ class CONTENT_EXPORT WebContentsImpl
   void OnCaptureHandleConfigUpdate(Page& page) override;
 
   // Returns the focused WebContents.
-  // If there are multiple inner/outer WebContents (when embedding <webview>,
-  // <guestview>, ...) returns the single one containing the currently focused
-  // frame. Otherwise, returns this WebContents.
+  // Returns nullptr if this WebContents is an inner WebContents embedded via
+  // SurfaceEmbed and the focused frame is not inside it. Otherwise, returns the
+  // WebContents containing the currently focused frame.
   WebContentsImpl* GetFocusedWebContents();
 
   // Returns the focused FrameTree. For MPArch we may return a different
   // focused frame tree even though the focused WebContents is the same.
+  // Returns nullptr if this WebContents is an inner WebContents embedded via
+  // SurfaceEmbed and the focused frame is not inside it.
   FrameTree* GetFocusedFrameTree();
 
   // TODO(lukasza): Maybe this method can be removed altogether (so that the

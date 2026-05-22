@@ -197,7 +197,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // in rendering a page, yet keyboard events all arrive at the main frame's
   // RenderWidgetHostView.  When a main frame's RenderWidgetHost is passed in,
   // the function returns the focused frame that should consume keyboard
-  // events. In all other cases, the function returns back |receiving_widget|.
+  // events.
+  // Returns nullptr if the focused frame's renderer process has crashed or
+  // the focused frame is outside of this WebContents that is embedded via
+  // SurfaceEmbed (e.g. this is an inner WebContents and the focused frame
+  // is in the outer WebContents).
+  // In all other cases, the function returns back |receiving_widget|.
   virtual RenderWidgetHostImpl* GetFocusedRenderWidgetHost(
       RenderWidgetHostImpl* receiving_widget);
 
@@ -333,6 +338,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Get the RenderWidgetHost that should receive page level focus events. This
   // will be the widget that is rendering the main frame of the currently
   // focused WebContents.
+  // Returns nullptr if the focused frame is outside of this WebContents that is
+  // embedded via SurfaceEmbed (e.g. this is an inner WebContents and the
+  // focused frame is in the outer WebContents).
   virtual RenderWidgetHostImpl* GetRenderWidgetHostWithPageFocus();
 
   // In cases with multiple RenderWidgetHosts involved in rendering a page, only

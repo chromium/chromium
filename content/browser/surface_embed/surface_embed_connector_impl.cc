@@ -4,6 +4,7 @@
 
 #include "content/browser/surface_embed/surface_embed_connector_impl.h"
 
+#include "base/check_is_test.h"
 #include "build/build_config.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/render_widget_host_input_event_router.h"
@@ -169,6 +170,95 @@ void SurfaceEmbedConnectorImpl::OnSynchronizeVisualProperties(
     return;
   }
   SynchronizeVisualProperties(visual_properties, true);
+}
+
+// static
+WebContentsImpl* SurfaceEmbedConnectorImpl::GetParentWebContents(
+    WebContentsImpl* web_contents) {
+  if (SurfaceEmbedConnector* connector =
+          web_contents->GetSurfaceEmbedConnector()) {
+    return static_cast<SurfaceEmbedConnectorImpl*>(connector)
+        ->parent_web_contents();
+  }
+  return web_contents->GetOuterWebContents();
+}
+
+// static
+WebContentsImpl* SurfaceEmbedConnectorImpl::GetRootWebContents(
+    WebContentsImpl* web_contents) {
+  auto* root = web_contents;
+  while (auto* parent = GetParentWebContents(root)) {
+    root = parent;
+  }
+  return root;
+}
+
+// static
+bool SurfaceEmbedConnectorImpl::ContainsOrIsFocusedWebContents(
+    WebContentsImpl* web_contents) {
+  // Focused frame tree is managed by root WebContents, so retrieve it from the
+  // root WebContents.
+  WebContentsImpl* root_web_contents = GetRootWebContents(web_contents);
+  WebContentsImpl* focused_web_contents =
+      root_web_contents->GetFocusedWebContents();
+  while (focused_web_contents) {
+    if (focused_web_contents == web_contents) {
+      return true;
+    }
+    focused_web_contents = GetParentWebContents(focused_web_contents);
+  }
+
+  return false;
+}
+
+FrameTree* SurfaceEmbedConnectorImpl::GetFocusFrameTreeIfContainsFocus() {
+  if (!parent_web_contents_ ||
+      !ContainsOrIsFocusedWebContents(child_web_contents())) {
+    return nullptr;
+  }
+  return GetRootWebContents(parent_web_contents())->GetFocusedFrameTree();
+}
+
+void SurfaceEmbedConnectorImpl::SetFocusedFrameTree(
+    FrameTree* frame_tree_to_focus) {
+  if (!parent_web_contents_) {
+    return;
+  }
+
+  // Update focused frame tree stored in the embedder.
+  parent_web_contents()->SetFocusedFrameTree(frame_tree_to_focus);
+  // The `frame_tree_to_focus` must belong to this WebContents
+  // or an inner WebContents in the subtree. Otherwise, this object's
+  // SetFocusedFrameTree should not be involved.
+  CHECK(ContainsOrIsFocusedWebContents(child_web_contents()));
+
+  // Ensure that outer frame trees are focused.
+  parent_web_contents()->GetPrimaryFrameTree().FocusOuterFrameTrees();
+
+  // Ensure that the embedder's page has focus so that it can display active UI
+  // and therefore the embedded plugin is also active.
+  parent_web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SetPageFocus(true);
+}
+
+void SurfaceEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
+  if (!parent_web_contents_) {
+    // Don't expect parent to be destroyed before child outside of tests.
+    CHECK_IS_TEST();
+    return;
+  }
+
+  if (!ContainsOrIsFocusedWebContents(child_web_contents())) {
+    return;
+  }
+
+  // Using the same logic as the one for inner WebContents in WebContentsImpl
+  // destructor to unset focus for child WebContents by setting focus on the
+  // root WebContents.
+  GetRootWebContents(parent_web_contents())
+      ->SetAsFocusedWebContentsIfNecessary();
 }
 
 WebContentsImpl* SurfaceEmbedConnectorImpl::parent_web_contents() const {
