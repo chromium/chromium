@@ -115,7 +115,7 @@ class SmartRestartManagerBrowserTest : public SmartRestartManagerTestBase {
   SmartRestartManagerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSmartRestart, {{"restart_delay", "1s"}}},
-         {features::kSmartRestartLockScreen, {{"restart_delay", "1s"}}}},
+         {features::kSmartRestartLockScreen, {{"lock_restart_delay", "1s"}}}},
         {});
   }
 };
@@ -363,7 +363,7 @@ class SmartRestartManagerConservativeBrowserTest
   SmartRestartManagerConservativeBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSmartRestartLockScreen,
-          {{"disruption_threshold", "0"}, {"restart_delay", "1s"}}}},
+          {{"lock_disruption_threshold", "0"}, {"lock_restart_delay", "1s"}}}},
         {});
   }
 };
