@@ -8,7 +8,7 @@
 //! MiniJinja comes with some built-in test functions that are listed below. To
 //! create a custom test write a function that takes at least a value argument
 //! that returns a boolean result, then register it with
-//! [`add_filter`](crate::Environment::add_test).
+//! [`add_test`](crate::Environment::add_test).
 //!
 //! # Using Tests
 //!

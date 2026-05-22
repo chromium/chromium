@@ -121,6 +121,12 @@ fn tracker_visit_expr<'a>(expr: &ast::Expr<'a>, state: &mut AssignmentTracker<'a
             tracker_visit_expr(&expr.left, state);
             tracker_visit_expr(&expr.right, state);
         }
+        ast::Expr::Compare(expr) => {
+            tracker_visit_expr(&expr.expr, state);
+            expr.ops
+                .iter()
+                .for_each(|op| tracker_visit_expr(&op.expr, state));
+        }
         ast::Expr::IfExpr(expr) => {
             tracker_visit_expr(&expr.test_expr, state);
             tracker_visit_expr(&expr.true_expr, state);

@@ -435,7 +435,7 @@ impl ser::SerializeStruct for SerializeStruct {
 
     fn end(self) -> Result<Value, InvalidValue> {
         let mut fields = self.fields;
-        fields.sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
+        fields.sort_unstable_by_key(|(a, _)| *a);
         Ok(Value::from_object(StaticKeyMap(fields)))
     }
 }

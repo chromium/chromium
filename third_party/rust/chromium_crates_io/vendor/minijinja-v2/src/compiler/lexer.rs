@@ -462,7 +462,15 @@ impl<'s> Tokenizer<'s> {
         let mut has_underscore = false;
         for c in self.rest_bytes()[num_len..].iter().copied() {
             state = match (c, state) {
-                (b'.', State::Integer) => State::Fraction,
+                (b'.', State::Integer) => {
+                    let bytes = self.rest_bytes();
+                    let is_exp = matches!(bytes.get(num_len + 1), Some(b'e' | b'E'))
+                        && matches!(bytes.get(num_len + 2), Some(b'+' | b'-' | b'0'..=b'9'));
+                    if !is_exp && lex_identifier(&self.rest()[num_len + 1..]) > 0 {
+                        break;
+                    }
+                    State::Fraction
+                }
                 (b'E' | b'e', State::Integer | State::Fraction) => State::Exponent,
                 (b'+' | b'-', State::Exponent) => State::ExponentSign,
                 (b'0'..=b'9', State::Exponent) => State::ExponentSign,

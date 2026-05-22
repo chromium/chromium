@@ -1,7 +1,7 @@
 Name: minijinja
 URL: https://crates.io/crates/minijinja
-Version: 2.19.0
-Revision: f15dc1e703ec58bc9cb50353322afb7890e3e016
+Version: 2.20.0
+Revision: 571e28a2c17d79bf34399a9e21c39e96224043dc
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/minijinja-v2/LICENSE

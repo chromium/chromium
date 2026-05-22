@@ -335,49 +335,73 @@ impl<'a> Parser<'a> {
     });
 
     fn parse_compare(&mut self) -> Result<ast::Expr<'a>, Error> {
-        let mut span = self.stream.last_span();
-        let mut expr = ok!(self.parse_math1());
+        let span = self.stream.last_span();
+        let expr = ok!(self.parse_math1());
+        let mut ops = Vec::new();
         loop {
-            let mut negated = false;
             let op = match ok!(self.stream.current()) {
-                Some((Token::Eq, _)) => ast::BinOpKind::Eq,
-                Some((Token::Ne, _)) => ast::BinOpKind::Ne,
-                Some((Token::Lt, _)) => ast::BinOpKind::Lt,
-                Some((Token::Lte, _)) => ast::BinOpKind::Lte,
-                Some((Token::Gt, _)) => ast::BinOpKind::Gt,
-                Some((Token::Gte, _)) => ast::BinOpKind::Gte,
-                Some((Token::Ident("in"), _)) => ast::BinOpKind::In,
+                Some((Token::Eq, _)) => ast::CompareOpKind::Eq,
+                Some((Token::Ne, _)) => ast::CompareOpKind::Ne,
+                Some((Token::Lt, _)) => ast::CompareOpKind::Lt,
+                Some((Token::Lte, _)) => ast::CompareOpKind::Lte,
+                Some((Token::Gt, _)) => ast::CompareOpKind::Gt,
+                Some((Token::Gte, _)) => ast::CompareOpKind::Gte,
+                Some((Token::Ident("in"), _)) => ast::CompareOpKind::In,
                 Some((Token::Ident("not"), _)) => {
                     ok!(self.stream.next());
                     expect_token!(self, Token::Ident("in"), "in");
-                    negated = true;
-                    ast::BinOpKind::In
+                    ast::CompareOpKind::NotIn
                 }
                 _ => break,
             };
-            if !negated {
+            if !matches!(op, ast::CompareOpKind::NotIn) {
                 ok!(self.stream.next());
             }
-            expr = ast::Expr::BinOp(Spanned::new(
-                ast::BinOp {
-                    op,
-                    left: expr,
-                    right: ok!(self.parse_math1()),
-                },
-                self.stream.expand_span(span),
-            ));
-            if negated {
-                expr = ast::Expr::UnaryOp(Spanned::new(
-                    ast::UnaryOp {
-                        op: ast::UnaryOpKind::Not,
-                        expr,
+            ops.push(ast::CompareOp {
+                op,
+                expr: ok!(self.parse_math1()),
+            });
+        }
+
+        Ok(match ops.len() {
+            0 => expr,
+            1 => {
+                let op = ops.pop().unwrap();
+                let (binop, negated) = match op.op {
+                    ast::CompareOpKind::Eq => (ast::BinOpKind::Eq, false),
+                    ast::CompareOpKind::Ne => (ast::BinOpKind::Ne, false),
+                    ast::CompareOpKind::Lt => (ast::BinOpKind::Lt, false),
+                    ast::CompareOpKind::Lte => (ast::BinOpKind::Lte, false),
+                    ast::CompareOpKind::Gt => (ast::BinOpKind::Gt, false),
+                    ast::CompareOpKind::Gte => (ast::BinOpKind::Gte, false),
+                    ast::CompareOpKind::In => (ast::BinOpKind::In, false),
+                    ast::CompareOpKind::NotIn => (ast::BinOpKind::In, true),
+                };
+                let expr = ast::Expr::BinOp(Spanned::new(
+                    ast::BinOp {
+                        op: binop,
+                        left: expr,
+                        right: op.expr,
                     },
                     self.stream.expand_span(span),
                 ));
+                if negated {
+                    ast::Expr::UnaryOp(Spanned::new(
+                        ast::UnaryOp {
+                            op: ast::UnaryOpKind::Not,
+                            expr,
+                        },
+                        self.stream.expand_span(span),
+                    ))
+                } else {
+                    expr
+                }
             }
-            span = self.stream.last_span();
-        }
-        Ok(expr)
+            _ => ast::Expr::Compare(Spanned::new(
+                ast::Compare { expr, ops },
+                self.stream.expand_span(span),
+            )),
+        })
     }
 
     binop!(parse_math1, parse_concat, {
@@ -1066,6 +1090,15 @@ impl<'a> Parser<'a> {
         }
         let old_in_loop = std::mem::replace(&mut self.in_loop, false);
         let (name, _) = expect_token!(self, Token::Ident(name) => name, "identifier");
+        if matches_token!(self, Token::Ident("scoped")) {
+            ok!(self.stream.next());
+        }
+        let required = if matches_token!(self, Token::Ident("required")) {
+            ok!(self.stream.next());
+            true
+        } else {
+            false
+        };
         if !self.blocks.insert(name) {
             syntax_error!("block '{}' defined twice", name);
         }
@@ -1073,6 +1106,15 @@ impl<'a> Parser<'a> {
         expect_token!(self, Token::BlockEnd, "end of block");
         let body = ok!(self.subparse(&|tok| matches!(tok, Token::Ident("endblock"))));
         ok!(self.stream.next());
+
+        if required
+            && !body.iter().all(|stmt| match stmt {
+                ast::Stmt::EmitRaw(raw) => raw.raw.trim().is_empty(),
+                _ => false,
+            })
+        {
+            syntax_error!("Required blocks can only contain comments or whitespace");
+        }
 
         if let Some((Token::Ident(trailing_name), _)) = ok!(self.stream.current()) {
             if *trailing_name != name {
@@ -1086,7 +1128,11 @@ impl<'a> Parser<'a> {
         }
         self.in_loop = old_in_loop;
 
-        Ok(ast::Block { name, body })
+        Ok(ast::Block {
+            name,
+            required,
+            body,
+        })
     }
     fn parse_auto_escape(&mut self) -> Result<ast::AutoEscape<'a>, Error> {
         let enabled = ok!(self.parse_expr());

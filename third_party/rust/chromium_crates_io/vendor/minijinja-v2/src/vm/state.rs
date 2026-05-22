@@ -468,6 +468,11 @@ impl<'template, 'env> BlockStack<'template, 'env> {
         self.instructions.get(self.depth).copied().unwrap()
     }
 
+    #[cfg(feature = "multi_template")]
+    pub fn len(&self) -> usize {
+        self.instructions.len()
+    }
+
     pub fn push(&mut self) -> bool {
         if self.depth + 1 < self.instructions.len() {
             self.depth += 1;

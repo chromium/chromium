@@ -21,6 +21,21 @@ pub type LocalId = u8;
 /// The maximum number of filters/tests that can be cached.
 pub const MAX_LOCALS: usize = 50;
 
+/// A comparison operation.
+#[derive(Copy, Clone)]
+#[cfg_attr(feature = "internal_debug", derive(Debug))]
+#[cfg_attr(feature = "unstable_machinery_serde", derive(serde::Serialize))]
+pub enum CompareOp {
+    Eq,
+    Ne,
+    Lt,
+    Lte,
+    Gt,
+    Gte,
+    In,
+    NotIn,
+}
+
 /// Represents an instruction for the VM.
 #[cfg_attr(feature = "internal_debug", derive(Debug))]
 #[cfg_attr(
@@ -126,6 +141,9 @@ pub enum Instruction<'source> {
 
     /// Performs a containment check
     In,
+
+    /// Performs a comparison and preserves the right operand for chained comparisons.
+    CompareAndPreserve(CompareOp),
 
     /// Apply a filter.
     ApplyFilter(&'source str, Option<u16>, LocalId),
@@ -265,6 +283,8 @@ pub struct Instructions<'source> {
     span_infos: Vec<SpanInfo>,
     name: &'source str,
     source: &'source str,
+    #[cfg(feature = "multi_template")]
+    required_block: bool,
 }
 
 pub(crate) static EMPTY_INSTRUCTIONS: Instructions<'static> = Instructions {
@@ -274,6 +294,8 @@ pub(crate) static EMPTY_INSTRUCTIONS: Instructions<'static> = Instructions {
     span_infos: Vec::new(),
     name: "<unknown>",
     source: "",
+    #[cfg(feature = "multi_template")]
+    required_block: false,
 };
 
 impl<'source> Instructions<'source> {
@@ -286,6 +308,8 @@ impl<'source> Instructions<'source> {
             span_infos: Vec::with_capacity(128),
             name,
             source,
+            #[cfg(feature = "multi_template")]
+            required_block: false,
         }
     }
 
@@ -315,6 +339,16 @@ impl<'source> Instructions<'source> {
         let rv = self.instructions.len();
         self.instructions.push(instr);
         rv as u32
+    }
+
+    #[cfg(feature = "multi_template")]
+    pub(crate) fn mark_required_block(&mut self, required: bool) {
+        self.required_block = required;
+    }
+
+    #[cfg(feature = "multi_template")]
+    pub(crate) fn is_required_block(&self) -> bool {
+        self.required_block
     }
 
     fn add_line_record(&mut self, instr: u32, line: u16) {

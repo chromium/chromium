@@ -4,7 +4,8 @@ use std::mem;
 
 use crate::compiler::ast;
 use crate::compiler::instructions::{
-    Instruction, Instructions, LocalId, LOOP_FLAG_RECURSIVE, LOOP_FLAG_WITH_LOOP_VAR, MAX_LOCALS,
+    CompareOp, Instruction, Instructions, LocalId, LOOP_FLAG_RECURSIVE, LOOP_FLAG_WITH_LOOP_VAR,
+    MAX_LOCALS,
 };
 use crate::compiler::tokens::Span;
 use crate::output::CaptureMode;
@@ -30,6 +31,19 @@ fn get_local_id<'source>(ids: &mut BTreeMap<&'source str, LocalId>, name: &'sour
         let next_id = ids.len() as LocalId;
         ids.insert(name, next_id);
         next_id
+    }
+}
+
+fn compare_op(op: ast::CompareOpKind) -> CompareOp {
+    match op {
+        ast::CompareOpKind::Eq => CompareOp::Eq,
+        ast::CompareOpKind::Ne => CompareOp::Ne,
+        ast::CompareOpKind::Lt => CompareOp::Lt,
+        ast::CompareOpKind::Lte => CompareOp::Lte,
+        ast::CompareOpKind::Gt => CompareOp::Gt,
+        ast::CompareOpKind::Gte => CompareOp::Gte,
+        ast::CompareOpKind::In => CompareOp::In,
+        ast::CompareOpKind::NotIn => CompareOp::NotIn,
     }
 }
 
@@ -461,6 +475,7 @@ impl<'source> CodeGenerator<'source> {
         for node in &block.body {
             sub.compile_stmt(node);
         }
+        sub.instructions.mark_required_block(block.required);
         let instructions = self.finish_subgenerator(sub);
         self.blocks.insert(block.name, instructions);
         self.add(Instruction::CallBlock(block.name));
@@ -709,6 +724,9 @@ impl<'source> CodeGenerator<'source> {
             ast::Expr::BinOp(c) => {
                 self.compile_bin_op(c);
             }
+            ast::Expr::Compare(c) => {
+                self.compile_compare(c);
+            }
             ast::Expr::IfExpr(i) => {
                 self.set_line_from_span(i.span());
                 self.compile_expr(&i.test_expr);
@@ -919,6 +937,58 @@ impl<'source> CodeGenerator<'source> {
         } else {
             assert!(pending_args as u16 as usize == pending_args);
             Some(pending_args as u16)
+        }
+    }
+
+    fn compile_compare(&mut self, c: &ast::Spanned<ast::Compare<'source>>) {
+        self.push_span(c.span());
+        self.compile_expr(&c.expr);
+        let mut cleanup_jumps = Vec::new();
+        for (idx, op) in c.ops.iter().enumerate() {
+            self.compile_expr(&op.expr);
+            if idx + 1 == c.ops.len() {
+                self.emit_compare(op.op);
+            } else {
+                self.add(Instruction::CompareAndPreserve(compare_op(op.op)));
+                cleanup_jumps.push(self.add(Instruction::JumpIfFalseOrPop(!0)));
+            }
+        }
+        if !cleanup_jumps.is_empty() {
+            let jump_end = self.add(Instruction::Jump(!0));
+            let cleanup_start = self.next_instruction();
+            self.add(Instruction::Swap);
+            self.add(Instruction::DiscardTop);
+            let end = self.next_instruction();
+            for instr in cleanup_jumps {
+                match self.instructions.get_mut(instr) {
+                    Some(&mut Instruction::JumpIfFalseOrPop(ref mut target)) => {
+                        *target = cleanup_start;
+                    }
+                    _ => unreachable!(),
+                }
+            }
+            match self.instructions.get_mut(jump_end) {
+                Some(&mut Instruction::Jump(ref mut target)) => {
+                    *target = end;
+                }
+                _ => unreachable!(),
+            }
+        }
+        self.pop_span();
+    }
+
+    fn emit_compare(&mut self, op: ast::CompareOpKind) {
+        self.add(match op {
+            ast::CompareOpKind::Eq => Instruction::Eq,
+            ast::CompareOpKind::Ne => Instruction::Ne,
+            ast::CompareOpKind::Lt => Instruction::Lt,
+            ast::CompareOpKind::Lte => Instruction::Lte,
+            ast::CompareOpKind::Gt => Instruction::Gt,
+            ast::CompareOpKind::Gte => Instruction::Gte,
+            ast::CompareOpKind::In | ast::CompareOpKind::NotIn => Instruction::In,
+        });
+        if matches!(op, ast::CompareOpKind::NotIn) {
+            self.add(Instruction::Not);
         }
     }
 

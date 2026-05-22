@@ -135,6 +135,7 @@ pub enum Expr<'a> {
     Slice(Spanned<Slice<'a>>),
     UnaryOp(Spanned<UnaryOp<'a>>),
     BinOp(Spanned<BinOp<'a>>),
+    Compare(Spanned<Compare<'a>>),
     IfExpr(Spanned<IfExpr<'a>>),
     Filter(Spanned<Filter<'a>>),
     Test(Spanned<Test<'a>>),
@@ -154,6 +155,7 @@ impl fmt::Debug for Expr<'_> {
             Expr::Slice(s) => fmt::Debug::fmt(s, f),
             Expr::UnaryOp(s) => fmt::Debug::fmt(s, f),
             Expr::BinOp(s) => fmt::Debug::fmt(s, f),
+            Expr::Compare(s) => fmt::Debug::fmt(s, f),
             Expr::IfExpr(s) => fmt::Debug::fmt(s, f),
             Expr::Filter(s) => fmt::Debug::fmt(s, f),
             Expr::Test(s) => fmt::Debug::fmt(s, f),
@@ -174,6 +176,7 @@ impl Expr<'_> {
             Expr::Slice(_)
             | Expr::UnaryOp(_)
             | Expr::BinOp(_)
+            | Expr::Compare(_)
             | Expr::IfExpr(_)
             | Expr::GetAttr(_)
             | Expr::GetItem(_) => "expression",
@@ -192,6 +195,7 @@ impl Expr<'_> {
             Expr::Slice(s) => s.span(),
             Expr::UnaryOp(s) => s.span(),
             Expr::BinOp(s) => s.span(),
+            Expr::Compare(s) => s.span(),
             Expr::IfExpr(s) => s.span(),
             Expr::Filter(s) => s.span(),
             Expr::Test(s) => s.span(),
@@ -216,32 +220,66 @@ impl Expr<'_> {
                 let (Some(left), Some(right)) = (c.left.as_const(), c.right.as_const()) else {
                     return None;
                 };
-                match c.op {
-                    BinOpKind::Add => ops::add(&left, &right).ok(),
-                    BinOpKind::Sub => ops::sub(&left, &right).ok(),
-                    BinOpKind::Mul => ops::mul(&left, &right).ok(),
-                    BinOpKind::Div => ops::div(&left, &right).ok(),
-                    BinOpKind::FloorDiv => ops::int_div(&left, &right).ok(),
-                    BinOpKind::Rem => ops::rem(&left, &right).ok(),
-                    BinOpKind::Pow => ops::pow(&left, &right).ok(),
-                    BinOpKind::Concat => Some(ops::string_concat(left, &right)),
-                    BinOpKind::Eq => Some(Value::from(left == right)),
-                    BinOpKind::Ne => Some(Value::from(left != right)),
-                    BinOpKind::Lt => Some(Value::from(left < right)),
-                    BinOpKind::Lte => Some(Value::from(left <= right)),
-                    BinOpKind::Gt => Some(Value::from(left > right)),
-                    BinOpKind::Gte => Some(Value::from(left >= right)),
-                    BinOpKind::In => ops::contains(&right, &left).ok(),
-                    BinOpKind::ScAnd => Some(if left.is_true() && right.is_true() {
-                        right
-                    } else {
-                        Value::from(false)
-                    }),
-                    BinOpKind::ScOr => Some(if left.is_true() { left } else { right }),
+                eval_binop(c.op, &left, &right)
+            }
+            Expr::Compare(c) => {
+                let mut left = c.expr.as_const()?;
+                for op in &c.ops {
+                    let right = op.expr.as_const()?;
+                    if !eval_compare(op.op, &left, &right)?.is_true() {
+                        return Some(Value::from(false));
+                    }
+                    left = right;
                 }
+                Some(Value::from(true))
             }
             _ => None,
         }
+    }
+}
+
+fn eval_binop(op: BinOpKind, left: &Value, right: &Value) -> Option<Value> {
+    match op {
+        BinOpKind::Add => ops::add(left, right).ok(),
+        BinOpKind::Sub => ops::sub(left, right).ok(),
+        BinOpKind::Mul => ops::mul(left, right).ok(),
+        BinOpKind::Div => ops::div(left, right).ok(),
+        BinOpKind::FloorDiv => ops::int_div(left, right).ok(),
+        BinOpKind::Rem => ops::rem(left, right).ok(),
+        BinOpKind::Pow => ops::pow(left, right).ok(),
+        BinOpKind::Concat => Some(ops::string_concat(left.clone(), right)),
+        BinOpKind::Eq => Some(Value::from(left == right)),
+        BinOpKind::Ne => Some(Value::from(left != right)),
+        BinOpKind::Lt => Some(Value::from(left < right)),
+        BinOpKind::Lte => Some(Value::from(left <= right)),
+        BinOpKind::Gt => Some(Value::from(left > right)),
+        BinOpKind::Gte => Some(Value::from(left >= right)),
+        BinOpKind::In => ops::contains(right, left).ok(),
+        BinOpKind::ScAnd => Some(if left.is_true() && right.is_true() {
+            right.clone()
+        } else {
+            Value::from(false)
+        }),
+        BinOpKind::ScOr => Some(if left.is_true() {
+            left.clone()
+        } else {
+            right.clone()
+        }),
+    }
+}
+
+fn eval_compare(op: CompareOpKind, left: &Value, right: &Value) -> Option<Value> {
+    match op {
+        CompareOpKind::Eq => Some(Value::from(left == right)),
+        CompareOpKind::Ne => Some(Value::from(left != right)),
+        CompareOpKind::Lt => Some(Value::from(left < right)),
+        CompareOpKind::Lte => Some(Value::from(left <= right)),
+        CompareOpKind::Gt => Some(Value::from(left > right)),
+        CompareOpKind::Gte => Some(Value::from(left >= right)),
+        CompareOpKind::In => ops::contains(right, left).ok(),
+        CompareOpKind::NotIn => ops::contains(right, left)
+            .ok()
+            .map(|value| Value::from(!value.is_true())),
     }
 }
 
@@ -304,6 +342,7 @@ pub struct SetBlock<'a> {
 #[cfg_attr(feature = "unstable_machinery_serde", derive(serde::Serialize))]
 pub struct Block<'a> {
     pub name: &'a str,
+    pub required: bool,
     pub body: Vec<Stmt<'a>>,
 }
 
@@ -451,7 +490,23 @@ pub struct UnaryOp<'a> {
     pub expr: Expr<'a>,
 }
 
+/// A kind of comparison operator.
+#[derive(Copy, Clone)]
+#[cfg_attr(feature = "internal_debug", derive(Debug))]
+#[cfg_attr(feature = "unstable_machinery_serde", derive(serde::Serialize))]
+pub enum CompareOpKind {
+    Eq,
+    Ne,
+    Lt,
+    Lte,
+    Gt,
+    Gte,
+    In,
+    NotIn,
+}
+
 /// A kind of binary operator.
+#[derive(Copy, Clone)]
 #[cfg_attr(feature = "internal_debug", derive(Debug))]
 #[cfg_attr(feature = "unstable_machinery_serde", derive(serde::Serialize))]
 pub enum BinOpKind {
@@ -481,6 +536,22 @@ pub struct BinOp<'a> {
     pub op: BinOpKind,
     pub left: Expr<'a>,
     pub right: Expr<'a>,
+}
+
+/// A comparison operand in a chained comparison.
+#[cfg_attr(feature = "internal_debug", derive(Debug))]
+#[cfg_attr(feature = "unstable_machinery_serde", derive(serde::Serialize))]
+pub struct CompareOp<'a> {
+    pub op: CompareOpKind,
+    pub expr: Expr<'a>,
+}
+
+/// A chained comparison expression.
+#[cfg_attr(feature = "internal_debug", derive(Debug))]
+#[cfg_attr(feature = "unstable_machinery_serde", derive(serde::Serialize))]
+pub struct Compare<'a> {
+    pub expr: Expr<'a>,
+    pub ops: Vec<CompareOp<'a>>,
 }
 
 /// An if expression.
