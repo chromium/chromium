@@ -228,9 +228,33 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
         TestShouldAllowRequest(web_state_url, url, feature_enabled,
                                !google_maps_not_installed, transition_type);
     EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
-    // Navigation should be blocked only if all conditions are true.
-    EXPECT_EQ(scenario != total - 1, res);
+    // Navigation should be blocked if all conditions are true, regardless of
+    // whether the mini map feature is enabled in the treatment arm.
+    bool expected_allow = (scenario | feature_enabled_index) != total - 1;
+    EXPECT_EQ(expected_allow, res);
   }
+}
+
+// Test that when the feature is disabled in the treatment arm, the URL is
+// modified and opened with utm_campaign=as-npt-bling.
+TEST_F(MiniMapTabHelperTest, TestTreatmentLoggingWhenDisabled) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/false,
+                                    /*google_maps_installed=*/false,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigation should be blocked (returns false).
+  EXPECT_FALSE(res);
+
+  // Check that a new URL was opened with the utm_campaign parameter.
+  web::WebState::OpenURLParams* params = web_state_.last_open_url_params();
+  ASSERT_TRUE(params);
+  EXPECT_EQ(
+      params->url.spec(),
+      "https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling");
 }
 
 // Test that a URL with google.com/maps/... is intercepted when all conditions
@@ -469,4 +493,25 @@ TEST_F(MiniMapTabHelperTest, TestCounterfactualLoggingWithRedirect) {
   EXPECT_EQ(
       params->url.spec(),
       "https://www.google.com/maps/foo?valid=true&utm_campaign=as-npc-bling");
+}
+
+// Test that when both the experiment feature and counterfactual are disabled,
+// the request is not intercepted at all.
+TEST_F(MiniMapTabHelperTest, TestExperimentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kIOSMiniMapUniversalLink,
+                             kIOSMiniMapUniversalLinkCounterfactual});
+
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/true,
+                                    /*google_maps_installed=*/false,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigation should be allowed (returns true).
+  EXPECT_TRUE(res);
 }
