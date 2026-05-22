@@ -42,7 +42,6 @@
 #include "components/variations/active_field_trials.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
-#include "content/browser/tracing/file_tracing_provider_impl.h"
 #include "content/browser/tracing/tracing_ui.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -149,8 +148,6 @@ TracingControllerImpl::TracingControllerImpl()
   DCHECK(!g_tracing_controller);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(delegate_);
-  // Deliberately leaked, like this class.
-  base::FileTracing::SetProvider(new FileTracingProviderImpl);
   InitializeDataSources();
   g_tracing_controller = this;
 

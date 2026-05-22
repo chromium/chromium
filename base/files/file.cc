@@ -95,7 +95,7 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
     error_details_ = FILE_ERROR_ACCESS_DENIED;
     return;
   }
-  if (FileTracing::IsCategoryEnabled()) {
+  if (TRACE_EVENT_CATEGORY_ENABLED(TRACE_DISABLED_BY_DEFAULT("file"))) {
     path_ = path;
   }
   SCOPED_FILE_TRACE("Initialize");

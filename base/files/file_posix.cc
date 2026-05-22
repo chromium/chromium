@@ -24,6 +24,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/files/file_tracing.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

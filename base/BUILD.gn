@@ -353,7 +353,6 @@ component("base") {
     "files/file_error_or.h",
     "files/file_path.cc",
     "files/file_path.h",
-    "files/file_tracing.cc",
     "files/file_tracing.h",
     "files/memory_mapped_file.cc",
     "files/memory_mapped_file.h",

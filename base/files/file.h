@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/files/file_tracing.h"
 #include "base/files/platform_file.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
@@ -412,8 +411,6 @@ class BASE_EXPORT File {
   }
 
  private:
-  friend class FileTracing::ScopedTrace;
-
   // PRECONDITIONS: `size` must be non-negative and `data` must point to at
   // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int ReadAtCurrentPos(char* data, int size);
@@ -464,9 +461,6 @@ class BASE_EXPORT File {
   // path_ will be empty if content URI cannot be opened making the file
   // invalid.
   FilePath path_;
-
-  // Object tied to the lifetime of |this| that enables/disables tracing.
-  FileTracing::ScopedEnabler trace_enabler_;
 
   Error error_details_ = FILE_ERROR_FAILED;
   bool created_ = false;
