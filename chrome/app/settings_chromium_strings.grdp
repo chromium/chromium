@@ -50,38 +50,8 @@
   </if>
 
   <!-- Autofill Page -->
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE" desc="Error message when the password check can't be completed because the user is offline.">
-    Chromium can't check your passwords. Try checking your internet connection.
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_SIGNED_OUT" desc="Error message when the password check can't be completed because the user is not signed in.">
-    Chromium can check your passwords when you sign in with your Google Account
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_NO_PASSWORDS" desc="Error message when the password check can't be completed since no passwords could be checked.">
-    No saved passwords. Chromium can check your passwords when you save them.
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_QUOTA_LIMIT_GOOGLE_ACCOUNT" desc="Error message when the password check can't be completed since the user hit the quota limit, but the user is able to check their passwords in their Google account.">
-    Chromium can't check your passwords. Try again after 24 hours or <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>check passwords in your Google Account<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_QUOTA_LIMIT" desc="Error message when the password check can't be completed since the user hit the quota limit.">
-    Chromium can't check your passwords. Try again after 24 hours.
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_GENERIC" desc="Error message when the password check can't be completed for an unspecified reason.">
-    Chromium can't check your passwords. Try again later.
-  </message>
-  <message name="IDS_SETTINGS_NO_COMPROMISED_CREDENTIALS_LABEL" desc="Label which is shown when there were no compromised passwords detected.">
-    Chromium will notify you when you sign in with a compromised password
-  </message>
   <message name="IDS_SETTINGS_SIGNED_OUT_USER_LABEL" desc="Label which is shown at the top of the compromised password section if user is signed out.">
     To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL" desc="Label which is shown at the bottom of the compromised password section if user is signed out and has compromised credentials.">
-    To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION_GENERATION" desc="Information about why weak passwords are a security issue and what syncing user should do to fix the problem. Has a link.">
-    Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>create and remember strong passwords for you<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_EDIT_DISCLAIMER_DESCRIPTION" desc="A description for the dialog which tells the user to edit password in Chromium if it was changed already.">
-    If so, please edit your saved password in Chromium so it matches your new password.
   </message>
 
   <!-- Enhanced autofill Page-->
@@ -211,9 +181,6 @@
   </message>
 
   <!-- Privacy Sandbox -->
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_TITLE" desc="TOPICS API A sub title that describes the first of 2 ways a site can get info from Chrome in order to target ads to the user. Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. * “Your”: we need to convey a sense of ownership, even if the user didn’t explicitly choose the interests we’re talking about. Without the “your”, it could sound like Chrome is simply building a generic library of interests. * “estimated”: It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “by Chrome”: This is new behavior for a browser (Chrome) to take an active role in processing user data for the purposes of showing ads. It’s important to convey “chrome”, the actor in this case.">
-    Your interests as estimated by Chromium
-  </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy.">
     Ad measurement allows sites you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
   </message>
@@ -301,9 +268,6 @@
   <message name="IDS_SETTINGS_SEARCH_AGGREGATOR_PREF_DESC" desc="The description of the 'Show suggestions and results from your organization' checkbox, which enables/disables sending omnibox input to the user's organization's search aggregator to get additional suggestions. Note that this setting is controlled by enterprise policy and, while a checkbox is shown, it is always enabled and cannot be disabled.">
     When you type in the address bar or search box, Chromium sends what you type to your organization's search, AI, and agent tools to get suggestions.
   </message>
-  <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chromium.">
-    Sign in to sync and personalize Chromium across your devices
-  </message>
   <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_DESC" desc="This is the subtitle of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome's Advanced Sync settings, after the 'Control how browsing history is used with your other data across Google services' string. The 'Web &#38; App Activity' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=77d3b75.">
     To get personalization, include Chromium in Web &#38; App Activity
   </message>
@@ -342,11 +306,6 @@
   </message>
   <message name="IDS_SETTINGS_PASSPHRASE_RESET_HINT_ACCOUNT_DATA_ENCRYPTION" desc="Informs user how to change their encryption setting.">
     If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>delete the Chromium data in your account<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
-  </message>
-
-  <!-- Page content -->
-  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
-    To help improve these features, Chromium sends your interactions with them to Google. This data may be read, processed, and annotated by human reviewers.
   </message>
 
   <!-- Performance Page -->

@@ -2,8 +2,6 @@
 <!-- Settings-specific strings (included from generated_resources.grd). -->
 <grit-part>
   <if expr="not is_android">
-    <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
-
     <!-- Shared across multiple pages -->
     <message name="IDS_SETTINGS_CONTINUE" desc="Label for 'Continue' buttons.">
       Continue
@@ -439,9 +437,6 @@
     <message name="IDS_SETTINGS_AUTOFILL_AND_PASSWORDS" desc="Name of the settings page which allows managing passwords, payment methods and addresses settings.">
       Autofill and passwords
     </message>
-    <message name="IDS_SETTINGS_YOUR_SAVED_INFO" desc="Name of the settings page which allows managing data saved by users in chrome.">
-      Your saved info
-    </message>
     <message name="IDS_IDENTITY_DOCS_SUBMENU_OPTION" desc="Text label of the Identity docs item in the Your saved info 3-dot submenu">
       Identity docs
     </message>
@@ -552,9 +547,6 @@
     </message>
     <message name="IDS_SETTINGS_LOCAL_PAYMENT_METHOD_REMOVE_CONFIRMATION_DESCRIPTION" desc="The notice/warning for the user before the card or IBAN (International Bank Account Number) deletion.">
       This payment method will be deleted from this device
-    </message>
-    <message name="IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS" desc="Shown in the payments section of settings. Descriptive text to inform the user that credit cards can be accessed online. Has a link.">
-     To add or manage Google Pay payment methods, visit your <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Google Account<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_SETTINGS_GOOGLE_WALLET" desc="Label used to differentiate when an Autofill AI entity (such as vehicle information) is stored in Google Wallet.">
       Google Wallet
@@ -685,33 +677,6 @@
     <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_SIGNED_OUT_ENABLED_DESC" desc="Text that describes the 'Password Leak Detection' functionality to signed-out users who have not disabled the feature. This text always follows a sentence describing the feature.">
       When you sign in to your Google Account, this feature is turned on.
     </message>
-    <message name="IDS_SETTINGS_CHECK_PASSWORDS_PROGRESS" desc="Text for a label showing how many passwords were checked so far and how many passwords need to be checked in total.">
-      Checking passwords (<ph name="CHECKED_PASSWORDS">$1<ex>6</ex></ph> of <ph name="TOTAL_PASSWORDS">$2<ex>31</ex></ph>)…
-    </message>
-    <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT" desc="Number of compromised passwords present in the database">
-      {COUNT, plural,
-        =0 {No compromised passwords found}
-        =1 {{COUNT} compromised password}
-        other {{COUNT} compromised passwords}}
-    </message>
-    <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of compromised passwords that the Chrome password check found.">
-      {NUM_COMPROMISED, plural,
-        =0 {No compromised passwords}
-        =1 {1 compromised password}
-        other {{NUM_COMPROMISED} compromised passwords}}
-    </message>
-    <message name="IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of weak passwords that the Chrome password check found.">
-      {NUM_WEAK, plural,
-        =0 {No weak passwords}
-        =1 {1 weak password}
-        other {{NUM_WEAK} weak passwords}}
-    </message>
-    <message name="IDS_SETTINGS_REUSED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of reused passwords that the Chrome password check found.">
-      {NUM_REUSED, plural,
-        =0 {No reused passwords}
-        =1 {1 reused password}
-        other {{NUM_REUSED} reused passwords}}
-    </message>
     <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title. 'Autofill': the user is on the 'enhanced autofill' feature page, but we want to frame this new type of autofill as just 'Autofill'. 'Can offer to save info when you submit forms': we want to convey that the user has the choice, each time a form is submitted, whether they want their info saved to Chrome for the purposes of Autofill. 'Like your driver's license or passport number': Today, supported data types for 'enhanced autofill' include 1) driver's licenses, 2) passports, and 3) vehicles. Eventually we'll support more, but this example needs to mention these types of data and not others.">
       Autofill can offer to save info when you submit forms, like your driver's license or passport number
     </message>
@@ -812,13 +777,6 @@
         More actions, passkey options for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
       </message>
     </if>
-
-    <message name="IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Show Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Reveals password when clicked.">
-      Show password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
-    </message>
-    <message name="IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Hide Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Hides password when clicked.">
-      Hide password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
-    </message>
 
     <message name="IDS_SETTINGS_HOME_AND_WORK_ADDRESS_EDIT" desc="Label for a context menu item that provides the edit option for the selected home and work address.">
       Edit in Google Account
@@ -1342,9 +1300,6 @@
     <message name="IDS_SETTINGS_PRIVACY" desc="Name of the settings page which allows users to modify privacy and security settings.">
       Privacy and security
     </message>
-    <message name="IDS_SETTINGS_PRIVACY_V2" desc="Name of the settings page which allows users to modify privacy and security settings.">
-      Security and Privacy
-    </message>
     <message name="IDS_SETTINGS_PRIVACY_MORE" desc="Label on the expansion button to show more privacy settings.">
       More
     </message>
@@ -1426,9 +1381,6 @@
     </message>
 
     <!-- Privacy Sandbox strings -->
-    <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
-      Privacy Sandbox
-    </message>
     <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG" desc="Text of a dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
       Learn about and control new technologies that aim to replace third-party cookies
     </message>
@@ -1709,12 +1661,6 @@
     </if>
 
     <!-- Safety check -->
-    <message name="IDS_SETTINGS_SAFETY_CHECK_ICON_INFO_ARIA_LABEL" desc="Accessibility text for a safety check child icon, that indicates info for the child check.">
-      Info
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_ICON_WARNING_ARIA_LABEL" desc="Accessibility text for a safety check child icon, that indicates a warning for the child check.">
-      Warning
-    </message>
     <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW" desc="Text for a button that allows users to review safety check findings, such as compromised passwords or blocklisted extensions.">
       Review
     </message>
@@ -1750,44 +1696,8 @@
     <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This label is for the toggle that allows users to switch off/on this functionality.">
       Automatically remove permissions from unused sites
     </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_UPDATES_DISABLED_BY_ADMIN" desc="This text describes that updates are managed by the administrator.">
-      Updates are managed by <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>your administrator<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
     <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_PRIMARY_LABEL" desc="'Passwords' is an element in safety check that allows users to check for their passwords being compromised.">
       Passwords
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_FEATURE_UNAVAILABLE" desc="Explains that the password check feature is not available in this version of the browser.">
-      Password check is not available in Chromium
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED" desc="This text points out that Safe Browsing is enabled and that the user is protected.">
-      Safe Browsing is on and protecting you from harmful sites and downloads
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_STANDARD" desc="This text points out that Safe Browsing is enabled as standard protection.">
-      Standard Protection is on
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_STANDARD_AVAILABLE_ENHANCED" desc="This text points out that Safe Browsing is enabled as standard protection, but the user can enable enhanced protection.">
-      Standard protection is on. For even more security, use enhanced protection.
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_ENHANCED" desc="This text points out that Safe Browsing is enabled as enhanced protection.">
-      Enhanced Protection is on
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_SAFE" desc="This text describes that the user is protected from potentially harmful extensions.">
-      You're protected from potentially harmful extensions
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_OFF" desc="This text describes that potentially harmful extensions have been disabled. The placeholder will be a numeral.">
-      {NUM_EXTENSIONS, plural,
-       =1 {1 potentially harmful extension is off. You can also remove it.}
-       other {{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_USER" desc="This text describes that the user has turned potentially harmful extensions back on. The placeholder will be a numeral.">
-      {NUM_EXTENSIONS, plural,
-       =1 {You turned 1 potentially harmful extension back on}
-       other {You turned {NUM_EXTENSIONS} potentially harmful extensions back on}}
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BLOCKLISTED_ON_ADMIN" desc="This text describes that an administrator has turned potentially harmful extensions back on.">
-      {NUM_EXTENSIONS, plural,
-       =1 {Your administrator turned 1 potentially harmful extension back on}
-       other {Your administrator turned {NUM_EXTENSIONS} potentially harmful extensions back on}}
     </message>
     <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS" desc="This text describes that potentially harmful extensions need to be reviewed by the user. The placeholder will be a numeral.">
       {NUM_EXTENSIONS, plural,
@@ -2313,16 +2223,6 @@
       Default Search Engine (DSE)
     </message>
 
-    <!-- Reset card title and Chrome Cleanup item on Windows -->
-    <if expr="is_win and _google_chrome">
-      <message name="IDS_SETTINGS_RESET_AND_CLEANUP" desc="Title of a section in Chrome Settings. Imperative. 'Reset' refers to resetting settings to defaults. 'Clean up' refers to cleaning up harmful software on the user's computer.">
-        Reset and clean up
-      </message>
-      <message name="IDS_SETTINGS_RESET_CLEAN_UP_COMPUTER_TRIGGER" desc="Title for an item in the 'Reset and clean up' section of Chrome Settings. 'Clean up' refers to cleaning up harmful software on the user's computer. Imperative.">
-        Clean up computer
-      </message>
-    </if>
-
     <!-- Search Page -->
     <message name="IDS_SETTINGS_SEARCH" desc="Name of the settings page which displays search engine preferences.">
       Search engine
@@ -2333,14 +2233,8 @@
     <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
       Learn more about default search engines
     </message>
-    <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES" desc="Label for the Manage Search Engines button.">
-      Manage search engines
-    </message>
     <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Label for the Manage Search Engines and Site Search button.">
       Manage search engines and site search
-    </message>
-    <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_EXPLANATION" desc="Explanation for the Manage Search Engines button.">
-      Create shortcuts for searching sites and manage your search engine
     </message>
     <message name="IDS_SETTINGS_SEARCH_SITE_SEARCH" desc="Label for 'Shortcuts for sites and search engines' section">
       Shortcuts for sites and search engines
@@ -2446,9 +2340,6 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION" desc="Explanation for 'Site Search' section. Used interchangeably with IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK">
       To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut.
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK" desc="Explanation for 'Site Search' section">
-      To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut. For example, to search only Bookmarks, type "@bookmarks", then press Tab or Space.
-    </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_SITES_ADDED" desc="Text shown when the 'Site Search' section is empty">
       No sites added
     </message>
@@ -2497,9 +2388,6 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION" desc="Text explaining how to use keyword mode">
       In the address bar, use this keyboard shortcut with shortcuts for search engines and site search
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION_STARTER_PACK" desc="Text explaining how to use keyboard mode, if scoped search starter pack is enabled">
-      In the address bar, enter the shortcut for the site you want to search, such as "@bookmarks". Then, press your preferred keyboard shortcut, and enter your search term.
-    </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
       Space or Tab
     </message>
@@ -2528,9 +2416,6 @@
     <!-- Site Settings Page -->
     <message name="IDS_SETTINGS_EXCEPTIONS_EMBEDDED_ON_HOST" desc="Template text for a child row in the content Exceptions page view. Controls the permission setting for the parent page when embedded on the specified site.">
       embedded on <ph name="URL">$1<ex>www.google.com</ex></ph>
-    </message>
-    <message name="IDS_SETTINGS_EXCEPTIONS_EMBEDDED_ON_ANY_HOST" desc="Template text for a child row in the content Exceptions page view. Controls the permission setting for the parent page when embedded on any site.">
-      embedded on any host
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES" desc="Label for the all sites site settings.">
       All sites
@@ -3012,9 +2897,6 @@
     <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the motion sensors content setting.">
       Not allowed to use motion sensors
     </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_DESCRIPTION" desc="Description of the notifications content setting.">
-      Sites usually send notifications to let you know about breaking news or chat messages
-    </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ALLOWED" desc="Label for the enabled option of the notifications content setting.">
       Sites can ask to send notifications
     </message>
@@ -3248,22 +3130,6 @@
       Don't allow sites to track your hands
     </message>
 
-    <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_DESCRIPTION" desc="Description of the local network access content setting.">
-      Sites can use this feature to look for and connect to any device on your local network
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_ASK" desc="Label for the enabled option of the local network access content setting.">
-      Sites can ask to connect to any device on your local network
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_BLOCK" desc="Label for the disabled option of the local network access content setting.">
-      Don't allow sites to connect to any device on your local network
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the local network access content setting.">
-      Allowed to connect to any device on your local network
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the local network access content setting.">
-      Not allowed to connect to any device on your local network
-    </message>
-
     <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_DESCRIPTION" desc="Description of the local network content setting.">
       Sites can use this feature to access other devices on your local network
     </message>
@@ -3356,20 +3222,11 @@
     <message name="IDS_SETTINGS_SITE_SETTINGS_RECENT_ACTIVITY" desc="Label for the section which contains the user's recent permissions changes">
       Recent activity
     </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK_RECOMMENDED" desc="The ask label for serial ports in site settings (with the 'recommended' suffix).">
-      Ask when a site wants to access serial ports (recommended)
-    </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_ZOOM_LEVEL" desc="Title tooltip and accessibility text for the button to remove zoom levels in site settings">
       Remove zoom level
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_ASK_BEFORE_SENDING" desc="The 'ask before sending' label in site settings.">
       Ask before sending
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATICALLY_BLOCKED_NOTIFICATIONS" desc="The label in notifications site settings -- a setting that is automatically set when the user declines notification permission prompts a few times.">
-      Automatically blocked because you declined notifications a few times
-    </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_SHOW_BLOCKED_NOTIFICATIONS_INDICATOR" desc="The label in notifications site settings -- a setting that enables showing a blocked indicator in the address bar when notifications are blocked for all sites. It can be set by the user or automatically set by Chrome when a user has denied notifications several times.">
-      Show an indicator in the address bar when notification are blocked
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_ASK_RECOMMENDED" desc="The allow label for protocol handlers in site settings (with the 'recommended' suffix).">
       Allow sites to ask to become default handlers for protocols (recommended)
@@ -3844,9 +3701,6 @@
       Google Profile photo
     </message>
 
-    <message name="IDS_SETTINGS_PEOPLE_SIGN_IN" desc="The label of the button that lets user sign-in to chrome.">
-      Sign in
-    </message>
     <message name="IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON" desc="This button is shown in Chrome's Settings, in the 'You and Google' section. It appears when the user needs to sign back in to Chrome in order to continue saving and using data (like bookmarks, passwords, or payment methods) in their Google Account. When the user clicks this button, they will be prompted to enter their Google Account credentials.">
       Verify it's you
     </message>
@@ -3930,15 +3784,6 @@
     <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button in the Sign out of Chrome dialog that toggles showing the profile stats. Only visible by screen reader software.">
       Show profile stats
     </message>
-    <message name="IDS_SETTINGS_SYNC_WILL_START" desc="The message to tell users that sync will start once they leave the sync setup page.">
-      Sync will start once you leave sync settings
-    </message>
-    <message name="IDS_SETTINGS_USER_EVENTS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables recording user events.">
-      Activity and interactions
-    </message>
-    <message name="IDS_SETTINGS_USER_EVENTS_CHECKBOX_TEXT" desc="Description text for the checkbox which enables or disables recording user events.">
-      Uses content on sites you visit, plus browser activity and interactions, for personalization
-    </message>
     <message name="IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
       Encrypt synced data with your own <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
     </message>
@@ -3947,9 +3792,6 @@
     </message>
     <message name="IDS_SETTINGS_PASSPHRASE_RESET_HINT_ENCRYPTION" desc="Informs user how to change their encryption setting.">
       To change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to remove your sync passphrase
-    </message>
-    <message name="IDS_SETTINGS_PASSPHRASE_RESET_HINT_TOGGLE" desc="Informs user how to change their encryption setting when unified consent is enabled.">
-      To turn this on, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to remove your sync passphrase
     </message>
     <message name="IDS_SETTINGS_PASSPHRASE_RECOVER" desc="Message about how to recover from a lost passphrase.">
       If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
@@ -4292,9 +4134,6 @@
     <message name="IDS_SETTINGS_SECURITY_KEYS_PIN_ERROR_TOO_LONG" desc="A validation error shown beneath a text box where the user is expected to enter a PIN for a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
       PIN must be at most 63 characters
     </message>
-    <message name="IDS_SETTINGS_SECURITY_KEYS_PIN_ERROR_INVALID" desc="A validation error shown beneath a text box where the user is expected to enter a PIN for a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
-      PIN contains invalid characters
-    </message>
     <message name="IDS_SETTINGS_SECURITY_KEYS_PIN_ERROR_MISMATCH" desc="A validation error shown beneath a text box where the user is expected to enter a PIN for a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
       The PINs you entered don’t match
     </message>
@@ -4613,31 +4452,6 @@
       </message>
       <message name="IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL" desc="This is an indicator on the top of the AI feature settings subpage, which informs the user that this feature is not available because it was turned off by their organization. The tone should be informative.">
         This feature is disabled by your organization
-      </message>
-      <!-- Experimental settings - Compare -->
-      <message name="IDS_SETTINGS_COMPARE_SETTING_SUBLABEL" desc="This string is the subheading of a setting for ‘Compare products’. This subheading summarizes the user benefit of the Compare Products feature. This is an AI (artificial intelligence) feature that helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
-        Easily compare similar products
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Compare Products help center article when the user taps it. It is at the end of the Compare Products setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
-        Learn more about comparing products
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
-        Helps you see similar products side-by-side and easily compare the details that matter to you
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_SUGGEST" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature will suggest which details are most relevant to look at when comparing different products. The tone should be motivating.">
-        Suggests comparison details to look at when choosing between products
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_FILTER" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that Compare tables are also useful as a notepad, as users can eliminate products that they are no longer considering. The tone should be motivating.">
-        You can use your comparison tables to keep track as you narrow down your options
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_REVIEWS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature will pull in details from review websites and product-buying guides; however, only some products have this content available. The tone should be motivating.">
-        For some products, comparison tables summarize reviews from around the web
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
-        When you compare products, the tab titles and URLs of the products are sent to Google
-      </message>
-      <message name="IDS_SETTINGS_COMPARE_CONSIDER_TABLES_IN_ACCOUNT" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s Google Account in order to provide the feature’s respective benefit. The tone should be informative.">
-        Comparison tables are saved in your Google Account
       </message>
 
       <!-- Experimental settings - Password Change -->
