@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
@@ -19,11 +18,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.Collections;
@@ -41,6 +38,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Boolean> mIsOffTheRecordSupplier;
     private final MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    private final Runnable mOpenHomepageRunnable;
+    private final Callback<String> mOnHomepageOpenedCallback;
 
     /**
      * @param tabSupplier Supplier for the currently active tab.
@@ -56,6 +55,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      *     on overview mode.
      * @param tabCreatorManager The {@link TabCreatorManager} used to create new tabs.
      * @param isOffTheRecordSupplier Supplier for whether the current UI is off-the-record.
+     * @param openHomepageRunnable Runnable that handles opening the homepage.
+     * @param onHomepageOpenedCallback Callback to run when a homepage is opened.
      */
     public ToolbarTabControllerImpl(
             Supplier<@Nullable Tab> tabSupplier,
@@ -65,7 +66,9 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             Runnable onSuccessRunnable,
             Supplier<@Nullable Tab> activityTabSupplier,
             TabCreatorManager tabCreatorManager,
-            Supplier<Boolean> isOffTheRecordSupplier) {
+            Supplier<Boolean> isOffTheRecordSupplier,
+            Runnable openHomepageRunnable,
+            Callback<String> onHomepageOpenedCallback) {
         mTabSupplier = tabSupplier;
         mTrackerSupplier = trackerSupplier;
         mBottomControlsBackPressHandlerSupplier = bottomControlsBackPressHandlerSupplier;
@@ -75,6 +78,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         mTabCreatorManager = tabCreatorManager;
         mIsOffTheRecordSupplier = isOffTheRecordSupplier;
         mMultiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
+        mOpenHomepageRunnable = openHomepageRunnable;
+        mOnHomepageOpenedCallback = onHomepageOpenedCallback;
     }
 
     @Override
@@ -208,36 +213,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void openHomepage() {
         RecordUserAction.record("Home");
-        String homePageUrl = mHomepageUrlSupplier.get();
-        recordHomeButtonMetrics(homePageUrl);
-
         recordHomeButtonUseForIph();
-
-        Tab currentTab = mTabSupplier.get();
-        if (currentTab != null) {
-            ActorUiTabController actorUiTabController = ActorUiTabController.from(currentTab);
-            if (actorUiTabController != null && actorUiTabController.isActorActive()) {
-                Runnable navigateRunnable =
-                        () -> {
-                            currentTab.loadUrl(
-                                    new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
-                        };
-                if (actorUiTabController.showTaskAbortConfirmationDialog(navigateRunnable)) {
-                    return;
-                }
-            }
-
-            currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
-        } else {
-            // Fallback: If there's no active tab (e.g. from tab switcher), open in a new tab
-            // instead.
-            mTabCreatorManager
-                    .getTabCreator(mIsOffTheRecordSupplier.get())
-                    .createNewTab(
-                            new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE),
-                            TabLaunchType.FROM_CHROME_UI,
-                            null);
-        }
+        mOpenHomepageRunnable.run();
     }
 
     @Override
@@ -245,7 +222,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         RecordUserAction.record(
                 foregroundNewTab ? "HomeInNewForegroundTab" : "HomeInNewBackgroundTab");
         String homePageUrl = mHomepageUrlSupplier.get();
-        recordHomeButtonMetrics(homePageUrl);
+        mOnHomepageOpenedCallback.onResult(homePageUrl);
 
         recordHomeButtonUseForIph();
         Tab currentTab = mTabSupplier.get();
@@ -265,7 +242,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     public void openHomepageInNewWindow() {
         RecordUserAction.record("HomeInNewForegroundWindow");
         String homePageUrl = mHomepageUrlSupplier.get();
-        recordHomeButtonMetrics(homePageUrl);
+        mOnHomepageOpenedCallback.onResult(homePageUrl);
 
         recordHomeButtonUseForIph();
         Tab currentTab = mTabSupplier.get();
@@ -287,20 +264,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                 Collections.singletonList(newTab),
                 /* finalizeCallback= */ null,
                 NewWindowAppSource.KEYBOARD_SHORTCUT);
-    }
-
-    private void recordHomeButtonMetrics(String homePageUrl) {
-        boolean isChromeInternal =
-                homePageUrl.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)
-                        || homePageUrl.startsWith(UrlConstants.CHROME_URL_SHORT_PREFIX)
-                        || homePageUrl.startsWith(UrlConstants.CHROME_NATIVE_URL_SHORT_PREFIX);
-        RecordHistogram.recordBooleanHistogram(
-                "Navigation.Home.IsChromeInternal", isChromeInternal);
-        // Log a user action for the !is_chrome_internal case. This value is used as part of a
-        // high-level guiding metric, which is being migrated to user actions.
-        if (!isChromeInternal) {
-            RecordUserAction.record("Navigation.Home.NotChromeInternal");
-        }
     }
 
     /**

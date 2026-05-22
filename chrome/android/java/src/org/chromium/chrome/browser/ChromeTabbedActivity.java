@@ -4438,6 +4438,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getWindowAndroid(),
                             DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.APP_MENU);
             RecordUserAction.record("MobileMenuDefaultBrowserPromo");
+        } else if (id == R.id.homepage_menu_id) {
+            HomepageManager.getInstance()
+                    .openHomepage(
+                            getActivityTab(),
+                            getTabCreatorManagerSupplier().get(),
+                            getCurrentTabModel().isIncognito());
+            RecordUserAction.record("MobileMenuHomepage");
         } else if (id == R.id.tab_search) {
             mHubSearchClient.requestOmniboxForResult(
                     mHubSearchClient

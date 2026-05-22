@@ -28879,6 +28879,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuHomepage">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <description>User pressed the 'Homepage' item in the app menu.</description>
+</action>
+
 <action name="MobileMenuIncognitoSearch">
   <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>

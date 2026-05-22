@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -350,6 +351,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             maybeAddDividerLine(modelList, R.id.page_info_divider_line_id);
         }
 
+        // Homepage
+        if (currentTab != null && HomepageManager.getInstance().shouldShowHomepageMenuItem()) {
+            modelList.add(buildHomepageItem());
+        }
+
         // Downloads
         modelList.add(buildDownloadsItem());
 
@@ -645,6 +651,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.new_tab_menu_id,
                         R.string.menu_new_tab,
                         shouldShowIconBeforeItem() ? R.drawable.ic_add_box_rounded_corner : 0));
+    }
+
+    private ListItem buildHomepageItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.homepage_menu_id,
+                        R.string.options_homepage_title,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_home_24dp : 0));
     }
 
     private boolean isIncognitoShowing() {

@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonStatus;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
@@ -29,8 +30,15 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 /**
@@ -127,6 +135,11 @@ public class HomepageManager
             return false;
         }
         return isHomepageEnabled();
+    }
+
+    /** Returns whether the homepage menu item should be shown in the three-dot button app menu. */
+    public boolean shouldShowHomepageMenuItem() {
+        return ChromeFeatureList.sHomeButtonRemovalKeepOnNtp.getValue() && isHomepageEnabled();
     }
 
     /** Returns whether the homepage settings should be visible. */
@@ -555,5 +568,62 @@ public class HomepageManager
     private static GURL getNtpUrl(boolean isIncognito) {
         UrlConstantResolver resolver = isIncognito ? getIncognitoResolver() : getOriginalResolver();
         return resolver.getNtpGurl();
+    }
+
+    /**
+     * Opens the homepage.
+     *
+     * @param currentTab The currently active tab, if any, where the homepage should be loaded.
+     * @param tabCreatorManager The manager to create new tabs if there's no active tab.
+     * @param isIncognito Whether the homepage should be opened in incognito mode.
+     */
+    public void openHomepage(
+            @Nullable Tab currentTab, TabCreatorManager tabCreatorManager, boolean isIncognito) {
+        GURL homepageGurl = getHomepageGurl(isIncognito);
+        if (homepageGurl.isEmpty()) {
+            // Fallback to NTP if homepage URL is empty.
+            homepageGurl = getNtpUrl(isIncognito);
+        }
+        String homePageUrl = homepageGurl.getSpec();
+
+        recordHomeNavigationMetrics(homePageUrl);
+
+        if (currentTab != null) {
+            ActorUiTabController actorUiTabController = ActorUiTabController.from(currentTab);
+            if (actorUiTabController != null && actorUiTabController.isActorActive()) {
+                Runnable navigateRunnable =
+                        () -> {
+                            currentTab.loadUrl(
+                                    new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
+                        };
+                if (actorUiTabController.showTaskAbortConfirmationDialog(navigateRunnable)) {
+                    return;
+                }
+            }
+            currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
+        } else {
+            // Fallback: If there's no active tab (e.g. from tab switcher), open in a new tab
+            // instead.
+            tabCreatorManager
+                    .getTabCreator(isIncognito)
+                    .createNewTab(
+                            new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE),
+                            TabLaunchType.FROM_CHROME_UI,
+                            null);
+        }
+    }
+
+    public void recordHomeNavigationMetrics(String homePageUrl) {
+        boolean isChromeInternal =
+                homePageUrl.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)
+                        || homePageUrl.startsWith(UrlConstants.CHROME_URL_SHORT_PREFIX)
+                        || homePageUrl.startsWith(UrlConstants.CHROME_NATIVE_URL_SHORT_PREFIX);
+        RecordHistogram.recordBooleanHistogram(
+                "Navigation.Home.IsChromeInternal", isChromeInternal);
+        // Log a user action for the !is_chrome_internal case. This value is used as part of a
+        // high-level guiding metric, which is being migrated to user actions.
+        if (!isChromeInternal) {
+            RecordUserAction.record("Navigation.Home.NotChromeInternal");
+        }
     }
 }

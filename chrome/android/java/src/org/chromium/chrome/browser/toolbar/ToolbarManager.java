@@ -933,7 +933,17 @@ public class ToolbarManager
                         this::updateButtonStatus,
                         mActivityTabProvider,
                         mTabCreatorManager,
-                        mLocationBarModel::isOffTheRecord);
+                        mLocationBarModel::isOffTheRecord,
+                        () -> {
+                            HomepageManager.getInstance()
+                                    .openHomepage(
+                                            mLocationBarModel.getTab(),
+                                            mTabCreatorManager,
+                                            mLocationBarModel.isOffTheRecord());
+                        },
+                        (homePageUrl) -> {
+                            HomepageManager.getInstance().recordHomeNavigationMetrics(homePageUrl);
+                        });
 
         if (backPressManager != null) {
             mBackPressHandler = new OnBackPressHandler();
