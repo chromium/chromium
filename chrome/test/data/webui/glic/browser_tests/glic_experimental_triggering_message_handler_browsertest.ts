@@ -6,7 +6,7 @@ import {ExperimentalTriggeringUpdateType} from '/glic/glic_api/glic_api.js';
 import type {ExperimentalTriggeringUpdate, Observable2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
-import {ApiTestFixtureBase, runUntil, testMain, WebClient} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, runUntil, testMain, WebClient} from './browser_test_base.js';
 
 class TriggeringUpdatesClient extends WebClient {
   triggeringUpdatesSubject = new Subject<ExperimentalTriggeringUpdate>();
@@ -50,6 +50,19 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
 
   async testRespectsLastSeenSequenceNumber() {
     await runUntil(() => client.isSubscribed);
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.WORKLOG,
+      data: 'test_update',
+    });
+  }
+
+  async testRelaysConversationId() {
+    await runUntil(() => client.isSubscribed);
+    assertDefined(this.host.registerConversation);
+    await this.host.registerConversation({
+      conversationId: 'test_conv_id',
+      conversationTitle: 'test',
+    });
     client.triggeringUpdatesSubject.next({
       type: ExperimentalTriggeringUpdateType.WORKLOG,
       data: 'test_update',

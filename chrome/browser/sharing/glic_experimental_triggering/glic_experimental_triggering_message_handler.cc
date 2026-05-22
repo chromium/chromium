@@ -373,6 +373,9 @@ class ExperimentalTriggeringUpdatesHandler
     if (last_seen_sequence_number_.has_value()) {
       task_metadata->set_last_seen_sequence_number(*last_seen_sequence_number_);
     }
+    if (instance_ && instance_->conversation_id()) {
+      task_metadata->set_conversation_id(*instance_->conversation_id());
+    }
     return message;
   }
 
