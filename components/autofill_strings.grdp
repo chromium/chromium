@@ -711,6 +711,10 @@
   <message name="IDS_AUTOFILL_IDENTITY_DOCS_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved identity documents. Sentence-Cased." formatter_data="android_java">
     Identity docs
   </message>
+  <!-- TODO(crbug.com/498115758): Make Shopping strings translatable and add to Android and iOS. -->
+  <message name="IDS_AUTOFILL_SHOPPING_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved shopping items. Sentence-Cased." formatter_data="android_java" translateable="false">
+    Shopping
+  </message>
   <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
     Travel
   </message>
@@ -726,12 +730,6 @@
   <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
     Includes information such as passports and driver's licenses
   </message>
-  <!-- TODO(crbug.com/498115758): Make Shopping strings translatable and add to Android and iOS. -->
-  <if expr="not is_android and not is_ios">
-    <message name="IDS_AUTOFILL_SHOPPING_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved shopping info. Sentence-Cased." formatter_data="android_java" translateable="false">
-      Shopping
-    </message>
-  </if>
 
   <!-- Autofill and passwords entry point summaries - mobile only -->
   <if expr="is_android">
@@ -749,6 +747,10 @@
     </message>
     <message name="IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY" desc="Summary for the Travel entry in the Autofill and passwords settings." formatter_data="android_java">
       Travel info · Vehicles
+    </message>
+    <!-- TODO(crbug.com/498115758): Make Shopping strings translatable and add to Android and iOS. -->
+    <message name="IDS_AUTOFILL_AND_PASSWORDS_SHOPPING_SUMMARY" desc="Summary for the Shopping entry in the Autofill and passwords settings." formatter_data="android_java" translateable="false">
+      Orders · Shipments
     </message>
     <message name="IDS_AUTOFILL_AND_PASSWORDS_SETTINGS_SUMMARY" desc="Summary for the Settings entry in the Autofill and passwords settings." formatter_data="android_java">
       Change autofill provider and other settings
