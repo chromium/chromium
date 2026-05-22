@@ -158,11 +158,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
 
-  virtual bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
-                                      const void* pixels,
-                                      size_t row_bytes,
-                                      int x,
-                                      int y) = 0;
+  virtual bool WritePixels(const SkImageInfo& orig_info,
+                           const void* pixels,
+                           size_t row_bytes,
+                           int x,
+                           int y) = 0;
 
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
@@ -207,11 +207,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
  protected:
   SkSurface* GetSkSurface() const;
-  bool UnacceleratedWritePixelsForCanvas2D(const SkImageInfo& orig_info,
-                                           const void* pixels,
-                                           size_t row_bytes,
-                                           int x,
-                                           int y);
+  bool UnacceleratedWritePixels(const SkImageInfo& orig_info,
+                                const void* pixels,
+                                size_t row_bytes,
+                                int x,
+                                int y);
 
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
       ImageOrientation);
@@ -308,11 +308,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
-  bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
-                              const void* pixels,
-                              size_t row_bytes,
-                              int x,
-                              int y) override;
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
 
   static std::unique_ptr<CanvasResourceProvider> CreateForTesting(
       gfx::Size size,
@@ -435,12 +435,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
-  bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
-                              const void* pixels,
-                              size_t row_bytes,
-                              int x,
-                              int y) override;
-
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
 
   void SetResourceRecyclingEnabled(bool value);
 
