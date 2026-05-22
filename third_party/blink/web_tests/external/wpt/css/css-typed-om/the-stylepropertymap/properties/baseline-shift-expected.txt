@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Can set 'baseline-shift' to the 'bottom' keyword: bottom
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[FAIL] Can set 'baseline-shift' to the 'center' keyword: center
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[FAIL] Can set 'baseline-shift' to the 'top' keyword: top
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+Harness: the test ran to completion.
+

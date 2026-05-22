@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #8 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #9 Test that WebAssembly compilation succeeds (ref_func.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #10 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #12 Test that WebAssembly instantiation succeeds (ref_func.wast:6)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #0 "M": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:16:10)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #13 Test that a WebAssembly code returns a specific result (ref_func.wast:56)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'is_null-f') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #14 Test that a WebAssembly code returns a specific result (ref_func.wast:57)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'is_null-g') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #15 Test that a WebAssembly code returns a specific result (ref_func.wast:58)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'is_null-v') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #16 Test that a WebAssembly code returns a specific result (ref_func.wast:60)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'call-f') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #17 Test that a WebAssembly code returns a specific result (ref_func.wast:61)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'call-g') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:31:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #18 Test that a WebAssembly code returns a specific result (ref_func.wast:62)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'call-v') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:34:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #19 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'set-g') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:37:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #20 Test that a WebAssembly code returns a specific result (ref_func.wast:64)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'call-v') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:40:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #21 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'set-f') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:43:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+[FAIL] #22 Test that a WebAssembly code returns a specific result (ref_func.wast:66)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'call-v') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at ref_func_wast_js (http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:46:1)\n    at http://web-platform.test:8001/wasm/core/js/ref_func.wast.js:63:3 expected true got false
+Harness: the test ran to completion.
+

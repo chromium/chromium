@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #61 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #62 Test that WebAssembly compilation succeeds (store.wast:3)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #63 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #64 Test that a WebAssembly code returns a specific result (store.wast:44)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-block-value') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #65 Test that a WebAssembly code returns a specific result (store.wast:45)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-loop-value') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #66 Test that a WebAssembly code returns a specific result (store.wast:47)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-br-value') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #67 Test that a WebAssembly code returns a specific result (store.wast:48)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-br_if-value') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #68 Test that a WebAssembly code returns a specific result (store.wast:49)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-br_if-value-cond') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #69 Test that a WebAssembly code returns a specific result (store.wast:50)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-br_table-value') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #70 Test that a WebAssembly code returns a specific result (store.wast:52)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-return-value') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #71 Test that a WebAssembly code returns a specific result (store.wast:54)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-if-then') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:31:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+[FAIL] #72 Test that a WebAssembly code returns a specific result (store.wast:55)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'as-if-else') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store_wast_js (http://web-platform.test:8001/wasm/core/js/store.wast.js:34:1)\n    at http://web-platform.test:8001/wasm/core/js/store.wast.js:210:3 expected true got false
+Harness: the test ran to completion.
+

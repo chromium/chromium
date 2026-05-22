@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #178 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+Harness: the test ran to completion.
+

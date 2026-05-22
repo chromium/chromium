@@ -1,8 +1,12 @@
 This is a testharness.js-based test.
-Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 324 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), {name: ML-KEM-512}, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, true, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, true, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -12,6 +16,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, true, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, true, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), ML-KEM-512, true, [encapsulateKey, encapsulateBits])
@@ -19,6 +27,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), {name: ML-KEM-512}, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, true, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, true, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -28,6 +40,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), ML-KEM-512, true, [])
@@ -35,6 +51,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), {name: ML-KEM-512}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -44,6 +64,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, true, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, true, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, true, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, true, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), ML-KEM-512, true, [decapsulateBits])
@@ -51,6 +75,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), {name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -60,6 +88,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, true, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, true, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, true, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, true, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), ML-KEM-512, true, [decapsulateKey])
@@ -67,6 +99,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), {name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -76,6 +112,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, false, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, false, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, false, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, false, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), ML-KEM-512, false, [encapsulateBits])
@@ -83,6 +123,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), {name: ML-KEM-512}, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, false, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, false, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -92,6 +136,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, false, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, false, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, false, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, false, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), ML-KEM-512, false, [encapsulateKey])
@@ -99,6 +147,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), {name: ML-KEM-512}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -108,6 +160,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (spki, buffer(822), ML-KEM-512, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), {name: ML-KEM-512}, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(kty, alg, pub), ML-KEM-512, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), {name: ML-KEM-512}, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-public, buffer(800), ML-KEM-512, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
@@ -115,6 +171,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), {name: ML-KEM-512}, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, false, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, false, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -124,6 +184,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, false, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, false, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), ML-KEM-512, false, [decapsulateKey, decapsulateBits])
@@ -131,6 +195,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), {name: ML-KEM-512}, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, false, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, false, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -140,6 +208,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (pkcs8, buffer(86), ML-KEM-512, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-512}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-512 bits (jwk, object(priv, kty, alg, pub), ML-KEM-512, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), {name: ML-KEM-512}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-512 bits (raw-seed, buffer(64), ML-KEM-512, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
@@ -147,6 +219,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), {name: ML-KEM-768}, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, true, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, true, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -156,6 +232,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, true, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, true, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), ML-KEM-768, true, [encapsulateKey, encapsulateBits])
@@ -163,6 +243,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), {name: ML-KEM-768}, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, true, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, true, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -172,6 +256,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), ML-KEM-768, true, [])
@@ -179,6 +267,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), {name: ML-KEM-768}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -188,6 +280,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, true, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, true, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, true, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, true, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), ML-KEM-768, true, [decapsulateBits])
@@ -195,6 +291,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), {name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -204,6 +304,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, true, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, true, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, true, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, true, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), ML-KEM-768, true, [decapsulateKey])
@@ -211,6 +315,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), {name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -220,6 +328,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, false, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, false, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, false, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, false, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), ML-KEM-768, false, [encapsulateBits])
@@ -227,6 +339,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), {name: ML-KEM-768}, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, false, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, false, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -236,6 +352,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, false, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, false, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, false, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, false, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), ML-KEM-768, false, [encapsulateKey])
@@ -243,6 +363,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), {name: ML-KEM-768}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -252,6 +376,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (spki, buffer(1206), ML-KEM-768, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), {name: ML-KEM-768}, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(kty, alg, pub), ML-KEM-768, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), {name: ML-KEM-768}, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-public, buffer(1184), ML-KEM-768, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
@@ -259,6 +387,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), {name: ML-KEM-768}, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, false, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, false, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -268,6 +400,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, false, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, false, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), ML-KEM-768, false, [decapsulateKey, decapsulateBits])
@@ -275,6 +411,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), {name: ML-KEM-768}, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, false, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, false, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -284,6 +424,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (pkcs8, buffer(86), ML-KEM-768, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-768}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-768 bits (jwk, object(priv, kty, alg, pub), ML-KEM-768, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), {name: ML-KEM-768}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-768 bits (raw-seed, buffer(64), ML-KEM-768, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
@@ -291,6 +435,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), {name: ML-KEM-1024}, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, true, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, true, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, true, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -300,6 +448,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, true, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, true, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), ML-KEM-1024, true, [encapsulateKey, encapsulateBits])
@@ -307,6 +459,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), {name: ML-KEM-1024}, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, true, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, true, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, true, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -316,6 +472,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), ML-KEM-1024, true, [])
@@ -323,6 +483,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), {name: ML-KEM-1024}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, true, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -332,6 +496,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, true, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, true, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, true, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, true, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), ML-KEM-1024, true, [decapsulateBits])
@@ -339,6 +507,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), {name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -348,6 +520,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, true, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, true, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, true, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, true, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), ML-KEM-1024, true, [decapsulateKey])
@@ -355,6 +531,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), {name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -364,6 +544,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, false, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, false, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, false, [encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, false, [encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), ML-KEM-1024, false, [encapsulateBits])
@@ -371,6 +555,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), {name: ML-KEM-1024}, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, false, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, false, [encapsulateKey, encapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, false, [encapsulateKey, encapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -380,6 +568,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, false, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, false, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, false, [encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, false, [encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), ML-KEM-1024, false, [encapsulateKey])
@@ -387,6 +579,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), {name: ML-KEM-1024}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -396,6 +592,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (spki, buffer(1590), ML-KEM-1024, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), {name: ML-KEM-1024}, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(kty, alg, pub), ML-KEM-1024, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), {name: ML-KEM-1024}, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-public, buffer(1568), ML-KEM-1024, false, [encapsulateBits, encapsulateKey, encapsulateBits, encapsulateKey])
@@ -403,6 +603,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), {name: ML-KEM-1024}, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, false, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, false, [decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, false, [decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
@@ -412,6 +616,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, false, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, false, [decapsulateKey, decapsulateBits])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), ML-KEM-1024, false, [decapsulateKey, decapsulateBits])
@@ -420,6 +628,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, false, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, false, [decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, false, [decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), ML-KEM-1024, false, [decapsulateKey])
@@ -427,6 +639,10 @@ Found 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), {name: ML-KEM-1024}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (pkcs8, buffer(86), ML-KEM-1024, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), {name: ML-KEM-1024}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: ML-KEM-1024 bits (jwk, object(priv, kty, alg, pub), ML-KEM-1024, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-KEM-1024 bits (raw-seed, buffer(64), {name: ML-KEM-1024}, false, [decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code

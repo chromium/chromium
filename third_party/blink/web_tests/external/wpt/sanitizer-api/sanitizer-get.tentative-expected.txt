@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] Sorting of attributes
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of removeAttributes
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of elements
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of removeElements
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of replaceWithChildrenElements
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of element's attributes
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of element's removeAttributes
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of processingInstructions
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+[FAIL] Sorting of removeProcessingInstructions
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #72 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #73 Test that WebAssembly compilation succeeds (memory64-imports.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #74 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at memory64_imports_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory64-imports.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory64-imports.wast.js:447:3 expected true got false
+[FAIL] #139 Test that a WebAssembly module is unlinkable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "test-table-10-inf": module is not an object or function \n    at assert_unlinkable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:410:15)\n    at memory64_imports_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory64-imports.wast.js:211:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory64-imports.wast.js:447:3 expected true got false
+Harness: the test ran to completion.
+

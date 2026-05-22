@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] LF at <after-colon> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] LF at <after-colon> should result in Network Error frame
+  assert_equals: expected null but got Document node with 1 child
+[FAIL] CR at <after-colon> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] CR at <after-colon> should result in Network Error frame
+  assert_equals: expected null but got Document node with 1 child
+[FAIL] COLON at <after-colon> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] COLON at <after-colon> should result in Network Error frame
+  assert_equals: expected null but got Document node with 1 child
+Harness: the test ran to completion.
+

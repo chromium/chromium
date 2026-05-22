@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_unreached: should have pointerLockElement as target. Reached unreachable code
+[FAIL] request pointer lock with different unadjustedMovement on the same locked element should still fire pointerlockchange event
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The options asked for in this request are not supported on this platform."
+[FAIL] request pointer lock with different unadjustedMovement on the different element should still fire pointerlockchange event
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The options asked for in this request are not supported on this platform."
+Harness: the test ran to completion.
+

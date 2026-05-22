@@ -1,10 +1,4 @@
 function run_test(vectors) {
-  function waitForEvent(obj, ev) {
-    return new Promise((resolve) => {
-      obj.addEventListener(ev, resolve, {once: true});
-    });
-  }
-
   function testCryptoKeySerialization(
       generateKeyAlgorithm, generateKeyUsages, exportFormat) {
     promise_test(async t => {
@@ -13,17 +7,9 @@ function run_test(vectors) {
       const keyExported =
           await crypto.subtle.exportKey(exportFormat, cryptoKey);
 
-      const popup = window.open('resources/post-page.html');
-      t.add_cleanup(() => popup.close());
-
-
-      // Wait for window to load.
-      await waitForEvent(popup, 'load');
-      popup.postMessage({key: cryptoKey});
-      // Wait to get key back via post.
-      let evt = await waitForEvent(window, 'message');
+      const {key} = structuredClone({key: cryptoKey});
       const newKeyExported =
-          await crypto.subtle.exportKey(exportFormat, evt.data.key);
+          await crypto.subtle.exportKey(exportFormat, key);
       assert_true(equalBuffers(keyExported, newKeyExported));
     }, 'serialization test ' + objectToString(generateKeyAlgorithm));
   };
@@ -39,20 +25,13 @@ function run_test(vectors) {
       const privateKeyExported = await crypto.subtle.exportKey(
           privateExportFormat, keyPair.privateKey);
 
-      const popup = window.open('resources/post-page.html');
-      t.add_cleanup(() => popup.close());
-
-      // Wait for window to load.
-      await waitForEvent(popup, 'load');
-      popup.postMessage(
+      const {publicKey, privateKey} = structuredClone(
           {publicKey: keyPair.publicKey, privateKey: keyPair.privateKey});
-      // Wait to get keys back via post.
-      let evt = await waitForEvent(window, 'message');
       const newPublicKeyExported =
-          await crypto.subtle.exportKey(publicExportFormat, evt.data.publicKey);
+          await crypto.subtle.exportKey(publicExportFormat, publicKey);
       assert_true(equalBuffers(publicKeyExported, newPublicKeyExported));
       const newPrivateKeyExported = await crypto.subtle.exportKey(
-          privateExportFormat, evt.data.privateKey);
+          privateExportFormat, privateKey);
       assert_true(equalBuffers(privateKeyExported, newPrivateKeyExported));
     }, 'serialization test ' + objectToString(generateKeyAlgorithm));
   };

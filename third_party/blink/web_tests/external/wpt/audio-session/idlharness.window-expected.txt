@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] AudioSession interface: existence and properties of interface object
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface object length
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface object name
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface: attribute type
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface: attribute state
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession interface: attribute onstatechange
+  assert_own_property: self does not have own property "AudioSession" expected property "AudioSession" missing
+[FAIL] AudioSession must be primary interface of navigator.audioSession
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of navigator.audioSession
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] AudioSession interface: navigator.audioSession must inherit property "type" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] AudioSession interface: navigator.audioSession must inherit property "state" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] AudioSession interface: navigator.audioSession must inherit property "onstatechange" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Navigator interface: attribute audioSession
+  assert_true: The prototype object must have a property "audioSession" expected true got false
+[FAIL] Navigator interface: navigator must inherit property "audioSession" with the proper type
+  assert_inherits: property "audioSession" not found in prototype chain
+Harness: the test ran to completion.
+

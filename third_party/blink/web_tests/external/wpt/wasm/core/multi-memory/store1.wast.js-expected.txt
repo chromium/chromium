@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #5 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #6 Test that WebAssembly compilation succeeds (store1.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #7 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:8:10)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #10 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'store') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:26:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #12 Test that a WebAssembly code returns a specific result (store1.wast:27)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:32:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #15 Test that WebAssembly instantiation succeeds (store1.wast:30)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #0 "M1": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:41:10)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #16 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'store1') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:44:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #17 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'store2') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:47:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #18 Test that a WebAssembly code returns a specific result (store1.wast:51)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load1') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:50:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+[FAIL] #19 Test that a WebAssembly code returns a specific result (store1.wast:52)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load2') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at store1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:53:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/store1.wast.js:55:3 expected true got false
+Harness: the test ran to completion.
+

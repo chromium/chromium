@@ -1,12 +1,60 @@
 This is a testharness.js-based test.
-Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed
+Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] new RTCPeerConnection(config) - with turns server and empty string username should succeed
   Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
-[FAIL] setConfiguration(config) - with turns server and empty string username, credential should succeed
+[FAIL] setConfiguration(config) - with turns server and empty string username should succeed
   Failed to execute 'setConfiguration' on 'RTCPeerConnection': The given configuration has invalid parameters.
-[FAIL] new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed
+[FAIL] new RTCPeerConnection(config) - with turn server and empty string username should succeed
   Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
-[FAIL] setConfiguration(config) - with turn server and empty string username, credential should succeed
+[FAIL] setConfiguration(config) - with turn server and empty string username should succeed
   Failed to execute 'setConfiguration' on 'RTCPeerConnection': The given configuration has invalid parameters.
+[FAIL] new RTCPeerConnection(config) - with turn url with no host or port should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with no host or port should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with port but no host should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with port but no host should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with too large a port should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with too large a port should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with IPv6 and no brackets should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with IPv6 and no brackets should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with IPv4-mapped IPv6 and no brackets should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with IPv4-mapped IPv6 and no brackets should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with fragment should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with fragment should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with userinfo should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with userinfo should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with / should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with / should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with \\ should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with \\ should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with path should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with path should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with \\path should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with \\path should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] new RTCPeerConnection(config) - with turn url with invalid transport should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to construct 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
+[FAIL] setConfiguration(config) - with turn url with invalid transport should throw SyntaxError
+  assert_throws_dom: function "() =>\n        makePc({ iceServers: [{ urls }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
 Harness: the test ran to completion.
 

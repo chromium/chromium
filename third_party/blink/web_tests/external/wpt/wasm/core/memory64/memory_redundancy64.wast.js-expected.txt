@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #4 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #5 Test that WebAssembly compilation succeeds (memory_redundancy64.wast:5)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #6 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #7 Test that a WebAssembly code returns a specific result (memory_redundancy64.wast:59)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test_store_to_load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #8 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'zero_everything') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #9 Test that a WebAssembly code returns a specific result (memory_redundancy64.wast:61)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test_redundant_load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #10 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'zero_everything') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #12 Test that WebAssembly instantiation succeeds (wrapper)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #0 "module": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:22:16\n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:249:31)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #13 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'run') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #14 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'zero_everything') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+[FAIL] #15 Test that a WebAssembly code returns a specific result (memory_redundancy64.wast:65)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'malloc_aliasing') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_redundancy64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory_redundancy64.wast.js:30:3 expected true got false
+Harness: the test ran to completion.
+

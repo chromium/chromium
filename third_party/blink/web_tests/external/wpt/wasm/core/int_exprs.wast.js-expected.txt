@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #21 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #22 Test that WebAssembly compilation succeeds (int_exprs.wast:6)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #23 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at int_exprs_wast_js (http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:384:3 expected true got false
+[FAIL] #24 Test that a WebAssembly code returns a specific result (int_exprs.wast:18)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'i32.no_fold_cmp_s_offset') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at int_exprs_wast_js (http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:384:3 expected true got false
+[FAIL] #25 Test that a WebAssembly code returns a specific result (int_exprs.wast:19)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'i32.no_fold_cmp_u_offset') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at int_exprs_wast_js (http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:384:3 expected true got false
+[FAIL] #26 Test that a WebAssembly code returns a specific result (int_exprs.wast:20)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'i64.no_fold_cmp_s_offset') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at int_exprs_wast_js (http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:384:3 expected true got false
+[FAIL] #27 Test that a WebAssembly code returns a specific result (int_exprs.wast:21)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'i64.no_fold_cmp_u_offset') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at int_exprs_wast_js (http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/int_exprs.wast.js:384:3 expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] AudioSession.type round-trips for "auto"
+  assert_implements: navigator.audioSession is not supported undefined
+[FAIL] AudioSession.type round-trips for "playback"
+  assert_implements: navigator.audioSession is not supported undefined
+[FAIL] AudioSession.type round-trips for "transient"
+  assert_implements: navigator.audioSession is not supported undefined
+[FAIL] AudioSession.type round-trips for "transient-solo"
+  assert_implements: navigator.audioSession is not supported undefined
+[FAIL] AudioSession.type round-trips for "ambient"
+  assert_implements: navigator.audioSession is not supported undefined
+[FAIL] AudioSession.type round-trips for "play-and-record"
+  assert_implements: navigator.audioSession is not supported undefined
+Harness: the test ran to completion.
+

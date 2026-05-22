@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #63 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #85 Test that WebAssembly instantiation succeeds (token.wast:47)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at token_wast_js (http://web-platform.test:8001/wasm/core/js/token.wast.js:67:11)\n    at http://web-platform.test:8001/wasm/core/js/token.wast.js:291:3 expected true got false
+Harness: the test ran to completion.
+

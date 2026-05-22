@@ -668,12 +668,12 @@ promise_test(async () => {
   await clickOn(p36);
   // Note: this should *not* reset "hint stack parent".
   assert_true(p34.matches(':popover-open'), 'p34 should remain open');
-  assert_false(p35.matches(':popover-open'), 'p35 should be light dismissed');
-  assert_true(p36.matches(':popover-open'), 'p36 should remain open, because its ancestor p34 is still open');
+  assert_false(p35.matches(':popover-open'), 'p35 should be light dismissed (clicking on the hint dismisses non-ancestor autos)');
+  assert_true(p36.matches(':popover-open'), 'p36 should remain open - clicking the hint shouldn\'t close it');
 
   p34.hidePopover();
   assert_false(p34.matches(':popover-open'), 'p34 should be closed');
-  assert_false(p36.matches(':popover-open'), 'p36 should be closed - p34 is its hint stack parent');
+  assert_false(p36.matches(':popover-open'), 'p36 should be closed - p34 is still its hint stack parent');
 }, 'Test "hint stack parent" behavior');
 
 promise_test(async () => {

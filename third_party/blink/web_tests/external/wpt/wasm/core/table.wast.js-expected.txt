@@ -1,8 +1,18 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
 [FAIL] #8 Test that WebAssembly compilation succeeds (table.wast:9)
   assert_equals: expected false but got true
+[FAIL] #42 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #43 Test that WebAssembly compilation succeeds (table.wast:3)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #44 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at table_wast_js (http://web-platform.test:8001/wasm/core/js/table.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/table.wast.js:192:3 expected true got false
 [FAIL] #55 Test that WebAssembly compilation succeeds (table.wast:9)
   assert_true: WebAssembly.compile failed unexpectedly with CompileError: WebAssembly.compile(): initial table size (4294967295 elements) is larger than implementation limit (10000000 elements) @+17 at {loc} expected true got false
+[FAIL] #67 Test that WebAssembly instantiation succeeds (table.wast:17)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at table_wast_js (http://web-platform.test:8001/wasm/core/js/table.wast.js:76:11)\n    at http://web-platform.test:8001/wasm/core/js/table.wast.js:192:3 expected true got false
 Harness: the test ran to completion.
 

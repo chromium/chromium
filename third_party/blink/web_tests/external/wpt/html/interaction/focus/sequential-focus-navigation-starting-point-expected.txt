@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Focus navigation starting point should be maintained when slotted focused element is removed.
+  assert_equals: Forwards sequential focus navigation should go to BUTTON# expected Element node <button data-next="" slot="d">button 4</button> but got Element node <button id="before-container">(before container)</button>
+Harness: the test ran to completion.
+

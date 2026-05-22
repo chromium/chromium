@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Get the expected default config
+  assert_true: Assert: Either config["processingInstructions"] exists or config["removeProcessingInstructions"] exists. expected true got false
+Harness: the test ran to completion.
+

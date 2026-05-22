@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] role-map-region-title-empty
+  assert_false: Computed Role: "region" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="region" data-testname="role-map-region-title-empty" class="ex-generic" title="">x</div> expected false got true
+Harness: the test ran to completion.
+

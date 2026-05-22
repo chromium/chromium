@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #40 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #41 Test that WebAssembly compilation succeeds (memory.wast:3)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #42 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at memory_wast_js (http://web-platform.test:8001/wasm/core/js/memory.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/memory.wast.js:306:3 expected true got false
+[FAIL] #89 Test that WebAssembly instantiation succeeds (wrapper)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #1 "spectest": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at http://web-platform.test:8001/wasm/core/js/memory.wast.js:145:16\n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:249:31)\n    at memory_wast_js (http://web-platform.test:8001/wasm/core/js/memory.wast.js:145:1)\n    at http://web-platform.test:8001/wasm/core/js/memory.wast.js:306:3 expected true got false
+[FAIL] #90 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'run') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at memory_wast_js (http://web-platform.test:8001/wasm/core/js/memory.wast.js:145:1)\n    at http://web-platform.test:8001/wasm/core/js/memory.wast.js:306:3 expected true got false
+Harness: the test ran to completion.
+

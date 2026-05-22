@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #3 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #4 Test that WebAssembly compilation succeeds (skip-stack-guard-page.wast:2)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #5 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #6 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #7 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #8 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #9 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #10 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #11 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #12 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #13 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:31:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #14 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:34:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+[FAIL] #15 Test that a WebAssembly code exhausts the stack space
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test-guard-page-skip') \n    at assert_exhaustion (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:387:15)\n    at skip_stack_guard_page_wast_js (http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:37:1)\n    at http://web-platform.test:8001/wasm/core/js/skip-stack-guard-page.wast.js:39:3 expected true got false
+Harness: the test ran to completion.
+

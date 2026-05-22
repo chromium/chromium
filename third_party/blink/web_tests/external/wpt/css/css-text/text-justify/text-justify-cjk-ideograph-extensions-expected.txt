@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] CJK Unified Ideographs Extension G (U+30000) justifies like U+4E00
+  assert_equals: Extension G (U+30000) must match U+4E00 expansion behavior expected true but got false
+[FAIL] CJK Unified Ideographs Extension H (U+31350) justifies like U+4E00
+  assert_equals: Extension H (U+31350) must match U+4E00 expansion behavior expected true but got false
+Harness: the test ran to completion.
+

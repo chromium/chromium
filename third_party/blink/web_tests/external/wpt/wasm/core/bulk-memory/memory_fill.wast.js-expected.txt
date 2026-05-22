@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #77 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #78 Test that WebAssembly compilation succeeds (memory_fill.wast:6)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #79 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at memory_fill_wast_js (http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:336:3 expected true got false
+[FAIL] #80 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'test') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at memory_fill_wast_js (http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:336:3 expected true got false
+[FAIL] #81 Test that a WebAssembly code returns a specific result (memory_fill.wast:24)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'checkRange') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_fill_wast_js (http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:336:3 expected true got false
+[FAIL] #82 Test that a WebAssembly code returns a specific result (memory_fill.wast:26)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'checkRange') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_fill_wast_js (http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/bulk-memory/memory_fill.wast.js:336:3 expected true got false
+Harness: the test ran to completion.
+

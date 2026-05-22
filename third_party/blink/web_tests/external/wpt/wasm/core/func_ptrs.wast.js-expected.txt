@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #12 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #13 Test that WebAssembly compilation succeeds (func_ptrs.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #14 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at func_ptrs_wast_js (http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:120:3 expected true got false
+[FAIL] #15 Test that a WebAssembly code returns a specific result (func_ptrs.wast:27)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'one') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at func_ptrs_wast_js (http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:120:3 expected true got false
+[FAIL] #16 Test that a WebAssembly code returns a specific result (func_ptrs.wast:28)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'two') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at func_ptrs_wast_js (http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:120:3 expected true got false
+[FAIL] #17 Test that a WebAssembly code returns a specific result (func_ptrs.wast:29)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'three') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at func_ptrs_wast_js (http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:120:3 expected true got false
+[FAIL] #18 run
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'four') \n    at run (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:248:15)\n    at func_ptrs_wast_js (http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/func_ptrs.wast.js:120:3 expected true got false
+Harness: the test ran to completion.
+

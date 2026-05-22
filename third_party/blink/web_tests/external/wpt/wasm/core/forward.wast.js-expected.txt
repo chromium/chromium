@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #3 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #4 Test that WebAssembly compilation succeeds (forward.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #5 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at forward_wast_js (http://web-platform.test:8001/wasm/core/js/forward.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/forward.wast.js:21:3 expected true got false
+[FAIL] #6 Test that a WebAssembly code returns a specific result (forward.wast:17)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'even') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at forward_wast_js (http://web-platform.test:8001/wasm/core/js/forward.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/forward.wast.js:21:3 expected true got false
+[FAIL] #7 Test that a WebAssembly code returns a specific result (forward.wast:18)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'even') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at forward_wast_js (http://web-platform.test:8001/wasm/core/js/forward.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/forward.wast.js:21:3 expected true got false
+[FAIL] #8 Test that a WebAssembly code returns a specific result (forward.wast:19)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'odd') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at forward_wast_js (http://web-platform.test:8001/wasm/core/js/forward.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/forward.wast.js:21:3 expected true got false
+[FAIL] #9 Test that a WebAssembly code returns a specific result (forward.wast:20)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'odd') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at forward_wast_js (http://web-platform.test:8001/wasm/core/js/forward.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/forward.wast.js:21:3 expected true got false
+Harness: the test ran to completion.
+

@@ -11,5 +11,9 @@ This is a testharness.js-based test.
   assert_throws_js: function "() =>\n    makePc({ iceServers: [{\n      url: 'stun:stun1.example.net'\n    }] })" did not throw
 [FAIL] setConfiguration(config) - with url field should throw TypeError
   assert_throws_js: function "() =>\n    makePc({ iceServers: [{\n      url: 'stun:stun1.example.net'\n    }] })" did not throw
+[FAIL] RTCPeerConnection with rtcpMuxPolicy "negotiate" should throw TypeError
+  assert_throws_js: function "() =>\n    new RTCPeerConnection({ rtcpMuxPolicy: 'negotiate' })" did not throw
+[FAIL] setConfiguration with rtcpMuxPolicy "negotiate" should throw TypeError
+  assert_throws_js: function "() =>\n    pc.setConfiguration({ rtcpMuxPolicy: 'negotiate' })" threw object "InvalidModificationError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Attempted to modify the PeerConnection's configuration in an unsupported way." ("InvalidModificationError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 Harness: the test ran to completion.
 

@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #6 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #7 Test that WebAssembly compilation succeeds (names.wast:4)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #8 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at names_wast_js (http://web-platform.test:8001/wasm/core/js/names.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/names.wast.js:1473:3 expected true got false
+[FAIL] #9 Test that a WebAssembly code returns a specific result (names.wast:8)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'foo') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at names_wast_js (http://web-platform.test:8001/wasm/core/js/names.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/names.wast.js:1473:3 expected true got false
+[FAIL] #495 Test that WebAssembly instantiation succeeds (names.wast:1095)
+  assert_true: unexpected instantiation error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at names_wast_js (http://web-platform.test:8001/wasm/core/js/names.wast.js:1468:10)\n    at http://web-platform.test:8001/wasm/core/js/names.wast.js:1473:3 expected true got false
+[FAIL] #496 Test that a WebAssembly code returns a specific result (names.wast:1107)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'print32') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at names_wast_js (http://web-platform.test:8001/wasm/core/js/names.wast.js:1471:1)\n    at http://web-platform.test:8001/wasm/core/js/names.wast.js:1473:3 expected true got false
+Harness: the test ran to completion.
+

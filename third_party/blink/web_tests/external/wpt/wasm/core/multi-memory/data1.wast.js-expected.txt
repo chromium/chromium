@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #16 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #17 Test that WebAssembly compilation succeeds (data1.wast:4)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #19 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at data1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:7:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:87:3 expected true got false
+[FAIL] #34 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at data1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:37:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:87:3 expected true got false
+[FAIL] #40 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at data1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:49:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:87:3 expected true got false
+[FAIL] #52 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at data1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:73:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:87:3 expected true got false
+[FAIL] #58 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at data1_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:85:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/data1.wast.js:87:3 expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #25 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #26 Test that WebAssembly compilation succeeds (type-rec.wast:3)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #27 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at type_rec_wast_js (http://web-platform.test:8001/wasm/core/js/type-rec.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/type-rec.wast.js:125:3 expected true got false
+Harness: the test ran to completion.
+

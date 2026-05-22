@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Shared WebAssembly.Memory from window to SharedWorker fires messageerror on the SharedWorker
+  assert_true: SharedWorker reports crossOriginIsolated; otherwise the headers are not being honored expected true got false
+[FAIL] Shared WebAssembly.Memory from SharedWorker to window fires messageerror on the window
+  assert_true: SharedWorker reports crossOriginIsolated; otherwise the headers are not being honored expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] CSS Values and Units Test: attr() invalidation of pseudo elements 5
+  assert_not_equals: Change of attribute value should lead to invalidation of ::placeholder element style. got disallowed value "13.3333px"
+[FAIL] CSS Values and Units Test: attr() invalidation of pseudo elements 6
+  assert_not_equals: Change of attribute value should lead to invalidation of ::file-selector-button element style. got disallowed value "13.3333px"
+[FAIL] CSS Values and Units Test: attr() invalidation of pseudo elements 7
+  assert_not_equals: Change of attribute value should lead to invalidation of ::details-content element style. got disallowed value "16px"
+Harness: the test ran to completion.
+

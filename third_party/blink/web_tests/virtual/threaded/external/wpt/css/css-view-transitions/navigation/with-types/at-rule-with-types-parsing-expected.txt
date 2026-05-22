@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] types: nOnE shoud result in []
+  assert_equals: expected "@view-transition { types: none; }" but got "@view-transition { }"
+[FAIL] types: abc shoud result in ["abc"]
+  assert_equals: expected "@view-transition { types: abc; }" but got "@view-transition { }"
+[FAIL] types: abc xyz shoud result in ["abc","xyz"]
+  assert_equals: expected "@view-transition { types: abc xyz; }" but got "@view-transition { }"
+[FAIL] types: abc\\ xyz shoud result in ["abc xyz"]
+  assert_array_equals: expected property 0 to be "abc xyz" but got "abc\\\\ xyz" (expected array ["abc xyz"] got ["abc\\\\ xyz"])
+[FAIL] types:    abc 	xyz  shoud result in ["abc","xyz"]
+  assert_equals: expected "@view-transition { types: abc xyz; }" but got "@view-transition { }"
+[FAIL] types: abc -uA-something shoud result in ["abc","-uA-something"]
+  assert_equals: expected "@view-transition { types: abc -uA-something; }" but got "@view-transition { }"
+[FAIL] types: abc -ok-something shoud result in ["abc","-ok-something"]
+  assert_equals: expected "@view-transition { types: abc -ok-something; }" but got "@view-transition { }"
+[FAIL] types: abc abc shoud result in ["abc","abc"]
+  assert_equals: expected "@view-transition { types: abc abc; }" but got "@view-transition { }"
+[FAIL] types: abc ABC shoud result in ["abc","ABC"]
+  assert_equals: expected "@view-transition { types: abc ABC; }" but got "@view-transition { }"
+Harness: the test ran to completion.
+

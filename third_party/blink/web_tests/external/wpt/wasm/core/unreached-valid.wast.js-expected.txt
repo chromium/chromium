@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #5 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #6 Test that WebAssembly compilation succeeds (unreached-valid.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #7 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #8 Test that a WebAssembly code traps (unreached-valid.wast:48)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-trap-left') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #9 Test that a WebAssembly code traps (unreached-valid.wast:49)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-trap-left') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #10 Test that a WebAssembly code traps (unreached-valid.wast:50)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-trap-right') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #11 Test that a WebAssembly code traps (unreached-valid.wast:51)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-trap-right') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #12 Test that a WebAssembly code traps (unreached-valid.wast:53)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-unreached-result1') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #13 Test that a WebAssembly code traps (unreached-valid.wast:54)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-unreached-result2') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #14 Test that a WebAssembly code traps (unreached-valid.wast:55)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-unreached-num') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #15 Test that a WebAssembly code traps (unreached-valid.wast:56)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'select-unreached-ref') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:31:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+[FAIL] #16 Test that a WebAssembly code traps (unreached-valid.wast:58)
+  assert_true: expected runtime error, observed TypeError: Cannot read properties of undefined (reading 'call_ref-unreached') \n    at assert_trap (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:269:15)\n    at unreached_valid_wast_js (http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:34:1)\n    at http://web-platform.test:8001/wasm/core/js/unreached-valid.wast.js:51:3 expected true got false
+Harness: the test ran to completion.
+

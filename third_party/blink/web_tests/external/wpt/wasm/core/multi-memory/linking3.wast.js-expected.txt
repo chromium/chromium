@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #8 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #9 Test that WebAssembly compilation succeeds (linking3.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #10 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:8:10)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #13 Test that a WebAssembly module is unlinkable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "spectest": module is not an object or function \n    at assert_unlinkable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:410:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:18:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #14 Test that a WebAssembly code returns a specific result (linking3.wast:23)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:21:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #17 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "Mm": module is not an object or function \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:27:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #18 Test that a WebAssembly code returns a specific result (linking3.wast:36)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:30:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #19 Test that a WebAssembly code returns a specific result (linking3.wast:37)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:33:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #22 Test that a WebAssembly module is uninstantiable
+  assert_true: expected link error, observed TypeError: WebAssembly.instantiate(): Import #0 "Mm": module is not an object or function \n    at assert_uninstantiable (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:433:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:39:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+[FAIL] #23 Test that a WebAssembly code returns a specific result (linking3.wast:49)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'load') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at linking3_wast_js (http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:42:1)\n    at http://web-platform.test:8001/wasm/core/js/multi-memory/linking3.wast.js:67:3 expected true got false
+Harness: the test ran to completion.
+

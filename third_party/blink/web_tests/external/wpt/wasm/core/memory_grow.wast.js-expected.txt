@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #19 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #20 Test that WebAssembly compilation succeeds (memory_grow.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #21 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #22 Test that a WebAssembly code returns a specific result (memory_grow.wast:6)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #23 Test that a WebAssembly code returns a specific result (memory_grow.wast:7)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #24 Test that a WebAssembly code returns a specific result (memory_grow.wast:8)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #25 Test that a WebAssembly code returns a specific result (memory_grow.wast:9)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #26 Test that a WebAssembly code returns a specific result (memory_grow.wast:10)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #27 Test that a WebAssembly code returns a specific result (memory_grow.wast:11)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #28 Test that a WebAssembly code returns a specific result (memory_grow.wast:12)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+[FAIL] #29 Test that a WebAssembly code returns a specific result (memory_grow.wast:13)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_grow_wast_js (http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:31:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_grow.wast.js:351:3 expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] LF at <before-dot> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] CR at <before-dot> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] HTAB at <before-dot> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] SP at <before-dot> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] COLON at <before-dot> should result in Network Error (fetch)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

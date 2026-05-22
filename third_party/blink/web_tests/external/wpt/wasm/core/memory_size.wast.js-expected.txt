@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #1 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #8 Reinitialize the default imports
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot convert 10 to a BigInt"
+[FAIL] #9 Test that WebAssembly compilation succeeds (memory_size.wast:1)
+  assert_true: WebAssembly.compile failed unexpectedly with TypeError: Cannot convert 10 to a BigInt at {loc} expected true got false
+[FAIL] #10 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:207:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:7:10)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #11 Test that a WebAssembly code returns a specific result (memory_size.wast:7)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'size') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:10:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #12 Test that a WebAssembly code returns a specific result (memory_size.wast:8)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:13:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #13 Test that a WebAssembly code returns a specific result (memory_size.wast:9)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'size') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:16:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #14 Test that a WebAssembly code returns a specific result (memory_size.wast:10)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:19:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #15 Test that a WebAssembly code returns a specific result (memory_size.wast:11)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'size') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #16 Test that a WebAssembly code returns a specific result (memory_size.wast:12)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'grow') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+[FAIL] #17 Test that a WebAssembly code returns a specific result (memory_size.wast:13)
+  assert_true: unexpected runtime error, observed TypeError: Cannot read properties of undefined (reading 'size') \n    at assert_return (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:312:15)\n    at memory_size_wast_js (http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:28:1)\n    at http://web-platform.test:8001/wasm/core/js/memory_size.wast.js:141:3 expected true got false
+Harness: the test ran to completion.
+

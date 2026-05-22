@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] serialization test Ed448
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] serialization test {name: Ed448}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+Harness: the test ran to completion.
+
