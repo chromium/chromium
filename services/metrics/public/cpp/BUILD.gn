@@ -80,6 +80,14 @@ action("gen_ukm_builders") {
     "//tools/metrics/ukm/builders_template.py",
     "//tools/metrics/ukm/decode_template.py",
     "//tools/metrics/ukm/codegen.py",
+    "//tools/metrics/ukm/setup_modules.py",
+    "//tools/metrics/python_support/setup_modules_lib.py",
+    "//tools/metrics/ukm/ukm_model.py",
+    "//tools/metrics/common/models.py",
+    "//tools/metrics/common/model_shared.py",
+    "//tools/metrics/common/pretty_print_xml.py",
+    "//tools/metrics/common/etree_util.py",
+    "//tools/metrics/common/codegen_shared.py",
   ]
   sources = [ "//tools/metrics/ukm/ukm.xml" ]
 

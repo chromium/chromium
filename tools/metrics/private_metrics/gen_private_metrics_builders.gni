@@ -20,6 +20,16 @@ template("private_metrics_builders") {
       "//tools/metrics/private_metrics/dwa_builders_template.py",
       "//tools/metrics/private_metrics/dwa_decode_template.py",
       "//tools/metrics/private_metrics/private_metrics_codegen.py",
+      "//tools/metrics/private_metrics/setup_modules.py",
+      "//tools/metrics/python_support/setup_modules_lib.py",
+      "//tools/metrics/private_metrics/dkm_model.py",
+      "//tools/metrics/private_metrics/dwa_model.py",
+      "//tools/metrics/private_metrics/private_metrics_model_shared.py",
+      "//tools/metrics/common/models.py",
+      "//tools/metrics/common/model_shared.py",
+      "//tools/metrics/common/pretty_print_xml.py",
+      "//tools/metrics/common/etree_util.py",
+      "//tools/metrics/common/codegen_shared.py",
     ]
 
     sources = [ "//tools/metrics/private_metrics/${invoker.type}.xml" ]

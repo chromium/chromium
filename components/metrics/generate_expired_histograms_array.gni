@@ -33,7 +33,25 @@ template("generate_expired_histograms_array") {
     script = "//tools/metrics/histograms/generate_expired_histograms_array.py"
     outputs = [ header_filename ]
 
-    inputs = histograms_xml_files
+    inputs = histograms_xml_files + [
+               "//tools/metrics/histograms/setup_modules.py",
+               "//tools/metrics/python_support/setup_modules_lib.py",
+               "//tools/metrics/histograms/extract_histograms.py",
+               "//tools/metrics/histograms/histogram_paths.py",
+               "//tools/metrics/histograms/merge_xml.py",
+               "//tools/metrics/common/xml_utils.py",
+               "//tools/metrics/common/path_util.py",
+               "//tools/metrics/histograms/expand_owners.py",
+               "//tools/metrics/histograms/histogram_configuration_model.py",
+               "//tools/metrics/histograms/populate_enums.py",
+               "//tools/metrics/common/codegen_shared.py",
+               "//tools/metrics/common/models.py",
+               "//tools/metrics/common/model_shared.py",
+               "//tools/metrics/common/pretty_print_xml.py",
+               "//tools/metrics/common/etree_util.py",
+               invoker.major_branch_date_filepath,
+               invoker.milestone_filepath,
+             ]
 
     major_branch_date_filepath = invoker.major_branch_date_filepath
     milestone_filepath = invoker.milestone_filepath
@@ -49,6 +67,6 @@ template("generate_expired_histograms_array") {
               "-H" + rebase_path(header_filename, root_gen_dir),
               "-d" + rebase_path(major_branch_date_filepath, root_build_dir),
               "-m" + rebase_path(milestone_filepath, root_build_dir),
-            ] + rebase_path(inputs, root_build_dir)
+            ] + rebase_path(histograms_xml_files, root_build_dir)
   }
 }

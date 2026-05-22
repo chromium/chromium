@@ -86,12 +86,13 @@ def __step_config(ctx, step_config):
         "tools/grit/preprocess_if_expr.py",
         "tools/licenses/licenses.py",
         "tools/media_engagement_preload/make_dafsa.py",
-        "tools/metrics/histograms/generate_expired_histograms_array.py",
+
+        # merge_xml.py relies on expand_owners.py, which
+        # executes dirmd (depot_tools) that queries local git repository
+        # metadata. This cannot run inside clean RBE sandboxes.
+        # TODO: Consider recoding the parsing in Python to sever the link to
+        # dirmd, as this dependency keeps causing various problems.
         "tools/metrics/histograms/merge_xml.py",
-        "tools/metrics/private_metrics/gen_private_metrics_builders.py",
-        "tools/metrics/structured/gen_events.py",
-        "tools/metrics/structured/gen_validator.py",
-        "tools/metrics/ukm/gen_builders.py",
         "tools/nocompile/wrapper.py",
         "tools/polymer/css_to_wrapper.py",
         "tools/polymer/html_to_wrapper.py",

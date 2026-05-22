@@ -152,13 +152,17 @@ action("gen_structured_events_cpp") {
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/structured/code_generator_cpp.py",
     "//tools/metrics/structured/code_generator.py",
+    "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/code_generator_ts.py",
     "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_events.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",
     "//tools/metrics/structured/templates_events.py",
+    "//tools/metrics/structured/templates_validator.py",
+    "//tools/metrics/structured/setup_modules.py",
+    "//tools/metrics/python_support/setup_modules_lib.py",
   ]
   sources = [ "//tools/metrics/structured/sync/structured.xml" ]
 
@@ -184,13 +188,17 @@ action("gen_structured_events_ts") {
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/structured/code_generator_ts.py",
     "//tools/metrics/structured/code_generator.py",
+    "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/code_generator_ts.py",
     "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_events.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",
     "//tools/metrics/structured/templates_events.py",
+    "//tools/metrics/structured/templates_validator.py",
+    "//tools/metrics/structured/setup_modules.py",
+    "//tools/metrics/python_support/setup_modules_lib.py",
   ]
   sources = [ "//tools/metrics/structured/sync/structured.xml" ]
 
@@ -228,12 +236,16 @@ action("gen_structured_metrics_validator") {
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
+    "//tools/metrics/structured/code_generator.py",
     "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/code_generator_ts.py",
     "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_validator.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",
     "//tools/metrics/structured/templates_validator.py",
+    "//tools/metrics/structured/setup_modules.py",
+    "//tools/metrics/python_support/setup_modules_lib.py",
   ]
   sources = [ "//tools/metrics/structured/sync/structured.xml" ]
 
