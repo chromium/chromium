@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+use icu_locale::fallback::LocaleFallbacker;
 use icu_locale::LocaleCanonicalizer;
 use icu_locale_core::Locale;
+use std::fmt;
 
 #[cxx::bridge(namespace = "base::i18n::internal")]
 pub mod ffi {
@@ -24,6 +26,12 @@ pub mod ffi {
         fn region(self: &Icu4xLocale) -> &str;
         fn variants(self: &Icu4xLocale) -> Vec<String>;
         fn extensions_as_strings(self: &Icu4xLocale) -> Vec<String>;
+        #[cxx_name = "to_string"]
+        fn to_string_inherent(self: &Icu4xLocale) -> String;
+
+        type IcuFallbacker;
+        fn create_icu_fallbacker() -> Box<IcuFallbacker>;
+        fn fallback_to_vec(self: &IcuFallbacker, locale_bytes: &[u8]) -> Vec<Icu4xLocale>;
     }
 }
 
@@ -110,10 +118,57 @@ impl Icu4xLocale {
 
         result
     }
+
+    pub fn to_string_inherent(&self) -> String {
+        self.locale.to_string()
+    }
+}
+
+impl fmt::Display for Icu4xLocale {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.locale)
+    }
 }
 
 fn create_icu_canonicalizer() -> Box<IcuCanonicalizer> {
     IcuCanonicalizer::new()
+}
+
+pub struct IcuFallbacker {
+    fallbacker: LocaleFallbacker,
+}
+
+impl IcuFallbacker {
+    pub fn new() -> Box<Self> {
+        Box::new(Self { fallbacker: LocaleFallbacker::new().static_to_owned() })
+    }
+
+    pub fn fallback_to_vec(&self, locale_bytes: &[u8]) -> Vec<Icu4xLocale> {
+        let locale = match Locale::try_from_utf8(locale_bytes) {
+            Ok(l) => l,
+            Err(_) => {
+                return Vec::new();
+            }
+        };
+
+        let mut fallbacks = Vec::new();
+        // Conversion from Locale to DataLocale drops most extensions (except -u-sd).
+        let mut iter = self.fallbacker.for_config(Default::default()).fallback_for(locale.into());
+        loop {
+            let data_locale = iter.get();
+            if data_locale.is_unknown() {
+                break;
+            }
+            fallbacks.push(Icu4xLocale { locale: data_locale.into_locale() });
+            iter.step();
+        }
+
+        fallbacks
+    }
+}
+
+fn create_icu_fallbacker() -> Box<IcuFallbacker> {
+    IcuFallbacker::new()
 }
 
 #[cfg(test)]
@@ -179,5 +234,24 @@ mod tests {
         assert_eq!(loc.language(), "en");
         assert!(loc.script().is_empty());
         assert!(loc.region().is_empty());
+    }
+
+    #[test]
+    fn test_fallbacker() {
+        let fallbacker = IcuFallbacker::new();
+        let fallbacks = fallbacker.fallback_to_vec(b"en-US");
+        let fallback_strings: Vec<String> = fallbacks.iter().map(|f| f.to_string()).collect();
+        // ICU4X fallback typically produces ["en-US", "en"] for en-US.
+        assert_eq!(fallback_strings, vec!["en-US", "en"]);
+
+        let fallbacks_zh = fallbacker.fallback_to_vec(b"zh-Hant-TW");
+        let fallback_zh_strings: Vec<String> = fallbacks_zh.iter().map(|f| f.to_string()).collect();
+        // For zh-Hant-TW, it often includes script fallback.
+        assert!(fallback_zh_strings.contains(&"zh-Hant".to_string()));
+
+        let fallbacks_rg = fallbacker.fallback_to_vec(b"en-US-u-rg-gbeng");
+        let fallback_rg_strings: Vec<String> = fallbacks_rg.iter().map(|f| f.to_string()).collect();
+        // Currently, DataLocale ignores -u-rg extensions, so it falls back to en-US.
+        assert_eq!(fallback_rg_strings, vec!["en-US", "en"]);
     }
 }
