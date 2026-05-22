@@ -79,6 +79,25 @@ class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
     return service_.get();
   }
 
+  void SetupAffilliations(const std::string& signon_realm,
+                          const std::string& affiliated_realm) {
+#if BUILDFLAG(IS_ANDROID)
+    static_cast<password_manager::FakePasswordStoreBackend*>(
+        store()->GetBackendForTesting())
+        ->SetAffiliatedAndGroupedRealms(signon_realm, {affiliated_realm});
+#else
+    std::string facet_uri = affiliated_realm;
+    if (!facet_uri.empty() && facet_uri.back() == '/') {
+      facet_uri.pop_back();
+    }
+    EXPECT_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
+        .WillOnce(base::test::RunOnceCallback<1>(
+            affiliations::AffiliatedFacets{affiliations::Facet(
+                affiliations::FacetURI::FromCanonicalSpec(facet_uri))},
+            true));
+#endif
+  }
+
   base::test::TaskEnvironment& task_environmenft() { return task_environment_; }
 
  private:
@@ -226,12 +245,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
            GetAllLoginsSync(store()).count(kAffiliatedRealm) > 0;
   }));
 
-  EXPECT_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          affiliations::AffiliatedFacets{
-              affiliations::Facet(affiliations::FacetURI::FromCanonicalSpec(
-                  "https://affiliated.com"))},
-          true));
+  SetupAffilliations(kSignonRealm, kAffiliatedRealm);
 
   Credential credential;
   credential.request_origin = kOrigin;
@@ -276,15 +290,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   // All updates are guaranteed to be finished here.
   EXPECT_TRUE(
       GetAllLoginsSync(store()).at(kSignonRealm)[0].actor_login_approved);
-#if !BUILDFLAG(IS_ANDROID)
-  // On Android, the `FakePasswordStoreBackend` ignores web affiliations due to
-  // the C++ filter in `AffiliatedMatchHelper` (which is dead code in prod but
-  // active in tests). So the affiliated credential is not cleared in the test.
-  // TODO(crbug.com/504896739): Update the test once the fake backend supports
-  // affiliation without the helper on Android.
   EXPECT_FALSE(
       GetAllLoginsSync(store()).at(kAffiliatedRealm)[0].actor_login_approved);
-#endif
 }
 
 // Tests that when a new permission is saved for a federated credential
@@ -297,7 +304,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   const std::u16string kExcludedUser = u"user1@gmail.com";
   const url::Origin kOrigin = url::Origin::Create(kUrl);
   const std::string kSignonRealm = kOrigin.GetURL().spec();
-  const std::string kAffiliatedRealm = "https://affiliated.com";
+  const std::string kAffiliatedRealm = "https://affiliated.com/";
 
   password_manager::PasswordForm form1;
   form1.url = kUrl;
@@ -307,15 +314,11 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
   store()->AddLogin(password_manager::FromPasswordForm(form1));
-
   // Wait for store to add login.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetAllLoginsSync(store()).count(kAffiliatedRealm) > 0; }));
-  EXPECT_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          affiliations::AffiliatedFacets{affiliations::Facet(
-              affiliations::FacetURI::FromCanonicalSpec(kAffiliatedRealm))},
-          true));
+
+  SetupAffilliations(kSignonRealm, kAffiliatedRealm);
 
   Credential credential;
   credential.request_origin = kOrigin;
@@ -389,18 +392,12 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
   store()->AddLogin(password_manager::FromPasswordForm(form2));
-
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetAllLoginsSync(store()).count(kExcludedSignonRealm) > 0 &&
            GetAllLoginsSync(store()).count(kOtherSignonRealm) > 0;
   }));
 
-  EXPECT_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          affiliations::AffiliatedFacets{
-              affiliations::Facet(affiliations::FacetURI::FromCanonicalSpec(
-                  "https://affiliated.com"))},
-          true));
+  SetupAffilliations(kExcludedSignonRealm, kOtherSignonRealm);
 
   EXPECT_CALL(*permission_service(), ListPermissions(kOrigin, _))
       .WillOnce([&](const url::Origin& origin, ListPermissionsResult callback) {
@@ -421,15 +418,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   EXPECT_TRUE(GetAllLoginsSync(store())
                   .at(kExcludedSignonRealm)[0]
                   .actor_login_approved);
-#if !BUILDFLAG(IS_ANDROID)
-  // On Android, the `FakePasswordStoreBackend` ignores web affiliations due to
-  // the C++ filter in `AffiliatedMatchHelper` (which is dead code in prod but
-  // active in tests). So the affiliated credential is not cleared in the test.
-  // TODO(crbug.com/504896739): Update the test once the fake backend supports
-  // affiliation without the helper on Android.
   EXPECT_FALSE(
       GetAllLoginsSync(store()).at(kOtherSignonRealm)[0].actor_login_approved);
-#endif
 }
 
 TEST_F(ActorLoginDuplicatePermissionCleanerTest,

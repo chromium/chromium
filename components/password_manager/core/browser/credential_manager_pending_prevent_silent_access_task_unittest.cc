@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -104,6 +105,20 @@ class CredentialManagerPendingPreventSilentAccessTaskTest
 
   MockAffiliatedMatchHelper& affiliated_match_helper() {
     return *mock_affiliated_match_helper_;
+  }
+
+  void SetupAffiliatedAndGroupedRealms(
+      TestPasswordStore* store,
+      const PasswordFormDigest& form,
+      const std::vector<std::string>& affiliated_realms,
+      const std::vector<std::string>& grouped_realms = {}) {
+#if BUILDFLAG(IS_ANDROID)
+    store->SetAffiliatedAndGroupedRealms(form.signon_realm, affiliated_realms,
+                                         grouped_realms);
+#else
+    affiliated_match_helper().ExpectCallToGetAffiliatedAndGrouped(
+        form, affiliated_realms, grouped_realms);
+#endif
   }
 
  protected:
@@ -225,8 +240,9 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
   const PasswordFormDigest kDigest(PasswordForm::Scheme::kHtml,
                                    GetSignonRealm(GURL(kUrl)), GURL(kUrl));
   // Register `kGroupedMatchUrl` domain as weakly affiliated with `kUrl`.
-  affiliated_match_helper().ExpectCallToGetAffiliatedAndGrouped(
-      kDigest, {kUrl}, {kGroupedMatchUrl});
+  SetupAffiliatedAndGroupedRealms(profile_store_.get(), kDigest,
+                                  /*affiliated_realms=*/{},
+                                  /*grouped_realms=*/{kGroupedMatchUrl});
   CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
   task.AddOrigin(kDigest);
   ProcessPasswordStoreUpdates();

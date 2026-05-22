@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -280,6 +281,19 @@ class PasswordManualFallbackFlowTest : public Test {
   // operation asynchronously.
   void ProcessPasswordStoreUpdates() { task_environment_.RunUntilIdle(); }
 
+  void SetupAffiliatedAndGroupedRealms(
+      const PasswordFormDigest& form,
+      const std::vector<std::string>& affiliated_realms,
+      const std::vector<std::string>& grouped_realms = {}) {
+#if BUILDFLAG(IS_ANDROID)
+    profile_password_store().SetAffiliatedAndGroupedRealms(
+        form.signon_realm, affiliated_realms, grouped_realms);
+#else
+    affiliated_match_helper().ExpectCallToGetAffiliatedAndGrouped(
+        form, affiliated_realms, grouped_realms);
+#endif
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   AutofillUnitTestEnvironment autofill_test_environment_;
@@ -513,8 +527,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   PasswordFormDigest digest(PasswordForm::Scheme::kHtml,
                             GetSignonRealm(GURL(kUrlWithNoExactMatches)),
                             GURL(kUrlWithNoExactMatches));
-  affiliated_match_helper().ExpectCallToGetAffiliatedAndGrouped(
-      digest, {kUrlWithNoExactMatches}, {kUrl});
+  SetupAffiliatedAndGroupedRealms(digest, {kUrlWithNoExactMatches}, {kUrl});
   // Trigger flow for the `kUrlWithNoExactMatches` domain.
   InitializeFlow(kUrlWithNoExactMatches);
   ProcessPasswordStoreUpdates();

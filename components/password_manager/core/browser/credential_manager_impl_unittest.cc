@@ -412,6 +412,19 @@ class CredentialManagerImplTest : public testing::Test,
 
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
+  void SetupAffiliatedAndGroupedRealms(
+      const PasswordFormDigest& form,
+      const std::vector<std::string>& affiliated_realms,
+      const std::vector<std::string>& grouped_realms = {}) {
+#if BUILDFLAG(IS_ANDROID)
+    store_->SetAffiliatedAndGroupedRealms(form.signon_realm, affiliated_realms,
+                                          grouped_realms);
+#else
+    mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+        form, affiliated_realms, grouped_realms);
+#endif
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   PasswordForm form_;
@@ -569,7 +582,6 @@ TEST_P(CredentialManagerImplTest, CredentialManagerStoreOverwrite) {
   form_.display_name = u"Old Name";
   form_.icon_url = GURL();
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   // Calling 'Store' with a credential that matches |form_| should update
   // the password without prompting the user.
@@ -640,8 +652,9 @@ TEST_P(CredentialManagerImplTest,
   // Calling 'Store' with a new credential that is a grouped match for an
   // existing credential with identical username and password should result in a
   // silent save without prompting the user.
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
-      cm_service_impl_->GetSynthesizedFormForOrigin(), /*affiliated_realms=*/{},
+  SetupAffiliatedAndGroupedRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(),
+      /*affiliated_realms=*/{},
       /*grouped_realms=*/{kTestAndroidRealm1});
   auto info = PasswordFormToCredentialInfo(form_);
   EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
@@ -725,7 +738,6 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest, CredentialManagerStoreOverwriteZeroClick) {
   form_.skip_zero_click = true;
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   // Calling 'Store' with a credential that matches |form_| should update
   // the credential without prompting the user.
@@ -751,7 +763,6 @@ TEST_P(CredentialManagerImplTest,
   form_.signon_realm = "federation://example.com/example.com";
   form_.match_type = PasswordForm::MatchType::kExact;
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   // Calling 'Store' with a credential that matches |form_| should update
   // the credential without prompting the user.
@@ -779,7 +790,6 @@ TEST_P(CredentialManagerImplTest, CredentialManagerGetOverwriteZeroClick) {
   form_.password_element = u"password-element";
   form_.url = GURL("https://example.com/old_form.html");
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
@@ -821,7 +831,6 @@ TEST_P(CredentialManagerImplTest, CredentialManagerOnPreventSilentAccess) {
   store_->AddLogin(password_manager::FromPasswordForm(form_));
   store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
   store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
-  RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
   EXPECT_EQ(3U, passwords.size());
@@ -854,7 +863,6 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled)
       .WillRepeatedly(Return(false));
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
   ASSERT_EQ(1U, passwords.size());
@@ -878,7 +886,6 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
   ASSERT_EQ(1U, passwords.size());
@@ -909,7 +916,7 @@ TEST_P(CredentialManagerImplTest,
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
   RunAllPendingTasks();
 
@@ -1167,7 +1174,7 @@ TEST_P(CredentialManagerImplTest,
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   // We pass in 'true' for the 'include_passwords' argument to ensure that
@@ -1185,7 +1192,7 @@ TEST_P(CredentialManagerImplTest,
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   // We pass in 'false' for the 'include_passwords' argument to ensure that
@@ -1207,7 +1214,7 @@ TEST_P(CredentialManagerImplTest,
 
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
@@ -1228,7 +1235,7 @@ TEST_P(CredentialManagerImplTest,
 
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
@@ -1306,7 +1313,6 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        OnRequestCredentialWithZeroClickOnlyCrossOriginPasswordStore) {
   store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
-
   form_.skip_zero_click = true;
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 
@@ -1410,10 +1416,6 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
   store_->AddLogin(password_manager::FromPasswordForm(form_));
   cross_origin_form_.skip_zero_click = true;
   store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
-
-  // Execute the PasswordStore asynchronousness to ensure everything is
-  // written before proceeding.
-  RunAllPendingTasks();
 
   // Sanity check.
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
@@ -1555,11 +1557,11 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithAffiliatedFormInPasswordStore) {
   // ought to be returned automagically.
   store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
 
-  std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms = {kTestAndroidRealm1};
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
+  std::vector<GURL> federations;
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
                                federations,
                                CredentialType::CREDENTIAL_TYPE_PASSWORD);
@@ -1576,7 +1578,7 @@ TEST_P(CredentialManagerImplTest,
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
   affiliated_realms.push_back(kTestAndroidRealm2);
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
@@ -1591,16 +1593,17 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
 
   std::vector<std::string> affiliated_realms;
-  PasswordFormDigest digest = cm_service_impl_->GetSynthesizedFormForOrigin();
-  // First expect affiliations for the HTTPS domain.
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(digest,
-                                                          affiliated_realms);
+  SetupAffiliatedAndGroupedRealms(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
+  PasswordFormDigest digest = cm_service_impl_->GetSynthesizedFormForOrigin();
   digest.url = HttpURLFromHttps(digest.url);
   digest.signon_realm = digest.url.spec();
+#if !BUILDFLAG(IS_ANDROID)
   // The second call happens for HTTP as the migration is triggered.
   mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(digest,
                                                           affiliated_realms);
+#endif
 
   std::vector<GURL> federations;
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
@@ -1617,7 +1620,7 @@ TEST_P(CredentialManagerImplTest,
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetupAffiliatedAndGroupedRealms(
       cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);
 
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
@@ -1809,7 +1812,6 @@ TEST_P(CredentialManagerImplTest,
   federated.signon_realm =
       "federation://" + federated.url.GetHost() + "/google.com";
   store_->AddLogin(password_manager::FromPasswordForm(federated));
-
   form_.username_value = u"username_value";
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 
@@ -2034,7 +2036,6 @@ TEST_P(CredentialManagerImplTest, ReauthAfterAccountSelection) {
       .WillByDefault(Return(true));
 
   store_->AddLogin(password_manager::FromPasswordForm(form_));
-  RunAllPendingTasks();
 
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(1);
 

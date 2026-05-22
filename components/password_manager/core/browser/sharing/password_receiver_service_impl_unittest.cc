@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -43,8 +44,8 @@ using testing::Field;
 using testing::IsEmpty;
 using testing::ValuesIn;
 
-constexpr std::string_view kUrl = "https://www.test.com";
-constexpr std::string_view kPslMatchUrl = "https://m.test.com";
+constexpr std::string_view kUrl = "https://www.test.com/";
+constexpr std::string_view kPslMatchUrl = "https://m.test.com/";
 constexpr std::string_view kGroupedMatchUrl = "https://grouped.match.com/";
 constexpr std::u16string_view kUsername = u"username";
 constexpr std::u16string_view kPassword = u"password";
@@ -198,6 +199,20 @@ class PasswordReceiverServiceImplTest : public testing::Test {
   }
 
   syncer::TestSyncService& sync_service() { return sync_service_; }
+
+  void SetupAffiliatedAndGroupedRealms(
+      const PasswordFormDigest& form,
+      const std::vector<std::string>& affiliated_realms,
+      const std::vector<std::string>& grouped_realms = {}) {
+#if BUILDFLAG(IS_ANDROID)
+    expected_password_store_for_syncing().SetAffiliatedAndGroupedRealms(
+        form.signon_realm, affiliated_realms, grouped_realms);
+#else
+    expected_affiliated_match_helper_for_syncing()
+        .ExpectCallToGetAffiliatedAndGrouped(
+            form, affiliated_realms, grouped_realms, /*repeatedly=*/true);
+#endif
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -650,9 +665,8 @@ TEST_F(PasswordReceiverServiceImplTest, ShouldIgnoreGroupedCredentials) {
 
   PasswordForm shared_form = CreatePasswordForm();
   PasswordFormDigest digest = PasswordFormDigest(shared_form);
-  expected_affiliated_match_helper_for_syncing()
-      .ExpectCallToGetAffiliatedAndGrouped(digest, {std::string(kUrl)},
-                                           {std::string(kGroupedMatchUrl)});
+  SetupAffiliatedAndGroupedRealms(digest, {std::string(kUrl)},
+                                  {std::string(kGroupedMatchUrl)});
   // Simulate an incoming invitation for the same stored passwords.
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(shared_form);

@@ -851,6 +851,20 @@ class PasswordManagerTestBase : public testing::Test {
     manager()->OnPasswordFormSubmitted(&driver_, form_data);
   }
 
+  void SetAffiliatedAndGroupedRealms(
+      const PasswordFormDigest& observed_form,
+      const std::vector<std::string>& affiliated_realms,
+      const std::vector<std::string>& grouped_realms = {},
+      bool repeatedly = false) {
+#if BUILDFLAG(IS_ANDROID)
+    store_->SetAffiliatedAndGroupedRealms(observed_form.signon_realm,
+                                          affiliated_realms, grouped_realms);
+#else
+    mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+        observed_form, affiliated_realms, grouped_realms, repeatedly);
+#endif
+  }
+
   const GURL test_form_url_{"https://www.google.com/a/LoginAuth"};
   const url::Origin test_form_origin_{url::Origin::Create(test_form_url_)};
   const GURL test_form_action_{"https://www.google.com/a/Login"};
@@ -3493,8 +3507,8 @@ TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion)
       .WillRepeatedly(SaveArg<0>(&form_data));
   store_->AddLogin(password_manager::FromPasswordForm(android_form));
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
-      PasswordFormDigest(observed_form), {android_form.signon_realm});
+  SetAffiliatedAndGroupedRealms(PasswordFormDigest(observed_form),
+                                {android_form.signon_realm});
   manager()->OnPasswordFormsParsed(&driver_, observed_forms);
   manager()->OnPasswordFormsRendered(&driver_, observed_forms);
   task_environment_.RunUntilIdle();
@@ -3555,8 +3569,8 @@ TEST_P(PasswordManagerTest, UpdatePasswordOfAffiliatedCredential) {
 
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion);
   store_->AddLogin(password_manager::FromPasswordForm(android_form));
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
-      PasswordFormDigest(observed_form), {android_form.signon_realm});
+  SetAffiliatedAndGroupedRealms(PasswordFormDigest(observed_form),
+                                {android_form.signon_realm});
   manager()->OnPasswordFormsParsed(&driver_, observed_forms);
   manager()->OnPasswordFormsRendered(&driver_, observed_forms);
   task_environment_.RunUntilIdle();
@@ -5831,7 +5845,7 @@ TEST_P(PasswordManagerTest, NoAutomaticPromptOnGroupedMatchSave) {
       .set_value(saved_match.password_value);
 
   // `saved_match` credential will be considered as a grouped match.
-  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+  SetAffiliatedAndGroupedRealms(
       PasswordFormDigest(password_form),
       /*affiliated_realms=*/{password_form.signon_realm},
       /*grouped_realms=*/{saved_match.signon_realm, password_form.signon_realm},

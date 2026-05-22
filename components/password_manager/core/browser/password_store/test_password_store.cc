@@ -37,6 +37,16 @@ void TestPasswordStore::TriggerOnLoginsRetainedForAndroid(
   fake_backend()->TriggerOnLoginsRetainedForAndroid(credentials);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void TestPasswordStore::SetAffiliatedAndGroupedRealms(
+    const std::string& signon_realm,
+    const std::vector<std::string>& affiliated_realms,
+    const std::vector<std::string>& grouped_realms) {
+  fake_backend()->SetAffiliatedAndGroupedRealms(signon_realm, affiliated_realms,
+                                                grouped_realms);
+}
+#endif
+
 void TestPasswordStore::ReturnErrorOnRequest(
     PasswordStoreBackendError password_store_backend_error) {
   fake_backend()->ReturnErrorOnRequest(password_store_backend_error);
