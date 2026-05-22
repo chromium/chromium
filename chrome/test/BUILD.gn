@@ -9636,6 +9636,7 @@ test("unit_tests") {
       "//base",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions:unit_tests",
+      "//chrome/renderer/extensions:unit_tests",
     ]
   }
 
@@ -9756,7 +9757,6 @@ test("unit_tests") {
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",
       "//chrome/common/extensions:extension_features_unittest",
-      "//chrome/renderer/extensions:unit_tests",
       "//chrome/utility/image_writer:unit_tests",
       "//components/services/unzip:in_process",
       "//extensions/browser/mime_handler",

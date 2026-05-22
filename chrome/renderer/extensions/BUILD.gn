@@ -13,6 +13,7 @@ source_set("extensions") {
   public = [
     "api/chrome_extensions_renderer_api_provider.h",
     "api/extension_hooks_delegate.h",
+    "api/identity_hooks_delegate.h",
     "api/tabs_hooks_delegate.h",
     "chrome_extensions_renderer_client.h",
     "chrome_policy_activity_log_filter_delegate.h",
@@ -23,6 +24,7 @@ source_set("extensions") {
   sources = [
     "api/chrome_extensions_renderer_api_provider.cc",
     "api/extension_hooks_delegate.cc",
+    "api/identity_hooks_delegate.cc",
     "api/notifications_native_handler.cc",
     "api/notifications_native_handler.h",
     "api/page_capture_custom_bindings.cc",
@@ -63,17 +65,13 @@ source_set("extensions") {
   # in the experimental desktop-android configuration. Gradually include more
   # of them, or omit them behind more targeted GN flags.
   if (enable_extensions) {
-    public += [
-      "api/accessibility_private_hooks_delegate.h",
-      "api/identity_hooks_delegate.h",
-    ]
+    public += [ "api/accessibility_private_hooks_delegate.h" ]
 
     sources += [
       "api/accessibility_private_hooks_delegate.cc",
       "api/accessibility_private_hooks_delegate.h",
       "api/app_hooks_delegate.cc",
       "api/app_hooks_delegate.h",
-      "api/identity_hooks_delegate.cc",
       "api/sync_file_system_custom_bindings.cc",
       "api/sync_file_system_custom_bindings.h",
     ]
@@ -121,8 +119,14 @@ source_set("extensions") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
-  deps = []
+  sources = [ "api/identity_hooks_delegate_unittest.cc" ]
+  deps = [
+    ":extensions",
+    "//base/test:test_support",
+    "//extensions:test_support",
+    "//extensions/renderer:unit_test_support",
+    "//testing/gtest",
+  ]
 
   # TODO(https://crbug.com/356905053): These sources are not currently included
   # in the experimental desktop-android configuration. Gradually include more
@@ -130,7 +134,6 @@ source_set("unit_tests") {
   if (enable_extensions) {
     sources += [
       "api/extension_hooks_delegate_unittest.cc",
-      "api/identity_hooks_delegate_unittest.cc",
       "api/tabs_hooks_delegate_unittest.cc",
       "chrome_native_extension_bindings_system_unittest.cc",
       "chrome_policy_activity_log_filter_delegate_unittest.cc",
@@ -139,16 +142,11 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      ":extensions",
-      "//base/test:test_support",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/common/extensions",
       "//chrome/renderer:process_state",
       "//content/test:test_support",
-      "//extensions:test_support",
-      "//extensions/renderer:unit_test_support",
-      "//testing/gtest",
     ]
   }
 

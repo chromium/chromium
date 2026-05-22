@@ -6,8 +6,11 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/v8_helpers.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

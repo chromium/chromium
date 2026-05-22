@@ -6,8 +6,10 @@
 
 #include <string_view>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/grit/renderer_resources_resources.h"
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
+#include "chrome/renderer/extensions/api/identity_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/notifications_native_handler.h"
 #include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
@@ -20,15 +22,15 @@
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
 #include "pdf/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "build/chromeos_buildflags.h"
-#include "chrome/renderer/extensions/api/app_hooks_delegate.h"
-#include "chrome/renderer/extensions/api/identity_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
-#include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/native_handler.h"
-#include "printing/buildflags/buildflags.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/renderer/extensions/api/app_hooks_delegate.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/renderer/extensions/api/accessibility_private_hooks_delegate.h"
@@ -40,7 +42,6 @@
 #include "chrome/renderer/extensions/api/printing_hooks_delegate.h"
 #endif  // BUILDFLAG(USE_CUPS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/renderer/extensions/api/pdf_viewer_private_custom_bindings.h"
@@ -99,21 +100,22 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
 void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
     Dispatcher* dispatcher,
     NativeExtensionBindingsSystem* bindings_system) const {
-  // TODO(crbug.com/356905053): Move bindings supported on desktop android here.
+  // Bindings are stored in a map so the order of registration doesn't matter.
   APIBindingsSystem* bindings = bindings_system->api_system();
   bindings->RegisterHooksDelegate(
       "extension", std::make_unique<extensions::ExtensionHooksDelegate>(
                        bindings_system->messaging_service()));
   bindings->RegisterHooksDelegate(
+      "identity", std::make_unique<extensions::IdentityHooksDelegate>());
+  bindings->RegisterHooksDelegate(
       "tabs", std::make_unique<extensions::TabsHooksDelegate>(
                   bindings_system->messaging_service()));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   bindings->RegisterHooksDelegate(
       "app", std::make_unique<extensions::AppHooksDelegate>(
                  dispatcher, bindings->request_handler(),
                  bindings_system->GetIPCMessageSender()));
-  bindings->RegisterHooksDelegate(
-      "identity", std::make_unique<extensions::IdentityHooksDelegate>());
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 #if BUILDFLAG(IS_CHROMEOS)
   bindings->RegisterHooksDelegate(
       "accessibilityPrivate",
@@ -123,7 +125,6 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
       "printing", std::make_unique<extensions::PrintingHooksDelegate>());
 #endif  // BUILDFLAG(USE_CUPS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
