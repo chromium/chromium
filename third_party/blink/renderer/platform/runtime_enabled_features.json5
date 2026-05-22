@@ -5138,6 +5138,10 @@
       status: "stable",
     },
     {
+      name: "ScrollPerformanceTiming",
+      status: "test",
+    },
+    {
       // Separate flag for crbug.com/1426506 (getCurrentTime API change) which
       // is expected to land after the initial launch of ScrollTimeline.
       name: "ScrollTimelineCurrentTime",

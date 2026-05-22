@@ -145,6 +145,9 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
   if (entry_type == performance_entry_names::kContainer) {
     return kContainer;
   }
+  if (entry_type == performance_entry_names::kScroll) {
+    return kScroll;
+  }
   return kInvalid;
 }
 

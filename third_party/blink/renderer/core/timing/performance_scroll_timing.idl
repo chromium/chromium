@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PerformanceScrollTiming/explainer.md
+[
+    Exposed=Window,
+    RuntimeEnabled=ScrollPerformanceTiming
+] interface PerformanceScrollTiming : PerformanceEntry {
+    readonly attribute Node? target;
+    readonly attribute DOMHighResTimeStamp firstFrameTime;
+    readonly attribute long deltaX;
+    readonly attribute long deltaY;
+    readonly attribute DOMString scrollSource;
+    readonly attribute unsigned long framesExpected;
+    readonly attribute unsigned long framesProduced;
+    readonly attribute DOMHighResTimeStamp checkerboardTime;
+
+    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+};

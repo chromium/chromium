@@ -528,6 +528,12 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kScript:
       break;
 
+    // TODO(crbug.com/504094429): Scroll entries are not emitted yet. A
+    // follow-up CL will add scroll instrumentation that delivers entries
+    // through PerformanceObserver.
+    case PerformanceEntry::kScroll:
+      break;
+
     case PerformanceEntry::kLayoutShift:
       entries = &layout_shift_buffer_;
       break;
