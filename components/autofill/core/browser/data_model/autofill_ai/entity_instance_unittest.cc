@@ -73,6 +73,18 @@ TEST_P(AutofillEntityInstanceTest, MaskedEntityWithMaskedAttributes) {
   EXPECT_CHECK_DEATH(invalid_entity.IsMaskedEntity());
 }
 
+TEST_P(AutofillEntityInstanceTest, MaskedPersonalContextEntity) {
+  AttributeInstance attribute((AttributeType(kPassportNumber)));
+  ASSERT_TRUE(attribute.type().is_obfuscated());
+  test_api(attribute).mark_as_masked();
+
+  EntityInstance entity = test::GetEntityInstance(
+      {attribute},
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EXPECT_TRUE(entity.IsMaskedEntity());
+  EXPECT_FALSE(entity.IsUnmaskedEntity());
+}
+
 TEST_P(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedEntity) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
@@ -663,6 +675,72 @@ TEST_P(AutofillEntityInstanceTest, GetWalletPassTypeExpectedTypes) {
   EXPECT_EQ(GetWalletPassType(EntityType(kShipment),
                               EntityInstance::RecordType::kServerWallet),
             EntityInstance::WalletPassType::kUnsupported);
+}
+
+// Tests that personal context SPII types have at least one obfuscated
+// attribute for sensitive categories (Spii), since entities without them can
+// be safely stored locally.
+TEST_P(AutofillEntityInstanceTest, GetPersonalContextSpiiType) {
+  for (EntityType t : DenseSet<EntityType>::all()) {
+    EXPECT_TRUE(
+        GetPersonalContextSpiiType(
+            t, EntityInstance::RecordType::kPersonalContext) !=
+            EntityInstance::PersonalContextSpiiType::kSpii ||
+        std::ranges::any_of(t.attributes(),
+                            [](AttributeType a) { return a.is_obfuscated(); }))
+        << t;
+    EXPECT_EQ(GetPersonalContextSpiiType(t, EntityInstance::RecordType::kLocal),
+              EntityInstance::PersonalContextSpiiType::kUnsupported)
+        << t;
+    EXPECT_EQ(GetPersonalContextSpiiType(
+                  t, EntityInstance::RecordType::kServerWallet),
+              EntityInstance::PersonalContextSpiiType::kUnsupported)
+        << t;
+  }
+}
+
+// Tests explicitly for the expected PersonalContextSpiiType of some entity
+// types.
+TEST_P(AutofillEntityInstanceTest, GetPersonalContextSpiiTypeExpectedTypes) {
+  using enum EntityTypeName;
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kDriversLicense),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kSpii);
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kNationalIdCard),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kSpii);
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kPassport),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kSpii);
+
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kFlightReservation),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kNoSpii);
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kVehicle),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kNoSpii);
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kOrder),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kNoSpii);
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kShipment),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kNoSpii);
+
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kKnownTravelerNumber),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kUnsupported);
+  EXPECT_EQ(
+      GetPersonalContextSpiiType(EntityType(kRedressNumber),
+                                 EntityInstance::RecordType::kPersonalContext),
+      EntityInstance::PersonalContextSpiiType::kUnsupported);
 }
 
 // Tests that all obfuscated attributes of entity types that can be stored in

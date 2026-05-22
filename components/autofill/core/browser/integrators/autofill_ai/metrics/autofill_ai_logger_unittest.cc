@@ -9,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -60,6 +61,34 @@ using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultUrl[] = "https://example.com";
+
+std::vector<std::tuple<EntityType, EntityInstance::RecordType>>
+GetCompatibleEntityAndRecordTypes() {
+  std::vector<std::tuple<EntityType, EntityInstance::RecordType>> result;
+  for (EntityType entity_type : DenseSet<EntityType>::all()) {
+    for (EntityInstance::RecordType record_type :
+         DenseSet<EntityInstance::RecordType>::all()) {
+      switch (record_type) {
+        case EntityInstance::RecordType::kServerWallet:
+          if (GetWalletPassType(entity_type, record_type) ==
+              EntityInstance::WalletPassType::kUnsupported) {
+            continue;
+          }
+          break;
+        case EntityInstance::RecordType::kPersonalContext:
+          if (GetPersonalContextSpiiType(entity_type, record_type) ==
+              EntityInstance::PersonalContextSpiiType::kUnsupported) {
+            continue;
+          }
+          break;
+        case EntityInstance::RecordType::kLocal:
+          break;
+      }
+      result.emplace_back(entity_type, record_type);
+    }
+  }
+  return result;
+}
 
 Suggestion GetSuggestion(const EntityInstance& entity) {
   Suggestion suggestion(SuggestionType::kFillAutofillAi);
@@ -279,10 +308,11 @@ class BaseAutofillAiTest : public testing::Test {
       }
       NOTREACHED();
     }();
-    return GetWalletPassType(type, record_type) ==
-                   EntityInstance::WalletPassType::kPrivate
-               ? test::MaskEntityInstance(entity)
-               : entity;
+    const bool should_mask = GetWalletPassType(type, record_type) ==
+                                 EntityInstance::WalletPassType::kPrivate ||
+                             GetPersonalContextSpiiType(type, record_type) ==
+                                 EntityInstance::PersonalContextSpiiType::kSpii;
+    return should_mask ? test::MaskEntityInstance(entity) : entity;
   }
 
   MockAutofillClient& autofill_client() { return autofill_client_; }
@@ -343,15 +373,18 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 class AutofillAiFunnelMetricsTest
     : public BaseAutofillAiTest,
       public testing::WithParamInterface<
-          std::tuple<bool, EntityType, EntityInstance::RecordType>> {
+          std::tuple<bool,
+                     std::tuple<EntityType, EntityInstance::RecordType>>> {
   static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s%s%s";
 
  public:
   AutofillAiFunnelMetricsTest() = default;
 
   bool submitted() { return std::get<0>(GetParam()); }
-  EntityType entity_type() { return std::get<1>(GetParam()); }
-  EntityInstance::RecordType record_type() { return std::get<2>(GetParam()); }
+  EntityType entity_type() { return std::get<0>(std::get<1>(GetParam())); }
+  EntityInstance::RecordType record_type() {
+    return std::get<1>(std::get<1>(GetParam()));
+  }
 
   std::unique_ptr<FormStructure> CreateForm() {
     return BaseAutofillAiTest::CreateForm(entity_type());
@@ -422,10 +455,8 @@ class AutofillAiFunnelMetricsTest
 INSTANTIATE_TEST_SUITE_P(
     AutofillAiTest,
     AutofillAiFunnelMetricsTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(DenseSet<EntityType>::all()),
-        testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(GetCompatibleEntityAndRecordTypes())));
 
 // Tests Autofill.Ai.Funnel.*.Eligibility2.
 TEST_P(AutofillAiFunnelMetricsTest, Eligibility) {
@@ -605,9 +636,7 @@ class AutofillAiKeyMetricsTest
 INSTANTIATE_TEST_SUITE_P(
     AutofillAiTest,
     AutofillAiKeyMetricsTest,
-    testing::Combine(
-        testing::ValuesIn(DenseSet<EntityType>::all()),
-        testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
+    testing::ValuesIn(GetCompatibleEntityAndRecordTypes()));
 
 TEST_P(AutofillAiKeyMetricsTest, FillingReadiness) {
   std::unique_ptr<FormStructure> form = CreateForm();
@@ -776,21 +805,22 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_MixedForm) {
 class AutofillAiPromptMetricsTest
     : public BaseAutofillAiTest,
       public testing::WithParamInterface<
-          std::tuple<EntityType,
-                     AutofillClient::AutofillAiImportPromptType,
+          std::tuple<AutofillClient::AutofillAiImportPromptType,
                      AutofillClient::AutofillAiBubbleResult,
-                     EntityInstance::RecordType>> {
+                     std::tuple<EntityType, EntityInstance::RecordType>>> {
  public:
   AutofillAiPromptMetricsTest() = default;
 
-  EntityType entity_type() { return std::get<0>(GetParam()); }
+  EntityType entity_type() { return std::get<0>(std::get<2>(GetParam())); }
   AutofillClient::AutofillAiImportPromptType prompt_type() {
-    return std::get<1>(GetParam());
+    return std::get<0>(GetParam());
   }
   AutofillClient::AutofillAiBubbleResult result() {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
-  EntityInstance::RecordType record_type() { return std::get<3>(GetParam()); }
+  EntityInstance::RecordType record_type() {
+    return std::get<1>(std::get<2>(GetParam()));
+  }
 
   FormData CreateForm() {
     return BaseAutofillAiTest::CreateForm(entity_type())->ToFormData();
@@ -801,12 +831,11 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillAiTest,
     AutofillAiPromptMetricsTest,
     testing::Combine(
-        testing::ValuesIn(DenseSet<EntityType>::all()),
         testing::ValuesIn(
             DenseSet<AutofillClient::AutofillAiImportPromptType>::all()),
         testing::ValuesIn(
             DenseSet<AutofillClient::AutofillAiBubbleResult>::all()),
-        testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
+        testing::ValuesIn(GetCompatibleEntityAndRecordTypes())));
 
 TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
   constexpr std::string_view kPromptHistogramMask = "Autofill.Ai.%s.%s%s";

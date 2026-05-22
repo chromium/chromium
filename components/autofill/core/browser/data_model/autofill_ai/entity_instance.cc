@@ -167,9 +167,8 @@ bool IsMaskableRecordType(EntityInstance::RecordType record_type) {
     case EntityInstance::RecordType::kLocal:
       return false;
     case EntityInstance::RecordType::kServerWallet:
-      return true;
     case EntityInstance::RecordType::kPersonalContext:
-      return false;
+      return true;
   }
   NOTREACHED();
 }

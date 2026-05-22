@@ -454,9 +454,12 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
 }
 
 EntityInstance MaskEntityInstance(const EntityInstance& entity_instance) {
-  CHECK_EQ(entity_instance.record_type(),
-           EntityInstance::RecordType::kServerWallet)
-      << "Masking only makes sense for server Wallet entities.";
+  CHECK(entity_instance.record_type() ==
+            EntityInstance::RecordType::kServerWallet ||
+        entity_instance.record_type() ==
+            EntityInstance::RecordType::kPersonalContext)
+      << "Masking only makes sense for server Wallet or Personal Context "
+         "entities.";
   std::vector<AttributeInstance> attributes =
       base::ToVector(entity_instance.attributes());
   for (AttributeInstance& attribute : attributes) {

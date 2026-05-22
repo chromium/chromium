@@ -291,6 +291,19 @@ class EntityInstance final {
     kPublic,
   };
 
+  // Categorizes different types of personal context entities.
+  enum class PersonalContextSpiiType {
+    // The entity is not supported as a personal context type (e.g., local
+    // entities, or record types other than kPersonalContext).
+    kUnsupported,
+    // A personal context entity which might contain sensitive information
+    // (e.g. passport, drivers license, national ID).
+    kSpii,
+    // A personal context entity which cannot contain sensitive information
+    // (e.g. flight reservation, vehicle, order, shipment).
+    kNoSpii,
+  };
+
   // `attributes` must be non-empty and their type must be identical to `type`.
   EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
@@ -529,6 +542,33 @@ constexpr EntityInstance::WalletPassType GetWalletPassType(
   }
 
   return EntityInstance::WalletPassType::kUnsupported;
+}
+
+// Returns the EntityInstance::PersonalContextSpiiType of an entity with the
+// given (`type`, `record_type`) combination.
+constexpr EntityInstance::PersonalContextSpiiType GetPersonalContextSpiiType(
+    EntityType type,
+    EntityInstance::RecordType record_type) {
+  if (record_type != EntityInstance::RecordType::kPersonalContext) {
+    return EntityInstance::PersonalContextSpiiType::kUnsupported;
+  }
+
+  switch (type.name()) {
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+      return EntityInstance::PersonalContextSpiiType::kSpii;
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      return EntityInstance::PersonalContextSpiiType::kNoSpii;
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      return EntityInstance::PersonalContextSpiiType::kUnsupported;
+  }
+
+  return EntityInstance::PersonalContextSpiiType::kUnsupported;
 }
 
 }  // namespace autofill

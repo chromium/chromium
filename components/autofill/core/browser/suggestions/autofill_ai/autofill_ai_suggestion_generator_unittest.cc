@@ -598,10 +598,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.name = u"Jon Doe",
        .number = u"12345",
        .record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
-      {.name = u"Jon Doe",
-       .number = u"12345",
-       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_pc =
+      MaskEntityInstance(GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"12345",
+           .record_type = EntityInstance::RecordType::kPersonalContext}));
   SetEntities({passport_local, passport_pc});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
 
@@ -639,10 +640,11 @@ TEST_F(
       {.name = u"Jon Doe",
        .number = u"12345",
        .record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
-      {.name = u"Jon Doe",
-       .number = u"12345",
-       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_pc =
+      MaskEntityInstance(GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"12345",
+           .record_type = EntityInstance::RecordType::kPersonalContext}));
 
   SetEntities({passport_server, passport_local, passport_pc});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
