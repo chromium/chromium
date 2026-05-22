@@ -538,13 +538,6 @@ constexpr double kUkmSamplingRate = 0.001;
 
 static const unsigned kCMaxWriteRecursionDepth = 21;
 
-// This amount of time must have elapsed before we will even consider scheduling
-// a layout without a delay.
-// FIXME: For faster machines this value can really be lowered to 200.  250 is
-// adequate, but a little high for dual G5s. :)
-static const base::TimeDelta kCLayoutScheduleThreshold =
-    base::Milliseconds(250);
-
 namespace {
 
 // https://github.com/whatwg/dom/pull/1079
@@ -4281,15 +4274,6 @@ void Document::DispatchLoadEventAndFinalize() {
   }
 
   if (!GetFrame()) {
-    load_event_progress_ = kLoadEventCompleted;
-    return;
-  }
-
-  if (GetFrame()->Loader().HasProvisionalNavigation() &&
-      start_time_.Elapsed() < kCLayoutScheduleThreshold) {
-    // Just bail out. Before or during the onload we were shifted to another
-    // page.  The old i-Bench suite does this. When this happens don't bother
-    // painting or laying out.
     load_event_progress_ = kLoadEventCompleted;
     return;
   }
