@@ -58,8 +58,7 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
                                      ui::kColorMenuIcon, 16));
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
-      kContextualCueingOpenSettingsCommand,
-      IDS_CONTEXTUAL_CUEING_MENU_SUGGESTION_SETTINGS,
+      kContextualCueingOpenSettingsCommand, IDS_CONTEXTUAL_CUEING_MENU_SETTINGS,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                          ? vector_icons::kSettingsFilledIcon
                                          : vector_icons::kSettingsOldIcon,
