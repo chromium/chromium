@@ -935,3 +935,67 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
       service->GetLocationHeader(url, /*for_automatic_sending=*/true);
   EXPECT_FALSE(automatic_header.has_value());
 }
+
+// Verifies that GetCachedLocationAccuracy returns the correct accuracy level.
+TEST_F(GeolocationHeaderServiceInlineLocationTest, GetCachedLocationAccuracy) {
+  auto service = CreateService();
+  GURL url(kGoogleUrl);
+  SetupGoogleDseWithPermissions();
+
+  // 1. When cache is empty, it should return std::nullopt.
+  EXPECT_EQ(service->GetCachedLocationAccuracy(), std::nullopt);
+
+  // 2. When coarse location is cached.
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/false);
+  service->PrimeLocation();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+  EXPECT_EQ(service->GetCachedLocationAccuracy(),
+            GeolocationAccuracy::kApproximate);
+
+  // 3. When precise location is cached. We recreate the service to ensure its
+  // cache is cleared and it actively primes the new precise location.
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+  service = CreateService();
+  service->PrimeLocation();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+  EXPECT_EQ(service->GetCachedLocationAccuracy(),
+            GeolocationAccuracy::kPrecise);
+}
+
+// Verifies that interactive inline suggestion retrieval bypasses the permission
+// granularity checks.
+TEST_F(GeolocationHeaderServiceInlineLocationTest,
+       GetLocationHeaderInteractiveBypass) {
+  // Cache a precise location.
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  std::unique_ptr<GeolocationHeaderService> service = CreateService();
+  GURL url(kGoogleUrl);
+  SetDefaultSearchProviderUrl(url.spec());
+
+  // The DSE is in ASK state to trigger the suggestions flow.
+  SetSitePermissionWithOptions(
+      url, {PermissionOption::kAsk, PermissionOption::kAsk});
+  SetAppLevelPermission(/*granted=*/true, /*fine_granted=*/true);
+
+  service->PrimeLocation();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+
+  // The interactive flow (for_automatic_sending = false) should bypass the
+  // precision check and return a valid precise header.
+  std::optional<std::string> suggestion_header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/false);
+  EXPECT_THAT(suggestion_header, Optional(StartsWith(kLocationProtoPrefix)));
+
+  // The automatic flow (for_automatic_sending = true) should fail because DSE
+  // permission is ASK.
+  std::optional<std::string> automatic_header =
+      service->GetLocationHeader(url, /*for_automatic_sending=*/true);
+  EXPECT_FALSE(automatic_header.has_value());
+}

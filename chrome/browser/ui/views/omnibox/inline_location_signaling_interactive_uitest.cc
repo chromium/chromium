@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/omnibox/geolocation_header_service_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -67,10 +68,13 @@ struct InlineLocationSignalingTestCase {
   std::string wording;
   bool site_permission_allowed = false;
   bool use_https = true;
+  bool is_precise = false;
   std::string user_input = "a";
   std::string mock_suggest_response;
   std::vector<std::pair<std::u16string, std::u16string>> expected_results;
 };
+
+}  // namespace
 
 class InlineLocationSignalingE2EInteractiveUiTest
     : public InteractiveBrowserTest,
@@ -84,12 +88,15 @@ class InlineLocationSignalingE2EInteractiveUiTest
     position->longitude = kMockLongitude;
     position->accuracy = 1.0;
     position->timestamp = base::Time::Now();
-    position->is_precise = false;
+    position->is_precise = GetParam().is_precise;
     return position;
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch("ignore-certificate-errors");
+    // Disable the 200ms debounce timer in SearchProvider for tests to prevent
+    // hitting the 1.5s AutocompleteController timeout on slow bots.
+    command_line->AppendSwitchASCII("omnibox-suggest-polling-strategy", "0");
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -115,8 +122,26 @@ class InlineLocationSignalingE2EInteractiveUiTest
     // Overrider moved to test body to ensure mojo environment is fully ready.
   }
 
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    InteractiveBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+
+    // Intercept the Device OS Mojo layer early to prevent early startup
+    // geolocation queries from binding to the real system service.
+    device::mojom::GeopositionResultPtr result_ptr =
+        device::mojom::GeopositionResult::NewPosition(CreateMockGeoposition());
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(
+            std::move(result_ptr));
+  }
+
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    InteractiveBrowserTest::SetUpOnMainThread();
+
+    // Mock system-level location permission (Mac, Win, ChromeOS).
+    system_permission_settings_ =
+        std::make_unique<system_permission_settings::ScopedSettingsForTesting>(
+            ContentSettingsType::GEOLOCATION, /*blocked=*/false);
 
     // Safeguard: Guarantee active window widget focus prior to executing
     // subview focus checks
@@ -128,6 +153,15 @@ class InlineLocationSignalingE2EInteractiveUiTest
     // `SearchProvider` payload transmissions
     browser()->profile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+    // Surgical Fix: Increase the global provider timeout specifically for this
+    // test to avoid flakes on slow bots without affecting production users.
+    browser()
+        ->window()
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->autocomplete_controller()
+        ->config_.stop_timer_duration = base::Seconds(10);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -146,6 +180,8 @@ class InlineLocationSignalingE2EInteractiveUiTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
+      system_permission_settings_;
 };
 
 IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
@@ -158,6 +194,7 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
   TemplateURLData data;
   data.SetShortName(u"Test DSE");
   data.SetKeyword(u"testdse");
+  data.send_x_geo_header = true;
 
   std::string base_url = test_server_->GetURL(kExternalEngineHost, "/").spec();
   if (base::EndsWith(base_url, "/")) {
@@ -216,12 +253,10 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
 
   ASSERT_TRUE(base::test::RunUntil([&]() { return controller->done(); }));
 
-  // Late Setup: Intercept the Device OS Mojo layer now that mojo is booted,
-  // matching the profile cache coordinates.
-  device::mojom::GeopositionResultPtr result_ptr =
-      device::mojom::GeopositionResult::NewPosition(CreateMockGeoposition());
-  geolocation_overrider_ = std::make_unique<device::ScopedGeolocationOverrider>(
-      std::move(result_ptr));
+  // Wait for any asynchronous Mojo geolocation query triggered by the focus
+  // flow or DSE change to complete before modifying omnibox state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !geo_service->is_geolocation_bound_for_testing(); }));
 
   omnibox_controller->StopAutocomplete(true);
   omnibox_view->OnBeforePossibleChange();
@@ -255,6 +290,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -271,6 +307,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -287,6 +324,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -303,6 +341,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -318,6 +357,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -333,6 +373,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseLocation",
      .site_permission_allowed = true,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -347,6 +388,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = false,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response =
          "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
@@ -362,6 +404,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response = "[\"a\",[\"a-location-relevant-suggestion\", "
                               "\"other-suggestion\"],[],[],"
@@ -379,6 +422,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response = "[\"a\",[\"other-suggestion\", "
                               "\"a-location-relevant-suggestion\", "
@@ -398,6 +442,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a query",
      .mock_suggest_response = "[\"a query\",[\"a query other-suggestion\", "
                               "\"a query location-relevant-suggestion\", "
@@ -418,6 +463,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response = "[\"a\",[\"a-location-relevant-suggestion\", "
                               "\"other-suggestion\"],[],[],"
@@ -436,6 +482,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "query",
      .mock_suggest_response = "[\"query\",[\"a-location-relevant-suggestion\"],"
                               "[],[],{\"google:suggestsubtypes\":[[457]],"
@@ -452,6 +499,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a query suggestion",
      .mock_suggest_response =
          "[\"a query suggestion\",[\"a query suggestion\"],[],[],"
@@ -468,6 +516,7 @@ const InlineLocationSignalingTestCase kTestCases[] = {
      .wording = "UseApproximateLocation",
      .site_permission_allowed = false,
      .use_https = true,
+     .is_precise = false,
      .user_input = "a",
      .mock_suggest_response = "[\"a\",[\"a-location-relevant-suggestion\", "
                               "\"another-location-relevant-suggestion\"],[],[],"
@@ -478,6 +527,44 @@ const InlineLocationSignalingTestCase kTestCases[] = {
                           {u"a-location-relevant-suggestion",
                            u"Use approximate location"},
                           {u"another-location-relevant-suggestion", u""}}},
+
+    // 15. E2E test for precise location caching + Dynamic accuracy wording.
+    // The UI wording must show "Use precise location" regardless of the wording
+    // parameter value.
+    {.test_name = "PreciseLocation_UseApproximateLocationWordingParam",
+     .display_order = "DisplayBelow",
+     .wording = "UseApproximateLocation",
+     .site_permission_allowed = false,
+     .use_https = true,
+     .is_precise = true,
+     .user_input = "a",
+     .mock_suggest_response =
+         "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
+         "{\"google:suggestsubtypes\":[[457]],"
+         "\"google:suggestrelevance\":[1400]}]",
+     .expected_results = {{u"a", kExpectedDseSearchText},
+                          {u"a-location-relevant-suggestion", u""},
+                          {u"a-location-relevant-suggestion",
+                           u"Use precise location"}}},
+
+    // 16. E2E test for precise location caching + Dynamic accuracy wording.
+    // Again, the UI wording must show "Use precise location" even if the
+    // wording param is "UseLocation".
+    {.test_name = "PreciseLocation_UseLocationWordingParam",
+     .display_order = "DisplayAbove",
+     .wording = "UseLocation",
+     .site_permission_allowed = false,
+     .use_https = true,
+     .is_precise = true,
+     .user_input = "a",
+     .mock_suggest_response =
+         "[\"a\",[\"a-location-relevant-suggestion\"],[],[],"
+         "{\"google:suggestsubtypes\":[[457]],"
+         "\"google:suggestrelevance\":[1400]}]",
+     .expected_results = {{u"a", kExpectedDseSearchText},
+                          {u"a-location-relevant-suggestion",
+                           u"Use precise location"},
+                          {u"a-location-relevant-suggestion", u""}}},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -488,5 +575,3 @@ INSTANTIATE_TEST_SUITE_P(
         InlineLocationSignalingE2EInteractiveUiTest::ParamType>& info) {
       return info.param.test_name;
     });
-
-}  // namespace

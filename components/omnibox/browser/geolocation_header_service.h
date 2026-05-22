@@ -56,6 +56,10 @@ class GeolocationHeaderService : public KeyedService {
   // Returns true if a location is available and cached.
   bool HasCachedLocation() const;
 
+  // Returns the accuracy level of the current cached position if a fresh
+  // location is available. Otherwise, returns std::nullopt.
+  std::optional<GeolocationAccuracy> GetCachedLocationAccuracy() const;
+
   // Returns the serialized X-Geo header if a valid, fresh location is
   // available and the url matches the DSE. Otherwise, returns std::nullopt.
   // - `for_automatic_sending` is true when this is called for search matches

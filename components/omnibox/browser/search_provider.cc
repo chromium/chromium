@@ -1684,6 +1684,13 @@ std::unique_ptr<AutocompleteMatch> SearchProvider::CreateLocationSignalingMatch(
   if (!geo_service) {
     return nullptr;
   }
+
+  std::optional<GeolocationAccuracy> accuracy =
+      geo_service->GetCachedLocationAccuracy();
+  if (!accuracy.has_value()) {
+    return nullptr;
+  }
+
   std::optional<std::string> location_header =
       geo_service->GetLocationHeader(match.destination_url,
                                      /*for_automatic_sending=*/false);
@@ -1695,19 +1702,23 @@ std::unique_ptr<AutocompleteMatch> SearchProvider::CreateLocationSignalingMatch(
   signaling_match.allowed_to_be_default_match = false;
   signaling_match.extra_headers[kXGeoHeader] = *location_header;
 
-  omnibox::InlineLocationSignalingWording wording =
-      omnibox::kInlineLocationSignalingWording.Get();
   std::u16string description_text;
-
-  switch (wording) {
-    case omnibox::InlineLocationSignalingWording::kUseLocation:
-      description_text =
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_ILLS_USE_LOCATION);
-      break;
-    case omnibox::InlineLocationSignalingWording::kUseApproximateLocation:
-      description_text =
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_ILLS_USE_APPROXIMATE_LOCATION);
-      break;
+  if (*accuracy == GeolocationAccuracy::kPrecise) {
+    description_text =
+        l10n_util::GetStringUTF16(IDS_OMNIBOX_ILLS_USE_PRECISE_LOCATION);
+  } else {
+    omnibox::InlineLocationSignalingWording wording =
+        omnibox::kInlineLocationSignalingWording.Get();
+    switch (wording) {
+      case omnibox::InlineLocationSignalingWording::kUseLocation:
+        description_text =
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_ILLS_USE_LOCATION);
+        break;
+      case omnibox::InlineLocationSignalingWording::kUseApproximateLocation:
+        description_text = l10n_util::GetStringUTF16(
+            IDS_OMNIBOX_ILLS_USE_APPROXIMATE_LOCATION);
+        break;
+    }
   }
   signaling_match.description = description_text;
 

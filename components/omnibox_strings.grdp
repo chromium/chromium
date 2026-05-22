@@ -14,6 +14,9 @@
   <message name="IDS_OMNIBOX_ILLS_USE_LOCATION" desc="Text shown next to an omnibox suggestions row, which informs the user that clicking the row will send location to search engine.">
     Use location
   </message>
+  <message name="IDS_OMNIBOX_ILLS_USE_PRECISE_LOCATION" desc="Text shown next to an omnibox suggestions row, which informs the user that clicking the row will send precise location to search engine. Specifically mentions 'precise' (as in accurate coordinates).">
+    Use precise location
+  </message>
   <message name="IDS_AUTOCOMPLETE_ASK_DESCRIPTION" desc="Description for matches from ask-keywords; e.g. gemini or ai mode.">
     Ask <ph name="ENGINE">$1<ex>AI Mode</ex></ph>
   </message>

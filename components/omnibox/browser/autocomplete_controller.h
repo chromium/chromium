@@ -325,6 +325,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class OmniboxEditModelPopupTest;
   friend class OmniboxMetricsTest;
   friend class OmniboxSearchAggregatorTest;
+  friend class InlineLocationSignalingE2EInteractiveUiTest;
   friend class extensions::UnscopedOmniboxApiTest;
   friend class SearchPreloadResponseController;
 #if BUILDFLAG(IS_IOS)

@@ -4468,7 +4468,8 @@ class SearchProviderInlineLocationSignalingConfigurableTest
 
   void SetupFeaturesAndPriming(const std::string& display_order,
                                const std::string& wording,
-                               bool site_permission_allowed = false) {
+                               bool site_permission_allowed = false,
+                               bool precise = false) {
 #if BUILDFLAG(IS_ANDROID)
     GeolocationHeaderServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
@@ -4521,9 +4522,9 @@ class SearchProviderInlineLocationSignalingConfigurableTest
         device::mojom::Geoposition::New());
     result->get_position()->latitude = 37.3861;
     result->get_position()->longitude = -122.0839;
-    result->get_position()->accuracy = 100.0;
+    result->get_position()->accuracy = precise ? 1.0 : 100.0;
     result->get_position()->timestamp = base::Time::Now();
-    result->get_position()->is_precise = false;
+    result->get_position()->is_precise = precise;
     geolocation_overrider_->UpdateLocation(std::move(result));
 
     geo_service->PrimeLocation();
@@ -4870,4 +4871,59 @@ TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
 
   EXPECT_EQ(matches[1].contents, u"query");
   EXPECT_EQ(matches[1].description, u"Use approximate location");
+}
+
+// Verifies that when cached location is precise, the description text is
+// "Use precise location", regardless of the wording param being
+// UseApproximateLocation.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       DynamicWordingPreciseWordingApproximateParam) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseApproximateLocation",
+                          /*site_permission_allowed=*/false, /*precise=*/true);
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[0].description, u"");
+
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[1].description, u"");
+
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use precise location");
+}
+
+// Verifies that when cached location is precise, the description text is
+// "Use precise location", regardless of the wording param being UseLocation.
+TEST_F(SearchProviderInlineLocationSignalingConfigurableTest,
+       DynamicWordingPreciseWordingUseLocationParam) {
+  SetupFeaturesAndPriming("DisplayBelow", "UseLocation",
+                          /*site_permission_allowed=*/false, /*precise=*/true);
+
+  QueryForInputAndWaitForFetcherResponses(
+      u"a", false,
+      "[\"a\",[\"location-relevant-suggestion\"],[],[],"
+      "{\"google:suggestsubtypes\":[[457]],"
+      "\"google:suggestrelevance\":[1300]}]",
+      std::string());
+
+  const auto& matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"a");
+  EXPECT_EQ(matches[0].description, u"");
+
+  EXPECT_EQ(matches[1].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[1].description, u"");
+
+  EXPECT_EQ(matches[2].contents, u"location-relevant-suggestion");
+  EXPECT_EQ(matches[2].description, u"Use precise location");
 }

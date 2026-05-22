@@ -165,6 +165,15 @@ bool GeolocationHeaderService::HasCachedLocation() const {
          kMaxLocationAgeForHeader;
 }
 
+std::optional<GeolocationAccuracy>
+GeolocationHeaderService::GetCachedLocationAccuracy() const {
+  if (!HasCachedLocation()) {
+    return std::nullopt;
+  }
+  return last_position_->is_precise ? GeolocationAccuracy::kPrecise
+                                    : GeolocationAccuracy::kApproximate;
+}
+
 std::optional<std::string> GeolocationHeaderService::GetLocationHeader(
     const GURL& url,
     bool for_automatic_sending) {
@@ -181,8 +190,14 @@ std::optional<std::string> GeolocationHeaderService::GetLocationHeader(
     return std::nullopt;
   }
 
-  if (last_position_->is_precise && !HasPrecisePermission(url)) {
-    // TODO(b/507328589): Implement location coarsening.
+  // For automatic sending, respect permission granularity.
+  // Note: For the interactive flow (for_automatic_sending == false), we bypass
+  // this precision check because the user's click on the signaling row
+  // constitutes explicit consent to send the cached location as-is, and the UI
+  // wording transparently reflects the accuracy being sent ("Use precise
+  // location").
+  if (for_automatic_sending && last_position_->is_precise &&
+      !HasPrecisePermission(url)) {
     return std::nullopt;
   }
 
