@@ -2142,10 +2142,6 @@ are declared in tools/grit/grit_args.gni.
                desc="Download page message: Server problem.">
         Unknown server error. Please try again, or contact the server administrator.
       </message>
-      <message name="IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_WEB_DRIVE_ERROR"
-               desc="Download page message: Upload failed.">
-        <ph name="WEB_DRIVE_MESSAGE">$1<ex>Storage limit reached.</ex></ph> (<ph name="SUPPORT_INFO">$2<ex>Request ID 12345</ex></ph>)
-      </message>
       <message name="IDS_DOWNLOAD_INTERRUPTED_STATUS_SHUTDOWN"
                desc="Shutdown.">
         Shutdown
@@ -2225,10 +2221,6 @@ are declared in tools/grit/grit_args.gni.
                  desc="The title of a download notification: the current download status is finished successufully.">
                  Download complete
         </message>
-        <message name="IDS_DOWNLOAD_STATUS_PAGE_READY_TITLE"
-                 desc="The title of a download notification for offline pages not stored in Downloads.">
-                 Page is ready to view
-        </message>
         <message name="IDS_DOWNLOAD_STATUS_SCAN_TITLE"
                  desc="The title of a download notification: the current download is being scanned.">
                  Scanning <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>
@@ -2275,15 +2267,6 @@ are declared in tools/grit/grit_args.gni.
       <!-- TODO(dbeam): can this be merged with IDS_DOWNLOAD_FILE_REMOVED? -->
       <message name="IDS_DOWNLOAD_STATUS_REMOVED" desc="Text that appears under the downloaded files that have been removed.">
         Removed
-      </message>
-      <message name="IDS_DOWNLOAD_STATUS_UPLOADING" desc="Status text for a download item that is being uploaded.">
-        Sending to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph>
-      </message>
-      <message name="IDS_DOWNLOAD_STATUS_UPLOADED" desc="Status text for a download item that has been uploaded.">
-        Saved to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph>
-      </message>
-      <message name="IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED" desc="Status text for a download item that was interrupted during reroute upload.">
-        Failed to save to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> - <ph name="INTERRUPT_REASON">$2<ex>Disk full</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_STATUS_INTERRUPTED" desc="Status text for a download item that was interrupted.">
         Failed - <ph name="INTERRUPT_REASON">$1<ex>Disk full</ex></ph>
@@ -2526,10 +2509,6 @@ are declared in tools/grit/grit_args.gni.
                desc="In the download view, 'Retry' button text to retry downloading a file.">
         Retry
       </message>
-      <message name="IDS_DOWNLOAD_LINK_SHOW_IN_WEB_DRIVE"
-                desc="In the download view, 'Show in web_drive' link text">
-          Show in <ph name="LOCATION">$1<ex>Google Drive</ex></ph>
-      </message>
       <if expr="not is_macosx">
         <message name="IDS_DOWNLOAD_LINK_SHOW"
                  desc="In the download view, 'Show in folder' link text">
@@ -2601,17 +2580,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_TOAST_CLEARED_ALL" desc="Toast message for clearing all download entries">
         Cleared all
       </message>
-      <message name="IDS_DOWNLOAD_DEEP_SCAN"
-               desc="In the download view, the 'Scan' button when prompt for deep scan">
-        Scan
-      </message>
       <message name="IDS_DOWNLOAD_DEEP_SCAN_UPDATED"
                desc="In the download view, the 'Scan' button when prompt for deep scan">
         Scan for malware
-      </message>
-      <message name="IDS_DOWNLOAD_BYPASS_DEEP_SCAN"
-               desc="In the download view, the 'Open' button when prompt for deep scan">
-        Open
       </message>
       <message name="IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN"
         desc="On the downloads page, the label for the button to check a download for malware">
@@ -3055,10 +3026,6 @@ are declared in tools/grit/grit_args.gni.
                desc="When a download is blocked because of warnings, let the user know.">
         Blocked
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_MALWARE"
-               desc="Malware warning for the user.">
-        Malware
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS"
         desc="Let the user know the download is suspicious and may need additional safety checks">
         Suspicious
@@ -3066,10 +3033,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNED_FAILED_UPDATED"
         desc="Let the user know the deep scanning failed, and they should be cautious">
         Scan failed
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS"
-               desc="The label on the checkbox with which the user chooses to bypass blocked download.">
-        I understand this download will harm my computer
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE"
                desc="Label for the Continue button on the blocked download bubble subpage.">
@@ -3106,10 +3069,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SCAN"
                desc="Label for the button prompting for Deep Scanning">
         Scan
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_OPEN"
-               desc="Label for the button prompting to bypass Deep Scanning">
-        Open
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SCAN_UPDATED"
                desc="Label for the button prompting for Deep Scanning">
@@ -3158,14 +3117,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_FILE_TOO_LARGE"
                desc="Status text for a download item that was interrupted because the file is too large for the file system.">
         File is too big for this device
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_FILE_TOO_LARGE"
-               desc="Subpage summary text for a download item that was interrupted because the file is too large for the file system.">
-        This file is too big for your device to manage. Try to download it on another device
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_UNFINISHED"
-               desc="Status text for a download item that was interrupted and could not finish.">
-        Couldn&#x2019;t finish download
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
                desc="Subpage summary text for a download item that was blocked by the organization.">
@@ -3227,10 +3178,6 @@ are declared in tools/grit/grit_args.gni.
                desc="Text for the link to the settings page allowing the user to turn on Safe Browsing. This string will be embedded in a longer sentence that makes up the whole label.">
         Turn on Safe Browsing
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS"
-               desc="Dangerous warning for the user.">
-        Dangerous
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ENCRYPTED"
                desc="Dangerous warning for an encrypted file.">
         Encrypted
@@ -3246,14 +3193,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ADVANCED_PROTECTION"
                desc="Subpage summary of warning for a file blocked by Advanced Protection.">
         This file is not commonly downloaded and has been blocked by Advanced Protection
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_UNCOMMON_FILE"
-               desc="Dangerous warning for a file with uncommon content.">
-        Uncommon file
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNCOMMON_FILE"
-               desc="Subpage summary for warning for a file with uncommon content.">
-        This file is not commonly downloaded and may be dangerous
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_UNKNOWN_SOURCE"
                desc="Dangerous warning for a file (like an extension) from an unknown source.">
@@ -3306,10 +3245,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SCAN_FAILED"
                desc="Subpage summary of dangerous warning for a file with failed scan.">
         Your organization blocked this file because the scan failed.
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
-               desc="Retry button when a download is failed">
-        Try again
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING_ENTERPRISE"
                desc="Status text for a download item that is being scanned by enterprise policy.">
