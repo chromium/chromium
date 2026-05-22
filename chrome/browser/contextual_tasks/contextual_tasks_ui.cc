@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -265,7 +266,7 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
 
 ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui,
-                              /*enable_chrome_send=*/false,
+                              /*enable_chrome_send=*/true,
                               /*enable_chrome_histograms=*/true),
       auto_suggestion_manager_(
           std::make_unique<
@@ -278,6 +279,12 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
               Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
   Profile* profile = Profile::FromWebUI(web_ui);
+
+  // Add a handler to provide plural strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("sharingTabs",
+                                            IDS_COMPOSE_SHARING_TABS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // In MPArch, a single webcontents is used to host multiple frame trees rather
   // than having a separate webcontents for each. In that case there's no need
