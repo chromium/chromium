@@ -78,7 +78,8 @@ class FieldInfoManager : public KeyedService {
 
   // Propagates signatures and field type received from the server.
   void ProcessServerPredictions(
-      const std::map<autofill::FormSignature, FormPredictions>& predictions);
+      const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
+          predictions);
 
  private:
   struct FieldInfoEntry {
