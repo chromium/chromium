@@ -650,7 +650,7 @@ BASE_FEATURE(kAutofillFixFormEquality, base::FEATURE_DISABLED_BY_DEFAULT);
 // FORM_SUBMISSION or PROBABLE_FORM_SUBMISSION signal. Also, fixes submission
 // deduplication so that it ignores submissions that PWM doesn't act upon.
 // TODO(crbug.com/40281981): Remove when launched.
-BASE_FEATURE(kAutofillFixFormTracking, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillFixFormTracking, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the new implementation of `FormFieldData::is_autofilled`.
 // TODO(crbug.com/393114125): Remove when launched.
@@ -690,13 +690,13 @@ BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
 // PHONE_COUNTRY_CODE matches a field that should not actually be classified as
 // such.
 BASE_FEATURE(kAutofillImprovePhoneFieldParser,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, `(PHONE_HOME_COUNTRY_CODE, PHONE_HOME_WHOLE_NUMBER)` are
 // rationalized to `(PHONE_HOME_COUNTRY_CODE,
 // PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX)`.
 BASE_FEATURE(kAutofillImprovePhoneNumberRationalization,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, global rules are applied to rewrite empty string values like
 // "null" to an empty string. These rules are applied for all types during
@@ -780,12 +780,12 @@ BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
 // Improves the regex for matching augmented country code select options by
 // supporting cases like +1 (234).
 BASE_FEATURE(kAutofillNewAugmentedPhoneCountryCodeRegex,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, more patterns are added to the PHONE_COUNTRY_CODE regex.
 // TODO(crbug.com/479503511): Remove once launched.
 BASE_FEATURE(kAutofillNewRegexForPhoneCountryCode,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the new suggestion generation logic is used.
 // TODO(crbug.com/409962888): Remove once launched.
@@ -865,13 +865,12 @@ BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
 // When enabled, we prefer a `PHONE_HOME_COUNTRY_CODE` heuristic type over a
 // `HtmlFieldType::kCountryCode`.
 BASE_FEATURE(kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
-// TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
