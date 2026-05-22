@@ -517,7 +517,7 @@ void Canvas2DResourceProviderSharedImage::
               .GetGpuFeatureInfo()
               .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
           gpu::kGpuFeatureStatusEnabled) {
-    RecorderForCanvas2D().DisableLineDrawingAsPaths();
+    Recorder().DisableLineDrawingAsPaths();
   }
 }
 
@@ -1699,7 +1699,7 @@ CanvasResourceProvider::~CanvasResourceProvider() {
 }
 
 std::unique_ptr<MemoryManagedPaintRecorder>
-CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
+CanvasResourceProvider::ReleaseRecorder() {
   // When releasing the recorder, we swap it with a new, valid one. This way,
   // the `recorder_for_canvas_2d_` member is guarantied to be always valid.
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
@@ -1709,7 +1709,7 @@ CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
   return recorder;
 }
 
-void CanvasResourceProvider::SetRecorderForCanvas2D(
+void CanvasResourceProvider::SetRecorder(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   recorder->SetClient(this);
   recorder_for_canvas_2d_ = std::move(recorder);

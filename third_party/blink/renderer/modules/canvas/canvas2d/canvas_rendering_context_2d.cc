@@ -489,7 +489,7 @@ const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
-  return &provider->RecorderForCanvas2D();
+  return &provider->Recorder();
 }
 
 MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
@@ -497,7 +497,7 @@ MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
-  return &provider->RecorderForCanvas2D();
+  return &provider->Recorder();
 }
 
 void CanvasRenderingContext2D::WillDraw(
@@ -1246,7 +1246,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
-      old_provider->ReleaseRecorderForCanvas2D();
+      old_provider->ReleaseRecorder();
   canvas()->ResetLayer();
   ReplaceResourceProvider(nullptr);
 
@@ -1263,7 +1263,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
 
   resource_provider_->RestoreBackBufferForCanvas2D(
       image->PaintImageForCurrentFrame());
-  resource_provider_->SetRecorderForCanvas2D(std::move(recorder));
+  resource_provider_->SetRecorder(std::move(recorder));
 
   canvas()->UpdateMemoryUsage();
 }
@@ -1321,8 +1321,7 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
                     PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
   resource_provider_->RestoreBackBufferForCanvas2D(builder.TakePaintImage());
-  resource_provider_->SetRecorderForCanvas2D(
-      hibernation_handler->ReleaseRecorder());
+  resource_provider_->SetRecorder(hibernation_handler->ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler->Clear();
   DCHECK(!hibernation_handler->IsHibernating());

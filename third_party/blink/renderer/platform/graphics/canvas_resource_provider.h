@@ -174,15 +174,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void FlushIfRecordingLimitExceededForCanvas2D();
 
-  const MemoryManagedPaintRecorder& RecorderForCanvas2D() const {
+  const MemoryManagedPaintRecorder& Recorder() const {
     return *recorder_for_canvas_2d_;
   }
-  MemoryManagedPaintRecorder& RecorderForCanvas2D() {
-    return *recorder_for_canvas_2d_;
-  }
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorderForCanvas2D();
-  void SetRecorderForCanvas2D(
-      std::unique_ptr<MemoryManagedPaintRecorder> recorder);
+  MemoryManagedPaintRecorder& Recorder() { return *recorder_for_canvas_2d_; }
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
+  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
 
   // Canvas2D-specific, as it is called only when `recorder_for_canvas_2d_` is
   // instantiated by Canvas2D-specific subclasses.
