@@ -5,19 +5,16 @@
 #include "content/browser/background_fetch/background_fetch_event_dispatcher.h"
 
 #include <stdint.h>
-
 #include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/background_fetch/background_fetch_test_base.h"
 #include "content/browser/background_fetch/background_fetch_test_service_worker.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace content {
@@ -54,10 +51,6 @@ class BackgroundFetchEventDispatcherTest : public BackgroundFetchTestBase {
 };
 
 TEST_F(BackgroundFetchEventDispatcherTest, DispatchAbortEvent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kBackgroundFetchAbortSuppression);
-
   auto* worker =
       embedded_worker_test_helper()
           ->AddNewPendingServiceWorker<BackgroundFetchTestServiceWorker>(
@@ -112,38 +105,6 @@ TEST_F(BackgroundFetchEventDispatcherTest, DispatchAbortEvent) {
 
   ASSERT_TRUE(worker->last_registration());
   EXPECT_EQ(kExampleDeveloperId2, worker->last_registration()->developer_id);
-}
-
-TEST_F(BackgroundFetchEventDispatcherTest, DispatchAbortEvent_Suppressed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kBackgroundFetchAbortSuppression);
-
-  auto* worker =
-      embedded_worker_test_helper()
-          ->AddNewPendingServiceWorker<BackgroundFetchTestServiceWorker>(
-              embedded_worker_test_helper());
-  int64_t service_worker_registration_id = RegisterServiceWorker();
-  ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
-            service_worker_registration_id);
-
-  BackgroundFetchRegistrationId registration_id(
-      service_worker_registration_id, storage_key(), kExampleDeveloperId,
-      kExampleUniqueId);
-
-  {
-    base::RunLoop run_loop;
-    auto registration_data = CreateBackgroundFetchRegistrationData(
-        kExampleDeveloperId, blink::mojom::BackgroundFetchResult::FAILURE,
-        blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
-    event_dispatcher_->DispatchBackgroundFetchCompletionEvent(
-        registration_id, std::move(registration_data), run_loop.QuitClosure());
-
-    run_loop.Run();
-  }
-
-  // The event should not have been dispatched.
-  EXPECT_FALSE(worker->has_last_registration_for_testing());
 }
 
 TEST_F(BackgroundFetchEventDispatcherTest, DispatchClickEvent) {

@@ -845,11 +845,6 @@
       status: "stable",
       base_feature: "none",
     },
-    {
-      name: "BackgroundFetchAbortSuppression",
-      public: true,
-      status: "stable",
-    },
     // A developer opt-out for background page freezing.
     {
       name: "BackgroundPageFreezeOptOut",
