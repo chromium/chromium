@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -21,6 +22,8 @@
 #include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(IS_MAC)
+#include <dlfcn.h>
+
 #include "base/mac/mac_util.h"
 #endif
 
@@ -42,6 +45,57 @@
 #endif
 
 namespace ui {
+
+#if BUILDFLAG(IS_MAC)
+namespace {
+
+constexpr char kHIServicesFrameworkPath[] =
+    "/System/Library/Frameworks/ApplicationServices.framework/Frameworks/"
+    "HIServices.framework/HIServices";
+
+// The glyph macOS uses for the fn modifier on keyboards that have a globe key:
+// U+1F310 GLOBE WITH MERIDIANS followed by U+FE0E VARIATION SELECTOR-15. The
+// VS-15 selector explicitly requests the text-style (monochrome) presentation
+// rather than the platform color emoji glyph, matching how AppKit renders the
+// symbol in native menus.
+constexpr char16_t kGlobeKeySymbol[] = u"\U0001F310\uFE0E";
+
+std::optional<bool>& MacKeyboardHasGlobeKeyOverride() {
+  static std::optional<bool> has_globe_key;
+  return has_globe_key;
+}
+
+// Returns true if any attached keyboard advertises a globe key. The underlying
+// answer comes from HIS_XPC_GetGlobeKeyAvailability(), a private HIServices SPI
+// used by AppKit's -[NSKeyboardShortcut localizedModifierMaskDisplayName].
+// Because there is no public header that declares this symbol, it is resolved
+// at runtime via dlopen + dlsym: this avoids depending on a private SDK and
+// lets older macOS versions that lack the symbol fall back gracefully to the
+// "(fn) " text. See crbug.com/40800376.
+bool MacKeyboardHasGlobeKey() {
+  std::optional<bool>& has_globe_key_override =
+      MacKeyboardHasGlobeKeyOverride();
+  if (has_globe_key_override.has_value()) {
+    return has_globe_key_override.value();
+  }
+
+  using HISXPCGetGlobeKeyAvailability = bool (*)();
+  static HISXPCGetGlobeKeyAvailability get_globe_key_availability =
+      []() -> HISXPCGetGlobeKeyAvailability {
+    void* hiservices = dlopen(kHIServicesFrameworkPath, RTLD_LAZY | RTLD_LOCAL);
+    if (!hiservices) {
+      return nullptr;
+    }
+
+    return reinterpret_cast<HISXPCGetGlobeKeyAvailability>(
+        dlsym(hiservices, "HIS_XPC_GetGlobeKeyAvailability"));
+  }();
+
+  return get_globe_key_availability && get_globe_key_availability();
+}
+
+}  // namespace
+#endif  // BUILDFLAG(IS_MAC)
 
 Accelerator::Accelerator(const KeyEvent& key_event)
     : key_code_(key_event.key_code()),
@@ -65,6 +119,16 @@ Accelerator::Accelerator(const KeyEvent& key_event)
   }
 #endif
 }
+
+#if BUILDFLAG(IS_MAC)
+void Accelerator::SetMacKeyboardHasGlobeKeyForTesting(bool has_globe_key) {
+  MacKeyboardHasGlobeKeyOverride() = has_globe_key;
+}
+
+void Accelerator::ClearMacKeyboardHasGlobeKeyForTesting() {
+  MacKeyboardHasGlobeKeyOverride().reset();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 KeyEvent Accelerator::ToKeyEvent() const {
   return KeyEvent(key_state() == Accelerator::KeyState::PRESSED
@@ -377,30 +441,28 @@ std::vector<std::u16string> Accelerator::GetShortFormModifiers() const {
     modifiers.push_back(u"⌘");  // U+2318, PLACE OF INTEREST SIGN
   }
 
+#if BUILDFLAG(IS_MAC)
+  // GetShortFormModifiers() is only called on macOS (see
+  // GetShortcutVectorRepresentation() and AcceleratorTestMac), and the
+  // function-key modifier is itself a Mac concept, so this entire block is
+  // restricted to Mac builds. This also keeps MacKeyboardHasGlobeKey() — which
+  // calls Mac-only HIServices — out of non-Mac compilation units.
   if (IsFunctionDown()) {
-    // The real "fn" used by menus is actually U+E23E in the Private Use Area in
-    // the keyboard font obtained with CTFontCreateUIFontForLanguage, with key
-    // kCTFontUIFontMenuItemCmdKey. Because this function must return a raw
+    // The real "fn" used by menus is actually U+E23E in the Private Use Area
+    // in the keyboard font obtained with CTFontCreateUIFontForLanguage, with
+    // key kCTFontUIFontMenuItemCmdKey. Because this function must return a raw
     // Unicode string with no specified font, return a string of characters.
     //
-    // Newer Mac keyboards have a globe symbol on the fn key that is used in
-    // menus instead of "fn". That globe symbol is actually U+1F310 + U+FE0E,
-    // the emoji globe + the variation selector that indicates the text-style
-    // presentation. (🌐︎)
-    //
-    // Whether or not "fn" or the globe is displayed as the menu shortcut
-    // modifier depends on whether there is an attached keyboard with a globe
-    // symbol on it. Rather than rummaging around in the IORegistry, where the
-    // HID driver for the keyboard has a SupportsGlobeKey = True property, it's
-    // probably best to just make a call to the HIServices function
-    // HIS_XPC_GetGlobeKeyAvailability() and let it do the magic. See AppKit's
-    // -[NSKeyboardShortcut localizedModifierMaskDisplayName] for an example of
-    // this.
-    //
-    // TODO(http://crbug.com/40800376): Implement all of this when text-style
-    // presentations are implemented for Views in https://crbug.com/40137571.
-    modifiers.push_back(u"(fn) ");
+    // Whether "(fn) " or the globe glyph is shown depends on whether an
+    // attached keyboard advertises a globe key; see MacKeyboardHasGlobeKey()
+    // above.
+    if (MacKeyboardHasGlobeKey()) {
+      modifiers.push_back(kGlobeKeySymbol);
+    } else {
+      modifiers.push_back(u"(fn) ");
+    }
   }
+#endif  // BUILDFLAG(IS_MAC)
 
   return modifiers;
 }

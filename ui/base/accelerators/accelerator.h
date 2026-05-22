@@ -201,6 +201,12 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
 
  private:
   friend class AcceleratorTestMac;
+
+#if BUILDFLAG(IS_MAC)
+  static void SetMacKeyboardHasGlobeKeyForTesting(bool has_globe_key);
+  static void ClearMacKeyboardHasGlobeKeyForTesting();
+#endif
+
   std::vector<std::u16string> GetLongFormModifiers() const;
   std::vector<std::u16string> GetShortFormModifiers() const;
   std::u16string GetKeyCodeStringForShortcut() const;
