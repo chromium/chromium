@@ -5321,6 +5321,10 @@
       base_feature: "none",
     },
     {
+      name: "SendEarlyLastBeginMainFrame",
+      status: "stable",
+    },
+    {
       // SlotChange signal is sent after node insertion is complete,
       // ensuring that slot fallback content is handled correctly.
       // This was added in M145 and can be removed after M147.
