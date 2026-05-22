@@ -28,6 +28,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -45,26 +46,24 @@ class ContainerNode;
 // also saves a little bit of memory, as a side effect.)
 class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
  public:
-  // These enums used to be needed to disambiguate constructors.  They aren't
-  // needed any more, but they still help document the constructor calls more
-  // clearly.
-  enum DocumentFragmentItemType { kItemForDocumentFragmentNode };
-  enum ContextElementItemType { kItemForContextElement };
-
-  HTMLStackItem(ContainerNode* node, DocumentFragmentItemType)
-      : node_(node),
+  // You cannot call this constructor directly (but it must be public so that
+  // MakeGarbageCollected() can); use CreateForDocumentFragment() below instead.
+  // (It isn't needed for this constructor since there's no extra space for
+  // attributes, but we use the same patten as the other two constructors,
+  // which do need this.)
+  HTMLStackItem(base::PassKey<HTMLStackItem>,
+                DocumentFragment* document_fragment)
+      : node_(document_fragment),
         token_name_(html_names::HTMLTag::kUnknown),
         is_document_fragment_node_(true) {}
 
   // You cannot call this constructor directly (but it must be public so that
   // MakeGarbageCollected() can); use CreateForContextElement() below instead.
-  HTMLStackItem(base::PassKey<HTMLStackItem>,
-                Element* element,
-                ContextElementItemType)
-      : node_(element),
-        token_name_(HTMLTokenName::FromLocalName(element->localName())),
-        namespace_uri_(element->namespaceURI()),
-        num_token_attributes_(element->Attributes().size()),
+  HTMLStackItem(base::PassKey<HTMLStackItem>, Element* context_element)
+      : node_(context_element),
+        token_name_(HTMLTokenName::FromLocalName(context_element->localName())),
+        namespace_uri_(context_element->namespaceURI()),
+        num_token_attributes_(context_element->Attributes().size()),
         is_document_fragment_node_(false) {
     // We need to store the attributes because we sometimes make decisions
     // based on attributes of the context elements, for example the encoding
@@ -72,7 +71,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     //
     // We rely on Create() allocating extra memory past our end for the
     // attributes.
-    const AttributeCollection element_attributes = element->Attributes();
+    const AttributeCollection element_attributes =
+        context_element->Attributes();
     auto attributes = TokenAttributesSpan();
     for (wtf_size_t i = 0; i < element_attributes.size(); ++i) {
       new (&attributes[i]) Attribute(element_attributes[i]);
@@ -117,10 +117,17 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
         base::PassKey<HTMLStackItem>(), node, token, namespace_uri);
   }
 
-  static HTMLStackItem* CreateForContextElement(Element* element) {
+  static HTMLStackItem* CreateForDocumentFragment(
+      DocumentFragment* document_fragment) {
+    return MakeGarbageCollected<HTMLStackItem>(base::PassKey<HTMLStackItem>(),
+                                               document_fragment);
+  }
+
+  static HTMLStackItem* CreateForContextElement(Element* context_element) {
     return MakeGarbageCollected<HTMLStackItem>(
-        AdditionalBytes(element->Attributes().size() * sizeof(Attribute)),
-        base::PassKey<HTMLStackItem>(), element, kItemForContextElement);
+        AdditionalBytes(context_element->Attributes().size() *
+                        sizeof(Attribute)),
+        base::PassKey<HTMLStackItem>(), context_element);
   }
 
   Element* GetElement() const { return To<Element>(node_.Get()); }
