@@ -26,7 +26,7 @@ ExternalBeginFrameSourceMojo::ExternalBeginFrameSourceMojo(
 
 ExternalBeginFrameSourceMojo::~ExternalBeginFrameSourceMojo() {
   frame_sink_manager_->RemoveObserver(this);
-  DCHECK(!display_);
+  CHECK(!display_);
 }
 
 void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
@@ -47,7 +47,7 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
   // Ensure that Display will receive the BeginFrame (as a missed one), even
   // if it doesn't currently need it. This way, we ensure that
   // OnDisplayDidFinishFrame will be called for this BeginFrame.
-  DCHECK(display_);
+  CHECK(display_);
   display_->SetNeedsOneBeginFrame(args);
   MaybeProduceFrameCallback();
 }
@@ -135,7 +135,7 @@ void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
   if (!pending_frame_callback_)
     return;
   if (!pending_frame_sinks_.empty()) {
-    DCHECK(!pending_ack_);
+    CHECK(!pending_ack_);
     pending_ack_ = ack;
     return;
   }

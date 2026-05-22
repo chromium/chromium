@@ -34,7 +34,7 @@ FrameCounter::~FrameCounter() = default;
 void FrameCounter::AddFrameSink(const FrameSinkId& frame_sink_id,
                                 bool is_root,
                                 std::string_view debug_label) {
-  DCHECK(!frame_sink_data_.contains(frame_sink_id));
+  CHECK(!frame_sink_data_.contains(frame_sink_id));
 
   auto per_sink_data = mojom::FrameCountingPerSinkData::New(
       is_root, static_cast<std::string>(debug_label), 0,

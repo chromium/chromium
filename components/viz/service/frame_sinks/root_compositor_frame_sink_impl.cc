@@ -240,12 +240,12 @@ RootCompositorFrameSinkImpl::Create(
   BeginFrameSource* begin_frame_source = synthetic_begin_frame_source.get();
   if (external_begin_frame_source)
     begin_frame_source = external_begin_frame_source.get();
-  DCHECK(begin_frame_source);
+  CHECK(begin_frame_source);
 
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   const auto& capabilities = output_surface->capabilities();
-  DCHECK_GT(capabilities.pending_swap_params.max_pending_swaps, 0);
+  CHECK_GT(capabilities.pending_swap_params.max_pending_swaps, 0);
   auto scheduler = std::make_unique<DisplayScheduler>(
       begin_frame_source, task_runner.get(), capabilities.pending_swap_params,
       hint_session_factory, run_all_compositor_stages_before_draw);
@@ -329,7 +329,7 @@ void RootCompositorFrameSinkImpl::DidEvictSurface(const SurfaceId& surface_id) {
   if (!current_surface_id.is_valid()) {
     return;
   }
-  DCHECK_EQ(surface_id.frame_sink_id(), current_surface_id.frame_sink_id());
+  CHECK_EQ(surface_id.frame_sink_id(), current_surface_id.frame_sink_id());
 
   // This matches CompositorFrameSinkSupport's eviction logic, which will
   // evict `surface_id` or matching but older ones. Avoid overwriting the
@@ -640,8 +640,8 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
       external_begin_frame_source_(std::move(external_begin_frame_source)),
       display_(std::move(display)),
       enable_video_conference_matcher_(enable_video_conference_matcher) {
-  DCHECK(display_);
-  DCHECK(begin_frame_source());
+  CHECK(display_);
+  CHECK(begin_frame_source());
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),
                                                support_->frame_sink_id());
   display_->Initialize(this, support_->frame_sink_manager()->surface_manager());
@@ -651,7 +651,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
   // client wants to refresh the content. It works two ways - a client setting a
   // preferred refresh rate and the system throttling the refresh rate in case
   // of battery saving or any other events.
-  DCHECK(hw_support_for_multiple_refresh_rates);
+  CHECK(hw_support_for_multiple_refresh_rates);
   use_preferred_interval_ = true;
 #else
   if (!hw_support_for_multiple_refresh_rates) {
@@ -833,7 +833,7 @@ void RootCompositorFrameSinkImpl::DisplayOutputSurfaceLost() {
 void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     AggregatedRenderPassList* render_passes) {
-  DCHECK(support_->GetHitTestAggregator());
+  CHECK(support_->GetHitTestAggregator());
   support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
 
   if (external_begin_frame_source_ &&
@@ -906,7 +906,7 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
 #if BUILDFLAG(IS_APPLE)
   // If |ca_layer_params| should have content only when there exists a client
   // to send it to.
-  DCHECK(ca_layer_params.IsEmpty() || display_client_);
+  CHECK(ca_layer_params.IsEmpty() || display_client_);
   if (last_ca_layer_params_ == ca_layer_params &&
       base::TimeTicks::Now() < next_forced_ca_layer_params_update_time_) {
     return;

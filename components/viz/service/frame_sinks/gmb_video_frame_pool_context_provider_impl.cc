@@ -97,11 +97,11 @@ class GmbVideoFramePoolContext
  private:
   void InitializeOnGpu(base::WaitableEvent* event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-    DCHECK(!initialized_);
-    DCHECK(gpu_service_);
+    CHECK(!initialized_);
+    CHECK(gpu_service_);
 
     shared_context_state_ = gpu_service_->GetContextState();
-    DCHECK(shared_context_state_);
+    CHECK(shared_context_state_);
 
     shared_context_state_->AddContextLostObserver(this);
 
@@ -121,7 +121,7 @@ class GmbVideoFramePoolContext
         /*is_for_display_compositor=*/false, gpu_service_->main_runner(),
         /*always_create_native_gmb_handle=*/true);
 
-    DCHECK(sii_in_process_);
+    CHECK(sii_in_process_);
 
     initialized_ = true;
 
@@ -130,7 +130,7 @@ class GmbVideoFramePoolContext
 
   void DestroyOnGpu(base::WaitableEvent* event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-    DCHECK(initialized_);
+    CHECK(initialized_);
 
     shared_context_state_->RemoveContextLostObserver(this);
     shared_context_state_ = nullptr;
@@ -142,7 +142,7 @@ class GmbVideoFramePoolContext
   void OnContextLost() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-    DCHECK(on_context_lost_);
+    CHECK(on_context_lost_);
     std::move(on_context_lost_).Run();
   }
 

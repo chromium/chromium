@@ -137,7 +137,7 @@ VideoDetector::~VideoDetector() {
 }
 
 void VideoDetector::OnVideoActivityEnded() {
-  DCHECK(video_is_playing_);
+  CHECK(video_is_playing_);
   video_is_playing_ = false;
   for (auto& observer : observers_) {
     observer->OnVideoActivityEnded();
@@ -154,7 +154,7 @@ void VideoDetector::AddObserver(
 }
 
 void VideoDetector::OnFrameSinkIdRegistered(const FrameSinkId& frame_sink_id) {
-  DCHECK(!client_infos_.count(frame_sink_id));
+  CHECK(!client_infos_.count(frame_sink_id));
   client_infos_[frame_sink_id] = std::make_unique<ClientInfo>();
 }
 

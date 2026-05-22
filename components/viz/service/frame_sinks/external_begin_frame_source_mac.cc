@@ -251,7 +251,7 @@ void ExternalBeginFrameSourceMac::StartBeginFrame() {
 
 void ExternalBeginFrameSourceMac::StopBeginFrame(bool force_stop) {
   if (display_link_mac_) {
-    DCHECK(vsync_callback_mac_);
+    CHECK(vsync_callback_mac_);
     vsyncs_to_skip_ = 0;
     // If not force_update, wait until the keep-alive counter has reached
     // `kMaxKeepAliveCount` in `OnDisplayLinkCallback()`.
@@ -264,7 +264,7 @@ void ExternalBeginFrameSourceMac::StopBeginFrame(bool force_stop) {
   }
 
   // Stop the timer.
-  DCHECK(time_source_);
+  CHECK(time_source_);
   time_source_->SetActive(/*active=*/false);
 }
 

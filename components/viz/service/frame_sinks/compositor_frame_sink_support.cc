@@ -1052,7 +1052,7 @@ SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(
 }
 
 void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
-  DCHECK_GT(pending_frames_, 0);
+  CHECK_GT(pending_frames_, 0);
   pending_frames_--;
 
   if (!client_) {
