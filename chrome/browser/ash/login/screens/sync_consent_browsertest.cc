@@ -6,6 +6,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_util.h"
@@ -41,9 +42,11 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -151,13 +154,18 @@ class SyncConsentTest : public OobeBaseTest {
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
-      expected_consent_ids_ = {
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
-      };
+    expected_consent_ids_ = {
+        IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
+        IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
+        IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
+        (base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) &&
+         base::FeatureList::IsEnabled(
+             ::switches::kChromeOsUseConsentLevelSigninForNewUsers))
+            ? IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_3
+            : IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
+        IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
+    };
 
     if (is_minor_user_) {
       // In minor mode, decline and turn on button should be displayed.

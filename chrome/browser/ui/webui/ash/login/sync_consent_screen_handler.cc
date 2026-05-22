@@ -10,12 +10,15 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -108,7 +111,13 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
       IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2, builder);
   RememberLocalizedValue(
       "syncConsentScreenChromeBrowserSyncTitle",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2, builder);
+      (base::FeatureList::IsEnabled(
+           syncer::kReplaceSyncPromosWithSignInPromos) &&
+       base::FeatureList::IsEnabled(
+           ::switches::kChromeOsUseConsentLevelSigninForNewUsers))
+          ? IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_3
+          : IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
+      builder);
   RememberLocalizedValue(
       "syncConsentScreenChromeBrowserSyncDescription",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION, builder);
