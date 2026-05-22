@@ -319,10 +319,6 @@ typedef base::RepeatingCallback<
     void(RenderFrameHostImpl*, ax::mojom::Event, int)>
     AccessibilityCallbackForTesting;
 
-using CachedPermissionMap =
-    std::optional<base::flat_map<blink::mojom::PermissionName,
-                                 blink::mojom::PermissionStatus>>;
-
 class CONTENT_EXPORT RenderFrameHostImpl
     : public RenderFrameHost,
       public base::SupportsUserData,
@@ -3284,12 +3280,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the number of accessibility platform node identifiers maintained by
   // this instance's AXNodeIdDelegate implementation.
   size_t GetAxUniqueIdCountForTesting() const { return ax_unique_ids_.size(); }
-
-  // Query necessary permission statues in order to propagate to the renderer.
-  // Right now, we're only caring about permissions for Geolocation, Camera, and
-  // Microphone. The permission statuses already take into account the device's
-  // status.
-  CachedPermissionMap GetCachedPermissionStatuses();
 
   // Allows tests to disable the unload event timer to simulate bugs that
   // happen before it fires (to avoid flakiness).
