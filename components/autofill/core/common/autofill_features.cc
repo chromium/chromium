@@ -651,7 +651,7 @@ BASE_FEATURE(kAutofillFixCivilStateMisclassificationForESPT,
 // Kill switch: Changes the behavior of Form[Field]Data::DeepEqual().
 // TODO(crbug.com/40183094): Turn this into a kill switch after a few
 // weeks on canary.
-BASE_FEATURE(kAutofillFixFormEquality, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillFixFormEquality, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Removes logic that resets form submission tracking data upon receiving a
 // FORM_SUBMISSION or PROBABLE_FORM_SUBMISSION signal. Also, fixes submission

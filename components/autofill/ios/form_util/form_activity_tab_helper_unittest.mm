@@ -79,20 +79,25 @@ constexpr NSString* kTestHTMLFormWithIframes =
 [[nodiscard]] FormData BuildTestFormData(std::string frame_id) {
   std::optional<base::UnguessableToken> host_frame =
       DeserializeJavaScriptFrameId(frame_id);
+  GURL url = GURL("https://chromium.test/");
 
   FormData test_form_data;
   test_form_data.set_name(u"form-name");
-  test_form_data.set_url(GURL("https://chromium.test/"));
-  test_form_data.set_action(GURL("https://chromium.test/"));
+  test_form_data.set_main_frame_origin(url::Origin::Create(url));
+  test_form_data.set_url(url);
+  test_form_data.set_action(url);
   test_form_data.set_name_attribute(u"form-name");
   test_form_data.set_renderer_id(FormRendererId(1));
   test_form_data.set_host_frame(LocalFrameToken(*host_frame));
 
   FormFieldData test_field_data;
   test_field_data.set_name(u"text");
+  test_field_data.set_origin(url::Origin::Create(url));
   test_field_data.set_form_control_type(FormControlType::kInputText);
   test_field_data.set_host_frame(LocalFrameToken(*host_frame));
   test_field_data.set_host_form_id(test_form_data.renderer_id());
+  test_field_data.set_host_form_signature(
+      FormSignature(14616800528926333697ul));
   test_field_data.set_renderer_id(FieldRendererId(2));
   test_field_data.set_id_attribute(u"text");
   test_field_data.set_max_length(FormFieldData::kDefaultMaxLength);
