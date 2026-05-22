@@ -127,6 +127,11 @@ bool GlicSharingManagerImpl::PinTabs(
   return pinned_tab_manager()->PinTabs(tab_handles, trigger);
 }
 
+void GlicSharingManagerImpl::SetPinTrigger(tabs::TabHandle tab_handle,
+                                           GlicPinTrigger trigger) {
+  pinned_tab_manager()->SetPinTrigger(tab_handle, trigger);
+}
+
 bool GlicSharingManagerImpl::UnpinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicUnpinTrigger trigger) {

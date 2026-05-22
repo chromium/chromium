@@ -84,6 +84,9 @@ class GlicSharingManagerImpl : public GlicSharingManager,
   bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
                GlicPinTrigger trigger) override;
 
+  void SetPinTrigger(tabs::TabHandle tab_handle,
+                     GlicPinTrigger trigger) override;
+
   bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
                  GlicUnpinTrigger trigger) override;
 

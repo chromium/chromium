@@ -40,6 +40,9 @@ bool GlicEmptyPinnedTabManager::PinTabs(
   return false;
 }
 
+void GlicEmptyPinnedTabManager::SetPinTrigger(tabs::TabHandle tab_handle,
+                                              GlicPinTrigger trigger) {}
+
 bool GlicEmptyPinnedTabManager::UnpinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicUnpinTrigger trigger) {

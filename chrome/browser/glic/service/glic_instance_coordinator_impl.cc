@@ -784,13 +784,6 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   mutable_options.focus_on_show = source_instance.HasFocus();
   mutable_options.reinitialize_if_already_active = true;
 
-  // TODO(b/510405771): Remove animation suppression once bottom sheet hide is
-  // cancelable.
-  if (auto* side_panel_options = std::get_if<SidePanelShowOptions>(
-          &mutable_options.embedder_options)) {
-    side_panel_options->suppress_opening_animation = true;
-  }
-
   GlicInstanceImpl* target_instance = nullptr;
   if (!info->conversation_id.empty()) {
     target_instance = GetInstanceImplForConversationId(info->conversation_id);
@@ -805,6 +798,24 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   }
 
   CHECK(target_instance);
+
+  if (auto* side_panel_options = std::get_if<SidePanelShowOptions>(
+          &mutable_options.embedder_options)) {
+    // TODO(b/510405771): Remove animation suppression once bottom sheet hide is
+    // cancelable.
+    side_panel_options->suppress_opening_animation = true;
+    side_panel_options->pin_trigger = GlicPinTrigger::kConversationChange;
+    if (target_instance == &source_instance) {
+      // If we are reusing the current instance in-place (as an optimization),
+      // BindTab is not called again, so we must manually overwrite all
+      // currently pinned tabs' pin triggers to kConversationChange to make the
+      // pin trigger correct.
+      for (auto* tab : target_instance->sharing_manager().GetPinnedTabs()) {
+        target_instance->sharing_manager().SetPinTrigger(
+            tab->GetHandle(), GlicPinTrigger::kConversationChange);
+      }
+    }
+  }
 
   metrics_.RecordSwitchConversationTarget(
       !info->conversation_id.empty()

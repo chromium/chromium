@@ -179,7 +179,13 @@ class GlicPinnedTabManagerImpl::PinnedTabObserver
 
  private:
   void CheckOriginChangeAndMaybeDeleteSelf(const url::Origin& new_origin) {
-    if (last_origin_ == new_origin) {
+    // If the origin has not changed, or if both the old and new origins are
+    // opaque, we update `last_origin_` and return early without unpinning.
+    // Opaque origins always have different unique nonces, but transitioning
+    // between them (e.g., initial blank page loads) is safe to ignore.
+    if (last_origin_ == new_origin ||
+        (last_origin_.opaque() && new_origin.opaque())) {
+      last_origin_ = new_origin;
       return;
     }
     last_origin_ = new_origin;
@@ -378,6 +384,14 @@ bool GlicPinnedTabManagerImpl::PinTabs(
   }
   NotifyPinnedTabsChanged();
   return pinning_fully_succeeded;
+}
+
+void GlicPinnedTabManagerImpl::SetPinTrigger(tabs::TabHandle tab_handle,
+                                             GlicPinTrigger trigger) {
+  if (auto* usage = GetPinnedTabUsageInternal(tab_handle)) {
+    usage->pin_event.trigger = trigger;
+    usage->pin_event.timestamp = base::TimeTicks::Now();
+  }
 }
 
 bool GlicPinnedTabManagerImpl::UnpinTabs(

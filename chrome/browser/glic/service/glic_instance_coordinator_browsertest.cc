@@ -545,6 +545,64 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
+                       KeptBoundWhenInPlaceConversationSwitched) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  // Explicitly pin tab2 to the instance's sharing manager with
+  // kInstanceCreation.
+  instance->sharing_manager().PinTabs({tab2->GetHandle()},
+                                      GlicPinTrigger::kInstanceCreation);
+
+  // Verify both are pinned with kInstanceCreation.
+  auto usage_tab1_before =
+      instance->sharing_manager().GetPinnedTabUsage(tab1->GetHandle());
+  ASSERT_TRUE(usage_tab1_before);
+  EXPECT_EQ(usage_tab1_before->pin_event.trigger,
+            GlicPinTrigger::kInstanceCreation);
+
+  auto usage_tab2_before =
+      instance->sharing_manager().GetPinnedTabUsage(tab2->GetHandle());
+  ASSERT_TRUE(usage_tab2_before);
+  EXPECT_EQ(usage_tab2_before->pin_event.trigger,
+            GlicPinTrigger::kInstanceCreation);
+
+  // Perform an in-place conversation switch on tab2.
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = "switched_conversation_id";
+  info->conversation_title = "Switched Conversation";
+
+  base::test::TestFuture<std::optional<mojom::SwitchConversationErrorReason>>
+      switch_future;
+  coordinator().SwitchConversation(*instance, ShowOptions::ForSidePanel(*tab2),
+                                   std::move(info),
+                                   switch_future.GetCallback());
+  EXPECT_EQ(switch_future.Get(), std::nullopt);
+
+  // Verify BOTH tab1 and tab2 triggers are updated to kConversationChange.
+  auto usage_tab1_after =
+      instance->sharing_manager().GetPinnedTabUsage(tab1->GetHandle());
+  ASSERT_TRUE(usage_tab1_after);
+  EXPECT_EQ(usage_tab1_after->pin_event.trigger,
+            GlicPinTrigger::kConversationChange);
+
+  auto usage_tab2_after =
+      instance->sharing_manager().GetPinnedTabUsage(tab2->GetHandle());
+  ASSERT_TRUE(usage_tab2_after);
+  EXPECT_EQ(usage_tab2_after->pin_event.trigger,
+            GlicPinTrigger::kConversationChange);
+
+  // Do not submit any input. Close Glic for tab2.
+  ASSERT_OK(CloseGlicForTabAndWait(tab2));
+
+  // Verify both stay bound!
+  EXPECT_TRUE(GetInstanceForTab(tab1));
+  EXPECT_TRUE(GetInstanceForTab(tab2));
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
                        KeptBoundWhenPinnedViaContextMenu) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));

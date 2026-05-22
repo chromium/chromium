@@ -202,6 +202,13 @@ class GlicSharingManager {
   virtual bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
                        GlicPinTrigger trigger) = 0;
 
+  // Overwrites the pin trigger and timestamp for an already-pinned tab.
+  // This should ONLY be used when transitioning the context of a pinned tab
+  // to a new conversation/instance session (such as during an in-place
+  // conversation switch), without performing a full unpin and re-pin.
+  virtual void SetPinTrigger(tabs::TabHandle tab_handle,
+                             GlicPinTrigger trigger) = 0;
+
   // Forwarding overload for legacy calls. Calls PinTabs with kUnknown trigger.
   bool PinTabs(base::span<const tabs::TabHandle> tab_handles);
 
