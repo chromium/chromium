@@ -48,6 +48,7 @@ class ARQuickLookTabHelperTest : public PlatformTest,
   ARQuickLookTabHelperTest()
       : delegate_([[FakeARQuickLookTabHelperDelegate alloc] init]) {
     ARQuickLookTabHelper::CreateForWebState(&web_state_);
+    web_state_.WasShown();
     ARQuickLookTabHelper::FromWebState(&web_state_)->set_delegate(delegate_);
   }
 
@@ -59,9 +60,10 @@ class ARQuickLookTabHelperTest : public PlatformTest,
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
+  web::FakeWebState web_state_;
+
  private:
   web::WebTaskEnvironment task_environment_;
-  web::FakeWebState web_state_;
   FakeARQuickLookTabHelperDelegate* delegate_;
   base::HistogramTester histogram_tester_;
 };
@@ -544,6 +546,33 @@ TEST_P(ARQuickLookTabHelperTest, ForbiddenHttpResponse) {
       static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kUnauthorizedFailure),
       1);
+}
+
+// Tests deferring AR model preview when the tab is hidden.
+TEST_F(ARQuickLookTabHelperTest, DeferARPreviewWhenHidden) {
+  web_state_.WasHidden();
+
+  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
+  task->SetGeneratedFileName(base::FilePath(kTestUsdzFileName));
+  web::FakeDownloadTask* task_ptr = task.get();
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
+  task_ptr->SetDone(true);
+
+  // The delegate should not be notified while hidden.
+  EXPECT_EQ(0U, delegate().fileURLs.count);
+
+  // Now, show the web state. The delegate should be notified.
+  web_state_.WasShown();
+  EXPECT_EQ(1U, delegate().fileURLs.count);
+  EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
+  EXPECT_TRUE(delegate().allowsContentScaling);
+  EXPECT_FALSE(delegate().canonicalWebPageURL);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

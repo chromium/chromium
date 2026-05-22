@@ -36,6 +36,7 @@ class PassKitTabHelperTest : public PlatformTest {
  protected:
   PassKitTabHelperTest() : handler_([[FakeWebContentHandler alloc] init]) {
     PassKitTabHelper::CreateForWebState(&web_state_);
+    web_state_.WasShown();
     PassKitTabHelper::FromWebState(&web_state_)
         ->SetWebContentsHandler(handler_);
   }
@@ -321,5 +322,40 @@ TEST_F(PassKitTabHelperTest, ForbiddenHttpResponse) {
       kUmaDownloadPassKitResult,
       static_cast<base::HistogramBase::Sample32>(
           DownloadPassKitResult::kUnauthorizedFailure),
+      1);
+}
+
+// Tests deferring PassKit presentation when the tab is hidden.
+TEST_F(PassKitTabHelperTest, DeferPassKitPresentationWhenHidden) {
+  web_state_.WasHidden();
+
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kPkPassMimeType);
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->Download(std::move(task));
+
+  std::string pass_data =
+      testing::GetTestFileContents(testing::kPkPassFilePath);
+  NSData* data = [NSData dataWithBytes:pass_data.data()
+                                length:pass_data.size()];
+  task_ptr->SetResponseData(data);
+  task_ptr->SetDone(true);
+
+  // The dialog should not be shown while the web state is hidden.
+  EXPECT_EQ(0U, handler_.passes.count);
+
+  // Show the web state. The dialog should be shown.
+  web_state_.WasShown();
+  EXPECT_EQ(1U, handler_.passes.count);
+  PKPass* pass = handler_.passes.firstObject;
+  EXPECT_TRUE([pass isKindOfClass:[PKPass class]]);
+  EXPECT_EQ(PKPassTypeBarcode, pass.passType);
+  EXPECT_NSEQ(@"pass.com.apple.devpubs.example", pass.passTypeIdentifier);
+  EXPECT_NSEQ(@"Toy Town", pass.organizationName);
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadPassKitResult,
+      static_cast<base::HistogramBase::Sample32>(
+          DownloadPassKitResult::kSuccessful),
       1);
 }

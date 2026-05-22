@@ -104,9 +104,12 @@ GURL ConvertRefToQueryInUrl(const GURL& url) {
 
 }  // namespace
 
+#pragma mark - Initialization
+
 ARQuickLookTabHelper::ARQuickLookTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  DCHECK(web_state_);
+  CHECK(web_state_);
+  web_state_observation_.Observe(web_state);
 }
 
 ARQuickLookTabHelper::~ARQuickLookTabHelper() {
@@ -114,6 +117,8 @@ ARQuickLookTabHelper::~ARQuickLookTabHelper() {
     RemoveCurrentDownload();
   }
 }
+
+#pragma mark - Public
 
 void ARQuickLookTabHelper::Download(
     std::unique_ptr<web::DownloadTask> download_task) {
@@ -197,16 +202,22 @@ void ARQuickLookTabHelper::DidFinishDownload() {
 
   NSURL* file_url =
       base::apple::FilePathToNSURL(download_task_->GetResponsePath());
-  [delegate_ presentUSDZFileWithURL:file_url
-                       canonicalURL:canonical_url
-                           webState:web_state_
-                allowContentScaling:allow_content_scaling];
+  if (web_state_->IsVisible()) {
+    [delegate_ presentUSDZFileWithURL:file_url
+                         canonicalURL:canonical_url
+                             webState:web_state_
+                  allowContentScaling:allow_content_scaling];
+  } else {
+    pending_preview_ = {file_url, canonical_url, allow_content_scaling};
+  }
 }
 
 void ARQuickLookTabHelper::RemoveCurrentDownload() {
   download_task_->RemoveObserver(this);
   download_task_.reset();
 }
+
+#pragma mark - DownloadTaskObserver
 
 void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {
   DCHECK_EQ(download_task, download_task_.get());
@@ -227,5 +238,18 @@ void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {
       break;
     case web::DownloadTask::State::kNotStarted:
       NOTREACHED() << "Invalid state.";
+  }
+}
+
+#pragma mark - WebStateObserver
+
+void ARQuickLookTabHelper::WasShown(web::WebState* web_state) {
+  CHECK_EQ(web_state_, web_state);
+  if (delegate_ && pending_preview_.has_value()) {
+    [delegate_ presentUSDZFileWithURL:pending_preview_->file_url
+                         canonicalURL:pending_preview_->canonical_url
+                             webState:web_state_
+                  allowContentScaling:pending_preview_->allow_content_scaling];
+    pending_preview_.reset();
   }
 }

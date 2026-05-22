@@ -27,7 +27,10 @@ char kUrl[] = "https://test.test/";
 // Test fixture for testing VcardTabHelperTest class.
 class VcardTabHelperTest : public PlatformTest {
  protected:
-  VcardTabHelperTest() { VcardTabHelper::CreateForWebState(&web_state_); }
+  VcardTabHelperTest() {
+    VcardTabHelper::CreateForWebState(&web_state_);
+    web_state_.WasShown();
+  }
 
   VcardTabHelper* tab_helper() {
     return VcardTabHelper::FromWebState(&web_state_);
@@ -78,4 +81,38 @@ TEST_F(VcardTabHelperTest, ValidXVcardFile) {
   task_ptr->SetDone(true);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
+}
+
+// Tests deferring vcard presentation when the tab is hidden.
+TEST_F(VcardTabHelperTest, DeferVcardPresentationWhenHidden) {
+  web_state_.WasHidden();
+
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kVcardMimeType);
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->Download(std::move(task));
+
+  std::string pass_data = testing::GetTestFileContents(testing::kVcardFilePath);
+  NSData* data = [NSData dataWithBytes:pass_data.data()
+                                length:pass_data.size()];
+
+  id mock_handler = OCMProtocolMock(@protocol(VcardTabHelperDelegate));
+  tab_helper()->set_delegate(mock_handler);
+
+  // The delegate should not be notified while the web state is hidden.
+  [[mock_handler reject] openVcardFromData:OCMOCK_ANY];
+
+  task_ptr->SetResponseData(data);
+  task_ptr->SetDone(true);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+
+  // Now, show the web state. The delegate should be called.
+  id mock_handler_visible = OCMProtocolMock(@protocol(VcardTabHelperDelegate));
+  tab_helper()->set_delegate(mock_handler_visible);
+  OCMExpect([mock_handler_visible openVcardFromData:data]);
+
+  web_state_.WasShown();
+
+  EXPECT_OCMOCK_VERIFY(mock_handler_visible);
 }

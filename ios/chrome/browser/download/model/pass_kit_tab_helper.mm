@@ -43,9 +43,12 @@ DownloadPassKitResult GetUmaHttpResult(web::DownloadTask* task) {
 
 }  // namespace
 
+#pragma mark - Initialization
+
 PassKitTabHelper::PassKitTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  DCHECK(web_state_);
+  CHECK(web_state_);
+  web_state_observation_.Observe(web_state);
 }
 
 PassKitTabHelper::~PassKitTabHelper() {
@@ -53,6 +56,8 @@ PassKitTabHelper::~PassKitTabHelper() {
     task->RemoveObserver(this);
   }
 }
+
+#pragma mark - Public
 
 void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   DCHECK(task->GetMimeType() == kPkPassMimeType ||
@@ -68,6 +73,18 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
 void PassKitTabHelper::SetWebContentsHandler(id<WebContentCommands> handler) {
   handler_ = handler;
 }
+
+#pragma mark - WebStateObserver
+
+void PassKitTabHelper::WasShown(web::WebState* web_state) {
+  CHECK_EQ(web_state_, web_state);
+  if (handler_ && pending_passes_) {
+    [handler_ showDialogForPassKitPasses:pending_passes_];
+    pending_passes_ = nil;
+  }
+}
+
+#pragma mark - DownloadTaskObserver
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
   auto iterator = tasks_.find(updated_task);
@@ -97,6 +114,8 @@ void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
                        weak_factory_.GetWeakPtr(), uma_result));
   }
 }
+
+#pragma mark - Private
 
 void PassKitTabHelper::OnDownloadBundledPassesDataRead(
     DownloadPassKitResult uma_result,
@@ -133,7 +152,12 @@ void PassKitTabHelper::OnDownloadDataAllRead(std::string uma_histogram,
       uma_result == DownloadPassKitResult::kParsingFailure) {
     uma_result = DownloadPassKitResult::kPartialFailure;
   }
-  [handler_ showDialogForPassKitPasses:passes];
+
+  if (web_state_->IsVisible()) {
+    [handler_ showDialogForPassKitPasses:passes];
+  } else {
+    pending_passes_ = passes;
+  }
 
   base::UmaHistogramEnumeration(uma_histogram, uma_result);
 }

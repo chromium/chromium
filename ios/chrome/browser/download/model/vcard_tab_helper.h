@@ -7,12 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-#include <set>
+#import <set>
 
-#include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/weak_ptr.h"
-#include "ios/web/public/download/download_task_observer.h"
-#include "ios/web/public/web_state_user_data.h"
+#import "base/containers/unique_ptr_adapters.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
+#import "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol VcardTabHelperDelegate;
 namespace web {
@@ -22,6 +25,7 @@ class WebState;
 
 // TabHelper which manages Vcard.
 class VcardTabHelper : public web::DownloadTaskObserver,
+                       public web::WebStateObserver,
                        public web::WebStateUserData<VcardTabHelper> {
  public:
   VcardTabHelper(const VcardTabHelper&) = delete;
@@ -47,6 +51,9 @@ class VcardTabHelper : public web::DownloadTaskObserver,
  private:
   friend class web::WebStateUserData<VcardTabHelper>;
 
+  // web::WebStateObserver overrides:
+  void WasShown(web::WebState* web_state) override;
+
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
 
@@ -54,11 +61,18 @@ class VcardTabHelper : public web::DownloadTaskObserver,
   void OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
                           NSData* data);
 
+  raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<VcardTabHelperDelegate> delegate_ = nil;
 
   // Set of unfinished download tasks.
   std::set<std::unique_ptr<web::DownloadTask>, base::UniquePtrComparator>
       tasks_;
+
+  // The vcard downloaded while the tab was hidden.
+  NSData* pending_vcard_ = nil;
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   base::WeakPtrFactory<VcardTabHelper> weak_factory_{this};
 };

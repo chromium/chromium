@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
@@ -83,6 +84,7 @@ class SafariDownloadCoordinatorTest : public PlatformTest {
     // SafariDownloadTabHelper instances once started.
     auto web_state = std::make_unique<web::FakeWebState>();
     auto* web_state_ptr = web_state.get();
+    web_state_ptr->WasShown();
     SafariDownloadTabHelper::CreateForWebState(web_state_ptr);
     browser_->GetWebStateList()->InsertWebState(std::move(web_state));
     [coordinator_ start];
@@ -239,6 +241,35 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidAppleWalletOrderFile) {
       static_cast<base::HistogramBase::Sample32>(
           SafariDownloadFileUI::kWarningAlertIsPresented),
       0);
+}
+
+// Tests that SafariDownloadTabHelper defers UI alert presentation when the
+// WebState is hidden.
+TEST_F(SafariDownloadCoordinatorTest,
+       DeferSafariDownloadPresentationWhenHidden) {
+  web::FakeWebState* fake_web_state = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+  fake_web_state->WasHidden();
+
+  auto task = std::make_unique<web::FakeDownloadTask>(
+      GURL("https://test.test/mobileconfig"), kMobileConfigurationType);
+
+  // Start the download in tab helper.
+  tab_helper()->DownloadMobileConfig(std::move(task));
+
+  // The warning alert should not be presented while hidden.
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UIAlertController class];
+  }));
+
+  // Now show the web state. The warning alert should be presented.
+  fake_web_state->WasShown();
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UIAlertController class];
+  }));
 }
 
 }  // namespace
