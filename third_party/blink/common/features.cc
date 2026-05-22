@@ -1012,6 +1012,9 @@ BASE_FEATURE(kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOffscreenCanvasPropagateVisibility,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceSkcmsICCParsing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceSkExifCppParsing, base::FEATURE_DISABLED_BY_DEFAULT);

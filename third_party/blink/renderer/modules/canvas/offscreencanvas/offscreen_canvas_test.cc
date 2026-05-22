@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -337,8 +339,34 @@ TEST_F(OffscreenCanvasTest, BitmapRendererResizePreservesTaint) {
   // origin_clean_ should still be false.
   EXPECT_FALSE(canvas->OriginClean());
   EXPECT_TRUE(context->IsPaintable());
-
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+}
+
+TEST_F(OffscreenCanvasTest, VisibilityPropagation) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        blink::features::kOffscreenCanvasPropagateVisibility);
+
+    EXPECT_TRUE(offscreen_canvas().IsPageVisible());
+    offscreen_canvas().SetParentVisibility(false);
+    // Should remain visible because the feature is disabled.
+    EXPECT_TRUE(offscreen_canvas().IsPageVisible());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        blink::features::kOffscreenCanvasPropagateVisibility);
+
+    EXPECT_TRUE(offscreen_canvas().IsPageVisible());
+
+    offscreen_canvas().SetParentVisibility(false);
+    EXPECT_FALSE(offscreen_canvas().IsPageVisible());
+
+    offscreen_canvas().SetParentVisibility(true);
+    EXPECT_TRUE(offscreen_canvas().IsPageVisible());
+  }
 }
 
 const TestParams kTestCases[] = {

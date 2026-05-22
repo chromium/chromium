@@ -30,6 +30,7 @@ class ExportedCanvasResource;
 class CanvasResourceDispatcherClient {
  public:
   virtual bool BeginFrame() = 0;
+  virtual void SetParentVisibility(bool visible) {}
 };
 
 class PLATFORM_EXPORT CanvasResourceDispatcher

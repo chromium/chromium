@@ -123,10 +123,8 @@ class CORE_EXPORT OffscreenCanvas final
   CanvasRenderingContext* RenderingContext() const override {
     return context_.Get();
   }
-  // Because OffscreenCanvas is not tied to a DOM, it's visibility cannot be
-  // determined synchronously.
-  // TODO(junov): Propagate changes in visibility from the placeholder canvas.
-  bool IsPageVisible() const override { return true; }
+  bool IsPageVisible() const override;
+  void SetParentVisibility(bool visible) override;
   void DiscardResources() override;
 
   bool PushFrameIfNeeded();
@@ -249,6 +247,7 @@ class CORE_EXPORT OffscreenCanvas final
   WeakMember<ExecutionContext> execution_context_;
 
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
+  bool is_parent_visible_ = true;
   std::optional<TextDirection> text_direction_;
 
   // Required for the TextStyle lang attribute, only non-null if control

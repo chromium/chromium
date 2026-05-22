@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
@@ -680,6 +682,28 @@ UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
       MakeGarbageCollected<UniqueFontSelector>(base_selector);
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
+}
+
+bool OffscreenCanvas::IsPageVisible() const {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kOffscreenCanvasPropagateVisibility)) {
+    return is_parent_visible_;
+  }
+  return true;
+}
+
+void OffscreenCanvas::SetParentVisibility(bool visible) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kOffscreenCanvasPropagateVisibility)) {
+    return;
+  }
+  if (is_parent_visible_ == visible) {
+    return;
+  }
+  is_parent_visible_ = visible;
+  if (context_) {
+    context_->PageVisibilityChanged();
+  }
 }
 
 void OffscreenCanvas::Trace(Visitor* visitor) const {

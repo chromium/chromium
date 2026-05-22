@@ -308,6 +308,10 @@ void CanvasResourceDispatcher::SetAnimationState(
   }
   animation_state_ = animation_state;
   UpdateBeginFrameSource();
+
+  if (client_) {
+    client_->SetParentVisibility(!IsAnimationSuspended());
+  }
 }
 
 void CanvasResourceDispatcher::UpdateBeginFrameSource() {
