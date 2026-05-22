@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <tuple>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -23,6 +26,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -36,11 +40,12 @@ enum class ContentExtraction {
 
 class ZeroStateSuggestionsBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<ContentExtraction> {
+      public ::testing::WithParamInterface<
+          std::tuple<ContentExtraction, bool>> {
  public:
   ZeroStateSuggestionsBrowserTest() {
     base::FieldTrialParams zss_params;
-    switch (GetParam()) {
+    switch (GetContentExtraction()) {
       case ContentExtraction::kFetchInnerTextOnly:
         zss_params = {{"ZSSExtractInnerText", "true"},
                       {"ZSSExtractAnnotatedPageContent", "false"}};
@@ -54,10 +59,24 @@ class ZeroStateSuggestionsBrowserTest
                       {"ZSSExtractAnnotatedPageContent", "true"}};
         break;
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{glic::kContextualCueing, {}},
-         {glic::kGlicZeroStateSuggestions, zss_params}},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {glic::kContextualCueing, {}},
+        {glic::kGlicZeroStateSuggestions, zss_params}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsPageSettledMonitorEnabled()) {
+      enabled_features.push_back(
+          {page_content_annotations::features::
+               kPageContentExtractionUsingPageSettledMonitor,
+           {{"capture_delay", "3s"}}});
+    } else {
+      disabled_features.push_back(
+          page_content_annotations::features::
+              kPageContentExtractionUsingPageSettledMonitor);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   void SetUp() override {
@@ -80,7 +99,11 @@ class ZeroStateSuggestionsBrowserTest
 
   GURL url() { return url_; }
 
-  ContentExtraction GetContentExtraction() const { return GetParam(); }
+  ContentExtraction GetContentExtraction() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsPageSettledMonitorEnabled() const { return std::get<1>(GetParam()); }
 
   void SetUpOnDemandHints(const GURL& url,
                           bool allow_contextual,
@@ -166,10 +189,31 @@ class ZeroStateSuggestionsBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     WithContentExtraction,
     ZeroStateSuggestionsBrowserTest,
-    ::testing::Values(
-        ContentExtraction::kFetchInnerTextOnly,
-        ContentExtraction::kFetchAnnotatedPageContentOnly,
-        ContentExtraction::kFetchInnerTextAndAnnotatedPageContent));
+    ::testing::Combine(
+        ::testing::Values(
+            ContentExtraction::kFetchInnerTextOnly,
+            ContentExtraction::kFetchAnnotatedPageContentOnly,
+            ContentExtraction::kFetchInnerTextAndAnnotatedPageContent),
+        ::testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<ContentExtraction, bool>>&
+           info) {
+      std::string extraction_name;
+      switch (std::get<0>(info.param)) {
+        case ContentExtraction::kFetchInnerTextOnly:
+          extraction_name = "FetchInnerTextOnly";
+          break;
+        case ContentExtraction::kFetchAnnotatedPageContentOnly:
+          extraction_name = "FetchAnnotatedPageContentOnly";
+          break;
+        case ContentExtraction::kFetchInnerTextAndAnnotatedPageContent:
+          extraction_name = "FetchInnerTextAndAnnotatedPageContent";
+          break;
+      }
+      return base::StrCat({extraction_name, "_",
+                           std::get<1>(info.param)
+                               ? "PageSettledMonitorEnabled"
+                               : "PageSettledMonitorDisabled"});
+    });
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicFlow) {
   base::HistogramTester histogram_tester;
@@ -485,12 +529,6 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
                        NonMSBBFlowContextualNotAllowedForAllPinnedTabs) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/515444685): Fix and reenable on Linux.
-  if (GetParam() == ContentExtraction::kFetchAnnotatedPageContentOnly) {
-    GTEST_SKIP() << "Skipping due to failures on Linux.";
-  }
-#endif
   base::HistogramTester histogram_tester;
 
   SetUpOnDemandHints(url(), /*allow_contextual=*/false, /*suggestions=*/{});
