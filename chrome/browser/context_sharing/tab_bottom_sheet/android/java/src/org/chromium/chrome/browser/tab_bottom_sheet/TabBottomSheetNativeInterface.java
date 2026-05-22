@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -53,6 +54,14 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         var tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null) {
             tabBottomSheetManager.tryToCloseBottomSheet(animate);
+        }
+    }
+
+    @CalledByNativeForTesting
+    public void suppressBottomSheetForTesting(boolean suppress) {
+        var tabBottomSheetManager = getTabBottomSheetManager(mTab);
+        if (tabBottomSheetManager != null) {
+            tabBottomSheetManager.suppressBottomSheetForTesting(suppress); // IN-TEST
         }
     }
 

@@ -154,4 +154,32 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   EXPECT_EQ(embedder_before, instance->GetEmbedderForTab(tab));
 }
 
+// This is a crash regression test, see crbug.com/512567837.
+IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
+                       ShowFailsWhenSuppressedCausesCrash) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  auto* coordinator_android = GetSidePanelCoordinatorAndroid(tab);
+  ASSERT_TRUE(coordinator_android);
+
+  // Set the side panel to peek state so that state_ is State::kPeek.
+  coordinator_android->OnOpened(false);
+  EXPECT_EQ(coordinator_android->state(),
+            GlicSidePanelCoordinator::State::kPeek);
+
+  // Suppress the bottom sheet so that the next Show() will fail synchronously.
+  coordinator_android->SuppressBottomSheetForTesting(true);
+
+  // Call Toggle to attempt to expand the panel with focus_on_show = true.
+  // In the buggy implementation, bridge_->Show will return false,
+  // SetState(kClosed) will transition from kPeek to kClosed, synchronously
+  // destroying the embedder. GlicInstanceImpl::Show will then call Focus() on
+  // the destroyed embedder, causing a SIGSEGV crash.
+  instance->Toggle(ShowOptions::ForSidePanel(*tab), /*prevent_close=*/false,
+                   mojom::InvocationSource::kTopChromeButton, std::nullopt);
+
+  coordinator_android->SuppressBottomSheetForTesting(false);
+}
+
 }  // namespace glic
