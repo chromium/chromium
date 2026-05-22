@@ -53,7 +53,7 @@ void VertexAttrib::SetInfo(
     GLsizei real_stride,
     GLsizei offset,
     GLboolean integer) {
-  DCHECK_GT(real_stride, 0);
+  CHECK_GT(real_stride, 0);
   buffer_ = buffer;
   size_ = size;
   type_ = type;
@@ -77,9 +77,11 @@ bool VertexAttrib::CanAccess(GLuint index) const {
   }
 
   uint32_t usable_size = buffer_size - offset_;
-  GLuint num_elements = usable_size / real_stride_ +
-      ((usable_size % real_stride_) >=
-       (GLES2Util::GetGroupSizeForBufferType(size_, type_)) ? 1 : 0);
+  uint32_t group_size = GLES2Util::GetGroupSizeForBufferType(size_, type_);
+  if (usable_size < group_size) {
+    return false;
+  }
+  GLuint num_elements = (usable_size - group_size) / real_stride_ + 1;
   return index < num_elements;
 }
 
