@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1019,6 +1020,18 @@ TEST_P(AnnotatePageContentRequestTest, Metrics_OnLoadTrigger) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentExtraction.TriggerSource",
       AnnotatedPageContentRequest::TriggerSource::kOnLoad, 1);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount",
+      1);
 }
 
 TEST_P(AnnotatePageContentRequestTest, Metrics_OnHiddenTrigger) {
@@ -1047,6 +1060,18 @@ TEST_P(AnnotatePageContentRequestTest, Metrics_OnHiddenTrigger) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
       0);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount",
+      1);
 }
 
 TEST_P(AnnotatePageContentRequestTest, Metrics_OnDemandTrigger) {
@@ -1054,6 +1079,9 @@ TEST_P(AnnotatePageContentRequestTest, Metrics_OnDemandTrigger) {
 
   SimulatePageLoad();
   WaitForExtraction();
+
+  // Ensures `histogram_tester` starts clean.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
   base::HistogramTester histogram_tester;
 
@@ -1076,6 +1104,18 @@ TEST_P(AnnotatePageContentRequestTest, Metrics_OnDemandTrigger) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest2", 4,
       1);  // 4 corresponds to Lifecycle::kExtracted
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount",
+      1);
 }
 
 TEST_P(AnnotatePageContentRequestTest,
@@ -1195,6 +1235,18 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentExtraction.TriggerSource",
       AnnotatedPageContentRequest::TriggerSource::kOnHidden, 1);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount",
+      1);
 }
 
 TEST_P(AnnotatePageContentRequestTest,
@@ -1217,6 +1269,18 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentExtraction.TriggerSource",
       AnnotatedPageContentRequest::TriggerSource::kOnHidden, 1);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount",
+      1);
 }
 
 TEST_P(AnnotatePageContentRequestTest,
@@ -1274,6 +1338,18 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
       1);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize",
+      2);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount",
+      2);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount",
+      2);
 }
 
 TEST_P(AnnotatePageContentRequestTest, OnLoadTriggerPDFExtraction) {

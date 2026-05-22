@@ -11,9 +11,11 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -1826,6 +1828,32 @@ void VisitContentNodes(
     base::FunctionRef<void(const optimization_guide::proto::ContentNode& node,
                            std::string_view document_identifier)> visitor) {
   VisitContentNodesImpl(node, document_identifier, visitor);
+}
+
+void ComputeContentNodeMetrics(
+    const optimization_guide::proto::ContentNode& content_node,
+    ContentNodeMetrics* metrics) {
+  bool is_previous_char_whitespace = true;
+  for (base::i18n::UTF8CharIterator iter(
+           content_node.content_attributes().text_data().text_content());
+       metrics->word_count < kMaxWordLimitForMetrics && !iter.end();
+       iter.Advance()) {
+    bool is_current_char_whitespace = base::IsUnicodeWhitespace(iter.get());
+    if (is_previous_char_whitespace && !is_current_char_whitespace) {
+      // Count the start of the word.
+      ++metrics->word_count;
+    }
+    is_previous_char_whitespace = is_current_char_whitespace;
+  }
+  metrics->node_count += 1;
+
+  for (const optimization_guide::proto::ContentNode& child :
+       content_node.children_nodes()) {
+    ComputeContentNodeMetrics(child, metrics);
+    if (metrics->node_count >= kMaxNodeLimitForMetrics) {
+      break;
+    }
+  }
 }
 
 }  // namespace optimization_guide

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_UTIL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_UTIL_H_
 
+#include <cstddef>
 #include <string_view>
 #include <variant>
 
@@ -32,6 +33,17 @@ namespace optimization_guide {
 
 inline constexpr char kHasMediaTranscripts[] = "has_media_transcripts";
 
+// The maximum limit for computing the metrics. These should not be changed
+// without versioning metrics.
+
+// LINT.IfChange(PageContentMaxNodeLimitForMetrics)
+inline constexpr size_t kMaxNodeLimitForMetrics = 100000;
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:PageContentExtractionAPCNodeCount,//tools/metrics/histograms/metadata/optimization/histograms.xml:APCTotalNodeCount)
+
+// LINT.IfChange(PageContentMaxWordLimitForMetrics)
+inline constexpr size_t kMaxWordLimitForMetrics = 100000;
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:PageContentExtractionAPCWordCount,//tools/metrics/histograms/metadata/optimization/histograms.xml:APCTotalWordCount)
+
 enum class AutofillFieldRedactionReason : int;
 
 namespace features {
@@ -39,6 +51,10 @@ BASE_DECLARE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentAutofillOtpRedactions);
 }  // namespace features
+
+namespace proto {
+class ContentNode;
+}  // namespace proto
 
 // Returns true if the given redaction reason is enabled by its feature gate.
 bool IsAutofillRedactionReasonEnabled(
@@ -91,6 +107,17 @@ class ConvertAIPageContentToProtoSession : public base::SupportsUserData {
   ConvertAIPageContentToProtoSession();
   ~ConvertAIPageContentToProtoSession() override;
 };
+
+struct ContentNodeMetrics {
+  size_t node_count = 0;
+  size_t word_count = 0;
+};
+
+// Computes metrics (node count and estimated word count) for the ContentNode
+// tree.
+void ComputeContentNodeMetrics(
+    const optimization_guide::proto::ContentNode& content_node,
+    ContentNodeMetrics* metrics);
 
 // Converts the mojom data structure for AIPageContent to its equivalent proto
 // mapping. If conversion fails, the returned base::expected contains a

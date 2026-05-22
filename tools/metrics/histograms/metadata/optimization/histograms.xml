@@ -778,6 +778,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(APCTotalNodeCount) -->
+
 <histogram
     name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount.{AIPageContentMode}"
     units="nodes" expires_after="2026-09-13">
@@ -791,6 +793,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="AIPageContentMode" variants="AIPageContentMode"/>
 </histogram>
+
+<!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.h:PageContentMaxNodeLimitForMetrics) -->
 
 <histogram
     name="OptimizationGuide.AnnotatedPageContent.TotalSize2.{AIPageContentMode}"
@@ -806,6 +810,8 @@ chromium-metrics-reviews@google.com.
   <token key="AIPageContentMode" variants="AIPageContentMode"/>
 </histogram>
 
+<!-- LINT.IfChange(APCTotalWordCount) -->
+
 <histogram name="OptimizationGuide.AnnotatedPageContent.TotalWordCount"
     units="words" expires_after="2026-11-01">
   <owner>khushalsagar@chromium.org</owner>
@@ -815,6 +821,8 @@ chromium-metrics-reviews@google.com.
     WebContents instance. Recorded once per extraction. Max of 100k words.
   </summary>
 </histogram>
+
+<!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.h:PageContentMaxWordLimitForMetrics) -->
 
 <histogram name="OptimizationGuide.ApplyDecision.{OptimizationType}"
     enum="OptimizationGuideOptimizationTypeDecision" expires_after="2027-04-14">
@@ -2195,6 +2203,48 @@ chromium-metrics-reviews@google.com.
     delay post-startup.
   </summary>
 </histogram>
+
+<!-- LINT.IfChange(PageContentExtractionAPCNodeCount) -->
+
+<histogram
+    name="OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount"
+    units="nodes" expires_after="2026-11-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the total number of ContentNodes in the fetched AnnotatedPageContent
+    proto. Recorded once per successful page content extraction.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.h:PageContentMaxNodeLimitForMetrics) -->
+
+<histogram
+    name="OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize"
+    units="KB" expires_after="2026-11-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the size (in KB) of the fetched AnnotatedPageContent proto. Recorded
+    once per successful page content extraction.
+  </summary>
+</histogram>
+
+<!-- LINT.IfChange(PageContentExtractionAPCWordCount) -->
+
+<histogram
+    name="OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount"
+    units="words" expires_after="2026-11-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the total estimated word count of text nodes in the fetched
+    AnnotatedPageContent proto. Recorded once per successful page content
+    extraction.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.h:PageContentMaxWordLimitForMetrics) -->
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.Async.PendingContentCallbacksBatched"

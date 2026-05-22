@@ -20,12 +20,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
-#include "base/i18n/char_iterator.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -65,15 +63,6 @@ BASE_FEATURE(kAnnotatedPageContentVerifyPopupProcess,
 }  // namespace features
 
 namespace {
-
-// The maximum limit for computing the metrics.
-constexpr size_t kMaxWordLimit = 100000;
-constexpr size_t kMaxNodeLimit = 100000;
-
-struct ContentNodeMetrics {
-  size_t word_count = 0;
-  size_t node_count = 0;
-};
 
 // To avoid blocking on subframe responses for too long, we proceed on a timeout
 // (if provided) as long as we have received a response from the main frame.
@@ -362,31 +351,6 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
   return render_frame_info;
 }
 
-// Computes the metrics in one pass.
-void ComputeContentNodeMetrics(
-    const optimization_guide::proto::ContentNode& content_node,
-    ContentNodeMetrics* metrics) {
-  bool is_previous_char_whitespace = true;
-  for (base::i18n::UTF8CharIterator iter(
-           content_node.content_attributes().text_data().text_content());
-       metrics->word_count < kMaxWordLimit && !iter.end(); iter.Advance()) {
-    bool is_current_char_whitespace = base::IsUnicodeWhitespace(iter.get());
-    if (is_previous_char_whitespace && !is_current_char_whitespace) {
-      // Count the start of the word.
-      ++metrics->word_count;
-    }
-    is_previous_char_whitespace = is_current_char_whitespace;
-  }
-  metrics->node_count += 1;
-
-  for (const auto& child : content_node.children_nodes()) {
-    ComputeContentNodeMetrics(child, metrics);
-    if (metrics->node_count > kMaxNodeLimit) {
-      break;
-    }
-  }
-}
-
 void RecordPageContentExtractionMetrics(
     base::TimeDelta total_latency,
     ukm::SourceId source_id,
@@ -432,7 +396,7 @@ void RecordPageContentExtractionMetrics(
         total_size / 1024, 10, 5000, 50);
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "OptimizationGuide.AnnotatedPageContent.TotalNodeCount.Default",
-        metrics.node_count, 1, kMaxNodeLimit, 50);
+        metrics.node_count, 1, kMaxNodeLimitForMetrics, 50);
   } else if (mode == blink::mojom::AIPageContentMode::kActionableElements) {
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "OptimizationGuide.AnnotatedPageContent.TotalSize2.ActionableElements",
@@ -440,11 +404,11 @@ void RecordPageContentExtractionMetrics(
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "OptimizationGuide.AnnotatedPageContent.TotalNodeCount."
         "ActionableElements",
-        metrics.node_count, 1, kMaxNodeLimit, 50);
+        metrics.node_count, 1, kMaxNodeLimitForMetrics, 50);
   }
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "OptimizationGuide.AnnotatedPageContent.TotalWordCount",
-      metrics.word_count, 1, kMaxWordLimit, 50);
+      metrics.word_count, 1, kMaxWordLimitForMetrics, 50);
 
   ukm::builders::OptimizationGuide_AnnotatedPageContent(source_id)
       .SetMode(static_cast<int64_t>(mode))

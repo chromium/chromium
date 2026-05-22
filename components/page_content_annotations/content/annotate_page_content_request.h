@@ -31,6 +31,11 @@
 
 namespace optimization_guide {
 class PageContextEligibility;
+
+namespace proto {
+class AnnotatedPageContent;
+}  // namespace proto
+
 }  // namespace optimization_guide
 
 namespace page_content_annotations {
@@ -179,6 +184,9 @@ class AnnotatedPageContentRequest
   void OnInnerTextReceived(
       base::TimeTicks start_time,
       std::unique_ptr<content_extraction::InnerTextResult> result);
+
+  void RecordAnnotatedPageContentMetrics(
+      const optimization_guide::proto::AnnotatedPageContent& proto);
 
   void ResolveAllCallbacksWith(
       const std::optional<ExtractedPageContentResult>& result);

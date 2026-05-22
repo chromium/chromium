@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -28,7 +29,9 @@
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/annotate_page_content_request_metrics.h"
 #include "components/page_content_annotations/content/browser/page_settled_monitor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -700,6 +703,11 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
                                  extraction_time, is_eligible_for_server_upload,
                                  std::move(screenshot_data));
 
+  CHECK(cached_content_);
+  CHECK(cached_content_->page_content);
+
+  RecordAnnotatedPageContentMetrics(cached_content_->page_content->data);
+
   ResolveAllCallbacksWith(cached_content_);
 }
 
@@ -713,6 +721,42 @@ void AnnotatedPageContentRequest::OnInnerTextReceived(
                       base::TimeTicks::Now() - start_time);
   UMA_HISTOGRAM_CUSTOM_COUNTS("OptimizationGuide.InnerText.TotalSize2",
                               result->inner_text.length() / 1024, 10, 5000, 50);
+}
+
+void AnnotatedPageContentRequest::RecordAnnotatedPageContentMetrics(
+    const optimization_guide::proto::AnnotatedPageContent& proto) {
+  // Note: Similar structural and performance metrics are recorded globally (but
+  // without caller/client granularity) during extraction in
+  // PageContentProtoProvider.
+  //
+  // TODO(b/515360778): Consider granularizing the global metrics in
+  // PageContentProtoProvider by caller/client to avoid duplicate metrics
+  // gathering.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](const optimization_guide::proto::AnnotatedPageContent proto) {
+            optimization_guide::ContentNodeMetrics metrics;
+            optimization_guide::ComputeContentNodeMetrics(proto.root_node(),
+                                                          &metrics);
+
+            size_t proto_size = proto.ByteSizeLong();
+            UMA_HISTOGRAM_CUSTOM_COUNTS(
+                "OptimizationGuide.PageContentExtraction.AnnotatedPageContent."
+                "ProtoSize",
+                proto_size / 1024, 10, 5000, 50);
+            UMA_HISTOGRAM_CUSTOM_COUNTS(
+                "OptimizationGuide.PageContentExtraction.AnnotatedPageContent."
+                "NodeCount",
+                metrics.node_count, 1,
+                optimization_guide::kMaxNodeLimitForMetrics, 50);
+            UMA_HISTOGRAM_CUSTOM_COUNTS(
+                "OptimizationGuide.PageContentExtraction.AnnotatedPageContent."
+                "WordCount",
+                metrics.word_count, 1,
+                optimization_guide::kMaxWordLimitForMetrics, 50);
+          },
+          proto));
 }
 
 #if BUILDFLAG(ENABLE_PDF)
