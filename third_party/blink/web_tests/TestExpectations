@@ -9510,6 +9510,10 @@ crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/b
 
 # [WebAudio] Expected to crash until Configurable Render Quantum is fully launched.
 crbug.com/502311300 webaudio/MediaStreamAudioSource/mediastreamaudiosourcenode-rendersizehint.https.html [ Crash Timeout ]
+crbug.com/502309240 external/wpt/webaudio/the-audio-api/the-scriptprocessornode-interface/scriptprocessor-rendersizehint.https.html [ Crash Failure ]
+crbug.com/502309240 external/wpt/webaudio/the-audio-api/the-analysernode-interface/analysernode-rendersizehint.https.html [ Crash Failure ]
+
+
 
 # Gardener 2026-05-18
 crbug.com/514075904 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
