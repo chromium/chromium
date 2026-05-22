@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace contextual_cueing {
@@ -23,11 +24,14 @@ struct CueTabMetrics {
 
 void RecordCueShownMetrics(ukm::SourceId source_id,
                            std::string_view cuj,
-                           const CueTabMetrics& tab_metrics);
+                           const CueTabMetrics& tab_metrics,
+                           base::TimeDelta latency);
 
 void RecordContextualCueingInteraction(
     ContextualCueingInteraction contextual_cueing_interaction,
-    const std::string& cuj);
+    const std::string& cuj,
+    ukm::SourceId source_id,
+    base::TimeDelta shown_duration);
 
 }  // namespace contextual_cueing
 

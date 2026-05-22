@@ -36,10 +36,12 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -563,9 +565,20 @@ void ContextualCueingController::ShowCue(
   tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
   CHECK(tab);
 
+  base::TimeDelta show_latency;
+  base::Time page_load_time = tab->GetContents()
+                                  ->GetController()
+                                  .GetLastCommittedEntry()
+                                  ->GetTimestamp();
+  if (!page_load_time.is_null()) {
+    show_latency = base::Time::Now() - page_load_time;
+  }
+
   RecordCueShownMetrics(
       tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-      response.suggested_cuj(), tab_metrics);
+      response.suggested_cuj(), tab_metrics, show_latency);
+
+  cue_shown_time_ = base::TimeTicks::Now();
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
       << "Contextual cueing anchored message UI is not implemented for Android";
@@ -632,6 +645,7 @@ void ContextualCueingController::ShowCue(
 
 void ContextualCueingController::OnCueHidden() {
   current_cuj_.clear();
+  cue_shown_time_ = base::TimeTicks();
 }
 
 void ContextualCueingController::OnSidePanelShown() {
@@ -660,21 +674,62 @@ void ContextualCueingController::OnCueClicked(
             kActionAnchoredContextualCue,
             {.priority =
                  page_actions::PageActionPriorityCategory::kContextualCue});
+        // TODO(crbug.com/515099278): Record a metric for this.
       }
     }
     return;
   }
 #endif
 
-  if (CueTarget* target = GetTarget(cue_type)) {
-    target->OnClick(std::move(data));
-  }
-  contextual_cueing_service_->OnCueClicked(cue_type);
+  OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type,
+                   std::move(data));
+}
 
-  RecordContextualCueingInteraction(ContextualCueingInteraction::kCueClicked,
-                                    current_cuj_);
+void ContextualCueingController::OnCueInteraction(
+    ContextualCueingInteraction interaction_type,
+    CueTargetType cue_type,
+    CueActionData data) {
+  base::TimeDelta shown_duration = ExtractCueShownDuration();
+
+  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
+  ukm::SourceId source_id =
+      tab ? tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId()
+          : ukm::kInvalidSourceId;
+
+  RecordContextualCueingInteraction(interaction_type, current_cuj_, source_id,
+                                    shown_duration);
+
+  switch (interaction_type) {
+    case ContextualCueingInteraction::kCueDismissed:
+      contextual_cueing_service_->OnCueDismissed(cue_type);
+      break;
+    case ContextualCueingInteraction::kCueEditPrompt:
+      if (CueTarget* target = GetTarget(cue_type)) {
+        target->OnEditPrompt(std::move(data));
+      }
+      break;
+    case ContextualCueingInteraction::kCueSuggestionsSettings:
+      chrome::ShowSettingsSubPageForProfile(
+          browser_window_interface_->GetProfile(), chrome::kSuggestionsSubPage);
+      break;
+    case ContextualCueingInteraction::kCueClicked:
+      if (CueTarget* target = GetTarget(cue_type)) {
+        target->OnClick(std::move(data));
+      }
+      contextual_cueing_service_->OnCueClicked(cue_type);
+      break;
+  }
 
   HideCue();
+}
+
+base::TimeDelta ContextualCueingController::ExtractCueShownDuration() {
+  if (cue_shown_time_.is_null()) {
+    return base::TimeDelta();
+  }
+  base::TimeDelta duration = base::TimeTicks::Now() - cue_shown_time_;
+  cue_shown_time_ = base::TimeTicks();
+  return duration;
 }
 
 void ContextualCueingController::HideCue() {

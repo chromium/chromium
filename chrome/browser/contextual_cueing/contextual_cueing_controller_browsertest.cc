@@ -325,6 +325,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        PassesFilterAndModelExecutionSucceeded) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicDefaultTabContextEnabled, true);
+
   // Navigate current Chrome tab to a valid URL (and will be in the background
   // in final state).
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -411,6 +414,16 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_CueShown::kMatchedTabCountName,
       ukm::GetExponentialBucketMin(1, 1.5));
+
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::ContextualCueing_CueShown::kMissingTabCountName,
+      ukm::GetExponentialBucketMin(1, 1.5));
+
+  const int64_t* latency_value = ukm_recorder.GetEntryMetric(
+      entry, ukm::builders::ContextualCueing_CueShown::
+                 kProactiveCueLatencyAfterPageLoadName);
+  ASSERT_TRUE(latency_value);
+  EXPECT_GE(*latency_value, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
@@ -495,6 +508,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SeedExecutionResult(MakeCompleteResponse());
   SimulateFilterPassed();
@@ -517,6 +531,16 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
                                       ContextualCueingInteraction::kCueClicked,
                                       1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_CueInteraction::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0].get();
+  const int64_t* duration_value = ukm_recorder.GetEntryMetric(
+      entry, ukm::builders::ContextualCueing_CueInteraction::
+                 kProactiveCueShownDurationName);
+  ASSERT_TRUE(duration_value);
+  EXPECT_GE(*duration_value, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
