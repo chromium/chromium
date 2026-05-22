@@ -48,6 +48,17 @@ StyleRuleKeyframes::StyleRuleKeyframes()
 
 StyleRuleKeyframes::StyleRuleKeyframes(const StyleRuleKeyframes& o) = default;
 
+StyleRuleKeyframes::StyleRuleKeyframes(
+    HeapVector<Member<StyleRuleKeyframe>>&& keyframes,
+    const AtomicString& name,
+    unsigned version,
+    bool is_vendor_prefixed)
+    : StyleRuleBase(kKeyframes),
+      keyframes_(std::move(keyframes)),
+      name_(name),
+      version_(version),
+      is_prefixed_(is_vendor_prefixed) {}
+
 StyleRuleKeyframes::~StyleRuleKeyframes() = default;
 
 void StyleRuleKeyframes::ParserAppendKeyframe(StyleRuleKeyframe* keyframe) {
@@ -230,6 +241,14 @@ CSSRuleList* CSSKeyframesRule::cssRules() const {
 void CSSKeyframesRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
   keyframes_rule_ = To<StyleRuleKeyframes>(rule);
+  CHECK_EQ(child_rule_cssom_wrappers_.size(),
+           keyframes_rule_->Keyframes().size());
+  for (unsigned i = 0; i < child_rule_cssom_wrappers_.size(); ++i) {
+    if (child_rule_cssom_wrappers_[i]) {
+      child_rule_cssom_wrappers_[i]->Reattach(
+          keyframes_rule_->Keyframes()[i].Get());
+    }
+  }
 }
 
 void CSSKeyframesRule::Trace(Visitor* visitor) const {

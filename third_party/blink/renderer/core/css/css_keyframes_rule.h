@@ -42,7 +42,11 @@ class CSSParserContext;
 class StyleRuleKeyframes final : public StyleRuleBase {
  public:
   StyleRuleKeyframes();
-  explicit StyleRuleKeyframes(const StyleRuleKeyframes&);
+  StyleRuleKeyframes(HeapVector<Member<StyleRuleKeyframe>>&& keyframes,
+                     const AtomicString& name,
+                     unsigned version,
+                     bool is_vendor_prefixed);
+  StyleRuleKeyframes(const StyleRuleKeyframes&);
   ~StyleRuleKeyframes();
 
   const HeapVector<Member<StyleRuleKeyframe>>& Keyframes() const {

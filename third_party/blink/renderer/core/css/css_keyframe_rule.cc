@@ -72,9 +72,11 @@ CSSStyleDeclaration* CSSKeyframeRule::style() const {
   return properties_cssom_wrapper_.Get();
 }
 
-void CSSKeyframeRule::Reattach(StyleRuleBase*) {
-  // No need to reattach, the underlying data is shareable on mutation.
-  NOTREACHED();
+void CSSKeyframeRule::Reattach(StyleRuleBase* rule) {
+  keyframe_ = To<StyleRuleKeyframe>(rule);
+  if (properties_cssom_wrapper_) {
+    properties_cssom_wrapper_->Reattach(keyframe_->MutableProperties());
+  }
 }
 
 void CSSKeyframeRule::Trace(Visitor* visitor) const {
