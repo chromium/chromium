@@ -12,6 +12,8 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/sync_file_system/file_change.h"
@@ -38,8 +40,10 @@ namespace sync_file_system {
 // Tracks local file changes for cloud-backed file systems.
 // All methods must be called on the file_task_runner given to the constructor.
 // Owned by FileSystemContext.
-class LocalFileChangeTracker : public storage::FileUpdateObserver,
-                               public storage::FileChangeObserver {
+class LocalFileChangeTracker
+    : public storage::FileUpdateObserver,
+      public storage::FileChangeObserver,
+      public base::RefCountedDeleteOnSequence<LocalFileChangeTracker> {
  public:
   // |file_task_runner| must be the one where the observee file operations run.
   // (So that we can make sure DB operations are done before actual update
@@ -51,9 +55,12 @@ class LocalFileChangeTracker : public storage::FileUpdateObserver,
   LocalFileChangeTracker(const LocalFileChangeTracker&) = delete;
   LocalFileChangeTracker& operator=(const LocalFileChangeTracker&) = delete;
 
-  ~LocalFileChangeTracker() override;
-
   // FileUpdateObserver overrides.
+  void AddRef() const override;
+  void Release() const override;
+
+  void Disable() override;
+
   void OnStartUpdate(const storage::FileSystemURL& url) override;
   void OnUpdate(const storage::FileSystemURL& url, int64_t delta) override {}
   void OnEndUpdate(const storage::FileSystemURL& url) override;
@@ -124,6 +131,13 @@ class LocalFileChangeTracker : public storage::FileUpdateObserver,
   }
 
  private:
+  friend class base::RefCountedDeleteOnSequence<LocalFileChangeTracker>;
+  friend class base::DeleteHelper<LocalFileChangeTracker>;
+
+  mutable base::Lock is_disabled_lock_;
+  bool is_disabled_ GUARDED_BY(is_disabled_lock_) = false;
+  ~LocalFileChangeTracker() override;
+
   class TrackerDB;
   friend class CannedSyncableFileSystem;
   friend class LocalFileChangeTrackerTest;
