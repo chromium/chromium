@@ -217,17 +217,35 @@
 - (BOOL)passwordCredential:(id<Credential>)credential
     matchesServiceIdentifiers:
         (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers {
-  for (ASCredentialServiceIdentifier* identifier in serviceIdentifiers) {
-    BOOL serviceNameMatches =
-        credential.serviceName &&
-        [identifier.identifier
-            localizedStandardContainsString:credential.serviceName];
-    BOOL serviceIdentifierMatches =
-        credential.serviceIdentifier &&
-        [identifier.identifier
-            localizedStandardContainsString:credential.serviceIdentifier];
-    if (serviceNameMatches || serviceIdentifierMatches) {
-      return YES;
+  for (ASCredentialServiceIdentifier* serviceIdentifier in serviceIdentifiers) {
+    NSString* requestedHost = HostForServiceIdentifier(serviceIdentifier);
+    if (!requestedHost) {
+      continue;
+    }
+
+    // Try matching with registryControlledDomain if available.
+    if (credential.registryControlledDomain.length > 0) {
+      NSString* domainSuffix = [NSString
+          stringWithFormat:@".%@", credential.registryControlledDomain];
+      if ([requestedHost isEqualToString:credential.registryControlledDomain] ||
+          [requestedHost hasSuffix:domainSuffix]) {
+        return YES;
+      }
+    }
+
+    // Fallback to matching the parsed host of the credential's
+    // serviceIdentifier.
+    NSURL* credURL = credential.serviceIdentifier
+                         ? [NSURL URLWithString:credential.serviceIdentifier]
+                         : nil;
+    NSString* credHost = credURL.host ?: credential.serviceIdentifier;
+
+    if (credHost.length > 0) {
+      NSString* credDomainSuffix = [NSString stringWithFormat:@".%@", credHost];
+      if ([requestedHost isEqualToString:credHost] ||
+          [requestedHost hasSuffix:credDomainSuffix]) {
+        return YES;
+      }
     }
   }
   return NO;
