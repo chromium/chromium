@@ -13,7 +13,8 @@ namespace disk_cache {
 
 class IndexedPairSetTest : public testing::Test {
  protected:
-  IndexedPairSet<int64_t, int64_t> set_;
+  // Tests the "Set" behavior where Entry is same as SubKey.
+  IndexedPairSet<int64_t, int64_t, int64_t> set_;
 };
 
 TEST_F(IndexedPairSetTest, EmptyInitially) {
@@ -27,9 +28,9 @@ TEST_F(IndexedPairSetTest, InsertAndFindSingleValue) {
   EXPECT_EQ(1u, set_.size());
   EXPECT_TRUE(set_.Contains(10));
 
-  std::vector<int64_t> values = set_.Find(10);
-  ASSERT_EQ(1u, values.size());
-  EXPECT_EQ(100, values[0]);
+  std::vector<int64_t> entries = set_.Find(10);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(100, entries[0]);
 }
 
 TEST_F(IndexedPairSetTest, InsertDuplicatePair) {
@@ -196,7 +197,7 @@ TEST_F(IndexedPairSetTest, MoveConstructor) {
   set_.Insert(20, 200);
   EXPECT_EQ(2u, set_.size());
 
-  IndexedPairSet<int64_t, int64_t> new_set(std::move(set_));
+  IndexedPairSet<int64_t, int64_t, int64_t> new_set(std::move(set_));
 
   // The old set should be empty.
   EXPECT_EQ(0u, set_.size());
@@ -214,7 +215,7 @@ TEST_F(IndexedPairSetTest, MoveAssignment) {
   set_.Insert(10, 100);
   set_.Insert(20, 200);
 
-  IndexedPairSet<int64_t, int64_t> new_set;
+  IndexedPairSet<int64_t, int64_t, int64_t> new_set;
   new_set.Insert(30, 300);
 
   new_set = std::move(set_);
@@ -250,7 +251,7 @@ TEST_F(IndexedPairSetTest, MoveAssignmentSelf) {
 TEST_F(IndexedPairSetTest, RemoveLastValueFromSecondaryMapRemovesKey) {
   set_.Insert(10, 100);
   set_.Insert(10, 200);
-  EXPECT_TRUE(set_.HasMultipleValues(10));
+  EXPECT_TRUE(set_.HasMultipleEntries(10));
 
   // Remove the value from the secondary_map.
   EXPECT_TRUE(set_.Remove(10, 200));
@@ -258,13 +259,13 @@ TEST_F(IndexedPairSetTest, RemoveLastValueFromSecondaryMapRemovesKey) {
   EXPECT_THAT(set_.Find(10), UnorderedElementsAre(100));
 
   // The key should no longer exist in the secondary_map.
-  EXPECT_FALSE(set_.HasMultipleValues(10));
+  EXPECT_FALSE(set_.HasMultipleEntries(10));
 }
 
 TEST_F(IndexedPairSetTest, RemoveAndPromoteWithEmptyingSecondaryMapRemovesKey) {
   set_.Insert(10, 100);
   set_.Insert(10, 200);
-  EXPECT_TRUE(set_.HasMultipleValues(10));
+  EXPECT_TRUE(set_.HasMultipleEntries(10));
 
   // This will remove 100 from the primary_map and promote 200 from the
   // secondary_map. After promotion, the secondary_map should be empty for key
@@ -274,23 +275,64 @@ TEST_F(IndexedPairSetTest, RemoveAndPromoteWithEmptyingSecondaryMapRemovesKey) {
   EXPECT_THAT(set_.Find(10), UnorderedElementsAre(200));
 
   // The key should no longer exist in the secondary_map.
-  EXPECT_FALSE(set_.HasMultipleValues(10));
+  EXPECT_FALSE(set_.HasMultipleEntries(10));
 }
 
-TEST_F(IndexedPairSetTest, TryGetSingleValue) {
-  EXPECT_EQ(set_.TryGetSingleValue(10), std::nullopt);
+TEST_F(IndexedPairSetTest, TryGetSingleSubKey) {
+  EXPECT_EQ(set_.TryGetSingleSubKey(10), std::nullopt);
 
   EXPECT_TRUE(set_.Insert(10, 100));
-  EXPECT_THAT(set_.TryGetSingleValue(10), 100);
+  EXPECT_THAT(set_.TryGetSingleSubKey(10), 100);
 
   EXPECT_TRUE(set_.Insert(10, 200));
-  EXPECT_EQ(set_.TryGetSingleValue(10), std::nullopt);
+  EXPECT_EQ(set_.TryGetSingleSubKey(10), std::nullopt);
 
   EXPECT_TRUE(set_.Remove(10, 200));
-  EXPECT_THAT(set_.TryGetSingleValue(10), 100);
+  EXPECT_THAT(set_.TryGetSingleSubKey(10), 100);
 
   EXPECT_TRUE(set_.Remove(10, 100));
-  EXPECT_EQ(set_.TryGetSingleValue(10), std::nullopt);
+  EXPECT_EQ(set_.TryGetSingleSubKey(10), std::nullopt);
+}
+
+// Tests "Map" behavior with complex Entry and custom Traits.
+struct TestEntry {
+  int64_t id;
+  std::string data;
+};
+
+struct TestEntryTraits {
+  static const int64_t& GetSubKey(const TestEntry& entry) { return entry.id; }
+};
+
+TEST(IndexedPairSetComplexTest, MapBehavior) {
+  IndexedPairSet<int32_t, int64_t, TestEntry, TestEntryTraits> map;
+
+  EXPECT_TRUE(map.Insert(1, {100, "first"}));
+  EXPECT_TRUE(map.Insert(1, {200, "second"}));
+  EXPECT_EQ(2u, map.size());
+
+  TestEntry* e = map.Get(1, 100);
+  ASSERT_NE(e, nullptr);
+  EXPECT_EQ(e->data, "first");
+
+  e->data = "updated";
+  EXPECT_EQ(map.Get(1, 100)->data, "updated");
+
+  EXPECT_FALSE(map.Insert(1, {100, "duplicate id"}));
+  EXPECT_EQ(2u, map.size());
+}
+
+TEST(IndexedPairSetComplexTest, ForEach) {
+  IndexedPairSet<int32_t, int64_t, TestEntry, TestEntryTraits> map;
+  map.Insert(1, {100, "a"});
+  map.Insert(1, {200, "b"});
+  map.Insert(2, {300, "c"});
+
+  std::vector<std::string> results;
+  map.ForEach([&results](int32_t key, const TestEntry& entry) {
+    results.push_back(entry.data);
+  });
+  EXPECT_THAT(results, UnorderedElementsAre("a", "b", "c"));
 }
 
 }  // namespace disk_cache

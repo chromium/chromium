@@ -91,10 +91,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     Impl& operator=(Impl&& other) noexcept = default;
 
     bool Insert(CacheEntryKeyHash hash, ResIdType res_id) {
-      if (hash_res_id_set_.Insert(hash, res_id)) {
-        return true;
-      }
-      return false;
+      return hash_res_id_set_.Insert(hash, res_id);
     }
 
     bool Contains(CacheEntryKeyHash hash) const {
@@ -116,7 +113,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
 
     // Tries to retrieve a single resource ID for the given hash.
     std::optional<ResIdType> TryGetSingleResId(CacheEntryKeyHash hash) const {
-      return hash_res_id_set_.TryGetSingleValue(hash);
+      return hash_res_id_set_.TryGetSingleSubKey(hash);
     }
 
     // Updates the in-memory hints for the entry identified by `hash` and
@@ -156,7 +153,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     size_t size() const { return hash_res_id_set_.size(); }
 
    private:
-    using HashResIdSet = IndexedPairSet<CacheEntryKeyHash, ResIdType>;
+    using HashResIdSet =
+        IndexedPairSet<CacheEntryKeyHash, ResIdType, ResIdType>;
 
     HashResIdSet hash_res_id_set_;
     ResIdToEntryDataHintsMap res_id_to_hints_map_;
