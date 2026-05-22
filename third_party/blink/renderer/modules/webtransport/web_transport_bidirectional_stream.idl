@@ -8,6 +8,12 @@
   SecureContext,
   ImplementedAs=BidirectionalStream ]
 interface WebTransportBidirectionalStream {
+  // TODO(crbug.com/510589920): Per spec the type should be
+  // WebTransportReceiveStream once the WebTransportReceiveStream runtime flag
+  // is on. Type-changing IDL attributes via [RuntimeEnabled] aren't supported
+  // by Blink's IDL compiler today, so this stays as ReadableStream. The
+  // implementation already returns a WebTransportReceiveStream when the flag
+  // is enabled (see bidirectional_stream.cc).
   readonly attribute ReadableStream readable;
   readonly attribute WritableStream writable;
 };
