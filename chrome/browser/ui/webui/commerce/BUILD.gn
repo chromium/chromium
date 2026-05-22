@@ -55,6 +55,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_load_timer",
     "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:metrics",

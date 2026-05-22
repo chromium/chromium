@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_log") {
+  sources = [
+    "device_log_ui.cc",
+    "device_log_ui.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome:resources",
+    "//chrome/browser/resources/device_log:resources",
+    "//components/device_event_log",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}

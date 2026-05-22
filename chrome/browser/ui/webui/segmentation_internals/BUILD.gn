@@ -9,3 +9,40 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   deps = [ "//mojo/public/mojom/base" ]
 }
+
+source_set("segmentation_internals") {
+  sources = [
+    "segmentation_internals_page_handler_impl.cc",
+    "segmentation_internals_page_handler_impl.h",
+    "segmentation_internals_ui.cc",
+    "segmentation_internals_ui.h",
+  ]
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/segmentation_internals:resources",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/common",
+    "//components/optimization_guide/core",
+    "//components/segmentation_platform/public",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "segmentation_internals_page_handler_impl_unittest.cc" ]
+  deps = [
+    ":mojo_bindings",
+    ":segmentation_internals",
+    "//base",
+    "//base/test:test_support",
+    "//components/segmentation_platform/public:test_support",
+    "//components/segmentation_platform/public/proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

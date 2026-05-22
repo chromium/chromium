@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui_js_error") {
+  sources = [
+    "webui_js_error_ui.cc",
+    "webui_js_error_ui.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/webui_js_error:resources",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("components") {
+  sources = [
+    "components_handler.cc",
+    "components_handler.h",
+    "components_ui.cc",
+    "components_ui.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/components:resources",
+    "//chrome/common",
+    "//components/component_updater",
+    "//components/strings",
+    "//components/update_client",
+    "//content/public/browser",
+    "//services/network/public/mojom",
+    "//ui/base",
+    "//ui/webui",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//components/user_manager" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "components_handler_unittest.cc" ]
+  deps = [
+    ":components",
+    "//components/component_updater:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

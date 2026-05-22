@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("saved_tab_groups_unsupported") {
+  sources = [
+    "saved_tab_groups_unsupported_ui.cc",
+    "saved_tab_groups_unsupported_ui.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/resources/saved_tab_groups_unsupported:resources",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}

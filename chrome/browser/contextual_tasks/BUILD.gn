@@ -356,6 +356,7 @@ source_set("ui_impl") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//components/application_locale_storage",

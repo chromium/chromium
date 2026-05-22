@@ -28,6 +28,7 @@ static_library("nearby_share") {
     "//chrome/browser/sharesheet",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//ui/webui",
   ]

@@ -25,6 +25,7 @@ static_library("settings") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui:webui_load_timer",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",

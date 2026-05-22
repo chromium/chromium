@@ -66,6 +66,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/access_code_cast:resources",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/common",
     "//components/access_code_cast/common:metrics",
     "//components/media_router/browser",

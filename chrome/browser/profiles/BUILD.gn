@@ -126,6 +126,7 @@ source_set("misc") {
     "//chrome/browser/transition_manager",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/webui:prefs_internals_source",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/webid",

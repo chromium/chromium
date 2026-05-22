@@ -35,6 +35,7 @@ static_library("main") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/settings:resources",
+    "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/common",

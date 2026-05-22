@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("predictors") {
+  sources = [
+    "predictors_handler.cc",
+    "predictors_handler.h",
+    "predictors_ui.cc",
+    "predictors_ui.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/predictors",
+    "//chrome/browser/predictors:impl",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/predictors:resources",
+    "//services/network/public/mojom",
+  ]
+}

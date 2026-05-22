@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
     "//components/site_engagement/content",
     "//components/zoom",

@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("image") {
+    sources = [
+      "image_navigation_throttle.cc",
+      "image_navigation_throttle.h",
+    ]
+    deps = [
+      "//chrome/common",
+      "//content/public/browser",
+      "//ui/base",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "image_navigation_throttle_unittest.cc" ]
+    deps = [
+      ":image",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "image_navigation_throttle_browsertest.cc" ]
+    deps = [
+      ":image",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
+}

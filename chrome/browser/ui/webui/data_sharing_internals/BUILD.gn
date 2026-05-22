@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("data_sharing_internals") {
+  sources = [
+    "data_sharing_internals_ui.cc",
+    "data_sharing_internals_ui.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/data_sharing",
+    "//chrome/browser/profiles:profile",
+    "//components/data_sharing/data_sharing_internals/resources",
+    "//components/data_sharing/data_sharing_internals/webui",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+}
