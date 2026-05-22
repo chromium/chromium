@@ -140,10 +140,7 @@ class AudioDecoderTest
  public:
   AudioDecoderTest()
       : decoder_type_(std::get<0>(GetParam())),
-        params_(std::get<1>(GetParam())),
-        pending_decode_(false),
-        pending_reset_(false),
-        last_decode_status_(DecoderStatus::Codes::kFailed) {
+        params_(std::get<1>(GetParam())) {
     AddSupplementalCodecsForTesting();
     switch (decoder_type_) {
       case AudioDecoderType::kFFmpeg:
@@ -464,6 +461,11 @@ class AudioDecoderTest
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 
+ protected:
+  std::unique_ptr<AudioFileReader> reader_;
+  std::unique_ptr<AudioDecoder> decoder_;
+  base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
+
  private:
   const AudioDecoderType decoder_type_;
 
@@ -483,14 +485,10 @@ class AudioDecoderTest
   scoped_refptr<DecoderBuffer> data_;
   const char* filename_ = nullptr;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
-  std::unique_ptr<AudioFileReader> reader_;
+  bool pending_decode_ = false;
+  bool pending_reset_ = false;
+  DecoderStatus last_decode_status_ = DecoderStatus::Codes::kFailed;
 
-  std::unique_ptr<AudioDecoder> decoder_;
-  bool pending_decode_;
-  bool pending_reset_;
-  DecoderStatus last_decode_status_ = DecoderStatus::Codes::kOk;
-
-  base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
   base::TimeDelta start_timestamp_;
 };
 
@@ -521,6 +519,14 @@ constexpr TestParams kOpusTestParams[] = {kSfxOpusParams, kBearOpusParams};
 // Test params to test decoder reinitialization. Choose opus because it is
 // supported on all platforms we test on.
 constexpr const TestParams& kReinitializeTestParams = kBearOpusParams;
+
+constexpr TestParams kHatBrokenParams = {
+    AudioCodec::kPCM,
+    "hat_broken.wav",
+    {{{0, 0, nullptr}, {0, 0, nullptr}, {0, 0, nullptr}}},
+    0,
+    44100,
+    CHANNEL_LAYOUT_MONO};
 
 #if BUILDFLAG(IS_ANDROID)
 constexpr TestParams kMediaCodecTestParams[] = {
@@ -851,6 +857,54 @@ TEST_P(AudioDecoderTest, EOSBuffer) {
   DecodeBuffer(DecoderBuffer::CreateEOSBuffer());
   EXPECT_TRUE(last_decode_status().is_ok());
 }
+
+class WavOddChunkTest : public AudioDecoderTest {
+ public:
+  WavOddChunkTest() = default;
+};
+
+TEST_P(WavOddChunkTest, DecodeWavWithOddChunk) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+
+  auto packet = ScopedAVPacket::Allocate();
+  while (reader_->ReadPacketForTesting(packet.get())) {
+    scoped_refptr<DecoderBuffer> buffer =
+        DecoderBuffer::CopyFrom(AVPacketData(*packet));
+
+    bool decode_done = false;
+    base::RunLoop decode_run_loop;
+    decoder_->Decode(std::move(buffer),
+                     base::BindOnce(
+                         [](bool* decode_done, base::OnceClosure quit_closure,
+                            DecoderStatus status) {
+                           EXPECT_TRUE(status.is_ok());
+                           *decode_done = true;
+                           std::move(quit_closure).Run();
+                         },
+                         &decode_done, decode_run_loop.QuitClosure()));
+
+    decode_run_loop.Run();
+    EXPECT_TRUE(decode_done);
+    av_packet_unref(packet.get());
+  }
+
+  int total_frames = 0;
+  for (const auto& buffer : decoded_audio_) {
+    total_frames += buffer->frame_count();
+  }
+  EXPECT_EQ(6615, total_frames);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    WavOddChunk,
+    WavOddChunkTest,
+    testing::Values(std::make_tuple(AudioDecoderType::kFFmpeg, kHatBrokenParams)
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+                        ,
+                    std::make_tuple(AudioDecoderType::kSymphonia,
+                                    kHatBrokenParams)
+#endif
+                        ));
 
 INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,

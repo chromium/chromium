@@ -1944,3 +1944,8 @@ Generated with Bento4's mp4encrypt:
         --key 1:00000000000000000000000000000001:00000000000000000000000000000000 \
         bear-320x240-v-2fragments-open-gop_frag.mp4 \
         bear-320x240-v-2fragments-open-gop_frag-cenc.mp4
+
+
+#### hat-broken.wav
+
+From https://crbug.com/414508118

@@ -379,6 +379,7 @@ data/h264-320x180-frame-0
 data/h264-320x180-frame-1
 data/h264-320x180-frame-2
 data/h264-320x180-frame-3
+data/hat_broken.wav
 data/hls/README
 data/hls/bear0.mp4
 data/hls/bear0.ts

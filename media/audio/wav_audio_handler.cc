@@ -211,6 +211,12 @@ std::optional<ParseWavResult> ParseWavData(base::span<const uint8_t> wav_data) {
     base::span<const uint8_t> chunk_payload =
         *buf.Read(std::min(size_t{chunk_length}, buf.remaining()));
 
+    // Chunks are 2-byte aligned, so if the chunk length is odd, there is a
+    // padding byte that we should skip.
+    if (chunk_length % 2 != 0) {
+      buf.Skip(1u);
+    }
+
     // Parse the subsection header, handling it if it is a "data" or "fmt "
     // chunk. Skip it otherwise.
     if (chunk_fmt == kFmtSubchunkId) {

@@ -762,6 +762,7 @@ TEST(WavAudioHandlerTest, UnalignedDataTest) {
       'j', 'u', 'n', 'k',
       0x01, 0x00, 0x00, 0x00,  // chunk size (1 byte).
       0x00,                    // 1 byte of junk.
+      0x00,                    // padding byte.
       // data chunk.
       'd', 'a', 't', 'a',
       0x04, 0x00, 0x00, 0x00,  // data size (4 bytes).
@@ -796,12 +797,12 @@ TEST(WavAudioHandlerTest, UnalignedDataTest) {
 // Test that unaligned 64-bit float data is correctly handled.
 TEST(WavAudioHandlerTest, UnalignedFloat64DataTest) {
   // Similar to above but with 64-bit float.
-  // data payload at offset 53 is not 8-byte aligned.
+  // data payload at offset 54 is not 8-byte aligned.
 
   // clang-format off
   auto data = std::to_array<uint8_t>({
       'R', 'I', 'F', 'F',
-      0x35, 0x00, 0x00, 0x00,  // chunk size (53 bytes).
+      0x36, 0x00, 0x00, 0x00,  // chunk size.
       'W', 'A', 'V', 'E',
       // fmt chunk.
       'f', 'm', 't', ' ',
@@ -816,6 +817,7 @@ TEST(WavAudioHandlerTest, UnalignedFloat64DataTest) {
       'j', 'u', 'n', 'k',
       0x01, 0x00, 0x00, 0x00,  // chunk size (1 byte).
       0x00,                    // 1 byte of junk.
+      0x00,                    // padding byte.
       // data chunk.
       'd', 'a', 't', 'a',
       0x08, 0x00, 0x00, 0x00,  // data size (8 bytes).
@@ -944,6 +946,43 @@ TEST(WavAudioHandlerTest, CopyPartialFramesToZeroesOnlyLeftoverFrames) {
     // Frame 4: Untouched.
     EXPECT_FLOAT_EQ(channel[4], 1.0f);
   }
+}
+
+// Test that odd-sized chunks are correctly followed by a padding skip.
+TEST(WavAudioHandlerTest, TestPaddingSkip) {
+  // clang-format off
+  constexpr auto kWavWithOddChunk = std::to_array<uint8_t>({
+      // RIFF header.
+      'R', 'I', 'F', 'F',
+      0x32, 0x00, 0x00, 0x00,  // chunk size (50 bytes = 4 + 24 + 10 + 12).
+      'W', 'A', 'V', 'E',
+      // fmt chunk.
+      'f', 'm', 't', ' ',
+      0x10, 0x00, 0x00, 0x00,  // chunk size (16 bytes).
+      0x01, 0x00,              // PCM format.
+      0x01, 0x00,              // 1 channel.
+      0x44, 0xAC, 0x00, 0x00,  // 44100 Hz sample rate.
+      0xAC, 0x44, 0x00, 0x00,  // byte rate (44100 * 1 * 1 = 44100).
+      0x01, 0x00,              // block align (1).
+      0x08, 0x00,              // 8 bits per sample.
+      // Unknown chunk "junk" with odd size (1).
+      'j', 'u', 'n', 'k',
+      0x01, 0x00, 0x00, 0x00,  // chunk size (1 byte).
+      0xAA,                    // 1 byte of junk.
+      0x00,                    // padding byte (mandatory for odd chunks).
+      // data chunk.
+      'd', 'a', 't', 'a',
+      0x04, 0x00, 0x00, 0x00,  // data size (4 bytes).
+      0x80, 0x90, 0xA0, 0xB0   // sample data.
+  });
+  // clang-format on
+
+  auto handler = WavAudioHandler::Create(base::span(kWavWithOddChunk));
+  ASSERT_TRUE(handler);
+  EXPECT_EQ(1, handler->GetNumChannels());
+  EXPECT_EQ(8, handler->bits_per_sample_for_testing());
+  ASSERT_EQ(4u, handler->data().size());
+  EXPECT_EQ(0x80, handler->data()[0]);
 }
 
 }  // namespace media
