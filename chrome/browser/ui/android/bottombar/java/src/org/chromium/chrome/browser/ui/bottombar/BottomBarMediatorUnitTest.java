@@ -316,6 +316,7 @@ public class BottomBarMediatorUnitTest {
 
         mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
         assertTrue(mModel.get(BottomBarProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO);
+        verify(mVisibilityDelegate).onBackgroundColorChanged();
     }
 
     @Test

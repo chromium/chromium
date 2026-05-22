@@ -233,4 +233,10 @@ public class BottomBarContainerCoordinatorUnitTest {
         // Verify runnable NOT executed.
         verify(mOnModelTokenChange, times(1)).onResult(any());
     }
+
+    @Test
+    public void testOnBackgroundColorChanged() {
+        mCoordinator.onBackgroundColorChanged();
+        verify(mRequestLayerUpdateCallback).onResult(false);
+    }
 }

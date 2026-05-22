@@ -142,6 +142,11 @@ public class BottomBarContainerCoordinator
     }
 
     @Override
+    public void onBackgroundColorChanged() {
+        mRequestLayerUpdateCallback.onResult(false);
+    }
+
+    @Override
     public @LayerScrollBehavior int getScrollBehavior() {
         return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
     }

@@ -43,6 +43,9 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
 
         /** Called when the model state changes and a new screenshot is needed. */
         void onModelTokenChange();
+
+        /** Called when the background color of the bottom bar changes. */
+        void onBackgroundColorChanged();
     }
 
     private final PropertyModel mModel;
@@ -257,6 +260,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);
+        mVisibilityDelegate.onBackgroundColorChanged();
     }
 
     @Override
