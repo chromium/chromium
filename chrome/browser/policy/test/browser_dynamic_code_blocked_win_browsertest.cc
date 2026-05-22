@@ -70,6 +70,9 @@ class BrowserDynamicCodeBlockedTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
+// Do not disable or otherwise modify this test without running it past the
+// Chrome Security team, as this is an important security mitigation for the
+// browser process.
 IN_PROC_BROWSER_TEST_P(BrowserDynamicCodeBlockedTest, IsRespected) {
   // This mitigation only does anything on Win10 RS1 and above.
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
