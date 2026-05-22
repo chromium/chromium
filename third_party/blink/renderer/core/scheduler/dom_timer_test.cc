@@ -217,7 +217,7 @@ TEST_F(DOMTimerTest, DisposeWithNullActionCancelsTask) {
       script_state, *GetDocument().GetExecutionContext(), String("void 0"));
   auto* timer = MakeGarbageCollected<DOMTimer>(
       *GetDocument().GetExecutionContext(), action, base::Milliseconds(50),
-      /*single_shot=*/true);
+      /*single_shot=*/true, probe::AsyncTaskContext::ScanForAds::kFalse);
   ASSERT_TRUE(timer->IsActive());
 
   // Stop clears action_ and cancels the task.

@@ -4510,4 +4510,65 @@ TEST_F(AdTrackerSimTest, JavascriptUrlFormDetected) {
   EXPECT_TRUE(To<LocalFrame>(test_frame)->IsFrameCreatedByAdScript());
 }
 
+TEST_F(AdTrackerSimTest, SetTimeoutWithStringScript) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script></body>
+  )HTML");
+
+  // The ad script uses string-based setTimeout to create an iframe. Function
+  // callbacks are correctly attached to the associated script id but strings
+  // are not, so make sure that we capture string-based callbacks and tag
+  // them as ads when they run.
+  ad_script.Complete(R"SCRIPT(
+    setTimeout(`
+      const iframe = document.createElement('iframe');
+      iframe.src = 'about:blank';
+      document.body.appendChild(iframe);
+    `, 0);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the iframe is created.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  // The frame should now be correctly flagged as created by ad script.
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+}
+
+TEST_F(AdTrackerSimTest, NewFunctionDetected) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script></body>
+  )HTML");
+
+  // Make sure that a compiled function from a string is appropriately tagged
+  // as an ad.
+  ad_script.Complete(R"SCRIPT(
+    const f = new Function(`
+      const iframe = document.createElement('iframe');
+      iframe.src = 'about:blank';
+      document.body.appendChild(iframe);
+    `);
+    f();
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the iframe is created.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  // The frame should be correctly flagged.
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+}
+
 }  // namespace blink
