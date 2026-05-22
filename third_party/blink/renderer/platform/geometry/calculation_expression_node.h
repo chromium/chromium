@@ -113,7 +113,9 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
-  const CalculationExpressionNode* Zoom(double factor) const final;
+  const CalculationExpressionNode* Zoom(double factor) const final {
+    return this;
+  }
   bool IsNumber() const final { return true; }
   ~CalculationExpressionNumberNode() final = default;
 

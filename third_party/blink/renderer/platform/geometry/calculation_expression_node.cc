@@ -32,11 +32,6 @@ bool CalculationExpressionNumberNode::Equals(
   return value_ == other_number->Value();
 }
 
-const CalculationExpressionNode* CalculationExpressionNumberNode::Zoom(
-    double) const {
-  return MakeGarbageCollected<CalculationExpressionNumberNode>(value_);
-}
-
 // ------ CalculationExpressionSizingKeywordNode ------
 
 CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
@@ -694,66 +689,11 @@ bool CalculationExpressionOperationNode::Equals(
 
 const CalculationExpressionNode* CalculationExpressionOperationNode::Zoom(
     double factor) const {
-  switch (operator_) {
-    case CalculationOperator::kAdd:
-    case CalculationOperator::kSubtract:
-      DCHECK_EQ(children_.size(), 2u);
-      return CreateSimplified(
-          Children({children_[0]->Zoom(factor), children_[1]->Zoom(factor)}),
-          operator_);
-    case CalculationOperator::kMultiply: {
-      DCHECK_EQ(children_.size(), 2u);
-      auto& number = children_[0]->IsNumber() ? children_[0] : children_[1];
-      auto& pixels_and_percent =
-          children_[0]->IsNumber() ? children_[1] : children_[0];
-      return CreateSimplified(
-          Children({pixels_and_percent->Zoom(factor), number}), operator_);
-    }
-    case CalculationOperator::kInvert: {
-      DCHECK_EQ(children_.size(), 1u);
-      return CreateSimplified(Children({children_[0]->Zoom(factor)}),
-                              operator_);
-    }
-    case CalculationOperator::kCalcSize: {
-      DCHECK_EQ(children_.size(), 2u);
-      return CreateSimplified(
-          Children({children_[0], children_[1]->Zoom(factor)}), operator_);
-    }
-    case CalculationOperator::kMin:
-    case CalculationOperator::kMax:
-    case CalculationOperator::kClamp:
-    case CalculationOperator::kRoundNearest:
-    case CalculationOperator::kRoundUp:
-    case CalculationOperator::kRoundDown:
-    case CalculationOperator::kRoundToZero:
-    case CalculationOperator::kMod:
-    case CalculationOperator::kRem:
-    case CalculationOperator::kHypot:
-    case CalculationOperator::kAbs:
-    case CalculationOperator::kLog:
-    case CalculationOperator::kExp:
-    case CalculationOperator::kSqrt:
-    case CalculationOperator::kSign:
-    case CalculationOperator::kProgress:
-    case CalculationOperator::kMediaProgress:
-    case CalculationOperator::kContainerProgress:
-    case CalculationOperator::kSin:
-    case CalculationOperator::kCos:
-    case CalculationOperator::kTan:
-    case CalculationOperator::kAsin:
-    case CalculationOperator::kAcos:
-    case CalculationOperator::kAtan:
-    case CalculationOperator::kAtan2:
-    case CalculationOperator::kPow:
-    case CalculationOperator::kRandom: {
-      DCHECK(children_.size());
-      HeapVector<Member<const CalculationExpressionNode>> cloned_operands;
-      cloned_operands.reserve(children_.size());
-      for (const auto& child : children_)
-        cloned_operands.push_back(child->Zoom(factor));
-      return CreateSimplified(std::move(cloned_operands), operator_);
-    }
-  }
+  HeapVector<Member<const CalculationExpressionNode>> cloned_operands(
+      children_, [factor](const CalculationExpressionNode* child) {
+        return child->Zoom(factor);
+      });
+  return CreateSimplified(std::move(cloned_operands), operator_);
 }
 
 bool CalculationExpressionOperationNode::HasMinContent() const {
