@@ -34,7 +34,8 @@ class AlgorithmRegistry {
         ed25519_(CreateEd25519Implementation()),
         x25519_(CreateX25519Implementation()),
         ml_dsa_(CreateMlDsaImplementation()),
-        ml_kem_(CreateMlKemImplementation()) {}
+        ml_kem_(CreateMlKemImplementation()),
+        mlkem768_x25519_(CreateMlKem768X25519Implementation()) {}
 
   const AlgorithmImplementation* GetAlgorithm(
       blink::WebCryptoAlgorithmId id) const {
@@ -79,6 +80,8 @@ class AlgorithmRegistry {
       case blink::kWebCryptoAlgorithmIdMlKem768:
       case blink::kWebCryptoAlgorithmIdMlKem1024:
         return ml_kem_.get();
+      case blink::kWebCryptoAlgorithmIdMlKem768X25519:
+        return mlkem768_x25519_.get();
       case blink::kWebCryptoAlgorithmIdChaCha20Poly1305:
         return chacha20_poly1305_.get();
       default:
@@ -105,6 +108,7 @@ class AlgorithmRegistry {
   const std::unique_ptr<AlgorithmImplementation> x25519_;
   const std::unique_ptr<AlgorithmImplementation> ml_dsa_;
   const std::unique_ptr<AlgorithmImplementation> ml_kem_;
+  const std::unique_ptr<AlgorithmImplementation> mlkem768_x25519_;
 };
 
 }  // namespace

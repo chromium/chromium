@@ -174,14 +174,10 @@ class AlgorithmImplementation {
   //     and be able to survive future migrations to crypto libraries)
   //   * Work for all keys (including ones marked as non-extractable).
   //   * Gracefully handle invalid inputs
-  //
-  // Tests to verify structured cloning are available in:
-  //   LayoutTests/crypto/clone-*.html
 
-  // Note that SerializeKeyForClone() is not virtual because all
-  // implementations end up doing the same thing.
-  Status SerializeKeyForClone(const blink::WebCryptoKey& key,
-                              std::vector<uint8_t>* key_data) const;
+  // Serializes key data for Blink.
+  virtual Status SerializeKeyForClone(const blink::WebCryptoKey& key,
+                                      std::vector<uint8_t>* key_data) const;
 
   // Deserializes key data from Blink (used for structured cloning).
   //

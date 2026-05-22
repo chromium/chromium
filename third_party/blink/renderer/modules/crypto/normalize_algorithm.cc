@@ -99,6 +99,7 @@ constexpr AlgorithmNameMappingArray kAlgorithmNameMappings = {{
     {"ML-DSA-87", 9, kWebCryptoAlgorithmIdMlDsa87},
     {"ML-KEM-768", 10, kWebCryptoAlgorithmIdMlKem768},
     {"ML-KEM-1024", 11, kWebCryptoAlgorithmIdMlKem1024},
+    {"MLKEM768-X25519", 15, kWebCryptoAlgorithmIdMlKem768X25519},
     {"CHACHA20-POLY1305", 17, kWebCryptoAlgorithmIdChaCha20Poly1305},
     {"RSASSA-PKCS1-V1_5", 17, kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5},
 }};
@@ -211,7 +212,8 @@ std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
 
   if ((id == kWebCryptoAlgorithmIdChaCha20Poly1305 ||
        WebCryptoAlgorithm::IsMlDsa(id) || id == kWebCryptoAlgorithmIdMlKem768 ||
-       id == kWebCryptoAlgorithmIdMlKem1024) &&
+       id == kWebCryptoAlgorithmIdMlKem1024 ||
+       id == kWebCryptoAlgorithmIdMlKem768X25519) &&
       !RuntimeEnabledFeatures::WebCryptoPQCEnabled()) {
     return std::nullopt;
   }

@@ -84,7 +84,8 @@ enum WebCryptoAlgorithmId {
   kWebCryptoAlgorithmIdMlDsa87,
   kWebCryptoAlgorithmIdMlKem768,
   kWebCryptoAlgorithmIdMlKem1024,
-  kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdMlKem1024,
+  kWebCryptoAlgorithmIdMlKem768X25519,
+  kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdMlKem768X25519,
 };
 
 enum WebCryptoNamedCurve {

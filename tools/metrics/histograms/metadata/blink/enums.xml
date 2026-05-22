@@ -6566,6 +6566,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5895" label="FocusGroupStart"/>
   <int value="5896" label="WebAuthenticationRemoteCspDisallowsRpId"/>
   <int value="5897" label="SpeculationMeasurement"/>
+  <int value="5898" label="CryptoAlgorithmMlKem768X25519"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

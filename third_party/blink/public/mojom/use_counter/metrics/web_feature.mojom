@@ -5212,6 +5212,7 @@ enum WebFeature {
   kFocusGroupStart = 5895,
   kWebAuthenticationRemoteCspDisallowsRpId = 5896,
   kSpeculationMeasurement = 5897,
+  kCryptoAlgorithmMlKem768X25519 = 5898,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

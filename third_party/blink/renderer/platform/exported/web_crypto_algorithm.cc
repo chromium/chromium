@@ -448,7 +448,28 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
      }},
     {// Index 23
+     // TODO(crbug.com/450627019): ML-KEM-1024 is experimental behind a flag.
+     // See https://chromestatus.com/feature/5198951632470016
      "ML-KEM-1024",
+     {
+         WebCryptoAlgorithmInfo::kUndefined,  // Encrypt
+         WebCryptoAlgorithmInfo::kUndefined,  // Decrypt
+         WebCryptoAlgorithmInfo::kUndefined,  // Sign
+         WebCryptoAlgorithmInfo::kUndefined,  // Verify
+         WebCryptoAlgorithmInfo::kUndefined,  // Digest
+         kWebCryptoAlgorithmParamsTypeNone,   // GenerateKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ImportKey
+         WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
+         WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
+         WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
+         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
+         kWebCryptoAlgorithmParamsTypeNone,   // Encapsulate
+         kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
+     }},
+    {// Index 24
+     // TODO(crbug.com/450627019): MLKEM768-X25519 is experimental behind a
+     // flag. See https://chromestatus.com/feature/5198951632470016
+     "MLKEM768-X25519",
      {
          WebCryptoAlgorithmInfo::kUndefined,  // Encrypt
          WebCryptoAlgorithmInfo::kUndefined,  // Decrypt
@@ -496,7 +517,9 @@ static_assert(kWebCryptoAlgorithmIdMlDsa87 == 21, "ML-DSA-87 id must match");
 static_assert(kWebCryptoAlgorithmIdMlKem768 == 22, "ML-KEM-768 id must match");
 static_assert(kWebCryptoAlgorithmIdMlKem1024 == 23,
               "ML-KEM-1024 id must match");
-static_assert(kWebCryptoAlgorithmIdLast == 23, "last id must match");
+static_assert(kWebCryptoAlgorithmIdMlKem768X25519 == 24,
+              "MLKEM768-X25519 id must match");
+static_assert(kWebCryptoAlgorithmIdLast == 24, "last id must match");
 static_assert(12 == kWebCryptoOperationLast,
               "the parameter mapping needs to be updated");
 
@@ -713,6 +736,7 @@ bool WebCryptoAlgorithm::IsHash(WebCryptoAlgorithmId id) {
     case kWebCryptoAlgorithmIdMlDsa87:
     case kWebCryptoAlgorithmIdMlKem768:
     case kWebCryptoAlgorithmIdMlKem1024:
+    case kWebCryptoAlgorithmIdMlKem768X25519:
       return false;
   }
 }
@@ -744,6 +768,7 @@ bool WebCryptoAlgorithm::IsKdf(WebCryptoAlgorithmId id) {
     case kWebCryptoAlgorithmIdMlDsa87:
     case kWebCryptoAlgorithmIdMlKem768:
     case kWebCryptoAlgorithmIdMlKem1024:
+    case kWebCryptoAlgorithmIdMlKem768X25519:
       return false;
   }
 }
@@ -775,6 +800,7 @@ bool WebCryptoAlgorithm::IsMlDsa(WebCryptoAlgorithmId id) {
     case kWebCryptoAlgorithmIdChaCha20Poly1305:
     case kWebCryptoAlgorithmIdMlKem768:
     case kWebCryptoAlgorithmIdMlKem1024:
+    case kWebCryptoAlgorithmIdMlKem768X25519:
       return false;
   }
 }

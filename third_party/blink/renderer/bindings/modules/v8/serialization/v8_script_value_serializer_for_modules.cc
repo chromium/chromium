@@ -438,6 +438,8 @@ uint32_t AlgorithmIdForWireFormat(WebCryptoAlgorithmId id) {
       return kMlKem768Tag;
     case kWebCryptoAlgorithmIdMlKem1024:
       return kMlKem1024Tag;
+    case kWebCryptoAlgorithmIdMlKem768X25519:
+      return kMlKem1024Tag;
   }
   NOTREACHED() << "Unknown algorithm ID " << id;
 }

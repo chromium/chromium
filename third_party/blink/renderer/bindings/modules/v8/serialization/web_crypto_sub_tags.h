@@ -35,6 +35,7 @@ enum CryptoKeyAlgorithmTag : uint32_t {
   kMlDsa87Tag = 23,
   kMlKem768Tag = 24,
   kMlKem1024Tag = 25,
+  kMlKem768X25519Tag = 26,
   // Maximum allowed value is 2^32-1
 };
 

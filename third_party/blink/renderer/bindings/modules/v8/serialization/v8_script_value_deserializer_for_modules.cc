@@ -214,6 +214,9 @@ bool AlgorithmIdFromWireFormat(uint32_t raw_id, WebCryptoAlgorithmId* id) {
     case kMlKem1024Tag:
       *id = kWebCryptoAlgorithmIdMlKem1024;
       return true;
+    case kMlKem768X25519Tag:
+      *id = kWebCryptoAlgorithmIdMlKem768X25519;
+      return true;
   }
   return false;
 }
