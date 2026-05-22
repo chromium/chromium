@@ -133,7 +133,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit test suite for AutofillProfilesFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK})
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK,
+    ChromeFeatureList.AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS
+})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
@@ -1391,7 +1394,10 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testAutofillAiEntities_opensEditorOnAddClickForWalletEntity() throws Exception {
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS)
+    public void
+            testAutofillAiEntities_opensEditorOnAddClickForWalletEntity_showsSnackbarWhenFeatureDisabled()
+                    throws Exception {
         EntityType vehicleType =
                 TestUtils.getVehicleEntityType(
                         /* isReadOnly= */ false,
@@ -1448,6 +1454,69 @@ public class AutofillProfilesFragmentTest {
                                 R.string
                                         .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_title);
         waitForSnackbar(snackbarMessage);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_opensEditorOnAddClickForWalletEntity_showsDialog()
+            throws Exception {
+        EntityType vehicleType =
+                TestUtils.getVehicleEntityType(
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Collections.emptyList());
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
+
+        // Trigger a rebuild of the profile list to pick up the new mock entities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        Preference addVehicle =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            PreferenceCategory category =
+                                    mSettingsActivityTestRule
+                                            .getFragment()
+                                            .findPreference("Vehicle");
+                            return category.findPreference("Vehicle" + " Add");
+                        });
+        assertNotNull(addVehicle);
+        int callCount = rule.mClickUpdate.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        rule.mClickUpdate.waitForCallback(callCount);
+
+        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+
+        // Click the "Done" button and trigger the local save fallback snackbar. Verify that the
+        // snackbar is displayed.
+        onView(withText("Done")).perform(click());
+        ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mEntityDataManager)
+                .addOrUpdateEntityInstance(
+                        any(),
+                        eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
+                        eq(R.string.done),
+                        localSaveFallbackCaptor.capture());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
+
+        String snackbarMessage =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_title);
+        onView(withText(snackbarMessage)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     /** Wait for the snackbar to show on the main activity post deletion. */

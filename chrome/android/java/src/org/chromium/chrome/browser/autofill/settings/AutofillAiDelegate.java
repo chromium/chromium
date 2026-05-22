@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -48,8 +49,13 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -632,6 +638,49 @@ public class AutofillAiDelegate {
     }
 
     private void onLocalSaveFallback() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS)) {
+            showConfirmationDialog();
+        } else {
+            showConfirmationSnackbar();
+        }
+    }
+
+    private void showConfirmationDialog() {
+        Activity activity = mFragment.getActivity();
+        if (!(activity instanceof ModalDialogManagerHolder)) {
+            return;
+        }
+
+        ModalDialogManager modalDialogManager =
+                ((ModalDialogManagerHolder) activity).getModalDialogManager();
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(activity, modalDialogManager);
+        final String title =
+                activity.getString(
+                        R.string.autofill_ai_save_or_update_entity_failed_wallet_save_dialog_title);
+        final String googleWallet = activity.getString(R.string.autofill_google_wallet_title);
+        final String description =
+                activity.getString(
+                                R.string
+                                        .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_description)
+                        .replace("$1", googleWallet);
+        final String buttonText =
+                activity.getString(
+                        R.string
+                                .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_confirmation_button_label);
+
+        dialog.show(
+                new ConfirmationDialogParams.Builder(activity)
+                        .withTitle(title)
+                        .withDescription(description)
+                        .withPositiveButton(buttonText)
+                        .build(),
+                (dismissHandler, buttonClickResult, stopShowing) ->
+                        DialogDismissType.DISMISS_IMMEDIATELY);
+    }
+
+    private void showConfirmationSnackbar() {
         if (!(mFragment.getActivity() instanceof SnackbarManager.SnackbarManageable manageable)) {
             return;
         }

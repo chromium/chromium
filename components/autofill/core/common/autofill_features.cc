@@ -301,9 +301,16 @@ BASE_FEATURE_PARAM(bool,
 
 // If enabled, AutofillAi supports shipment entities.
 BASE_FEATURE(kAutofillAiShipment, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, the user is notified about a failure to upstream data to Wallet
+// via a dialog instead of a snackbar.
+BASE_FEATURE(kAutofillAiShowDialogInSettingsWhenUpstreamingFails,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Controls whether a banner is shown in settings when wallet data sharing is
 // disabled.
-
 BASE_FEATURE(kAutofillAiShowWalletDisabledBanner,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
