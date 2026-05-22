@@ -18805,8 +18805,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // It replaces invalidly behaving unit test added for http://crbug.com/40395.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
                        ClientRedirectAfterSameDocumentNavigation) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/foo.html");
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/foo.html").RespondWith("text/html",
+                                             "<html><script>"
+                                             "window.location.replace('#a');"
+                                             "window.location='/title3.html';"
+                                             "</script></html>");
   ASSERT_TRUE(embedded_test_server()->Start());
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
@@ -18823,15 +18827,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   // redirect.
   TestNavigationManager observer(shell()->web_contents(), last_url);
   shell()->LoadURL(main_url);
-  response.WaitForRequest();
-  response.Send(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=utf-8\r\n"
-      "\r\n"
-      "<html><script>"
-      "window.location.replace('#a');"
-      "window.location='/title3.html';"
-      "</script></html>");
   ASSERT_TRUE(observer.WaitForNavigationFinished());
 
   EXPECT_EQ(last_url, controller.GetLastCommittedEntry()->GetURL());
