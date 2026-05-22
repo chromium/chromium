@@ -21,12 +21,14 @@
     </style>
 
 <if expr="is_chromeos">
-    <div class="settings-box first">
-      <localized-link class="secondary"
-          localized-string="$i18n{browserSyncFeatureLabel}"
-          link-url="$i18n{osSyncSettingsUrl}">
-      </localized-link>
-    </div>
+  <div hidden="[[isAccountSettingsPage_]]">
+      <div class="settings-box first">
+        <localized-link class="secondary"
+            localized-string="$i18n{browserSyncFeatureLabel}"
+            link-url="$i18n{osSyncSettingsUrl}">
+        </localized-link>
+      </div>
+  </div>
 </if>
 
     <template is="dom-if" if="[[!isAccountSettingsPage_]]" restamp>
@@ -44,7 +46,6 @@
       </div>
     </template>
 
-<if expr="not is_chromeos">
     <div hidden="[[!showSyncDisabledInformation]]">
       <div class="cr-row first">
         <cr-policy-indicator id="syncDisabledIndicator"
@@ -55,12 +56,10 @@
         </div>
       </div>
     </div>
-</if>
 
     <div class="cr-row first" hidden="[[isAccountSettingsPage_]]">
       <h2 class="cr-title-text flex">$i18n{syncData}</h2>
     </div>
-<if expr="not is_chromeos">
     <div id="toggles-header" hidden="[[!isAccountSettingsPage_]]">
       <div class="cr-row first">
         <h2 class="cr-title-text flex">$i18n{accountDataTypesHeading}</h2>
@@ -68,17 +67,18 @@
       <div class="cr-row continuation">
         <div class="cr-secondary-text flex">$i18n{accountDataTypesBody}</div>
       </div>
+<if expr="not is_chromeos">
       <div class="cr-row continuation" hidden="[[!shouldShowBatchUploadPromo_(
             batchUploadPromoHTML_, isAccountSettingsPage_)]]">
         <div class="cr-secondary-text flex" id="batchUploadPromo"
             inner-h-t-m-l="[[batchUploadPromoHTML_]]">
         </div>
       </div>
-    </div>
 </if>
+    </div>
 
     <div class="list-frame" id="sync-data-types">
-<if expr="not is_chromeos">
+
       <template is="dom-if" if="[[isAccountSettingsPage_]]" restamp>
         <div class="list-item">
           <div class="cr-padded-text">
@@ -106,7 +106,6 @@
           </cr-toggle>
         </div>
       </template>
-</if>
 
       <div hidden="[[isAccountSettingsPage_]]">
         <div class="list-item" hidden="[[!syncPrefs.typedUrlsRegistered]]">
@@ -386,5 +385,5 @@
             aria-labelledby="wifiConfigurationsCheckboxLabel">
         </cr-toggle>
       </div>
-    </div>
 </if>
+    </div>

@@ -24,11 +24,11 @@ import {Router} from '../router.js';
 
 import {getTemplate} from './sync_controls.html.js';
 
-// <if expr="not is_chromeos">
 import {loadTimeData} from '../i18n_setup.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin} from '../router.js';
 
+// <if expr="not is_chromeos">
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {BatchUploadPromoProxyImpl} from 'chrome://resources/js/batch_upload_promo/batch_upload_promo_proxy.js';
@@ -50,13 +50,8 @@ enum RadioButtonNames {
  * 'settings-sync-controls' contains all sync data type controls.
  */
 
-// <if expr="not is_chromeos">
 const SettingsSyncControlsElementBase =
     RouteObserverMixin(WebUiListenerMixin(PolymerElement));
-// </if>
-// <if expr="is_chromeos">
-const SettingsSyncControlsElementBase = WebUiListenerMixin(PolymerElement);
-// </if>
 
 export class SettingsSyncControlsElement extends
     SettingsSyncControlsElementBase {
@@ -113,8 +108,8 @@ export class SettingsSyncControlsElement extends
 
       /**
        * Returns whether this element is currently displayed on the account
-       * settings page. Always false on ChromeOS and with
-       * `replaceSyncPromosWithSignInPromos` disabled.
+       * settings page. True when `replaceSyncPromosWithSignInPromos` is enabled
+       * and the user navigates to the account page.
        */
       isAccountSettingsPage_: {
         type: Boolean,
@@ -179,13 +174,11 @@ export class SettingsSyncControlsElement extends
     if (currentRoute === routes.SYNC_ADVANCED) {
       this.syncBrowserProxy_.didNavigateToSyncPage();
     }
-    // <if expr="not is_chromeos">
     if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
         currentRoute === routes.ACCOUNT) {
       this.isAccountSettingsPage_ = true;
       this.syncBrowserProxy_.didNavigateToAccountSettingsPage();
     }
-    // </if>
   }
 
   /**
@@ -277,7 +270,6 @@ export class SettingsSyncControlsElement extends
     }
   }
 
-  // <if expr="not is_chromeos">
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
       return;
@@ -321,7 +313,6 @@ export class SettingsSyncControlsElement extends
     this.syncBrowserProxy_.setSyncDatatype(
         UserSelectableType.SAVED_TAB_GROUPS, toggle.checked);
   }
-  // </if>
 
   private handleSyncAllDataTypesChanged_(syncAllDataTypes: boolean) {
     if (syncAllDataTypes) {
@@ -351,7 +342,6 @@ export class SettingsSyncControlsElement extends
    * Handler for when any sync data type checkbox is changed.
    */
   private onSingleSyncDataTypeChanged_(_event?: Event) {
-    // <if expr="not is_chromeos">
     if (this.isAccountSettingsPage_) {
       assert(_event);
 
@@ -362,7 +352,6 @@ export class SettingsSyncControlsElement extends
       this.syncBrowserProxy_.setSyncDatatype(type, toggle.checked);
       return;
     }
-    // </if>
 
     assert(this.syncPrefs);
     this.syncBrowserProxy_.setSyncDatatypes(this.syncPrefs);
@@ -418,7 +407,6 @@ export class SettingsSyncControlsElement extends
     const router = Router.getInstance();
     if (router.getCurrentRoute() === routes.SYNC_ADVANCED &&
         this.syncControlsHidden_()) {
-      // <if expr="not is_chromeos">
       // Try to navigate the user to the account page, where they can find the
       // toggles. If the page does not exist, they will be redirected to the
       // people settings page from there.
@@ -426,7 +414,6 @@ export class SettingsSyncControlsElement extends
         router.navigateTo(routes.ACCOUNT);
         return;
       }
-      // </if>
 
       router.navigateTo(routes.SYNC);
     }
@@ -446,7 +433,6 @@ export class SettingsSyncControlsElement extends
     // state here. However, the controls should be hidden if there is a generic
     // sync error (e.g. a passphrase is required), or if the user has local sync
     // enabled.
-    // <if expr="not is_chromeos">
     if (this.isAccountSettingsPage_) {
       return (!!this.syncStatus.hasError &&
               this.syncStatus.statusAction !== StatusAction.UPGRADE_CLIENT &&
@@ -454,7 +440,6 @@ export class SettingsSyncControlsElement extends
                   StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE) ||
           (!!this.syncPrefs && this.syncPrefs.localSyncEnabled);
     }
-    // </if>
 
     if (this.syncStatus.signedInState !== SignedInState.SYNCING ||
         this.syncStatus.disabled) {

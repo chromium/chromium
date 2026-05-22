@@ -25,6 +25,7 @@
        data-parent-view-id="parent" profile-name="[[profileName_]]"
        route-path$="[[routes_.MANAGE_PROFILE.path]]">
    </settings-manage-profile>
+</if>
 
    <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
       restamp>
@@ -33,7 +34,6 @@
          route-path$="[[routes_.ACCOUNT.path]]">
      </settings-account-page>
    </template>
-</if>
 
    <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
       restamp>

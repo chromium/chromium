@@ -12,6 +12,7 @@ build_webui_tests("build") {
 
   files = [
     "about_page_test.ts",
+    "account_page_test.ts",
     "ai_history_search_subpage_test.ts",
     "ai_info_card_test.ts",
     "ai_logging_info_bullet_test.ts",
@@ -215,7 +216,6 @@ build_webui_tests("build") {
     ]
   } else {
     files += [
-      "account_page_test.ts",
       "clear_browsing_data_account_indicator_test.ts",
       "default_browser_test.ts",
       "fake_language_settings_private.ts",

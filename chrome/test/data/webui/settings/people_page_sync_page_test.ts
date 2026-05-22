@@ -14,7 +14,7 @@ import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
 import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {loadTimeData, OpenWindowProxyImpl, PageStatus, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, OpenWindowProxyImpl, PageStatus, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -22,7 +22,6 @@ import {isChildVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // <if expr="not is_chromeos">
 import {simulateStoredAccounts} from './sync_test_util.js';
-import {resetRouterForTesting} from 'chrome://settings/settings.js';
 // </if>
 
 import {getSyncAllPrefs} from './sync_test_util.js';
@@ -781,7 +780,6 @@ suite('SyncSettings', function() {
   // </if>
 });
 
-// <if expr="not is_chromeos">
 suite('SyncSettingsWithReplaceSyncPromosWithSignInPromos', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -808,7 +806,6 @@ suite('SyncSettingsWithReplaceSyncPromosWithSignInPromos', function() {
     assertEquals(routes.PEOPLE, Router.getInstance().getCurrentRoute());
   });
 });
-// </if>
 
 suite('EEAChoiceCountry', function() {
   let syncPage: SettingsSyncPageElement;

@@ -249,11 +249,8 @@ export interface SyncBrowserProxy {
    */
   pauseSync(): void;
 
-  /**
-   * Function to invoke when the account settings page with the account storage
-   * per type settings is shown.
-   */
-  didNavigateToAccountSettingsPage(): void;
+  recordSigninPendingOffered(): void;
+  // </if>
 
   /**
    * Sets a single type of data to sync.
@@ -261,8 +258,11 @@ export interface SyncBrowserProxy {
   setSyncDatatype(pref: UserSelectableType, value: boolean):
       Promise<PageStatus>;
 
-  recordSigninPendingOffered(): void;
-  // </if>
+  /**
+   * Function to invoke when the account settings page with the account storage
+   * per type settings is shown.
+   */
+  didNavigateToAccountSettingsPage(): void;
 
   // <if expr="is_chromeos">
   /**
@@ -396,18 +396,18 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
     chrome.send('SyncSetupPauseSync');
   }
 
-  didNavigateToAccountSettingsPage() {
-    chrome.send('ShowAccountSettingsUI');
+  recordSigninPendingOffered() {
+    chrome.send('RecordSigninPendingOffered');
   }
+  // </if>
 
   setSyncDatatype(pref: UserSelectableType, value: boolean) {
     return sendWithPromise<PageStatus>('SetDatatype', pref, value);
   }
 
-  recordSigninPendingOffered() {
-    chrome.send('RecordSigninPendingOffered');
+  didNavigateToAccountSettingsPage() {
+    chrome.send('ShowAccountSettingsUI');
   }
-  // </if>
 
   // <if expr="is_chromeos">
   attemptUserExit() {

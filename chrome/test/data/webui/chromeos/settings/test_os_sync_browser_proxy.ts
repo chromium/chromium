@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ChromeSigninAccessPoint, ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
+import type {ChromeSigninAccessPoint, ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus, UserSelectableType} from 'chrome://os-settings/os_settings.js';
 import {ChromeSigninUserChoice, PageStatus, SignedInState, StatusAction} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -38,6 +38,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'turnOffSync',
       'SetChromeSigninUserChoiceInfo',
       'GetChromeSigninUserChoice',
+      'didNavigateToAccountSettingsPage',
+      'setSyncDatatype',
     ]);
   }
 
@@ -137,4 +139,14 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   showSyncPassphraseDialog(): void {}
 
   showBookmarkLimitExceededHelp(): void {}
+
+  didNavigateToAccountSettingsPage(): void {
+    this.methodCalled('didNavigateToAccountSettingsPage');
+  }
+
+  setSyncDatatype(pref: UserSelectableType, value: boolean):
+      Promise<PageStatus> {
+    this.methodCalled('setSyncDatatype', pref, value);
+    return Promise.resolve(PageStatus.CONFIGURE);
+  }
 }

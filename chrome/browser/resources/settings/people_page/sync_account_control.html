@@ -146,6 +146,7 @@
       }
 
     </style>
+    <if expr="not is_chromeos">
     <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedInState)]]"
         part="banner"></div>
     <div class="cr-row first"
@@ -167,6 +168,7 @@
         $i18n{peopleSignInNoAccountAwareness}
       </cr-button>
     </div>
+    </if>
     <template is="dom-if" if="[[shouldShowAvatarRow_]]">
       <div class="cr-row first two-line" id="avatar-row">
         <div id="avatar-container">
@@ -174,6 +176,7 @@
               src="[[getProfileImageSrc_(
                 shownAccount_.avatarImage,
                 profileAvatarURL_)]]">
+          <if expr="not is_chromeos">
           <div id="sync-icon-container"
               hidden="[[!isSyncing_(syncStatus.signedInState)]]"
               class$="[[getSyncIconStyle_(
@@ -183,6 +186,7 @@
                 syncStatus.hasError, syncStatus.statusAction,
                 syncStatus.disabled)]]"></cr-icon>
           </div>
+          </if>
         </div>
         <div class="cr-row-gap cr-padded-text flex no-min-width" id="user-info">
           <div class="text-elide">
@@ -214,6 +218,7 @@
               this.syncStatus.signedInState)]]
           </div>
         </div>
+        <if expr="not is_chromeos">
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain)]]"
@@ -287,8 +292,10 @@
             $i18n{verifyAccount}
           </cr-button>
         </div>
+        </if>
 
       </div>
+      <if expr="not is_chromeos">
       <template is="dom-if"
           if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
               syncStatus.domain)]]" restamp>
@@ -309,4 +316,5 @@
           </button>
         </cr-action-menu>
       </template>
+      </if>
     </template>

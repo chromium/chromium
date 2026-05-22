@@ -503,6 +503,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     if (routes.SYNC) {
       map.set(routes.SYNC.path, '#sync-setup');
     }
+    if (routes.ACCOUNT) {
+      map.set(routes.ACCOUNT.path, '#account-subpage-row');
+    }
     if (routes.GOOGLE_SERVICES) {
       map.set(routes.GOOGLE_SERVICES.path, '#google-services');
     }
@@ -514,9 +517,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
               '#edit-profile' :
               '#profile-row .subpage-arrow');
     }
-    if (routes.ACCOUNT) {
-      map.set(routes.ACCOUNT.path, '#account-subpage-row');
-    }
     // </if>
     return map;
   }
@@ -524,9 +524,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     const ids = [
-      'sync', 'syncControls', 'googleServices',
+      'sync', 'syncControls', 'account', 'googleServices',
       // <if expr="not is_chromeos">
-      'manageProfile', 'account',
+      'manageProfile',
       // </if>
     ];
     assert(ids.includes(childViewId));
@@ -537,6 +537,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       case 'syncControls':
         triggerId = 'sync-setup';
         break;
+      case 'account':
+        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
+        triggerId = 'account-subpage-row';
+        break;
       case 'googleServices':
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
         triggerId = 'google-services';
@@ -544,10 +548,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       // <if expr="not is_chromeos">
       case 'manageProfile':
         triggerId = this.signinAllowed_ ? 'edit-profile' : 'profile-row';
-        break;
-      case 'account':
-        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-        triggerId = 'account-subpage-row';
         break;
       // </if>
       default:

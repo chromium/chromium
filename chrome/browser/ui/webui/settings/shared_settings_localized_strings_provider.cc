@@ -220,11 +220,7 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
 
   const bool updateAccountSettingsStrings =
-#if BUILDFLAG(IS_CHROMEOS)
-      false;
-#else
       syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
-#endif
 
   html_source->AddLocalizedString(
       "encryptWithGoogleCredentialsLabel",

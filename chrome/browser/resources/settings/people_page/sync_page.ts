@@ -328,13 +328,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
 
-    // <if expr="not is_chromeos">
     if (Router.getInstance().getCurrentRoute() === routes.SYNC &&
         !this.shouldShowSyncPage_()) {
       this.onNavigateAwayFromPage_();
       Router.getInstance().navigateTo(routes.PEOPLE);
     }
-    // </if>
   }
 
   // <if expr="is_chromeos">
@@ -395,26 +393,24 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
+  // </if>
 
   private shouldShowSyncPage_(): boolean {
     return !loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ||
         !this.syncStatus_ ||
         this.syncStatus_.signedInState === SignedInState.SYNCING;
   }
-  // </if>
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
 
     const router = Router.getInstance();
     if (router.getCurrentRoute() === router.getRoutes().SYNC) {
-      // <if expr="not is_chromeos">
       if (!this.shouldShowSyncPage_()) {
         this.onNavigateAwayFromPage_();
         Router.getInstance().navigateTo(routes.PEOPLE);
         return;
       }
-      // </if>
 
       this.onNavigateToPage_();
       return;

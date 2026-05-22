@@ -381,6 +381,8 @@ void PeopleHandler::RegisterMessages() {
       "SyncShowSyncPassphraseDialog",
       base::BindRepeating(&PeopleHandler::HandleShowSyncPassphraseDialog,
                           base::Unretained(this)));
+#endif
+
   web_ui()->RegisterMessageCallback(
       "ShowAccountSettingsUI",
       base::BindRepeating(&PeopleHandler::HandleShowAccountSettingsUI,
@@ -389,7 +391,6 @@ void PeopleHandler::RegisterMessages() {
       "SetDatatype", base::BindRepeating(&PeopleHandler::HandleSetDatatype,
                                          base::Unretained(this)));
 
-#endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   web_ui()->RegisterMessageCallback(
       "SyncSetupSignout", base::BindRepeating(&PeopleHandler::HandleSignout,
@@ -967,6 +968,7 @@ void PeopleHandler::HandleShowSyncPassphraseDialog(
   ShowSyncPassphraseDialogAndDecryptData(
       *browser->GetBrowserForMigrationOnly());
 }
+#endif
 
 void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {
   CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
@@ -1003,7 +1005,6 @@ void PeopleHandler::HandleSetDatatype(const base::ListValue& args) {
 
   ResolveJavascriptCallback(callback_id, base::Value(kConfigurePageStatus));
 }
-#endif
 
 void PeopleHandler::HandleGetSyncStatus(const base::ListValue& args) {
   AllowJavascript();

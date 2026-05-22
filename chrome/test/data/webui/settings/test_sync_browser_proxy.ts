@@ -7,8 +7,9 @@ import type {StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrom
 import type {ChromeSigninUserChoiceInfo} from 'chrome://settings/settings.js';
 import {PageStatus, SignedInState, StatusAction, ChromeSigninUserChoice} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import type {UserSelectableType} from 'chrome://settings/settings.js';
 // <if expr="not is_chromeos">
-import type {ChromeSigninAccessPoint, UserSelectableType} from 'chrome://settings/settings.js';
+import type {ChromeSigninAccessPoint} from 'chrome://settings/settings.js';
 // </if>
 
 // clang-format on
@@ -48,12 +49,13 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'sendTrustedVaultBannerStateChanged',
       'startSyncingWithEmail',
 
+      'didNavigateToAccountSettingsPage',
+      'setSyncDatatype',
+
       // <if expr="not is_chromeos">
       'pauseSync',
       'signOut',
       'startSignIn',
-      'didNavigateToAccountSettingsPage',
-      'setSyncDatatype',
       'recordSigninPendingOffered',
       // </if>
 
@@ -101,6 +103,15 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.profileAvatarURL);
   }
 
+  didNavigateToAccountSettingsPage() {
+    this.methodCalled('didNavigateToAccountSettingsPage');
+  }
+
+  setSyncDatatype(pref: UserSelectableType, value: boolean) {
+    this.methodCalled('setSyncDatatype', pref, value);
+    return Promise.resolve(PageStatus.CONFIGURE);
+  }
+
   // <if expr="not is_chromeos">
   signOut(deleteProfile: boolean) {
     this.methodCalled('signOut', deleteProfile);
@@ -112,15 +123,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   startSignIn(accessPoint: ChromeSigninAccessPoint) {
     this.methodCalled('startSignIn', accessPoint);
-  }
-
-  didNavigateToAccountSettingsPage() {
-    this.methodCalled('didNavigateToAccountSettingsPage');
-  }
-
-  setSyncDatatype(pref: UserSelectableType, value: boolean) {
-    this.methodCalled('setSyncDatatype', pref, value);
-    return Promise.resolve(PageStatus.CONFIGURE);
   }
 
   recordSigninPendingOffered(): void {

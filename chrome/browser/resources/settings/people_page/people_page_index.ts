@@ -86,6 +86,11 @@ export class SettingsPeoplePageIndexElement extends
           this.$.viewManager.switchView(
               'syncControls', 'no-animation', 'no-animation');
           break;
+        case routes.ACCOUNT:
+          assert(this.replaceSyncPromosWithSignInPromos_);
+          this.$.viewManager.switchView(
+              'account', 'no-animation', 'no-animation');
+          break;
         case routes.GOOGLE_SERVICES:
           assert(this.replaceSyncPromosWithSignInPromos_);
           this.$.viewManager.switchView(
@@ -98,11 +103,6 @@ export class SettingsPeoplePageIndexElement extends
           // there, otherwise they will not be visible even if open.
           this.$.viewManager.switchView(
               'parent', 'no-animation', 'no-animation');
-          break;
-        case routes.ACCOUNT:
-          assert(this.replaceSyncPromosWithSignInPromos_);
-          this.$.viewManager.switchView(
-              'account', 'no-animation', 'no-animation');
           break;
         case routes.MANAGE_PROFILE:
           this.$.viewManager.switchView(

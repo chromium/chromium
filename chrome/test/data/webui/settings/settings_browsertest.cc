@@ -95,11 +95,9 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, A11yPage) {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, AccountPage) {
   RunTest("settings/account_page_test.js", "mocha.run()");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, GoogleServicesPage) {
   RunTest("settings/google_services_page_test.js", "mocha.run()");
@@ -985,13 +983,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SyncSettings) {
 }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest,
                        SyncSettingsWithReplaceSyncPromosWithSignInPromos) {
   RunTest("settings/people_page_sync_page_test.js",
           "runMochaSuite('SyncSettingsWithReplaceSyncPromosWithSignInPromos')");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, EEAChoiceCountry) {
   RunTest("settings/people_page_sync_page_test.js",

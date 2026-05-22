@@ -102,9 +102,7 @@ export type {Account, AccountManagerBrowserProxy} from './people_page/account_ma
 // </if>
 export {SettingsPeoplePageElement} from './people_page/people_page.js';
 export {SettingsPeoplePageIndexElement} from './people_page/people_page_index.js';
-// <if expr="not is_chromeos">
 export {SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
-// </if>
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, SettingsMemoryPageElement} from './performance_page/memory_page.js';
 export {PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
