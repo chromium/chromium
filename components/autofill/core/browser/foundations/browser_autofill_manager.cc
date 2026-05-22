@@ -2105,18 +2105,6 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
         type, MAX_VALID_FIELD_TYPE);
   }
 
-  // Notify installed screen readers if the focus is on a field for which there
-  // are suggestions to present. Ignore if a screen reader is not present.
-  if (!external_delegate_->HasActiveScreenReader()) {
-    return;
-  }
-
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  SuggestionsContext context =
-      BuildSuggestionsContext(form, form_structure, field, autofill_field,
-                              AutofillSuggestionTriggerSource::kUnspecified,
-                              GetAcUnrecognizedBehavior(client()));
-
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -2125,15 +2113,27 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // suggestions generated, but only the way suggestions behave when they are
   // accepted. For this reason, checking whether suggestions are available can
   // be done with the `kUnspecified` suggestion trigger source.
-  std::vector<Suggestion> suggestions =
-      GetAvailableSuggestions(form, form_structure, field, autofill_field,
-                              AutofillSuggestionTriggerSource::kUnspecified,
-                              /*one_time_passwords=*/{}, context);
-  external_delegate_->OnAutofillAvailabilityEvent(
-      (context.suppress_reason == SuppressReason::kNotSuppressed &&
-       !suggestions.empty())
-          ? mojom::AutofillSuggestionAvailability::kAutofillAvailable
-          : mojom::AutofillSuggestionAvailability::kNoSuggestions);
+  if (external_delegate_->HasActiveScreenReader() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillDoNotUpdateAutofillAvailabilityOnFocusEvents)) {
+    const FormFieldData& field =
+        CHECK_DEREF(form.FindFieldByGlobalId(field_id));
+    SuggestionsContext context =
+        BuildSuggestionsContext(form, form_structure, field, autofill_field,
+                                AutofillSuggestionTriggerSource::kUnspecified,
+                                GetAcUnrecognizedBehavior(client()));
+    std::vector<Suggestion> suggestions =
+        GetAvailableSuggestions(form, form_structure, field, autofill_field,
+                                AutofillSuggestionTriggerSource::kUnspecified,
+                                /*one_time_passwords=*/{}, context);
+    // Notify installed screen readers if the focus is on a field for which
+    // there are suggestions to present.
+    external_delegate_->OnAutofillAvailabilityEvent(
+        (context.suppress_reason == SuppressReason::kNotSuppressed &&
+         !suggestions.empty())
+            ? mojom::AutofillSuggestionAvailability::kAutofillAvailable
+            : mojom::AutofillSuggestionAvailability::kNoSuggestions);
+  }
 }
 
 void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(

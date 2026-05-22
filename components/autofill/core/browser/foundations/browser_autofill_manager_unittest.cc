@@ -7703,124 +7703,8 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-// Test param indicates if there is an active screen reader.
-class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
-                               public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-
-    has_active_screen_reader_ = GetParam();
-    external_delegate()->set_has_active_screen_reader(
-        has_active_screen_reader_);
-  }
-
-  void TearDown() override {
-    external_delegate()->set_has_active_screen_reader(false);
-    BrowserAutofillManagerTest::TearDown();
-  }
-
-  void CheckSuggestionsAvailableIfScreenReaderRunning() {
-    EXPECT_EQ(has_active_screen_reader_,
-              external_delegate()->has_suggestions_available_on_field_focus());
-  }
-
-  void CheckNoSuggestionsAvailableOnFieldFocus() {
-    EXPECT_FALSE(
-        external_delegate()->has_suggestions_available_on_field_focus());
-  }
-
-  bool has_active_screen_reader_;
-};
-
-TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
-  FormData form = test::GetFormData(
-      {.fields = {
-           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
-           {.role = NAME_LAST, .autocomplete_attribute = "unrecognized"}}});
-  FormsSeen({form});
-
-  // Suggestions should be returned for the first field.
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[0].global_id());
-  CheckSuggestionsAvailableIfScreenReaderRunning();
-
-  // No suggestions should be provided for the second field because of its
-  // unrecognized autocomplete attribute.
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
-  CheckNoSuggestionsAvailableOnFieldFocus();
-}
-
-TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
-  FormData form = test::GetFormData(
-      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
-                  {.role = NAME_LAST,
-                   .autocomplete_attribute = "given-name",
-                   .should_autocomplete = false}}});
-  FormsSeen({form});
-
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
-  CheckSuggestionsAvailableIfScreenReaderRunning();
-}
-
-TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_Ablation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/true,
-                             /*for_credit_cards=*/false);
-
-  // Set up our form data.
-  FormData form = CreateTestAddressFormData();
-  // Clear the form action.
-  form.set_action(GURL());
-  FormsSeen({form});
-
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
-  CheckNoSuggestionsAvailableOnFieldFocus();
-}
-
-TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_SecureContext) {
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  // Clear the form action.
-  form.set_action(GURL());
-  FormsSeen({form});
-
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
-  CheckSuggestionsAvailableIfScreenReaderRunning();
-}
-
-TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_NonSecureContext) {
-  // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
-                                               /*use_month_type=*/false);
-  // Clear the form action.
-  form.set_action(GURL());
-  FormsSeen({form});
-
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
-  // In a non-HTTPS context, there will be a warning indicating the page is
-  // insecure.
-  CheckSuggestionsAvailableIfScreenReaderRunning();
-}
-
-TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/false,
-                             /*for_credit_cards=*/true);
-
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  // Clear the form action.
-  form.set_action(GURL());
-  FormsSeen({form});
-
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
-  CheckNoSuggestionsAvailableOnFieldFocus();
-}
-
 // Ensure that focus events are properly reported to the AutofillFields.
-TEST_P(OnFocusOnFormFieldTest, FocusReporting) {
+TEST_F(BrowserAutofillManagerTest, OnFocusOnFormField_FocusReporting) {
   FormData form = test::GetFormData(
       {.fields = {
            {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
@@ -7863,8 +7747,6 @@ TEST_P(OnFocusOnFormFieldTest, FocusReporting) {
   EXPECT_TRUE(field0->was_focused());
   EXPECT_TRUE(field1->was_focused());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, OnFocusOnFormFieldTest, testing::Bool());
 
 struct ShareNicknameTestParam {
   std::string local_nickname;

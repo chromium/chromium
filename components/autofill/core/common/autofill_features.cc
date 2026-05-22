@@ -451,6 +451,11 @@ BASE_FEATURE(kAutofillDisallowMoreHyphenLikeLabels,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_disallow_more_hyphen_like_labels)
 
+// If enabled, autofill availability event will not be updated in
+// BrowserAutofillManager::OnFocusOnFormField().
+BASE_FEATURE(kAutofillDoNotUpdateAutofillAvailabilityOnFocusEvents,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy, base::FEATURE_DISABLED_BY_DEFAULT);
