@@ -482,7 +482,7 @@ TEST_F(AudioDataTest, Interleaved) {
     samples[block_index + 2] = i + 2 * kFrames;  // channel 2
   }
 
-  const uint8_t* data[] = {reinterpret_cast<const uint8_t*>(samples.data())};
+  const base::span<const uint8_t> data[] = {base::as_byte_span(samples)};
 
   auto media_buffer = media::AudioBuffer::CopyFrom(
       media::SampleFormat::kSampleFormatS16,

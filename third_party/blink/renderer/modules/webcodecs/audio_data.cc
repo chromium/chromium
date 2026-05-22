@@ -342,30 +342,28 @@ AudioData::AudioData(ScriptState* script_state,
     return;
   }
 
-  std::vector<const uint8_t*> channel_ptrs;
+  std::vector<base::span<const uint8_t>> channel_spans;
   if (media::IsInterleaved(media_format)) {
     // Interleaved data can directly added.
-    channel_ptrs.push_back(array_span.data());
+    channel_spans.push_back(array_span.first(total_bytes));
   } else {
+    auto input_data = array_span.first(total_bytes);
     // Planar data needs one pointer per channel.
-    channel_ptrs.resize(init->numberOfChannels());
+    channel_spans.resize(init->numberOfChannels());
 
     uint32_t plane_size_in_bytes =
         init->numberOfFrames() *
         media::SampleFormatToBytesPerChannel(media_format);
 
-    const uint8_t* plane_start =
-        reinterpret_cast<const uint8_t*>(array_span.data());
-
     for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch) {
-      UNSAFE_TODO(channel_ptrs[ch] = plane_start + ch * plane_size_in_bytes);
+      channel_spans[ch] = input_data.take_first(plane_size_in_bytes);
     }
+    CHECK(input_data.empty());
   }
 
   data_ = media::AudioBuffer::CopyFrom(
       media_format, channel_layout, init->numberOfChannels(), sample_rate,
-      init->numberOfFrames(), channel_ptrs.data(),
-      base::Microseconds(timestamp_));
+      init->numberOfFrames(), channel_spans, base::Microseconds(timestamp_));
   CHECK(data_);
 }
 
