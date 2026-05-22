@@ -552,6 +552,18 @@ source_set("time_util") {
   ]
 }
 
+source_set("io_gzip_stream") {
+  public = [ "src/google/protobuf/io/gzip_stream.h" ]
+  sources = [ "src/google/protobuf/io/gzip_stream.cc" ]
+
+  deps = [
+    ":protobuf_lite",
+    "//third_party/zlib",
+  ]
+
+  defines = [ "HAVE_ZLIB" ]
+}
+
 _current_dir = rebase_path(".", "//")
 _proto_out_dir_full = "$_current_dir/full/src"
 

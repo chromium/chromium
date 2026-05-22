@@ -1,0 +1,14 @@
+diff --git a/src/google/protobuf/io/gzip_stream.h b/src/google/protobuf/io/gzip_stream.h
+index 1644949fa3d8e..995cfb91ee162 100644
+--- a/src/google/protobuf/io/gzip_stream.h
++++ b/src/google/protobuf/io/gzip_stream.h
+@@ -28,6 +28,9 @@
+ // Must be included last.
+ #include "google/protobuf/port_def.inc"
+ 
++#undef PROTOBUF_EXPORT
++#define PROTOBUF_EXPORT
++
+ namespace google {
+ namespace protobuf {
+ namespace io {

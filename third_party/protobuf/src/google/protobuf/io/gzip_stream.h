@@ -28,6 +28,9 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
+#undef PROTOBUF_EXPORT
+#define PROTOBUF_EXPORT
+
 namespace google {
 namespace protobuf {
 namespace io {
