@@ -1,7 +1,7 @@
 Name: Fuzztest
 URL: https://github.com/google/fuzztest
 Version: N/A
-Revision: 7991d2b163e06ab603eb8cf33f9bf638848e3abc
+Revision: 19f2215202d03f9cbd1d73f06f82f5c73c42704e
 Update Mechanism: Autoroll
 License: dtoa, BSD-3-Clause, Apache-2.0
 Security Critical: no
