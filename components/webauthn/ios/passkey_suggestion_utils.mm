@@ -38,7 +38,7 @@ NSArray<FormSuggestion*>* FormSuggestionsFromPasskeyCredentials(
     } else {
       value = base::SysUTF8ToNSString(display_name);
       display_description =
-          [NSString stringWithFormat:@"%@ • %@", username, passkey_label];
+          [NSString stringWithFormat:@"%@ • %@", passkey_label, username];
     }
 
     FormSuggestion* suggestion = [FormSuggestion

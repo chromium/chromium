@@ -79,10 +79,10 @@ TEST_F(PasskeySuggestionUtilsTest,
 
   // The passkey's username should be displayed in the display description as
   // the passkey's display name will appear as the value of the suggestion.
-  NSString* expected_display_description =
-      [NSString stringWithFormat:@"%@ • %@", base::SysUTF8ToNSString(kUsername),
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_PASSKEY_SUGGESTION_LABEL)];
+  NSString* expected_display_description = [NSString
+      stringWithFormat:@"%@ • %@",
+                       l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL),
+                       base::SysUTF8ToNSString(kUsername)];
 
   ASSERT_EQ(1u, suggestions.count);
   EXPECT_NSEQ(base::SysUTF8ToNSString(kDisplayName), suggestions[0].value);

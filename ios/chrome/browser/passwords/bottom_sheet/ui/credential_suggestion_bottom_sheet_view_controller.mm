@@ -470,7 +470,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   configuration.title = GetSuggestionDisplayUsername(formSuggestion);
   configuration.titleNumberOfLines = 1;
   configuration.titleLineBreakMode = NSLineBreakByTruncatingMiddle;
-  configuration.subtitle = _domain;
+  configuration.subtitle = [self cellSubtitleForSuggestion:formSuggestion];
   configuration.subtitleNumberOfLines = 1;
   configuration.subtitleLineBreakMode = NSLineBreakByTruncatingMiddle;
   // Note that both the credentials and URLs will use middle truncation, as it
@@ -497,6 +497,29 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
   return cell;
+}
+
+// Returns the subtitle to display for the given suggestion.
+- (NSString*)cellSubtitleForSuggestion:(FormSuggestion*)formSuggestion {
+  if (!IsConditionalPasskeyLoginEnabled()) {
+    return _domain;
+  }
+
+  if (formSuggestion.type == SuggestionType::kWebauthnCredential) {
+    return formSuggestion.displayDescription;
+  }
+
+  NSString* credentialType =
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+
+  NSString* suggestionHost = formSuggestion.displayDescription;
+  if (suggestionHost && suggestionHost.length > 0 &&
+      ![suggestionHost isEqualToString:_domain]) {
+    return
+        [NSString stringWithFormat:@"%@ • %@", credentialType, suggestionHost];
+  }
+
+  return credentialType;
 }
 
 @end
