@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/live_caption/features.h"
@@ -83,8 +84,26 @@ void LiveTranslateController::GetTranslation(const std::string& result,
       base::HashMetricName(target_language));
 
   base::TimeTicks total_start_time = base::TimeTicks::Now();
-  if (base::FeatureList::IsEnabled(
-          live_caption::kLiveCaptionOnDeviceTranslation)) {
+  bool use_on_device = base::FeatureList::IsEnabled(
+      live_caption::kLiveCaptionOnDeviceTranslation);
+  if (use_on_device &&
+      base::FeatureList::IsEnabled(
+          live_caption::kLiveCaptionOnDeviceTranslationEnglishOnly)) {
+    auto is_english = [](const std::string& lang) {
+      return base::StartsWith(lang, "en", base::CompareCase::INSENSITIVE_ASCII);
+    };
+    auto is_zh_tw = [](const std::string& lang) {
+      return base::ToLowerASCII(lang) == "zh-tw" ||
+             base::ToLowerASCII(lang) == "cmn-hant-tw";
+    };
+
+    if (!(is_english(source_language) || is_english(target_language)) ||
+        is_zh_tw(source_language) || is_zh_tw(target_language)) {
+      use_on_device = false;
+    }
+  }
+
+  if (use_on_device) {
     on_device_dispatcher_->GetTranslation(
         result, source_language, target_language,
         base::BindOnce(&LiveTranslateController::OnOnDeviceTranslated,
