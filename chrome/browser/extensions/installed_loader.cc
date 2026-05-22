@@ -360,7 +360,7 @@ void InstalledLoader::LoadAllExtensions() {
 
 void InstalledLoader::LoadAllExtensions(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT0("browser,startup", "InstalledLoader::LoadAllExtensions");
+  TRACE_EVENT("browser,startup", "InstalledLoader::LoadAllExtensions");
 
   bool is_user_profile =
       profile_util::ProfileCanUseNonComponentExtensions(profile);
@@ -379,6 +379,8 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
     }
 
     if (ShouldReloadExtensionManifest(info)) {
+      TRACE_EVENT("browser,startup", "Reload Extension Manifest");
+
       // Reloading an extension reads files from disk.  We do this on the
       // UI thread because reloads should be very rare, and the complexity
       // added by delaying the time when the extensions service knows about
@@ -408,6 +410,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
 
   for (const auto& info : extensions_info) {
     if (info.extension_location != mojom::ManifestLocation::kCommandLine) {
+      TRACE_EVENT("browser,startup", "Load Extension");
       Load(info, should_write_prefs);
     }
   }
@@ -461,6 +464,7 @@ void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
 
 // TODO(crbug.com/40739895): Separate out Webstore/Offstore metrics.
 void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
+  TRACE_EVENT("browser,startup", "RecordExtensionsMetrics");
   DCHECK(profile_util::ProfileCanUseNonComponentExtensions(profile));
 
   int app_user_count = 0;
