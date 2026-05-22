@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <utility>
@@ -62,12 +63,9 @@ class MEDIA_EXPORT AudioBuffer
     base::raw_span<uint8_t, DanglingUntriaged> span_;
   };
 
-  // Create an AudioBuffer whose channel data is copied from |data|. For
-  // interleaved data, only the first buffer is used. For planar data, the
-  // number of buffers must be equal to |channel_count|. |frame_count| is the
-  // number of frames in each buffer. |data| must not be null and |frame_count|
-  // must be >= 0. For optimal efficiency when many buffers are being created, a
-  // AudioBufferMemoryPool can be provided to avoid thrashing memory.
+  // TODO(crbug.com/373960632): Keep this raw-pointer overload while call sites
+  // migrate to the span overload below. For interleaved data only `data[0]` is
+  // read; for planar data, `data` must contain `channel_count` pointers.
   static scoped_refptr<AudioBuffer> CopyFrom(
       SampleFormat sample_format,
       ChannelLayout channel_layout,
@@ -78,8 +76,27 @@ class MEDIA_EXPORT AudioBuffer
       const base::TimeDelta timestamp,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
-  // Create an AudioBuffer from a copy of the data in |audio_bus| and a given
-  // |channel_layout|. For optimal efficiency when many buffers are being
+  // Create an AudioBuffer whose channel data is copied from `data`. For
+  // interleaved data, `data` must contain exactly one span, which must contain
+  // the data for all channels. For planar data, `data` must contain exactly
+  // `channel_count` spans, each with exactly `frame_count` frames of data for
+  // one channel. `frame_count` is the number of frames in each buffer. `data`
+  // must not be empty and `frame_count` must be >= 0. For optimal efficiency
+  // when many buffers are being created, a
+  // AudioBufferMemoryPool can be provided to avoid thrashing memory.
+  using AudioBufferData = base::span<const base::span<const uint8_t>>;
+  static scoped_refptr<AudioBuffer> CopyFrom(
+      SampleFormat sample_format,
+      ChannelLayout channel_layout,
+      int channel_count,
+      int sample_rate,
+      int frame_count,
+      AudioBufferData data,
+      const base::TimeDelta timestamp,
+      scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
+
+  // Create an AudioBuffer from a copy of the data in `audio_bus` and a given
+  // `channel_layout`. For optimal efficiency when many buffers are being
   // created, a AudioBufferMemoryPool can be provided to avoid thrashing memory.
   static scoped_refptr<AudioBuffer> CopyFrom(
       ChannelLayout channel_layout,
@@ -88,7 +105,7 @@ class MEDIA_EXPORT AudioBuffer
       const AudioBus* audio_bus,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
-  // Create an AudioBuffer from a copy of the data in |audio_bus|.
+  // Create an AudioBuffer from a copy of the data in `audio_bus`.
   // For optimal efficiency when many buffers are being created, a
   // AudioBufferMemoryPool can be provided to avoid thrashing memory.
   static scoped_refptr<AudioBuffer> CopyFrom(
@@ -97,9 +114,8 @@ class MEDIA_EXPORT AudioBuffer
       const AudioBus* audio_bus,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
-  // Create an AudioBuffer for compressed bitstream. Its channel data is copied
-  // from |data|, and the size is |data_size|. |data| must not be null and
-  // |frame_count| must be >= 0.
+  // TODO(crbug.com/373960632): Keep this raw-pointer overload while call sites
+  // migrate to the span overload below.
   static scoped_refptr<AudioBuffer> CopyBitstreamFrom(
       SampleFormat sample_format,
       ChannelLayout channel_layout,
@@ -111,7 +127,21 @@ class MEDIA_EXPORT AudioBuffer
       const base::TimeDelta timestamp,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
-  // Create an AudioBuffer with |frame_count| frames. Buffer is allocated, but
+  // Create an AudioBuffer for compressed bitstream. Its channel data is copied
+  // from `data`. For the span overload, the size is `data.size()`. For the
+  // raw-pointer overload, the size is `data_size`. `data` must not be
+  // null/empty and `frame_count` must be >= 0.
+  static scoped_refptr<AudioBuffer> CopyBitstreamFrom(
+      SampleFormat sample_format,
+      ChannelLayout channel_layout,
+      int channel_count,
+      int sample_rate,
+      int frame_count,
+      const base::span<const uint8_t> data,
+      const base::TimeDelta timestamp,
+      scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
+
+  // Create an AudioBuffer with `frame_count` frames. Buffer is allocated, but
   // not initialized. Timestamp and duration are set to kNoTimestamp. For
   // optimal efficiency when many buffers are being created, a
   // AudioBufferMemoryPool can be provided to avoid thrashing memory.
@@ -134,7 +164,7 @@ class MEDIA_EXPORT AudioBuffer
       size_t data_size,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
-  // Create an empty AudioBuffer with |frame_count| frames.
+  // Create an empty AudioBuffer with `frame_count` frames.
   static scoped_refptr<AudioBuffer> CreateEmptyBuffer(
       ChannelLayout channel_layout,
       int channel_count,
@@ -157,9 +187,9 @@ class MEDIA_EXPORT AudioBuffer
       const base::TimeDelta timestamp,
       std::unique_ptr<ExternalMemory> external_memory);
 
-  // Helper function that creates a new AudioBus which wraps |audio_buffer| and
-  // takes a reference on it, if the memory layout (e.g. |sample_format_|) is
-  // compatible with wrapping. Otherwise, this copies |audio_buffer| to a new
+  // Helper function that creates a new AudioBus which wraps `audio_buffer` and
+  // takes a reference on it, if the memory layout (e.g. `sample_format_`) is
+  // compatible with wrapping. Otherwise, this copies `audio_buffer` to a new
   // AudioBus, using ReadFrames().
   static std::unique_ptr<AudioBus> WrapOrCopyToAudioBus(
       scoped_refptr<AudioBuffer> audio_buffer);
@@ -170,10 +200,10 @@ class MEDIA_EXPORT AudioBuffer
   static scoped_refptr<AudioBuffer> CreateEOSBuffer();
 
   // Allocates aligned contiguous buffer to hold all channel data (1 block for
-  // interleaved data, |channel_count| blocks for planar data), copies
-  // [data,data+data_size) to the allocated buffer(s). If |data| is null, no
-  // data is copied. If |create_buffer| is false, no data buffer is created (or
-  // copied to).
+  // interleaved data, `channel_count` blocks for planar data), and copies
+  // input data to the allocated buffer(s). If `data` is empty, no data is
+  // copied. If `create_buffer` is false, no data buffer is created (or copied
+  // to).
   AudioBuffer(base::PassKey<AudioBuffer>,
               SampleFormat sample_format,
               ChannelLayout channel_layout,
@@ -181,12 +211,12 @@ class MEDIA_EXPORT AudioBuffer
               int sample_rate,
               int frame_count,
               bool create_buffer,
-              const uint8_t* const* data,
+              AudioBufferData data,
               const size_t data_size,
               const base::TimeDelta timestamp,
               scoped_refptr<AudioBufferMemoryPool> pool);
   // Takes ownership over a contiguous buffer to hold all channel data
-  // (1 block for interleaved data, |channel_count| blocks for planar data).
+  // (1 block for interleaved data, `channel_count` blocks for planar data).
   AudioBuffer(base::PassKey<AudioBuffer>,
               SampleFormat sample_format,
               ChannelLayout channel_layout,
@@ -205,9 +235,9 @@ class MEDIA_EXPORT AudioBuffer
   // change.
   void AdjustSampleRate(int sample_rate);
 
-  // Copy frames into |dest|. |frames_to_copy| is the number of frames to copy.
-  // |source_frame_offset| specifies how many frames in the buffer to skip
-  // first. |dest_frame_offset| is the frame offset in |dest|. The frames are
+  // Copy frames into `dest`. `frames_to_copy` is the number of frames to copy.
+  // `source_frame_offset` specifies how many frames in the buffer to skip
+  // first. `dest_frame_offset` is the frame offset in `dest`. The frames are
   // converted and clipped from their source format into planar float32 data
   // (which is all that AudioBus handles).
   void ReadFrames(int frames_to_copy,
@@ -215,18 +245,18 @@ class MEDIA_EXPORT AudioBuffer
                   int dest_frame_offset,
                   AudioBus* dest) const;
 
-  // Trim an AudioBuffer by removing |frames_to_trim| frames from the start.
+  // Trim an AudioBuffer by removing `frames_to_trim` frames from the start.
   // Timestamp and duration are adjusted to reflect the fewer frames.
   // Note that repeated calls to TrimStart() may result in timestamp() and
   // duration() being off by a few microseconds due to rounding issues.
   void TrimStart(int frames_to_trim);
 
-  // Trim an AudioBuffer by removing |frames_to_trim| frames from the end.
+  // Trim an AudioBuffer by removing `frames_to_trim` frames from the end.
   // Duration is adjusted to reflect the fewer frames.
   void TrimEnd(int frames_to_trim);
 
-  // Trim an AudioBuffer by removing |end - start| frames from [|start|, |end|).
-  // Even if |start| is zero, timestamp() is not adjusted, only duration().
+  // Trim an AudioBuffer by removing `end - start` frames from [`start`, `end`).
+  // Even if `start` is zero, timestamp() is not adjusted, only duration().
   void TrimRange(int start, int end);
 
   // Return true if the buffer contains compressed bitstream.
