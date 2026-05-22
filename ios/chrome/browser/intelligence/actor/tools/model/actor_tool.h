@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-class Browser;
 class ProfileIOS;
+class UrlLoadingBrowserAgent;
 
 namespace web {
 class WebState;
@@ -31,8 +31,8 @@ class ActorTool {
     TabResolutionResult& operator=(const TabResolutionResult&);
     ~TabResolutionResult();
 
-    // The browser containing the tab.
-    raw_ptr<Browser> browser = nullptr;
+    // A weak pointer to the tab's URL loading agent.
+    base::WeakPtr<UrlLoadingBrowserAgent> url_loader;
     // The index of the tab in the browser's web state list.
     int tab_index = WebStateList::kInvalidIndex;
     // A weak pointer to the tab's WebState.

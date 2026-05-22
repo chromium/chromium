@@ -74,6 +74,9 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   void LoadUrlInTab(const UrlLoadParams& params,
                     web::WebState* target_web_state);
 
+  // Provides a weak pointer to this instance.
+  base::WeakPtr<UrlLoadingBrowserAgent> AsWeakPtr();
+
  private:
   friend class BrowserUserData<UrlLoadingBrowserAgent>;
   friend class FakeUrlLoadingBrowserAgent;

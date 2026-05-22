@@ -143,6 +143,10 @@ UrlLoadingBrowserAgent::UrlLoadingBrowserAgent(Browser* browser)
 
 UrlLoadingBrowserAgent::~UrlLoadingBrowserAgent() {}
 
+base::WeakPtr<UrlLoadingBrowserAgent> UrlLoadingBrowserAgent::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void UrlLoadingBrowserAgent::SetSceneService(
     SceneUrlLoadingService* scene_service) {
   scene_service_ = scene_service;

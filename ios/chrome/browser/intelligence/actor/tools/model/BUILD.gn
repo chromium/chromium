@@ -42,6 +42,7 @@ source_set("actor_tool_interface") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/web/public",
   ]
 }

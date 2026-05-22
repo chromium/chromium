@@ -10,15 +10,12 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
 namespace actor {
-
-NavigateTool::~NavigateTool() = default;
 
 // static
 base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
@@ -36,15 +33,22 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
   }
 
   TabResolutionResult result = resolution_result.value();
-  return std::unique_ptr<NavigateTool>(new NavigateTool(
-      action.url(), result.web_state, result.browser->GetWebStateList(),
-      UrlLoadingBrowserAgent::FromBrowser(result.browser)));
+
+  return std::unique_ptr<NavigateTool>(
+      new NavigateTool(action.url(), result.web_state, result.url_loader));
 }
+
+NavigateTool::NavigateTool(const std::string& url,
+                           base::WeakPtr<web::WebState> web_state,
+                           base::WeakPtr<UrlLoadingBrowserAgent> url_loader)
+    : url_(url), web_state_(web_state), url_loader_(url_loader) {}
+
+NavigateTool::~NavigateTool() = default;
 
 // TODO(crbug.com/474383578): Limit what URLs can be navigated to using the
 // ActorService.
 void NavigateTool::Execute(ToolExecutionCallback callback) {
-  if (!web_state_ || !web_state_list_ || !url_loader_) {
+  if (!web_state_ || !url_loader_) {
     std::move(callback).Run(ToolExecutionResult(
         InternalToolErrorCode::kExecutionMissingDependencies));
     return;
@@ -85,14 +89,5 @@ base::WeakPtr<web::WebState> NavigateTool::GetTargetWebState() const {
 ToolType NavigateTool::GetToolType() const {
   return ToolType::kNavigate;
 }
-
-NavigateTool::NavigateTool(const std::string& url,
-                           base::WeakPtr<web::WebState> web_state,
-                           WebStateList* web_state_list,
-                           UrlLoadingBrowserAgent* url_loader)
-    : url_(url),
-      web_state_(web_state),
-      web_state_list_(web_state_list),
-      url_loader_(url_loader) {}
 
 }  // namespace actor

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -52,7 +53,11 @@ ActorTool::ResolveTab(int32_t tab_id, ProfileIOS* profile) {
   }
 
   TabResolutionResult result;
-  result.browser = browser_and_index.browser;
+  UrlLoadingBrowserAgent* url_loader =
+      UrlLoadingBrowserAgent::FromBrowser(browser_and_index.browser);
+  if (url_loader) {
+    result.url_loader = url_loader->AsWeakPtr();
+  }
   result.tab_index = browser_and_index.tab_index;
   result.web_state = web_state->GetWeakPtr();
   return result;
