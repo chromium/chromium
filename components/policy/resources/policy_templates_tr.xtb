@@ -4539,6 +4539,13 @@ Bu sınırın üzerinde bir değer belirlerseniz 256 kullanılır.
 Varsayılanın (128) üzerinde bir değer ayarlanması durumunda tüm sorumluluk size aittir.</translation>
 <translation id="3935592079035695061">Gece yarısından bu yana milisaniye.</translation>
 <translation id="3937800910397007337">Tüm sekmeler için ön plan önceliğini zorla</translation>
+<translation id="3938885528378923718"><ph name="PRODUCT_NAME" /> öğesinin, üretken yapay zekanın temel modelini indirme ve yerel çıkarım için kullanma şeklini yapılandırın.
+
+Politika, İzin Verildi (0) değerine ayarlanır veya ayarlanmadan bırakılırsa model otomatik olarak indirilir ve çıkarım için kullanılır.
+
+Politika, Devre Dışı (1) değerine ayarlanırsa model indirilmez ve mevcut model (daha önce indirilmişse) silinir.
+
+Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> değerini yanlış olarak ayarlayarak da devre dışı bırakılabilir.</translation>
 <translation id="3941289958028934630">Giriş ekranında sözlü geri bildirimi devre dışı bırak</translation>
 <translation id="3943930334592166130">Bu politika, <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> ile eşleşen birden fazla sertifika olduğunda kullanıcıdan bir istemci sertifikası seçmesinin istenip istenmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan bir istemci sertifikası seçmesi istenir.

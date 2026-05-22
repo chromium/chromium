@@ -3357,6 +3357,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3289856944988573801">Kasutage värskenduste otsimiseks Etherneti või WiFi-ühendust.</translation>
 <translation id="3290249595466894471">Saadab ka lehtede, allalaadimiste, laienduste tegevuse ja süsteemiteabe näidiseid, et aidata uusi ohte tuvastada.</translation>
 <translation id="3292966601422448005">Õigused, mida lubate rakenduse <ph name="APP_NAME" /> jaoks, lubatakse ka selle installitavate rakenduste jaoks.</translation>
+<translation id="3293080634164207409">Lisage vahelehti</translation>
 <translation id="3293181007446299124">Teie sirvimisajalugu hoitakse teie seadmes privaatsena ja aruanded saadetakse viivitusega, et teie isikut saladuses hoida</translation>
 <translation id="329324683265785818">Esitamine/peatamine, klaviatuuri otsetee k</translation>
 <translation id="3293644607209440645">Saada leht</translation>
@@ -8666,6 +8667,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6997553674029032185">Minge saidile</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – tegevuste logi</translation>
 <translation id="6997707937646349884">Teie seadmetes:</translation>
+<translation id="6998036632333022623">Jagate vahelehti Google'iga.</translation>
 <translation id="6998793565256476099">Registreeri seade videokonverentsi kasutamiseks</translation>
 <translation id="6999956497249459195">Uus grupp</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> on ühendatud, aga vajab seadistamist</translation>
@@ -10032,6 +10034,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7947962633355574091">K&amp;opeeri video aadress</translation>
 <translation id="7947964080535614577">Saidid kuvavad reklaame tavaliselt selleks, et pakkuda maksekohustuseta sisu või teenuseid. Mõned saidid aga kuvavad sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="7948407723851303488">Kõik domeeni <ph name="DOMAIN_NAME" /> lehed</translation>
+<translation id="7948579849190819732">Praegune vaheleht</translation>
 <translation id="7949038991703929816">Ajaloo laadimine ebaõnnestus. Veenduge, et failid sisaldaksid kehtivaid värskendaja logisid.</translation>
 <translation id="7950629216186736592">Põhjus: LBS toetab ainult URL-e kujul http://, https:// ja file://.</translation>
 <translation id="7950814699499457511">Sees • See laiendus pole avaldanud privaatsuspõhimõtteid, milles kirjeldataks, kuidas laiendus andmeid kogub ja kasutab</translation>

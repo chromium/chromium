@@ -4606,6 +4606,13 @@ Jika nilai yang ditetapkan melebihi batas tersebut, nilai yang akan digunakan ad
 Jika menaikkan nilai di atas nilai default (128), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="3935592079035695061">Milidetik sejak tengah malam.</translation>
 <translation id="3937800910397007337">Terapkan prioritas latar depan untuk semua tab</translation>
+<translation id="3938885528378923718">Mengonfigurasi cara <ph name="PRODUCT_NAME" /> mendownload model AI Generatif dasar dan menggunakannya untuk inferensi secara lokal.
+
+Jika kebijakan disetel ke Diizinkan (0) atau tidak disetel, model akan otomatis didownload dan digunakan untuk inferensi.
+
+Jika kebijakan ini disetel ke Nonaktif (1), model tidak akan didownload, dan model yang ada (jika sudah didownload) akan dihapus.
+
+Di platform desktop, download model juga dapat dinonaktifkan dengan menyetel <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> ke salah (false).</translation>
 <translation id="3941289958028934630">Nonaktifkan respons lisan di layar login</translation>
 <translation id="3943930334592166130">Kebijakan ini mengontrol apakah pengguna akan diminta memilih sertifikat klien saat lebih dari satu sertifikat cocok dengan <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.

@@ -4434,6 +4434,13 @@ Si vous définissez une valeur supérieure à cette limite, la valeur limite (25
 Toute augmentation de la valeur par défaut (128) est effectuée à vos propres risques.</translation>
 <translation id="3935592079035695061">Millisecondes depuis minuit.</translation>
 <translation id="3937800910397007337">Forcer la priorité au premier plan pour tous les onglets</translation>
+<translation id="3938885528378923718">Configurez la manière dont <ph name="PRODUCT_NAME" /> télécharge le modèle de fondation de la GenAI et l'utilise pour l'inférence en local.
+
+Si cette règle est définie sur "Autorisé" (0) ou qu'elle n'est pas configurée, le modèle est téléchargé automatiquement et est utilisé pour l'inférence.
+
+Si elle est définie sur "Désactivé" (1), le modèle n'est pas téléchargé, et le modèle existant (s'il a déjà été téléchargé) est supprimé.
+
+Sur les plates-formes de bureau, le téléchargement du modèle peut également être désactivé en définissant <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> sur "false".</translation>
 <translation id="3941289958028934630">Désactiver la lecture vocale sur l'écran de connexion</translation>
 <translation id="3943930334592166130">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client quand la règle <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.

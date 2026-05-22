@@ -3368,6 +3368,7 @@
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
 <translation id="3292966601422448005"><ph name="APP_NAME" />에 허용하는 권한은 설치된 앱에도 허용됩니다.</translation>
+<translation id="3293080634164207409">탭 추가</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
 <translation id="329324683265785818">재생/일시중지, 키보드 단축키 k</translation>
 <translation id="3293644607209440645">이 페이지 전송</translation>
@@ -8675,6 +8676,7 @@
 <translation id="6997553674029032185">사이트로 이동</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
+<translation id="6998036632333022623">Google과 탭 공유 중</translation>
 <translation id="6998793565256476099">화상회의용 기기 등록</translation>
 <translation id="6999956497249459195">새 그룹</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />이(가) 연결되어 있으나 구성이 필요함</translation>
@@ -10040,6 +10042,7 @@
 <translation id="7947962633355574091">동영상 주소 복사(&amp;O)</translation>
 <translation id="7947964080535614577">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />의 모든 페이지</translation>
+<translation id="7948579849190819732">현재 탭</translation>
 <translation id="7949038991703929816">기록을 로드할 수 없습니다. 파일에 유효한 업데이터 로그가 포함되어 있는지 확인하세요.</translation>
 <translation id="7950629216186736592">이유: LBS는 http://, https:// 및 file:// URL만 지원합니다.</translation>
 <translation id="7950814699499457511">사용 • 이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다.</translation>

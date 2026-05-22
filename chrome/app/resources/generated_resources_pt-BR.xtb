@@ -1494,7 +1494,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2004413981947727241">Use suas senhas em qualquer dispositivo.</translation>
 <translation id="2006638907958895361">Abrir link no <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informar um problema...</translation>
-<translation id="200781997903833896">Para usar a Leitura em voz alta, libere espaço no dispositivo</translation>
+<translation id="200781997903833896">Para usar o Ler em voz alta, libere espaço no dispositivo</translation>
 <translation id="200928901437634269">Use a Conta do Google infantil ou uma conta escolar. Também é possível definir os controles da família.</translation>
 <translation id="2009590708342941694">Ferramenta e emoji</translation>
 <translation id="2010501376126504057">Dispositivos compatíveis</translation>
@@ -3366,6 +3366,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
 <translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
 <translation id="3292966601422448005">As permissões concedidas para <ph name="APP_NAME" /> também serão dadas aos apps instalados por ele.</translation>
+<translation id="3293080634164207409">Adicionar guias</translation>
 <translation id="3293181007446299124">Seu histórico de navegação é mantido no seu dispositivo, e os relatórios são enviados com um atraso para proteger sua identidade</translation>
 <translation id="329324683265785818">Iniciar/pausar, atalho do teclado k</translation>
 <translation id="3293644607209440645">Enviar esta página</translation>
@@ -7026,7 +7027,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5846504156837627898">Gerenciar permissões de sites</translation>
 <translation id="5846749317653566506">Ajuste as configurações de correção de cor para garantir que as cores fiquem nítidas</translation>
 <translation id="5848054741303781539">Definido manualmente, sem usar a localização</translation>
-<translation id="5848319660029558352">Leitura em voz alta e formatação de texto</translation>
+<translation id="5848319660029558352">Ler em voz alta e formatação de texto</translation>
 <translation id="5849212445710944278">Já adicionada</translation>
 <translation id="5849288995120328556">Parar de compartilhar?</translation>
 <translation id="584945105664698226">Velocidade da fala</translation>
@@ -8532,7 +8533,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6897756054229464646">com o Gemini</translation>
 <translation id="6897972855231767338">Aprenda a navegar como visitante</translation>
 <translation id="6898438890765871056">Abrir pasta do OneDrive</translation>
-<translation id="6898926986978115885">No momento, não é possível usar a Leitura em voz alta.</translation>
+<translation id="6898926986978115885">No momento, não é possível usar Ler em voz alta.</translation>
 <translation id="6899427698619335650">Permitir atribuição flexível do diacrítico. Por exemplo, insira "anh1" ou "a1nh" para digitar "ánh".</translation>
 <translation id="6900284862687837908">Aplicativo de segundo plano: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Proteção reforçada</translation>
@@ -8679,6 +8680,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6997553674029032185">Acessar o site</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: registro de atividades</translation>
 <translation id="6997707937646349884">Nos seus dispositivos:</translation>
+<translation id="6998036632333022623">Compartilhando guias com o Google</translation>
 <translation id="6998793565256476099">Cadastre o dispositivo para videoconferência</translation>
 <translation id="6999956497249459195">Novo grupo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, mas precisa ser configurada</translation>
@@ -10045,6 +10047,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7947962633355574091">C&amp;opiar endereço do vídeo</translation>
 <translation id="7947964080535614577">Os sites geralmente mostram anúncios para oferecer conteúdo ou serviços sem custo financeiro. No entanto, alguns sites têm anúncios invasivos ou enganosos.</translation>
 <translation id="7948407723851303488">Todas as páginas de <ph name="DOMAIN_NAME" /></translation>
+<translation id="7948579849190819732">Guia atual</translation>
 <translation id="7949038991703929816">Falha ao carregar o histórico. Verifique se os arquivos contêm registros de atualizador válidos.</translation>
 <translation id="7950629216186736592">Motivo: o LBS tem suporte apenas a URLs http://, https:// e file://.</translation>
 <translation id="7950814699499457511">Ativada • A extensão não publicou práticas de privacidade, como a forma de coleta e uso dos dados</translation>

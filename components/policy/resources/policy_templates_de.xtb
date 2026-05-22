@@ -4436,6 +4436,13 @@ Wird ein höherer Wert festgelegt, wird stattdessen 256 verwendet.
 Das Erhöhen über den Standardwert (128) erfolgt auf eigenes Risiko.</translation>
 <translation id="3935592079035695061">Millisekunden seit Mitternacht.</translation>
 <translation id="3937800910397007337">Vordergrundpriorität für alle Tabs erzwingen</translation>
+<translation id="3938885528378923718">Mit dieser Richtlinie kann konfiguriert werden, wie <ph name="PRODUCT_NAME" /> das Foundation Model für generative KI herunterlädt und lokal für die Inferenz verwendet.
+
+Wenn die Richtlinie auf „Zulässig (0)“ gesetzt oder nicht konfiguriert ist, wird das Modell automatisch heruntergeladen und für die Inferenz verwendet.
+
+Ist die Richtlinie auf „Deaktiviert (1)“ gesetzt, wird das Modell nicht heruntergeladen und das vorhandene Modell (sofern bereits heruntergeladen) gelöscht.
+
+Auf Desktop-Plattformen kann das Herunterladen von Modellen auch deaktiviert werden, indem „<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />“ auf „false“ gesetzt wird.</translation>
 <translation id="3941289958028934630">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="3943930334592166130">Diese Richtlinie legt fest, ob Nutzer aufgefordert werden, ein Clientzertifikat auszuwählen, wenn mehrere Zertifikate zu <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> passen.
       Ist die Richtlinie aktiviert, werden Nutzer aufgefordert, immer dann ein Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.

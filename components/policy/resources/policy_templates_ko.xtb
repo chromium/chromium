@@ -4491,6 +4491,13 @@ WebSocket이 아닌 요청 한도를 수정하려면 <ph name="MAX_CONNECTIONS_P
 기본값(128)보다 높게 설정하는 데 따르는 위험은 사용자가 감수해야 합니다.</translation>
 <translation id="3935592079035695061">자정부터 경과된 밀리초입니다.</translation>
 <translation id="3937800910397007337">모든 탭에 포그라운드 우선순위 강제 적용</translation>
+<translation id="3938885528378923718"><ph name="PRODUCT_NAME" />에서 기본적인 생성형 AI 모델을 다운로드하고 로컬에서 추론에 사용하는 방법을 구성합니다.
+
+정책을 허용됨(0)으로 설정하거나 설정하지 않으면 모델이 자동으로 다운로드되어 추론에 사용됩니다.
+
+정책을 사용 안 함(1)으로 설정하면 모델이 다운로드되지 않으며 기존 모델(이미 다운로드된 경우)이 삭제됩니다.
+
+데스크톱 플랫폼의 경우 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 정책을 false로 설정하여 모델 다운로드를 사용 중지할 수도 있습니다.</translation>
 <translation id="3941289958028934630">로그인 화면에서 음성 피드백 사용 중지</translation>
 <translation id="3943930334592166130">이 정책은 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />와 일치하는 인증서가 여러 개일 때 사용자에게 클라이언트 인증서를 선택하라는 메시지를 표시할지 제어합니다.
       정책을 사용으로 설정하면 자동 선택 정책과 일치하는 인증서가 여러 개 있을 때마다 사용자에게 클라이언트 인증서를 선택하라는 메시지가 표시됩니다.

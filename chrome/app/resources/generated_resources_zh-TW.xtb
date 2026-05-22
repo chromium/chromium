@@ -3350,6 +3350,7 @@
 <translation id="3289856944988573801">如要檢查更新，請使用乙太網路或 Wi-Fi。</translation>
 <translation id="3290249595466894471">另外也會傳送少量網頁、下載內容、擴充功能活動和系統資訊，協助找出新的威脅</translation>
 <translation id="3292966601422448005">你授予「<ph name="APP_NAME" />」的權限，也會套用至其所安裝的應用程式。</translation>
+<translation id="3293080634164207409">新增分頁</translation>
 <translation id="3293181007446299124">在裝置端保留瀏覽記錄，僅供你本人存取。系統會延遲一段時間才傳送報告，保護你的身分</translation>
 <translation id="329324683265785818">播放/暫停，鍵盤快速鍵為 K 鍵</translation>
 <translation id="3293644607209440645">傳送這個頁面</translation>
@@ -8649,6 +8650,7 @@
 <translation id="6997553674029032185">前往網站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在你的裝置上：</translation>
+<translation id="6998036632333022623">正在將分頁內容分享給 Google</translation>
 <translation id="6998793565256476099">註冊視訊會議裝置</translation>
 <translation id="6999956497249459195">新群組</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> 已連接，請進行設定</translation>
@@ -10014,6 +10016,7 @@
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
 <translation id="7947964080535614577">為了提供免付費的內容或服務，網站通常會放送廣告。不過，某些網站會放送干擾性或誤導性的廣告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
+<translation id="7948579849190819732">目前分頁</translation>
 <translation id="7949038991703929816">記錄無法載入，請確認檔案內含有效的更新工具記錄。</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
 <translation id="7950814699499457511">已開啟 • 這項擴充功能尚未發布隱私權實務規範，例如擴充功能如何收集和使用資料</translation>
@@ -11131,7 +11134,7 @@
 <translation id="8710414664106871428">奇幻</translation>
 <translation id="8711402221661888347">漢堡</translation>
 <translation id="8711538096655725662">自動在你造訪的所有網站上執行</translation>
-<translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="8713110120305151436">在快速設定中顯示無障礙選項</translation>
 <translation id="8713570323158206935">傳送<ph name="BEGIN_LINK1" />系統資訊<ph name="END_LINK1" /></translation>
 <translation id="8713761545374852805">協助你撰寫評論、電子郵件、社群媒體貼文、文章等內容</translation>

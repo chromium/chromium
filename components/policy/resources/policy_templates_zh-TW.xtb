@@ -4326,6 +4326,13 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 請自行承擔高於預設值 (128) 的風險。</translation>
 <translation id="3935592079035695061">毫秒數 (自午夜起算)。</translation>
 <translation id="3937800910397007337">強制將所有分頁設為前景優先</translation>
+<translation id="3938885528378923718">設定 <ph name="PRODUCT_NAME" /> 如何下載基礎生成式 AI 模型，並在本機用於推論。
+
+如果將這項政策設為允許 (0) 或不設定，系統會自動下載模型並用於推論。
+
+如果將這項政策設為停用 (1)，系統就不會下載模型，並會刪除現有模型 (如果已下載)。
+
+在電腦平台上，將 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 設為 false，也能停用模型下載功能。</translation>
 <translation id="3941289958028934630">在登入畫面上停用互動朗讀功能</translation>
 <translation id="3943930334592166130">當多個憑證與 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 相符時，這項政策可控管是否要提示使用者選取用戶端憑證。
       如果將這項政策設為 Enabled，每當自動選取政策與多個憑證相符時，系統會提示使用者選取用戶端憑證。

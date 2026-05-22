@@ -4596,6 +4596,13 @@ Si estableces un valor superior a ese límite, se usará 256.
 Usa un valor mayor al valor predeterminado (128) bajo tu responsabilidad.</translation>
 <translation id="3935592079035695061">Milisegundos desde la medianoche.</translation>
 <translation id="3937800910397007337">Forzar la prioridad en primer plano para todas las pestañas</translation>
+<translation id="3938885528378923718">Configura la forma en que <ph name="PRODUCT_NAME" /> descarga el modelo básico de IA generativa y lo usa para la inferencia a nivel local.
+
+Si permites (0) la política o no la estableces, el modelo se descargará automáticamente y se usará para las inferencias.
+
+Si la inhabilitas (1), no se descargará el modelo y se borrará el modelo existente (si ya se descargó).
+
+En plataformas de escritorio, también se puede inhabilitar la descarga de modelos si se establece <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> como falsa.</translation>
 <translation id="3941289958028934630">Inhabilitar las descripciones por voz en la pantalla de acceso</translation>
 <translation id="3943930334592166130">Esta política controla si se le solicita al usuario que seleccione un certificado de cliente cuando más de un certificado coincide con <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si habilitas esta política, se le solicitará al usuario que seleccione un certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados.

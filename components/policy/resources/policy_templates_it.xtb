@@ -4505,6 +4505,13 @@ Se imposti un valore superiore a questo limite, verrà utilizzato 256.
 È sconsigliato utilizzare un valore superiore a quello predefinito (128).</translation>
 <translation id="3935592079035695061">Millisecondi dalla mezzanotte.</translation>
 <translation id="3937800910397007337">Forza la priorità in primo piano per tutte le schede</translation>
+<translation id="3938885528378923718">Configura il modo in cui <ph name="PRODUCT_NAME" /> scarica il modello di base di AI generativa e lo utilizza localmente per l'inferenza.
+
+Se la policy viene impostata su Consentita (0) o se non viene configurata, il modello viene scaricato automaticamente e utilizzato per l'inferenza.
+
+Se la policy viene impostata su Disattivata (1), il modello non viene scaricato e il modello esistente (se già scaricato) viene eliminato.
+
+Sulle piattaforme desktop, il download del modello può essere disattivato anche impostando <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> su falso.</translation>
 <translation id="3941289958028934630">Disattiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="3943930334592166130">Questa policy controlla se all'utente viene richiesto di selezionare un certificato client quando più certificati corrispondono a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Se la policy viene impostata su Attivata, all'utente viene richiesto di selezionare un certificato client quando la policy di selezione automatica corrisponde a più certificati.

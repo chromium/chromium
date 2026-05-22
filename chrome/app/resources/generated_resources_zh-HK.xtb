@@ -3363,6 +3363,7 @@
 <translation id="3289856944988573801">如要檢查更新，請使用以太網絡或 Wi-Fi。</translation>
 <translation id="3290249595466894471">同時傳送網頁、下載檔案、擴充程式活動及系統資料的少量抽樣資料，以協助發現新威脅</translation>
 <translation id="3292966601422448005">如果你將權限授予「<ph name="APP_NAME" />」，其已安裝的應用程式亦會取得同樣的權限。</translation>
+<translation id="3293080634164207409">新增分頁</translation>
 <translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
 <translation id="329324683265785818">播放/暫停，鍵盤快速鍵 K</translation>
 <translation id="3293644607209440645">傳送此頁面</translation>
@@ -8667,6 +8668,7 @@
 <translation id="6997553674029032185">前往網站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在您的裝置上：</translation>
+<translation id="6998036632333022623">正在將分頁內容分享給 Google</translation>
 <translation id="6998793565256476099">註冊視像會議裝置</translation>
 <translation id="6999956497249459195">新群組</translation>
 <translation id="7000206553895739324">已連接 <ph name="PRINTER_NAME" />，但需要設定</translation>
@@ -10030,6 +10032,7 @@
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
 <translation id="7947964080535614577">網站通常要顯示廣告，才能免費提供內容或服務。不過，部分網站會顯示滋擾性或誤導廣告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
+<translation id="7948579849190819732">目前分頁</translation>
 <translation id="7949038991703929816">無法載入記錄，請確保檔案包含有效的更新工具記錄。</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
 <translation id="7950814699499457511">已開啟 • 此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料</translation>

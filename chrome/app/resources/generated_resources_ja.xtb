@@ -3345,6 +3345,7 @@
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
 <translation id="3292966601422448005"><ph name="APP_NAME" /> に許可した権限は、インストール済みの関連アプリにも適用されます。</translation>
+<translation id="3293080634164207409">タブを追加</translation>
 <translation id="3293181007446299124">閲覧履歴はプライバシーを保つためデバイスに保存され、レポートはユーザーを特定できないように遅れて送信されます</translation>
 <translation id="329324683265785818">再生 / 一時停止、キーボード ショートカット K キー</translation>
 <translation id="3293644607209440645">このページを送信</translation>
@@ -8644,6 +8645,7 @@
 <translation id="6997553674029032185">サイトに移動</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - アクティビティ ログ</translation>
 <translation id="6997707937646349884">デバイスで次の操作を行います。</translation>
+<translation id="6998036632333022623">Google とタブを共有しています</translation>
 <translation id="6998793565256476099">デバイスをビデオ会議用に登録</translation>
 <translation id="6999956497249459195">新しいグループ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> は接続していますが設定が必要です</translation>
@@ -10009,6 +10011,7 @@
 <translation id="7947962633355574091">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7947964080535614577">多くのサイトは、コンテンツやサービスを料金なしで提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> のすべてのページ</translation>
+<translation id="7948579849190819732">現在のタブ</translation>
 <translation id="7949038991703929816">履歴を読み込めませんでした。ファイルに有効なアップデータ ログが含まれていることを確認してください。</translation>
 <translation id="7950629216186736592">理由: LBS では http://、https://、file:// の URL のみサポートされています。</translation>
 <translation id="7950814699499457511">オン • この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません</translation>

@@ -3343,6 +3343,7 @@
 <translation id="3289856944988573801">要检查是否有更新，请使用以太网或 WLAN。</translation>
 <translation id="3290249595466894471">还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
 <translation id="3292966601422448005">您向“<ph name="APP_NAME" />”授予的权限也会授予它安装的应用。</translation>
+<translation id="3293080634164207409">添加标签页</translation>
 <translation id="3293181007446299124">您的浏览记录会私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
 <translation id="329324683265785818">播放/暂停，键盘快捷键为 K 键</translation>
 <translation id="3293644607209440645">发送此页面</translation>
@@ -8646,6 +8647,7 @@
 <translation id="6997553674029032185">前往网站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活动日志</translation>
 <translation id="6997707937646349884">在您的设备上：</translation>
+<translation id="6998036632333022623">正在与 Google 分享标签页</translation>
 <translation id="6998793565256476099">注册设备以进行视频会议</translation>
 <translation id="6999956497249459195">新建组</translation>
 <translation id="7000206553895739324">“<ph name="PRINTER_NAME" />”已建立连接但需要配置</translation>
@@ -10012,6 +10014,7 @@
 <translation id="7947962633355574091">复制视频地址(&amp;O)</translation>
 <translation id="7947964080535614577">网站通常会显示广告，以便能够免费提供内容或服务。但是，我们已知某些网站会展示侵扰性或误导性广告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有网页</translation>
+<translation id="7948579849190819732">当前标签页</translation>
 <translation id="7949038991703929816">未能加载历史记录。请确保文件包含有效的更新程序日志。</translation>
 <translation id="7950629216186736592">原因：LBS 仅支持 http://、https:// 和 file:// 网址。</translation>
 <translation id="7950814699499457511">已开启 • 此扩展程序尚未发布隐私权规范，例如如何收集和使用数据</translation>
