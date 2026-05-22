@@ -35,6 +35,11 @@ public class OmniboxFeatureMap extends FeatureMap {
         return OmniboxFeatureMapJni.get().getNativeMap();
     }
 
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
+    public static boolean isEnabled(String featureName) {
+        return getInstance().isEnabledInNative(featureName);
+    }
+
     @NativeMethods
     protected interface Natives {
         long getNativeMap();
