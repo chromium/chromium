@@ -207,9 +207,11 @@ struct CreateReservationInfo {
   base::FilePath temporary_path;
   base::FilePath fallback_directory;  // directory to use when target path
                                       // cannot be used.
-  bool create_target_directory;
+  bool create_target_directory = false;
   base::Time start_time;
   DownloadPathReservationTracker::FilenameConflictAction conflict_action;
+  bool is_transient = false;
+  bool is_forced_path = false;
 };
 
 // Check if |target_path| is writable.
@@ -253,8 +255,30 @@ PathValidationResult ResolveReservationConflicts(
 PathValidationResult ValidatePathAndResolveConflicts(
     const CreateReservationInfo& info,
     base::FilePath* target_path) {
+  // Enforce that the suggested path does not escape the default download
+  // directory via symlink/junction traversal.
+  bool path_escaped = false;
+  if (!info.is_transient && !info.is_forced_path &&
+      !info.default_download_path.empty() &&
+      base::PathExists(info.default_download_path)) {
+    base::FilePath absolute_default_path =
+        base::MakeAbsoluteFilePath(info.default_download_path);
+    base::FilePath absolute_target_dir =
+        base::MakeAbsoluteFilePath(target_path->DirName());
+    if (!absolute_default_path.empty() && !absolute_target_dir.empty()) {
+      if (absolute_target_dir != absolute_default_path &&
+          !absolute_default_path.IsParent(absolute_target_dir)) {
+        DVLOG(1) << "Path escapes default download path via symlink/junction \""
+                 << target_path->value() << "\"";
+        *target_path =
+            info.default_download_path.Append(target_path->BaseName());
+        path_escaped = true;
+      }
+    }
+  }
+
   // Check writability of the suggested path. If we can't write to it, use
-  // the |default_download_path| if it is not empty or |fallback_directory|.
+  // |default_download_path| if it is not empty or |fallback_directory|.
   // We'll prompt them in this case. No further amendments are made to the
   // filename since the user is going to be prompted.
   if (!IsPathWritable(info, *target_path)) {
@@ -265,6 +289,10 @@ PathValidationResult ValidatePathAndResolveConflicts(
     } else {
       *target_path = info.fallback_directory.Append(target_path->BaseName());
     }
+    return PathValidationResult::PATH_NOT_WRITABLE;
+  }
+
+  if (path_escaped) {
     return PathValidationResult::PATH_NOT_WRITABLE;
   }
 
@@ -513,7 +541,9 @@ void DownloadPathReservationTracker::GetReservedPath(
                                 fallback_directory,
                                 create_directory,
                                 download_item->GetStartTime(),
-                                conflict_action};
+                                conflict_action,
+                                download_item->IsTransient(),
+                                !download_item->GetForcedFilePath().empty()};
 
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateReservation, info, reserved_path),

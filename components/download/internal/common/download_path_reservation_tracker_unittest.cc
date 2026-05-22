@@ -125,6 +125,9 @@ DownloadPathReservationTrackerTest::CreateDownloadItem(int32_t id) {
   EXPECT_CALL(*item, GetState())
       .WillRepeatedly(Return(DownloadItem::IN_PROGRESS));
   EXPECT_CALL(*item, GetURL()).WillRepeatedly(ReturnRefOfCopy(GURL()));
+  EXPECT_CALL(*item, IsTransient()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*item, GetForcedFilePath())
+      .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
 
   static constexpr base::Time::Exploded kReferenceTime = {.year = 2019,
                                                           .month = 1,
@@ -727,5 +730,28 @@ TEST_F(DownloadPathReservationTrackerTest, TruncationFail) {
 }
 
 #endif  // Platforms that support filename truncation.
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+TEST_F(DownloadPathReservationTrackerTest, SymlinkTraversingPath) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+
+  base::FilePath symlink_path =
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("symlink_dir"));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir.GetPath(), symlink_path));
+
+  base::FilePath target_path =
+      symlink_path.Append(FILE_PATH_LITERAL("payload.txt"));
+  ASSERT_FALSE(IsPathInUse(target_path));
+
+  CreateReservation(
+      item.get(), target_path, DownloadPathReservationTracker::OVERWRITE,
+      PathValidationResult::PATH_NOT_WRITABLE,
+      default_download_path().Append(FILE_PATH_LITERAL("payload.txt")));
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+}
+#endif
 
 }  // namespace download
