@@ -756,7 +756,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SoftNavigationTest,
                          ::testing::Values(false, true));
 
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
+#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/515171473): Flaky on Linux.
+#define MAYBE_INP_ClickWithPresentation DISABLED_INP_ClickWithPresentation
+#else
+#define MAYBE_INP_ClickWithPresentation INP_ClickWithPresentation
+#endif
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_INP_ClickWithPresentation) {
   // Start tracing to record tracing data.
   StartTracing({"devtools.timeline"});
   Start();
