@@ -39,6 +39,7 @@ enum {
 
 struct MEDIA_EXPORT H265ProfileTierLevel {
   H265ProfileTierLevel();
+  bool operator==(const H265ProfileTierLevel&) const = default;
 
   enum H265ProfileIdc {
     kProfileIdcMain = 1,
@@ -72,6 +73,7 @@ struct MEDIA_EXPORT H265ProfileTierLevel {
 
 struct MEDIA_EXPORT H265ScalingListData {
   H265ScalingListData();
+  bool operator==(const H265ScalingListData&) const = default;
 
   enum {
     kDefaultScalingListSize0Values = 16,  // Table 7-5, all values are 16
@@ -113,6 +115,8 @@ struct MEDIA_EXPORT H265ScalingListData {
 };
 
 struct MEDIA_EXPORT H265StRefPicSet {
+  bool operator==(const H265StRefPicSet&) const = default;
+
   // Syntax elements.
   int num_negative_pics = 0;
   int num_positive_pics = 0;
@@ -129,6 +133,7 @@ struct MEDIA_EXPORT H265StRefPicSet {
 struct MEDIA_EXPORT H265VUIParameters {
   H265VUIParameters();
   H265VUIParameters(H265VUIParameters&&) noexcept;
+  bool operator==(const H265VUIParameters&) const = default;
 
   // Syntax elements.
   int sar_width = 0;
@@ -176,6 +181,7 @@ struct MEDIA_EXPORT H265VPS {
 struct MEDIA_EXPORT H265SPS {
   H265SPS();
   H265SPS(H265SPS&&) noexcept;
+  bool operator==(const H265SPS&) const = default;
 
   // Syntax elements.
   int sps_video_parameter_set_id = 0;
@@ -209,8 +215,8 @@ struct MEDIA_EXPORT H265SPS {
   bool amp_enabled_flag = false;
   bool sample_adaptive_offset_enabled_flag = false;
   bool pcm_enabled_flag = false;
-  int pcm_sample_bit_depth_luma_minus1 = {};
-  int pcm_sample_bit_depth_chroma_minus1 = {};
+  int pcm_sample_bit_depth_luma_minus1 = 0;
+  int pcm_sample_bit_depth_chroma_minus1 = 0;
   int log2_min_pcm_luma_coding_block_size_minus3 = 0;
   int log2_diff_max_min_pcm_luma_coding_block_size = 0;
   bool pcm_loop_filter_disabled_flag = false;

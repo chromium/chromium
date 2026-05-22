@@ -13,6 +13,8 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
+#include "media/gpu/h265_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -632,6 +634,66 @@ TEST_F(H265ParserTest, ValidSubLayerCount) {
 
   int unused_vps_id;
   EXPECT_NE(H265Parser::kOk, parser.ParseVPS(&unused_vps_id));
+}
+
+TEST_F(H265ParserTest, SpsOverwritesInvalidatesPps) {
+  H265SPS sps = {};
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.pic_width_in_luma_samples = 1280;
+  sps.pic_height_in_luma_samples = 720;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.log2_diff_max_min_luma_coding_block_size = 3;
+  sps.log2_diff_max_min_luma_transform_block_size = 3;
+
+  H265PPS pps = {};
+  pps.pps_pic_parameter_set_id = 0;
+  pps.pps_seq_parameter_set_id = 0;
+
+  H26xAnnexBBitstreamBuilder builder;
+  BuildPackedH265SPS(builder, sps);
+  BuildPackedH265PPS(builder, pps);
+
+  // Re-append the SPS to simulate an overwrite.
+  BuildPackedH265SPS(builder, sps);
+
+  // Now change the SPS to simulate an overwrite with different parameters.
+  sps.pic_width_in_luma_samples = 1920;
+  BuildPackedH265SPS(builder, sps);
+  builder.Flush();
+
+  parser_.SetStream(builder.data());
+
+  H265NALU nalu;
+  EXPECT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  int sps_id;
+  EXPECT_EQ(parser_.ParseSPS(&sps_id), H265Parser::kOk);
+
+  EXPECT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::PPS_NUT);
+  int pps_id;
+  EXPECT_EQ(parser_.ParsePPS(nalu, &pps_id), H265Parser::kOk);
+
+  EXPECT_NE(parser_.GetPPS(pps_id), nullptr);
+
+  // Parse the second SPS (identical to the first).
+  EXPECT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  int new_sps_id;
+  EXPECT_EQ(parser_.ParseSPS(&new_sps_id), H265Parser::kOk);
+  EXPECT_EQ(new_sps_id, sps_id);
+
+  // The PPS should NOT be invalidated because the SPS hasn't changed.
+  EXPECT_NE(parser_.GetPPS(pps_id), nullptr);
+
+  // Parse the third SPS (different from the first).
+  EXPECT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  EXPECT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  EXPECT_EQ(parser_.ParseSPS(&new_sps_id), H265Parser::kOk);
+  EXPECT_EQ(new_sps_id, sps_id);
+
+  // The PPS should be invalidated because the SPS has changed.
+  EXPECT_EQ(parser_.GetPPS(pps_id), nullptr);
 }
 
 }  // namespace media
