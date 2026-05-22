@@ -296,6 +296,16 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
       PageClassificationToAimEntryPoint(
           omnibox_controller()->client()->GetPageClassification(
               /*is_prefetch=*/false));
+
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    int file_count = 0;
+    if (auto* session_handle = GetContextualSessionHandle()) {
+      file_count = session_handle->GetUploadedContextFileInfos().size();
+    }
+    metrics_recorder->RecordNoAcMatchSubmitQuery(query_text.size(), file_count,
+                                                 /*is_ac_match=*/false);
+  }
+
   SubmitQuery(query_text, disposition, aim_entry_point,
               /*additional_params=*/{});
 }

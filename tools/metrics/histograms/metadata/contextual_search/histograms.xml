@@ -344,6 +344,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.NoAcMatch.SubmitQuery.{ContextualSearchSource}"
+    enum="ContextualSearchNoAcMatchState" expires_after="2027-03-15">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a query is submitted without an autocomplete match selection
+    from {ContextualSearchSource}. Used for debugging query submission
+    modalities.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.Query.AttachmentCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="count" expires_after="2027-05-13">
   <owner>ameurhosni@google.com</owner>

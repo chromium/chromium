@@ -77,6 +77,17 @@ enum class ContextualSearchContextState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
 
+// LINT.IfChange(ContextualSearchNoAcMatchState)
+enum class ContextualSearchNoAcMatchState {
+  kOnlyContext = 0,
+  kOnlyText = 1,
+  kTextAndContext = 2,
+  kNoTextOrContext = 3,
+  kAcMatch = 4,
+  kMaxValue = kAcMatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchNoAcMatchState)
+
 enum class SessionState {
   kNone = 0,
   kSessionStarted = 1,
@@ -255,6 +266,11 @@ class ContextualSearchMetricsRecorder {
 
   // Records when a typed suggestion is clicked.
   virtual void RecordTypedSuggestNavigation(bool is_verbatim);
+
+  // Debug metric for no AC match submit query.
+  void RecordNoAcMatchSubmitQuery(int text_length,
+                                  int file_count,
+                                  bool is_ac_match = false);
 
  private:
   // Called when the session starts to correctly track session

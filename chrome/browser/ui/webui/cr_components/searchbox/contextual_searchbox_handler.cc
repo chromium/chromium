@@ -1299,6 +1299,11 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
     }
   }
 
+  if (recorder) {
+    recorder->RecordNoAcMatchSubmitQuery(/*text_length=*/0, /*file_count=*/0,
+                                         /*is_ac_match=*/true);
+  }
+
   SearchboxHandler::OpenAutocompleteMatch(line, url, are_matches_showing,
                                           mouse_button, alt_key, ctrl_key,
                                           meta_key, shift_key);

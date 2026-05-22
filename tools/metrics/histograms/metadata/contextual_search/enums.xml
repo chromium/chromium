@@ -116,6 +116,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Text and File"/>
 </enum>
 
+<!-- LINT.IfChange(ContextualSearchNoAcMatchState) -->
+
+<enum name="ContextualSearchNoAcMatchState">
+  <int value="0" label="Only Context"/>
+  <int value="1" label="Only Text"/>
+  <int value="2" label="Text and Context"/>
+  <int value="3" label="No Text or Context"/>
+  <int value="4" label="AcMatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchNoAcMatchState) -->
+
 <!-- LINT.IfChange(ContextualSearchSource) -->
 
 <enum name="ContextualSearchSource">
