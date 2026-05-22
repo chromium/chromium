@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
+
+class TabAndroid;
 
 namespace content {
 class WebContents;
@@ -17,11 +20,19 @@ namespace tabs {
 class TabInterface;
 }
 
+namespace ui {
+class WindowAndroid;
+}
+
 namespace context_sharing {
 
 // Bridge for managing CoBrowseViews on Android from C++.
 class CoBrowseViewsBridge {
  public:
+  // Returns the Java View object from a CoBrowseViews object.
+  static base::android::ScopedJavaLocalRef<jobject> GetViewFromCoBrowseViews(
+      const base::android::JavaRef<jobject>& java_co_browse_views);
+
   explicit CoBrowseViewsBridge(
       tabs::TabInterface& tab,
       context_sharing::TabBottomSheetClientType client_type);
@@ -37,13 +48,17 @@ class CoBrowseViewsBridge {
   // Sets the web contents for the view.
   void SetWebContents(content::WebContents* web_contents);
 
-  // Returns the Java View object.
-  base::android::ScopedJavaLocalRef<jobject> GetView();
+  // Returns the Java CoBrowseViews object.
+  base::android::ScopedJavaLocalRef<jobject> GetCoBrowseViews();
 
  private:
+  void DestroyCoBrowseViews();
+  TabAndroid* GetTabAndroid() const;
+
   const raw_ref<tabs::TabInterface> tab_;
   const context_sharing::TabBottomSheetClientType client_type_;
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
+  raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
 };
 
 }  // namespace context_sharing

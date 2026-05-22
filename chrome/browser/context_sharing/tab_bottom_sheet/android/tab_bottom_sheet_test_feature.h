@@ -22,6 +22,8 @@ class WebContents;
 
 namespace context_sharing {
 
+class CoBrowseViewsBridge;
+
 class TabBottomSheetTestFeature : public TabBottomSheetBridge::Observer {
  public:
   explicit TabBottomSheetTestFeature(tabs::TabInterface* tab);
@@ -72,7 +74,8 @@ class TabBottomSheetTestFeature : public TabBottomSheetBridge::Observer {
 
  private:
   const raw_ref<tabs::TabInterface> tab_;
-  std::unique_ptr<TabBottomSheetBridge> bridge_;
+  std::unique_ptr<CoBrowseViewsBridge> views_bridge_;
+  std::unique_ptr<TabBottomSheetBridge> tab_bottom_sheet_bridge_;
 
   bool was_opened_ = false;
   bool was_closed_ = false;

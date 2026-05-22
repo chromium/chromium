@@ -213,6 +213,7 @@ source_set("browser_tests") {
   ]
   deps = [
     ":android",
+    ":client_type_java_enum",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",

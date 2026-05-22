@@ -15,6 +15,10 @@
 class BrowserWindowInterface;
 class TabAndroid;
 
+namespace context_sharing {
+class CoBrowseViewsBridge;
+}
+
 namespace content {
 class WebContents;
 }
@@ -72,7 +76,9 @@ class ContextualTasksPanelHostAndroid
 
   // Bridge to manage the native lifecycle and JNI interactions for the Java
   // bottom sheet. Access through GetOrCreateBridge() helper method.
-  std::unique_ptr<context_sharing::TabBottomSheetBridge> bridge_;
+  std::unique_ptr<context_sharing::CoBrowseViewsBridge> views_bridge_;
+  std::unique_ptr<context_sharing::TabBottomSheetBridge>
+      tab_bottom_sheet_bridge_;
 
   // The WebContents currently being displayed in the panel.
   raw_ptr<content::WebContents> web_contents_ = nullptr;

@@ -161,7 +161,8 @@ SidePanelNativeView GlicSidePanelCoordinatorDesktopAndroid::CreateView(
             *tab_, context_sharing::TabBottomSheetClientType::kGlic);
     cobrowse_views_bridge_->CreateCoBrowseViews(web_contents_.get());
   }
-  auto view = cobrowse_views_bridge_->GetView();
+  auto view = context_sharing::CoBrowseViewsBridge::GetViewFromCoBrowseViews(
+      cobrowse_views_bridge_->GetCoBrowseViews());
   if (!view) {
     return nullptr;
   }

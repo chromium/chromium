@@ -4,7 +4,9 @@
 
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_test_feature.h"
 
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -12,8 +14,9 @@ namespace context_sharing {
 
 TabBottomSheetTestFeature::TabBottomSheetTestFeature(tabs::TabInterface* tab)
     : tab_(*tab) {
-  bridge_ = std::make_unique<TabBottomSheetBridge>(
-      this, tab, TabBottomSheetClientType::kUnknown);
+  views_bridge_ = std::make_unique<CoBrowseViewsBridge>(
+      *tab, TabBottomSheetClientType::kUnknown);
+  tab_bottom_sheet_bridge_ = std::make_unique<TabBottomSheetBridge>(this, tab);
 }
 
 TabBottomSheetTestFeature::~TabBottomSheetTestFeature() {
@@ -22,18 +25,19 @@ TabBottomSheetTestFeature::~TabBottomSheetTestFeature() {
 
 bool TabBottomSheetTestFeature::Show(bool animate, bool starts_expanded) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return bridge_->Show(animate, starts_expanded);
+  return tab_bottom_sheet_bridge_->Show(views_bridge_->GetCoBrowseViews(),
+                                        animate, starts_expanded);
 }
 
 void TabBottomSheetTestFeature::Close(bool animate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bridge_->Close(animate);
+  tab_bottom_sheet_bridge_->Close(animate);
 }
 
 void TabBottomSheetTestFeature::SetWebContents(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bridge_->SetWebContents(web_contents);
+  views_bridge_->SetWebContents(web_contents);
 }
 
 void TabBottomSheetTestFeature::OnClosed() {

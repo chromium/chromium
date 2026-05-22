@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -33,8 +34,10 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
 
   browser_observation_.Observe(GlobalBrowserCollection::GetInstance());
 
-  bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
-      this, tab, context_sharing::TabBottomSheetClientType::kGlic);
+  views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
+      *tab, context_sharing::TabBottomSheetClientType::kGlic);
+  tab_bottom_sheet_bridge_ =
+      std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
 }
 
 GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() = default;
@@ -49,7 +52,9 @@ void GlicSidePanelCoordinatorAndroid::Show(const ShowOptions& options) {
     return;
   }
 
-  bool shown = bridge_->Show(
+  views_bridge_->SetWebContents(web_contents_.get());
+  bool shown = tab_bottom_sheet_bridge_->Show(
+      views_bridge_->GetCoBrowseViews(),
       /*animate=*/!options.suppress_animations,
       /*starts_expanded=*/options.initial_state ==
           ShowOptions::InitialState::kExpanded);
@@ -76,7 +81,7 @@ void GlicSidePanelCoordinatorAndroid::SetWebContents(
   } else {
     web_contents_.reset();
   }
-  bridge_->SetWebContents(web_contents);
+  views_bridge_->SetWebContents(web_contents);
 }
 
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
@@ -89,7 +94,7 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
-  bridge_->Close(/* animate= */ !options.suppress_animations);
+  tab_bottom_sheet_bridge_->Close(/* animate= */ !options.suppress_animations);
 }
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
@@ -145,7 +150,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
   }
   SetState(State::kBackgrounded);
 
-  bridge_->Close(/* animate= */ false);
+  tab_bottom_sheet_bridge_->Close(/* animate= */ false);
 }
 
 void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
@@ -158,7 +163,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
   if (detach_reason == tabs::TabInterface::DetachReason::kDelete) {
     if (state_ != State::kClosed) {
       SetState(State::kBackgrounded);
-      bridge_->Close(/* animate= */ false);
+      tab_bottom_sheet_bridge_->Close(/* animate= */ false);
     }
   }
 }
@@ -183,7 +188,7 @@ void GlicSidePanelCoordinatorAndroid::OnBrowserDeactivated(
   }
   if (tab_->GetBrowserWindowInterface() == browser) {
     SetState(State::kBackgrounded);
-    bridge_->Close(/*animate=*/false);
+    tab_bottom_sheet_bridge_->Close(/*animate=*/false);
   }
 }
 

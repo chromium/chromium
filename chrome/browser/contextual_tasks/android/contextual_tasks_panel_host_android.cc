@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_android.h"
 
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -31,7 +32,8 @@ void ContextualTasksPanelHostAndroid::RemoveObserver(
 
 void ContextualTasksPanelHostAndroid::Show(AnimationStyle animation_style) {
   if (auto* bridge = GetOrCreateBridge()) {
-    if (bridge->Show(/*animate=*/false, /*starts_expanded=*/true)) {
+    if (bridge->Show(views_bridge_->GetCoBrowseViews(), /*animate=*/false,
+                     /*starts_expanded=*/true)) {
       is_open_ = true;
       observers_.Notify(
           &ContextualTasksPanelHost::Observer::OnSurfaceStateChanged,
@@ -84,9 +86,10 @@ void ContextualTasksPanelHostAndroid::SetWebContents(
 
   web_contents_->SetDelegate(this);
   if (auto* bridge = GetOrCreateBridge()) {
-    bridge->SetWebContents(web_contents);
+    views_bridge_->SetWebContents(web_contents);
     if (is_open_) {
-      bridge->Show(/*animate=*/false, /*starts_expanded=*/true);
+      bridge->Show(views_bridge_->GetCoBrowseViews(), /*animate=*/false,
+                   /*starts_expanded=*/true);
     }
   }
 }
@@ -115,16 +118,19 @@ content::WebContents* ContextualTasksPanelHostAndroid::OpenURLFromTab(
 
 context_sharing::TabBottomSheetBridge*
 ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
-  if (!bridge_) {
+  if (!tab_bottom_sheet_bridge_) {
     TabAndroid* tab_android = GetTabAndroid();
     if (!tab_android) {
       return nullptr;
     }
-    bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
-        this, tab_android,
+    views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
+        *tab_android,
         context_sharing::TabBottomSheetClientType::kContextualTasks);
+    tab_bottom_sheet_bridge_ =
+        std::make_unique<context_sharing::TabBottomSheetBridge>(this,
+                                                                tab_android);
   }
-  return bridge_.get();
+  return tab_bottom_sheet_bridge_.get();
 }
 
 TabAndroid* ContextualTasksPanelHostAndroid::GetTabAndroid() const {
