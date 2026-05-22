@@ -219,8 +219,8 @@ void UserSessionInitializer::InitRlz(Profile* profile) {
   // if it is empty.  The latter is to correct a problem in older builds where
   // an empty brand code would be persisted if the first login after OOBE was
   // a guest session.
-  if (!local_state_->HasPrefPath(::prefs::kRLZBrand) ||
-      local_state_->GetValue(::prefs::kRLZBrand).GetString().empty()) {
+  if (!local_state_->HasPrefPath(ash::prefs::kRLZBrand) ||
+      local_state_->GetValue(ash::prefs::kRLZBrand).GetString().empty()) {
     // Read brand code asynchronously from an OEM data and repost ourselves.
     google_brand::chromeos::InitBrand(base::BindOnce(
         &UserSessionInitializer::InitRlz, weak_factory_.GetWeakPtr(), profile));
@@ -428,10 +428,10 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
     // Empty brand code means an organic install (no RLZ pings are sent).
     google_brand::chromeos::ClearBrandForCurrentSession();
   }
-  if (params.disabled != local_state_->GetBoolean(::prefs::kRLZDisabled)) {
+  if (params.disabled != local_state_->GetBoolean(ash::prefs::kRLZDisabled)) {
     // When switching to RLZ enabled/disabled state, clear all recorded events.
     rlz::RLZTracker::ClearRlzState();
-    local_state_->SetBoolean(::prefs::kRLZDisabled, params.disabled);
+    local_state_->SetBoolean(ash::prefs::kRLZDisabled, params.disabled);
   }
   // Init the RLZ library.
   int ping_delay =

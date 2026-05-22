@@ -3206,6 +3206,16 @@ inline constexpr char kCryptAuthInstanceIdToken[] =
     "cryptauth.instance_id_token";
 
 //-----------------------------------------------------------------------------
+// RLZ related Prefs
+//-----------------------------------------------------------------------------
+
+// The RLZ brand code, if enabled.
+inline constexpr char kRLZBrand[] = "rlz.brand";
+
+// Whether RLZ pings are disabled.
+inline constexpr char kRLZDisabled[] = "rlz.disabled";
+
+//-----------------------------------------------------------------------------
 // File manager/file system related Prefs
 //-----------------------------------------------------------------------------
 

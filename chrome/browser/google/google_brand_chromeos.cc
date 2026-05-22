@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/google/google_brand_code_map_chromeos.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -49,7 +49,7 @@ void SetBrand(base::OnceClosure callback, const std::string& brand) {
   if (!IsBrandValid(brand)) {
     return;
   }
-  g_browser_process->local_state()->SetString(prefs::kRLZBrand, brand);
+  g_browser_process->local_state()->SetString(ash::prefs::kRLZBrand, brand);
   std::move(callback).Run();
 }
 
@@ -76,7 +76,7 @@ std::string GetBrand() {
   if (!g_browser_process->local_state()) {
     return std::string();
   }
-  return g_browser_process->local_state()->GetString(prefs::kRLZBrand);
+  return g_browser_process->local_state()->GetString(ash::prefs::kRLZBrand);
 }
 
 std::string GetRlzBrand() {

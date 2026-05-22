@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -61,7 +61,7 @@ class LoginUtilsTest : public LoginManagerTest {
 #if BUILDFLAG(ENABLE_RLZ)
 IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
   // No RLZ brand code set initially.
-  EXPECT_FALSE(local_state()->HasPrefPath(prefs::kRLZBrand));
+  EXPECT_FALSE(local_state()->HasPrefPath(ash::prefs::kRLZBrand));
 
   // Wait for blocking RLZ tasks to complete.
   {
@@ -78,8 +78,8 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
   }
 
   // RLZ brand code has been set.
-  EXPECT_TRUE(local_state()->HasPrefPath(prefs::kRLZBrand));
-  EXPECT_EQ(local_state()->GetString(prefs::kRLZBrand), kTestBrand);
+  EXPECT_TRUE(local_state()->HasPrefPath(ash::prefs::kRLZBrand));
+  EXPECT_EQ(local_state()->GetString(ash::prefs::kRLZBrand), kTestBrand);
 
   // RLZ value for homepage access point should have been initialized.
   // This value must be obtained in a background thread.

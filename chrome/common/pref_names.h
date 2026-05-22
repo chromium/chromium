@@ -2438,13 +2438,6 @@ inline constexpr char kShortcutMigrationVersion[] =
     "browser.shortcut_migration_version";
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// The RLZ brand code, if enabled.
-inline constexpr char kRLZBrand[] = "rlz.brand";
-// Whether RLZ pings are disabled.
-inline constexpr char kRLZDisabled[] = "rlz.disabled";
-#endif
-
 // An integer that is incremented whenever changes are made to app shortcuts.
 // Increasing this causes all app shortcuts to be recreated.
 inline constexpr char kAppShortcutsVersion[] = "apps.shortcuts_version";
