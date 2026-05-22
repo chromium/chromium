@@ -4,9 +4,11 @@
 
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
+#include "gpu/command_buffer/service/program_manager.h"
 #include "ui/gl/gl_version_info.h"
 
 namespace gpu {
@@ -69,6 +71,19 @@ void TransformFeedback::DoBindTransformFeedback(
     }
     SetIsBound(true);
   }
+}
+
+void TransformFeedback::SetActiveProgram(Program* program) {
+  CHECK(!active_program_);
+  CHECK(program);
+  active_program_ = program;
+  program->IncrementActiveTransformFeedbackCount();
+}
+
+void TransformFeedback::ClearActiveProgram() {
+  CHECK(active_program_);
+  active_program_->DecrementActiveTransformFeedbackCount();
+  active_program_ = nullptr;
 }
 
 void TransformFeedback::DoBeginTransformFeedback(GLenum primitive_mode) {
