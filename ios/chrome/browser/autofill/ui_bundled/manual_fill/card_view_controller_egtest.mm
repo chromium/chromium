@@ -740,6 +740,11 @@ void DismissPaymentBottomSheet() {
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
+  // Ensure the second element is completely on-screen and unobstructed.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"document.getElementById('CCNo')."
+                                      @"scrollIntoView();"];
+
   // Tap the second element.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementCardNumber)];
