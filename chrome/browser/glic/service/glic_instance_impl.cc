@@ -412,12 +412,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   }
 
   embedder_to_show->Show(options);
-  // WARNING: Show() may result in deleting the embedder! Check if the embedder
-  // is still active before calling Focus().
-  if (options.focus_on_show && IsActiveEmbedder(new_key)) {
-    if (auto* active_embedder = GetActiveEmbedder()) {
-      active_embedder->Focus();
-    }
+  if (options.focus_on_show) {
+    embedder_to_show->Focus();
   }
 }
 

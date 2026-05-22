@@ -44,7 +44,6 @@ class GlicSidePanelCoordinatorAndroid
       base::RepeatingCallback<void(State state)> callback) override;
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
-  void SuppressBottomSheetForTesting(bool suppress);
 
   // context_sharing::TabBottomSheetBridge::Observer:
   void OnClosed() override;

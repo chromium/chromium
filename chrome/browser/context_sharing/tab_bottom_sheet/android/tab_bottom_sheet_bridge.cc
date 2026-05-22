@@ -74,11 +74,6 @@ void TabBottomSheetBridge::Close(bool animate) {
                                            animate);
 }
 
-void TabBottomSheetBridge::SuppressBottomSheetForTesting(bool suppress) {
-  Java_TabBottomSheetNativeInterface_suppressBottomSheetForTesting(  // IN-TEST
-      AttachCurrentThread(), java_bridge_, suppress);                // IN-TEST
-}
-
 void TabBottomSheetBridge::OnClosed(JNIEnv* env) {
   observer_->OnClosed();
 }
