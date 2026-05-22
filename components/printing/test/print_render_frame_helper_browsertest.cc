@@ -358,9 +358,9 @@ class TestPrintManagerHost
     std::move(callback).Run(std::move(settings));
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(base::DictValue job_settings,
-                           UpdatePrintSettingsCallback callback) override {
+  void GetPrintPreviewParams(GetPrintPreviewParamsCallback callback) override {
     // Check and make sure the required settings are all there.
+    const base::DictValue& job_settings = job_settings_;
     std::optional<int> margins_type = job_settings.FindInt(kSettingMarginsType);
     if (!margins_type.has_value() ||
         !job_settings.FindBool(kSettingLandscape) ||
@@ -449,7 +449,11 @@ class TestPrintManagerHost
   void set_preview_ui(FakePrintPreviewUI* preview_ui) {
     preview_ui_ = preview_ui;
   }
-#endif
+
+  void set_job_settings(const base::DictValue& settings) {
+    job_settings_ = settings.Clone();
+  }
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   int accessibility_tree_set_count() const {
     return accessibility_tree_set_count_;
@@ -478,6 +482,7 @@ class TestPrintManagerHost
   raw_ptr<MockPrinter> printer_;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   raw_ptr<FakePrintPreviewUI> preview_ui_;
+  base::DictValue job_settings_;
 #endif
   base::OnceClosure quit_closure_;
   bool is_printing_enabled_ = true;
@@ -1735,6 +1740,7 @@ class PrintRenderFrameHelperPreviewTest
   }
 
   void OnPrintPreview() {
+    print_manager()->set_job_settings(print_settings());
     PrintRenderFrameHelper* print_render_frame_helper =
         GetPrintRenderFrameHelper();
     print_render_frame_helper->InitiatePrintPreview(
@@ -1742,7 +1748,7 @@ class PrintRenderFrameHelperPreviewTest
         mojo::NullAssociatedRemote(),
 #endif
         /*has_selection=*/false);
-    print_render_frame_helper->PrintPreview(print_settings_.Clone());
+    print_render_frame_helper->PrintPreview(print_settings().Clone());
     preview_ui()->WaitUntilPreviewUpdate();
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
@@ -1756,8 +1762,9 @@ class PrintRenderFrameHelperPreviewTest
   }
 
   void OnPrintPreviewRerender() {
+    print_manager()->set_job_settings(print_settings());
     preview_ui()->ResetPreviewStatus();
-    GetPrintRenderFrameHelper()->PrintPreview(print_settings_.Clone());
+    GetPrintRenderFrameHelper()->PrintPreview(print_settings().Clone());
     preview_ui()->WaitUntilPreviewUpdate();
   }
 
@@ -1769,6 +1776,7 @@ class PrintRenderFrameHelperPreviewTest
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(frame);
     BindPrintManagerHost(render_frame);
+    print_manager(render_frame)->set_job_settings(print_settings());
     PrintRenderFrameHelper* print_render_frame_helper =
         GetPrintRenderFrameHelperForFrame(render_frame);
     print_render_frame_helper->SetPrintPreviewUI(preview_ui->BindReceiver());

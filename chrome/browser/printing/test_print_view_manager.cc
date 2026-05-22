@@ -32,9 +32,9 @@ namespace printing {
 
 namespace {
 
-void OnDidUpdatePrintSettings(
+void OnDidGetPrintPreviewParams(
     mojom::PrintPagesParamsPtr& snooped_params,
-    mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
+    mojom::PrintManagerHost::GetPrintPreviewParamsCallback callback,
     mojom::PrintPagesParamsPtr settings) {
   snooped_params = mojom::PrintPagesParams::New();
   auto params = mojom::PrintParams::New();
@@ -156,12 +156,10 @@ void TestPrintViewManager::PrintPreviewAllowedForTesting() {
   }
 }
 
-void TestPrintViewManager::UpdatePrintSettings(
-    base::DictValue job_settings,
-    UpdatePrintSettingsCallback callback) {
-  PrintViewManagerBase::UpdatePrintSettings(
-      std::move(job_settings),
-      base::BindOnce(&OnDidUpdatePrintSettings, std::ref(snooped_params_),
+void TestPrintViewManager::GetPrintPreviewParams(
+    GetPrintPreviewParamsCallback callback) {
+  PrintViewManagerBase::GetPrintPreviewParams(
+      base::BindOnce(&OnDidGetPrintPreviewParams, std::ref(snooped_params_),
                      std::move(callback)));
 }
 
