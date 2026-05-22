@@ -16,6 +16,7 @@
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
@@ -112,11 +113,19 @@ MATCHER_P(IsCloseToTopRightOf, image_bounds_ref, "") {
 
 class IndigoBrowserTest : public InteractiveBrowserTest {
  public:
-  IndigoBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIndigo, blink::features::kImageReplacement}, {});
-  }
+  IndigoBrowserTest() = default;
   ~IndigoBrowserTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIndigo,
+          {{features::kIndigoGenerateUrl.name,
+            embedded_test_server()->GetURL("/generate").spec()}}},
+         {blink::features::kImageReplacement, {}}},
+        {});
+    InteractiveBrowserTest::SetUp();
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InteractiveBrowserTest::SetUpCommandLine(command_line);
@@ -142,14 +151,20 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
                                 .has_user_image = true});
         }));
 
-    // Mock sign-in and capabilities to make the profile locally eligible.
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
-    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-        identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+    AccountInfo account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@example.com",
+                                          signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_model_execution_features(true);
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
 
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
                                                  true);
@@ -173,16 +188,37 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
             response->set_content_type("text/html");
             return response;
           }
+          if (request.relative_url == "/generate") {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content(R"({
+              "result": {
+                "generatedImageUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+              }
+            })");
+            response->set_content_type("application/json");
+            return response;
+          }
           return nullptr;
         }));
 
-    ASSERT_TRUE(embedded_test_server()->Start());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
   base::ScopedTempDir temp_dir_;
 };
 
