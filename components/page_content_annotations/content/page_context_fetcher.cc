@@ -4,27 +4,31 @@
 
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -33,35 +37,42 @@
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/core/page_content_proto_serializer.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_content_screenshot_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
+#include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/redaction_params.h"
 #include "components/pdf/common/constants.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/schemeful_site.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
+#include "pdf/mojom/pdf.mojom.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace page_content_annotations {
@@ -1071,15 +1082,6 @@ const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeoutBrowserAllowance{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_allowance_ms",
     base::Milliseconds(500)};
-
-PdfOptions::PdfOptions(Format format, uint32_t size_limit)
-    : format_(format), size_limit_(size_limit) {
-  CHECK_GT(size_limit, 0u);
-}
-
-FetchPageContextOptions::FetchPageContextOptions() = default;
-
-FetchPageContextOptions::~FetchPageContextOptions() = default;
 
 FetchPageContextResult::FetchPageContextResult()
     : screenshot_result(base::unexpected("Uninitialized")),
