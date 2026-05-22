@@ -12542,6 +12542,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEdgeToEdgeExtraLogsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeExtraLogs)},
 
+    {"web-app-short-edges-cutout-mode",
+     flag_descriptions::kWebAppShortEdgesCutoutModeName,
+     flag_descriptions::kWebAppShortEdgesCutoutModeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kWebAppShortEdgesCutoutMode)},
+
     {"compositor-view-remeasure-fix",
      flag_descriptions::kCompositorViewRemeasureFixName,
      flag_descriptions::kCompositorViewRemeasureFixDescription, kOsAndroid,

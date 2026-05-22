@@ -10404,6 +10404,7 @@ from previous Chrome versions.
   <int value="-1232629319" label="ResamplingScrollEvents:disabled"/>
   <int value="-1232521924"
       label="AutofillRemoveCardExpiryFromDownstreamSuggestion:disabled"/>
+  <int value="-1232270830" label="WebAppShortEdgesCutoutMode:enabled"/>
   <int value="-1232050488" label="CameraMicEffects:disabled"/>
   <int value="-1231606770" label="ChromeRefresh2023:disabled"/>
   <int value="-1231507397" label="NtpZeroSuggest:enabled"/>
@@ -10440,6 +10441,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopSettings:enabled"/>
   <int value="-1222106729" label="ArcNearbyShareFuseBox:enabled"/>
   <int value="-1221040370" label="OsSettingsAppBadgingToggle:enabled"/>
+  <int value="-1220815756" label="WebAppShortEdgesCutoutMode:disabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>

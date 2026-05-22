@@ -303,6 +303,7 @@ BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kUseWebUiNtpAndroid);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
 BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
+BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kXplatSyncedSetup);
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageAndroid);

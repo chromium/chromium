@@ -5639,6 +5639,15 @@ inline constexpr char kEdgeToEdgeExtraLogsDescription[] =
     "When this is enabled, extra logs will be emitted for tracking "
     "edge-to-edge state and inset updates.";
 
+inline constexpr char kWebAppShortEdgesCutoutModeName[] =
+    "Web App Short Edges Cutout Mode";
+inline constexpr char kWebAppShortEdgesCutoutModeDescription[] =
+    "When enabled, installed PWAs (display: standalone or display: fullscreen) "
+    "that opt in via viewport-fit=cover draw under the status and navigation "
+    "bars on Android, with non-zero CSS env(safe-area-inset-*) values for "
+    "controls. Standalone webapps that do not declare viewport-fit=cover are "
+    "unaffected.";
+
 inline constexpr char kEnableAccessibilityLabeledByName[] =
     "Enable Accessibility LabeledBy";
 inline constexpr char kEnableAccessibilityLabeledByDescription[] =
