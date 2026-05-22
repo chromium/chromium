@@ -133,6 +133,9 @@ public class WebViewCachedFlags {
                             // Add new CachedFlags here along with their default state.
                             Map.ofEntries(
                                     Map.entry(
+                                            AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
                                             AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
                                             DefaultState.DISABLED),
                                     Map.entry(

@@ -17,6 +17,7 @@ namespace android_webview::features {
 // Alphabetical:
 BASE_DECLARE_FEATURE(kWebViewAddQuicHints);
 BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
+BASE_DECLARE_FEATURE(kWebViewBackgroundClassPreloading);
 BASE_DECLARE_FEATURE(kWebViewBackgroundTracingInit);
 // TODO(crbug.com/455296998): Remove this code for M145.
 BASE_DECLARE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader);

@@ -43,6 +43,7 @@ import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 
 import org.chromium.android_webview.AwBrowserMainParts;
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.AwClassPreloader;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
@@ -681,6 +682,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     // Don't let SafeMode crash WebView. Instead just log the error.
                     Log.e(TAG, "WebViewSafeMode threw exception: ", t);
                 }
+            }
+
+            if (WebViewCachedFlags.get()
+                    .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING)) {
+                AwClassPreloader.preloadClasses();
             }
 
             // This must happen after pref value has been read and SafeMode setup has completed.

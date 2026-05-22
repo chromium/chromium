@@ -40,6 +40,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kStartupNonBlockingWebViewConstructor,
     &features::kWebViewAddQuicHints,
     &features::kWebViewBackForwardCache,
+    &features::kWebViewBackgroundClassPreloading,
     &features::kWebViewBackgroundTracingInit,
     &features::kWebViewBypassProvisionalCookieManager,
     &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,

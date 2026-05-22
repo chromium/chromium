@@ -19,6 +19,11 @@ BASE_FEATURE(kWebViewAddQuicHints, base::FEATURE_ENABLED_BY_DEFAULT);
 // flag is enabled.
 BASE_FEATURE(kWebViewBackForwardCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables preloading WebView classes on a background thread during early
+// startup.
+BASE_FEATURE(kWebViewBackgroundClassPreloading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables parsing a custom header passed by the WebView embedder during a
 // prefetch request that allows bypassing the HTTP cache for that request.
 // This is a kill switch, so it is enabled by default.
