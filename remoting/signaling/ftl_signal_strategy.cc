@@ -469,7 +469,23 @@ void FtlSignalStrategy::Core::SendMessageImpl(
   std::string message_payload;
   if (message.has_xmpp()) {
     if (message.xmpp().has_iq_stanza()) {
-      message_payload = message.xmpp().iq_stanza().DebugString();
+      const ftl::IqStanza& iq_stanza = message.xmpp().iq_stanza();
+      JingleMessage jingle_message;
+      std::string error;
+      if (JingleMessageFromProto(iq_stanza, &jingle_message, &error)) {
+        message_payload = jingle_message.ToSerializedXml();
+      } else {
+        JingleMessageReply jingle_reply;
+        if (JingleMessageReplyFromProto(iq_stanza, &jingle_reply)) {
+          message_payload = jingle_reply.ToSerializedXml();
+        } else {
+          message_payload =
+              "Failed to convert IqStanza to JingleMessage (error: " + error +
+              ") or JingleMessageReply. Raw fields: id=" + iq_stanza.id() +
+              ", sender=" + iq_stanza.sender().local_part() +
+              ", receiver=" + iq_stanza.receiver().local_part();
+        }
+      }
     } else {
       message_payload = message.xmpp().stanza();
     }
