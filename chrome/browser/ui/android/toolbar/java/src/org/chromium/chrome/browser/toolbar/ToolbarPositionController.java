@@ -686,21 +686,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             boolean isFormFieldFocusedWithKeyboardVisible,
             boolean doesUserPreferTopToolbar,
             @ControlsPosition int currentPosition) {
-        boolean allowBottomAnchoredFocusedOmnibox =
-                ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled();
-        boolean forceBottomForFocusedOmnibox =
-                isOmniboxFocused
-                        && (ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox
-                                        .getValue()
-                                || (allowBottomAnchoredFocusedOmnibox
-                                        && !doesUserPreferTopToolbar));
         @ControlsPosition int newControlsPosition;
-        if (!forceBottomForFocusedOmnibox
-                && (ntpShowing
-                        || tabSwitcherShowing
-                        || (isOmniboxFocused && !allowBottomAnchoredFocusedOmnibox)
-                        || isFindInPageShowing
-                        || doesUserPreferTopToolbar)) {
+        if (ntpShowing
+                || tabSwitcherShowing
+                || isOmniboxFocused
+                || isFindInPageShowing
+                || doesUserPreferTopToolbar) {
             newControlsPosition = ControlsPosition.TOP;
         } else {
             newControlsPosition = ControlsPosition.BOTTOM;
@@ -760,8 +751,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             int keyboardHeight = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
 
             // Ignore keyboard's height for offset calculation if the keyboard resizes the window.
-            if (shouldIgnoreKeyboardHeightInResizeMode()
-                    || shouldIgnoreKeyboardHeightForIncognitoNtp()) {
+            if (shouldIgnoreKeyboardHeightInResizeMode()) {
                 keyboardHeight = 0;
             }
 
@@ -793,44 +783,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         assert height >= 0;
         mControlContainerHeight = height;
         mBottomControlsStacker.requestLayerUpdate(false);
-    }
-
-    /**
-     * Returns whether the keyboard height should be ignored for toolbar's Y offset calculation when
-     * omnibox is focused. Can return {@code true} only when {@code AndroidBottomToolbarV2} and
-     * {@code OmniboxAutofocusOnIncognitoNtp} features are enabled.
-     *
-     * <p>{@code OmniboxAutofocusOnIncognitoNtp} feature requires the keyboard to not be in overlay
-     * mode to work correctly. This is managed by not attaching the {@code
-     * DeferredIMEWindowInsetApplicationCallback} in {@code AutocompleteMediator}.
-     *
-     * <p>TODO(crbug.com/485814887): This is a temporary method that should be removed after the
-     * feature is stable, along with the {@code sEnableToolbarPositioningInResizeMode} killswitch.
-     *
-     * @return Whether the keyboard height should be ignored.
-     */
-    private boolean shouldIgnoreKeyboardHeightForIncognitoNtp() {
-        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
-        // If the inset observer isn't available but the Incognito NTP Omnibox Autofocus is
-        // active, we assume the keyboard is in resizing mode.
-        boolean isKeyboardInResizingMode =
-                insetObserver == null || !insetObserver.isKeyboardInOverlayMode();
-
-        boolean isIncognitoNtpShowing = mIsIncognitoNtpShowingSupplier.get();
-        boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
-
-        boolean allowOmniboxAutofocusOnIncognitoNtp =
-                ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled();
-        boolean allowForceBottomForFocusedOmnibox =
-                ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.getValue()
-                        || (ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()
-                                && !isToolbarConfiguredToShowOnTop());
-
-        return allowForceBottomForFocusedOmnibox
-                && allowOmniboxAutofocusOnIncognitoNtp
-                && isIncognitoNtpShowing
-                && isOmniboxFocused
-                && isKeyboardInResizingMode;
     }
 
     /**

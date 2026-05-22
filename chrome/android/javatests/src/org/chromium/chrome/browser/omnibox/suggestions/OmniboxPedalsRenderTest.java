@@ -53,7 +53,8 @@ public class OmniboxPedalsRenderTest {
     // 1: Initial version.
     // 2: Updated refine button assets with vector drawables.
     // 3: Default to bottom-anchored focused omnibox
-    private static final int RENDER_TEST_REVISION = 3;
+    // 4: Removed bottom toolbar functionality
+    private static final int RENDER_TEST_REVISION = 4;
 
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =

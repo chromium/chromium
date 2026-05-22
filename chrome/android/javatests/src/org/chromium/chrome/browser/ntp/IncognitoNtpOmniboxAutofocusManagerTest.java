@@ -73,8 +73,8 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_INCOGNITO)
-                    .setRevision(5)
-                    .setDescription("Updated Incognito splash to GM3")
+                    .setRevision(6)
+                    .setDescription("Removed bottom toolbar functionality")
                     .build();
 
     @Rule

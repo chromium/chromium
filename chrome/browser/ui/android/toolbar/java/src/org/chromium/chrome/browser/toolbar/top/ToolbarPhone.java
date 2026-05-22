@@ -93,7 +93,6 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
@@ -1089,17 +1088,6 @@ public class ToolbarPhone extends ToolbarLayout
         int searchBoxInset = ntpDelegate.getSearchBoxBoundsVerticalInset();
         if (mTopPaddingForEdgeToEdgeNtp > 0 && searchBoxInset > 0) {
             translationY -= searchBoxInset;
-        }
-
-        // When Bottom Toolbar v2 is enabled, toolbar is at bottom, and URL has focus, we set the
-        // top padding to 0 in updateLayoutParamsForMultiline(). This causes the location bar's
-        // getTop() to decrease by the padding amount, which makes translationY larger than it
-        // should be. We need to subtract the padding difference to compensate.
-        if (ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()
-                && !AddressBarPreference.isToolbarConfiguredToShowOnTop()
-                && urlHasFocus()
-                && mTopPaddingForEdgeToEdgeNtp > 0) {
-            translationY -= mTopPaddingForEdgeToEdgeNtp;
         }
 
         return Math.max(0, translationY);
@@ -2407,8 +2395,7 @@ public class ToolbarPhone extends ToolbarLayout
         // - investigate what else needs to be done to make the WRAP_CONTENT work well as the
         //   default / static setting (likely leading to elimination of `toolbar_height_no_shadow`
         //   dimension).
-        if (OmniboxFeatures.sMultilineEditField.isEnabled()
-                || ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
+        if (OmniboxFeatures.sMultilineEditField.isEnabled()) {
             updateLayoutParamsForMultiline();
         }
 
@@ -2428,19 +2415,12 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void updateLayoutParamsForMultiline() {
         var params = getLayoutParams();
-        int effectiveTopPadding = getEffectiveTopPaddingForEdgeToEdge();
         params.height =
                 urlHasFocus()
                         ? LayoutParams.WRAP_CONTENT
                         : getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                                + effectiveTopPadding;
+                                + mTopPaddingForEdgeToEdgeNtp;
         setLayoutParams(params);
-
-        // When Bottom Toolbar v2 is enabled, URL focus causes the omnibox to move to the bottom of
-        // the screen. We should update the top padding that was added for edge-to-edge NTP, as it's
-        // no longer needed and would cause incorrect spacing.
-        setPaddingRelative(
-                getPaddingStart(), effectiveTopPadding, getPaddingEnd(), getPaddingBottom());
     }
 
     private boolean animatingSuggestionsListOnNtp() {
@@ -3135,45 +3115,24 @@ public class ToolbarPhone extends ToolbarLayout
         // with the toolbar's color.
         mTopPaddingForEdgeToEdgeNtp = newTopPadding;
 
-        // Use effective padding which considers whether the omnibox is currently at the bottom
-        // (When Bottom Toolbar v2 is enabled and URL has focus).
-        int effectiveTopPadding = getEffectiveTopPaddingForEdgeToEdge();
-
         var layoutParams = getLayoutParams();
 
         // During screen rotation, onToEdgeChange() is called and may reset the toolbar height.
         // When URL has focus, the toolbar should use WRAP_CONTENT to support multiline omnibox,
         // instead of being reset to a fixed height.
-        if (urlHasFocus()
-                && (OmniboxFeatures.sMultilineEditField.isEnabled()
-                        || ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled())) {
+        if (urlHasFocus() && OmniboxFeatures.sMultilineEditField.isEnabled()) {
             layoutParams.height = LayoutParams.WRAP_CONTENT;
         } else {
             layoutParams.height =
                     getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                            + effectiveTopPadding;
+                            + mTopPaddingForEdgeToEdgeNtp;
         }
         setLayoutParams(layoutParams);
         setPaddingRelative(
-                getPaddingStart(), effectiveTopPadding, getPaddingEnd(), getPaddingBottom());
-    }
-
-    /**
-     * Returns the effective top padding for the current state. When Bottom Toolbar v2 is enabled,
-     * toolbar is configured to show at bottom, and URL has focus, the top padding should be 0 since
-     * the omnibox moves to the bottom of the screen.
-     */
-    private int getEffectiveTopPaddingForEdgeToEdge() {
-        // When toolbar is configured to show on top, keep the top padding.
-        if (!ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()
-                || AddressBarPreference.isToolbarConfiguredToShowOnTop()) {
-            return mTopPaddingForEdgeToEdgeNtp;
-        }
-
-        // When toolbar is at bottom, clear padding if:
-        // 1. URL has focus (omnibox moves to bottom), or
-        // 2. Not on NTP (only NTP needs the padding for edge-to-edge display)
-        return (urlHasFocus() || !isNtpVisualState(mVisualState)) ? 0 : mTopPaddingForEdgeToEdgeNtp;
+                getPaddingStart(),
+                mTopPaddingForEdgeToEdgeNtp,
+                getPaddingEnd(),
+                getPaddingBottom());
     }
 
     /** Checks if the given visual state represents a New Tab Page. */

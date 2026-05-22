@@ -22,14 +22,12 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Insets;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -90,7 +88,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -297,7 +294,6 @@ public class ToolbarPositionControllerTest {
     @Mock private View mProgressBarContainer;
     @Mock private ViewGroup mProgressBarParent;
     @Mock private TopInsetProvider mTopInsetProvider;
-    @Mock private View mRootView;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefs;
@@ -305,7 +301,6 @@ public class ToolbarPositionControllerTest {
     @Mock private PrefService mLocalPrefService;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private InsetObserver mInsetObserver;
 
     private Context mContext;
@@ -542,7 +537,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testUpdatePositionChangesWithOmniboxFocusState() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -624,7 +618,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testBottomControlsStacker_visibilityChanges() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -645,7 +638,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2})
     public void testCalculateStateTransition() {
         boolean prefStateChanged = false;
         boolean ntpShowing = false;
@@ -815,60 +807,6 @@ public class ToolbarPositionControllerTest {
                         isFormFieldFocusedWithKeyboardVisible,
                         true,
                         ControlsPosition.BOTTOM));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
-    public void testForceBottomForFocusedOmnibox() {
-        ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(true);
-        boolean prefStateChanged = false;
-        boolean ntpShowing = true;
-        boolean tabSwitcherShowing = false;
-        boolean isOmniboxFocused = true;
-        boolean isFindInPageShowing = false;
-        boolean isFormFieldFocusedWithKeyboardVisible = false;
-        boolean doesUserPreferTopToolbar = true;
-
-        assertEquals(
-                StateTransition.SNAP_TO_BOTTOM,
-                ToolbarPositionController.calculateStateTransition(
-                        prefStateChanged,
-                        ntpShowing,
-                        tabSwitcherShowing,
-                        isOmniboxFocused,
-                        isFindInPageShowing,
-                        isFormFieldFocusedWithKeyboardVisible,
-                        doesUserPreferTopToolbar,
-                        ControlsPosition.TOP));
-
-        ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
-        doesUserPreferTopToolbar = false;
-
-        assertEquals(
-                StateTransition.SNAP_TO_BOTTOM,
-                ToolbarPositionController.calculateStateTransition(
-                        prefStateChanged,
-                        ntpShowing,
-                        tabSwitcherShowing,
-                        isOmniboxFocused,
-                        isFindInPageShowing,
-                        isFormFieldFocusedWithKeyboardVisible,
-                        doesUserPreferTopToolbar,
-                        ControlsPosition.TOP));
-
-        AddressBarPreference.setToolbarPositionAndSource(
-                ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
-        assertEquals(
-                StateTransition.SNAP_TO_BOTTOM,
-                ToolbarPositionController.calculateStateTransition(
-                        true,
-                        ntpShowing,
-                        tabSwitcherShowing,
-                        true,
-                        isFindInPageShowing,
-                        isFormFieldFocusedWithKeyboardVisible,
-                        doesUserPreferTopToolbar,
-                        ControlsPosition.TOP));
     }
 
     @Test
@@ -1097,71 +1035,10 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @Config(qualifiers = "sw400dp", sdk = 30)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
-    public void testBottomAnchoredFocusedOmnibox() {
-        // Null InsetObserver, should fallback to keyboard's overlay mode.
-        doReturn(null).when(mWindowAndroid).getInsetObserver();
-        setupBottomAnchoredFocusedOmniboxTest();
-
-        mKeyboardHeightSupplier.set(400);
-        verify(mControlContainerView).setTranslationY(-400f);
-
-        // If the window is too short to accommodate the keyboard + the full height of the toolbar,
-        // the toolbar should be translated up to the top of the screen but no further.
-        doReturn(430).when(mDisplayAndroid).getDisplayHeight();
-        mKeyboardHeightSupplier.set(401);
-        verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT - STATUS_BAR_HEIGHT));
-        verify(mControlContainer, atLeast(1)).setMaxHeight(20);
-    }
-
-    @Test
-    @Config(qualifiers = "sw400dp", sdk = 30)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
-    public void testBottomAnchoredFocusedOmnibox_whenOverlayKeyboardMode() {
-        doReturn(true).when(mInsetObserver).isKeyboardInOverlayMode();
-        setupBottomAnchoredFocusedOmniboxTest();
-
-        mKeyboardHeightSupplier.set(400);
-        verify(mControlContainerView, atLeast(1)).setTranslationY(-400f);
-    }
-
-    @Test
-    @Config(qualifiers = "sw400dp", sdk = 30)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
-    public void testBottomAnchoredFocusedOmnibox_whenResizeKeyboardMode() {
-        doReturn(false).when(mInsetObserver).isKeyboardInOverlayMode();
-        setupBottomAnchoredFocusedOmniboxTest();
-
-        mKeyboardHeightSupplier.set(400);
-        // In resize mode, keyboard height should be ignored for translation.
-        verify(mControlContainerView, atLeast(1)).setTranslationY(0f);
-    }
-
-    @Test
     public void testDestroy() {
         mController.destroy();
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtTop();
-    }
-
-    private void setupBottomAnchoredFocusedOmniboxTest() {
-        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
-        doReturn(1000).when(mDisplayAndroid).getDisplayHeight();
-        doReturn(mRootView).when(mControlContainerView).getRootView();
-
-        WindowInsets rootViewInsets =
-                new WindowInsets.Builder()
-                        .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 400))
-                        .setInsets(
-                                WindowInsets.Type.statusBars(),
-                                Insets.of(0, STATUS_BAR_HEIGHT, 0, 0))
-                        .build();
-        doReturn(rootViewInsets).when(mControlContainerView).getRootWindowInsets();
-
-        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
-        mIsOmniboxFocused.set(true);
-        assertControlsAtBottom();
     }
 
     @Test
