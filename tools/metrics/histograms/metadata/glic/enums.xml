@@ -505,6 +505,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Password change"/>
   <int value="30" label="From an Autofill action"/>
   <int value="31" label="Button in the toolbar"/>
+  <int value="32" label="Indigo page action"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -790,6 +791,10 @@ chromium-metrics-reviews@google.com.
   <int value="126" label="Toolbar button, attached, audio mode."/>
   <int value="127" label="Toolbar button, detached, text mode."/>
   <int value="128" label="Toolbar button, detached, audio mode."/>
+  <int value="129" label="Indigo page action, attached, text mode."/>
+  <int value="130" label="Indigo page action, attached, audio mode."/>
+  <int value="131" label="Indigo page action, detached, text mode."/>
+  <int value="132" label="Indigo page action, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

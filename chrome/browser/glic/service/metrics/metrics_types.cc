@@ -108,6 +108,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "UniversalCart";
     case mojom::InvocationSource::kExperimentalTriggering:
       return "ExperimentalTriggering";
+    case mojom::InvocationSource::kIndigoPageAction:
+      return "IndigoPageAction";
     case mojom::InvocationSource::kUnsupported:
       return "Unsupported";
     case mojom::InvocationSource::kWebContentsContextMenu:

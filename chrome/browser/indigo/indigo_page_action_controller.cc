@@ -4,6 +4,9 @@
 
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 
+#include <memory>
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -13,6 +16,10 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
@@ -207,6 +214,24 @@ void IndigoPageActionController::ContinueInvoke(
         << "Indigo not eligible for generation and not ready to onboard";
     RecordTransformationResultCannotGenerateImage(eligibility);
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kIndigoOpenGlic)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    if (auto* glic_keyed_service = glic::GlicKeyedService::Get(profile)) {
+      glic::GlicInvokeOptions options(
+          glic::Target(&tab()),
+          glic::mojom::InvocationSource::kIndigoPageAction);
+
+      std::string prompt = features::kIndigoGlicPrompt.Get();
+      if (!prompt.empty()) {
+        options.prompts.push_back(std::move(prompt));
+        glic_keyed_service->InvokeWithAutoSubmit(
+            glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+            std::move(options));
+      }
+    }
   }
 
   if (IndigoAgentHost::GetOrCreateForPage(web_contents->GetPrimaryPage())

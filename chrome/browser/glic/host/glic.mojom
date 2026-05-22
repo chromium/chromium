@@ -1671,6 +1671,8 @@ enum InvocationSource {
   [MinVersion=21] kAutofill = 30,
   // Button in the toolbar.
   [MinVersion=22] kToolbarButton = 31,
+  // User clicked on an Indigo page action.
+  [MinVersion=23] kIndigoPageAction = 32,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

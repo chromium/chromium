@@ -3004,6 +3004,8 @@ export enum InvocationSource {
   AUTOFILL = 30,
   // Button in the toolbar.
   TOOLBAR_BUTTON = 31,
+  // User clicked on an Indigo page action.
+  INDIGO_PAGE_ACTION = 32,
 }
 
 ///////////////////////////////////////////////
