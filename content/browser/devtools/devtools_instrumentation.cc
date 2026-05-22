@@ -1320,6 +1320,16 @@ void ThrottleServiceWorkerMainScriptFetch(
 
   ThrottleForServiceWorkerAgentHost(agent_host, requesting_agent_host,
                                     throttle_handle);
+
+  // When the service worker is throttled for DevTools, there is no
+  // renderer for the service worker yet and that means that the NetworkHandler
+  // does not have a reference to the network content and DevTools protocol
+  // commands that depend on it will not work. To fix this, we need to set the
+  // storage partition for the service worker on the Network handler.
+  for (auto* network_handler :
+       protocol::NetworkHandler::ForAgentHost(agent_host)) {
+    network_handler->SetStoragePartition(wrapper->storage_partition());
+  }
 }
 
 void ThrottleWorkerMainScriptFetch(
@@ -1341,7 +1351,17 @@ void ThrottleWorkerMainScriptFetch(
 
   FrameTreeNode* ftn = rfh->frame_tree_node();
   DispatchToAgents(ftn, &protocol::TargetHandler::AddWorkerThrottle, agent_host,
-                   std::move(throttle_handle));
+                   throttle_handle);
+
+  if (agent_host->GetParentId() !=
+      ftn->current_frame_host()->GetDevToolsFrameToken().ToString()) {
+    if (auto parent_host =
+            DevToolsAgentHostImpl::GetForId(agent_host->GetParentId())) {
+      DispatchToAgents(parent_host.get(),
+                       &protocol::TargetHandler::AddWorkerThrottle, agent_host,
+                       throttle_handle);
+    }
+  }
 }
 
 bool ShouldWaitForDebuggerInWindowOpen() {
@@ -1684,6 +1704,17 @@ WillCreateURLLoaderFactoryParams::ForWorkerMainScript(
     DevToolsAgentHostImpl* agent_host,
     const base::UnguessableToken& worker_token,
     RenderFrameHostImpl& ancestor_render_frame_host) {
+  if (agent_host &&
+      agent_host->GetParentId() !=
+          ancestor_render_frame_host.GetDevToolsFrameToken().ToString()) {
+    if (auto parent_host =
+            DevToolsAgentHostImpl::GetForId(agent_host->GetParentId())) {
+      return WillCreateURLLoaderFactoryParams(
+          parent_host.get(), worker_token,
+          ancestor_render_frame_host.GetProcess()->GetDeprecatedID(),
+          ancestor_render_frame_host.GetProcess()->GetStoragePartition());
+    }
+  }
   // Use the ancestor frame's interceptor to align with the interception
   // behavior in the renderer that reuses the same url loader factory from
   // the ancestor frame for the worker.
@@ -2421,6 +2452,13 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id,
     network::ResourceRequest& request) {
+  ServiceWorkerDevToolsAgentHost* agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
+                                                       version_id);
+  CHECK(agent_host);
+  request.throttling_profile_id = agent_host->devtools_worker_token();
+
   // Currently, `requesting_frame_id` is invalid when payment apps and
   // extensions register a service worker. See the callers of
   // ServiceWorkerContextWrapper::RegisterServiceWorker().
@@ -2438,11 +2476,6 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
   network::mojom::URLRequestDevToolsInfoPtr request_info =
       network::ExtractDevToolsInfo(request);
 
-  ServiceWorkerDevToolsAgentHost* agent_host =
-      ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
-                                                       version_id);
-  DCHECK(agent_host);
   const std::string request_id = agent_host->devtools_worker_token().ToString();
   MaybeAssignResourceRequestId(agent_host, request_id, request);
   for (auto* network_handler :
@@ -2477,24 +2510,31 @@ void OnWorkerMainScriptLoadingFailed(
 
 void OnWorkerMainScriptRequestWillBeSent(
     RenderFrameHostImpl& ancestor_frame_host,
+    DedicatedWorkerHost* creator_worker,
     const base::UnguessableToken& worker_token,
     network::ResourceRequest& request) {
   FrameTreeNode* ftn = ancestor_frame_host.frame_tree_node();
 
   auto timestamp = base::TimeTicks::Now();
+
+  DevToolsAgentHostImpl* effective_host =
+      creator_worker ? DedicatedWorkerDevToolsAgentHost::GetFor(creator_worker)
+                     : RenderFrameDevToolsAgentHost::GetFor(ftn);
+
+  if (!effective_host) {
+    return;
+  }
+
   network::mojom::URLRequestDevToolsInfoPtr request_info =
       network::ExtractDevToolsInfo(request);
 
-  auto* owner_host = RenderFrameDevToolsAgentHost::GetFor(ftn);
-  if (!owner_host) {
-    return;
-  }
-  MaybeAssignResourceRequestId(owner_host, worker_token.ToString(), request);
+  MaybeAssignResourceRequestId(effective_host, worker_token.ToString(),
+                               request);
 
   // Note: we apply overrides from the owner frame to match the behavior in the
   // renderer.
   bool disable_cache = false;
-  ApplyNetworkRequestOverrides(owner_host, &request.headers, &disable_cache,
+  ApplyNetworkRequestOverrides(effective_host, &request.headers, &disable_cache,
                                nullptr, &request.skip_service_worker,
                                &request.devtools_accepted_stream_types, nullptr,
                                nullptr, nullptr);
@@ -2505,12 +2545,13 @@ void OnWorkerMainScriptRequestWillBeSent(
     request.load_flags |= net::LOAD_BYPASS_CACHE;
   }
 
-  DispatchToAgents(
-      ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
-      /*loader_id=*/"", request.headers, *request_info,
-      protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
-      /*initiator_devtools_request_id*/ "",
-      ancestor_frame_host.devtools_frame_token(), timestamp);
+  DispatchToAgents(effective_host, &protocol::NetworkHandler::RequestSent,
+                   worker_token.ToString(),
+                   /*loader_id=*/"", request.headers, *request_info,
+                   protocol::Network::Initiator::TypeEnum::Other,
+                   ftn->current_url(),
+                   /*initiator_devtools_request_id*/ "",
+                   ancestor_frame_host.devtools_frame_token(), timestamp);
 }
 
 void LogWorkletMessage(RenderFrameHostImpl& frame_host,

@@ -143,6 +143,11 @@ class NetworkHandler : public DevToolsDomainHandler,
                   std::optional<bool> enable_durable_messages) override;
   Response Disable() override;
 
+  // Used to set a storage partition for a service worker agent host
+  // before the service worker agent host has a renderer. The storage
+  // partition will be updated via SetRenderer once the renderer is available.
+  void SetStoragePartition(StoragePartition* storage_partition);
+
 #if BUILDFLAG(ENABLE_REPORTING)
   void OnReportAdded(const net::ReportingReport& report) override;
   void OnReportUpdated(const net::ReportingReport& report) override;

@@ -506,7 +506,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
 
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetDeprecatedID(), host->token(),
-      host->instance().url(), creator, &creator,
+      host->instance().url(), creator, &creator, /*creator_worker=*/nullptr,
       host->instance().DoesRequireCrossSiteRequestForCookies()
           ? net::SiteForCookies()
           : host->instance().creator_storage_key().ToNetSiteForCookies(),

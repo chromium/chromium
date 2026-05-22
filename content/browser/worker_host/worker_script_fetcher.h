@@ -38,6 +38,7 @@ class URLLoaderThrottle;
 
 namespace content {
 
+class DedicatedWorkerHost;
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class ServiceWorkerContextWrapper;
@@ -126,6 +127,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       const GURL& initial_request_url,
       RenderFrameHostImpl& ancestor_render_frame_host,
       RenderFrameHostImpl* creator_render_frame_host,
+      DedicatedWorkerHost* creator_worker,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& request_initiator,
       const blink::StorageKey& request_initiator_storage_key,

@@ -1599,6 +1599,10 @@ void NetworkHandler::SetRenderer(int render_process_host_id,
   }
 }
 
+void NetworkHandler::SetStoragePartition(StoragePartition* storage_partition) {
+  storage_partition_ = storage_partition;
+}
+
 Response NetworkHandler::Enable(
     std::optional<int> max_total_size,
     std::optional<int> max_resource_size,

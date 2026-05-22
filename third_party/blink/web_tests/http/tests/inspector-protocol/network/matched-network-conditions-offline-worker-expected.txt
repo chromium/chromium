@@ -1,0 +1,3 @@
+Verify pattern matched network conditions offline emulation are applied to worker main script in the main frame.
+main frame worker script load result: worker failed to load
+

@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/service_worker/service_worker_new_script_fetcher.h"
+
 #include <memory>
 
 #include "base/test/bind.h"
+#include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -37,6 +41,9 @@ class ServiceWorkerNewScriptFetcherTest : public testing::Test {
   }
 
   ServiceWorkerContextCore* context() { return helper_->context(); }
+  ServiceWorkerContextWrapper* context_wrapper() {
+    return helper_->context_wrapper();
+  }
 
   const GURL kScriptUrl{"https://example.com/fake-script.js"};
 
@@ -79,6 +86,11 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
       std::move(fetch_client_settings_object),
       /*requesting_frame_id=*/GlobalRenderFrameHostId());
 
+  ServiceWorkerDevToolsManager::GetInstance()->WorkerMainScriptFetchingStarting(
+      base::WrapRefCounted(context_wrapper()), version->version_id(),
+      version->script_url(), version->scope(), GlobalRenderFrameHostId(),
+      base::MakeRefCounted<DevToolsThrottleHandle>(base::DoNothing()));
+
   // Start a fetcher and wait to get the result. The script loaded from
   // `loader_factory` is set to the `main_script_load_params` through
   // ServiceWorkerNewScriptLoader and ServiceWorkerNewScriptFetcher.
@@ -114,6 +126,9 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
   EXPECT_TRUE(mojo::BlockingCopyToString(
       std::move(main_script_load_params->response_body), &loaded_body));
   EXPECT_EQ(kBody, loaded_body);
+
+  ServiceWorkerDevToolsManager::GetInstance()->WorkerMainScriptFetchingFailed(
+      base::WrapRefCounted(context_wrapper()), version->version_id());
 }
 
 }  // namespace content

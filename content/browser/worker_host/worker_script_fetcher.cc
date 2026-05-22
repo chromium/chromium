@@ -25,6 +25,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"
@@ -257,6 +258,7 @@ void WorkerScriptFetcher::CreateAndStart(
     const GURL& initial_request_url,
     RenderFrameHostImpl& ancestor_render_frame_host,
     RenderFrameHostImpl* creator_render_frame_host,
+    DedicatedWorkerHost* creator_worker,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& request_initiator,
     const blink::StorageKey& request_initiator_storage_key,
@@ -337,7 +339,23 @@ void WorkerScriptFetcher::CreateAndStart(
   resource_request->url = initial_request_url;
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->request_initiator = request_initiator;
-  resource_request->referrer = sanitized_referrer.url,
+  resource_request->referrer = sanitized_referrer.url;
+
+  // DevTools throttling profiles are only associated with local frame roots,
+  // not each individual frame. If the creator is a worker on the other hand,
+  // we should use its token for throttling.
+  if (creator_worker) {  // a nested dedicated worker
+    resource_request->throttling_profile_id =
+        creator_worker->GetToken().value();
+  } else {
+    RenderFrameHostImpl* local_root_rfh = creator_render_frame_host;
+    while (!local_root_rfh->is_local_root()) {
+      local_root_rfh = local_root_rfh->GetParent();
+    }
+    CHECK(local_root_rfh);
+    resource_request->throttling_profile_id =
+        local_root_rfh->GetDevToolsFrameToken();
+  }
   resource_request->referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
       outside_fetch_client_settings_object->policy_container_policies
           ->referrer_policy);
@@ -395,7 +413,8 @@ void WorkerScriptFetcher::CreateAndStart(
   // shared workers, `ancestor_render_frame_host` and
   // `creator_render_frame_host` are always same.
   devtools_instrumentation::OnWorkerMainScriptRequestWillBeSent(
-      ancestor_render_frame_host, devtools_worker_token, *resource_request);
+      ancestor_render_frame_host, creator_worker, devtools_worker_token,
+      *resource_request);
 
   WorkerScriptFetcher::CreateScriptLoader(
       worker_process_id, worker_token, initial_request_url,

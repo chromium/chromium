@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/child_process_id.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
@@ -36,7 +37,7 @@ class ServiceWorkerDevToolsAgentHost;
 class ServiceWorkerContextWrapper;
 
 // Manages ServiceWorkerDevToolsAgentHost's. This class lives on UI thread.
-class ServiceWorkerDevToolsManager {
+class CONTENT_EXPORT ServiceWorkerDevToolsManager {
  public:
   class Observer : public base::CheckedObserver {
    public:

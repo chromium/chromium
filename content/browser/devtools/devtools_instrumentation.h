@@ -77,6 +77,7 @@ namespace content {
 class BackForwardCacheCanStoreDocumentResult;
 class BackForwardCacheCanStoreTreeResult;
 class BrowserContext;
+class DedicatedWorkerHost;
 class DevToolsAgentHostImpl;
 class FencedFrame;
 class FrameTree;
@@ -484,6 +485,7 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
 // worker main script. Used for DedicatedWorker and SharedWorker.
 void OnWorkerMainScriptRequestWillBeSent(
     RenderFrameHostImpl& ancestor_frame_host,
+    DedicatedWorkerHost* creator_worker,
     const base::UnguessableToken& worker_token,
     network::ResourceRequest& request);
 

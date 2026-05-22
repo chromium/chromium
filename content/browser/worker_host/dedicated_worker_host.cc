@@ -397,6 +397,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host_->GetDeprecatedID(), token_, script_url,
       *nearest_ancestor_render_frame_host, creator_render_frame_host,
+      creator_worker,
       nearest_ancestor_render_frame_host->ComputeSiteForCookies(),
       creator_origin_, worker_storage_key_,
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),

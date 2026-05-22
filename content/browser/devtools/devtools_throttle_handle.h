@@ -8,12 +8,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
 // A simple class that holds the callback that unthrottles either a SW or a
 // navigation. It is refcounted and runs `throttle_callback` when destroyed.
-class DevToolsThrottleHandle : public base::RefCounted<DevToolsThrottleHandle> {
+class CONTENT_EXPORT DevToolsThrottleHandle
+    : public base::RefCounted<DevToolsThrottleHandle> {
  public:
   explicit DevToolsThrottleHandle(base::OnceCallback<void()> throttle_callback);
 
