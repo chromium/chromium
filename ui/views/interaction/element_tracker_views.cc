@@ -207,6 +207,12 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver {
     RemoveView(observed_view);
   }
 
+  void OnViewHierarchyChanged(
+      View* observed_view,
+      const ViewHierarchyChangedDetails& details) override {
+    UpdateVisible(observed_view);
+  }
+
   // Returns whether the specified view is visible to the user. Takes the view
   // hierarchy and widget into account.
   bool IsViewVisibleToUser(View* view) {
