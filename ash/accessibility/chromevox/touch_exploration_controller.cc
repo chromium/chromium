@@ -867,6 +867,10 @@ const std::string& TouchExplorationController::GetName() const {
   return name;
 }
 
+base::WeakPtr<ui::GestureConsumer> TouchExplorationController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void TouchExplorationController::ProcessGestureEvents() {
   std::vector<std::unique_ptr<ui::GestureEvent>> gestures =
       gesture_provider_->GetAndResetPendingGestures();
