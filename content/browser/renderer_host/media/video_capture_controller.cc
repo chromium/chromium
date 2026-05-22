@@ -278,7 +278,7 @@ void VideoCaptureController::AddClient(
   // client.
   controller_clients_.push_back(std::move(client));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (stream_type_ == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
     const auto desktop_media_id = DesktopMediaID::Parse(device_id_);
     if (desktop_media_id.type == DesktopMediaID::TYPE_SCREEN) {
@@ -304,7 +304,7 @@ base::UnguessableToken VideoCaptureController::RemoveClient(
   if (!client)
     return base::UnguessableToken();
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (stream_type_ == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
     const auto desktop_media_id = DesktopMediaID::Parse(device_id_);
     if (desktop_media_id.type == DesktopMediaID::TYPE_SCREEN) {

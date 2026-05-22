@@ -17,7 +17,7 @@ PipScreenCaptureCoordinator* PipScreenCaptureCoordinator::GetInstance() {
   if (g_instance_for_testing) {
     return g_instance_for_testing;
   }
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return PipScreenCaptureCoordinatorImpl::GetInstance();
 #else
   return nullptr;

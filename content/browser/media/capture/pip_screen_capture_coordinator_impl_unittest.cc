@@ -55,6 +55,11 @@ class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
       (override));
 };
 
+class MockPipExcludedObserver : public PipScreenCaptureExclusionObserver {
+ public:
+  MOCK_METHOD(void, OnExcludeFromScreenCaptureChanged, (bool), (override));
+};
+
 void CallOnPipShownAndWaitUntilDone(
     content::BrowserTaskEnvironment& task_environment,
     PipScreenCaptureCoordinatorImpl* coordinator,
@@ -525,6 +530,83 @@ TEST_F(PipScreenCaptureCoordinatorImplTest,
   coordinator_->RemoveCapture(session_other);
   EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
             std::make_optional(kPipWindowId));
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, IsExcludedFromScreenCapture) {
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+
+  // 1. Document PiP shown, no captures.
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+
+  // 2. Capture by opener.
+  const base::UnguessableToken session_owner = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_owner,
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  EXPECT_TRUE(coordinator_->IsExcludedFromScreenCapture());
+
+  // 3. Capture by other (not the opener).
+  const base::UnguessableToken session_other = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_other,
+       .render_frame_host_id = kOtherId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+
+  // 4. Other (not the opener) stops.
+  coordinator_->RemoveCapture(session_other);
+  EXPECT_TRUE(coordinator_->IsExcludedFromScreenCapture());
+
+  // 5. Opener stops.
+  coordinator_->RemoveCapture(session_owner);
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+
+  // 6. Document PiP closed.
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+  coordinator_->OnPipClosed();
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, ExcludeFromScreenCaptureObserver) {
+  MockPipExcludedObserver observer;
+  coordinator_->AddExclusionObserver(&observer);
+
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+
+  // Transition from false to true.
+  EXPECT_CALL(observer, OnExcludeFromScreenCaptureChanged(true));
+  coordinator_->AddCapture(
+      {.session_id = base::UnguessableToken::Create(),
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Transition from true to false.
+  EXPECT_CALL(observer, OnExcludeFromScreenCaptureChanged(false));
+  const base::UnguessableToken session_other = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_other,
+       .render_frame_host_id = kOtherId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Transition from false to true.
+  EXPECT_CALL(observer, OnExcludeFromScreenCaptureChanged(true));
+  coordinator_->RemoveCapture(session_other);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Verify OnPipClosed does not trigger the observer. Skipping the update
+  // for a closing window prevents potential flickering.
+  EXPECT_CALL(observer, OnExcludeFromScreenCaptureChanged(_)).Times(0);
+  coordinator_->OnPipClosed();
+
+  coordinator_->RemoveExclusionObserver(&observer);
 }
 
 }  // namespace content

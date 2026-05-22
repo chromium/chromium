@@ -32,6 +32,15 @@ class MockPipScreenCaptureCoordinator : public PipScreenCaptureCoordinator {
               GetPipWindowToExcludeFromScreenCapture,
               (DesktopMediaID::Id),
               (override));
+  MOCK_METHOD(void,
+              AddExclusionObserver,
+              (PipScreenCaptureExclusionObserver*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveExclusionObserver,
+              (PipScreenCaptureExclusionObserver*),
+              (override));
+  MOCK_METHOD(bool, IsExcludedFromScreenCapture, (), (const, override));
 };
 
 class DocumentPictureInPictureWindowControllerImplTest
