@@ -373,7 +373,8 @@ void SafeTemplateURLParser::ParseAliases(
     const std::vector<const base::Value*>& aliases) {
   for (auto* alias : aliases) {
     std::string alias_value;
-    if (data_decoder::GetXmlElementText(*alias, &alias_value)) {
+    if (data_decoder::GetXmlElementText(*alias, &alias_value) &&
+        !alias_value.empty()) {
       data_.SetKeyword(base::UTF8ToUTF16(alias_value));
       has_custom_keyword_ = true;
     }
