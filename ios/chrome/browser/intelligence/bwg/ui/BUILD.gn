@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/button_stack:constants",
     "//ios/web/public/test",

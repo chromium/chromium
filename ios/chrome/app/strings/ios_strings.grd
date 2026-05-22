@@ -1421,44 +1421,23 @@
       <message name="IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE" desc="First box title text for the Gemini Consent page for managed accounts.">
           Get more relevant answers by sharing your tabs
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_LINK_1" desc="Text for the first link in the BWG consent footnote.">
-          Google Terms
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_LINK_2" desc="Text for the second link in the BWG consent footnote.">
-          Gemini Apps Privacy Notice
-      </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT" desc="Format string for the Gemini consent footnote.">
-          <ph name="GOOGLE_TERMS">$1<ex>Google Terms</ex></ph> and the <ph name="GEMINI_APPS_PRIVACY">$2<ex>Gemini Apps Privacy Notice</ex></ph> apply. Gemini is AI and can make mistakes, including about people.
+          <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Terms<ph name="END_LINK">END_LINK</ph> and the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Notice<ph name="END_LINK">END_LINK</ph> apply. Gemini is AI and can make mistakes, including about people.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA" desc="Format string for the Gemini consent footnote for accounts in South Korea.">
-          Our <ph name="TERMS">$1<ex>Terms</ex></ph>, <ph name="KOREAN_LOCATION_TERMS">$2<ex>Korean Location Terms</ex></ph>, and <ph name="PRIVACY_NOTICE">$3<ex>Privacy Notice</ex></ph> apply. Gemini is AI and can make mistakes, including about people.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_1" desc="Text for the first link in the Gemini consent footnote for South Korea.">
-          Terms
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_2" desc="Text for the second link in the Gemini consent footnote for South Korea.">
-          Korean Location Terms
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_3" desc="Text for the third link in the Gemini consent footnote for South Korea.">
-          Privacy Notice
+          Our <ph name="BEGIN_LINK">BEGIN_LINK</ph>Terms<ph name="END_LINK">END_LINK</ph>, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Korean Location Terms<ph name="END_LINK">END_LINK</ph>, and <ph name="BEGIN_LINK">BEGIN_LINK</ph>Privacy Notice<ph name="END_LINK">END_LINK</ph> apply. Gemini is AI and can make mistakes, including about people.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_US_ONLY_ADDITION" desc="US-only footer addition message.">
           Some content may not be suitable for everyone.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LABEL" desc="Footer label for watch video.">
-          Watch: <ph name="WATCH_LINK">$1<ex>5 must-knows for generative AI</ex></ph>
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_WATCH_LINK" desc="Footer link text for watch video.">
-          5 must-knows for generative AI
+          Watch: <ph name="BEGIN_LINK">BEGIN_LINK</ph>5 must-knows for generative AI<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
           By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google but won’t be used to improve generative AI models. You can change this setting anytime.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for managed accounts.">
-          Neither your conversations with Gemini nor your <ph name="GOOGLE_WORKSPACE_DATA">$1<ex>Google Workspace data</ex></ph> will be reviewed by human reviewers or used to improve generative AI models.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY_LINK" desc="The link text in the second box body for managed accounts.">
-        Google Workspace data
+          Neither your conversations with Gemini nor your <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Workspace data<ph name="END_LINK">END_LINK</ph> will be reviewed by human reviewers or used to improve generative AI models.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Consent page for managed accounts.">
           Your organization's data is private and secure
@@ -1467,13 +1446,7 @@
           By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google. You can change this setting anytime.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for non managed accounts.">
-          Chats are reviewed and used to improve Google AI. <ph name="LEARN_ABOUT_CHOICES">$1<ex>Learn about your choices.</ex></ph> <ph name="INFO_ABOUT_LOCATION">$2<ex>Info about your location</ex></ph> is also stored with your activity.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY_LINK_1" desc="The first link text in the second box body for non managed accounts.">
-        Learn about your choices.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY_LINK_2" desc="The second link text within the second box body for non managed accounts.">
-        Info about your location
+          Chats are reviewed and used to improve Google AI. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn about your choices.<ph name="END_LINK">END_LINK</ph> <ph name="BEGIN_LINK">BEGIN_LINK</ph>Info about your location<ph name="END_LINK">END_LINK</ph> is also stored with your activity.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Consent page for non managed accounts.">
           Your activity improves Google AI
@@ -3316,19 +3289,10 @@
         Live will use your microphone. Tapping the Live button turns on the mic. To turn off the mic, tap the stop button or close Gemini.
       </message>
       <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY" desc="Body text for the second box of the Gemini Live Consent page.">
-        Recordings of your interactions with Live and content you share with it are saved and processed per the <ph name="PRIVACY_NOTICE">$1<ex>Gemini Apps Privacy Notice</ex></ph>. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
-      </message>
-      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY_LINK_1" desc="First link text within the second box body of the Gemini Live Consent page.">
-        Gemini Apps Privacy Notice
-      </message>
-      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY_LINK_2" desc="Second link text within the second box body of the Gemini Live Consent page.">
-        Learn more
+        Recordings of your interactions with Live and content you share with it are saved and processed per the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Notice<ph name="END_LINK">END_LINK</ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY" desc="Body text for the third box of the Gemini Live Consent page.">
-        <ph name="RESPECT_PRIVACY">$1<ex>Respect other’s privacy</ex></ph> and ask permission before recording or including them in a Live chat.
-      </message>
-      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY_LINK" desc="Link text within the third box body of the Gemini Live Consent page.">
-        Respect other’s privacy
+        <ph name="BEGIN_LINK">BEGIN_LINK</ph>Respect other’s privacy<ph name="END_LINK">END_LINK</ph> and ask permission before recording or including them in a Live chat.
       </message>
       <message name="IDS_IOS_GEMINI_LIVE_CONSENT_TITLE" desc="Main title text for the Gemini Live Consent page.">
         Go Live with Gemini

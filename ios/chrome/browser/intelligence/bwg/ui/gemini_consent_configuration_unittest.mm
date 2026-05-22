@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -83,10 +84,9 @@ TEST_F(GeminiConsentConfigurationTest, StandardNonManagedAccountRows) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE),
       row2.title);
-  EXPECT_TRUE([row2.body.string
-      containsString:
-          l10n_util::GetNSString(
-              IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY_LINK_1)]);
+  StringWithTags parsedText2 = ParseStringWithLinks(
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY));
+  EXPECT_NSEQ(parsedText2.string, row2.body.string);
   EXPECT_TRUE(HasLinkWithAction(row2.body,
                                 kGeminiSecondBoxLink1ActionNonManagedAccount));
   EXPECT_TRUE(HasLinkWithAction(row2.body,
@@ -109,9 +109,9 @@ TEST_F(GeminiConsentConfigurationTest, StandardManagedAccountRows) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE),
       row2.title);
-  EXPECT_TRUE([row2.body.string
-      containsString:l10n_util::GetNSString(
-                         IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY_LINK)]);
+  StringWithTags parsedText2 = ParseStringWithLinks(
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY));
+  EXPECT_NSEQ(parsedText2.string, row2.body.string);
   EXPECT_TRUE(
       HasLinkWithAction(row2.body, kGeminiSecondBoxLinkActionManagedAccount));
 }
@@ -175,11 +175,17 @@ TEST_F(GeminiConsentConfigurationTest, LiveRowPropertiesAndLinks) {
   // Row 2
   GeminiConsentRow* row2 = config.rows[1];
   EXPECT_EQ(nil, row2.title);
+  StringWithTags parsedText2 = ParseStringWithLinks(
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY));
+  EXPECT_NSEQ(parsedText2.string, row2.body.string);
   EXPECT_TRUE(HasLinkWithAction(row2.body, kGeminiLivePrivacyNoticeLinkAction));
   EXPECT_TRUE(HasLinkWithAction(row2.body, kGeminiLiveLearnMoreLinkAction));
 
   // Row 3
   GeminiConsentRow* row3 = config.rows[2];
   EXPECT_EQ(nil, row3.title);
+  StringWithTags parsedText3 = ParseStringWithLinks(
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY));
+  EXPECT_NSEQ(parsedText3.string, row3.body.string);
   EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiLivePrivacyPolicyLinkAction));
 }
