@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/indigo/fake_api.h"
+#include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -153,8 +154,9 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(fake_api_.InitializeAndListen());
 
     feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIndigo, {{features::kIndigoGenerateUrl.name,
-                             fake_api_.GetGenerateUrl().spec()}});
+        features::kIndigo,
+        {{features::kIndigoGenerateUrl.name, fake_api_.GetGenerateUrl().spec()},
+         {features::kIndigoDeleteUrl.name, fake_api_.GetDeleteUrl().spec()}});
 
     InProcessBrowserTest::SetUp();
   }
@@ -169,7 +171,7 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
     identity_test_env_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable("user@gmail.com",
                                       signin::ConsentLevel::kSignin);
-    fake_api_.StartAcceptingConnections(5);
+    fake_api_.StartAcceptingConnections(5, 5);
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -567,6 +569,39 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(subframe.get());
   std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe.get());
   EXPECT_EQ(actual_src, success_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       DeleteOriginalPhotoResetsReplacements) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab);
+  auto* controller = IndigoPageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->OnDeleteOriginalPhoto(nullptr);
+
+  fake_api_.WaitForDeleteRequest();
+  fake_api_.SendDeleteSuccessResponse();
+
+  mock_replacement.WaitForDisconnect();
 }
 
 }  // namespace indigo

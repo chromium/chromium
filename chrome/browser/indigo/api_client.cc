@@ -238,6 +238,107 @@ class GetStatusRequest : public google_apis::UrlFetchRequestBase {
   ApiClient::StatusCallback callback_;
 };
 
+class DeleteRequest : public google_apis::UrlFetchRequestBase {
+ public:
+  DeleteRequest(google_apis::RequestSender* sender,
+                GURL url,
+                ApiClient::DeleteCallback callback)
+      : google_apis::UrlFetchRequestBase(sender,
+                                         google_apis::ProgressCallback(),
+                                         google_apis::ProgressCallback()),
+        url_(url),
+        callback_(std::move(callback)) {}
+
+  DeleteRequest(const DeleteRequest&) = delete;
+  DeleteRequest& operator=(const DeleteRequest&) = delete;
+  ~DeleteRequest() override {
+    if (callback_) {
+      std::move(callback_).Run(
+          base::unexpected(DeleteError{"Request cancelled"}));
+    }
+  }
+
+ protected:
+  GURL GetURL() const override { return url_; }
+
+  google_apis::HttpRequestMethod GetRequestType() const override {
+    return google_apis::HttpRequestMethod::kPost;
+  }
+
+  bool GetContentData(std::string* upload_content_type,
+                      std::string* upload_content) override {
+    *upload_content_type = "application/json";
+    *upload_content = "{}";
+    return true;
+  }
+
+  google_apis::ApiErrorCode MapReasonToError(
+      google_apis::ApiErrorCode code,
+      const std::string& reason) override {
+    return code;
+  }
+
+  bool IsSuccessfulErrorCode(google_apis::ApiErrorCode error) override {
+    return error == google_apis::HTTP_SUCCESS;
+  }
+
+  void ProcessURLFetchResults(
+      const network::mojom::URLResponseHead* response_head,
+      base::FilePath response_file,
+      std::string response_body) override {
+    auto complete = [&](base::expected<void, DeleteError> result) {
+      std::move(callback_).Run(std::move(result));
+      OnProcessURLFetchResultsComplete();
+    };
+
+    if (GetErrorCode() != google_apis::HTTP_SUCCESS) {
+      return complete(base::unexpected(DeleteError{
+          "HTTP error: " + google_apis::ApiErrorCodeToString(GetErrorCode())}));
+    }
+
+    if (response_body.empty()) {
+      return complete(base::unexpected(
+          DeleteError{"Unexpected empty response from " + url_.spec()}));
+    }
+
+    auto parse_result = base::JSONReader::ReadAndReturnValueWithError(
+        response_body, base::JSON_PARSE_RFC);
+    if (!parse_result.has_value()) {
+      return complete(base::unexpected(
+          DeleteError{"Invalid JSON response from " + url_.spec() + ": " +
+                      parse_result.error().ToString()}));
+    }
+    if (!parse_result->is_dict()) {
+      return complete(base::unexpected(DeleteError{
+          "Invalid JSON response from " + url_.spec() + ": not a dictionary"}));
+    }
+
+    const auto& dict = parse_result->GetDict();
+    const auto* error = dict.FindDict("error");
+    if (error) {
+      const std::string* message = error->FindString("message");
+      return complete(base::unexpected(DeleteError{
+          message ? *message : "API returned error without message"}));
+    }
+
+    if (dict.empty()) {
+      return complete(base::ok());
+    }
+
+    return complete(base::unexpected(
+        DeleteError{"Unexpected non-empty JSON response from " + url_.spec()}));
+  }
+
+  void RunCallbackOnPrematureFailure(google_apis::ApiErrorCode code) override {
+    std::move(callback_).Run(base::unexpected(DeleteError{base::StrCat(
+        {"Premature failure: ", google_apis::ApiErrorCodeToString(code)})}));
+  }
+
+ private:
+  GURL url_;
+  ApiClient::DeleteCallback callback_;
+};
+
 }  // namespace
 
 ApiClient::ApiClient(
@@ -246,7 +347,8 @@ ApiClient::ApiClient(
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       generate_url_(features::kIndigoGenerateUrl.Get()),
-      status_url_(features::kIndigoStatusUrl.Get()) {
+      status_url_(features::kIndigoStatusUrl.Get()),
+      delete_url_(features::kIndigoDeleteUrl.Get()) {
   DCHECK(identity_manager);
   DCHECK(url_loader_factory);
 
@@ -327,6 +429,22 @@ void ApiClient::GetStatus(StatusCallback callback) {
 
   request_sender_->StartRequestWithAuthRetry(std::make_unique<GetStatusRequest>(
       request_sender_.get(), status_url_, std::move(callback)));
+}
+
+void ApiClient::Delete(DeleteCallback callback) {
+  if (!request_sender_) {
+    std::move(callback).Run(base::unexpected(DeleteError{"No signed in user"}));
+    return;
+  }
+
+  if (!delete_url_.is_valid()) {
+    std::move(callback).Run(base::unexpected(DeleteError{
+        base::StrCat({"Invalid delete URL: ", delete_url_.spec()})}));
+    return;
+  }
+
+  request_sender_->StartRequestWithAuthRetry(std::make_unique<DeleteRequest>(
+      request_sender_.get(), delete_url_, std::move(callback)));
 }
 
 }  // namespace indigo

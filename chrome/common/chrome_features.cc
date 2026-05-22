@@ -1180,6 +1180,8 @@ const base::FeatureParam<std::string> kIndigoGenerateUrl{
     &kIndigo, "indigo_generate_url", ""};
 const base::FeatureParam<std::string> kIndigoStatusUrl{&kIndigo,
                                                        "indigo_status_url", ""};
+const base::FeatureParam<std::string> kIndigoDeleteUrl{&kIndigo,
+                                                       "indigo_delete_url", ""};
 const base::FeatureParam<std::string> kIndigoOnboardingUrl{
     &kIndigo, "indigo_onboarding_url", ""};
 const base::FeatureParam<std::string> kIndigoScopes{

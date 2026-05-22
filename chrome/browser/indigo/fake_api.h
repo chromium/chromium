@@ -27,7 +27,8 @@ class FakeApi {
   bool InitializeAndListen();
 
   // Starts accepting connections on the embedded test server.
-  void StartAcceptingConnections(int num_requests = 1);
+  void StartAcceptingConnections(int num_generate_requests = 1,
+                                 int num_delete_requests = 0);
 
   // Returns the URL to be used for the generate endpoint.
   GURL GetGenerateUrl() const;
@@ -41,6 +42,15 @@ class FakeApi {
   // Sends an error response.
   void SendErrorResponse(size_t index = 0);
 
+  // Returns the URL to be used for the delete endpoint.
+  GURL GetDeleteUrl() const;
+
+  // Waits for a request to arrive at the delete endpoint.
+  void WaitForDeleteRequest(size_t index = 0);
+
+  // Sends a successful response for delete.
+  void SendDeleteSuccessResponse(size_t index = 0);
+
   // Checks that the request has a valid product image.
   testing::AssertionResult RequestHasValidProductImage(
       base::span<const uint8_t> expected_image_bytes,
@@ -50,6 +60,8 @@ class FakeApi {
   net::EmbeddedTestServer test_server_;
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       controllable_responses_;
+  std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
+      delete_responses_;
 };
 
 }  // namespace indigo

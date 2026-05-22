@@ -22,11 +22,17 @@ bool FakeApi::InitializeAndListen() {
   return test_server_.InitializeAndListen();
 }
 
-void FakeApi::StartAcceptingConnections(int num_requests) {
-  for (int i = 0; i < num_requests; ++i) {
+void FakeApi::StartAcceptingConnections(int num_generate_requests,
+                                        int num_delete_requests) {
+  for (int i = 0; i < num_generate_requests; ++i) {
     controllable_responses_.push_back(
         std::make_unique<net::test_server::ControllableHttpResponse>(
             &test_server_, "/generate"));
+  }
+  for (int i = 0; i < num_delete_requests; ++i) {
+    delete_responses_.push_back(
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            &test_server_, "/delete"));
   }
 
   test_server_.StartAcceptingConnections();
@@ -62,6 +68,22 @@ void FakeApi::SendErrorResponse(size_t index) {
   std::string response_body =
       R"({"error": {"code": "INTERNAL", "message": "Generation failed"}})";
   controllable_response->Send(net::HTTP_OK, "application/json", response_body);
+  controllable_response->Done();
+}
+
+GURL FakeApi::GetDeleteUrl() const {
+  return test_server_.GetURL("/delete");
+}
+
+void FakeApi::WaitForDeleteRequest(size_t index) {
+  CHECK_LT(index, delete_responses_.size());
+  delete_responses_[index]->WaitForRequest();
+}
+
+void FakeApi::SendDeleteSuccessResponse(size_t index) {
+  CHECK_LT(index, delete_responses_.size());
+  auto& controllable_response = delete_responses_[index];
+  controllable_response->Send(net::HTTP_OK, "application/json", "{}");
   controllable_response->Done();
 }
 

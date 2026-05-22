@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
@@ -130,6 +131,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // Updates state and handles preference changes when the dialog closes.
   void OnOnboardingDialogClosed(const OnboardingResult& result);
+
+  // Called when the delete request completes.
+  void OnDeleteOriginalPhotoComplete(base::expected<void, DeleteError> result);
 
   // Called when the profile state has changed in a way that might affect
   // whether this feature should be offered.

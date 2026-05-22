@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -279,25 +280,6 @@ void IndigoPageActionController::DidFinishNavigation(
   }
 }
 
-void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
-  if (toolbar_) {
-    toolbar_->Hide();
-    toolbar_.reset();
-  }
-  content::WebContents* web_contents = tab().GetContents();
-  if (web_contents) {
-    auto* host = IndigoAgentHost::GetForPage(web_contents->GetPrimaryPage());
-    if (host) {
-      host->Reset();
-    }
-    auto* manager = IndigoImageReplacementManager::GetForPage(
-        web_contents->GetPrimaryPage());
-    if (manager) {
-      manager->ResetAllReplacements();
-    }
-  }
-}
-
 void IndigoPageActionController::TabWillBecomeHidden(tabs::TabInterface* tab) {
   DCHECK_EQ(tab, &this->tab());
   if (toolbar_) {
@@ -319,6 +301,25 @@ void IndigoPageActionController::TabDidBecomeVisible(tabs::TabInterface* tab) {
   toolbar_->TabDidBecomeVisible(parent_view);
 }
 
+void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
+  if (toolbar_) {
+    toolbar_->Hide();
+    toolbar_.reset();
+  }
+  content::WebContents* web_contents = tab().GetContents();
+  if (web_contents) {
+    auto* host = IndigoAgentHost::GetForPage(web_contents->GetPrimaryPage());
+    if (host) {
+      host->Reset();
+    }
+    auto* manager = IndigoImageReplacementManager::GetForPage(
+        web_contents->GetPrimaryPage());
+    if (manager) {
+      manager->ResetAllReplacements();
+    }
+  }
+}
+
 void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
   NOTIMPLEMENTED();
 }
@@ -329,7 +330,41 @@ void IndigoPageActionController::OnReplaceOriginalPhoto(
 }
 
 void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
-  NOTIMPLEMENTED();
+  if (!indigo_service_) {
+    return;
+  }
+
+  if (toolbar_) {
+    toolbar_->Hide();
+    toolbar_.reset();
+  }
+  content::WebContents* web_contents = tab().GetContents();
+  if (web_contents) {
+    auto* host = IndigoAgentHost::GetForPage(web_contents->GetPrimaryPage());
+    if (host) {
+      host->Reset();
+    }
+    auto* manager = IndigoImageReplacementManager::GetForPage(
+        web_contents->GetPrimaryPage());
+    if (manager) {
+      manager->ResetAllReplacements();
+    }
+  }
+
+  indigo_service_->GetApiClient().Delete(
+      base::BindOnce(&IndigoPageActionController::OnDeleteOriginalPhotoComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
+    base::expected<void, DeleteError> result) {
+  if (result.has_value()) {
+    // TODO(b/509508517): Show a toast to inform the user the image
+    // was deleted.
+    indigo_service_->InvalidateRemoteEligibility();
+  } else {
+    LOG(ERROR) << "Delete original photo failed: " << result.error().message;
+  }
 }
 
 void IndigoPageActionController::UpdateEntryPointsState() {
