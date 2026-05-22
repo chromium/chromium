@@ -121,16 +121,9 @@ class InteractionTestUtilMouse {
   bool SetTouchMode(bool touch_mode);
   bool GetTouchMode() const;
 
-  // Perform the gesture or gestures specified asynchronously.
-  // The |on_complete| callback is called when the gestures are finished.
-  template <typename... Args>
-  void PerformGestures(base::OnceCallback<void(bool)> on_complete,
-                       const GestureParams& params,
-                       Args... gestures);
-
   // Perform the gesture or gestures specified, returns true on success.
   template <typename... Args>
-  bool PerformGestures(const GestureParams& params, Args... gestures);
+  bool PerformGestures(const GestureParams& window_hint, Args... gestures);
 
   // Cancels any pending actions and cleans up any resulting mouse state (i.e.
   // releases any buttons which were pressed).
@@ -141,13 +134,7 @@ class InteractionTestUtilMouse {
   static void AddGestures(MouseGestures& gestures, MouseGesture to_add);
   static void AddGestures(MouseGestures& gestures, MouseGestures to_add);
 
-  void PerformGesturesImpl(base::OnceCallback<void(bool)> on_complete,
-                           const GestureParams& params,
-                           MouseGestures gestures);
-
   bool PerformGesturesImpl(const GestureParams& params, MouseGestures gestures);
-
-  void PerformNextGesture(const GestureParams& params, MouseGestures gestures);
 
   bool ShouldCancelDrag() const;
   void CancelFutureDrag();
@@ -160,14 +147,11 @@ class InteractionTestUtilMouse {
                 const GestureParams& params,
                 base::OnceClosure on_complete);
 
-  // The set of buttons currently pressed.
+  // The set of mouse buttons currently depressed. Used to clean up on abort.
   std::set<ui_controls::MouseButton> buttons_down_;
 
-  // Whether gestures are currently being performed.
+  // Whether gestures are being executed.
   bool performing_gestures_ = false;
-
-  // Callback to be called when gestures are complete.
-  base::OnceCallback<void(bool)> on_complete_;
 
   // Whether the current sequence is canceled.
   bool canceled_ = false;
@@ -195,16 +179,6 @@ class InteractionTestUtilMouse {
 
   base::WeakPtrFactory<InteractionTestUtilMouse> weak_ptr_factory_{this};
 };
-
-template <typename... Args>
-void InteractionTestUtilMouse::PerformGestures(
-    base::OnceCallback<void(bool)> on_complete,
-    const GestureParams& params,
-    Args... gestures) {
-  MouseGestures gesture_list;
-  (AddGestures(gesture_list, std::move(gestures)), ...);
-  PerformGesturesImpl(std::move(on_complete), params, std::move(gesture_list));
-}
 
 template <typename... Args>
 bool InteractionTestUtilMouse::PerformGestures(const GestureParams& params,

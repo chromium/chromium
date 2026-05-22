@@ -33,13 +33,15 @@ InteractiveMouseTestApi::StepBuilder InteractiveMouseTestApi::MoveMouseTo(
   step.SetStartCallback(base::BindOnce(
       [](InteractiveMouseTestApi* test, RelativePositionCallback pos_callback,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](ui::InteractionSequence::StepTransitionHandle handle,
-                   bool success) { std::move(handle).Proceed(success); },
-                seq->SeizeStepTransitionControl()),
-            test->test_impl_->GetGestureParamsForStep(el, seq),
-            InteractionTestUtilMouse::MoveTo(std::move(pos_callback).Run(el)));
+        const auto weak_seq = seq->AsWeakPtr();
+        if (!test->mouse_util().PerformGestures(
+                test->test_impl_->GetGestureParamsForStep(el, seq),
+                InteractionTestUtilMouse::MoveTo(
+                    std::move(pos_callback).Run(el)))) {
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
+        }
       },
       base::Unretained(this), GetPositionCallback(std::move(position))));
   return step;
@@ -63,16 +65,17 @@ InteractiveMouseTestApi::StepBuilder InteractiveMouseTestApi::ClickMouse(
       [](InteractiveMouseTestApi* test, ui_controls::MouseButton button,
          bool release, int modifier_keys, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](ui::InteractionSequence::StepTransitionHandle handle,
-                   bool success) { std::move(handle).Proceed(success); },
-                seq->SeizeStepTransitionControl()),
-            test->test_impl_->GetGestureParamsForStep(el, seq),
-            release ? InteractionTestUtilMouse::Click(button, modifier_keys)
-                    : InteractionTestUtilMouse::MouseGestures{
-                          InteractionTestUtilMouse::MouseDown(button,
-                                                              modifier_keys)});
+        const auto weak_seq = seq->AsWeakPtr();
+        if (!test->mouse_util().PerformGestures(
+                test->test_impl_->GetGestureParamsForStep(el, seq),
+                release ? InteractionTestUtilMouse::Click(button, modifier_keys)
+                        : InteractionTestUtilMouse::MouseGestures{
+                              InteractionTestUtilMouse::MouseDown(
+                                  button, modifier_keys)})) {
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
+        }
       },
       base::Unretained(this), button, release, modifier_keys));
   step.SetMustRemainVisible(false);
@@ -91,14 +94,15 @@ InteractiveMouseTestApi::StepBuilder InteractiveMouseTestApi::DragMouseTo(
       [](InteractiveMouseTestApi* test, RelativePositionCallback pos_callback,
          bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
         const gfx::Point target = std::move(pos_callback).Run(el);
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](ui::InteractionSequence::StepTransitionHandle handle,
-                   bool success) { std::move(handle).Proceed(success); },
-                seq->SeizeStepTransitionControl()),
-            test->test_impl_->GetGestureParamsForStep(el, seq),
-            release ? InteractionTestUtilMouse::DragAndRelease(target)
-                    : InteractionTestUtilMouse::DragAndHold(target));
+        const auto weak_seq = seq->AsWeakPtr();
+        if (!test->mouse_util().PerformGestures(
+                test->test_impl_->GetGestureParamsForStep(el, seq),
+                release ? InteractionTestUtilMouse::DragAndRelease(target)
+                        : InteractionTestUtilMouse::DragAndHold(target))) {
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
+        }
       },
       base::Unretained(this), GetPositionCallback(std::move(position)),
       release));
@@ -123,13 +127,14 @@ InteractiveMouseTestApi::StepBuilder InteractiveMouseTestApi::ReleaseMouse(
       [](InteractiveMouseTestApi* test, ui_controls::MouseButton button,
          int modifier_keys, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](ui::InteractionSequence::StepTransitionHandle handle,
-                   bool success) { std::move(handle).Proceed(success); },
-                seq->SeizeStepTransitionControl()),
-            test->test_impl_->GetGestureParamsForStep(el, seq),
-            InteractionTestUtilMouse::MouseUp(button, modifier_keys));
+        const auto weak_seq = seq->AsWeakPtr();
+        if (!test->mouse_util().PerformGestures(
+                test->test_impl_->GetGestureParamsForStep(el, seq),
+                InteractionTestUtilMouse::MouseUp(button, modifier_keys))) {
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
+        }
       },
       base::Unretained(this), button, modifier_keys));
   step.SetMustRemainVisible(false);
