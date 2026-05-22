@@ -40,6 +40,9 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mModel =
                 new PropertyModel.Builder(PdfToolbarProperties.ALL_KEYS)
                         .with(PdfToolbarProperties.ON_CLICK_LISTENER, this)
+                        .with(
+                                PdfToolbarProperties.PAGE_NUMBER_EDIT_LISTENER,
+                                this::onPageNumberSubmitted)
                         .with(PdfToolbarProperties.ZOOM_LEVEL, 1.0f)
                         .with(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, true)
                         .with(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false)
@@ -53,27 +56,17 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         int actionId = view.getId();
-        int currentPageNumber = mModel.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
-        int totalPageCount = mModel.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
         float currentZoomFactor = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
+        int currentPageNumber = mModel.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
 
-        if (actionId == R.id.page_increase_button && currentPageNumber < totalPageCount) {
-            mDelegate.navigateToPage(currentPageNumber);
-        } else if (actionId == R.id.page_decrease_button && currentPageNumber > 1) {
-            mDelegate.navigateToPage(currentPageNumber - 2);
-        } else if (actionId == R.id.zoom_increase_button) {
+        if (actionId == R.id.zoom_increase_button) {
             mDelegate.changeZoomLevel(getNextZoomLevel(currentZoomFactor, true));
         } else if (actionId == R.id.zoom_decrease_button) {
             mDelegate.changeZoomLevel(getNextZoomLevel(currentZoomFactor, false));
         } else if (actionId == R.id.fit_to_page_button) {
             boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
-            if (showFitToHeight) {
-                mDelegate.toggleFitToPage(true, currentPageNumber - 1);
-                mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, false);
-            } else {
-                mDelegate.toggleFitToPage(false, currentPageNumber - 1);
-                mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, true);
-            }
+            mDelegate.toggleFitToPage(showFitToHeight, currentPageNumber - 1);
+            mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, !showFitToHeight);
         } else if (actionId == R.id.two_page_button) {
             boolean isCurrentlyActive = mModel.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE);
             boolean newState = !isCurrentlyActive;
@@ -129,6 +122,14 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mModel.set(
                 PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED,
                 zoomLevel < mZoomLevels.get(mZoomLevels.size() - 1));
+    }
+
+    private void onPageNumberSubmitted(int pageNumber) {
+        int totalPageCount = mModel.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
+        if (pageNumber >= 1 && pageNumber <= totalPageCount) {
+            // Convert to 0-based index for the delegate.
+            mDelegate.navigateToPage(pageNumber - 1);
+        }
     }
 
     /** Destroys the coordinator and releases references held by the change processor. */

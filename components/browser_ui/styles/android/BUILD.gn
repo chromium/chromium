@@ -162,8 +162,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_call_end_white_24dp.xml",
     "java/res/drawable/ic_check_circle_24dp.xml",
     "java/res/drawable/ic_check_circle_filled_green_24dp.xml",
-    "java/res/drawable/ic_chevron_left_24dp.xml",
-    "java/res/drawable/ic_chevron_right_24dp.xml",
     "java/res/drawable/ic_chrome.xml",
     "java/res/drawable/ic_data_personalization_20dp.xml",
     "java/res/drawable/ic_data_table_fill_24dp.xml",

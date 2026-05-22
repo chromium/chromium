@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,19 +61,49 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
-    public void testPageIncrease() {
-        // Default current page is 99 (1-indexed)
-        View pageIncreaseButton = mPdfPageView.findViewById(R.id.page_increase_button);
-        pageIncreaseButton.performClick();
-        verify(mDelegate).navigateToPage(99);
+    public void testPageNumberEdit() {
+        // Default current page is 99 (1-indexed), total is 100
+        EditText currentPage = mPdfPageView.findViewById(R.id.current_page);
+
+        // Request focus to enable editing
+        assertTrue(currentPage.requestFocus());
+        assertTrue(currentPage.isFocused());
+
+        // Simulate typing valid page and submitting
+        currentPage.setText("50");
+        currentPage.onEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+
+        // Should navigate to 0-indexed page 49
+        verify(mDelegate).navigateToPage(49);
+
+        // Verify it loses focus
+        assertFalse(currentPage.isFocused());
     }
 
     @Test
-    public void testPageDecrease() {
-        // Default current page is 99 (1-indexed)
-        View pageDecreaseButton = mPdfPageView.findViewById(R.id.page_decrease_button);
-        pageDecreaseButton.performClick();
-        verify(mDelegate).navigateToPage(97);
+    public void testPageNumberEdit_invalid() {
+        EditText currentPage = mPdfPageView.findViewById(R.id.current_page);
+
+        // Out of bounds high
+        assertTrue(currentPage.requestFocus());
+        assertTrue(currentPage.isFocused());
+        currentPage.setText("101");
+        currentPage.onEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+        // Should NOT navigate to 100
+        verify(mDelegate, org.mockito.Mockito.never()).navigateToPage(100);
+        // Should revert to 99
+        assertEquals("99", currentPage.getText().toString());
+        assertFalse(currentPage.isFocused());
+
+        // Out of bounds low
+        assertTrue(currentPage.requestFocus());
+        assertTrue(currentPage.isFocused());
+        currentPage.setText("0");
+        currentPage.onEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+        verify(mDelegate, org.mockito.Mockito.never()).navigateToPage(-1);
+        // Should revert to 99
+        assertEquals("99", currentPage.getText().toString());
+        assertFalse(currentPage.isFocused());
     }
 
     @Test
@@ -81,12 +114,12 @@ public class PdfToolbarCoordinatorUnitTest {
         TextView pageCount = mPdfPageView.findViewById(R.id.page_count);
         TextView zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
         // Current page is firstVisiblePage + 1
-        Assert.assertEquals(
+        assertEquals(
                 "6 / 100",
                 currentPage.getText().toString()
                         + pageCountDivider.getText().toString()
                         + pageCount.getText().toString());
-        Assert.assertEquals("100%", zoomValue.getText().toString());
+        assertEquals("100%", zoomValue.getText().toString());
     }
 
     @Test
@@ -94,11 +127,11 @@ public class PdfToolbarCoordinatorUnitTest {
         // Input is 0-indexed (page 0), output should be 1-indexed ("1")
         mPdfToolbarCoordinator.onViewportChanged(0, 1);
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
-        Assert.assertEquals("1", currentPage.getText().toString());
+        assertEquals("1", currentPage.getText().toString());
 
         // Input is 0-indexed (page 5), output should be 1-indexed ("6")
         mPdfToolbarCoordinator.onViewportChanged(5, 1);
-        Assert.assertEquals("6", currentPage.getText().toString());
+        assertEquals("6", currentPage.getText().toString());
     }
 
     @Test
@@ -106,13 +139,13 @@ public class PdfToolbarCoordinatorUnitTest {
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
         TextView pageCountDivider = mPdfPageView.findViewById(R.id.page_count_divider);
         TextView pageCount = mPdfPageView.findViewById(R.id.page_count);
-        Assert.assertEquals(
+        assertEquals(
                 "99 / 100",
                 currentPage.getText().toString()
                         + pageCountDivider.getText().toString()
                         + pageCount.getText().toString());
         TextView zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
-        Assert.assertEquals("100%", zoomValue.getText().toString());
+        assertEquals("100%", zoomValue.getText().toString());
     }
 
     // Regression test: onViewportChanged with a zoom value just below 5.0
@@ -137,10 +170,10 @@ public class PdfToolbarCoordinatorUnitTest {
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
         TextView pageCount = mPdfPageView.findViewById(R.id.page_count);
         // Current page remains 99 (default), total page count becomes 50
-        Assert.assertEquals("99", currentPage.getText().toString());
-        Assert.assertEquals("50", pageCount.getText().toString());
+        assertEquals("99", currentPage.getText().toString());
+        assertEquals("50", pageCount.getText().toString());
         TextView title = mPdfPageView.findViewById(R.id.pdf_title);
-        Assert.assertEquals("test_title.pdf", title.getText().toString());
+        assertEquals("test_title.pdf", title.getText().toString());
     }
 
     @Test

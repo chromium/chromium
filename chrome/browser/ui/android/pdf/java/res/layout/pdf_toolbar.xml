@@ -31,32 +31,25 @@ found in the LICENSE file.
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/page_decrease_button"
+            app:layout_constraintEnd_toStartOf="@id/current_page"
             android:textAppearance="@style/TextAppearance.TextLargeThick.Primary"
             android:layout_gravity="start|center_vertical" />
 
         <!-- page_navigation -->
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/page_decrease_button"
-            style="@style/ToolbarButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_chevron_left_24dp"
-            app:tint="@color/default_icon_color_tint_list"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingEnd="12dp"
-            app:layout_constraintEnd_toStartOf="@id/current_page"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <TextView
+        <EditText
             android:id="@+id/current_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-            android:paddingStart="12dp"
+            android:background="@drawable/modern_toolbar_input_field_background"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:imeOptions="actionGo"
+            android:cursorVisible="true"
+            android:importantForAutofill="no"
+            android:textAlignment="center"
+            tools:ignore="LabelFor"
             app:layout_constraintEnd_toStartOf="@id/page_count_divider"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -79,21 +72,6 @@ found in the LICENSE file.
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
             android:paddingEnd="12dp"
-            app:layout_constraintEnd_toStartOf="@id/page_increase_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/page_increase_button"
-            style="@style/ToolbarButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:src="@drawable/ic_chevron_right_24dp"
-            app:tint="@color/default_icon_color_tint_list"
             app:layout_constraintEnd_toStartOf="@id/zoom_page_divider"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />

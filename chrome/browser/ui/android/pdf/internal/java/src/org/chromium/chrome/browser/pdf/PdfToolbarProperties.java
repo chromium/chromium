@@ -48,10 +48,20 @@ class PdfToolbarProperties {
     static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The callback for page number submission. */
+    static final WritableObjectPropertyKey<org.chromium.base.Callback<Integer>>
+            PAGE_NUMBER_EDIT_LISTENER = new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
-        CURRENT_PAGE_NUMBER, TITLE, TOTAL_PAGE_COUNT, ZOOM_LEVEL, ON_CLICK_LISTENER,
+        CURRENT_PAGE_NUMBER,
+        TITLE,
+        TOTAL_PAGE_COUNT,
+        ZOOM_LEVEL,
+        ON_CLICK_LISTENER,
         TWO_PAGES_PER_ROW_ACTIVE,
-        ZOOM_DECREASE_BUTTON_ENABLED, ZOOM_INCREASE_BUTTON_ENABLED,
+        ZOOM_DECREASE_BUTTON_ENABLED,
+        ZOOM_INCREASE_BUTTON_ENABLED,
+        PAGE_NUMBER_EDIT_LISTENER,
         SHOW_FIT_TO_HEIGHT_ICON
     };
 }
