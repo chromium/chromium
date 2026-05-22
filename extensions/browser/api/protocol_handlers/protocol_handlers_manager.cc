@@ -9,7 +9,6 @@
 #include "base/one_shot_event.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest_handlers/protocol_handler_info.h"
@@ -24,12 +23,11 @@ namespace {
 static void RegisterHandlersIfNeeded(
     const ExtensionId& id,
     const ProtocolHandlersInfo& info,
-    custom_handlers::ProtocolHandlerRegistry& registry,
-    bool allowed_in_incognito) {
+    custom_handlers::ProtocolHandlerRegistry& registry) {
   for (const auto& handler_info : info) {
     custom_handlers::ProtocolHandler handler =
         custom_handlers::ProtocolHandler::CreateExtensionProtocolHandler(
-            handler_info.protocol, handler_info.url, id, allowed_in_incognito);
+            handler_info.protocol, handler_info.url, id);
 
     DCHECK(handler.IsValid());
 
@@ -93,35 +91,28 @@ ProtocolHandlersManager::GetFactoryInstance() {
   return instance.get();
 }
 
-void ProtocolHandlersManager::OnExtensionLoaded(content::BrowserContext*,
-                                                const Extension* extension) {
+void ProtocolHandlersManager::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
   const ProtocolHandlersInfo* info =
       ProtocolHandlers::GetProtocolHandlers(*extension);
   if (!info) {
     return;
   }
 
-  // Use browser_context_ (this manager's own context) rather than the
-  // browser_context argument: for OTR instances the ExtensionRegistry
-  // redirects to the original profile, so the argument is always the regular
-  // context even when the OTR manager receives the event. Each manager must
-  // update its own profile's ProtocolHandlerRegistry.
   auto* registry = ExtensionsBrowserClient::Get()->GetProtocolHandlerRegistry(
-      browser_context_);
+      browser_context);
   // Can be null for tests using dummy profiles.
   if (!registry) {
     CHECK_IS_TEST();
     return;
   }
 
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-  bool allowed_in_incognito = prefs->IsIncognitoEnabled(extension->id());
-  RegisterHandlersIfNeeded(extension->id(), *info, *registry,
-                           allowed_in_incognito);
+  RegisterHandlersIfNeeded(extension->id(), *info, *registry);
 }
 
 void ProtocolHandlersManager::OnExtensionUnloaded(
-    content::BrowserContext*,
+    content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
   const ProtocolHandlersInfo* info =
@@ -130,9 +121,8 @@ void ProtocolHandlersManager::OnExtensionUnloaded(
     return;
   }
 
-  // Use browser_context_ for the same reason as OnExtensionLoaded.
   auto* registry = ExtensionsBrowserClient::Get()->GetProtocolHandlerRegistry(
-      browser_context_);
+      browser_context);
   // Can be null for tests using dummy profiles.
   if (!registry) {
     CHECK_IS_TEST();
