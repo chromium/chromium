@@ -5,16 +5,19 @@
 #ifndef COMPONENTS_ZUCCHINI_IO_UTILS_H_
 #define COMPONENTS_ZUCCHINI_IO_UTILS_H_
 
-#include <stdint.h>
-
+#include <array>
+#include <cstdint>
 #include <istream>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 
 namespace zucchini {
 
@@ -70,15 +73,17 @@ struct AsHex {
 
 template <int N, typename T>
 std::ostream& operator<<(std::ostream& os, const AsHex<N, T>& as_hex) {
-  char buf[N + 1];
-  buf[N] = '\0';
+  std::array<char, N> buf;
   T value = as_hex.value;
-  for (int i = N - 1; i >= 0; --i, value >>= 4)
-    UNSAFE_TODO(buf[i]) =
-        UNSAFE_TODO("0123456789ABCDEF"[static_cast<int>(value & 0x0F)]);
-  if (value)
+  static constexpr auto kHexDigits =
+      base::span_from_cstring("0123456789ABCDEF");
+  for (int i = N - 1; i >= 0; --i, value >>= 4) {
+    buf[static_cast<size_t>(i)] = kHexDigits[value & 0x0F];
+  }
+  if (value) {
     os << "...";  // To indicate data truncation, or negative values.
-  os << buf;
+  }
+  os << base::as_string_view(buf);
   return os;
 }
 
