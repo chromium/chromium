@@ -3333,6 +3333,9 @@
       <message name="IDS_IOS_GEMINI_LIVE_CONSENT_TITLE" desc="Main title text for the Gemini Live Consent page.">
         Go Live with Gemini
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR" desc="Snackbar message shown to ask if the user wants to continue their Gemini Live session.">
+        Are you still using Live? Tap the Live button to keep talking to Gemini
+      </message>
       <message name="IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_DETAIL" desc="Detail message of modal dialog shown when the user tries to start Gemini Live but has not allowed microphone access. This body instructs the user to enable the microphone in Settings.">
         To use Live, give Chrome access to your microphone in settings
       </message>
@@ -3345,7 +3348,6 @@
       <message name="IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_TITLE" desc="Title of modal dialog shown when the user tries to start Gemini Live but has not allowed microphone access.">
         Turn on Microphone
       </message>
-
       <message name="IDS_IOS_GEMINI_LIVE_SHARING_LABEL" desc="Label describing the current page context shown in Gemini Live mode, indicating that the current page is being shared. [iOS only]">
         Sharing <ph name="PAGE_TITLE">$1<ex>Example Page</ex></ph>
       </message>

@@ -215,8 +215,18 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Shows a snackbar message informing the user that sign-in is required.
   void ShowSignInRequiredSnackbar(gemini::EntryPoint entry_point);
 
+  // Shows a snackbar message asking the user if they want to continue the Live
+  // session.
+  void ShowLiveSessionDormantSnackbar();
+
+  // Sets whether the dormant snackbar is showing.
+  void SetIsShowingLiveSessionDormantSnackbar(bool showing);
+
   // Returns the floaty offset based on current fullscreen progress.
   CGFloat GetFloatyOffset();
+
+  // Returns the floaty offset assuming the toolbars are fully expanded.
+  CGFloat GetFullyExpandedFloatyOffset();
 
   // Returns the floaty progress based on current fullscreen state.
   CGFloat GetFloatyProgress();
@@ -265,6 +275,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // New sources must be added to the switch statement depending on if we
   // expect the source to re-show the floaty after hiding it.
   bool ShouldSourceReshowFloaty(gemini::FloatyUpdateSource source) const;
+
+  // Returns true if the update from `source` should be ignored because the Live
+  // session dormant snackbar is active.
+  bool ShouldIgnoreUpdateForDormantSnackbar(
+      gemini::FloatyUpdateSource source) const;
 
   // Called when keyboard state changes.
   void OnKeyboardStateChanged(bool is_visible);
@@ -384,6 +399,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Updates the Gemini availability and notifies observers if it changed.
   void UpdateGeminiAvailability();
+
+  // Whether we are currently displaying the Live session dormant snackbar.
+  bool is_showing_live_session_dormant_snackbar_ = false;
 
   // Weak pointer factory.
   // Observers for GeminiBrowserAgent.

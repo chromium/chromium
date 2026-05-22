@@ -90,6 +90,14 @@ namespace {
 // this constant is used to remove some of that innate padding.
 const CGFloat kFloatyIntrinsicPaddingCorrection = 8.0;
 
+// The vertical offset clearance required to position the dormant Live session
+// snackbar cleanly above the floaty pill. Note this includes the full floaty
+// height.
+// TODO(crbug.com/512576285): Confirm offset value with UI.
+// TODO(crbug.com/513881624): Get the actual floaty height separately, if
+// possible, so this constant can just represent the offset.
+const CGFloat kDormantSnackbarOffsetFromFloaty = 100.0;
+
 // Used for forcing fullscreen progress value.
 const CGFloat kFullscreenEnabled = 0.0;
 
@@ -501,6 +509,35 @@ void GeminiBrowserAgent::ShowSignInRequiredSnackbar(
   [snackbar_handler showSnackbarMessage:message];
 }
 
+void GeminiBrowserAgent::ShowLiveSessionDormantSnackbar() {
+  PrepareFloatyToBeShown();
+  fullscreen_disabler_timer_.Stop();
+
+  id<SnackbarCommands> snackbar_handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR)];
+  base::WeakPtr<GeminiBrowserAgent> weak_self = weak_factory_.GetWeakPtr();
+  message.completionHandler = ^(BOOL completed) {
+    if (weak_self) {
+      weak_self->SetIsShowingLiveSessionDormantSnackbar(false);
+    }
+  };
+
+  CGFloat floaty_offset = GetFullyExpandedFloatyOffset();
+  CGFloat snackbar_offset = floaty_offset + kDormantSnackbarOffsetFromFloaty;
+
+  [snackbar_handler showSnackbarMessage:message bottomOffset:snackbar_offset];
+}
+
+void GeminiBrowserAgent::SetIsShowingLiveSessionDormantSnackbar(bool showing) {
+  is_showing_live_session_dormant_snackbar_ = showing;
+  if (!showing) {
+    ResetFullscreenDisabler();
+  }
+}
+
 void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
                                          GeminiStartupState* startup_state) {
   gemini::EntryPoint entry_point = startup_state.entryPoint;
@@ -589,6 +626,38 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
   return offset;
 }
 
+CGFloat GeminiBrowserAgent::GetFullyExpandedFloatyOffset() {
+  CHECK(IsFullscreenInitialized());
+  CGFloat max_bottom_inset =
+      IsFullscreenRefactoringEnabled()
+          ? FullscreenBrowserAgent::FromBrowser(browser_)->max_insets().bottom
+          : fullscreen_controller_->GetMaxViewportInsets().bottom;
+
+  SceneState* scene_state = browser_->GetSceneState();
+
+  if (!IsFullscreenRefactoringEnabled() && IsChromeNextIaEnabled()) {
+    // The legacy FullscreenController is unaware of the App Bar's height.
+    // If the App Bar is at the bottom, explicitly account for it to ensure
+    // the floaty positions correctly above it.
+    LayoutGuideCenter* layout_guide_center =
+        LayoutGuideCenterForScene(scene_state);
+    UIView* app_bar_view =
+        [layout_guide_center referencedViewUnderName:kAppBarGuide];
+    if (app_bar_view &&
+        scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
+      max_bottom_inset += kAppBarHeight;
+    }
+  }
+
+  if (scene_state && scene_state.window && IsLandscape(scene_state.window)) {
+    max_bottom_inset += scene_state.window.safeAreaInsets.bottom;
+  }
+
+  CGFloat offset = max_bottom_inset - kFloatyIntrinsicPaddingCorrection;
+
+  return offset;
+}
+
 CGFloat GeminiBrowserAgent::GetFloatyProgress() {
   if (IsFullscreenRefactoringEnabled()) {
     // If there is a collapsing bottom toolbar, track the bottom progress.
@@ -640,6 +709,9 @@ bool GeminiBrowserAgent::ShouldShowFloatyForSource(
 void GeminiBrowserAgent::UpdateActiveTabHelperWithPresentedSource(
     gemini::FloatyUpdateSource source,
     bool is_presented) {
+  if (ShouldIgnoreUpdateForDormantSnackbar(source)) {
+    return;
+  }
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
   if (!gemini_tab_helper) {
@@ -732,8 +804,10 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
       RequestPageContextGeneration();
       break;
     case ios::provider::GeminiClientMode::kDormant:
+      is_showing_live_session_dormant_snackbar_ = true;
       ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
                                   /*animated=*/true);
+      ShowLiveSessionDormantSnackbar();
       break;
     default:
       // No-op.
@@ -892,9 +966,18 @@ bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
   }
 }
 
+bool GeminiBrowserAgent::ShouldIgnoreUpdateForDormantSnackbar(
+    gemini::FloatyUpdateSource source) const {
+  return is_showing_live_session_dormant_snackbar_ &&
+         source == gemini::FloatyUpdateSource::Snackbar;
+}
+
 void GeminiBrowserAgent::HideFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
+  if (ShouldIgnoreUpdateForDormantSnackbar(source)) {
+    return;
+  }
   UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/true);
 
   if (!is_floaty_invoked_) {
@@ -923,6 +1006,9 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
 void GeminiBrowserAgent::ShowFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
+  if (ShouldIgnoreUpdateForDormantSnackbar(source)) {
+    return;
+  }
   UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/false);
 
   if (!is_floaty_invoked_ || !ShouldShowFloatyForSource(source)) {
