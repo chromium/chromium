@@ -245,7 +245,7 @@ class ContextualTasksContextService
   void OnAllTabsScored(
       const std::string& query,
       const TabSelectionOptions& options,
-      const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
+      const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
           on_selection_complete,
@@ -262,7 +262,9 @@ class ContextualTasksContextService
   // Creates the QueryState including active tab context.
   QueryState CreateQueryState(
       const std::string& query,
-      const passage_embeddings::Embedding& query_embedding);
+      const passage_embeddings::Embedding& query_embedding,
+      const std::vector<base::WeakPtr<content::WebContents>>&
+          all_eligible_tabs);
 
   // Computes TabSignals for a candidate tab.
   TabSignals ComputeTabSignals(content::WebContents* web_contents,
@@ -274,7 +276,7 @@ class ContextualTasksContextService
       const std::string& query,
       const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
-      const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
+      const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
           on_selection_complete,
@@ -288,15 +290,6 @@ class ContextualTasksContextService
 
   // Returns the WebContents of the currently active tab.
   content::WebContents* GetActiveTabWebContents();
-
-  // Returns the duration since the tab was last active.
-  std::optional<base::TimeDelta> GetDurationSinceLastActive(
-      content::WebContents* web_contents);
-
-  // Returns the time spent in the tab on its last visit. If the tab is still
-  // active, then it returns the time spent in the current visit.
-  std::optional<base::TimeDelta> GetDurationOfCurrentOrLastVisit(
-      content::WebContents* web_contents);
 
   // Returns whether the tab is valid i.e. it is not NTP, internal page, etc.
   // `site_exclusion_detail` is updated with results of site exclusion filtering

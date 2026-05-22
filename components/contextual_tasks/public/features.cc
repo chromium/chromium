@@ -187,6 +187,16 @@ const base::FeatureParam<double> kContentVisibilityThreshold{
     &kContextualTasksContext,
     "ContextualTasksContextContentVisibilityThreshold", 0.7};
 
+const base::FeatureParam<bool> kEnablePreviousTabFallback(
+    &kContextualTasksContext,
+    "ContextualTasksEnablePreviousTabFallback",
+    true);
+
+const base::FeatureParam<base::TimeDelta> kPreviousTabRecencyThreshold(
+    &kContextualTasksContext,
+    "ContextualTasksPreviousTabRecencyThreshold",
+    base::Seconds(30));
+
 const base::FeatureParam<std::string> kQueryEmbeddingTask{
     &kContextualTasksContext, "ContextualTasksContextQueryEmbeddingTask", ""};
 

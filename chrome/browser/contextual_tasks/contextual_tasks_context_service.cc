@@ -33,10 +33,12 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -286,6 +288,72 @@ std::string GetFormattedQueryString(const std::string& query) {
   return query;
 }
 
+std::optional<base::TimeDelta> GetDurationSinceLastActive(
+    content::WebContents* web_contents) {
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    if (auto* tracker = ContextualTasksTabVisitTracker::From(tab)) {
+      return tracker->GetDurationSinceLastActive();
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<base::TimeDelta> GetDurationOfCurrentOrLastVisit(
+    content::WebContents* web_contents) {
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    if (auto* tracker = ContextualTasksTabVisitTracker::From(tab)) {
+      return tracker->GetDurationOfCurrentOrLastVisit();
+    }
+  }
+  return std::nullopt;
+}
+
+// Returns the active tab if it is valid, otherwise returns the most recent tab
+// if it is valid and the active tab is AIM Full Tab or NTP.
+content::WebContents* GetQueryContextualizingTab(
+    const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs,
+    content::WebContents* active_tab_contents,
+    Profile* profile,
+    SiteExclusionDetail& site_exclusion_detail) {
+  if (!active_tab_contents) {
+    return nullptr;
+  }
+
+  GURL active_tab_url = active_tab_contents->GetLastCommittedURL();
+
+  if (IsValidUrlForSuggestedTab(active_tab_url, profile,
+                                site_exclusion_detail)) {
+    return active_tab_contents;
+  }
+
+  bool is_aim = ContextualTasksUiService::IsContextualTasksUrl(active_tab_url);
+  bool is_ntp = search::IsNTPOrRelatedURL(active_tab_url, profile);
+  if (kEnablePreviousTabFallback.Get() && (is_aim || is_ntp)) {
+    base::TimeDelta min_time_since_last_visit = base::TimeDelta::Max();
+    content::WebContents* most_recent_tab = nullptr;
+
+    for (const auto& tab_ptr : all_eligible_tabs) {
+      if (!tab_ptr) {
+        continue;
+      }
+      content::WebContents* tab = tab_ptr.get();
+      auto time_since_visit = GetDurationSinceLastActive(tab);
+      if (time_since_visit.has_value() &&
+          *time_since_visit < min_time_since_last_visit) {
+        min_time_since_last_visit = *time_since_visit;
+        most_recent_tab = tab;
+      }
+    }
+
+    if (most_recent_tab &&
+        min_time_since_last_visit <= kPreviousTabRecencyThreshold.Get()) {
+      return most_recent_tab;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 ContextualTasksContextService::ContextualTasksContextService(Profile* profile)
@@ -480,9 +548,9 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   AUTO_CONTEXT_LOG(
       base::StringPrintf("Processing query embedding for %s", query));
 
-  std::vector<base::WeakPtr<content::WebContents>> all_tabs =
+  std::vector<base::WeakPtr<content::WebContents>> all_eligible_tabs =
       GetAllEligibleTabs(options.browser_window_interface);
-  if (all_tabs.empty()) {
+  if (all_eligible_tabs.empty()) {
     AUTO_CONTEXT_LOG("No eligible tabs");
     RecordContextDeterminationStatus(
         ContextDeterminationStatus::kNoEligibleTabs);
@@ -512,7 +580,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   }
 
   SelectRelevantTabs(
-      query, options, query_embedding, all_tabs, explicit_urls,
+      query, options, query_embedding, all_eligible_tabs, explicit_urls,
       base::BindOnce(&ContextualTasksContextService::OnRelevantTabsSelected,
                      weak_ptr_factory_.GetWeakPtr(), query, options, start_time,
                      explicit_urls, std::move(callback), std::move(log_entry)),
@@ -671,16 +739,18 @@ void ContextualTasksContextService::PopulateQueryContext(
 ContextualTasksContextService::QueryState
 ContextualTasksContextService::CreateQueryState(
     const std::string& query,
-    const passage_embeddings::Embedding& query_embedding) {
+    const passage_embeddings::Embedding& query_embedding,
+    const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs) {
   QueryState query_state(query, query_embedding, GetWordCount(query));
 
-  content::WebContents* active_tab_contents = GetActiveTabWebContents();
   SiteExclusionDetail site_exclusion_detail;
-  if (IsValidUrlForSuggestedTab(active_tab_contents->GetLastCommittedURL(),
-                                profile_, site_exclusion_detail)) {
-    query_state.active_tab = active_tab_contents->GetWeakPtr();
+  content::WebContents* query_contextualizing_tab =
+      GetQueryContextualizingTab(all_eligible_tabs, GetActiveTabWebContents(),
+                                 profile_, site_exclusion_detail);
+  if (query_contextualizing_tab) {
+    query_state.active_tab = query_contextualizing_tab->GetWeakPtr();
     query_state.active_tab_embeddings = page_embeddings_service_->GetEmbeddings(
-        active_tab_contents->GetPrimaryPage());
+        query_contextualizing_tab->GetPrimaryPage());
 
     const passage_embeddings::Embedding* active_tab_title_embedding =
         GetTitleEmbedding(query_state.active_tab_embeddings);
@@ -761,13 +831,14 @@ void ContextualTasksContextService::SelectRelevantTabs(
     const std::string& query,
     const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
-    const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
+    const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs,
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         on_tab_selection_complete,
     optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
   PopulateTabSelectionModeInLog(options.tab_selection_mode, quality_log);
-  QueryState query_state = CreateQueryState(query, query_embedding);
+  QueryState query_state =
+      CreateQueryState(query, query_embedding, all_eligible_tabs);
   PopulateQueryContext(query_state, quality_log);
 
   QueryStateSignals query_signals;
@@ -777,13 +848,15 @@ void ContextualTasksContextService::SelectRelevantTabs(
   query_signals.query_active_tab_passage_similarities =
       query_state.active_tab_passage_similarities;
 
-  AUTO_CONTEXT_LOG(base::StringPrintf(
-      "Number of eligible open tabs for query %s: %d", query, all_tabs.size()));
+  AUTO_CONTEXT_LOG(
+      base::StringPrintf("Number of eligible open tabs for query %s: %d", query,
+                         all_eligible_tabs.size()));
 
-  auto scoring_state = base::MakeRefCounted<ScoringState>(all_tabs.size());
+  auto scoring_state =
+      base::MakeRefCounted<ScoringState>(all_eligible_tabs.size());
 
-  for (size_t i = 0; i < all_tabs.size(); ++i) {
-    const auto& web_contents = all_tabs[i];
+  for (size_t i = 0; i < all_eligible_tabs.size(); ++i) {
+    const auto& web_contents = all_eligible_tabs[i];
     if (!web_contents) {
       continue;
     }
@@ -809,22 +882,22 @@ void ContextualTasksContextService::SelectRelevantTabs(
             },
             base::BindOnce(&ContextualTasksContextService::OnAllTabsScored,
                            weak_ptr_factory_.GetWeakPtr(), query, options,
-                           all_tabs, explicit_urls,
+                           all_eligible_tabs, explicit_urls,
                            std::move(on_tab_selection_complete), scoring_state,
                            quality_log),
             scoring_state));
     return;
   }
 
-  for (size_t i = 0; i < all_tabs.size(); ++i) {
-    if (!all_tabs[i]) {
+  for (size_t i = 0; i < all_eligible_tabs.size(); ++i) {
+    if (!all_eligible_tabs[i]) {
       continue;
     }
     scoring_state->scores[i] =
         GetTabScoreSync(options, scoring_state->signals[i]);
   }
 
-  OnAllTabsScored(query, options, all_tabs, explicit_urls,
+  OnAllTabsScored(query, options, all_eligible_tabs, explicit_urls,
                   std::move(on_tab_selection_complete), scoring_state,
                   quality_log);
 }
@@ -832,7 +905,7 @@ void ContextualTasksContextService::SelectRelevantTabs(
 void ContextualTasksContextService::OnAllTabsScored(
     const std::string& query,
     const TabSelectionOptions& options,
-    const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
+    const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs,
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         on_tab_selection_complete,
@@ -841,8 +914,8 @@ void ContextualTasksContextService::OnAllTabsScored(
   std::vector<std::pair<double, base::WeakPtr<content::WebContents>>>
       scored_relevant_tabs;
 
-  for (size_t i = 0; i < all_tabs.size(); ++i) {
-    const auto& web_contents = all_tabs[i];
+  for (size_t i = 0; i < all_eligible_tabs.size(); ++i) {
+    const auto& web_contents = all_eligible_tabs[i];
     if (!web_contents) {
       continue;
     }
@@ -910,28 +983,6 @@ void ContextualTasksContextService::OnAllTabsScored(
   }
 
   std::move(on_tab_selection_complete).Run(std::move(relevant_tabs));
-}
-
-std::optional<base::TimeDelta>
-ContextualTasksContextService::GetDurationSinceLastActive(
-    content::WebContents* web_contents) {
-  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    if (auto* tracker = ContextualTasksTabVisitTracker::From(tab)) {
-      return tracker->GetDurationSinceLastActive();
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<base::TimeDelta>
-ContextualTasksContextService::GetDurationOfCurrentOrLastVisit(
-    content::WebContents* web_contents) {
-  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    if (auto* tracker = ContextualTasksTabVisitTracker::From(tab)) {
-      return tracker->GetDurationOfCurrentOrLastVisit();
-    }
-  }
-  return std::nullopt;
 }
 
 bool ContextualTasksContextService::ShouldAddTabToSelection(

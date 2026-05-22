@@ -129,6 +129,12 @@ extern const base::FeatureParam<double> kTabSelectionScoreThreshold;
 // Minimum score required for a tab to be considered visible.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
 
+// Whether to use the immediately previous visited tab as the active tab signal
+// fallback.
+extern const base::FeatureParam<bool> kEnablePreviousTabFallback;
+// Recency threshold for using the previous visited tab as active tab signal.
+extern const base::FeatureParam<base::TimeDelta> kPreviousTabRecencyThreshold;
+
 // Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
 extern const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing;
 
