@@ -48,9 +48,9 @@ class UiTriggerTabElement extends UiTriggerTabElementBase {
     };
   }
 
-  private uiTriggerObjectList_?: TimestampedMessage[];
-  private shareTargetSelectOptionList_?: ShareTargetSelectOption[];
-  private selectedShareTargetId_: string;
+  declare private uiTriggerObjectList_?: TimestampedMessage[];
+  declare private shareTargetSelectOptionList_?: ShareTargetSelectOption[];
+  declare private selectedShareTargetId_: string;
   private browserProxy_: NearbyUiTriggerBrowserProxy =
       NearbyUiTriggerBrowserProxy.getInstance();
   private prefsBrowserProxy_: NearbyPrefsBrowserProxy =

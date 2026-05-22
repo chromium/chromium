@@ -122,12 +122,12 @@ class LoggingTabElement extends LoggingTabElementBase {
     };
   }
 
-  private logList_: LogMessage[];
-  private filteredLogList_: LogMessage[];
-  private feature: string;
-  private currentFilter_: string;
-  private currentSeverity_: Severity;
-  private logLevelList_: SelectOption[];
+  declare private logList_: LogMessage[];
+  declare private filteredLogList_: LogMessage[];
+  declare private feature: string;
+  declare private currentFilter_: string;
+  declare private currentSeverity_: Severity;
+  declare private logLevelList_: SelectOption[];
   private logProvider_: LogProvider;
 
   /**

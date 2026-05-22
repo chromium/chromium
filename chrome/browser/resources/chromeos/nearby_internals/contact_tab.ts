@@ -37,7 +37,7 @@ class ContactTabElement extends ContactTabElementBase {
 
   private browserProxy_: NearbyContactBrowserProxy =
       NearbyContactBrowserProxy.getInstance();
-  private contactList_: ContactUpdate[];
+  declare private contactList_: ContactUpdate[];
 
   /**
    * When the page is initialized, notify the C++ layer to allow JavaScript and

@@ -26,7 +26,7 @@ class NpObjectElement extends PolymerElement {
       },
     };
   }
-  device: PresenceDevice;
+  declare device: PresenceDevice;
   private browserProxy_: NearbyPresenceBrowserProxy =
       NearbyPresenceBrowserProxy.getInstance();
 

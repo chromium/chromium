@@ -37,7 +37,7 @@ export class LogTypesElement extends PolymerElement {
     };
   }
 
-  currentLogTypes: FeatureValues[];
+  declare currentLogTypes: FeatureValues[];
 
   private nearbyInfraCheckboxClicked_(): void {
     const checkbox: HTMLInputElement|null =

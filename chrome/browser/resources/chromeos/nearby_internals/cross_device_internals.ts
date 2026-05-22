@@ -148,19 +148,19 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
     };
   }
 
-  private npDiscoveredDevicesList_: PresenceDevice[];
-  private featuresList_: SelectOption[];
-  private nearbyInfraActionList_: SelectOption[];
-  private nearbyShareActionList_: SelectOption[];
-  private fastPairActionList_: SelectOption[];
-  private actionsSelectList_: SelectOption[];
-  private logList_: LogMessage[];
-  private filteredLogList_: LogMessage[];
+  declare private npDiscoveredDevicesList_: PresenceDevice[];
+  declare private featuresList_: SelectOption[];
+  declare private nearbyInfraActionList_: SelectOption[];
+  declare private nearbyShareActionList_: SelectOption[];
+  declare private fastPairActionList_: SelectOption[];
+  declare private actionsSelectList_: SelectOption[];
+  declare private logList_: LogMessage[];
+  declare private filteredLogList_: LogMessage[];
   private currentFilter_: string;
-  private currentSeverity: Severity;
-  private logLevelList_: SelectOption[];
+  declare private currentSeverity: Severity;
+  declare private logLevelList_: SelectOption[];
   private logProvider_: LogProvider;
-  private currentLogTypes: FeatureValues[];
+  declare private currentLogTypes: FeatureValues[];
 
   private nearbyPresenceBrowserProxy_: NearbyPresenceBrowserProxy =
       NearbyPresenceBrowserProxy.getInstance();

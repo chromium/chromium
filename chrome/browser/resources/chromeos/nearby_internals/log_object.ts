@@ -31,7 +31,7 @@ class LogObjectElement extends PolymerElement {
     };
   }
 
-  logMessage: LogMessage;
+  declare logMessage: LogMessage;
 
   /**
    * Sets the log message style based on severity level.

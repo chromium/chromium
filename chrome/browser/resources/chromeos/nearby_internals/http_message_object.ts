@@ -35,7 +35,7 @@ class HttpMessageObjectElement extends PolymerElement {
     };
   }
 
-  item: HttpMessage;
+  declare item: HttpMessage;
 
   /**
    * Sets the Http message style based on whether it is a response or request.

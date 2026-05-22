@@ -39,7 +39,7 @@ class HttpTabElement extends HttpTabElementBase {
 
   private browserProxy_: NearbyHttpBrowserProxy =
       NearbyHttpBrowserProxy.getInstance();
-  private httpMessageList_: HttpMessage[];
+  declare private httpMessageList_: HttpMessage[];
 
   /**
    * When the page is initialized, notify the C++ layer to allow JavaScript and
