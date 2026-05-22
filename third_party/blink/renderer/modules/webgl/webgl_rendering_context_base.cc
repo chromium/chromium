@@ -6695,8 +6695,10 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
   auto info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
-  auto* snapshot_provider = image_cache.GetCanvasSnapshotProvider(info);
-  if (!snapshot_provider) {
+  bool tried_to_create_provider = false;
+  auto* snapshot_provider =
+      image_cache.GetCanvasSnapshotProvider(info, tried_to_create_provider);
+  if (!snapshot_provider && tried_to_create_provider) {
     return;
   }
 
@@ -6704,7 +6706,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   const bool kPreferTaggedOrientation = false;
   scoped_refptr<StaticBitmapImage> image;
-  if (snapshot_provider->IsExternalBitmapProvider()) {
+  if (!snapshot_provider) {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), info, video_renderer,
         kPreferTaggedOrientation, reinterpret_video_as_srgb);
@@ -9053,7 +9055,9 @@ WebGLRenderingContextBase::LRUCanvasSnapshotProviderCache::
 
 CanvasSnapshotProvider* WebGLRenderingContextBase::
     LRUCanvasSnapshotProviderCache::GetCanvasSnapshotProvider(
-        const CanvasSnapshotProvider::Info& info) {
+        const CanvasSnapshotProvider::Info& info,
+        bool& tried_to_create_provider) {
+  tried_to_create_provider = false;
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
     CanvasSnapshotProvider* snapshot_provider = snapshot_providers_[i].get();
@@ -9063,6 +9067,7 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
     if (!info.Matches(*snapshot_provider)) {
       continue;
     }
+    tried_to_create_provider = true;
     BubbleToFront(i);
     return snapshot_provider;
   }
@@ -9078,18 +9083,20 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
         ShouldCreateAcceleratedImages(raster_context_provider);
   }
 
+  tried_to_create_provider = create_accelerated_provider;
+
   std::unique_ptr<CanvasSnapshotProvider> temp;
   if (create_accelerated_provider) {
     temp = CanvasNon2DResourceProviderSharedImage::Create(
         info.size, info.format, info.alpha_type, info.color_space,
         SharedGpuContext::ContextProviderWrapper(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-  } else {
-    temp = CanvasNon2DSnapshotProviderBitmap::Create(info);
   }
 
-  if (!temp)
+  if (!temp) {
     return nullptr;
+  }
+
   i = std::min(capacity_ - 1, i);
   snapshot_providers_[i] = std::move(temp);
 
