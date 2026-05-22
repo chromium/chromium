@@ -455,7 +455,7 @@ public class AutofillAiDelegate {
             }
 
             PreferenceCategory category = new PreferenceCategory(getStyledContext());
-            category.setTitle(type.getTypeNameAsString());
+            category.setTitle(type.getTypeNameSectionTitleString());
             category.setKey(type.getTypeNameAsString());
             screen.addPreference(category);
 

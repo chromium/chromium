@@ -38,6 +38,8 @@ public class EntityType {
     private final String mTypeNameAsString;
     // Used for histogram recording.
     private final String mTypeNameAsMetricsString;
+    // Used to display entity sections in settings.
+    private final String mTypeNameSectionTitleString;
     // Used as title in the add entity dialog.
     private final String mAddEntityTypeString;
     // Used as title in the edit entity dialog.
@@ -58,6 +60,7 @@ public class EntityType {
             boolean isMaskedStorageSupported,
             @JniType("std::u16string") String typeNameAsString,
             @JniType("std::string") String typeNameAsMetricsString,
+            @JniType("std::string") String typeNameSectionTitleString,
             @JniType("std::string") String addEntityTypeString,
             @JniType("std::string") String editEntityTypeString,
             @JniType("std::string") String deleteEntityTypeString,
@@ -72,6 +75,7 @@ public class EntityType {
         mIsMaskedStorageSupported = isMaskedStorageSupported;
         mTypeNameAsString = typeNameAsString;
         mTypeNameAsMetricsString = typeNameAsMetricsString;
+        mTypeNameSectionTitleString = typeNameSectionTitleString;
         mAddEntityTypeString = addEntityTypeString;
         mEditEntityTypeString = editEntityTypeString;
         mDeleteEntityTypeString = deleteEntityTypeString;
@@ -110,6 +114,10 @@ public class EntityType {
 
     public String getTypeNameAsMetricsString() {
         return mTypeNameAsMetricsString;
+    }
+
+    public String getTypeNameSectionTitleString() {
+        return mTypeNameSectionTitleString;
     }
 
     public String getAddEntityTypeString() {

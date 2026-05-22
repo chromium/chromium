@@ -24,6 +24,7 @@ base::android::ScopedJavaLocalRef<jobject> EntityTypeAndroid::Create(
       entity_type.is_eligible_for_wallet_storage,
       entity_type.is_masked_storage_supported, entity_type.type_name_as_string,
       entity_type.type_name_as_metrics_string,
+      entity_type.type_name_section_title_string,
       entity_type.add_entity_type_string, entity_type.edit_entity_type_string,
       entity_type.delete_entity_type_string, entity_type.attribute_types,
       entity_type.required_types);
@@ -51,6 +52,8 @@ EntityTypeAndroid::EntityTypeAndroid(const EntityType& entity_type,
       is_masked_storage_supported(is_masked_storage_supported),
       type_name_as_string(entity_type.GetNameForI18n()),
       type_name_as_metrics_string(EntityTypeToMetricsString(entity_type)),
+      type_name_section_title_string(
+          GetEntityTypeSectionTitleStringForI18n(entity_type)),
       add_entity_type_string(GetAddEntityTypeStringForI18n(entity_type)),
       edit_entity_type_string(GetEditEntityTypeStringForI18n(entity_type)),
       delete_entity_type_string(GetDeleteEntityTypeStringForI18n(entity_type)),

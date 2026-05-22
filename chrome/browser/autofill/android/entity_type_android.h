@@ -46,6 +46,7 @@ struct EntityTypeAndroid {
   bool is_masked_storage_supported;
   std::u16string type_name_as_string;
   std::string type_name_as_metrics_string;
+  std::string type_name_section_title_string;
   std::string add_entity_type_string;
   std::string edit_entity_type_string;
   std::string delete_entity_type_string;

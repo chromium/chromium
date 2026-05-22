@@ -13,6 +13,10 @@
 
 namespace autofill {
 
+// Returns the i18n string representation of the "<entity type>s". For example,
+// for passport for "en-US", this function should return "Passports".
+std::string GetEntityTypeSectionTitleStringForI18n(EntityType entity_type);
+
 // Returns the i18n string representation of "Add <entity type>". For example,
 // for a passport for "en-US", this function should return "Add passport".
 std::string GetAddEntityTypeStringForI18n(EntityType entity_type);

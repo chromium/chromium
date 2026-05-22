@@ -16,6 +16,32 @@
 
 namespace autofill {
 
+std::string GetEntityTypeSectionTitleStringForI18n(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DRIVERS_LICENSES_TITLE);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_TITLE);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_NATIONAL_IDS_SHORT_TITLE);
+    case EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_PASSPORTS_TITLE);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_REDRESS_NUMBER_TITLE);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_VEHICLES_TITLE);
+    case EntityTypeName::kFlightReservation:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE);
+    case EntityTypeName::kOrder:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ORDERS_TITLE);
+    case EntityTypeName::kShipment:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_SHIPMENTS_TITLE);
+  }
+  NOTREACHED();
+}
+
 std::string GetAddEntityTypeStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
     case EntityTypeName::kDriversLicense:
