@@ -69,6 +69,8 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kOnlyUseWindowResizeHelperOnResize);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kCATransactionV2);
+inline constexpr base::FeatureParam<size_t> kCAContextMaxFencePorts{
+    &kCATransactionV2, "ca_context_max_fence_ports", 4};
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kAsyncLiveResize);
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -147,6 +147,16 @@ void CATransactionCoordinator::Synchronize() {
     return;
 
   if (base::FeatureList::IsEnabled(features::kCATransactionV2)) {
+    // If we are in a nested run loop (e.g, during zoom), the we do not want
+    // keep a CATransaction open across the animation, because it will cause
+    // the animation to not be seen.
+    if (NSRunLoop.currentRunLoop.currentMode &&
+        ![NSRunLoop.currentRunLoop.currentMode
+            isEqualToString:NSDefaultRunLoopMode]) {
+      ca_action_disabler_.reset();
+      return;
+    }
+
     if (!ca_action_disabler_) {
       ca_action_disabler_ = std::make_unique<ScopedCAActionDisabler>();
     }

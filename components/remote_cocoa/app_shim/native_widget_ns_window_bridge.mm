@@ -647,6 +647,14 @@ void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
     const gfx::Size& minimum_content_size,
     const std::optional<gfx::Size>& maximum_content_size) {
+  // Ensure that any changes to the window frame be atomic with the updates to
+  // their content.
+  if (!ca_transaction_sync_suppressed_ &&
+      base::FeatureList::IsEnabled(features::kCATransactionV2) &&
+      !base::FeatureList::IsEnabled(features::kAsyncLiveResize)) {
+    ui::CATransactionCoordinator::Get().Synchronize();
+  }
+
   // Discard any pending live resizes.
   live_resize_.pending_window_frame = std::nullopt;
   live_resize_.queued_pending_window_frame = std::nullopt;

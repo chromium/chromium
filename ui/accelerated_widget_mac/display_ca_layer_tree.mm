@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/remote_layer_api.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -85,14 +86,14 @@ void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
       ca_context_fence_mach_ports_.push_back(
           std::move(ca_layer_params.ca_context_fence_mach_port));
       // If the ca_context_fence_mach_ports_ is freed here, then the screen
-      // flickers (even if in a ScopedCAActionDisabler). Holding on to just one
-      // port is sufficient to remove the flickering, but hold on to 4 just to
-      // be safe. This appears to consume no resources beyond the mach ports
-      // themselves (the IOSurfaces referenced by the CAContext kept alive by
-      // a port are unreferenced, even if the port is never freed), so this does
-      // not have memory usage implications.
-      constexpr size_t kMaxFencePorts = 4u;
-      if (ca_context_fence_mach_ports_.size() > kMaxFencePorts) {
+      // flickers (even if in a ScopedCAActionDisabler). Keeping the port alive
+      // for some amount of time after seems to reduce the likelihood of
+      // flickering. Keeping ports alive appears to consume no resources beyond
+      // the mach ports themselves (the IOSurfaces referenced by the CAContext
+      // kept alive by a port are unreferenced, even if the port is never
+      // freed), so this does not have memory usage implications.
+      if (ca_context_fence_mach_ports_.size() >
+          features::kCAContextMaxFencePorts.Get()) {
         ca_context_fence_mach_ports_.pop_front();
       }
     }

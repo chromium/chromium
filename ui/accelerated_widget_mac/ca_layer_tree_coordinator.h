@@ -110,6 +110,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
       std::vector<gfx::MTLSharedEventFence> metal_fences);
 
  private:
+  void EnsureCAContextAndRootLayer();
+
   const bool allow_remote_layers_ = true;
   const bool allow_av_sample_buffer_display_layer_ = true;
   gfx::Size pixel_size_;

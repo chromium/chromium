@@ -41,18 +41,6 @@ CALayerTreeCoordinator::CALayerTreeCoordinator(
       gl_make_current_callback_(gl_make_current_callback),
       metal_device_(metal_device),
       no_post_task_for_callback_(no_post_task_for_callback) {
-  if (allow_remote_layers_) {
-    root_ca_layer_ = [[CALayer alloc] init];
-#if BUILDFLAG(IS_MAC)
-    // iOS' UIKit has default coordinate system where the origin is at the upper
-    // left of the drawing area. In contrast, AppKit and Core Graphics that
-    // macOS uses has its origin at the lower left of the drawing area. Thus, we
-    // don't need to flip the coordinate system on iOS as it's already set the
-    // way we want it to be.
-    root_ca_layer_.geometryFlipped = YES;
-#endif
-    root_ca_layer_.opaque = YES;
-  }
 }
 
 CALayerTreeCoordinator::~CALayerTreeCoordinator() = default;
@@ -160,6 +148,43 @@ void CALayerTreeCoordinator::Present(
   presented_frames_.push(std::move(frame));
 }
 
+void CALayerTreeCoordinator::EnsureCAContextAndRootLayer() {
+  if (!allow_remote_layers_) {
+    return;
+  }
+  if (!root_ca_layer_) {
+    root_ca_layer_ = [[CALayer alloc] init];
+#if BUILDFLAG(IS_MAC)
+    // iOS' UIKit has default coordinate system where the origin is at the
+    // upper left of the drawing area. In contrast, AppKit and Core Graphics
+    // that macOS uses has its origin at the lower left of the drawing area.
+    // Thus, we don't need to flip the coordinate system on iOS as it's
+    // already set the way we want it to be.
+    root_ca_layer_.geometryFlipped = YES;
+#endif
+    root_ca_layer_.opaque = YES;
+  }
+  if (!ca_context_) {
+#if !BUILDFLAG(IS_IOS) || BUILDFLAG(IS_IOS_TVOS)
+    // Create the CAContext to send this to the GPU process, and the layer
+    // for the context.
+#if BUILDFLAG(IS_MAC)
+    CGSConnectionID connection_id = CGSMainConnectionID();
+    ca_context_ = [CAContext contextWithCGSConnection:connection_id
+                                              options:@{}];
+#else
+    // Use a very large display ID to ensure that the context is never put
+    // on-screen without being explicitly parented.
+    ca_context_ = [CAContext remoteContextWithOptions:@{
+      kCAContextIgnoresHitTest : @YES,
+      kCAContextDisplayId : @10000
+    }];
+#endif
+    ca_context_.layer = root_ca_layer_;
+  }
+#endif  // !BUILDFLAG(IS_IOS) || BUILDFLAG(IS_IOS_TVOS)
+}
+
 void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     base::TimeDelta frame_interval,
     base::TimeTicks display_time) {
@@ -184,7 +209,7 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   gfx::CALayerParams params;
 #if BUILDFLAG(IS_MAC)
   if (has_resized_since_last_swap_) {
-    // Create a new CAContext at the new size. This allows new frame update at
+    // Create a new CAContext for the new size. This allows new frame update at
     // the new size to be atomic with things like resizing the NSWindow.
     if (base::FeatureList::IsEnabled(features::kCATransactionV2) &&
         allow_remote_layers_) {
@@ -192,11 +217,13 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
       [ca_context_ setFencePort:params.ca_context_fence_mach_port.get()];
       ca_context_.layer = nil;
       ca_context_ = nil;
+      root_ca_layer_ = nil;
       current_tree = nullptr;
     }
     has_resized_since_last_swap_ = false;
   }
 #endif
+  EnsureCAContextAndRootLayer();
 
   // Get the frame to be committed.
   auto& frame = presented_frames_.front();
@@ -217,25 +244,6 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
                         pixel_size_.width());
 
     if (allow_remote_layers_) {
-#if !BUILDFLAG(IS_IOS) || BUILDFLAG(IS_IOS_TVOS)
-      if (!ca_context_) {
-        // Create the CAContext to send this to the GPU process, and the layer
-        // for the context.
-#if BUILDFLAG(IS_MAC)
-        CGSConnectionID connection_id = CGSMainConnectionID();
-        ca_context_ = [CAContext contextWithCGSConnection:connection_id
-                                                  options:@{}];
-#else
-        // Use a very large display ID to ensure that the context is never put
-        // on-screen without being explicitly parented.
-        ca_context_ = [CAContext remoteContextWithOptions:@{
-          kCAContextIgnoresHitTest : @YES,
-          kCAContextDisplayId : @10000
-        }];
-#endif
-        ca_context_.layer = root_ca_layer_;
-      }
-#endif  // !BUILDFLAG(IS_IOS) || BUILDFLAG(IS_IOS_TVOS)
       params.ca_context_id = [ca_context_ contextId];
     } else {
       IOSurfaceRef io_surface = frame.layer_tree->GetContentIOSurface();
