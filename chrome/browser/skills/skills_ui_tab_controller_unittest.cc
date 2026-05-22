@@ -8,11 +8,18 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -33,18 +40,22 @@ constexpr char kTestSkillId[] = "test_skill_id";
 
 class TestSkillsUiTabController : public SkillsUiTabController {
  public:
-  explicit TestSkillsUiTabController(tabs::TabInterface& tab)
-      : SkillsUiTabController(tab) {}
+  TestSkillsUiTabController(tabs::TabInterface& tab, Profile* profile)
+      : SkillsUiTabController(tab), profile_(profile) {}
 
+  raw_ptr<Profile> profile_;
   Skill test_skill_;
 
-  MOCK_METHOD(void, ShowGlicPanel, (), (override));
-  MOCK_METHOD(bool, IsClientReady, (), (override));
-  MOCK_METHOD(void, NotifySkillToInvokeChanged, (), (override));
-
-  void CallRealNotifySkillToInvokeChanged() {
-    SkillsUiTabController::NotifySkillToInvokeChanged();
+  glic::GlicKeyedService* GetGlicService() override {
+    return mock_glic_keyed_service_.get();
   }
+
+  void SetMockGlicKeyedService(
+      std::unique_ptr<glic::MockGlicKeyedService> mock) {
+    mock_glic_keyed_service_ = std::move(mock);
+  }
+
+  std::unique_ptr<glic::MockGlicKeyedService> mock_glic_keyed_service_;
 
   const Skill* GetSkill(std::string_view skill_id) override {
     if (skill_id == kTestSkillId) {
@@ -62,25 +73,35 @@ class SkillsUiTabControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
+    TestingProfileManager* profile_manager =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
 
     EXPECT_CALL(mock_tab_, GetUnownedUserDataHost())
         .WillRepeatedly(ReturnRef(user_data_host_));
     EXPECT_CALL(mock_tab_, GetBrowserWindowInterface())
         .WillRepeatedly(Return(&mock_browser_window_interface_));
 
-    controller_ = std::make_unique<TestSkillsUiTabController>(mock_tab_);
+    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    TestingProfile* profile =
+        profile_manager->CreateTestingProfile("test_profile");
+    glic_test_env_.SetupProfile(profile);
+
+    controller_ =
+        std::make_unique<TestSkillsUiTabController>(mock_tab_, profile);
+    auto mock_service =
+        std::make_unique<testing::NiceMock<glic::MockGlicKeyedService>>(
+            profile, identity_test_env_.identity_manager(),
+            profile_manager->profile_manager(), &glic_profile_manager_, nullptr,
+            nullptr);
+    controller_->SetMockGlicKeyedService(std::move(mock_service));
   }
 
   void TearDown() override {
     controller_.reset();
-
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
     testing::Mock::VerifyAndClear(&mock_browser_window_interface_);
     testing::Mock::VerifyAndClear(&mock_tab_);
-
-    profile_manager_.reset();
 
     ChromeViewsTestBase::TearDown();
   }
@@ -88,82 +109,51 @@ class SkillsUiTabControllerTest : public ChromeViewsTestBase {
  protected:
   base::HistogramTester histogram_tester_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  glic::GlicProfileManager glic_profile_manager_;
+  glic::GlicUnitTestEnvironment glic_test_env_;
 
   ::ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
   NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  signin::IdentityTestEnvironment identity_test_env_;
 
   std::unique_ptr<TestSkillsUiTabController> controller_;
 };
 
-TEST_F(SkillsUiTabControllerTest, InvokeSkill_TriggersToggleUI) {
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
-  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).Times(1);
+TEST_F(SkillsUiTabControllerTest, InvokeSkill_CallsInvokeWithAutoSubmit) {
+  controller_->test_skill_.id = kTestSkillId;
+  controller_->test_skill_.prompt = "Test Prompt";
+
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .WillOnce([](glic::InvokeWithAutoSubmitPasskey,
+                   const glic::GlicInvokeOptions& options)
+                    -> base::WeakPtr<glic::GlicInstance> {
+        EXPECT_EQ(options.skill_id, kTestSkillId);
+        EXPECT_EQ(options.prompts.size(), 1u);
+        EXPECT_EQ(options.prompts[0], "Test Prompt");
+        return base::WeakPtr<glic::GlicInstance>();
+      });
 
   controller_->InvokeSkill(kTestSkillId);
-}
-
-TEST_F(SkillsUiTabControllerTest, InvokeSkill_ClientNotReady_Waits) {
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
-  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).Times(0);
-
-  controller_->InvokeSkill(kTestSkillId);
-}
-
-TEST_F(SkillsUiTabControllerTest,
-       InvokeSkill_ClientBecomesReady_SendsNotification) {
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
-  EXPECT_CALL(*controller_, IsClientReady())
-      .WillOnce(Return(false))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).Times(1);
-
-  controller_->InvokeSkill(kTestSkillId);
-
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-}
-
-TEST_F(SkillsUiTabControllerTest, InvokeSkill_Timeout_GivesUp) {
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
-  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).Times(0);
-
-  controller_->InvokeSkill(kTestSkillId);
-
-  task_environment()->FastForwardBy(base::Seconds(61));
-  histogram_tester_.ExpectUniqueSample("Skills.Invoke.Result",
-                                       skills::SkillsInvokeResult::kTimeout, 1);
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
-  TestingProfile* profile =
-      profile_manager_->CreateTestingProfile("test_profile");
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile, nullptr);
-
-  EXPECT_CALL(mock_tab_, GetContents())
-      .WillRepeatedly(Return(web_contents.get()));
-
-  // Setup dummy skill data.
   controller_->test_skill_.id = kTestSkillId;
   controller_->test_skill_.source =
       sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
   controller_->test_skill_.prompt = "Test Prompt";
 
-  // Force "Ready" state
-  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .Times(1);
 
-  // Run it
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).WillOnce([this]() {
-    controller_->CallRealNotifySkillToInvokeChanged();
-  });
   controller_->InvokeSkill(kTestSkillId);
 
-  // Verify Metrics
   histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
                                       SkillsInvokeAction::kUserCreated, 1);
   histogram_tester_.ExpectUniqueSample("Skills.Invoke.Result",
@@ -171,28 +161,19 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
-  TestingProfile* profile =
-      profile_manager_->CreateTestingProfile("test_profile");
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile, nullptr);
-
-  EXPECT_CALL(mock_tab_, GetContents())
-      .WillRepeatedly(Return(web_contents.get()));
-
   controller_->test_skill_.id = kTestSkillId;
   controller_->test_skill_.source =
       sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
   controller_->test_skill_.prompt = "Test Prompt";
 
-  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .Times(1);
 
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).WillOnce([this]() {
-    controller_->CallRealNotifySkillToInvokeChanged();
-  });
   controller_->InvokeSkill(kTestSkillId);
 
-  // Verify Metrics
   histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
                                       SkillsInvokeAction::kFirstParty, 1);
   histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
@@ -202,19 +183,14 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_SkillNotFound_LogsMetric) {
-  // Force the client to be ready so it immediately tries to invoke
-  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
+  auto* mock_glic_keyed_service =
+      static_cast<glic::MockGlicKeyedService*>(controller_->GetGlicService());
+  EXPECT_CALL(*mock_glic_keyed_service,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+      .Times(0);
 
-  // Allow the real notification method to run
-  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).WillOnce([this]() {
-    controller_->CallRealNotifySkillToInvokeChanged();
-  });
-
-  // Pass an ID that the mock GetSkill() doesn't recognize
   controller_->InvokeSkill("some_deleted_skill_id");
 
-  // Assert the error metric fired safely
   histogram_tester_.ExpectUniqueSample(
       "Skills.Invoke.Result", skills::SkillsInvokeResult::kSkillNotFound, 1);
 }

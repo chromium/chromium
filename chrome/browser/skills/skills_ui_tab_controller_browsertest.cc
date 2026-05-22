@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kAdd);
+      mojom::SkillsDialogType::kAdd, nullptr);
 
   EXPECT_TRUE(IsDialogVisible());
   EXPECT_NE(nullptr, GetDialogWebContents());
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
 
   views::Widget* first_widget = GetDialogWidget();
   ASSERT_TRUE(first_widget);
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill2), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
 
   // Widget should be exactly the same instance.
   views::Widget* second_widget = GetDialogWidget();
@@ -143,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
   EXPECT_TRUE(IsDialogVisible());
 
   // Trigger the close.
@@ -160,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("id", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
 
   views::Widget* widget = GetDialogWidget();
   ASSERT_TRUE(widget);
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill2("id2", "name2", "icon2", "prompt2");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill2), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
   EXPECT_TRUE(IsDialogVisible());
 }
 
@@ -191,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
   skills::Skill test_skill("id", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
   EXPECT_TRUE(IsDialogVisible());
 
   // Close the tab.
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   controller_a->ShowDialog(std::move(test_skill),
                            SkillsDialogEntryPoint::kWebClientPrefilled,
-                           mojom::SkillsDialogType::kEdit);
+                           mojom::SkillsDialogType::kEdit, nullptr);
   EXPECT_TRUE(IsDialogVisible());
 
   // Open a new Tab B and switch to it.
@@ -224,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
   controller_b->ShowDialog(std::move(test_skill2),
                            SkillsDialogEntryPoint::kWebClientPrefilled,
-                           mojom::SkillsDialogType::kEdit);
+                           mojom::SkillsDialogType::kEdit, nullptr);
 
   EXPECT_TRUE(IsDialogVisible());
 
@@ -243,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
 
   // Dig down to find the SkillsUI.
   // The controller holds the delegate -> which holds WebContents -> which holds
@@ -275,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kAdd);
+      mojom::SkillsDialogType::kAdd, nullptr);
 
   content::WebContents* web_contents = GetDialogWebContents();
   ASSERT_TRUE(web_contents);
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // Open the dialog.
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
   EXPECT_TRUE(IsDialogVisible());
 
   //  Get the WebContents and wait for it to load.
@@ -388,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("id", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(
       std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
-      mojom::SkillsDialogType::kEdit);
+      mojom::SkillsDialogType::kEdit, nullptr);
 
   content::WebContents* dialog_contents = GetDialogWebContents();
   ASSERT_TRUE(dialog_contents);

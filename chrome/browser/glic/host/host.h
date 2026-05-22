@@ -387,8 +387,6 @@ class Host : public GlicSharingManagerProvider {
 
   void NotifyActorTaskListRowClicked(int32_t task_id);
 
-  void NotifySkillToInvokeChanged(mojom::SkillPtr skill);
-
   // Register a handler to observe experimental triggering related updates.
   // The callback informs if the registration operations was successful or not.
   virtual void GetExperimentalTriggeringUpdates(

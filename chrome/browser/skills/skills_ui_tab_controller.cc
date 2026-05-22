@@ -5,8 +5,10 @@
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
@@ -27,10 +29,6 @@
 DEFINE_USER_DATA(skills::SkillsUiTabController);
 
 namespace {
-
-constexpr base::TimeDelta kNotifyTimeoutSeconds = base::Seconds(60);
-constexpr base::TimeDelta kGlicPanelPollIntervalMilliseconds =
-    base::Milliseconds(60);
 
 using glic::mojom::SkillSource;
 
@@ -66,7 +64,8 @@ void SkillsUiTabController::OnTabWillDetach(
 
 void SkillsUiTabController::ShowDialog(Skill skill,
                                        SkillsDialogEntryPoint entrypoint,
-                                       mojom::SkillsDialogType dialog_type) {
+                                       mojom::SkillsDialogType dialog_type,
+                                       std::unique_ptr<glic::Target> target) {
   if (dialog_widget_) {
     // Dialog is already open.
     return;
@@ -75,6 +74,7 @@ void SkillsUiTabController::ShowDialog(Skill skill,
   RecordSkillsDialogAction(SkillsDialogAction::kOpened, entrypoint,
                            /*is_edit_mode=*/IsEditMode(&skill));
   current_skill_ = skill;
+  target_ = std::move(target);
 
   content::WebContents* contents = tab_->GetContents();
   CHECK(contents);
@@ -164,70 +164,8 @@ bool SkillsUiTabController::IsShowing() const {
 }
 
 void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {
-  if (pending_skill_id_.empty()) {
-    ShowGlicPanel();
-  }
-
-  pending_skill_id_ = skill_id;
-
-  glic_panel_open_time_ = base::TimeTicks::Now();
-
-  NotifySkillToInvokeChangedWhenReady();
-}
-
-glic::GlicKeyedService* SkillsUiTabController::GetGlicService() {
-  content::WebContents* contents = tab_->GetContents();
-  if (!contents) {
-    return nullptr;
-  }
-  return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      contents->GetBrowserContext());
-}
-
-void SkillsUiTabController::ShowGlicPanel() {
-  if (auto* service = GetGlicService()) {
-    service->ToggleUI(tab_->GetBrowserWindowInterface(),
-                      /*prevent_close=*/true,
-                      glic::mojom::InvocationSource::kSkills);
-  }
-}
-
-void SkillsUiTabController::NotifySkillToInvokeChangedWhenReady() {
-  // TODO(b/483387751): refactor to use invoke API.
-  if (IsClientReady()) {
-    NotifySkillToInvokeChanged();
-  } else if (base::TimeTicks::Now() - glic_panel_open_time_ >
-             kNotifyTimeoutSeconds) {
-    RecordSkillsInvokeResult(SkillsInvokeResult::kTimeout);
-    Reset();
-  } else if (!glic_panel_ready_timer_.IsRunning()) {
-    glic_panel_ready_timer_.Start(
-        FROM_HERE, kGlicPanelPollIntervalMilliseconds,
-        base::BindRepeating(
-            &SkillsUiTabController::NotifySkillToInvokeChangedWhenReady,
-            base::Unretained(this)));
-  }
-}
-
-const skills::Skill* SkillsUiTabController::GetSkill(
-    std::string_view skill_id) {
-  content::WebContents* contents = tab_->GetContents();
-  if (!contents) {
-    return nullptr;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto* service = skills::SkillsServiceFactory::GetForProfile(profile);
-  return service ? service->GetSkillById(skill_id) : nullptr;
-}
-
-void SkillsUiTabController::NotifySkillToInvokeChanged() {
-  std::string skill_id_to_invoke = pending_skill_id_;
-
-  Reset();
-  CHECK(!glic_panel_ready_timer_.IsRunning());
-
-  const skills::Skill* skill = GetSkill(skill_id_to_invoke);
+  last_invoked_skill_id_for_testing_ = skill_id;
+  const skills::Skill* skill = GetSkill(skill_id);
 
   if (!skill) {
     // TODO(https://crbug.com/475549806): provide user feedback.
@@ -254,30 +192,41 @@ void SkillsUiTabController::NotifySkillToInvokeChanged() {
       break;
   }
 
-  auto mojo_skill = glic::mojom::Skill::New();
-  mojo_skill->prompt = skill->prompt;
-  mojo_skill->preview = SkillToGlicMojomSkillPreview(skill);
-
   if (auto* service = GetGlicService()) {
-    if (auto* instance = service->GetInstanceForTab(&tab_.get())) {
-      instance->host().NotifySkillToInvokeChanged(std::move(mojo_skill));
+    glic::GlicInvokeOptions options(
+        glic::Target(&tab_.get(), glic::DefaultConversation()),
+        glic::mojom::InvocationSource::kSkills);
+    options.prompts.push_back(skill->prompt);
+    options.skill_id = std::string(skill_id);
+    if (target_) {
+      options.target = std::move(*target_);
+      target_.reset();
     }
+    service->InvokeWithAutoSubmit(
+        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+        std::move(options));
   }
 }
 
-void SkillsUiTabController::Reset() {
-  glic_panel_open_time_ = base::TimeTicks();
-  glic_panel_ready_timer_.Stop();
-  pending_skill_id_ = "";
+glic::GlicKeyedService* SkillsUiTabController::GetGlicService() {
+  content::WebContents* contents = tab_->GetContents();
+  if (!contents) {
+    return nullptr;
+  }
+  return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      contents->GetBrowserContext());
 }
 
-bool SkillsUiTabController::IsClientReady() {
-  if (auto* service = GetGlicService()) {
-    if (auto* instance = service->GetInstanceForTab(&tab_.get())) {
-      return instance->host().IsWebClientConnected();
-    }
+const skills::Skill* SkillsUiTabController::GetSkill(
+    std::string_view skill_id) {
+  content::WebContents* contents = tab_->GetContents();
+  if (!contents) {
+    return nullptr;
   }
-  return false;
+
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto* service = skills::SkillsServiceFactory::GetForProfile(profile);
+  return service ? service->GetSkillById(skill_id) : nullptr;
 }
 
 }  // namespace skills

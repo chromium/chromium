@@ -306,6 +306,14 @@ class WebClient implements GlicWebClient {
     if (options.context) {
       additionalContextSubject.next(options.context);
     }
+
+    if (options.prompts && options.prompts.length > 0) {
+      const input = $.skillPromptInput as HTMLInputElement;
+      const prompt = options.prompts[0];
+      if (input && prompt !== undefined) {
+        input.value = prompt;
+      }
+    }
   }
 
   getInitialized(): Promise<void> {

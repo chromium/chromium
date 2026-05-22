@@ -325,10 +325,6 @@ class WebClientMessageHandler implements
     this.host.skillPreviews.assignAndSignal(this.combineSkillPreviews());
   }
 
-  glicWebClientNotifySkillToInvokeChanged(payload: {skill: Skill}): void {
-    this.host.skillToInvoke.assignAndSignal(payload.skill);
-  }
-
   glicWebClientPageMetadataChanged(
       payload: {tabId: string, pageMetadata: PageMetadata|null}): void {
     const observable = this.host.pageMetadataObservers.get(payload.tabId);

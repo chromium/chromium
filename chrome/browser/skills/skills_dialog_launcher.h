@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_SKILLS_SKILLS_DIALOG_LAUNCHER_H_
 #define CHROME_BROWSER_SKILLS_SKILLS_DIALOG_LAUNCHER_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/skills/public/skill.h"
@@ -14,6 +18,10 @@
 
 namespace tabs {
 class TabInterface;
+}
+
+namespace glic {
+struct Target;
 }
 
 namespace skills {
@@ -31,6 +39,7 @@ class SkillsDialogLauncher
   static void CreateForTab(tabs::TabInterface* tab,
                            Skill skill,
                            mojom::SkillsDialogType dialog_type,
+                           std::unique_ptr<glic::Target> target,
                            SkillResultCallback callback);
 
   ~SkillsDialogLauncher() override;
@@ -42,12 +51,14 @@ class SkillsDialogLauncher
   static void TriggerDialog(tabs::TabInterface* tab,
                             Skill skill,
                             mojom::SkillsDialogType dialog_type,
+                            std::unique_ptr<glic::Target> target,
                             SkillResultCallback callback);
 
   SkillsDialogLauncher(content::WebContents* contents,
                        tabs::TabInterface* tab,
                        Skill skill,
                        mojom::SkillsDialogType dialog_type,
+                       std::unique_ptr<glic::Target> target,
                        SkillResultCallback callback);
 
   // content::WebContentsObserver:
@@ -62,6 +73,8 @@ class SkillsDialogLauncher
   Skill skill_;
   // The dialog type.
   mojom::SkillsDialogType dialog_type_;
+  // The target for the invocation.
+  std::unique_ptr<glic::Target> target_;
   // Callback to signal success or failure to the caller.
   SkillResultCallback callback_;
 

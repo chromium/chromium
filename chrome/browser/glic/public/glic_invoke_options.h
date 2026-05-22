@@ -228,6 +228,8 @@ struct GlicInvokeOptions {
   std::optional<ZssConfig> zss_config;
 
   // If this invocation is used by the skill feature, this specifies its ID.
+  // TODO(b/507074189): make this a source-specific payload rather than a
+  // general option.
   std::optional<std::string> skill_id;
 
   // The FRE override, if any.

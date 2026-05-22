@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
@@ -14,7 +16,14 @@
 
 namespace skills {
 
-class SkillsInvocationInteractiveUiTest : public SkillsInteractiveUiTestBase {};
+class SkillsInvocationInteractiveUiTest : public SkillsInteractiveUiTestBase {
+ public:
+  void InvokeWithAutoSubmitHelper(glic::GlicInvokeOptions options) {
+    glic_service()->InvokeWithAutoSubmit(
+        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+        std::move(options));
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
                        Invoke1PSkillFromFloatyGic) {
@@ -38,22 +47,24 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest, Invoke1PSkill) {
 }
 
 IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
-                       NotifySkillToInvokeChanged_UpdatesGetSkillToInvoke) {
+                       InvokeWithAutoSubmit_UpdatesWebUI) {
   auto skill = GetMockSkill();
   std::string generated_skill_id;
 
   RunTestSequence(
       OpenGlicAndInstrument(), AddUserOwnedSkill(skill, &generated_skill_id),
-      // Simulate a notification that the skill to invoke has changed.
+      // Simulate an invocation with auto-submit.
       Do([this, skill, skill_id_ptr = &generated_skill_id]() mutable {
         skill.id = *skill_id_ptr;
-        auto mojo_skill = glic::mojom::Skill::New(
-            SkillToGlicMojomSkillPreview(&skill), skill.prompt,
-            /*source_skill_id=*/std::nullopt);
-        GetGlicInstanceImpl()->host().NotifySkillToInvokeChanged(
-            std::move(mojo_skill));
+        glic::GlicInvokeOptions options(
+            glic::Target(browser()->GetActiveTabInterface()),
+            glic::mojom::InvocationSource::kSkills);
+        options.prompts.push_back(skill.prompt);
+        options.skill_id = skill.id;
+
+        InvokeWithAutoSubmitHelper(std::move(options));
       }),
-      // Verify the getSkillToInvoke() endpoint reflects the update.
+      // Verify the WebUI reflects the update.
       VerifyInvocationInWebUI(skill.prompt));
 }
 

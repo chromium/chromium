@@ -25,6 +25,11 @@ namespace ttc {
 class AiOverlayTools;
 }
 
+namespace skills {
+class SkillsUiTabController;
+class SkillsInvocationInteractiveUiTest;
+}  // namespace skills
+
 namespace glic {
 
 class AnchoredNudgeController;
@@ -58,6 +63,8 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class ::GlicExperimentalTriggeringMessageHandler;
   friend class GlicCueTarget;
   friend class ::ttc::AiOverlayTools;
+  friend class ::skills::SkillsUiTabController;
+  friend class ::skills::SkillsInvocationInteractiveUiTest;
   friend class AndroidAutoSubmitPasskeyHelper<
       mojom::InvocationSource::kUniversalCart>;
 };

@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/types/optional_util.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
@@ -105,7 +106,7 @@ void SkillsPageHandler::OpenSkillsDialog(
     tab_controller->ShowDialog(
         skill.value_or(skills::Skill()),
         ResolveEntryPointForManagementPage(base::OptionalToPtr(skill)),
-        dialog_type);
+        dialog_type, nullptr);
   } else {
     RecordSkillsManagementError(SkillsManagementError::kTabControllerDNE);
   }

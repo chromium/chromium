@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(SkillsDialogLauncherBrowserTest, LaunchOnLoadedTab) {
 
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   SkillsDialogLauncher::CreateForTab(
-      tab, std::move(test_skill), mojom::SkillsDialogType::kEdit,
+      tab, std::move(test_skill), mojom::SkillsDialogType::kEdit, nullptr,
       base::BindLambdaForTesting([&](bool success) {
         callback_success = success;
         run_loop.Quit();
@@ -69,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(SkillsDialogLauncherBrowserTest,
 
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   SkillsDialogLauncher::CreateForTab(
-      tab, std::move(test_skill), mojom::SkillsDialogType::kEdit,
+      tab, std::move(test_skill), mojom::SkillsDialogType::kEdit, nullptr,
       base::BindLambdaForTesting([&](bool success) {
         callback_success = success;
         run_loop.Quit();
@@ -110,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(SkillsDialogLauncherBrowserTest,
   // Launch the dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   SkillsDialogLauncher::CreateForTab(tab, std::move(test_skill),
-                                     mojom::SkillsDialogType::kEdit,
+                                     mojom::SkillsDialogType::kEdit, nullptr,
                                      std::move(wrapped_callback));
 
   // Close the tab immediately.

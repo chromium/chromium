@@ -2002,9 +2002,6 @@ interface WebClient {
   // Notify that the skills previews have changed.
   NotifySkillPreviewsChanged(array<SkillPreview> skill_previews);
 
-  // Notify that the skill to invoke has changed.
-  NotifySkillToInvokeChanged(Skill skill);
-
   // Informs the client that the zero state suggestions have changed.
   NotifyZeroStateSuggestionsChanged(ZeroStateSuggestionsV2? suggestions,
                                     ZeroStateSuggestionsOptions options);

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_dialog_launcher.h"
 #include "chrome/browser/skills/skills_service_factory.h"
@@ -118,8 +119,14 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
     return;
   }
   // Delegate the race-condition handling to the Skills launcher.
+  auto target = std::make_unique<glic::Target>();
+  target->surface = target_tab;
+  if (auto conv_id = instance_->conversation_id()) {
+    target->conversation = glic::ConversationId(*conv_id);
+  }
   skills::SkillsDialogLauncher::CreateForTab(target_tab, std::move(skill),
-                                             dialog_type, std::move(callback));
+                                             dialog_type, std::move(target),
+                                             std::move(callback));
 }
 
 void GlicSkillsManagerImpl::ShowManageSkillsUi() {
