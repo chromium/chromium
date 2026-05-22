@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 #include "chrome/browser/glic/fre/fre_util.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/glic_experimental_opt_in_resources.h"
 #include "chrome/grit/glic_experimental_opt_in_resources_map.h"
@@ -28,7 +30,13 @@ namespace {
 
 GURL GetExperimentalTriggeringOptInURL(Profile* profile,
                                        RequiredExperimentalOptIn state) {
-  GURL url = GURL(features::kGlicExperimentalTriggeringOptInURL.Get());
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_url_override =
+      command_line->HasSwitch(::switches::kGlicExperimentalFreURL);
+  GURL url = GURL(has_url_override
+                      ? command_line->GetSwitchValueASCII(
+                            ::switches::kGlicExperimentalFreURL)
+                      : features::kGlicExperimentalTriggeringOptInURL.Get());
   if (url.is_empty()) {
     LOG(ERROR) << "No glic experimental triggering opt in url";
     return GURL();

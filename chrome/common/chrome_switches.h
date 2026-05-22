@@ -296,6 +296,7 @@ extern const char kGlicGuestURL[];
 extern const char kGlicAlwaysOpenFre[];
 extern const char kGlicAlwaysSkipFre[];
 extern const char kGlicFreURL[];
+extern const char kGlicExperimentalFreURL[];
 extern const char kGlicShortcutsLearnMoreURL[];
 extern const char kGlicOpenOnStartup[];
 extern const char kGlicAllowedOrigins[];

@@ -944,6 +944,7 @@ const char kGlicGuestURL[] = "glic-guest-url";
 const char kGlicAlwaysOpenFre[] = "glic-always-open-fre";
 const char kGlicAlwaysSkipFre[] = "glic-always-skip-fre";
 const char kGlicFreURL[] = "glic-fre-url";
+const char kGlicExperimentalFreURL[] = "glic-experimental-fre-url";
 const char kGlicShortcutsLearnMoreURL[] = "glic-shortcuts-learn-more-url";
 // Use --glic-open-on-startup=attached or --glic-open-on-startup=detached.
 const char kGlicOpenOnStartup[] = "glic-open-on-startup";
