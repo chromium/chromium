@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -66,6 +67,7 @@ namespace {
 
 const char kTestURL[] = "http://foo";
 const char kTestData[] = "blah!";
+constexpr base::ByteSize kTestDataSize(std::size(kTestData));
 
 class MockResourceRequestSender : public ResourceRequestSender {
  public:
@@ -384,9 +386,9 @@ class URLLoaderTest : public testing::Test {
     body_handle_.reset();
     base::RunLoop().RunUntilIdle();
     network::URLLoaderCompletionStatus status(net::OK);
-    status.encoded_data_length = std::size(kTestData);
-    status.encoded_body_length = std::size(kTestData);
-    status.decoded_body_length = std::size(kTestData);
+    status.encoded_data_length = kTestDataSize.InBytes();
+    status.encoded_body_length = kTestDataSize.InBytes();
+    status.decoded_body_length = kTestDataSize.InBytes();
     resource_request_client()->OnCompletedRequest(status);
     EXPECT_TRUE(client()->did_finish());
     // There should be no error.
@@ -399,9 +401,9 @@ class URLLoaderTest : public testing::Test {
     body_handle_.reset();
     base::RunLoop().RunUntilIdle();
     network::URLLoaderCompletionStatus status(net::ERR_FAILED);
-    status.encoded_data_length = std::size(kTestData);
-    status.encoded_body_length = std::size(kTestData);
-    status.decoded_body_length = std::size(kTestData);
+    status.encoded_data_length = kTestDataSize.InBytes();
+    status.encoded_body_length = kTestDataSize.InBytes();
+    status.decoded_body_length = kTestDataSize.InBytes();
     resource_request_client()->OnCompletedRequest(status);
     EXPECT_FALSE(client()->did_finish());
     ASSERT_TRUE(client()->error());
