@@ -94,7 +94,12 @@ struct WebAppInstallParams {
   // proto::INSTALLED_WITH_OS_INTEGRATION.
   bool add_to_applications_menu = true;
   bool add_to_desktop = true;
-  bool add_to_quick_launch_bar = true;
+  // Pinning to Shelf on ChromeOS is not done by default and should be
+  // explicitly triggered (e.g. via the user-accepted install dialog). So, this
+  // defaults to false on ChromeOS, while remaining true by default on other
+  // desktop platforms where it has the expected native shortcut-creation
+  // effect.
+  bool add_to_quick_launch_bar = !BUILDFLAG(IS_CHROMEOS);
 
   // These have no effect outside of Chrome OS.
   bool add_to_search = true;

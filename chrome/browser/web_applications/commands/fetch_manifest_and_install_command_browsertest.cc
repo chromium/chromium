@@ -310,15 +310,13 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
 
       CreateDialogCallback(/*accept=*/false),
-      base::BindLambdaForTesting(
-          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
-            EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
-            EXPECT_FALSE(provider()
-                             .registrar_unsafe()
-                             .GetInstallState(app_id)
-                             .has_value());
-            loop.Quit();
-          }),
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id,
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
+        EXPECT_FALSE(
+            provider().registrar_unsafe().GetInstallState(app_id).has_value());
+        loop.Quit();
+      }),
       FallbackBehavior::kCraftedManifestOnly);
   loop.Run();
 }
@@ -336,15 +334,13 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       web_contents->GetWeakPtr(), CreateDialogCallback(),
-      base::BindLambdaForTesting(
-          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
-            EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
-            EXPECT_FALSE(provider()
-                             .registrar_unsafe()
-                             .GetInstallState(app_id)
-                             .has_value());
-            loop.Quit();
-          }),
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id,
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
+        EXPECT_FALSE(
+            provider().registrar_unsafe().GetInstallState(app_id).has_value());
+        loop.Quit();
+      }),
       FallbackBehavior::kCraftedManifestOnly);
 
   // Create a new tab to ensure that the browser isn't destroyed with the web
@@ -712,6 +708,66 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallTestNoConsoleErrors,
   tester.ExpectBucketCount("WebApp.ManifestIconDownloader.ChromeUrl.Result",
                            content::ManifestIconDownloader::Result::kSuccess,
                            1);
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
+                       QuickLaunchBarPinned) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  // Dialog callback that sets add_to_quick_launch_bar.
+  auto dialog_callback = base::BindLambdaForTesting(
+      [](base::WeakPtr<WebAppScreenshotFetcher>,
+         content::WebContents* initiator_web_contents,
+         std::unique_ptr<WebAppInstallInfo> web_app_info,
+         WebAppInstallationAcceptanceCallback acceptance_callback) {
+        web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+        web_app_info->add_to_quick_launch_bar = true;
+        AdaptToLaunchOnInstallSuccess(std::move(acceptance_callback))
+            .Run(true, std::move(web_app_info));
+      });
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      std::move(dialog_callback), install_future.GetCallback(),
+      FallbackBehavior::kCraftedManifestOnly);
+
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+
+  bool can_apps_be_pinned = provider().ui_manager().CanAddAppToQuickLaunchBar();
+  bool is_app_pinned = can_apps_be_pinned &&
+                       provider().ui_manager().IsAppInQuickLaunchBar(app_id);
+  EXPECT_EQ(is_app_pinned, can_apps_be_pinned);
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
+                       QuickLaunchBarNotPinnedByDefault) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(), install_future.GetCallback(),
+      FallbackBehavior::kCraftedManifestOnly);
+
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+  if (provider().ui_manager().CanAddAppToQuickLaunchBar()) {
+    EXPECT_FALSE(provider().ui_manager().IsAppInQuickLaunchBar(app_id));
+  }
 }
 
 }  // namespace web_app

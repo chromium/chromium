@@ -813,4 +813,40 @@ INSTANTIATE_TEST_SUITE_P(
             "https://foo.example/search?q=querystring#hello",
             "https://foo.example/search")));
 
+TEST_F(FinalizeInstallJobTest, FinalizeJobQuickLaunchBarPinningEnabled) {
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
+  info->title = u"Foo Title";
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  options.add_to_quick_launch_bar = true;
+
+  static_cast<FakeWebAppUiManager&>(provider().ui_manager())
+      .SetCanAddAppToQuickLaunchBar(true);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_TRUE(
+      provider().ui_manager().IsAppInQuickLaunchBar(result.installed_app_id));
+}
+
+TEST_F(FinalizeInstallJobTest, FinalizeJobQuickLaunchBarPinningDisabled) {
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
+  info->title = u"Foo Title";
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  options.add_to_quick_launch_bar = false;
+
+  static_cast<FakeWebAppUiManager&>(provider().ui_manager())
+      .SetCanAddAppToQuickLaunchBar(true);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_FALSE(
+      provider().ui_manager().IsAppInQuickLaunchBar(result.installed_app_id));
+}
+
 }  // namespace web_app
