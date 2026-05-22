@@ -17,6 +17,31 @@ namespace net {
 
 namespace {
 
+// Searches in `sources` for a certificate with subject matching
+// `current_issuer`. If found, the certificate is added to `intermediates`,
+// `current_issuer` and `current_subject` are updated to the values from the
+// certificate, and true is returned.
+bool FindIssuerCert(const ClientCertIssuerSourceCollection& sources,
+                    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* intermediates,
+                    base::span<const uint8_t>* current_issuer,
+                    base::span<const uint8_t>* current_subject) {
+  for (const auto& source : sources) {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> issuers =
+        source->GetCertsByName(*current_issuer);
+    for (auto& issuer : issuers) {
+      if (asn1::ExtractIssuerAndSubjectFromDERCert(
+              x509_util::CryptoBufferAsSpan(issuer.get()), current_issuer,
+              current_subject)) {
+        // The first matching issuer found at each step is used. This algorithm
+        // doesn't do a full graph exploration.
+        intermediates->push_back(std::move(issuer));
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool MatchClientCertificateIssuers(
     X509Certificate* cert,
     const std::vector<std::string>& cert_authorities,
@@ -54,24 +79,8 @@ bool MatchClientCertificateIssuers(
     }
 
     // Look for an issuer of the current cert.
-    bool found_issuer = false;
-    for (const auto& source : sources) {
-      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> issuers =
-          source->GetCertsByName(current_issuer);
-      for (auto& issuer : issuers) {
-        if (asn1::ExtractIssuerAndSubjectFromDERCert(
-                x509_util::CryptoBufferAsSpan(issuer.get()), &current_issuer,
-                &current_subject)) {
-          // The first issuer found at each step is used. This algorithm doesn't
-          // do a full graph exploration.
-          found_issuer = true;
-          intermediates->push_back(std::move(issuer));
-          break;
-        }
-      }
-    }
-
-    if (!found_issuer) {
+    if (!FindIssuerCert(sources, intermediates, &current_issuer,
+                        &current_subject)) {
       // No issuers were found, give up.
       return false;
     }
