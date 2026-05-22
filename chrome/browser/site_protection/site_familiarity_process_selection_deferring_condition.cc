@@ -5,6 +5,7 @@
 #include "chrome/browser/site_protection/site_familiarity_process_selection_deferring_condition.h"
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,6 +61,7 @@ SiteFamiliarityProcessSelectionDeferringCondition::OnWillSelectFinalProcess(
     return content::ProcessSelectionDeferringCondition::Result::kProceed;
   }
   callback_ = std::move(resume);
+  defer_timer_.emplace();
   return content::ProcessSelectionDeferringCondition::Result::kDefer;
 }
 
@@ -78,6 +80,11 @@ void SiteFamiliarityProcessSelectionDeferringCondition::OnComputedVerdict(
 
   if (callback_) {
     SetVerdictOnHandle();
+    if (defer_timer_) {
+      base::UmaHistogramTimes(kSiteFamiliarityDeferNavigationDurationHistogram,
+                              defer_timer_->Elapsed());
+      defer_timer_.reset();
+    }
     std::move(callback_).Run();
   }
 }
