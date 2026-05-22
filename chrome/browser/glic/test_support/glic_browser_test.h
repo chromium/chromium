@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,6 +148,10 @@ class GlicBrowserTestMixin : public T {
     glic_test_environment_.SetGlicPagePath(
         "/glic/browser_tests/minimal_client.html");
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    // Globally block all In-Product Help (IPH) triggers in all Glic browser
+    // tests to avoid flakiness caused by unexpected IPH popups (e.g., adaptive
+    // top toolbar customization cues on Android), which can make glic hide.
+    scoped_iph_feature_list_.InitWithNoFeaturesAllowed();
   }
   ~GlicBrowserTestMixin() override = default;
 
@@ -476,6 +481,7 @@ class GlicBrowserTestMixin : public T {
 #endif
   GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   std::unique_ptr<views::test::MockActivationController> activation_controller_;
 #endif

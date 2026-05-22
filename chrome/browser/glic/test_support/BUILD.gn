@@ -49,6 +49,7 @@ source_set("test_support") {
     "//chrome/browser/glic/fre",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
+    "//components/feature_engagement/test:test_support",
     "//components/signin/public/identity_manager:test_support",
   ]
   if (enable_desktop_aura || is_mac) {
