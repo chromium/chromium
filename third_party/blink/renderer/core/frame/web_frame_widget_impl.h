@@ -232,7 +232,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   cc::AnimationTimeline* ScrollAnimationTimeline() const final;
   void SetOverscrollBehavior(
       const cc::OverscrollBehavior& overscroll_behavior) final;
-  void SendEarlyFinalBeginMainFrame() override;
   void RequestAnimationAfterDelay(const base::TimeDelta&, bool urgent) final;
   void RequestAnimationAfterDelay(cc::BeginMainFrameReason,
                                   const base::TimeDelta&,

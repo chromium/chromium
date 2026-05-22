@@ -232,7 +232,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void UnregisterFromCommitObservation(CommitObserver*) = 0;
 
   virtual void WillCommitCompositorFrame() = 0;
-  virtual void RequestFrameWithoutVSyncFromRoot(LocalFrame& frame) {}
 
   virtual bool StartDeferringCommits(LocalFrame& main_frame,
                                      base::TimeDelta timeout,
