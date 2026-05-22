@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -130,6 +131,7 @@ FormData WithoutValues(FormData form) {
     field.set_value({});
     field.set_is_autofilled_according_to_renderer(false);
     field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
+    field.set_properties_mask(0);
   }
   return form;
 }
@@ -383,5 +385,109 @@ FormData CreateTestUnclassifiedFormData() {
       FormControlType::kInputText)});
   return form;
 }
+
+#define FFD_PROPERTY_EQ(property) \
+  testing::Property(#property, &FormFieldData::property, expected.property())
+
+testing::Matcher<FormFieldData> FormFieldDataEq(const FormFieldData& expected) {
+  return testing::AllOf(
+      // Keep in the same order as FormFieldDataMembers in form_field_data.h.
+      // LINT.IfChange(FormFieldDataEq)
+      // clang-format off
+      FFD_PROPERTY_EQ(name),
+      FFD_PROPERTY_EQ(id_attribute),
+      FFD_PROPERTY_EQ(name_attribute),
+      FFD_PROPERTY_EQ(label),
+      FFD_PROPERTY_EQ(value),
+      FFD_PROPERTY_EQ(selected_option_text),
+      FFD_PROPERTY_EQ(selected_text),
+      FFD_PROPERTY_EQ(form_control_type),
+      FFD_PROPERTY_EQ(autocomplete_attribute),
+      FFD_PROPERTY_EQ(parsed_autocomplete),
+      FFD_PROPERTY_EQ(pattern),
+      FFD_PROPERTY_EQ(placeholder),
+      FFD_PROPERTY_EQ(css_classes),
+      FFD_PROPERTY_EQ(aria_label),
+      FFD_PROPERTY_EQ(aria_description),
+      FFD_PROPERTY_EQ(challenge),
+      FFD_PROPERTY_EQ(host_frame),
+      FFD_PROPERTY_EQ(renderer_id),
+      FFD_PROPERTY_EQ(host_form_id),
+      FFD_PROPERTY_EQ(host_form_signature),
+      FFD_PROPERTY_EQ(origin),
+      FFD_PROPERTY_EQ(form_control_ax_id),
+      FFD_PROPERTY_EQ(max_length),
+      FFD_PROPERTY_EQ(is_autofilled_according_to_renderer),
+      FFD_PROPERTY_EQ(check_status),
+      FFD_PROPERTY_EQ(is_focusable),
+      FFD_PROPERTY_EQ(is_visible),
+      FFD_PROPERTY_EQ(should_autocomplete),
+      FFD_PROPERTY_EQ(role),
+      FFD_PROPERTY_EQ(text_direction),
+      FFD_PROPERTY_EQ(properties_mask),
+      FFD_PROPERTY_EQ(is_enabled),
+      FFD_PROPERTY_EQ(is_readonly),
+      FFD_PROPERTY_EQ(user_input),
+      FFD_PROPERTY_EQ(allows_writing_suggestions),
+      FFD_PROPERTY_EQ(options),
+      FFD_PROPERTY_EQ(label_source),
+      FFD_PROPERTY_EQ(bounds),
+      FFD_PROPERTY_EQ(datalist_options),
+      FFD_PROPERTY_EQ(force_override),
+      // clang-format on
+      // LINT.ThenChange(form_field_data.h:FormFieldDataMembers)
+      // Backstop for members compared by IdenticalAndEquivalentDomElements().
+      testing::Truly([expected](const FormFieldData& actual) {
+        return FormFieldData::IdenticalAndEquivalentDomElements(expected,
+                                                                actual);
+      }));
+}
+
+#undef FFD_PROPERTY_EQ
+
+#define FD_PROPERTY_EQ(property) \
+  testing::Property(#property, &FormData::property, expected.property())
+
+testing::Matcher<FormData> FormDataEq(const FormData& expected) {
+  // Build field matchers for each field in the expected form.
+  std::vector<testing::Matcher<FormFieldData>> field_matchers;
+  field_matchers.reserve(expected.fields().size());
+  for (const FormFieldData& field : expected.fields()) {
+    field_matchers.push_back(FormFieldDataEq(field));
+  }
+
+  return testing::AllOf(
+      // Keep in the same order as FormDataMembers in form_data.h.
+      // LINT.IfChange(FormDataEq)
+      // clang-format off
+      FD_PROPERTY_EQ(host_frame),
+      FD_PROPERTY_EQ(renderer_id),
+      FD_PROPERTY_EQ(child_frames),
+      // Compare fields_ recursively with FormFieldDataEq().
+      testing::Property("fields", &FormData::fields,
+                        testing::ElementsAreArray(field_matchers)),
+      FD_PROPERTY_EQ(id_attribute),
+      FD_PROPERTY_EQ(name_attribute),
+      FD_PROPERTY_EQ(name),
+      FD_PROPERTY_EQ(button_titles),
+      FD_PROPERTY_EQ(url),
+      FD_PROPERTY_EQ(full_url),
+      FD_PROPERTY_EQ(action),
+      FD_PROPERTY_EQ(is_action_empty),
+      FD_PROPERTY_EQ(main_frame_origin),
+      FD_PROPERTY_EQ(submission_event),
+      FD_PROPERTY_EQ(username_predictions),
+      FD_PROPERTY_EQ(is_gaia_with_skip_save_password_form),
+      FD_PROPERTY_EQ(likely_contains_captcha),
+      FD_PROPERTY_EQ(version),
+      // clang-format on
+      // LINT.ThenChange(form_data.h:FormDataMembers)
+      // Backstop for members compared by IdenticalAndEquivalentDomElements().
+      testing::Truly([expected](const FormData& actual) {
+        return FormData::IdenticalAndEquivalentDomElements(expected, actual);
+      }));
+}
+
+#undef FD_PROPERTY_EQ
 
 }  // namespace autofill::test

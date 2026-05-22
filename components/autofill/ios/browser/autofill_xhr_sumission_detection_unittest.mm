@@ -30,6 +30,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
+using ::autofill::test::FormDataEq;
+using ::autofill::test::WithoutValues;
 using ::testing::ElementsAre;
 using ::testing::Property;
 
@@ -162,7 +164,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   auto& autofill_manager = main_frame_manager();
   ASSERT_TRUE(autofill_manager.submitted_form());
   // Check that the submitted form has the values "typed" in each field.
-  EXPECT_EQ(*autofill_manager.submitted_form(), form_data2);
+  EXPECT_THAT(*autofill_manager.submitted_form(), FormDataEq(form_data2));
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value2"),
                           Property(&FormFieldData::value, u"value3")));
@@ -207,7 +209,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // AutofillManager.
   auto& autofill_manager = main_frame_manager();
   ASSERT_TRUE(autofill_manager.submitted_form());
-  EXPECT_EQ(*autofill_manager.submitted_form(), form_data);
+  EXPECT_THAT(*autofill_manager.submitted_form(), FormDataEq(form_data));
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value")));
 
@@ -288,7 +290,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Validate that the formless form was detected as submitted and sent to
   // AutofillManager.
   ASSERT_TRUE(autofill_manager.submitted_form());
-  EXPECT_EQ(*autofill_manager.submitted_form(), form_data);
+  EXPECT_THAT(*autofill_manager.submitted_form(), FormDataEq(form_data));
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value1"),
                           Property(&FormFieldData::value, u"value2")));
@@ -378,8 +380,8 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // FieldDataManager.
   auto& autofill_manager = main_frame_manager();
   ASSERT_TRUE(autofill_manager.submitted_form());
-  EXPECT_EQ(test::WithoutValues(form_data),
-            test::WithoutValues(*autofill_manager.submitted_form()));
+  EXPECT_THAT(WithoutValues(form_data),
+              FormDataEq(WithoutValues(*autofill_manager.submitted_form())));
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value2")));
 }

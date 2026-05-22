@@ -18,6 +18,9 @@
 namespace autofill {
 namespace {
 
+using ::autofill::test::FormDataEq;
+using ::autofill::test::WithoutUnserializedData;
+
 // This function serializes the form data into the pickle in version one format.
 // It should always be possible to deserialize it using DeserializeFormData(),
 // even when version changes. See kPickleVersion in form_data.cc.
@@ -185,8 +188,8 @@ TEST(FormDataTest, SerializeAndDeserialize) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v1_Deserialize_vCurrent) {
@@ -200,8 +203,8 @@ TEST(FormDataTest, Serialize_v1_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v2_Deserialize_vCurrent) {
@@ -215,8 +218,8 @@ TEST(FormDataTest, Serialize_v2_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent) {
@@ -230,8 +233,8 @@ TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent_IsFormTagFalse) {
@@ -246,8 +249,8 @@ TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent_IsFormTagFalse) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
@@ -261,8 +264,8 @@ TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
@@ -276,8 +279,8 @@ TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
@@ -291,8 +294,8 @@ TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
@@ -306,8 +309,8 @@ TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, Serialize_v8_Deserialize_vCurrent) {
@@ -321,8 +324,8 @@ TEST(FormDataTest, Serialize_v8_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_EQ(test::WithoutUnserializedData(actual),
-            test::WithoutUnserializedData(data));
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(data)));
 }
 
 TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
@@ -337,7 +340,8 @@ TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
   EXPECT_FALSE(DeserializeFormData(&iter, &actual));
 
   FormData empty;
-  EXPECT_EQ(actual, empty);
+  EXPECT_THAT(WithoutUnserializedData(actual),
+              FormDataEq(WithoutUnserializedData(empty)));
 }
 
 }  // namespace

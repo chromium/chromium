@@ -378,7 +378,8 @@ class FormData {
   bool is_gaia_with_skip_save_password_form_ = false;
   bool likely_contains_captcha_ = false;
   FormVersion version_;
-  // LINT.ThenChange(form_data.cc:IdenticalAndEquivalentDomElements)
+  // LINT.ThenChange(form_data.cc:IdenticalAndEquivalentDomElements,
+  // autofill_test_utils.cc:FormDataEq)
 };
 
 // Whether any of the fields in |form| is a non-empty password field.

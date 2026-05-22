@@ -28,10 +28,12 @@
 namespace autofill {
 namespace {
 
+using ::autofill::test::FormDataEq;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::MockFunction;
+using ::testing::Not;
 using ::testing::Pointwise;
 using ::testing::SizeIs;
 
@@ -122,10 +124,10 @@ TEST_F(FormDataAndroidTest, Form) {
   FormData form = CreateTestForm();
   FormDataAndroid form_android(form, kSampleSessionId);
 
-  EXPECT_EQ(form_android.form(), form);
+  EXPECT_THAT(form_android.form(), FormDataEq(form));
 
   form.set_name(form.name() + u"x");
-  EXPECT_NE(form_android.form(), form);
+  EXPECT_THAT(form_android.form(), Not(FormDataEq(form)));
 }
 
 // Tests that form similarity checks include name, name_attribute, id_attribute,
@@ -344,7 +346,7 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   EXPECT_CALL(*field_bridges()[2], UpdateFocusable).Times(0);
   form_android.UpdateFieldVisibilities(form);
 
-  EXPECT_EQ(form_android.form(), form);
+  EXPECT_THAT(form_android.form(), FormDataEq(form));
 }
 
 // Tests that `GetJavaPeer` passes the correct `FormData`, `SessionId` and

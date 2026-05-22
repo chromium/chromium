@@ -531,7 +531,8 @@ class FormFieldData {
   gfx::RectF bounds_;
   std::vector<SelectOption> datalist_options_;
   bool force_override_ = false;
-  // LINT.ThenChange(form_field_data.cc:IdenticalAndEquivalentDomElements)
+  // LINT.ThenChange(form_field_data.cc:IdenticalAndEquivalentDomElements,
+  // autofill_test_utils.cc:FormFieldDataEq)
 };
 
 // Structure containing necessary information to be sent from the browser to the

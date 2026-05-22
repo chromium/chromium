@@ -30,6 +30,10 @@
 namespace autofill {
 namespace {
 
+using ::autofill::test::FormDataEq;
+using ::autofill::test::FormFieldDataEq;
+using ::autofill::test::WithoutUnserializedData;
+
 const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
                                            "Option4"};
 
@@ -124,8 +128,8 @@ void CheckEqualPassPasswordGenerationUIData(
   EXPECT_EQ(expected.is_generation_element_password_type,
             actual.is_generation_element_password_type);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
-  EXPECT_EQ(test::WithoutUnserializedData(expected.form_data),
-            test::WithoutUnserializedData(actual.form_data));
+  EXPECT_THAT(WithoutUnserializedData(expected.form_data),
+              FormDataEq(WithoutUnserializedData(actual.form_data)));
 }
 
 void CheckEqualTriggeringField(const TriggeringField& expected,
@@ -145,8 +149,8 @@ void CheckEqualPasswordSuggestionRequest(
     const PasswordSuggestionRequest& expected,
     const PasswordSuggestionRequest& actual) {
   CheckEqualTriggeringField(expected.field, actual.field);
-  EXPECT_EQ(test::WithoutUnserializedData(expected.form_data),
-            test::WithoutUnserializedData(actual.form_data));
+  EXPECT_THAT(WithoutUnserializedData(expected.form_data),
+              FormDataEq(WithoutUnserializedData(actual.form_data)));
   EXPECT_TRUE(actual.username_field_id.frame_token.is_empty());
   EXPECT_TRUE(actual.password_field_id.frame_token.is_empty());
   EXPECT_EQ(expected.username_field_id.renderer_id,
@@ -223,9 +227,8 @@ void ExpectFormFieldData(const FormFieldData& expected,
                          base::OnceClosure closure,
                          const FormFieldData& passed) {
   EXPECT_TRUE(passed.host_frame().is_empty());
-  EXPECT_TRUE(FormFieldData::IdenticalAndEquivalentDomElements(
-      test::WithoutUnserializedData(expected),
-      test::WithoutUnserializedData(passed)));
+  EXPECT_THAT(WithoutUnserializedData(expected),
+              FormFieldDataEq(WithoutUnserializedData(passed)));
   std::move(closure).Run();
 }
 
@@ -233,8 +236,8 @@ void ExpectFormData(const FormData& expected,
                     base::OnceClosure closure,
                     const FormData& passed) {
   EXPECT_TRUE(passed.host_frame().is_empty());
-  EXPECT_EQ(test::WithoutUnserializedData(expected),
-            test::WithoutUnserializedData(passed));
+  EXPECT_THAT(WithoutUnserializedData(expected),
+              FormDataEq(WithoutUnserializedData(passed)));
   std::move(closure).Run();
 }
 
@@ -248,7 +251,7 @@ void ExpectFormFieldDataPredictions(const FormFieldDataPredictions& expected,
 void ExpectFormDataPredictions(FormDataPredictions expected,
                                base::OnceClosure closure,
                                const FormDataPredictions& passed) {
-  expected.data = test::WithoutUnserializedData(expected.data);
+  expected.data = WithoutUnserializedData(expected.data);
   EXPECT_EQ(expected, passed);
   std::move(closure).Run();
 }

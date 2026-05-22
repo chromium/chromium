@@ -62,6 +62,7 @@ namespace {
 
 using ::autofill::FormControlType;
 using ::autofill::test::CreateTestFormField;
+using ::autofill::test::FormDataEq;
 using ::testing::AllOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
@@ -1961,7 +1962,7 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_EQ(form, FormStructure(form).ToFormData());
+  EXPECT_THAT(form, FormDataEq(FormStructure(form).ToFormData()));
 }
 
 // Tests that an Autofill upload for password form with 1 field should not be
@@ -2386,13 +2387,13 @@ TEST_F(FormStructureTestImpl, UpdateFormData) {
   fields.front().set_value(u"John Doe");
   form.set_fields(std::move(fields));
   form.set_name_attribute(u"new-form-name");
-  ASSERT_NE(form_structure.ToFormData(), form);
+  ASSERT_THAT(form_structure.ToFormData(), Not(FormDataEq(form)));
 
   // By updating the `FormData` in `form_structure`, `form` matches again with
   // `form_structure.ToFormData()`, and the other  information in
   // `form_structure` remain unchanged.
   test_api(form_structure).UpdateFormData(form);
-  EXPECT_EQ(form_structure.ToFormData(), form);
+  EXPECT_THAT(form_structure.ToFormData(), FormDataEq(form));
   EXPECT_EQ(form_structure.field(0)->Type().GetAddressType(), NAME_FULL);
   EXPECT_EQ(form_structure.submission_source(),
             mojom::SubmissionSource::XHR_SUCCEEDED);

@@ -16,6 +16,7 @@
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -45,7 +46,9 @@ namespace {
 using base::test::WithFeatureOverride;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using test::FormDataEq;
 using test::kTrackFormMutationsDelayInMs;
+using test::WithoutUnserializedData;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -271,7 +274,9 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
   ASSERT_TRUE(observer_->submit_document_info());
   EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
-  EXPECT_EQ(test_form_data, observer_->submit_document_info()->form_data);
+  EXPECT_THAT(
+      WithoutUnserializedData(observer_->submit_document_info()->form_data),
+      FormDataEq(WithoutUnserializedData(test_form_data)));
 
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
@@ -979,7 +984,9 @@ TEST_F(FormSubmittedHookTest, TestFormSubmittedHook) {
 
   ASSERT_TRUE(observer_->submit_document_info());
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
-  EXPECT_EQ(test_form_data, observer_->submit_document_info()->form_data);
+  EXPECT_THAT(
+      WithoutUnserializedData(observer_->submit_document_info()->form_data),
+      FormDataEq(WithoutUnserializedData(test_form_data)));
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
   histogram_tester_.ExpectUniqueSample(kProgrammaticFormSubmissionHistogram,
