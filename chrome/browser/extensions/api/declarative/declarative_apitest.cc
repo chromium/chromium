@@ -29,6 +29,9 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
+// This file tests declarativeWebRequest, which is not supported on Android.
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace extensions {
 
 namespace {
