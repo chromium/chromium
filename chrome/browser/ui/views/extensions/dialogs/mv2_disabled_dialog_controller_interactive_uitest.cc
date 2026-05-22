@@ -183,18 +183,13 @@ class Mv2DisabledDialogControllerInteractiveUITest
     std::vector<base::test::FeatureRef> disabled_features;
 
     switch (experiment_stage) {
-      case MV2ExperimentStage::kWarning:
       case MV2ExperimentStage::kDisableWithReEnable:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
         break;
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -228,8 +223,6 @@ INSTANTIATE_TEST_SUITE_P(
                       MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kWarning:
-          NOTREACHED();
         case MV2ExperimentStage::kDisableWithReEnable:
           return "DisableExperiment";
         case MV2ExperimentStage::kUnsupported:

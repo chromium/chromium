@@ -4529,11 +4529,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "extension-manifest-v2-deprecation-disabled",
-    "owners": [ "emiliapaz@chromium.org" ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "extension-manifest-v2-deprecation-unsupported",
     "owners": [ "emiliapaz@chromium.org" ],
     "expiry_milestone": 137

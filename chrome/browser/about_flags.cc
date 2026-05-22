@@ -8858,12 +8858,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHExtensionsRequestAccessButtonFeature)},
 
-    {"extension-manifest-v2-deprecation-disabled",
-     flag_descriptions::kExtensionManifestV2DeprecationDisabledName,
-     flag_descriptions::kExtensionManifestV2DeprecationDisabledDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(extensions_features::kExtensionManifestV2Disabled)},
-
     {"extension-manifest-v2-deprecation-unsupported",
      flag_descriptions::kExtensionManifestV2DeprecationUnsupportedName,
      flag_descriptions::kExtensionManifestV2DeprecationUnsupportedDescription,

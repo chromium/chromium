@@ -886,23 +886,13 @@ WebstorePrivateManifestV2DeprecationUnitTest::
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
   switch (GetParam()) {
-    case MV2ExperimentStage::kWarning:
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2Disabled);
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2Unsupported);
-      break;
     case MV2ExperimentStage::kDisableWithReEnable:
-      enabled_features.push_back(
-          extensions_features::kExtensionManifestV2Disabled);
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2Unsupported);
       break;
     case MV2ExperimentStage::kUnsupported:
       enabled_features.push_back(
           extensions_features::kExtensionManifestV2Unsupported);
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2Disabled);
       break;
   }
 
@@ -912,13 +902,10 @@ WebstorePrivateManifestV2DeprecationUnitTest::
 INSTANTIATE_TEST_SUITE_P(
     ,
     WebstorePrivateManifestV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable,
+    testing::Values(MV2ExperimentStage::kDisableWithReEnable,
                     MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kWarning:
-          return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
           return "DisableExperiment";
         case MV2ExperimentStage::kUnsupported:
@@ -938,9 +925,6 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
 
   std::string expected;
   switch (GetParam()) {
-    case MV2ExperimentStage::kWarning:
-      expected = "warning";
-      break;
     case MV2ExperimentStage::kDisableWithReEnable:
       expected = "soft_disable";
       break;

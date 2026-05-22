@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -15,15 +14,11 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
 class Mv2DeprecationKeepDialogInteractiveTest : public InteractiveBrowserTest {
  public:
-  Mv2DeprecationKeepDialogInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionManifestV2Disabled);
-  }
+  Mv2DeprecationKeepDialogInteractiveTest() = default;
   ~Mv2DeprecationKeepDialogInteractiveTest() override = default;
   Mv2DeprecationKeepDialogInteractiveTest(
       const Mv2DeprecationKeepDialogInteractiveTest&) = delete;
@@ -51,9 +46,6 @@ class Mv2DeprecationKeepDialogInteractiveTest : public InteractiveBrowserTest {
   extensions::ExtensionRegistrar* extension_registrar() {
     return extensions::ExtensionRegistrar::Get(browser()->profile());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(Mv2DeprecationKeepDialogInteractiveTest, ShowDialog) {

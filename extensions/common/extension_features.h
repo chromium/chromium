@@ -152,10 +152,6 @@ BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);
 // A replacement key for declaring icons, in addition to supporting dark mode.
 BASE_DECLARE_FEATURE(kExtensionIconVariants);
 
-// Controls disabling affected MV2 extensions that are no longer supported.
-// Users can re-enable these extensions.
-BASE_DECLARE_FEATURE(kExtensionManifestV2Disabled);
-
 // Controls fully removing support for user-installed MV2 extensions.
 // Users may no longer re-enable these extensions. Enterprises may still
 // override this.

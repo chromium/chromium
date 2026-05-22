@@ -3415,109 +3415,19 @@ TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
 }
 
-// Test suite for cases where the user is in the  MV2 deprecation "warning"
-// experiment phase.
-class DeveloperPrivateApiWithMV2DeprecationWarningUnitTest
-    : public DeveloperPrivateApiUnitTest {
- public:
-  DeveloperPrivateApiWithMV2DeprecationWarningUnitTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            extensions_features::kExtensionManifestV2Disabled,
-            extensions_features::kExtensionManifestV2Unsupported});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test suite for cases where the user is in the  MV2 deprecation "disabled"
 // experiment phase.
 class DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
   DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest() {
-    feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionManifestV2Disabled},
-        {extensions_features::kExtensionManifestV2Unsupported});
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionManifestV2Unsupported);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-// Extension of manifest version 2 is not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
-       TestAcknowledgingAnExtension) {
-  // Add an extension that is affected by the MV2 deprecation.
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  registrar()->AddExtension(extension.get());
-
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-
-  base::ListValue args;
-  args.Append(extension->id());
-
-  // Dismiss the extension's notice.
-  auto dismiss_notice_function = base::MakeRefCounted<
-      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
-  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
-  EXPECT_TRUE(RunFunction(dismiss_notice_function, args));
-
-  // Extension's notice should be marked as acknowledged.
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-}
-
-TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
-       TestAcknowledgingANonAffectedExtension) {
-  // Add an extension that is not affected by the MV2 deprecation.
-  scoped_refptr<const Extension> extension = ExtensionBuilder("ext").Build();
-  registrar()->AddExtension(extension.get());
-
-  std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
-  auto dismiss_notice_function = base::MakeRefCounted<
-      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
-  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
-
-  // Cannot dismiss an extension's notice whe the extension is not affected by
-  // the MV2 deprecation.
-  std::string error = api_test_utils::RunFunctionAndReturnError(
-      dismiss_notice_function, args, profile());
-  EXPECT_EQ(error,
-            ErrorUtils::FormatErrorMessage(
-                "Extension with ID '*' is not affected by the MV2 deprecation.",
-                extension->id()));
-
-  // Extension notice should not be marked as acknowledged.
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
-       TestAcknowledgingNoticeGlobally) {
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNoticeGlobally());
-
-  auto update_profile_function = base::MakeRefCounted<
-      api::DeveloperPrivateUpdateProfileConfigurationFunction>();
-  update_profile_function->set_source_context_type(mojom::ContextType::kWebUi);
-
-  base::ListValue args;
-  args.Append(base::DictValue().Set("isMv2DeprecationNoticeDismissed", true));
-  EXPECT_TRUE(RunFunction(update_profile_function, args));
-
-  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNoticeGlobally());
-}
 
 // Extension of manifest version 2 is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)

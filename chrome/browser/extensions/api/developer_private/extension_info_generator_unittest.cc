@@ -1337,23 +1337,13 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
 
     experiment_stage_ = GetParam();
     switch (experiment_stage_) {
-      case MV2ExperimentStage::kWarning:
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Unsupported);
-        break;
       case MV2ExperimentStage::kDisableWithReEnable:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
         break;
     }
 
@@ -1373,13 +1363,10 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable,
+    testing::Values(MV2ExperimentStage::kDisableWithReEnable,
                     MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kWarning:
-          return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
           return "DisableExperiment";
         case MV2ExperimentStage::kUnsupported:

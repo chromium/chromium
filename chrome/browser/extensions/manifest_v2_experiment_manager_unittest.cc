@@ -81,18 +81,6 @@ ManifestV2ExperimentManagerUnitTestBase::
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
-// Test suite for cases where the user is in the "warning" experiment phase.
-class ManifestV2ExperimentManagerWarningUnitTest
-    : public ManifestV2ExperimentManagerUnitTestBase {
- public:
-  ManifestV2ExperimentManagerWarningUnitTest()
-      : ManifestV2ExperimentManagerUnitTestBase(
-            {},
-            {extensions_features::kExtensionManifestV2Disabled,
-             extensions_features::kExtensionManifestV2Unsupported}) {}
-  ~ManifestV2ExperimentManagerWarningUnitTest() override = default;
-};
-
 // Test suite for cases where the user is in the "disable with re-enable"
 // experiment phase.
 class ManifestV2ExperimentManagerDisableWithReEnableUnitTest
@@ -100,22 +88,9 @@ class ManifestV2ExperimentManagerDisableWithReEnableUnitTest
  public:
   ManifestV2ExperimentManagerDisableWithReEnableUnitTest()
       : ManifestV2ExperimentManagerUnitTestBase(
-            {extensions_features::kExtensionManifestV2Disabled},
+            {},
             {extensions_features::kExtensionManifestV2Unsupported}) {}
   ~ManifestV2ExperimentManagerDisableWithReEnableUnitTest() override = default;
-};
-
-// Test suite for cases where the user is in the "disable with re-enable"
-// experiment phase *and* the warning experiment is still active.
-class ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest
-    : public ManifestV2ExperimentManagerUnitTestBase {
- public:
-  ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest()
-      : ManifestV2ExperimentManagerUnitTestBase(
-            {extensions_features::kExtensionManifestV2Disabled},
-            {extensions_features::kExtensionManifestV2Unsupported}) {}
-  ~ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest() override =
-      default;
 };
 
 // Test suite for cases where the user is in the "unsupported" experiment phase.
@@ -129,101 +104,9 @@ class ManifestV2ExperimentManagerUnsupportedUnitTest
   ~ManifestV2ExperimentManagerUnsupportedUnitTest() override = default;
 };
 
-// Tests that the experiment stage is properly set when the manifest V2
-// deprecation warning experiment is enabled.
-TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
-       ExperimentStageIsSetToWarning) {
-  EXPECT_EQ(MV2ExperimentStage::kWarning,
-            experiment_manager()->GetCurrentExperimentStage());
-}
-
-// Sanity check that MV2 extensions are considered affected when the
-// experiment is enabled. The "is affected" logic is much more heavily tested
-// in mv2_deprecation_impact_checker_unittest.cc.
-TEST_F(ManifestV2ExperimentManagerWarningUnitTest, MV2ExtensionsAreAffected) {
-  struct {
-    mojom::ManifestLocation manifest_location;
-    const char* name;
-  } test_cases[] = {
-      {mojom::ManifestLocation::kInternal, "internal"},
-      {mojom::ManifestLocation::kExternalPref, "external pref"},
-      {mojom::ManifestLocation::kExternalRegistry, "external registry"},
-  };
-
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.name);
-    scoped_refptr<const Extension> mv2_extension =
-        ExtensionBuilder(test_case.name)
-            .SetManifestVersion(2)
-            .SetLocation(test_case.manifest_location)
-            .Build();
-    EXPECT_TRUE(experiment_manager()->IsExtensionAffected(*mv2_extension));
-    // Even though the MV2 extension is affected by the experiment, it should
-    // *not* be blocked from installation or enablement in the warning phase.
-    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-        mv2_extension->id(), mv2_extension->manifest_version(),
-        mv2_extension->GetType(), mv2_extension->location(),
-        mv2_extension->hashed_id()));
-    EXPECT_FALSE(
-        experiment_manager()->ShouldBlockExtensionEnable(*mv2_extension));
-
-    // Modern extensions are not affected by the experiment.
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder(test_case.name)
-            .SetLocation(test_case.manifest_location)
-            .Build();
-    EXPECT_FALSE(experiment_manager()->IsExtensionAffected(*extension));
-    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-        extension->id(), extension->manifest_version(), extension->GetType(),
-        extension->location(), extension->hashed_id()));
-    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
-  }
-}
-
-TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
-       MarkingNoticeAsAcknowledged) {
-  scoped_refptr<const Extension> ext1 =
-      ExtensionBuilder("one")
-          .SetManifestVersion(2)
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .Build();
-  scoped_refptr<const Extension> ext2 =
-      ExtensionBuilder("two")
-          .SetManifestVersion(2)
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .Build();
-
-  registrar()->AddExtension(ext1.get());
-  registrar()->AddExtension(ext2.get());
-
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext1->id()));
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
-
-  experiment_manager()->MarkNoticeAsAcknowledged(ext1->id());
-
-  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNotice(ext1->id()));
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
-}
-
-TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
-       MarkingGlobalNoticeAsAcknowledged) {
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
-  experiment_manager()->MarkNoticeAsAcknowledgedGlobally();
-  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
-}
-
 // Tests that the experiment phase is properly set for a user in the
 // "disable with re-enable" experiment phase.
 TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
-       ExperimentStageIsSetToDisableWithReEnable) {
-  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
-            experiment_manager()->GetCurrentExperimentStage());
-}
-
-// Tests that the experiment phase is properly set for a user in the
-// "disable with re-enable" experiment phase if the "warning" experiment is
-// still active. That is, verifies that the "latest" stage takes precedence.
-TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest,
        ExperimentStageIsSetToDisableWithReEnable) {
   EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
             experiment_manager()->GetCurrentExperimentStage());

@@ -2667,6 +2667,9 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
 
       // Added 2025-08.
       "state",
+
+      // Added 2026-05.
+      "mv2_deprecation_warning_ack",
   };
 
   for (auto key_value : extensions_dictionary) {

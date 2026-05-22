@@ -49,10 +49,6 @@ constexpr PrefMap kMV2DeprecationUnsupportedDisabledDialogAcknowledgedPref = {
 const PrefMap& GetDisabledDialogAcknowledgedPref(
     MV2ExperimentStage experiment_stage) {
   switch (experiment_stage) {
-    case MV2ExperimentStage::kWarning:
-      // There is no disabled dialog for this stage, thus extension cannot be
-      // acknowledged.
-      NOTREACHED();
     case MV2ExperimentStage::kDisableWithReEnable:
       return kMV2DeprecationDisabledDialogAcknowledgedPref;
     case MV2ExperimentStage::kUnsupported:

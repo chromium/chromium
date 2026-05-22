@@ -2305,11 +2305,6 @@ inline constexpr char kIPHExtensionsRequestAccessButtonFeatureDescription[] =
     "Enables In-Product-Help that appears when at least one extension is "
     "requesting access to the current page. This feature is gated by "
     "extensions-menu-access-control.";
-inline constexpr char kExtensionManifestV2DeprecationDisabledName[] =
-    "Extension Manifest V2 Deprecation Disabled Stage";
-inline constexpr char kExtensionManifestV2DeprecationDisabledDescription[] =
-    "Displays a warning that affected MV2 extensions were turned off due to "
-    "the Manifest V2 deprecation.";
 inline constexpr char kExtensionManifestV2DeprecationUnsupportedName[] =
     "Extension Manifest V2 Deprecation Unsupported Stage";
 inline constexpr char kExtensionManifestV2DeprecationUnsupportedDescription[] =

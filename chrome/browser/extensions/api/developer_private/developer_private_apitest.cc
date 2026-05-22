@@ -547,23 +547,13 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     switch (experiment_stage_) {
-      case MV2ExperimentStage::kWarning:
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Unsupported);
-        break;
       case MV2ExperimentStage::kDisableWithReEnable:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -581,13 +571,10 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     DeveloperPrivateApiWithMV2DeprecationApiTest,
-    testing::Values(MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable,
+    testing::Values(MV2ExperimentStage::kDisableWithReEnable,
                     MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kWarning:
-          return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
           return "DisableExperiment";
         case MV2ExperimentStage::kUnsupported:
@@ -626,16 +613,6 @@ IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
   std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
 
   switch (experiment_stage()) {
-    case MV2ExperimentStage::kWarning:
-      api_test_utils::RunFunction(dismiss_notice_function.get(), args,
-                                  profile());
-
-      // Extension's notice should be marked as acknowledged.
-      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-      EXPECT_TRUE(
-          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-      break;
-
     case MV2ExperimentStage::kDisableWithReEnable: {
       // The function will trigger a dialog for this stage. Add a waiter for the
       // dialog.

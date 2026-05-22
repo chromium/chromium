@@ -67,9 +67,6 @@ std::string DescribeTestVariant(const TestVariant& test_variant) {
   description += "And";
 
   switch (experiment_stage) {
-    case MV2ExperimentStage::kWarning:
-      description += "WarningExperiment";
-      break;
     case MV2ExperimentStage::kDisableWithReEnable:
       description += "DisableExperiment";
       break;
@@ -233,8 +230,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     MV2DeprecationImpactCheckerUnitTest,
     testing::Combine(
-        testing::Values(MV2ExperimentStage::kWarning,
-                        MV2ExperimentStage::kDisableWithReEnable,
+        testing::Values(MV2ExperimentStage::kDisableWithReEnable,
                         MV2ExperimentStage::kUnsupported),
         testing::Values(MV2PolicyLevel::kUnset,
                         MV2PolicyLevel::kAllowed,
@@ -248,8 +244,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     MV2DeprecationImpactCheckerUnitTestWithAllowlist,
     testing::Combine(
-        testing::Values(MV2ExperimentStage::kWarning,
-                        MV2ExperimentStage::kDisableWithReEnable,
+        testing::Values(MV2ExperimentStage::kDisableWithReEnable,
                         MV2ExperimentStage::kUnsupported),
         testing::Values(MV2PolicyLevel::kUnset,
                         MV2PolicyLevel::kAllowed,

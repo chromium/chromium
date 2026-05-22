@@ -2582,12 +2582,6 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
   MV2ExperimentStage experiment_stage =
       experiment_manager->GetCurrentExperimentStage();
   switch (experiment_stage) {
-    case MV2ExperimentStage::kWarning: {
-      // Immediately dismiss the notice.
-      DismissExtensionNotice();
-      return RespondNow(NoArguments());
-    }
-
     case MV2ExperimentStage::kDisableWithReEnable: {
       // Prompt for user confirmation before dismissing the notice.
       if (accept_bubble_for_testing_.has_value()) {

@@ -891,9 +891,8 @@ class ManagementApiUnitTestMV2DisableWithReEnableUnitTest
     : public ManagementApiUnitTest {
  public:
   ManagementApiUnitTestMV2DisableWithReEnableUnitTest() {
-    feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionManifestV2Disabled},
-        {extensions_features::kExtensionManifestV2Unsupported});
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionManifestV2Unsupported);
   }
   ~ManagementApiUnitTestMV2DisableWithReEnableUnitTest() override = default;
 
