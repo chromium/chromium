@@ -203,6 +203,7 @@ namespace mojom {
 class NetworkContext;
 class NetworkService;
 class TrustedURLLoaderHeaderClient;
+class URLResponseHead;
 }  // namespace mojom
 struct ResourceRequest;
 }  // namespace network
@@ -714,6 +715,22 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>
   GetBaselinePermissionsPolicyForIsolatedApp(BrowserContext* browser_context,
                                              const url::Origin& app_origin);
+
+  // Isolated Apps rely on specific COOP/COEP/CSP headers as a a protective
+  // measure; however, it's possible for an Isolated App page to register a
+  // service worker with a fetch handler and accidentally bypass this protection
+  // layer. This function allows the embedder to inspect the headers that are
+  // about to be served as part of the response for an Isolated App resource
+  // request and modify them accordingly.
+  // `frame_tree_node` is only expected to be non-null for navigations.
+  // For dedicated/shared workers, it should be std::nullopt as they are
+  // only expected to run for already installed IWAs, where the source
+  // can be determined without an inspection context.
+  virtual void EnsureRequiredHeadersForIsolatedApp(
+      BrowserContext* browser_context,
+      const GURL& url,
+      network::mojom::URLResponseHead* response_head,
+      const std::optional<FrameTreeNodeId>& frame_tree_node);
 
   // Returns whether a new process should be created or an existing one should
   // be reused based on the URL we want to load. This should return false,

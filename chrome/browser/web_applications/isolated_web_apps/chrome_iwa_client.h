@@ -11,6 +11,9 @@
 
 namespace web_app {
 
+inline constexpr char kInstallPagePath[] =
+    "/.well-known/_generated_install_page.html";
+
 class ChromeIwaClient : public IwaClient {
  public:
   // Creates a global singleton that can be accessed via

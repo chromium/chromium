@@ -11,9 +11,13 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
@@ -31,6 +35,19 @@ class IsolatedWebAppCspBrowserTest : public IsolatedWebAppBrowserTestHarness {
   }
 
  protected:
+  void NavigateAndWaitForTitle(content::RenderFrameHost*& iwa_frame,
+                               const GURL& url,
+                               const std::u16string& page_title) {
+    ASSERT_TRUE(iwa_frame);
+    content::TitleWatcher title_watcher(
+        content::WebContents::FromRenderFrameHost(iwa_frame), page_title);
+
+    iwa_frame =
+        ui_test_utils::NavigateToURL(GetBrowserFromFrame(iwa_frame), url);
+
+    EXPECT_EQ(page_title, title_watcher.WaitAndGetTitle());
+  }
+
   base::FilePath resource_path() {
     base::FilePath base_path;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
@@ -270,6 +287,340 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest, ProxyMode) {
     )",
                                            src);
   EXPECT_EQ("violation", EvalJs(app_frame, test_js));
+}
+
+constexpr char kServiceWorkerRegistrationScript[] = R"js(
+  const policy = trustedTypes.createPolicy('default', {
+    createScriptURL(url) { return new URL(url, document.baseURI); },
+  });
+  const register_service_worker = async () => {
+    const registration = await navigator.serviceWorker.register(
+      policy.createScriptURL('service_worker.js'), { scope: '/' }
+    );
+    const worker = registration.installing ||
+                   registration.waiting ||
+                   registration.active;
+    await new Promise(resolve => {
+      if (worker.state === 'activated') resolve();
+      worker.addEventListener('statechange', () => {
+        if (worker.state === 'activated') resolve();
+      });
+    });
+  };
+  window.addEventListener('load', (async () => {
+    await register_service_worker();
+    document.title = 'SW Registered';
+  }));
+)js";
+
+constexpr char kIndexHtml[] = R"html(
+                  <html>
+                    <head>
+                      <script type="text/javascript" src="/script.js"></script>
+                    </head>
+                  </html>
+                  )html";
+
+constexpr char kTargetHtml[] = R"html(
+                  <html>
+                    <head>
+                      <script type="text/javascript" src="/target_script.js">
+                      </script>
+                      <title>Intercepted Target</title>
+                    </head>
+                    <body>
+                    </body>
+                  </html>
+                  )html";
+
+constexpr char kWaitForWorkerMessageScript[] = R"(
+    new Promise(resolve => {
+      if (window.workerMessage) {
+        resolve(window.workerMessage.success);
+      } else {
+        window.onWorkerMessage = () => resolve(window.workerMessage.success);
+      }
+    })
+)";
+
+// Test that service worker intercepting navigations cannot bypass CSP
+// rules and the page stays in Isolated Context.
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest, ServiceWorkerRespondWith) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", kIndexHtml)
+          .AddHtml("/target.html", kTargetHtml)
+          .AddJs("/target_script.js", R"(
+            window.evilExecuted = false;
+          )")
+          .AddJs("/script.js", kServiceWorkerRegistrationScript)
+          .AddJs("/service_worker.js", content::JsReplace(R"js(
+            addEventListener('fetch', (event) => {
+              if (event.request.url.endsWith('/target.html')) {
+                const html = `<html>
+                  <head>
+                    <title>Intercepted Target</title>
+                    <script>
+                    // Should be blocked by CSP.
+                    window.dynamicJsExecuted = true;
+                    </script>
+                  </head>
+                  <body>Intercepted Target page</body>
+                </html>`;
+                event.respondWith(new Response(html, {
+                  // No CSP header is provided.
+                  headers: {
+                    'Content-Type': 'text/html'
+                  }
+                }));
+              }
+            });
+
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(clients.claim());
+            });
+            )js"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
+  content::RenderFrameHost* iwa_frame =
+      OpenIsolatedWebApp(profile(), url_info.app_id());
+
+  content::TitleWatcher sw_registered_watcher(
+      content::WebContents::FromRenderFrameHost(iwa_frame), u"SW Registered");
+  EXPECT_EQ(u"SW Registered", sw_registered_watcher.WaitAndGetTitle());
+
+  NavigateAndWaitForTitle(iwa_frame,
+                          url_info.origin().GetURL().Resolve("/target.html"),
+                          u"Intercepted Target");
+
+  EXPECT_FALSE(EvalJs(iwa_frame, "!!window.dynamicJsExecuted").ExtractBool());
+
+  // Check that page still has isolated context which
+  // means that COEP and COOP headers are injected.
+  EXPECT_TRUE(EvalJs(iwa_frame, "window.crossOriginIsolated").ExtractBool());
+}
+
+// Test that service worker intercepting dedicated worker scripts
+// cannot bypass CSP rules and the page stays in Isolated Context.
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest,
+                       ServiceWorkerRespondWithDedicatedWorker) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", kIndexHtml)
+          .AddHtml("/target.html", kTargetHtml)
+          .AddJs("/target_script.js", R"(
+            const workerPolicy = window.trustedTypes
+                          .createPolicy('workerPolicy', {
+              createScriptURL: url => url,
+            });
+            const worker = new Worker(workerPolicy
+              .createScriptURL('worker.js'));
+            worker.addEventListener('message', e => {
+              window.workerMessage = e.data;
+              if (window.onWorkerMessage) window.onWorkerMessage();
+            });
+          )")
+          .AddJs("/script.js", kServiceWorkerRegistrationScript)
+          .AddJs("/service_worker.js", content::JsReplace(R"js(
+            addEventListener('fetch', (event) => {
+              if (event.request.url.endsWith('/worker.js')) {
+                const js = `
+                  try {
+                    eval("self.evilExecuted = true");
+                    postMessage({success: true, evilExecuted: self.evilExecuted,
+                      crossOriginIsolated: self.crossOriginIsolated});
+                  } catch (e) {
+                    postMessage({success: true, evilExecuted: false,
+                      crossOriginIsolated: self.crossOriginIsolated,
+                         error: e.message});
+                  }
+                `;
+                event.respondWith(new Response(js, {
+                  headers: {
+                    'Content-Type': 'text/javascript'
+                  }
+                }));
+              }
+            });
+
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(clients.claim());
+            });
+            )js"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
+  content::RenderFrameHost* iwa_frame =
+      OpenIsolatedWebApp(profile(), url_info.app_id());
+
+  content::TitleWatcher sw_registered_watcher(
+      content::WebContents::FromRenderFrameHost(iwa_frame), u"SW Registered");
+  EXPECT_EQ(u"SW Registered", sw_registered_watcher.WaitAndGetTitle());
+
+  NavigateAndWaitForTitle(iwa_frame,
+                          url_info.origin().GetURL().Resolve("/target.html"),
+                          u"Intercepted Target");
+
+  // Wait for message from worker.
+  EXPECT_EQ(true, EvalJs(iwa_frame, kWaitForWorkerMessageScript));
+
+  EXPECT_FALSE(
+      EvalJs(iwa_frame, "window.workerMessage.evilExecuted").ExtractBool());
+
+  EXPECT_TRUE(EvalJs(iwa_frame, "window.workerMessage.crossOriginIsolated")
+                  .ExtractBool());
+}
+
+// Test that service worker intercepting shared worker scripts
+// cannot bypass CSP rules and the page stays in Isolated Context.
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest,
+                       ServiceWorkerRespondWithSharedWorker) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", kIndexHtml)
+          .AddHtml("/target.html", kTargetHtml)
+          .AddJs("/target_script.js", R"(
+            const workerPolicy = window.trustedTypes
+              .createPolicy('workerPolicy', {
+              createScriptURL: url => url,
+            });
+            const worker = new SharedWorker(workerPolicy.
+              createScriptURL('worker.js'));
+            worker.port.start();
+            worker.port.addEventListener('message', e => {
+              window.workerMessage = e.data;
+              if (window.onWorkerMessage) window.onWorkerMessage();
+            });
+          )")
+          .AddJs("/script.js", kServiceWorkerRegistrationScript)
+          .AddJs("/service_worker.js", content::JsReplace(R"js(
+            addEventListener('fetch', (event) => {
+              if (event.request.url.endsWith('/worker.js')) {
+                const js = `
+                  addEventListener('connect', event => {
+                    const port = event.ports[0];
+                    try {
+                      eval("self.evilExecuted = true");
+                      port.postMessage({success: true, evilExecuted: self.evilExecuted,
+                        crossOriginIsolated: self.crossOriginIsolated});
+                    } catch (e) {
+                      port.postMessage({success: true, evilExecuted: false,
+                        crossOriginIsolated: self.crossOriginIsolated, error: e.message});
+                    }
+                  });
+                `;
+                event.respondWith(new Response(js, {
+                  headers: {
+                    'Content-Type': 'text/javascript'
+                  }
+                }));
+              }
+            });
+
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(clients.claim());
+            });
+            )js"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
+  content::RenderFrameHost* iwa_frame =
+      OpenIsolatedWebApp(profile(), url_info.app_id());
+
+  content::TitleWatcher sw_registered_watcher(
+      content::WebContents::FromRenderFrameHost(iwa_frame), u"SW Registered");
+  EXPECT_EQ(u"SW Registered", sw_registered_watcher.WaitAndGetTitle());
+
+  NavigateAndWaitForTitle(iwa_frame,
+                          url_info.origin().GetURL().Resolve("/target.html"),
+                          u"Intercepted Target");
+
+  // Wait for message from worker.
+  EXPECT_EQ(true, EvalJs(iwa_frame, kWaitForWorkerMessageScript));
+
+  EXPECT_FALSE(
+      EvalJs(iwa_frame, "window.workerMessage.evilExecuted").ExtractBool());
+
+  EXPECT_TRUE(EvalJs(iwa_frame, "window.workerMessage.crossOriginIsolated")
+                  .ExtractBool());
+}
+
+class RedirectHeaderObserver : public content::WebContentsObserver {
+ public:
+  explicit RedirectHeaderObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void DidRedirectNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    const net::HttpResponseHeaders* headers =
+        navigation_handle->GetResponseHeaders();
+    ASSERT_TRUE(headers) << "Redirect response has no headers!";
+
+    std::optional<std::string> coep =
+        headers->GetNormalizedHeader("Cross-Origin-Embedder-Policy");
+    EXPECT_TRUE(coep.has_value());
+    EXPECT_EQ(*coep, "require-corp");
+
+    std::optional<std::string> coop =
+        headers->GetNormalizedHeader("Cross-Origin-Opener-Policy");
+    EXPECT_TRUE(coop.has_value());
+    EXPECT_EQ(*coop, "same-origin");
+
+    redirect_observed_ = true;
+  }
+
+  bool redirect_observed() const { return redirect_observed_; }
+
+ private:
+  bool redirect_observed_ = false;
+};
+
+// Test that ServiceWorker intercepting navigation and
+// responding with redirect does not remove isolated app CSP
+// and Isolated Context
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest,
+                       ServiceWorkerRedirectMaintainsIsolatedContext) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", kIndexHtml)
+          .AddHtml("/actual_target.html", R"html(
+                  <html>
+                    <head><title>Redirect Success</title></head>
+                    <body>Target page reached via redirect.</body>
+                  </html>
+                  )html")
+          .AddJs("/script.js", kServiceWorkerRegistrationScript)
+          .AddJs("/service_worker.js", content::JsReplace(R"js(
+            addEventListener('fetch', (event) => {
+              if (event.request.url.endsWith('/trigger_redirect.html')) {
+                event.respondWith(
+                  Response.redirect('/actual_target.html', 302));
+              }
+            });
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(clients.claim());
+            });
+            )js"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
+  content::RenderFrameHost* iwa_frame =
+      OpenIsolatedWebApp(profile(), url_info.app_id());
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(iwa_frame);
+
+  content::TitleWatcher sw_registered_watcher(web_contents, u"SW Registered");
+  EXPECT_EQ(u"SW Registered", sw_registered_watcher.WaitAndGetTitle());
+
+  RedirectHeaderObserver observer(web_contents);
+
+  NavigateAndWaitForTitle(
+      iwa_frame, url_info.origin().GetURL().Resolve("/trigger_redirect.html"),
+      u"Redirect Success");
+
+  EXPECT_TRUE(observer.redirect_observed());
+  EXPECT_TRUE(EvalJs(iwa_frame, "window.crossOriginIsolated").ExtractBool());
 }
 
 struct WebSocketTestParam {

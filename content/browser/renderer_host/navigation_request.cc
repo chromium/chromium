@@ -3612,6 +3612,15 @@ void NavigationRequest::OnRequestRedirected(
   CHECK(response_head->parsed_headers);
   response_head_ = std::move(response_head);
   ssl_info_ = response_head_->ssl_info;
+  BrowserContext* browser_context =
+      frame_tree_node_->navigator().controller().GetBrowserContext();
+
+  if (SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          browser_context, GetURL())) {
+    GetContentClient()->browser()->EnsureRequiredHeadersForIsolatedApp(
+        browser_context, GetURL(), response_head_.get(),
+        frame_tree_node_->frame_tree_node_id());
+  }
 
   // Reset the page state as it can no longer be used at commit time since the
   // navigation was redirected.
@@ -4694,6 +4703,15 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
+  BrowserContext* browser_context =
+      frame_tree_node_->navigator().controller().GetBrowserContext();
+
+  if (SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          browser_context, GetURL())) {
+    GetContentClient()->browser()->EnsureRequiredHeadersForIsolatedApp(
+        browser_context, GetURL(), response_head_.get(),
+        frame_tree_node_->frame_tree_node_id());
+  }
 
   // TODO(crbug.com/40218207): Store the whole EarlyHints struct instead
   // of duplicating all of its fields.

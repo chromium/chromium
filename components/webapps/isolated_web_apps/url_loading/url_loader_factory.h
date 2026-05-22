@@ -6,7 +6,9 @@
 #define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_URL_LOADING_URL_LOADER_FACTORY_H_
 
 #include <optional>
+#include <string>
 
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"

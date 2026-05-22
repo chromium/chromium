@@ -34,6 +34,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_provider.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
@@ -268,6 +269,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   GetBaselinePermissionsPolicyForIsolatedApp(
       content::BrowserContext* browser_context,
       const url::Origin& app_origin) override;
+  void EnsureRequiredHeadersForIsolatedApp(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      network::mojom::URLResponseHead* response_head,
+      const std::optional<content::FrameTreeNodeId>& frame_tree_node) override;
   bool ShouldTryToUseExistingProcessHost(
       content::BrowserContext* browser_context,
       const GURL& url) override;

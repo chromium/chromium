@@ -4,8 +4,19 @@
 
 source_set("public") {
   sources = [
+    "header_utils.cc",
+    "header_utils.h",
     "iwa_runtime_data_provider.cc",
     "iwa_runtime_data_provider.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+  deps = [
+    "//components/webapps/isolated_web_apps/types",
+    "//services/network/public/cpp:web_platform",
+  ]
 }

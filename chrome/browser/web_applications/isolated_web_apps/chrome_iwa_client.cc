@@ -34,7 +34,6 @@ namespace {
 
 using SourceRequestError = IwaClient::SourceRequestError;
 
-constexpr char kInstallPagePath[] = "/.well-known/_generated_install_page.html";
 constexpr char kInstallPageContent[] = R"(
     <!DOCTYPE html>
     <html>

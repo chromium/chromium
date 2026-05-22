@@ -2456,6 +2456,18 @@ ChromeContentBrowserClient::GetBaselinePermissionsPolicyForIsolatedApp(
 #endif
 }
 
+void ChromeContentBrowserClient::EnsureRequiredHeadersForIsolatedApp(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    network::mojom::URLResponseHead* response_head,
+    const std::optional<content::FrameTreeNodeId>& frame_tree_node) {
+#if !BUILDFLAG(IS_ANDROID)
+  ChromeContentBrowserClientIsolatedWebAppsPart::
+      EnsureRequiredHeadersForIsolatedApp(browser_context, url, response_head,
+                                          frame_tree_node);
+#endif
+}
+
 bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     content::BrowserContext* browser_context,
     const GURL& url) {
