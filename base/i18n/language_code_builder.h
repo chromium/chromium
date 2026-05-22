@@ -15,6 +15,9 @@
 #include "base/i18n/language_code.h"
 
 namespace base {
+namespace i18n::internal {
+struct Icu4xLocale;
+}
 
 // Helper class for parsing and validating language codes.
 //
@@ -52,6 +55,10 @@ class BASE_I18N_EXPORT LanguageCodeBuilder {
 
  private:
   class Impl;
+
+  // Internal usage.
+  LanguageCode FromIcu4xLocale(
+      const base::i18n::internal::Icu4xLocale& icu_locale) const;
   std::unique_ptr<Impl> impl_;
 };
 
