@@ -148,8 +148,7 @@ bool ZoomViewController::CanBubbleBeVisible(bool prefer_to_show_bubble,
   // If neither of these is true, we only show the bubble if the zoom level
   // is not at the default (`!is_zoom_at_default`), indicating that zoom is
   // active.
-  return (prefer_to_show_bubble || IsBubbleVisible()) ? true
-                                                      : !is_zoom_at_default;
+  return prefer_to_show_bubble || IsBubbleVisible() || !is_zoom_at_default;
 }
 
 content::WebContents* ZoomViewController::GetWebContents() const {
