@@ -1410,17 +1410,9 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
       event_result = target_frame->GetEventHandler().UpdateDragAndDrop(
           event, data_transfer);
     } else if (drag_target_) {
-      Element* related_target = new_target;
-      if (RuntimeEnabledFeatures::DontLeakShadowTreesInDragEventsEnabled() &&
-          related_target) {
-        // Avoid exposing the shadow DOM details to the drag target.
-        // See https://crbug.com/328662546.
-        related_target =
-            &drag_target_->GetTreeScope().Retarget(*related_target);
-      }
-      mouse_event_manager_->DispatchDragEvent(
-          event_type_names::kDragleave, drag_target_.Get(), related_target,
-          event, data_transfer);
+      mouse_event_manager_->DispatchDragEvent(event_type_names::kDragleave,
+                                              drag_target_.Get(), new_target,
+                                              event, data_transfer);
     }
 
     if (new_target) {

@@ -2458,7 +2458,7 @@
     },
     {
       // When enabled, retarget the relatedTarget attribute of drag events.
-      // This landed in M146 and can be removed in M148.
+      // This landed partly in M146 and more in M150 and can be removed in M152.
       name: "DontLeakShadowTreesInDragEvents",
       status: "stable",
     },

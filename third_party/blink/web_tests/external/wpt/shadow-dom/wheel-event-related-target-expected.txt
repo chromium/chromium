@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] wheel relatedTarget should be retargeted to shadow host when entering shadow DOM
+  assert_equals: relatedTarget before mouse is over shadow host expected Element node <div id="container">Scrolling container\n  <div id="height... but got null
+Harness: the test ran to completion.
+

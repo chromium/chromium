@@ -31,9 +31,11 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/drag_event.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -281,7 +283,21 @@ void Event::SetRelatedTargetIfExists(EventTarget* related_target) {
   if (auto* mouse_event = DynamicTo<MouseEvent>(this)) {
     mouse_event->SetRelatedTarget(related_target);
   } else if (auto* pointer_event = DynamicTo<PointerEvent>(this)) {
+    // PointerEvent inherits from MouseEvent but overrides Event::IsMouseEvent
+    // so DynamicTo<MouseEvent> sometimes returns null.
     pointer_event->SetRelatedTarget(related_target);
+  } else if (auto* wheel_event = DynamicTo<WheelEvent>(this)) {
+    // WheelEvent inherits from MouseEvent but overrides Event::IsMouseEvent
+    // so DynamicTo<MouseEvent> returns null.
+    if (RuntimeEnabledFeatures::DontLeakShadowTreesInDragEventsEnabled()) {
+      wheel_event->SetRelatedTarget(related_target);
+    }
+  } else if (auto* drag_event = DynamicTo<DragEvent>(this)) {
+    // DragEvent inherits from MouseEvent but overrides Event::IsMouseEvent so
+    // DynamicTo<MouseEvent> returns null.
+    if (RuntimeEnabledFeatures::DontLeakShadowTreesInDragEventsEnabled()) {
+      drag_event->SetRelatedTarget(related_target);
+    }
   } else if (auto* focus_event = DynamicTo<FocusEvent>(this)) {
     focus_event->SetRelatedTarget(related_target);
   }
