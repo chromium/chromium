@@ -919,11 +919,13 @@ bool ScopedFocusNavigation::ShouldSkipForFocusgroup(const Element& element) {
     return false;
   }
   // Non-entry focusgroup items are normally skipped. But if the element is a
-  // scope owner (shadow host with author shadow root, or slot), its scope may
-  // contain the actual entry element. Let it through so
-  // FindFocusableElementRecursively can enter the scope. UA shadow roots
-  // (e.g., <input>) are excluded — they don't contain focusgroup items.
-  if (element.AuthorShadowRoot() || IsA<HTMLSlotElement>(element)) {
+  // scope owner (shadow host with author shadow root, slot, or reading-flow
+  // container), its scope may contain the actual entry element. Let it
+  // through so FindFocusableElementRecursively can enter the scope. UA
+  // shadow roots (e.g., <input>) are excluded — they don't contain
+  // focusgroup items.
+  if (element.AuthorShadowRoot() || IsA<HTMLSlotElement>(element) ||
+      IsReadingFlowScopeOwner(&element)) {
     return false;
   }
   return true;
@@ -1706,6 +1708,16 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
          !owner->IsShadowHostWithDelegatesFocus()) ||
         IsKeyboardFocusablePopoverInvoker(*owner) ||
         IsKeyboardFocusableReadingFlowOwner(*owner)) {
+      // We are moving from an exhausted inner focus scope back to its
+      // owner. If that owner is a non-entry focusgroup item, it should
+      // not become the tab stop; continue searching from the owner's
+      // outer scope instead.
+      if (FocusgroupControllerUtils::IsNonEntryFocusgroupScopeOwner(*owner)) {
+        current_scope = GetScopeFor(owner, owner_map);
+        found =
+            FindFocusableElementRecursivelyBackward(current_scope, owner_map);
+        continue;
+      }
       found = owner;
       break;
     }

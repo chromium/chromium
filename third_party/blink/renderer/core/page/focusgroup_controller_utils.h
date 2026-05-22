@@ -260,6 +260,13 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // entering a focusgroup segment via sequential focus navigation.
   static bool IsFocusgroupStart(const Element& element);
 
+  // Returns true when |element| is a focusgroup item that is not the entry
+  // element for its segment. The caller must verify the element is a focus
+  // scope owner (shadow host, slot, popover invoker, reading-flow owner,
+  // etc.). Used by sequential focus navigation so that scope owners which
+  // are non-entry focusgroup items are skipped instead of receiving focus.
+  static bool IsNonEntryFocusgroupScopeOwner(const Element& element);
+
   static GridFocusgroupStructureInfo*
   CreateGridFocusgroupStructureInfoForGridRoot(const Element* root);
 };

@@ -920,4 +920,14 @@ bool FocusgroupControllerUtils::IsFocusgroupStart(const Element& element) {
   return element.FastHasAttribute(html_names::kFocusgroupstartAttr);
 }
 
+// static
+bool FocusgroupControllerUtils::IsNonEntryFocusgroupScopeOwner(
+    const Element& element) {
+  Element* owner = GetFocusgroupOwnerOfItem(&element);
+  if (!owner) {
+    return false;
+  }
+  return !IsEntryElementForFocusgroupSegment(element, *owner);
+}
+
 }  // namespace blink
