@@ -2,12 +2,10 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='log' interesting name='Atomic illegal' live_region_type=1
 ++android.widget.EditText clickable editable_text interesting hint='Autocomplete illegal'
 ++android.view.View role_description='log' interesting name='Busy illegal' live_region_type=1
-++android.view.View role_description='tree' collection hierarchical interesting item_count=1 row_count=1
-++++android.view.View role_description='tree item' checkable clickable collection_item content_description='Checked illegal' item_index=0 row_index=0 checked=1
+++android.view.View role_description='tree item' checkable clickable collection_item interesting content_description='Checked illegal' checked=1
 ++android.view.View interesting state_description='current item' container_title='Current illegal'
 ++android.view.View disabled interesting container_title='Disabled illegal'
-++android.view.View role_description='tree' collection hierarchical interesting item_count=1 row_count=1
-++++android.view.View role_description='tree item' clickable collection_item expanded content_description='Expanded illegal' item_index=0 row_index=0 expanded_state=3
+++android.view.View role_description='tree item' clickable collection_item expanded interesting content_description='Expanded illegal' expanded_state=3
 ++android.widget.Button clickable interesting content_description='Haspopup illegal'
 ++android.view.View content_invalid interesting container_title='Invalid illegal'
 ++android.view.View role_description='log' interesting name='Live illegal'

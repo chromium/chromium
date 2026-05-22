@@ -82,5 +82,4 @@ rootWebArea
 ++++++tooltip
 ++++++tree
 ++++++treeGrid
-++++++tree
-++++++++treeItem expanded
+++++++treeItem expanded

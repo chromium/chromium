@@ -5855,10 +5855,6 @@ bool AXObject::HasRequiredParentContext(ax::mojom::blink::Role role) const {
     return !IsOrphanedOption(*element);
   }
 
-  if (role == ax::mojom::blink::Role::kTreeItem) {
-    return !IsOrphanedTreeItem(*element);
-  }
-
   return true;
 }
 
@@ -5970,73 +5966,6 @@ bool AXObject::IsOrphanedOption(const Element& element) const {
   }
 
   return true;
-}
-
-bool AXObject::IsOrphanedTreeItem(const Element& element) const {
-  // Check if owned via aria-owns (Relation Cache lookup).
-  AXRelationCache* relation_cache = AXObjectCache().RelationCache();
-  if (relation_cache && relation_cache->IsAriaOwned(this)) {
-    AXObject* owner = relation_cache->ValidatedAriaOwner(this);
-    if (owner) {
-      ax::mojom::blink::Role owner_role = owner->RoleValue();
-      if (owner_role == ax::mojom::blink::Role::kTree ||
-          owner_role == ax::mojom::blink::Role::kGroup) {
-        return false;  // It has a valid owner, so it is not an orphan.
-      }
-    }
-  }
-
-  // Walk up the DOM tree looking for a valid tree or group container parent.
-  for (Node* curr = LayoutTreeBuilderTraversal::Parent(element); curr;
-       curr = LayoutTreeBuilderTraversal::Parent(*curr)) {
-    auto* parent = DynamicTo<Element>(curr);
-    if (!parent) {
-      continue;
-    }
-
-    const AtomicString& role_str =
-        AXObject::AriaAttribute(*parent, html_names::kRoleAttr);
-    ax::mojom::blink::Role parent_role = ax::mojom::blink::Role::kUnknown;
-    if (!role_str.empty()) {
-      parent_role = FirstValidRoleInRoleString(role_str);
-    }
-    if (parent_role == ax::mojom::blink::Role::kTree ||
-        parent_role == ax::mojom::blink::Role::kGroup) {
-      return false;  // Found valid tree/group parent, so it is not an orphan.
-    }
-
-    // Allow walking up through parent treeitem elements in nested tree
-    // structures.
-    if (parent_role == ax::mojom::blink::Role::kTreeItem) {
-      continue;
-    }
-
-    // Skip presentational wrappers that do not affect tree structure.
-    if (ui::IsPresentational(parent_role)) {
-      continue;
-    }
-
-    // Skip anonymous/generic <div> wrappers without explicit roles.
-    if (parent->HasTagName(html_names::kDivTag) && role_str.empty()) {
-      continue;
-    }
-
-    // Skip anonymous/generic <span> wrappers without explicit roles.
-    if (parent->HasTagName(html_names::kSpanTag) && role_str.empty()) {
-      continue;
-    }
-
-    // Skip generic custom element wrappers (e.g. <cr-tree-item>) without
-    // explicit roles.
-    if (parent->IsCustomElement() && role_str.empty()) {
-      continue;
-    }
-
-    // Any other non-generic structural element interrupts the context.
-    break;
-  }
-
-  return true;  // No tree/group parent found, it is an orphan.
 }
 
 ax::mojom::blink::Role AXObject::FirstValidRoleInRoleStringWithContext(

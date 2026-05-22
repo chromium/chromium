@@ -1794,11 +1794,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // wrappers.
   bool IsOrphanedOption(const Element&) const;
 
-  // Returns true if the treeitem is an orphan (i.e., not owned via aria-owns
-  // and not a descendant of a tree or group element). Skips generic <div>
-  // wrappers.
-  bool IsOrphanedTreeItem(const Element&) const;
-
   // Attaches the tree with the given ID to this object as a child tree and
   // updates the cache.
   void SetChildTree(const ui::AXTreeID& child_tree_id);
