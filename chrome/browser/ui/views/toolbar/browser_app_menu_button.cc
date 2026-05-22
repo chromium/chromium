@@ -265,8 +265,10 @@ bool BrowserAppMenuButton::ShouldPaintBorder() const {
 void BrowserAppMenuButton::UpdateLayoutInsets() {
   if (IsLabelPresentAndVisible()) {
     SetLayoutInsets(::GetLayoutInsets(BROWSER_APP_MENU_CHIP_PADDING));
+    SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   } else {
     SetLayoutInsets(::GetLayoutInsets(TOOLBAR_BUTTON));
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
   }
 }
 
