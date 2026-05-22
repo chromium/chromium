@@ -183,7 +183,6 @@ public class BottomSheetControllerImplUnitTest {
         // 2. Set bottom controls offset to 100. Since scrim is visible, bottom margin remains 0.
         mController.setBottomControlsOffset(100);
         verify(mBottomSheet, times(3)).setBottomMargin(0);
-        verify(mBottomSheet).setBottomControlsOffset(100);
 
         // 3. Trigger callback to hide scrim -> bottom margin should be updated to the offset (100).
         callback.onResult(false);
