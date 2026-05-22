@@ -621,8 +621,7 @@ void ExistingUserController::PerformLogin(
       !new_user_context.GetChallengeResponseKeys().empty();
 
   if (new_user_context.IsUsingPin()) {
-    const quick_unlock::PinSaltStorageImpl pin_salt_storage(
-        &local_state_.get());
+    const quick_unlock::PinSaltStorageImpl pin_salt_storage;
 
     std::optional<Key> key =
         quick_unlock::PinStorageCryptohome::TransformPinKey(

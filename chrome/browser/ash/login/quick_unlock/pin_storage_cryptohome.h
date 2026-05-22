@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
 class AccountId;
-class PrefService;
 
 namespace ash {
 
@@ -45,8 +44,7 @@ class PinStorageCryptohome {
       const AccountId& account_id,
       const Key& key);
 
-  // `local_state` must be non-null and must outlive `this`.
-  explicit PinStorageCryptohome(PrefService* local_state);
+  PinStorageCryptohome();
   // Allow injecting fake storage for testing.
   explicit PinStorageCryptohome(
       std::unique_ptr<PinSaltStorage> pin_salt_storage);

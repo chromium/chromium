@@ -52,6 +52,7 @@ static_library("quick_unlock") {
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile_manager",
