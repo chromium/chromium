@@ -109,6 +109,7 @@ source_set("browser_sources") {
     "api/api_resource.cc",
     "api/api_resource.h",
     "api/api_resource_manager.h",
+    "api/constants.h",
     "api/declarative/declarative_api.cc",
     "api/declarative/declarative_api.h",
     "api/declarative/declarative_rule.h",

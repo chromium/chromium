@@ -9171,6 +9171,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Extensions.DeclarativeNetRequest.DSERedirect">
+  <owner>quarz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an extension redirects search away from the default search
+    engine (DSE) page using the DeclarativeNetRequest API.
+  </summary>
+  <metric name="Seen" enum="Boolean">
+    <summary>
+      Dummy Boolean as UKM does not support events with no metrics.
+    </summary>
+  </metric>
+</event>
+
 <event name="Extensions.ExtensionUsage">
   <owner>howardcha@google.com</owner>
   <owner>webstore-eng@google.com</owner>
@@ -9366,6 +9380,49 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="Extensions.SearchRedirect">
+  <owner>quarz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an extension redirects a search away from the default search
+    engine (DSE) page. The event is associated with the destination URL of the
+    redirect.
+  </summary>
+  <metric name="Api" enum="ExtensionSearchRedirectedByApi">
+    <summary>
+      The API used to perform the redirect.
+    </summary>
+  </metric>
+</event>
+
+<event name="Extensions.Tabs.RemoveDSE">
+  <owner>quarz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an extension uses the Tabs API to update the default search
+    engine url of the tab.
+  </summary>
+  <metric name="Seen" enum="Boolean">
+    <summary>
+      Dummy Boolean as UKM does not support events with no metrics.
+    </summary>
+  </metric>
+</event>
+
+<event name="Extensions.Tabs.UpdateDSE">
+  <owner>quarz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an extension uses the Tabs API to remove a tab whose url is
+    the default search engine.
+  </summary>
+  <metric name="Seen" enum="Boolean">
+    <summary>
+      Dummy Boolean as UKM does not support events with no metrics.
+    </summary>
   </metric>
 </event>
 

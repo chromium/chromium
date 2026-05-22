@@ -68,6 +68,22 @@ ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
 }
 
 // static
+ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
+    base::PassKey<extensions::declarative_net_request::RulesetManager>,
+    const GURL& redirect_url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(redirect_url,
+                                               SourceIdType::REDIRECT_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
+    base::PassKey<extensions::TabsUpdateFunction>,
+    const GURL& redirect_url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(redirect_url,
+                                               SourceIdType::REDIRECT_ID);
+}
+
+// static
 ukm::SourceId UkmRecorder::GetSourceIdForDipsSite(
     base::PassKey<content::BtmServiceImpl>,
     const std::string& site) {
@@ -111,6 +127,36 @@ ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
     base::PassKey<extensions::MetricsPrivateRecordExtensionUsageUkmFunction>,
+    const GURL& extension_url) {
+  // UkmRecorderImpl will verify the extension URL (and the corresponding
+  // extension) prior to emitting the record.
+  return UkmRecorder::GetSourceIdFromScopeImpl(extension_url,
+                                               SourceIdType::EXTENSION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
+    base::PassKey<extensions::declarative_net_request::RulesetManager>,
+    const GURL& extension_url) {
+  // UkmRecorderImpl will verify the extension URL (and the corresponding
+  // extension) prior to emitting the record.
+  return UkmRecorder::GetSourceIdFromScopeImpl(extension_url,
+                                               SourceIdType::EXTENSION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
+    base::PassKey<extensions::TabsUpdateFunction>,
+    const GURL& extension_url) {
+  // UkmRecorderImpl will verify the extension URL (and the corresponding
+  // extension) prior to emitting the record.
+  return UkmRecorder::GetSourceIdFromScopeImpl(extension_url,
+                                               SourceIdType::EXTENSION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
+    base::PassKey<extensions::TabsRemoveFunction>,
     const GURL& extension_url) {
   // UkmRecorderImpl will verify the extension URL (and the corresponding
   // extension) prior to emitting the record.
