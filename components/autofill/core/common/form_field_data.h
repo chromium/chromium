@@ -317,13 +317,8 @@ class FormFieldData {
   void set_aria_description(std::u16string aria_description) {
     aria_description_ = std::move(aria_description);
   }
-  // A cryptographically random nonce provided by the website as a challenge
-  // to the browser to bind it to the EVT.
-  // https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#section-2.5
-  const std::u16string& challenge() const { return challenge_; }
-  void set_challenge(std::u16string challenge) {
-    challenge_ = std::move(challenge);
-  }
+  const std::u16string& nonce() const { return nonce_; }
+  void set_nonce(std::u16string nonce) { nonce_ = std::move(nonce); }
 
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
@@ -506,7 +501,7 @@ class FormFieldData {
   std::u16string css_classes_;
   std::u16string aria_label_;
   std::u16string aria_description_;
-  std::u16string challenge_;
+  std::u16string nonce_;
   LocalFrameToken host_frame_;
   FieldRendererId renderer_id_;
   FormRendererId host_form_id_;

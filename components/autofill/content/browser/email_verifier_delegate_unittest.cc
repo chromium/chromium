@@ -127,12 +127,12 @@ class EmailVerifierDelegateTest : public content::RenderViewHostTestHarness {
              {
                  {.label = u"Email",
                   .name = u"email",
-                  .challenge = u"test_nonce",
+                  .nonce = u"test_nonce",
                   .value = u"Triggering field (filled)",
                   .form_control_type = FormControlType::kInputEmail},
                  {.label = u"Verification Token",
                   .name = u"verification_token",
-                  .challenge = u"test_nonce",
+                  .nonce = u"test_nonce",
                   .autocomplete_attribute = "email-verification-token",
                   .form_control_type =
                       FormControlType::kInputHiddenEmailVerification},
@@ -271,7 +271,7 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
       test::GetFormData({.fields = {
                              {.label = u"Email",
                               .name = u"email",
-                              .challenge = u"test_nonce",
+                              .nonce = u"test_nonce",
                               .value = u"Triggering field (filled)"},
                          }});
 

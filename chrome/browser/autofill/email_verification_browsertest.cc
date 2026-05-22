@@ -88,7 +88,7 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
     <input
       type="hidden"
       id="verification"
-      challenge="test_nonce"
+      nonce="test_nonce"
       autocomplete="email-verification-token"
     >
     <input type="submit" id="submit_button">
@@ -176,11 +176,11 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
 
   const FormStructure* form_structure = nullptr;
   for (const FormStructure* form : test_api(*manager).form_structures()) {
-    bool found_challenge = std::ranges::any_of(
+    bool found_nonce = std::ranges::any_of(
         form->fields(), [](const std::unique_ptr<AutofillField>& field) {
-          return field->challenge() == u"test_nonce";
+          return field->nonce() == u"test_nonce";
         });
-    if (found_challenge) {
+    if (found_nonce) {
       form_structure = form;
       break;
     }

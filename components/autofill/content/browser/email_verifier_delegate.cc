@@ -102,15 +102,15 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   }
 
   const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
-  const AutofillField* challenge_field =
+  const AutofillField* nonce_field =
       FindField(fields, [&](const AutofillField& field) {
         return field.parsed_autocomplete() &&
                field.parsed_autocomplete()->email_verification_token &&
-               !field.challenge().empty() &&
+               !field.nonce().empty() &&
                field.host_form_id() == triggering_email_field->host_form_id();
       });
 
-  if (!challenge_field) {
+  if (!nonce_field) {
     return;
   }
 
@@ -133,7 +133,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
 
   verifier->Verify(
-      base::UTF16ToUTF8(email), base::UTF16ToUTF8(challenge_field->challenge()),
+      base::UTF16ToUTF8(email), base::UTF16ToUTF8(nonce_field->nonce()),
       base::BindOnce(
           [](base::WeakPtr<AutofillManager> manager,
              FieldGlobalId email_field_id, const std::string& email,
@@ -147,7 +147,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
                 email_field_id, email, token_field_id, *presentation_token);
           },
           manager.GetWeakPtr(), triggering_email_field->global_id(),
-          base::UTF16ToUTF8(email), challenge_field->global_id()));
+          base::UTF16ToUTF8(email), nonce_field->global_id()));
 }
 
 }  // namespace autofill

@@ -221,11 +221,11 @@ bool StructTraits<
   }
 
   {
-    std::u16string challenge;
-    if (!data.ReadChallenge(&challenge)) {
+    std::u16string nonce;
+    if (!data.ReadNonce(&nonce)) {
       return false;
     }
-    out->set_challenge(std::move(challenge));
+    out->set_nonce(std::move(nonce));
   }
 
   out->set_properties_mask(data.properties_mask());

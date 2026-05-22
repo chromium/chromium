@@ -409,7 +409,7 @@ testing::Matcher<FormFieldData> FormFieldDataEq(const FormFieldData& expected) {
       FFD_PROPERTY_EQ(css_classes),
       FFD_PROPERTY_EQ(aria_label),
       FFD_PROPERTY_EQ(aria_description),
-      FFD_PROPERTY_EQ(challenge),
+      FFD_PROPERTY_EQ(nonce),
       FFD_PROPERTY_EQ(host_frame),
       FFD_PROPERTY_EQ(renderer_id),
       FFD_PROPERTY_EQ(host_form_id),

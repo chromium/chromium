@@ -304,11 +304,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
   mojo_base.mojom.String16 aria_description;
-  // A challenge (a cryptographic random nonce, unique per verification)
-  // provided by the website to the browser to be included in the key binding of
-  // EVTs.
-  // https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#section-2.1
-  mojo_base.mojom.String16 challenge;
+  mojo_base.mojom.String16 nonce;
   FieldRendererId renderer_id;
   FormRendererId host_form_id;
   uint32 properties_mask;
