@@ -5995,11 +5995,7 @@
       depends_on: ["TextSpacingTrimFallback"],
       status: "stable",
     },
-    {
-      // crbug.com/331123676
-      name: "TextSpacingTrimYuGothicUI",
-      status: "stable",
-    },
+
     {
       name: "ThrottledHistoryAPIThrowsSecurityError",
       status: "test",

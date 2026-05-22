@@ -422,13 +422,11 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (RuntimeEnabledFeatures::TextSpacingTrimYuGothicUIEnabled()) {
-    // Exclude "Yu Gothic UI" until the fonts are fixed. crbug.com/331123676
-    const String postscript_name = font.PlatformData().GetPostScriptName();
-    if (postscript_name.starts_with("YuGothicUI")) [[unlikely]] {
-      has_alternate_spacing = false;
-      return;
-    }
+  // Exclude "Yu Gothic UI" until the fonts are fixed. crbug.com/331123676
+  const String postscript_name = font.PlatformData().GetPostScriptName();
+  if (postscript_name.starts_with("YuGothicUI")) [[unlikely]] {
+    has_alternate_spacing = false;
+    return;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
