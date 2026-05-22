@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_and_views_toolbar_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -188,11 +189,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   // page finishes loading may temporarily disable the reload button, making it
   // no longer focusable, which will cause walking through focusable elements to
   // skip over it, and the test will then fail.
-  RunTestSequence(MoveMouseTo(ToolbarView::kToolbarElementId,
-                              base::BindOnce([](ui::TrackedElement* el) {
-                                return el->GetScreenBounds().bottom_center() +
-                                       gfx::Vector2d(0, 1);
-                              })));
+  RunTestSequence(InstrumentToolbar(), MoveMouseOffOfReloadButton());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url1));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url2));

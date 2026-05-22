@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/browser/ui/views/toolbar/webui_and_views_toolbar_interactive_uitest_base.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -20,8 +20,13 @@ namespace ui {
 class TrackedElement;
 }
 
-class ToolbarAccessibilityTest : public InteractiveBrowserTest,
-                                 public testing::WithParamInterface<bool> {
+// This inherits from WebUIAndViewsToolbarInteractiveUiTestBase not because it
+// depends on that parent class, but because some of its subclasses do, and
+// WebUIAndViewsToolbarInteractiveUiTestBase has no effect unless the methods it
+// exposes are used, so it's safe to inherit from.
+class ToolbarAccessibilityTest
+    : public WebUIAndViewsToolbarInteractiveUiTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   ToolbarAccessibilityTest();
   ~ToolbarAccessibilityTest() override;

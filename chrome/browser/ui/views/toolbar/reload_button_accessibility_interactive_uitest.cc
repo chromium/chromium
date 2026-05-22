@@ -35,8 +35,7 @@
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2ElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
                                     kTabCountState);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
@@ -72,7 +71,20 @@ class ReloadButtonAccessibilityTest : public ToolbarAccessibilityTest {
   ReloadButtonAccessibilityTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+          {
+#if BUILDFLAG(IS_MAC)
+              // Due to a Mac bug, have to move mouse onto another toolbar
+              // button that's not the reload button to ensure ":hover" is not
+              // set on the reload button. See MoveMouseOffOfReloadButton() docs
+              // for details.
+              //
+              // TODO(crbug.com/503006742): Remove this once the Mac bug is
+              // fixed, or remove the above #if if we start testing the
+              // back/forward button with these tests.
+              features::kWebUIBackForwardButton,
+#endif  // BUILDFLAG(IS_MAC)
+              features::kInitialWebUI, features::kWebUIReloadButton},
+          {});
     } else {
       feature_list_.InitWithFeatures(
           {}, {features::kInitialWebUI, features::kWebUIReloadButton});
@@ -147,19 +159,21 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   RunTestSequence(
-      InstrumentTab(kWebContentsElementId), WaitForShow(kReloadButtonElementId),
+      InstrumentToolbar(), WaitForShow(kReloadButtonElementId),
+      WaitForReloadButtonReady(),
+
       // Initial state: Reload
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
 
-      // Setup observer
-      WithElement(kWebContentsElementId,
+      // Set up observer
+      WithElement(TabId(),
                   [this](ui::TrackedElement* el) {
                     reload_observer_ = std::make_unique<ReloadTypeObserver>(
                         AsInstrumentedWebContents(el)->web_contents());
                   }),
 
       // Start navigation to slow page
-      InstrumentNextTab(kWebContents2ElementId), Do([&]() {
+      InstrumentNextTab(kNewTabId), Do([&]() {
         browser()->OpenURL(
             content::OpenURLParams(embedded_test_server()->GetURL("/slow"),
                                    content::Referrer(),
@@ -174,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest,
       WaitForReloadButtonTooltip(IDS_TOOLTIP_STOP),
 
       // Stop the navigation
-      MoveMouseToElement(kReloadButtonElementId), ClickMouse(),
+      WaitForReloadButtonStopIcon(), MoveMouseOverReloadButton(), ClickMouse(),
 
       // Button should turn back into Reload
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD));
@@ -190,30 +204,27 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_NormalReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+      InstrumentToolbar(),
       // Make sure mouse is not hovering over the reload button, as that can
       // result in temporarily disabling the button on load complete.
-      MoveMouseTo(ToolbarView::kToolbarElementId,
-                  base::BindOnce([](ui::TrackedElement* el) {
-                    return el->GetScreenBounds().bottom_center() +
-                           gfx::Vector2d(0, 1);
-                  })),
-      NavigateWebContents(kWebContentsElementId, url),
+      MoveMouseOffOfReloadButton(),
+
+      NavigateWebContents(TabId(), url), WaitForReloadButtonReady(),
       WaitForShow(kReloadButtonElementId),
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
 
-      // Setup observer BEFORE click
-      WithElement(kWebContentsElementId,
+      // Set up observer BEFORE click
+      WithElement(TabId(),
                   [this](ui::TrackedElement* el) {
                     reload_observer_ = std::make_unique<ReloadTypeObserver>(
                         AsInstrumentedWebContents(el)->web_contents());
                   }),
 
       // Click the reload button
-      MoveMouseToElement(kReloadButtonElementId), ClickMouse(),
+      MoveMouseOverReloadButton(), ClickMouse(),
 
       // Wait for reload to complete
-      WaitForWebContentsNavigation(kWebContentsElementId),
+      WaitForWebContentsNavigation(TabId()),
 
       // Wait for reload button to be back in Reload state
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
@@ -236,31 +247,26 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+      InstrumentToolbar(),
       // Make sure mouse is not hovering over the reload button, as that can
       // result in temporarily disabling the button on load complete.
-      MoveMouseTo(ToolbarView::kToolbarElementId,
-                  base::BindOnce([](ui::TrackedElement* el) {
-                    return el->GetScreenBounds().bottom_center() +
-                           gfx::Vector2d(0, 1);
-                  })),
-      NavigateWebContents(kWebContentsElementId, url),
-      WaitForShow(kReloadButtonElementId),
+      MoveMouseOffOfReloadButton(), NavigateWebContents(TabId(), url),
+      WaitForReloadButtonReady(), WaitForShow(kReloadButtonElementId),
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
 
-      // Setup observer BEFORE click
-      WithElement(kWebContentsElementId,
+      // Set up observer BEFORE click
+      WithElement(TabId(),
                   [this](ui::TrackedElement* el) {
                     reload_observer_ = std::make_unique<ReloadTypeObserver>(
                         AsInstrumentedWebContents(el)->web_contents());
                   }),
 
       // Shift-Click the reload button
-      MoveMouseToElement(kReloadButtonElementId),
+      MoveMouseOverReloadButton(),
       ClickMouse(ui_controls::LEFT, true, ui_controls::kShift),
 
       // Wait for reload to complete
-      WaitForWebContentsNavigation(kWebContentsElementId),
+      WaitForWebContentsNavigation(TabId()),
 
       // Wait for reload button to be back in Reload state
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
@@ -285,16 +291,11 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_MiddleClickReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+      InstrumentToolbar(),
       // Make sure mouse is not hovering over the reload button, as that can
       // result in temporarily disabling the button on load complete.
-      MoveMouseTo(ToolbarView::kToolbarElementId,
-                  base::BindOnce([](ui::TrackedElement* el) {
-                    return el->GetScreenBounds().bottom_center() +
-                           gfx::Vector2d(0, 1);
-                  })),
-      NavigateWebContents(kWebContentsElementId, url),
-      WaitForShow(kReloadButtonElementId),
+      MoveMouseOffOfReloadButton(), NavigateWebContents(TabId(), url),
+      WaitForReloadButtonReady(), WaitForShow(kReloadButtonElementId),
 
       // Ensure we have only 1 tab
       Check([&]() { return browser()->tab_strip_model()->count() == 1; }),
@@ -304,8 +305,7 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_MiddleClickReload) {
                 [this]() { return browser()->tab_strip_model()->count(); }),
 
       // Middle-click the reload button
-      MoveMouseToElement(kReloadButtonElementId),
-      ClickMouse(ui_controls::MIDDLE),
+      MoveMouseOverReloadButton(), ClickMouse(ui_controls::MIDDLE),
 
       // Wait for the second tab to be opened
       WaitForState(kTabCountState, 2),
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_MiddleClickReload) {
 // button.
 IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, AccessibilityNode) {
   RunTestSequence(
-      InstrumentTab(kWebContentsElementId), WaitForShow(kReloadButtonElementId),
+      InstrumentToolbar(), WaitForShow(kReloadButtonElementId),
       WaitForReloadButtonTooltip(IDS_TOOLTIP_RELOAD),
       CheckElement(
           kReloadButtonElementId,
