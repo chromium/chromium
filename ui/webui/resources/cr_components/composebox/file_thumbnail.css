@@ -9,6 +9,8 @@
 
 :host {
   --image-chip-border-radius_: var(--file-chip-border-radius, 8px);
+  --pdf-icon-background-color_: rgba(219, 69, 55, 1); /* red */
+  --pdf-icon-color_: white;
 }
 
 @keyframes spin {
@@ -128,12 +130,11 @@
 }
 
 .pdf-icon {
-  background-color: var(--color-composebox-pdf-chip-icon-background,
-      --color-composebox-background);
+  background-color: var(--pdf-icon-background-color_);
   /* TODO(crbug.com/467758241): fix radius of svg itself. */
   border-radius: var(--pdf-icon-border-radius, 4px);
   box-sizing: border-box;
-  color: var(--color-composebox-pdf-chip-icon-border);
+  color: var(--pdf-icon-color_);
   height: var(--pdf-icon-size, 100%);
   width: var(--pdf-icon-size, 100%);
 }
