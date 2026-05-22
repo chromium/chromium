@@ -88,6 +88,16 @@ UIColor* NormalTintColor() {
   [self updateMask];
 }
 
+- (void)setHidden:(BOOL)hidden {
+  [super setHidden:hidden];
+  if (self.forceHidden) {
+    return;
+  }
+  self.alpha = hidden ? 0.0 : 1.0;
+  self.transform = hidden ? CGAffineTransformMakeScale(0.01, 0.01)
+                          : CGAffineTransformIdentity;
+}
+
 #pragma mark - UIControl
 
 - (void)setEnabled:(BOOL)enabled {

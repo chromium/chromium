@@ -884,6 +884,10 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 - (void)updateButtons:(NSArray<UIView*>*)buttons
     forFullscreenProgress:(CGFloat)progress {
   for (UIView* button in buttons) {
+    if (button.hidden) {
+      button.alpha = 0;
+      continue;
+    }
     if (progress > 0.99) {
       button.alpha = 1;
       button.transform = CGAffineTransformIdentity;
@@ -1334,11 +1338,11 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
   [NSLayoutConstraint deactivateConstraints:_regularRegularConstraints];
 
-  if (IsRegularXRegularSizeClass(self.view.window)) {
+  if (IsRegularXRegularSizeClass(self)) {
     _leadingStackLeadingConstraint.constant = kStackViewMarginRegularRegular;
     _trailingStackTrailingConstraint.constant = kStackViewMarginRegularRegular;
     [NSLayoutConstraint activateConstraints:_regularRegularConstraints];
-  } else if (IsIPhoneLandscape(self.view.window)) {
+  } else if (IsIPhoneLandscape(self)) {
     _leadingStackLeadingConstraint.constant = kStackViewMarginLandscape;
     _trailingStackTrailingConstraint.constant = kStackViewMarginLandscape;
     [NSLayoutConstraint activateConstraints:_landscapeOrientationConstraints];
