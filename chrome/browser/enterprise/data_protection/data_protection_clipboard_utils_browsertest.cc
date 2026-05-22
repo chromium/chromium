@@ -15,10 +15,13 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -79,7 +82,9 @@ class DataControlsClipboardUtilsBrowserTest
   DataControlsClipboardUtilsBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         data_controls::kDataControlsDragEnforcement,
-        data_controls::kDataControlsSearchWith};
+        data_controls::kDataControlsSearchWith,
+        enterprise_connectors::kGlicBulkDataEntrySupport,
+        data_controls::kDataControlsGlic};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -93,6 +98,49 @@ class DataControlsClipboardUtilsBrowserTest
 
   ~DataControlsClipboardUtilsBrowserTest() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
+
+  void SetupContentAnalysisToBlock() {
+    enterprise_connectors::test::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(),
+        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+        R"(
+          {
+            "service_provider": "google",
+            "enable": [
+              {
+                "url_list": ["*"],
+                "tags": ["dlp"]
+              }
+            ],
+            "block_until_verdict": 1
+          })",
+        machine_scope());
+
+#if BUILDFLAG(IS_CHROMEOS)
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken("fake_dm_token"));
+#else
+    if (machine_scope()) {
+      policy::SetDMTokenForTesting(
+          policy::DMToken::CreateValidToken("fake_dm_token"));
+    } else {
+      enterprise_connectors::test::SetProfileDMToken(browser()->profile(),
+                                                     "fake_dm_token");
+    }
+#endif
+
+    auto status_callback = base::BindRepeating([](const std::string& contents,
+                                                  const base::FilePath& path) {
+      return enterprise_connectors::test::FakeContentAnalysisDelegate::
+          DlpResponse(
+              enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
+              "rule", enterprise_connectors::TriggeredRule::BLOCK);
+    });
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+            base::DoNothing(), status_callback, "fake_dm_token"));
   }
 
   bool machine_scope() const { return std::get<0>(GetParam()); }
@@ -117,6 +165,10 @@ class DataControlsClipboardUtilsBrowserTest
 
   void TearDownOnMainThread() override {
     event_report_validator_helper_.reset();
+
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+        enterprise_connectors::ContentAnalysisDelegate::Factory());
+    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
 
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
@@ -2154,4 +2206,108 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::Rule::Level::kWarn, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DataControlsClipboardUtilsBrowserTest,
+    PasteFromGeminiIfAllowedByPolicy_ContentAnalysisBlocked) {
+  SetupContentAnalysisToBlock();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  base::test::TestFuture<bool> future;
+  PasteFromGeminiIfAllowedByPolicy(contents()->GetPrimaryMainFrame(),
+                                   std::string(1000, 'a'),
+                                   future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       PasteFromGeminiIfAllowedByPolicy_WarnedThenBlocked) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "WARN"}
+        ],
+        "sources": {
+          "gemini_in_chrome": true
+        }
+      })"},
+                                 machine_scope());
+
+  SetupContentAnalysisToBlock();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  data_controls::DesktopDataControlsDialogTestHelper dialog_helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+
+  base::test::TestFuture<bool> future;
+  PasteFromGeminiIfAllowedByPolicy(contents()->GetPrimaryMainFrame(),
+                                   std::string(1000, 'a'),
+                                   future.GetCallback());
+
+  dialog_helper.WaitForDialogToInitialize();
+  dialog_helper.BypassWarning();
+  dialog_helper.WaitForDialogToClose();
+
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       PasteFromGeminiIfAllowedByPolicy_DataControlsBlocked) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ],
+        "sources": {
+          "gemini_in_chrome": true
+        }
+      })"},
+                                 machine_scope());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  base::test::TestFuture<bool> future;
+  PasteFromGeminiIfAllowedByPolicy(contents()->GetPrimaryMainFrame(),
+                                   std::string(1000, 'a'),
+                                   future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       PasteFromGeminiIfAllowedByPolicy_DataControlsWarned) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "WARN"}
+        ],
+        "sources": {
+          "gemini_in_chrome": true
+        }
+      })"},
+                                 machine_scope());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  data_controls::DesktopDataControlsDialogTestHelper dialog_helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+
+  base::test::TestFuture<bool> future;
+  PasteFromGeminiIfAllowedByPolicy(contents()->GetPrimaryMainFrame(),
+                                   std::string(1000, 'a'),
+                                   future.GetCallback());
+
+  dialog_helper.WaitForDialogToInitialize();
+  dialog_helper.BypassWarning();
+  dialog_helper.WaitForDialogToClose();
+
+  EXPECT_TRUE(future.Get());
+}
 }  // namespace enterprise_data_protection

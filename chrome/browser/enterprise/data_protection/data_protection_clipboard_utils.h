@@ -41,6 +41,18 @@ void PasteIfAllowedByPolicy(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
 
+// This function checks if a paste originating from Gemini in Chrome is allowed
+// to proceed according to the following policies:
+// - DataControlsRules (specifically the "gemini_in_chrome" source)
+// - OnBulkDataEntryEnterpriseConnector
+//
+// This function will always call `callback` after policies are evaluated. If
+// policies indicate the action should receive a bypassable warning, `callback`
+// will only be called after the user makes the decision.
+void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
+                                      std::string data,
+                                      base::OnceCallback<void(bool)> callback);
+
 // Returns true if `PasteIfAllowedByPolicy` needs to be called for the provided
 // context. This is not required to be called before `PasteIfAllowedByPolicy` as
 // it includes logic to return early in cases where policies aren't set or no

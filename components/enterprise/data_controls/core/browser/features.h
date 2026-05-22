@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kDataControlsDragEnforcement);
 // Controls enabling Data Controls rules for "Search with" context menu item.
 BASE_DECLARE_FEATURE(kDataControlsSearchWith);
 
+// Controls enabling Data Controls rules for Glic.
+BASE_DECLARE_FEATURE(kDataControlsGlic);
+
 }  // namespace data_controls
 
 #endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_FEATURES_H_

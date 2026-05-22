@@ -66,12 +66,6 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS©_LINUX)
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
-#endif
-
 using actor::ActorKeyedService;
 using actor::ActorTask;
 using actor::ActResultFuture;
@@ -787,91 +781,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   EXPECT_FALSE(observer.last_navigation_succeeded());
 }
 
-class GlicActorPolicyCheckerBrowserTestManagedWithBulkDataSupport
-    : public GlicActorPolicyCheckerBrowserTestManagedBrowser {
- public:
-  GlicActorPolicyCheckerBrowserTestManagedWithBulkDataSupport() {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_connectors::kGlicBulkDataEntrySupport);
-  }
-
-  void TearDownOnMainThread() override {
-    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-        enterprise_connectors::ContentAnalysisDelegate::Factory());
-    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
-    GlicActorPolicyCheckerBrowserTestManagedBrowser::TearDownOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    GlicActorPolicyCheckerBrowserTestManagedWithBulkDataSupport,
-    ValidateContentAllowedWhenPolicyDisabled) {
-  // Disabled by default since no enterprise connector policy is set.
-  base::test::TestFuture<GlicActorPolicyChecker::ContentValidationReason>
-      future;
-  GetPolicyChecker().ValidateContentSentToRenderer(
-      web_contents()->GetPrimaryMainFrame(), "test content",
-      future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            GlicActorPolicyChecker::ContentValidationReason::kAllowed);
-}
-
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-IN_PROC_BROWSER_TEST_F(
-    GlicActorPolicyCheckerBrowserTestManagedWithBulkDataSupport,
-    ValidateContentBlockedByPolicy) {
-  // Set up policy to enable content analysis.
-  enterprise_connectors::test::SetAnalysisConnector(
-      GetProfile()->GetPrefs(),
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-      R"(
-        {
-          "service_provider": "google",
-          "enable": [
-            {
-              "url_list": ["*"],
-              "tags": ["dlp"]
-            }
-          ],
-          "block_until_verdict": 1
-        })",
-      /*machine_scope=*/true);
-
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidToken("fake_dm_token"));
-
-  GURL url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  auto status_callback = base::BindRepeating(
-      [](const std::string& contents, const base::FilePath& path) {
-        return enterprise_connectors::test::FakeContentAnalysisDelegate::
-            DlpResponse(
-                enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
-                "rule", enterprise_connectors::TriggeredRule::BLOCK);
-      });
-  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(
-          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
-          base::DoNothing(), status_callback, "fake_dm_token"));
-
-  base::test::TestFuture<GlicActorPolicyChecker::ContentValidationReason>
-      future;
-
-  // Content size set to be above minimum scan data size threshold.
-  GetPolicyChecker().ValidateContentSentToRenderer(
-      web_contents()->GetPrimaryMainFrame(), std::string(1000, 'a'),
-      future.GetCallback());
-
-  // Block rule on all urls triggered.
-  EXPECT_EQ(future.Get(),
-            GlicActorPolicyChecker::ContentValidationReason::kBlocked);
-}
-#endif
-
 // Makes sure that on policy-managed clients, when the default pref is
 // kForcedDisabled, the policy value is discarded.
 class GlicActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref
@@ -1127,6 +1036,19 @@ IN_PROC_BROWSER_TEST_F(
       glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
   EXPECT_TRUE(GetPolicyChecker().CanActOnWeb());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
+                       ValidateContentAllowedByDefault) {
+  base::test::TestFuture<GlicActorPolicyChecker::ContentValidationReason>
+      future;
+
+  GetPolicyChecker().ValidateContentSentToRenderer(
+      web_contents()->GetPrimaryMainFrame(), "test content",
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            GlicActorPolicyChecker::ContentValidationReason::kAllowed);
 }
 
 }  // namespace glic

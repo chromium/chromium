@@ -46,6 +46,11 @@ class RulesServiceBase : public KeyedService {
   // verdicts should trigger a dialog.
   virtual Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
 
+  // Returns a clipboard verdict for when data is being inserted/pasted into
+  // the browser from the integrated Gemini agent (Glic).
+  virtual Verdict GetPasteFromGeminiInChromeVerdict(
+      const GURL& destination) const;
+
   // Returns a verdict to be applied to a specific file download.
   virtual Verdict GetDownloadVerdict(const GURL& download_url) const;
 

@@ -273,11 +273,10 @@ void DesktopDataControlsDialog::Show(base::OnceClosure on_destructed) {
 
 void DesktopDataControlsDialog::CloseDialog(
     views::Widget::ClosedReason reason) {
-  if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
-    OnDialogButtonClicked(/*bypassed=*/false);
-  }
   if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
     OnDialogButtonClicked(/*bypassed=*/true);
+  } else {
+    OnDialogButtonClicked(/*bypassed=*/false);
   }
 
   static_cast<DataControlsDialogDelegate*>(dialog_delegate_.get())->Shutdown();

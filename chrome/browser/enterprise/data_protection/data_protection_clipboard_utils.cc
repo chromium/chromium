@@ -685,6 +685,48 @@ std::optional<content::ClipboardEndpoint> GetValidURLEndpoint(
   return endpoint;
 }
 
+void PasteFromGeminiIfAllowedByContentAnalysis(
+    content::RenderFrameHost* destination,
+    std::string data,
+    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kGlicBulkDataEntrySupport)) {
+    Profile* profile =
+        Profile::FromBrowserContext(destination->GetBrowserContext());
+    enterprise_connectors::ContentAnalysisDelegate::Data dialog_data;
+    // TODO(crbug.com/473047343): Add support when glic is targeting an element
+    // inside a cross-origin iframe.
+    if (profile &&
+        enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+            profile, GetSourceURL(destination), &dialog_data,
+            enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
+      dialog_data.text.push_back(std::move(data));
+
+      enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+          content::WebContents::FromRenderFrameHost(destination),
+          std::move(dialog_data),
+          base::BindOnce(
+              [](base::OnceCallback<void(bool)> cb,
+                 const enterprise_connectors::ContentAnalysisDelegate::Data&,
+                 enterprise_connectors::ContentAnalysisDelegate::Result&
+                     result) {
+                // TODO(crbug.com/473047343): Not exposed currently, but we
+                // would want to return `kWarned` verdicts at some point.
+                bool allowed =
+                    result.text_results.empty() || result.text_results[0];
+                std::move(cb).Run(allowed);
+              },
+              std::move(callback)),
+          enterprise_connectors::DeepScanAccessPoint::ACTOR);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+  std::move(callback).Run(true);
+}
+
 }  // namespace
 
 void PasteIfAllowedByPolicy(
@@ -1209,4 +1251,62 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
           std::make_unique<ui::DataTransferEndpoint>(std::move(dte))));
 }
 
+void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
+                                      std::string data,
+                                      base::OnceCallback<void(bool)> callback) {
+  CHECK(destination);
+  if (base::FeatureList::IsEnabled(data_controls::kDataControlsGlic)) {
+    auto* rules_service =
+        data_controls::ChromeRulesServiceFactory::GetInstance()
+            ->GetForBrowserContext(destination->GetBrowserContext());
+    if (rules_service) {
+      auto verdict = rules_service->GetPasteFromGeminiInChromeVerdict(
+          GetSourceURL(destination));
+      auto* factory = GetDialogFactory();
+
+      switch (verdict.level()) {
+        // TODO(crbug.com/515092886): Emit reports for kReport, kWarn, and
+        // kBlock verdicts.
+        case data_controls::Rule::Level::kBlock:
+          if (factory) {
+            factory->ShowDialogIfNeeded(
+                content::WebContents::FromRenderFrameHost(destination),
+                data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+          }
+          std::move(callback).Run(false);
+          return;
+        case data_controls::Rule::Level::kWarn:
+          if (factory) {
+            factory->ShowDialogIfNeeded(
+                content::WebContents::FromRenderFrameHost(destination),
+                data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
+                base::BindOnce(
+                    [](content::GlobalRenderFrameHostId rfh_id,
+                       std::string content_text,
+                       base::OnceCallback<void(bool)> cb, bool bypassed) {
+                      auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+                      if (bypassed && rfh) {
+                        PasteFromGeminiIfAllowedByContentAnalysis(
+                            rfh, std::move(content_text), std::move(cb));
+                      } else {
+                        std::move(cb).Run(false);
+                      }
+                    },
+                    destination->GetGlobalId(), std::move(data),
+                    std::move(callback)));
+          } else {
+            std::move(callback).Run(false);
+          }
+          return;
+        case data_controls::Rule::Level::kReport:
+        case data_controls::Rule::Level::kAllow:
+        case data_controls::Rule::Level::kNotSet:
+          break;
+      }
+    }
+  }
+
+  PasteFromGeminiIfAllowedByContentAnalysis(destination, std::move(data),
+                                            std::move(callback));
+}
 }  // namespace enterprise_data_protection

@@ -38,8 +38,9 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || \
+    BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #endif
 
 // Traits for base::ToString(). They need to be in the corresponding namespace
@@ -160,7 +161,6 @@ bool HasUrlAllowlist(Profile& profile) {
   const base::ListValue& allowlist = pref_service->GetList(allowlist_pref_path);
   return !allowlist.empty();
 }
-
 
 // TODO(crbug.com/471065012): This is a consumer check so it should be moved to
 // the overall actuation account access check. Placed here for a quick fix.
@@ -511,38 +511,19 @@ void GlicActorPolicyChecker::ValidateContentSentToRenderer(
     return;
   }
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kGlicBulkDataEntrySupport)) {
-    enterprise_connectors::ContentAnalysisDelegate::Data data;
-    // TODO(crbug.com/473047343): Add support when glic is targeting an element
-    // inside a cross-origin iframe.
-    if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-            profile_, frame->GetLastCommittedURL(), &data,
-            enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
-      data.text.push_back(content);
-      enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-          web_contents, std::move(data),
-          base::BindOnce(
-              [](ContentValidationCallback cb,
-                 const enterprise_connectors::ContentAnalysisDelegate::Data&,
-                 enterprise_connectors::ContentAnalysisDelegate::Result&
-                     result) {
-                // TODO(crbug.com/473047343): Not exposed currently, but we
-                // would want to return `kWarned` verdicts at some point.
-                bool allowed =
-                    result.text_results.empty() || result.text_results[0];
-                std::move(cb).Run(allowed ? ContentValidationReason::kAllowed
-                                          : ContentValidationReason::kBlocked);
-              },
-              std::move(callback)),
-          enterprise_connectors::DeepScanAccessPoint::ACTOR);
-      return;
-    }
-  }
-#endif
-
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || \
+    BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  enterprise_data_protection::PasteFromGeminiIfAllowedByPolicy(
+      frame, content,
+      base::BindOnce(
+          [](ContentValidationCallback cb, bool allowed) {
+            std::move(cb).Run(allowed ? ContentValidationReason::kAllowed
+                                      : ContentValidationReason::kBlocked);
+          },
+          std::move(callback)));
+#else
   std::move(callback).Run(ContentValidationReason::kAllowed);
+#endif
 }
 
 }  // namespace glic

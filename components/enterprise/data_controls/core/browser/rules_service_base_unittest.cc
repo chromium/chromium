@@ -267,6 +267,61 @@ TEST_F(RulesServiceBaseTest, WarnOSClipboardCopy) {
       incognito_service_->GetCopyToOSClipboardVerdict(google_url()));
 }
 
+TEST_F(RulesServiceBaseTest, BlockPasteFromGeminiInChrome) {
+  SetDataControls(&prefs_, {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "gemini_in_chrome": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  ExpectBlockVerdict(service_->GetPasteFromGeminiInChromeVerdict(google_url()));
+  ExpectBlockVerdict(
+      incognito_service_->GetPasteFromGeminiInChromeVerdict(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, WarnPasteFromGeminiInChrome) {
+  SetDataControls(&prefs_, {R"({
+                    "name": "warn",
+                    "rule_id": "1234",
+                    "sources": {
+                      "gemini_in_chrome": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  ExpectWarnVerdict(service_->GetPasteFromGeminiInChromeVerdict(google_url()));
+  ExpectWarnVerdict(
+      incognito_service_->GetPasteFromGeminiInChromeVerdict(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, BlockPasteFromGeminiInChromeToUrl) {
+  SetDataControls(&prefs_, {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "gemini_in_chrome": true
+                    },
+                    "destinations": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  ExpectBlockVerdict(service_->GetPasteFromGeminiInChromeVerdict(google_url()));
+  ExpectBlockVerdict(
+      incognito_service_->GetPasteFromGeminiInChromeVerdict(google_url()));
+  ExpectNoVerdict(
+      service_->GetPasteFromGeminiInChromeVerdict(GURL("https://example.com")));
+  ExpectNoVerdict(incognito_service_->GetPasteFromGeminiInChromeVerdict(
+      GURL("https://example.com")));
+}
+
 TEST_F(RulesServiceBaseTest, RuleWithoutRestrictionsForCopy) {
   SetDataControls(&prefs_, {R"({
                     "name": "block",

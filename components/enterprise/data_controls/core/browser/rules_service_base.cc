@@ -57,6 +57,23 @@ Verdict RulesServiceBase::GetCopyToOSClipboardVerdict(
                     });
 }
 
+Verdict RulesServiceBase::GetPasteFromGeminiInChromeVerdict(
+    const GURL& destination) const {
+  return GetVerdict(Rule::Restriction::kClipboard,
+                    {
+                        .source =
+                            {
+                                .incognito = incognito_profile(),
+                                .gemini_in_chrome = true,
+                            },
+                        .destination =
+                            {
+                                .url = destination,
+                                .incognito = incognito_profile(),
+                            },
+                    });
+}
+
 Verdict RulesServiceBase::GetDownloadVerdict(const GURL& download_url) const {
   return GetVerdict(Rule::Restriction::kFileDownload,
                     {
