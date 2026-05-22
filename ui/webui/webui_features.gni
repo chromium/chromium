@@ -38,8 +38,9 @@ if (enable_cast_receiver || is_cast_android || is_castos) {
 } else {
   declare_args() {
     # Enable the WebUI version of the New Tab Page.
-    enable_webui_ntp = target_os == "win" || target_os == "mac" ||
-                       target_os == "linux" || target_os == "chromeos"
+    enable_webui_ntp =
+        target_os == "win" || target_os == "mac" || target_os == "linux" ||
+        target_os == "chromeos" || is_desktop_android
   }
   declare_args() {
     # Enable WebUI Contextual Tasks Composebox.
