@@ -89,6 +89,19 @@ class PageEmbeddingsService::WebContentsEventsObserver
     }
   }
 
+  void PrimaryPageChanged(content::Page& page) override {
+    auto loc =
+        page_embeddings_service_->web_contents_states_.find(web_contents());
+    if (loc != page_embeddings_service_->web_contents_states_.end()) {
+      if (auto* computing =
+              std::get_if<Computing>(&loc->second.embeddings_state)) {
+        page_embeddings_service_->embedder_->TryCancel(computing->task_id);
+      }
+      loc->second.page = nullptr;
+      loc->second.embeddings_state = Unavailable{};
+    }
+  }
+
   void WebContentsDestroyed() override {
     page_embeddings_service_->web_contents_states_.erase(web_contents());
   }

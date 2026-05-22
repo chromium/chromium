@@ -1167,4 +1167,62 @@ TEST_F(PageEmbeddingsServiceTest, GeneratesCandidatePassagesFromPDFText) {
       base::MakeRefCounted<RefCountedPDFText>("pdf text content"));
 }
 
+// Validates that embeddings computed for a page that is no longer the primary
+// page (e.g. it was navigated away from but is still alive in BFCache) are
+// ignored and do not notify observers.
+TEST_F(PageEmbeddingsServiceTest, BFCacheRaceReproduction) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+
+  ObserverMock observer;
+  EXPECT_CALL(observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(observer, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
+  page_embeddings_service().AddObserver(&observer);
+
+  passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback;
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillOnce(
+          [&](passage_embeddings::PassagePriority priority,
+              std::vector<std::string> passages,
+              passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                  callback) {
+            compute_passages_embeddings_callback = std::move(callback);
+            return 1;
+          });
+
+  // 1. Initial page load (attacker.com).
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL("https://attacker.com"));
+  content::Page& page1 = web_contents->GetPrimaryPage();
+  base::WeakPtr<content::Page> page1_weak = page1.GetWeakPtr();
+
+  // 2. Content extracted for page 1.
+  page_embeddings_service().OnPageContentExtracted(
+      page1, base::MakeRefCounted<RefCountedAnnotatedPageContent>());
+
+  ASSERT_FALSE(compute_passages_embeddings_callback.is_null());
+
+  // 3. Navigate to page 2 (victim.com).
+  EXPECT_CALL(embedder_mock(), TryCancel(1));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL("https://victim.com"));
+  ASSERT_NE(nullptr, page1_weak)
+      << "Page 1 was destroyed upon navigation. BFCache simulation failed.";
+
+  // 4. Complete embedding for page 1.
+  // OnPageEmbeddingsAvailable should NOT be called because
+  // PrimaryPageChanged cleared the state.
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(testing::_)).Times(0);
+
+  std::move(compute_passages_embeddings_callback)
+      .Run({"passage"}, {passage_embeddings::Embedding({1.0f})}, 1,
+           passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+  page_embeddings_service().RemoveObserver(&observer);
+}
+
 }  // namespace page_content_annotations
