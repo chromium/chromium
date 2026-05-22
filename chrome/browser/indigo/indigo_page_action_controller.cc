@@ -361,7 +361,6 @@ void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
   if (result.has_value()) {
     // TODO(b/509508517): Show a toast to inform the user the image
     // was deleted.
-    indigo_service_->InvalidateRemoteEligibility();
   } else {
     LOG(ERROR) << "Delete original photo failed: " << result.error().message;
   }
@@ -426,7 +425,6 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
     base::RecordAction(base::UserMetricsAction("Indigo.Onboarding.Complete"));
 
     if (indigo_service_) {
-      indigo_service_->InvalidateRemoteEligibility();
       indigo_service_->GetCombinedEligibility(
           base::BindOnce(&IndigoPageActionController::ContinueInvoke,
                          invoke_weak_ptr_factory_.GetWeakPtr()));

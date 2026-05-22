@@ -159,10 +159,6 @@ export class IndigoInternalsAppElement extends CrLitElement {
     this.combinedEligibility_ = status;
     this.lastUpdated_ = new Date().toLocaleTimeString();
   }
-
-  protected onInvalidateClick_() {
-    BrowserProxy.getInstance().handler.invalidateRemoteEligibility();
-  }
 }
 
 declare global {
