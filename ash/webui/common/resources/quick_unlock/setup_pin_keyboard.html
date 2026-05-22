@@ -51,8 +51,6 @@ Where:
     height: 32px;
     max-width: 200px;
     min-height: 0;
-    padding-bottom: 8px;
-    padding-top: 4px;
   }
 
   /* Hide this using visibility: hidden instead of hidden so that the
@@ -60,19 +58,48 @@ Where:
   #problemDiv[invisible] {
     visibility: hidden;
   }
+
+  #complexityRequirement {
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: 13px;
+    line-height: 20px;
+    width: 100%;
+    max-width: 250px;
+    padding: 16px 12px;
+    gap: 5px;
+    justify-content: center;
+   }
+
+  #complexityRequirement[hidden] {
+    display: none;
+  }
+
+  #containerDiv {
+    display:flex;
+    flex-direction: column;
+  }
+
 </style>
-<pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
-    on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
-    has-error="[[hasError_(problemMessageId_, problemClass_)]]"
-    disabled="[[shouldDisableKeyboard_(isSetPinCallPending_, localAuthFactorsComplexity_)]]"
-    enable-visibility-icon="[[enableVisibilityIcon]]"
-    enable-placeholder="[[enablePlaceholder]]">
-  <!-- Warning/error; only shown if title is hidden. -->
-  <div id="problemDiv" class$="[[problemClass_]]"
-      invisible$="[[!problemMessageId_]]" problem>
-    <span aria-live="assertive">
-      [[formatProblemMessage_(locale, problemMessageId_,
-            problemMessageParameters_)]]
-    </span>
+<div id="containerDiv">
+  <div id="complexityRequirement"
+      hidden$="[[!complexityRequirementId_]]">
+    [[formatProblemMessage_(locale, complexityRequirementId_,
+          complexityRequirementParameters_)]]
   </div>
-</pin-keyboard>
+  <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+      on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
+      has-error="[[hasError_(problemMessageId_, problemClass_)]]"
+      disabled="[[shouldDisableKeyboard_(isSetPinCallPending_, localAuthFactorsComplexity_)]]"
+      enable-visibility-icon="[[enableVisibilityIcon]]"
+      enable-placeholder="[[enablePlaceholder]]">
+    <!-- Warning/error; only shown if title is hidden. -->
+    <div id="problemDiv" class$="[[problemClass_]]"
+        invisible$="[[!problemMessageId_]]" problem>
+      <span aria-live="assertive">
+        [[formatProblemMessage_(locale, problemMessageId_,
+              problemMessageParameters_)]]
+      </span>
+    </div>
+  </pin-keyboard>
+</div>

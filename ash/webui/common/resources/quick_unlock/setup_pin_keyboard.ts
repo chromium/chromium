@@ -42,6 +42,9 @@ export enum MessageType {
   COMPLEXITY_LOW = 'configurePinComplexityErrorLow',
   COMPLEXITY_MEDIUM = 'configurePinComplexityErrorMedium',
   COMPLEXITY_HIGH = 'configurePinComplexityErrorHigh',
+  COMPLEXITY_REPEATING = 'configurePinComplexityRepeating',
+  COMPLEXITY_ORDERED = 'configurePinComplexityOrdered',
+  COMPLEXITY_TOO_SHORT = 'configurePinComplexityTooShort',
 }
 
 export enum ProblemType {
@@ -49,7 +52,7 @@ export enum ProblemType {
   ERROR = 'error',
 }
 
-const ComplexityErrorMap: Record<
+const ComplexityRequirementMap: Record<
     Exclude<LocalAuthFactorsComplexity, LocalAuthFactorsComplexity.kUnset>,
     MessageType> = {
   [LocalAuthFactorsComplexity.kNone]: MessageType.COMPLEXITY_NONE,
@@ -57,6 +60,28 @@ const ComplexityErrorMap: Record<
   [LocalAuthFactorsComplexity.kMedium]: MessageType.COMPLEXITY_MEDIUM,
   [LocalAuthFactorsComplexity.kHigh]: MessageType.COMPLEXITY_HIGH,
 };
+
+// Pin complexity to error message map. Used to translate
+const ComplexityPinErrorMap:
+    Record<Exclude<PinComplexity, PinComplexity.kOk>, MessageType> = {
+      [PinComplexity.kTooShort]: MessageType.COMPLEXITY_TOO_SHORT,
+      [PinComplexity.kContainsOrderedSequence]: MessageType.COMPLEXITY_ORDERED,
+      [PinComplexity.kContainsRepeatingDigits]:
+          MessageType.COMPLEXITY_REPEATING,
+      [PinComplexity.kContainsNonDigits]: MessageType.CONTAINS_NONDIGIT,
+    };
+
+// LINT.IfChange(ComplexityMinLengths)
+// The minimum lengths for each of the different complexity requirements.
+const ComplexityMinLengths: Record<
+    Exclude<LocalAuthFactorsComplexity, LocalAuthFactorsComplexity.kUnset>,
+    String> = {
+  [LocalAuthFactorsComplexity.kNone]: '1',
+  [LocalAuthFactorsComplexity.kLow]: '4',
+  [LocalAuthFactorsComplexity.kMedium]: '6',
+  [LocalAuthFactorsComplexity.kHigh]: '8',
+};
+// LINT.ThenChange(//chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.cc:PinComplexityValidationMap)
 
 const SetupPinKeyboardElementBase = I18nMixin(PolymerElement);
 
@@ -189,6 +214,15 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         value: undefined,
         observer: 'updateDefaultMessage_',
       },
+
+      /**
+       * The message ID of the complexity requirement to display above the
+       * input field. Hides the complexity requirement message when not set.
+       */
+      complexityRequirementId_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -204,6 +238,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   private initialPin_: string;
   private problemMessageId_: MessageType|'';
   private problemMessageParameters_: string;
+  private complexityRequirementId_: MessageType|'';
   private problemClass_: ProblemType|''|undefined;
   private pinHasPassedMinimumLength_: boolean;
   private isSetPinCallPending_: boolean;
@@ -247,7 +282,16 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.problemClass_ = problemClass;
 
     let params = '';
-    if (this.credentialRequirements_ !== undefined) {
+    // Local auth factors policy params takes precedence over quick unlock
+    // params.
+    if (this.localAuthFactorsComplexity_ !== undefined &&
+        this.localAuthFactorsComplexity_ !==
+            LocalAuthFactorsComplexity.kUnset) {
+      if (messageId === MessageType.COMPLEXITY_TOO_SHORT) {
+        params =
+            ComplexityMinLengths[this.localAuthFactorsComplexity_].toString();
+      }
+    } else if (this.credentialRequirements_ !== undefined) {
       if (messageId === MessageType.TOO_SHORT) {
         params = this.credentialRequirements_.minLength.toString();
       } else if (messageId === MessageType.TOO_LONG) {
@@ -476,7 +520,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     if (this.localAuthFactorsComplexity_ !== undefined &&
         this.localAuthFactorsComplexity_ !==
             LocalAuthFactorsComplexity.kUnset) {
-      messageId = ComplexityErrorMap[this.localAuthFactorsComplexity_];
+      messageId = ComplexityPinErrorMap[pinComplexity];
     }
     this.showProblem_(messageId, ProblemType.ERROR);
   }
@@ -514,21 +558,25 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     // policy to avoid the legacy 6-digit message "flash".
     if (this.localAuthFactorsComplexity_ === undefined) {
       this.hideProblem_();
+      this.complexityRequirementId_ = '';
       return;
     }
 
     // 2. Complexity policy is in effect.
     if (this.localAuthFactorsComplexity_ !==
         LocalAuthFactorsComplexity.kUnset) {
-      this.showProblem_(
-          ComplexityErrorMap[this.localAuthFactorsComplexity_],
-          ProblemType.WARNING);
+      this.complexityRequirementId_ =
+          ComplexityRequirementMap[this.localAuthFactorsComplexity_];
+      // Complexity is shown ABOVE the input box, so clear any initial
+      // 'problem/error' text below it.
+      this.hideProblem_();
       return;
     }
 
     // 3. Complexity policy is unset or fetch error (backend says "no policy"):
     // Fall back to the legacy 6-digit requirement.
     this.showProblem_(MessageType.TOO_SHORT, ProblemType.WARNING);
+    this.complexityRequirementId_ = '';
   }
 
   private shouldDisableKeyboard_(

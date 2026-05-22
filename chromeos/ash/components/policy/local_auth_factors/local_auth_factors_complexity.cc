@@ -60,6 +60,7 @@ constexpr PinValidationRules kDefaultPinValidationRules = PinValidationRules{
     /* min_length= */ 1, /* check_trivial_sequence= */ false};
 
 // clang-format off
+// LINT.IfChange(PinComplexityValidationMap)
 // PIN complexity to PIN validation rule map, used to lookup PIN validation
 // rules.
 constexpr auto kPinComplexityValidationMap =
@@ -69,6 +70,7 @@ constexpr auto kPinComplexityValidationMap =
         {Complexity::kMedium, {/* min_length= */ 6, /* check_trivial_sequence= */ true}},
         {Complexity::kHigh,   {/* min_length= */ 8, /* check_trivial_sequence= */ true}}
     });
+// LINT.ThenChange(//ash/webui/common/resources/quick_unlock/setup_pin_keyboard.ts:ComplexityMinLengths)
 // clang-format on
 
 PinValidationRules GetPinComplexityValidationRules(Complexity complexity) {

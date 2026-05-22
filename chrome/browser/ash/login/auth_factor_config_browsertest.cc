@@ -599,7 +599,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(result.value(), mojom::PinComplexity::kOk);
 }
 
-// Checks that CheckPinComplexity returns kTooWeak for a simple PIN.
+// Checks that CheckPinComplexity returns kContainsRepeatingDigits for a simple
+// PIN.
 IN_PROC_BROWSER_TEST_F(
     AuthFactorConfigTestWithCryptohomePinAndLocalAuthFactorsComplexity,
     CheckPinComplexity_TooWeak) {
@@ -607,9 +608,9 @@ IN_PROC_BROWSER_TEST_F(
   std::optional<std::string> auth_token = MakeAuthToken(test::kAuthPin);
   ASSERT_TRUE(auth_token.has_value());
 
-  auto result = CheckPinComplexity(*auth_token, kWeakPin);
+  auto result = CheckPinComplexity(*auth_token, "11111111");
 
-  EXPECT_EQ(result.value(), mojom::PinComplexity::kTooWeak);
+  EXPECT_EQ(result.value(), mojom::PinComplexity::kContainsRepeatingDigits);
 }
 
 // Checks that CheckPinComplexity returns kOk for a weak PIN when the policy

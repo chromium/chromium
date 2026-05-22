@@ -21,6 +21,8 @@ enum class PasswordComplexityResult {
 };
 // LINT.ThenChange(//chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom:PasswordComplexity)
 
+// LINT.IfChange(PinComplexityResult)
+// Result for the PinComplexity check, Do not reorder as this maps to Mojo.
 enum class PinComplexityResult {
   kOk,
   kTooShort,
@@ -28,6 +30,7 @@ enum class PinComplexityResult {
   kContainsRepeatingDigits,
   kContainsNonDigits,
 };
+// LINT.ThenChange(//chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom:PinComplexity)
 
 // Checks the complexity of the given password according to the
 // `LocalAuthFactorsComplexity` policy and returns the result of the complexity

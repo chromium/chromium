@@ -113,10 +113,15 @@ interface RecoveryFactorEditor {
 };
 
 // A value describing the complexity of a pin.
+// LINT.IfChange(PinComplexity)
 enum PinComplexity {
   kOk,
-  kTooWeak,
+  kTooShort,
+  kContainsOrderedSequence,
+  kContainsRepeatingDigits,
+  kContainsNonDigits,
 };
+// LINT.ThenChange(//chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h:PinComplexityResult)
 
 // Interface for methods specific to pin authentication. Served from chrome
 // ash, intended to be consumed by the following webuis:

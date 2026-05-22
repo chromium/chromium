@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -22,21 +23,15 @@ namespace ash::auth {
 
 namespace {
 
-using policy::local_auth_factors::CheckPinComplexity;
-using policy::local_auth_factors::PinComplexityResult;
-
 mojom::PinComplexity CheckPinComplexityImpl(const AccountId& account_id,
                                             const std::string& pin) {
   std::optional<LocalAuthFactorsComplexity> policy =
       AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
           account_id);
   if (policy.has_value()) {
-    const PinComplexityResult result = CheckPinComplexity(pin, *policy);
-    // TODO(crbug.com/445625494): Rename `kTooWeak` to `kTooShort`.
-    return result == PinComplexityResult::kOk ? mojom::PinComplexity::kOk
-                                              : mojom::PinComplexity::kTooWeak;
+    return static_cast<mojom::PinComplexity>(
+        policy::local_auth_factors::CheckPinComplexity(pin, *policy));
   }
-
   return mojom::PinComplexity::kOk;
 }
 

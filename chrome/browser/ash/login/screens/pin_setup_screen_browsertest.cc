@@ -85,6 +85,8 @@ const test::UIPath kShowHidePinButton = {kPinSetupScreen, "pinKeyboard",
                                          "pinKeyboard", "showPinButton"};
 
 const test::UIPath kProblemDiv = {kPinSetupScreen, "pinKeyboard", "problemDiv"};
+const test::UIPath kComplexityRequirementDiv = {kPinSetupScreen, "pinKeyboard",
+                                                "complexityRequirement"};
 
 // PasswordSelectionScreen elements.
 const test::UIPath kGaiaPasswordButton = {"password-selection",
@@ -97,9 +99,13 @@ const test::UIPath kBackButtonPasswordSelection = {"password-selection",
 // The default minimum length for the legacy QuickUnlock PIN check is 6 digits.
 const char kWeakPin[] = "111111";
 const char kStrongPin[] = "978213587623";
+const char kRepeatingPin[] = "11111111";
+const char kOrderedPin[] = "12345678";
 const char kExpectedHighComplexityError[] =
     "Must be at least 8 digits and can't contain repeating or ordered "
     "sequences";
+const char kExpectedRepeatingDigitsError[] = "Can't contain repeating digits";
+const char kExpectedOrderedSequenceError[] = "Can't contain ordered sequences";
 const char kExpectedLegacyWeakPinWarning[] = "PIN may be easy to guess";
 
 PinSetupScreen* GetScreen() {
@@ -183,17 +189,35 @@ void ExpectProblemMessage(bool is_error, const std::string& expected_message) {
                                      kProblemDiv)
       ->Wait();
 
+  // Wait for the expected message to appear.
+  test::OobeJS()
+      .CreateElementTextContentWaiter(expected_message, kProblemDiv)
+      ->Wait();
+
   // Assert the style (error vs. warning).
   test::OobeJS().ExpectHasClass(is_error ? "error" : "warning", kProblemDiv);
-
-  // Assert the actual string.
-  test::OobeJS().ExpectElementContainsText(expected_message, kProblemDiv);
 }
 
 void ExpectNoProblemMessage() {
   test::OobeJS()
       .CreateAttributePresenceWaiter("invisible", /*presence=*/true,
                                      kProblemDiv)
+      ->Wait();
+}
+
+void ExpectComplexityRequirement(const std::string& expected_message) {
+  test::OobeJS()
+      .CreateAttributePresenceWaiter("hidden", /*presence=*/false,
+                                     kComplexityRequirementDiv)
+      ->Wait();
+  test::OobeJS().ExpectElementContainsText(expected_message,
+                                           kComplexityRequirementDiv);
+}
+
+void ExpectNoComplexityRequirement() {
+  test::OobeJS()
+      .CreateAttributePresenceWaiter("hidden", /*presence=*/true,
+                                     kComplexityRequirementDiv)
       ->Wait();
 }
 
@@ -907,11 +931,16 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest, WeakPinShowsErrorMessage) {
   SetComplexityPolicy(ash::LocalAuthFactorsComplexity::kHigh);
   WaitForScreenShown();
 
-  // Enter a weak PIN.
-  EnterPin(kWeakPin);
+  // Requirement should be visible even before typing.
+  ExpectComplexityRequirement(kExpectedHighComplexityError);
 
-  // Verify the hard error state and message.
-  ExpectProblemMessage(/*is_error=*/true, kExpectedHighComplexityError);
+  // Enter a repeating PIN.
+  EnterPin(kRepeatingPin);
+
+  // Verify the hard error state and specific message.
+  ExpectProblemMessage(/*is_error=*/true, kExpectedRepeatingDigitsError);
+  // Requirement should still be visible.
+  ExpectComplexityRequirement(kExpectedHighComplexityError);
 }
 
 // Tests that a weak PIN explicitly displays the correct warning message on
@@ -921,6 +950,9 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
   ShowPinSetupScreen();
   // Do NOT set the complexity policy, leaving it as kUnset.
   WaitForScreenShown();
+
+  // No policy requirement should be visible.
+  ExpectNoComplexityRequirement();
 
   // Enter a weak PIN.
   EnterPin(kWeakPin);
@@ -945,6 +977,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest, StrongPinAllowed) {
 
   // Wait for the asynchronous check to succeed and enable the 'Next' button.
   WaitUntilNextButtonEnabled(true);
+  ExpectComplexityRequirement(kExpectedHighComplexityError);
 
   // Verify the user can actually proceed to the confirmation step.
   TapNextButton();
@@ -959,10 +992,11 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
   SetComplexityPolicy(ash::LocalAuthFactorsComplexity::kHigh);
   WaitForScreenShown();
 
-  // 1. Enter a weak PIN and verify it gets blocked.
-  EnterPin(kWeakPin);
+  // 1. Enter a repeating PIN and verify it gets blocked.
+  EnterPin(kRepeatingPin);
   WaitUntilNextButtonEnabled(false);
-  ExpectProblemMessage(/*is_error=*/true, kExpectedHighComplexityError);
+  ExpectProblemMessage(/*is_error=*/true, kExpectedRepeatingDigitsError);
+  ExpectComplexityRequirement(kExpectedHighComplexityError);
 
   // 2. Enter a strong PIN and verify the UI recovers.
   EnterPin(kStrongPin);
@@ -971,10 +1005,25 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
   // error.
   WaitUntilNextButtonEnabled(true);
   ExpectNoProblemMessage();
+  ExpectComplexityRequirement(kExpectedHighComplexityError);
 
   // Verify the user can actually proceed to the confirmation step.
   TapNextButton();
   WaitUntilConfirmationStep();
+}
+
+// Tests that an ordered sequence PIN is blocked by the complexity policy.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest, OrderedSequenceBlocked) {
+  ShowPinSetupScreen();
+  SetComplexityPolicy(ash::LocalAuthFactorsComplexity::kHigh);
+  WaitForScreenShown();
+
+  // Enter an ordered sequence PIN.
+  EnterPin(kOrderedPin);
+
+  WaitUntilNextButtonEnabled(false);
+  ExpectProblemMessage(/*is_error=*/true, kExpectedOrderedSequenceError);
+  ExpectComplexityRequirement(kExpectedHighComplexityError);
 }
 
 // Tests that navigating back from the confirmation step to the setup step
@@ -988,8 +1037,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
 
   // Wait for the complexity policy to be fetched and the UI to update.
   test::OobeJS()
-      .CreateWaiter(base::StrCat({test::GetOobeElementPath(kProblemDiv),
-                                  ".textContent.includes('4 digits')"}))
+      .CreateElementTextContentWaiter("4 digits", kComplexityRequirementDiv)
       ->Wait();
 
   EnterPin("1234");
@@ -1006,8 +1054,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
 
   // Verification: It must still show the 4-digit requirement.
   test::OobeJS()
-      .CreateWaiter(base::StrCat({test::GetOobeElementPath(kProblemDiv),
-                                  ".textContent.includes('4 digits')"}))
+      .CreateElementTextContentWaiter("4 digits", kComplexityRequirementDiv)
       ->Wait();
 }
 
