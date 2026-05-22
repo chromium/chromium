@@ -5410,6 +5410,17 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MAX_NUMBER_OF_WINDOWS_INSTANCE_SWITCHER_INACTIVE_TAB" desc="Message to notify the user thata window cannot be restored because the total number of persisted instances exceeds the window limit.">
         To restore a new window, reduce the total number of active windows to <ph name="MAX_WINDOW_COUNT_MINUS_ONE">%1$d</ph> or fewer. Inactive windows are deleted after 6 months.
       </message>
+      <message name="IDS_CRASH_RECOVERY_DIALOG_TITLE" desc="Title of the crash recovery dialog that prompts the user to restore windows that were active during a crash.">
+        Restore all windows?
+      </message>
+      <message name="IDS_CRASH_RECOVERY_DIALOG_MESSAGE" desc="Message on the crash recovery dialog that prompts the user to restore windows that were active during a crash.">
+        Chrome didn’t shut down correctly and can try to restore your lost windows and tabs. Some windows may be minimized when restored.
+      </message>
+      <message name="IDS_CRASH_RECOVERY_DIALOG_POSITIVE_BUTTON_TEXT" desc="Positive button text on the crash recovery dialog. [ICU Syntax]">
+        {NUM_WINDOWS, plural,
+          =1 {Restore 1 window}
+          other {Restore # windows}}
+      </message>
       <message name="IDS_TAB_DROPPED_DIFFERENT_MODEL" desc="Toast that appears when a tab is dropped into tab strip with a different profile (regular v.s. incognito).">
         You can find all open tabs in the tab switcher
       </message>

@@ -14,6 +14,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.SparseIntArray;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
@@ -22,12 +24,16 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,10 +143,86 @@ public class TabbedCrashRecoveryDelegate {
                 new Callback<>() {
                     @Override
                     public void onResult(ModalDialogManager modalDialogManager) {
-                        // TODO: Show recovery dialog.
+                        showRecoveryDialog(modalDialogManager, hostActivity, crashedWindows);
                         modalDialogManagerSupplier.removeObserver(this);
                     }
                 });
+    }
+
+    private void showRecoveryDialog(
+            ModalDialogManager modalDialogManager,
+            ChromeTabbedActivity hostActivity,
+            List<CrashRecoveryWindowInfo> crashedWindows) {
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onDismiss(
+                            PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                            // When the recovery dialog is dismissed, cleanup recovery state for
+                            // non-recovered windows since this data will now be stale.
+                            for (CrashRecoveryWindowInfo windowInfo : crashedWindows) {
+                                int windowId = windowInfo.windowId;
+                                if (windowId == hostActivity.getWindowId()) continue;
+                                ChromeMultiInstancePersistentStore.writeIsRecoverable(
+                                        windowId, /* isRecoverable= */ false);
+                                int persistedTaskId =
+                                        ChromeMultiInstancePersistentStore.readTaskId(windowId);
+                                if (mPreRecoveryAppTasks.containsKey(persistedTaskId)) {
+                                    mPreRecoveryAppTasks.get(persistedTaskId).finishAndRemoveTask();
+                                }
+                            }
+                            mCrashRecoveryInProgress = false;
+                        }
+                    }
+
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        switch (buttonType) {
+                            case ModalDialogProperties.ButtonType.NEGATIVE:
+                                modalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                                break;
+                            case ModalDialogProperties.ButtonType.POSITIVE:
+                                RecordUserAction.record("Android.MultiWindow.CrashRecoveryOptIn");
+                                restoreWindows(hostActivity);
+                                modalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                break;
+                        }
+                    }
+                };
+
+        int pendingWindows = mWindowIdsPendingRecovery.size();
+        String positiveButtonText =
+                hostActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.crash_recovery_dialog_positive_button_text,
+                                pendingWindows,
+                                pendingWindows);
+
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                hostActivity.getString(R.string.crash_recovery_dialog_title))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                hostActivity.getString(R.string.crash_recovery_dialog_message))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                hostActivity.getString(R.string.cancel))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .build();
+
+        RecordUserAction.record("Android.MultiWindow.CrashRecoveryDialogShown");
+        modalDialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
     }
 
     private static Map<Integer, AppTask> getAppTasksById(Context context) {
@@ -245,7 +327,8 @@ public class TabbedCrashRecoveryDelegate {
         hostActivity.startActivity(intent, bundle);
     }
 
-    private void resetState() {
+    @VisibleForTesting
+    /* package */ void resetState() {
         mCrashRecoveryInProgress = false;
         mPreRecoveryAppTasks.clear();
         mNonVisibleWindows.clear();
