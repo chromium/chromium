@@ -15,6 +15,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -41,14 +42,17 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.View;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -536,6 +540,8 @@ public class AutofillIdentityDocsFragmentTest {
                     assertThat(toggle.isEnabled()).isTrue();
                     assertThat(toggle.isChecked()).isFalse();
                 });
+
+        onView(enterpriseTextMatcher()).check(doesNotExist());
     }
 
     @Test
@@ -556,6 +562,8 @@ public class AutofillIdentityDocsFragmentTest {
                     assertThat(toggle.isEnabled()).isTrue();
                     assertThat(toggle.isChecked()).isTrue();
                 });
+
+        onView(enterpriseTextMatcher()).check(doesNotExist());
     }
 
     @Test
@@ -575,6 +583,27 @@ public class AutofillIdentityDocsFragmentTest {
                     assertThat(toggle.isEnabled()).isFalse();
                     assertThat(toggle.isChecked()).isFalse();
                 });
+        onView(enterpriseTextMatcher()).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testToggleManagedByPolicy() {
+        when(mEntityDataManager.getIsAutofillAiDisabledByEnterprisePolicy()).thenReturn(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference(
+                                    AutofillIdentityDocsFragment.PREF_OPT_IN_TOGGLE);
+                    assertNotNull(toggle);
+                    assertThat(toggle.isEnabled()).isFalse();
+                    assertThat(toggle.isChecked()).isFalse();
+                });
+
+        onView(enterpriseTextMatcher()).check(matches(isDisplayed()));
     }
 
     @Test
@@ -980,10 +1009,52 @@ public class AutofillIdentityDocsFragmentTest {
         intended(intentMatcher);
     }
 
+    @Test
+    @MediumTest
+    public void testAutofillAiEntities_addButtonNotEnabledWhenDisabledByPolicy() {
+        when(mEntityDataManager.getIsAutofillAiDisabledByEnterprisePolicy()).thenReturn(true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(
+                getPassportEntityType(),
+                Arrays.asList(TestUtils.buildGermanyPassportWithLabels("guid1")));
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        setIdentityTogglePreference(true);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
+                    Preference passportCategory = fragment.findPreference("Passport");
+                    Criteria.checkThat(
+                            "Passport entity category should exist",
+                            passportCategory,
+                            Matchers.notNullValue());
+                    PreferenceGroup passportGroup = (PreferenceGroup) passportCategory;
+                    Preference passportEntity = fragment.findPreference("guid1");
+                    Criteria.checkThat(
+                            "Passport entity should exist",
+                            passportEntity,
+                            Matchers.notNullValue());
+
+                    Preference addPassport = passportGroup.findPreference("Passport Add");
+                    assertThat(addPassport).isNotNull();
+                    assertThat(addPassport.isEnabled()).isFalse();
+                });
+    }
+
     private void setIdentityTogglePreference(boolean value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         UserPrefs.get(mSettingsActivityTestRule.getFragment().getProfile())
                                 .setBoolean(Pref.AUTOFILL_AI_IDENTITY_ENTITIES_ENABLED, value));
+    }
+
+    private Matcher<View> enterpriseTextMatcher() {
+        return allOf(
+                withText(R.string.managed_by_your_organization),
+                withEffectiveVisibility(Visibility.VISIBLE));
     }
 }

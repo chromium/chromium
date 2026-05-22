@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -264,8 +265,18 @@ public class AutofillAiDelegate {
         optInToggle.setChecked(toggleState.checked);
         optInToggle.setEnabled(toggleState.enabled);
 
-        // TODO(crbug.com/485781500): Add Enterprise policy indicator
-        // toggleState.controlledByEnterprisePolicy
+        optInToggle.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(mFragment.getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return toggleState.controlledByEnterprisePolicy;
+                    }
+
+                    @Override
+                    public boolean isPreferenceClickDisabled(Preference preference) {
+                        return !toggleState.enabled;
+                    }
+                });
 
         optInToggle.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -562,7 +573,7 @@ public class AutofillAiDelegate {
     private boolean isEligibleToAddEntities(
             EntityDataManager entityDataManager, @EntityTypeName int entityTypeName) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
-            return isToggleOn() && entityTypeToggleEnabled(entityDataManager, entityTypeName);
+            return getToggleState(entityTypeName).checked;
         }
 
         return (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
@@ -594,7 +605,7 @@ public class AutofillAiDelegate {
 
         boolean enabled = entityTypeToggleEnabled(entityDataManager, entityTypeName);
         if (enabled) {
-            if (isToggleOn()) {
+            if (isTogglePrefOn()) {
                 return AutofillAiToggleState.ENABLED_ON;
             } else {
                 return AutofillAiToggleState.ENABLED_OFF;
@@ -604,7 +615,7 @@ public class AutofillAiDelegate {
         }
     }
 
-    private boolean isToggleOn() {
+    private boolean isTogglePrefOn() {
         if (mToggleConfig == null) {
             return true;
         }
