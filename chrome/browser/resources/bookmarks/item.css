@@ -40,6 +40,11 @@
     background-color: var(--color-bookmark-manager-item-background-selected);
   }
 
+  &:host(:focus-visible) {
+    outline: solid 2px var(--cr-focus-outline-color);
+    outline-offset: -2px;
+  }
+
   #website-title {
     color: var(--color-bookmark-manager-item-title);
   }
