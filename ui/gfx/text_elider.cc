@@ -69,8 +69,8 @@ std::u16string ElideEmail(std::u16string_view email,
   // but not in the domain part, so splitting at the last @ symbol is safe.
   const size_t split_index = email.find_last_of('@');
   DCHECK_NE(split_index, std::u16string::npos);
-  std::u16string username(email.substr(0, split_index));
-  std::u16string domain(email.substr(split_index + 1));
+  std::u16string_view username = email.substr(0, split_index);
+  std::u16string_view domain = email.substr(split_index + 1);
   DCHECK(!username.empty());
   DCHECK(!domain.empty());
 
@@ -83,9 +83,12 @@ std::u16string ElideEmail(std::u16string_view email,
   const float full_username_width = GetStringWidthF(username, font_list);
   const float available_domain_width =
       available_pixel_width -
-      std::min(full_username_width,
-               GetStringWidthF(username.substr(0, 1) + kEllipsisUTF16,
-                               font_list));
+      std::min(
+          full_username_width,
+          GetStringWidthF(base::StrCat({username.substr(0, 1), kEllipsisUTF16}),
+                          font_list));
+
+  std::u16string domain_str;
   if (GetStringWidthF(domain, font_list) > available_domain_width) {
     // Elide the domain so that it only takes half of the available width.
     // Should the username not need all the width available in its half, the
@@ -97,19 +100,24 @@ std::u16string ElideEmail(std::u16string_view email,
         std::min(available_domain_width,
                  std::max(available_pixel_width - full_username_width,
                           available_pixel_width / 2));
-    domain = ElideText(domain, font_list, desired_domain_width, ELIDE_MIDDLE);
+    domain_str =
+        ElideText(domain, font_list, desired_domain_width, ELIDE_MIDDLE);
     // Failing to elide the domain such that at least one character remains
     // (other than the ellipsis itself) remains: return a single ellipsis.
-    if (domain.length() <= 1U)
+    if (domain_str.length() <= 1U) {
       return std::u16string(kEllipsisUTF16);
+    }
+  } else {
+    domain_str = domain;
   }
 
   // Fit the username in the remaining width (at this point the elided username
   // is guaranteed to fit with at least one character remaining given all the
   // precautions taken earlier).
-  available_pixel_width -= GetStringWidthF(domain, font_list);
-  username = ElideText(username, font_list, available_pixel_width, ELIDE_TAIL);
-  return base::StrCat({username, kAtSignUTF16, domain});
+  available_pixel_width -= GetStringWidthF(domain_str, font_list);
+  return base::StrCat(
+      {ElideText(username, font_list, available_pixel_width, ELIDE_TAIL),
+       kAtSignUTF16, domain_str});
 }
 #endif
 
