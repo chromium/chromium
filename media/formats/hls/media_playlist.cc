@@ -25,6 +25,7 @@
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace media::hls {
 
@@ -252,12 +253,11 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
               // be populated by an opaque fetch response.
               key_location =
                   MediaSegment::EncryptionData::KeyLocation::kSafeOrigin;
-            } else if (!declared_uri_value.starts_with("//") &&
-                       !GURL(declared_uri_value).has_scheme()) {
-              // "Path-only" URLs are considered safe as well, since they are
-              // hosted on the same origin as the manifest in which they are
-              // declared. Note that this _not_ the same as the page security
-              // origin.
+            } else if (url::Origin::Create(resource_uri)
+                           .IsSameOriginWith(
+                               url::Origin::Create(playlist_uri))) {
+              // Same-origin URLs (including resolved path-only URLs) are
+              // considered safe as well.
               key_location =
                   MediaSegment::EncryptionData::KeyLocation::kSafeOrigin;
             }
