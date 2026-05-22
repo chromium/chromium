@@ -53,8 +53,8 @@ class OnboardingDialogTracker
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OnboardingDialogTracker);
 
-constexpr gfx::Size kMinSize{480, 360};
-constexpr gfx::Size kMaxSize{480, 600};
+constexpr gfx::Size kMinSize{480, 100};
+constexpr gfx::Size kMaxSize{480, 960};
 
 class OnboardingWebView : public views::WebView {
  public:
@@ -179,7 +179,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   delegate_ = std::make_unique<views::DialogDelegate>();
   delegate_->SetContentsView(std::move(web_view));
   delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  delegate_->SetShowCloseButton(true);
+  delegate_->SetShowCloseButton(false);
   delegate_->SetModalType(ui::mojom::ModalType::kChild);
   delegate_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
