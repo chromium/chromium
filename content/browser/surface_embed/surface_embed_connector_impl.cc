@@ -409,7 +409,15 @@ void SurfaceEmbedConnectorImpl::SynchronizeVisualProperties(
   }
 }
 
-void SurfaceEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {}
+void SurfaceEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
+  RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
+
+  // UpdateCursor messages are ignored if the root view does not support
+  // cursors.
+  if (root_view && root_view->GetCursorManager()) {
+    root_view->GetCursorManager()->UpdateCursor(view_, cursor);
+  }
+}
 
 FrameConnector::RootViewFocusState SurfaceEmbedConnectorImpl::HasFocus() {
   return RootViewFocusState::kNullView;

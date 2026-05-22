@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "cc/input/touch_action.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/cursor_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -74,6 +75,11 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
   void SetLocalSurfaceId(SurfaceEmbedConnectorImpl* connector,
                          const viz::LocalSurfaceId& local_surface_id) {
     connector->local_surface_id_ = local_surface_id;
+  }
+
+  RenderWidgetHostViewChildFrame* GetView(
+      SurfaceEmbedConnectorImpl* connector) {
+    return connector->view_;
   }
 
  protected:
@@ -879,6 +885,49 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
             grandparent_impl->GetFocusedRenderWidgetHost(grandparent_rwh));
   EXPECT_EQ(parent_rwh, parent_impl->GetFocusedRenderWidgetHost(parent_rwh));
   EXPECT_EQ(nullptr, child_impl->GetFocusedRenderWidgetHost(child_rwh));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, UpdateCursor) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  // Ensure the view is set.
+  if (!GetView(context.connector.get())) {
+    context.connector->SetView(context.rwhvcf, false);
+  }
+  ASSERT_TRUE(GetView(context.connector.get()));
+
+  RenderWidgetHostViewBase* root_view =
+      context.connector->GetRootRenderWidgetHostView();
+  ASSERT_TRUE(root_view);
+
+  input::CursorManager* cursor_manager = root_view->GetCursorManager();
+
+  // Verify that updating the cursor works.
+  context.connector->UpdateCursor(ui::Cursor(ui::mojom::CursorType::kHand));
+
+  if (cursor_manager) {
+    ui::Cursor cursor;
+    EXPECT_TRUE(cursor_manager->GetCursorForTesting(
+        GetView(context.connector.get()), cursor));
+    EXPECT_EQ(ui::mojom::CursorType::kHand, cursor.type());
+  }
+
+  // Verify that updating the cursor does not crash when there is no root view
+  // (e.g. parent is destroyed).
+  auto* connector_ptr = context.connector.get();
+  context.connector = nullptr;  // Clear raw_ptr to avoid DanglingPtr check.
+  context.rwhvcf = nullptr;     // Clear raw_ptr to avoid DanglingPtr check.
+
+  context.parent_web_contents = nullptr;
+  Shell* shell = context.parent_shell;
+  context.parent_shell = nullptr;
+  if (shell) {
+    shell->Close();
+  }
+
+  // This should not crash.
+  connector_ptr->UpdateCursor(ui::Cursor(ui::mojom::CursorType::kPointer));
 }
 
 }  // namespace content
