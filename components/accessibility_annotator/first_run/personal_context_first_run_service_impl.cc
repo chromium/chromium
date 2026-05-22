@@ -11,10 +11,10 @@
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 
-namespace accessibility_annotator {
+namespace personal_context {
 PersonalContextFirstRunServiceImpl::PersonalContextFirstRunServiceImpl(
     std::unique_ptr<PersonalContextFirstRunClient> client,
-    personal_context::PersonalContextEnablementService* enablement_service,
+    PersonalContextEnablementService* enablement_service,
     PrefService* pref_service)
     : client_(std::move(client)),
       enablement_service_(enablement_service),
@@ -32,43 +32,41 @@ void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
     return;
   }
 
-  personal_context::PersonalContextEnablementState state =
+  PersonalContextEnablementState state =
       enablement_service_->GetEnablementState();
-  if (state ==
-      personal_context::PersonalContextEnablementState::kDisabledNotEligible) {
+  if (state == PersonalContextEnablementState::kDisabledNotEligible) {
     std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
     return;
   }
-  if (state == personal_context::PersonalContextEnablementState::kEnabled) {
+  if (state == PersonalContextEnablementState::kEnabled) {
     std::move(callback).Run(FirstRunTriggerResult::kIgnoredAlreadyEnabled);
     return;
   }
 
-  auto wrapped_callback =
-      base::BindOnce(&PersonalContextFirstRunServiceImpl::OnInfoDialogCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto wrapped_callback = base::BindOnce(
+      &PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   switch (state) {
-    case personal_context::PersonalContextEnablementState::kDisabledPendingInfo:
-      client_->ShowRemoteAnnotatorInfo(web_contents, invocation_source,
-                                       std::move(wrapped_callback));
+    case PersonalContextEnablementState::kDisabledPendingInfo:
+      client_->ShowNotice(web_contents, invocation_source,
+                          std::move(wrapped_callback));
       break;
     default:
       break;
   }
 }
 
-void PersonalContextFirstRunServiceImpl::OnInfoDialogCompleted(
+void PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted(
     base::OnceCallback<void(FirstRunTriggerResult)> callback,
-    InfoResult result) {
-  if (result == InfoResult::kAcknowledged) {
+    NoticeResult result) {
+  if (result == NoticeResult::kAcknowledged) {
     if (pref_service_) {
-      pref_service_->SetBoolean(
-          personal_context::prefs::kShouldShowPersonalContextFirstRunInfo,
-          false);
+      pref_service_->SetBoolean(prefs::kShouldShowPersonalContextFirstRunInfo,
+                                false);
     }
   }
   std::move(callback).Run(FirstRunTriggerResult::kSuccess);
 }
 
-}  // namespace accessibility_annotator
+}  // namespace personal_context

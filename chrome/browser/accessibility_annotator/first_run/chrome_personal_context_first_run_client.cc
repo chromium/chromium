@@ -21,13 +21,13 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
-accessibility_annotator::InfoResult ToInfoResult(
+personal_context::NoticeResult ToNoticeResult(
     personal_context::NoticeDialogResult result) {
   switch (result) {
     case personal_context::NoticeDialogResult::kAcknowledged:
-      return accessibility_annotator::InfoResult::kAcknowledged;
+      return personal_context::NoticeResult::kAcknowledged;
     case personal_context::NoticeDialogResult::kDismissed:
-      return accessibility_annotator::InfoResult::kNotAcknowledged;
+      return personal_context::NoticeResult::kNotAcknowledged;
   }
 }
 }  // namespace
@@ -39,10 +39,10 @@ ChromePersonalContextFirstRunClient::ChromePersonalContextFirstRunClient() =
 ChromePersonalContextFirstRunClient::~ChromePersonalContextFirstRunClient() =
     default;
 
-void ChromePersonalContextFirstRunClient::ShowRemoteAnnotatorInfo(
+void ChromePersonalContextFirstRunClient::ShowNotice(
     content::WebContents* web_contents,
-    accessibility_annotator::FirstRunInvocationSource invocation_source,
-    base::OnceCallback<void(accessibility_annotator::InfoResult)> callback) {
+    personal_context::FirstRunInvocationSource invocation_source,
+    base::OnceCallback<void(personal_context::NoticeResult)> callback) {
 #if !BUILDFLAG(IS_ANDROID)
   content::BrowserContext* context = web_contents->GetBrowserContext();
   auto* controller = static_cast<
@@ -63,22 +63,21 @@ void ChromePersonalContextFirstRunClient::ShowRemoteAnnotatorInfo(
   }
 
   controller->ShowDialog(
-      web_contents, base::BindOnce(&ToInfoResult).Then(std::move(callback)));
+      web_contents, base::BindOnce(&ToNoticeResult).Then(std::move(callback)));
 #else
   android_bridge_ = std::make_unique<
       personal_context::PersonalContextFirstRunBottomSheetBridge>(
       web_contents,
-      base::BindOnce(
-          &ChromePersonalContextFirstRunClient::OnRemoteAnnotatorInfoResult,
-          base::Unretained(this), std::move(callback)));
+      base::BindOnce(&ChromePersonalContextFirstRunClient::OnNoticeResult,
+                     base::Unretained(this), std::move(callback)));
   android_bridge_->Show();
 #endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ChromePersonalContextFirstRunClient::OnRemoteAnnotatorInfoResult(
-    base::OnceCallback<void(accessibility_annotator::InfoResult)> callback,
-    accessibility_annotator::InfoResult result) {
+void ChromePersonalContextFirstRunClient::OnNoticeResult(
+    base::OnceCallback<void(personal_context::NoticeResult)> callback,
+    personal_context::NoticeResult result) {
   std::move(callback).Run(result);
   android_bridge_.reset();
 }

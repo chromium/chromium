@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_TYPES_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_TYPES_H_
 
-namespace accessibility_annotator {
+namespace personal_context {
 
 // First run trigger result.
 enum class FirstRunTriggerResult {
@@ -15,17 +15,17 @@ enum class FirstRunTriggerResult {
 };
 
 // Notice action result. Used internally, not exposed to consuming features.
-enum class InfoResult {
+enum class NoticeResult {
   kAcknowledged = 0,     // User clicked "Got it"
   kNotAcknowledged = 1,  // User hit 'ESC' or clicked elsewhere, closing the
-                         // Info without acknowledging.
+                         // notice without acknowledging.
 };
 
-// The outcome of a request to show the Accessibility Annotator info dialog.
+// The outcome of a request to show the Personal Context notice dialog.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(InfoShowRequestResult)
-enum class InfoShowRequestResult {
+// LINT.IfChange(NoticeShowRequestResult)
+enum class NoticeShowRequestResult {
   kShown = 0,
   kAccepted = 1,
   kDismissed = 2,
@@ -39,6 +39,6 @@ enum class FirstRunInvocationSource {
   kAutoTriggerPromo = 1,
 };
 
-}  // namespace accessibility_annotator
+}  // namespace personal_context
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_TYPES_H_

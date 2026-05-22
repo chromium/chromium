@@ -32,7 +32,6 @@
 #include "url/gurl.h"
 
 namespace personal_context::notice {
-using accessibility_annotator::InfoShowRequestResult;
 namespace {
 
 constexpr char kDialogResultHistogramName[] =
@@ -75,7 +74,7 @@ class PersonalContextNoticePageHandlerTest
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_interface_;
-  mojo::Remote<personal_context::notice::mojom::PageHandler> page_handler_;
+  mojo::Remote<notice::mojom::PageHandler> page_handler_;
   std::unique_ptr<PersonalContextNoticeUI> info_ui_;
   std::unique_ptr<PersonalContextNoticePageHandler> handler_;
   std::optional<NoticeDialogResult> result_;
@@ -99,8 +98,8 @@ TEST_F(PersonalContextNoticePageHandlerTest, GetAccountInfo) {
                                     "https://example.com/avatar", avatar_image);
 
   bool callback_called = false;
-  handler_->GetAccountInfo(base::BindLambdaForTesting(
-      [&](personal_context::notice::mojom::AccountInfoPtr info) {
+  handler_->GetAccountInfo(
+      base::BindLambdaForTesting([&](notice::mojom::AccountInfoPtr info) {
         callback_called = true;
         ASSERT_TRUE(info);
         EXPECT_EQ("test@example.com", info->email);
@@ -112,8 +111,8 @@ TEST_F(PersonalContextNoticePageHandlerTest, GetAccountInfo) {
 
 TEST_F(PersonalContextNoticePageHandlerTest, GetAccountInfoSignedOut) {
   bool callback_called = false;
-  handler_->GetAccountInfo(base::BindLambdaForTesting(
-      [&](personal_context::notice::mojom::AccountInfoPtr info) {
+  handler_->GetAccountInfo(
+      base::BindLambdaForTesting([&](notice::mojom::AccountInfoPtr info) {
         callback_called = true;
         ASSERT_TRUE(info);
         EXPECT_TRUE(info->email.empty());
@@ -135,7 +134,7 @@ TEST_F(PersonalContextNoticePageHandlerTest, OnInfoAcknowledged) {
   EXPECT_TRUE(result_.has_value());
   EXPECT_EQ(NoticeDialogResult::kAcknowledged, result_);
   histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
-                                       InfoShowRequestResult::kAccepted, 1);
+                                       NoticeShowRequestResult::kAccepted, 1);
 }
 
 // TODO(crbug.com/506117669): If no UI element for dismissal is added: delete
@@ -153,7 +152,7 @@ TEST_F(PersonalContextNoticePageHandlerTest, OnInfoDismissedByExplicitCall) {
   EXPECT_TRUE(result_.has_value());
   EXPECT_EQ(NoticeDialogResult::kDismissed, result_);
   histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
-                                       InfoShowRequestResult::kDismissed, 1);
+                                       NoticeShowRequestResult::kDismissed, 1);
 }
 
 TEST_F(PersonalContextNoticePageHandlerTest,
@@ -169,7 +168,7 @@ TEST_F(PersonalContextNoticePageHandlerTest,
   EXPECT_TRUE(result_.has_value());
   EXPECT_EQ(NoticeDialogResult::kDismissed, result_);
   histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
-                                       InfoShowRequestResult::kDismissed, 1);
+                                       NoticeShowRequestResult::kDismissed, 1);
 }
 
 TEST_F(PersonalContextNoticePageHandlerTest, OnLearnMoreClicked) {

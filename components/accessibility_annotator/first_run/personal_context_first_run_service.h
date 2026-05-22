@@ -17,12 +17,11 @@ namespace content {
 class WebContents;
 }
 
-namespace accessibility_annotator {
+namespace personal_context {
 
-// Service that manages the First Feature Run for the Accessibility
-// Annotator. It tracks the enablement state of the remote annotator feature and
-// provides methods to trigger the first run flow. Clients can observe changes
-// to the enablement state.
+// Service that manages the First Feature Run for the Personal Context.
+// It provides methods to trigger the first run flow.
+// Clients can observe changes to the enablement state.
 class PersonalContextFirstRunService : public KeyedService {
  public:
   using FirstRunTriggerCallback =
@@ -39,6 +38,6 @@ class PersonalContextFirstRunService : public KeyedService {
                                     FirstRunTriggerCallback callback) = 0;
 };
 
-}  // namespace accessibility_annotator
+}  // namespace personal_context
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_

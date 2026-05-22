@@ -31,13 +31,12 @@ void PersonalContextInternalsPageHandler::TriggerFirstRun(
 
   service->MaybeTriggerFirstRun(
       web_contents_,
-      accessibility_annotator::FirstRunInvocationSource::kAutoTriggerPromo,
+      personal_context::FirstRunInvocationSource::kAutoTriggerPromo,
       base::BindOnce(
           [](TriggerFirstRunCallback callback,
-             accessibility_annotator::FirstRunTriggerResult result) {
+             personal_context::FirstRunTriggerResult result) {
             std::move(callback).Run(
-                result ==
-                accessibility_annotator::FirstRunTriggerResult::kSuccess);
+                result == personal_context::FirstRunTriggerResult::kSuccess);
           },
           std::move(callback)));
 }

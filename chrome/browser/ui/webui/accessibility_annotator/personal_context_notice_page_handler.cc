@@ -24,11 +24,9 @@
 #include "ui/base/window_open_disposition.h"
 
 namespace personal_context::notice {
-using accessibility_annotator::InfoShowRequestResult;
 
 PersonalContextNoticePageHandler::PersonalContextNoticePageHandler(
-    mojo::PendingReceiver<personal_context::notice::mojom::PageHandler>
-        receiver,
+    mojo::PendingReceiver<notice::mojom::PageHandler> receiver,
     base::OnceCallback<void(NoticeDialogResult)> callback,
     PersonalContextNoticeUI& info_ui,
     content::WebContents* web_contents)
@@ -47,7 +45,7 @@ PersonalContextNoticePageHandler::~PersonalContextNoticePageHandler() {
 
 void PersonalContextNoticePageHandler::GetAccountInfo(
     GetAccountInfoCallback callback) {
-  auto account_info_mojom = personal_context::notice::mojom::AccountInfo::New();
+  auto account_info_mojom = notice::mojom::AccountInfo::New();
 
   if (web_contents_) {
     Profile* profile =
@@ -80,7 +78,7 @@ void PersonalContextNoticePageHandler::GetAccountInfo(
 
 void PersonalContextNoticePageHandler::OnInfoAcknowledged() {
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
-                                InfoShowRequestResult::kAccepted);
+                                NoticeShowRequestResult::kAccepted);
 
   if (callback_) {
     std::move(callback_).Run(NoticeDialogResult::kAcknowledged);
@@ -89,7 +87,7 @@ void PersonalContextNoticePageHandler::OnInfoAcknowledged() {
 
 void PersonalContextNoticePageHandler::OnInfoDismissed() {
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
-                                InfoShowRequestResult::kDismissed);
+                                NoticeShowRequestResult::kDismissed);
 
   if (callback_) {
     std::move(callback_).Run(NoticeDialogResult::kDismissed);
@@ -135,7 +133,7 @@ void PersonalContextNoticePageHandler::ShowUi() {
   info_ui_->ShowUI();
 
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
-                                InfoShowRequestResult::kShown);
+                                NoticeShowRequestResult::kShown);
 }
 
 }  // namespace personal_context::notice

@@ -22,7 +22,7 @@ class PersonalContextFirstRunBottomSheetBridge;
 #endif
 
 class ChromePersonalContextFirstRunClient
-    : public accessibility_annotator::PersonalContextFirstRunClient {
+    : public personal_context::PersonalContextFirstRunClient {
  public:
   ChromePersonalContextFirstRunClient();
   ChromePersonalContextFirstRunClient(
@@ -31,18 +31,17 @@ class ChromePersonalContextFirstRunClient
       const ChromePersonalContextFirstRunClient&) = delete;
   ~ChromePersonalContextFirstRunClient() override;
 
-  // AccessibilityAnnotatorFirstRunClient:
-  void ShowRemoteAnnotatorInfo(
-      content::WebContents* web_contents,
-      accessibility_annotator::FirstRunInvocationSource invocation_source,
-      base::OnceCallback<void(accessibility_annotator::InfoResult)> callback)
-      override;
+  // PersonalContextFirstRunClient:
+  void ShowNotice(content::WebContents* web_contents,
+                  personal_context::FirstRunInvocationSource invocation_source,
+                  base::OnceCallback<void(personal_context::NoticeResult)>
+                      callback) override;
 
  private:
 #if BUILDFLAG(IS_ANDROID)
-  void OnRemoteAnnotatorInfoResult(
-      base::OnceCallback<void(accessibility_annotator::InfoResult)> callback,
-      accessibility_annotator::InfoResult result);
+  void OnNoticeResult(
+      base::OnceCallback<void(personal_context::NoticeResult)> callback,
+      personal_context::NoticeResult result);
 
   std::unique_ptr<personal_context::PersonalContextFirstRunBottomSheetBridge>
       android_bridge_;

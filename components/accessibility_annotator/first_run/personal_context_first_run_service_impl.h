@@ -21,16 +21,13 @@ class WebContents;
 
 namespace personal_context {
 class PersonalContextEnablementService;
-}
-
-namespace accessibility_annotator {
 
 class PersonalContextFirstRunServiceImpl
     : public PersonalContextFirstRunService {
  public:
   PersonalContextFirstRunServiceImpl(
       std::unique_ptr<PersonalContextFirstRunClient> client,
-      personal_context::PersonalContextEnablementService* enablement_service,
+      PersonalContextEnablementService* enablement_service,
       PrefService* pref_service);
   PersonalContextFirstRunServiceImpl(
       const PersonalContextFirstRunServiceImpl&) = delete;
@@ -44,19 +41,18 @@ class PersonalContextFirstRunServiceImpl
       base::OnceCallback<void(FirstRunTriggerResult)> callback) override;
 
  private:
-  void OnInfoDialogCompleted(
+  void OnNoticeDialogCompleted(
       base::OnceCallback<void(FirstRunTriggerResult)> callback,
-      InfoResult result);
+      NoticeResult result);
 
   std::unique_ptr<PersonalContextFirstRunClient> client_;
-  raw_ptr<personal_context::PersonalContextEnablementService>
-      enablement_service_;
+  raw_ptr<PersonalContextEnablementService> enablement_service_;
   raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<PersonalContextFirstRunServiceImpl> weak_ptr_factory_{
       this};
 };
 
-}  // namespace accessibility_annotator
+}  // namespace personal_context
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_IMPL_H_

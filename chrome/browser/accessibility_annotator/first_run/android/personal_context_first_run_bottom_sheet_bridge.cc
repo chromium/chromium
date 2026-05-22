@@ -26,7 +26,7 @@ constexpr char kNoticeInteractionsHistogramName[] =
 PersonalContextFirstRunBottomSheetBridge::
     PersonalContextFirstRunBottomSheetBridge(
         content::WebContents* web_contents,
-        base::OnceCallback<void(accessibility_annotator::InfoResult)> callback)
+        base::OnceCallback<void(NoticeResult)> callback)
     : callback_(std::move(callback)) {
   if (!web_contents) {
     return;
@@ -63,14 +63,12 @@ bool PersonalContextFirstRunBottomSheetBridge::PerformShowContent() {
 
 void PersonalContextFirstRunBottomSheetBridge::Show() {
   if (PerformShowContent()) {
-    base::UmaHistogramEnumeration(
-        kNoticeInteractionsHistogramName,
-        accessibility_annotator::InfoShowRequestResult::kShown);
+    base::UmaHistogramEnumeration(kNoticeInteractionsHistogramName,
+                                  NoticeShowRequestResult::kShown);
   } else {
     // TODO(crbug.com/502445725): Record "NotShown" histogram value.
     if (callback_) {
-      std::move(callback_).Run(
-          accessibility_annotator::InfoResult::kNotAcknowledged);
+      std::move(callback_).Run(NoticeResult::kNotAcknowledged);
     }
   }
 }
@@ -84,11 +82,9 @@ void PersonalContextFirstRunBottomSheetBridge::Hide() {
 
 void PersonalContextFirstRunBottomSheetBridge::OnInfoAcknowledged(JNIEnv* env) {
   if (callback_) {
-    std::move(callback_).Run(
-        accessibility_annotator::InfoResult::kAcknowledged);
-    base::UmaHistogramEnumeration(
-        kNoticeInteractionsHistogramName,
-        accessibility_annotator::InfoShowRequestResult::kAccepted);
+    std::move(callback_).Run(NoticeResult::kAcknowledged);
+    base::UmaHistogramEnumeration(kNoticeInteractionsHistogramName,
+                                  NoticeShowRequestResult::kAccepted);
   }
 }
 
@@ -105,11 +101,9 @@ void PersonalContextFirstRunBottomSheetBridge::OnLearnMoreClicked(JNIEnv* env) {
 
 void PersonalContextFirstRunBottomSheetBridge::OnInfoDismissed(JNIEnv* env) {
   if (callback_) {
-    std::move(callback_).Run(
-        accessibility_annotator::InfoResult::kNotAcknowledged);
-    base::UmaHistogramEnumeration(
-        kNoticeInteractionsHistogramName,
-        accessibility_annotator::InfoShowRequestResult::kDismissed);
+    std::move(callback_).Run(NoticeResult::kNotAcknowledged);
+    base::UmaHistogramEnumeration(kNoticeInteractionsHistogramName,
+                                  NoticeShowRequestResult::kDismissed);
   }
 }
 

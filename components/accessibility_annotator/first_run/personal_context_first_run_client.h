@@ -12,21 +12,20 @@ namespace content {
 class WebContents;
 }
 
-namespace accessibility_annotator {
+namespace personal_context {
 
 // Delegate interface for environment-specific (e.g., Chrome vs other embedders)
-// UI implementations of the Accessibility Annotator First Feature Run.
+// UI implementations of the Personal Context First Feature Run.
 class PersonalContextFirstRunClient {
  public:
   virtual ~PersonalContextFirstRunClient() = default;
 
-  // Displays the informational UI for the remote annotator and invokes
-  // `callback` with the result (e.g. accepted, declined, etc).
-  virtual void ShowRemoteAnnotatorInfo(
-      content::WebContents* web_contents,
-      FirstRunInvocationSource invocation_source,
-      base::OnceCallback<void(InfoResult)> callback) = 0;
+  // Displays the notice UI and invokes `callback` with the result
+  // (e.g. accepted, declined, etc).
+  virtual void ShowNotice(content::WebContents* web_contents,
+                          FirstRunInvocationSource invocation_source,
+                          base::OnceCallback<void(NoticeResult)> callback) = 0;
 };
-}  // namespace accessibility_annotator
+}  // namespace personal_context
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_

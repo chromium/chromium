@@ -39,14 +39,11 @@ class TestPersonalContextFirstRunBottomSheetBridge
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowWithoutJava) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
   auto bridge = std::make_unique<PersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
 
-  EXPECT_CALL(callback,
-              Run(accessibility_annotator::InfoResult::kNotAcknowledged));
+  EXPECT_CALL(callback, Run(NoticeResult::kNotAcknowledged));
   bridge->Show();
 
   histogram_tester.ExpectTotalCount(kNoticeInteractionsHistogramName, 0);
@@ -54,9 +51,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowWithoutJava) {
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowSuccessRecordsMetric) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
 
   auto bridge = std::make_unique<TestPersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
@@ -64,50 +59,39 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowSuccessRecordsMetric) {
   bridge->SetShowResult(true);
   bridge->Show();
 
-  histogram_tester.ExpectUniqueSample(
-      kNoticeInteractionsHistogramName,
-      accessibility_annotator::InfoShowRequestResult::kShown, 1);
+  histogram_tester.ExpectUniqueSample(kNoticeInteractionsHistogramName,
+                                      NoticeShowRequestResult::kShown, 1);
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnInfoAcknowledged) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
   auto bridge = std::make_unique<PersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
 
-  EXPECT_CALL(callback,
-              Run(accessibility_annotator::InfoResult::kAcknowledged));
+  EXPECT_CALL(callback, Run(NoticeResult::kAcknowledged));
   bridge->OnInfoAcknowledged(/*env=*/nullptr);
 
-  histogram_tester.ExpectUniqueSample(
-      kNoticeInteractionsHistogramName,
-      accessibility_annotator::InfoShowRequestResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(kNoticeInteractionsHistogramName,
+                                      NoticeShowRequestResult::kAccepted, 1);
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnInfoDismissed) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
   auto bridge = std::make_unique<PersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
 
-  EXPECT_CALL(callback,
-              Run(accessibility_annotator::InfoResult::kNotAcknowledged));
+  EXPECT_CALL(callback, Run(NoticeResult::kNotAcknowledged));
   bridge->OnInfoDismissed(/*env=*/nullptr);
 
-  histogram_tester.ExpectUniqueSample(
-      kNoticeInteractionsHistogramName,
-      accessibility_annotator::InfoShowRequestResult::kDismissed, 1);
+  histogram_tester.ExpectUniqueSample(kNoticeInteractionsHistogramName,
+                                      NoticeShowRequestResult::kDismissed, 1);
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnManageSettingsClicked) {
   base::UserActionTester user_action_tester;
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
   auto bridge = std::make_unique<PersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
 
@@ -119,9 +103,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnManageSettingsClicked) {
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnLearnMoreClicked) {
   base::UserActionTester user_action_tester;
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
   auto bridge = std::make_unique<PersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
 
@@ -132,9 +114,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnLearnMoreClicked) {
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, HideWithoutJava) {
-  base::MockCallback<
-      base::OnceCallback<void(accessibility_annotator::InfoResult)>>
-      callback;
+  base::MockCallback<base::OnceCallback<void(NoticeResult)>> callback;
   auto bridge = std::make_unique<PersonalContextFirstRunBottomSheetBridge>(
       /*web_contents=*/nullptr, callback.Get());
 

@@ -16,9 +16,9 @@
 #include "components/personal_context/core/personal_context_features.h"
 
 // static
-accessibility_annotator::PersonalContextFirstRunService*
+personal_context::PersonalContextFirstRunService*
 PersonalContextFirstRunServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<accessibility_annotator::PersonalContextFirstRunService*>(
+  return static_cast<personal_context::PersonalContextFirstRunService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -48,10 +48,9 @@ PersonalContextFirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<accessibility_annotator::PersonalContextFirstRunClient>
-      client = std::make_unique<ChromePersonalContextFirstRunClient>();
-  return std::make_unique<
-      accessibility_annotator::PersonalContextFirstRunServiceImpl>(
+  std::unique_ptr<personal_context::PersonalContextFirstRunClient> client =
+      std::make_unique<ChromePersonalContextFirstRunClient>();
+  return std::make_unique<personal_context::PersonalContextFirstRunServiceImpl>(
       std::move(client),
       PersonalContextEnablementServiceFactory::GetForProfile(profile),
       profile->GetPrefs());

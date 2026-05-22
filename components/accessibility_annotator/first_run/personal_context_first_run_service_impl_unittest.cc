@@ -18,40 +18,39 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace accessibility_annotator {
+namespace personal_context {
 namespace {
 
 using ::testing::_;
 using ::testing::Return;
 
-class MockAccessibilityAnnotatorFirstRunClient
-    : public PersonalContextFirstRunClient {
+class MockPersonalContextFirstRunClient : public PersonalContextFirstRunClient {
  public:
   MOCK_METHOD(void,
-              ShowRemoteAnnotatorInfo,
+              ShowNotice,
               (content::WebContents*,
                FirstRunInvocationSource,
-               base::OnceCallback<void(InfoResult)>),
+               base::OnceCallback<void(NoticeResult)>),
               (override));
 };
 
 class MockPersonalContextEnablementService
-    : public personal_context::PersonalContextEnablementService {
+    : public PersonalContextEnablementService {
  public:
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(personal_context::PersonalContextEnablementState,
+  MOCK_METHOD(PersonalContextEnablementState,
               GetEnablementState,
               (),
               (override));
 };
 
-class AccessibilityAnnotatorFirstRunServiceImplTest : public testing::Test {
+class PersonalContextFirstRunServiceImplTest : public testing::Test {
  public:
-  AccessibilityAnnotatorFirstRunServiceImplTest() {
-    personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
+  PersonalContextFirstRunServiceImplTest() {
+    prefs::RegisterProfilePrefs(pref_service_.registry());
 
-    auto client = std::make_unique<MockAccessibilityAnnotatorFirstRunClient>();
+    auto client = std::make_unique<MockPersonalContextFirstRunClient>();
     client_ = client.get();
 
     service_ = std::make_unique<PersonalContextFirstRunServiceImpl>(
@@ -60,7 +59,7 @@ class AccessibilityAnnotatorFirstRunServiceImplTest : public testing::Test {
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
-  MockAccessibilityAnnotatorFirstRunClient* client() { return client_; }
+  MockPersonalContextFirstRunClient* client() { return client_; }
 
   MockPersonalContextEnablementService* enablement_service() {
     return &enablement_service_;
@@ -73,18 +72,17 @@ class AccessibilityAnnotatorFirstRunServiceImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   MockPersonalContextEnablementService enablement_service_;
   std::unique_ptr<PersonalContextFirstRunServiceImpl> service_;
-  raw_ptr<MockAccessibilityAnnotatorFirstRunClient> client_ = nullptr;
+  raw_ptr<MockPersonalContextFirstRunClient> client_ = nullptr;
 };
 
-TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
+TEST_F(PersonalContextFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(personal_context::PersonalContextEnablementState::
-                           kDisabledPendingInfo));
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingInfo));
 
-  EXPECT_CALL(*client(), ShowRemoteAnnotatorInfo)
+  EXPECT_CALL(*client(), ShowNotice)
       .WillOnce([](content::WebContents*, FirstRunInvocationSource,
-                   base::OnceCallback<void(InfoResult)> callback) {
-        std::move(callback).Run(InfoResult::kAcknowledged);
+                   base::OnceCallback<void(NoticeResult)> callback) {
+        std::move(callback).Run(NoticeResult::kAcknowledged);
       });
 
   base::test::TestFuture<FirstRunTriggerResult> future;
@@ -94,18 +92,17 @@ TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
 
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kSuccess);
   EXPECT_FALSE(pref_service()->GetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo));
+      prefs::kShouldShowPersonalContextFirstRunInfo));
 }
 
-TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
+TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(personal_context::PersonalContextEnablementState::
-                           kDisabledPendingInfo));
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingInfo));
 
-  EXPECT_CALL(*client(), ShowRemoteAnnotatorInfo)
+  EXPECT_CALL(*client(), ShowNotice)
       .WillOnce([](content::WebContents*, FirstRunInvocationSource,
-                   base::OnceCallback<void(InfoResult)> callback) {
-        std::move(callback).Run(InfoResult::kNotAcknowledged);
+                   base::OnceCallback<void(NoticeResult)> callback) {
+        std::move(callback).Run(NoticeResult::kNotAcknowledged);
       });
 
   base::test::TestFuture<FirstRunTriggerResult> future;
@@ -115,16 +112,14 @@ TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
 
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kSuccess);
   EXPECT_TRUE(pref_service()->GetBoolean(
-      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo));
+      prefs::kShouldShowPersonalContextFirstRunInfo));
 }
 
-TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest,
-       DoesNotTriggerWhenNotEligible) {
+TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNotEligible) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(personal_context::PersonalContextEnablementState::
-                           kDisabledNotEligible));
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledNotEligible));
 
-  EXPECT_CALL(*client(), ShowRemoteAnnotatorInfo).Times(0);
+  EXPECT_CALL(*client(), ShowNotice).Times(0);
 
   base::test::TestFuture<FirstRunTriggerResult> future;
 
@@ -134,13 +129,12 @@ TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest,
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kIgnoredNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest,
+TEST_F(PersonalContextFirstRunServiceImplTest,
        DoesNotTriggerWhenAlreadyEnabled) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(
-          Return(personal_context::PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
 
-  EXPECT_CALL(*client(), ShowRemoteAnnotatorInfo).Times(0);
+  EXPECT_CALL(*client(), ShowNotice).Times(0);
 
   base::test::TestFuture<FirstRunTriggerResult> future;
 
@@ -150,28 +144,25 @@ TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest,
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kIgnoredAlreadyEnabled);
 }
 
-TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest,
-       DoesNotTriggerWhenPendingSetup) {
+TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenPendingSetup) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(personal_context::PersonalContextEnablementState::
-                           kDisabledPendingSetup));
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingSetup));
 
-  EXPECT_CALL(*client(), ShowRemoteAnnotatorInfo).Times(0);
+  EXPECT_CALL(*client(), ShowNotice).Times(0);
 
   service()->MaybeTriggerFirstRun(nullptr, FirstRunInvocationSource::kAutofill,
                                   base::DoNothing());
 }
 
-TEST_F(AccessibilityAnnotatorFirstRunServiceImplTest, TriggersWhenPendingInfo) {
+TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenPendingInfo) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(personal_context::PersonalContextEnablementState::
-                           kDisabledPendingInfo));
+      .WillOnce(Return(PersonalContextEnablementState::kDisabledPendingInfo));
 
-  EXPECT_CALL(*client(), ShowRemoteAnnotatorInfo).Times(1);
+  EXPECT_CALL(*client(), ShowNotice).Times(1);
 
   service()->MaybeTriggerFirstRun(nullptr, FirstRunInvocationSource::kAutofill,
                                   base::DoNothing());
 }
 
 }  // namespace
-}  // namespace accessibility_annotator
+}  // namespace personal_context

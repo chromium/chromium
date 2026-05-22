@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace accessibility_annotator {
+namespace personal_context {
 class PersonalContextFirstRunService;
 }
 
@@ -21,7 +21,7 @@ class Profile;
 class PersonalContextFirstRunServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
-  static accessibility_annotator::PersonalContextFirstRunService* GetForProfile(
+  static personal_context::PersonalContextFirstRunService* GetForProfile(
       Profile* profile);
   static PersonalContextFirstRunServiceFactory* GetInstance();
 
