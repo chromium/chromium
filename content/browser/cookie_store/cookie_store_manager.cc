@@ -255,9 +255,10 @@ void CookieStoreManager::AddSubscriptions(
     auto new_subscription = std::make_unique<CookieChangeSubscription>(
         std::move(mojo_subscription), service_worker_registration->id());
 
-    auto existing_subscription_it = std::ranges::find(
-        subscriptions, *new_subscription,
-        &std::unique_ptr<CookieChangeSubscription>::operator*);
+    auto existing_subscription_it = std::ranges::find_if(
+        subscriptions, [&new_subscription](const auto& sub) {
+          return *sub == *new_subscription;
+        });
     if (existing_subscription_it == subscriptions.end())
       subscriptions.push_back(std::move(new_subscription));
   }
@@ -353,9 +354,10 @@ void CookieStoreManager::RemoveSubscriptions(
   }
 
   for (auto& subscription : all_subscriptions) {
-    auto target_subscription_it = std::ranges::find(
-        target_subscriptions, *subscription,
-        &std::unique_ptr<CookieChangeSubscription>::operator*);
+    auto target_subscription_it = std::ranges::find_if(
+        target_subscriptions,
+        [&subscription](const auto& sub) { return *sub == *subscription; });
+
     if (target_subscription_it == target_subscriptions.end()) {
       // The subscription is not marked for deletion.
       live_subscriptions.push_back(std::move(subscription));

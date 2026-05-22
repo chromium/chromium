@@ -84,8 +84,9 @@ void LogDurationMetrics(
     base::TimeTicks now,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   size_t num_detected_field_types =
-      std::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
-                            &std::unique_ptr<AutofillField>::operator*);
+      std::ranges::count_if(form, [](const auto& field) {
+        return FieldHasMeaningfulPossibleFieldTypes(*field);
+      });
   bool form_has_autofilled_fields = std::ranges::any_of(
       form.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return field->last_modifier() == FieldModifier::kAutofill;

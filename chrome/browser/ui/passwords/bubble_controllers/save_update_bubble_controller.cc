@@ -83,9 +83,8 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
   std::vector<password_manager::PasswordForm> result;
   result.reserve(forms.size());
-  std::ranges::transform(
-      forms, std::back_inserter(result),
-      &std::unique_ptr<password_manager::PasswordForm>::operator*);
+  std::ranges::transform(forms, std::back_inserter(result),
+                         [](const auto& form) -> const auto& { return *form; });
   return result;
 }
 
