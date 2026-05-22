@@ -9634,6 +9634,8 @@ void Document::ExecuteJavaScriptUrls() {
   urls_to_execute.swap(pending_javascript_urls_);
 
   for (auto& url_to_execute : urls_to_execute) {
+    probe::AsyncTask async_task(GetExecutionContext(),
+                                &url_to_execute->async_task_context);
     dom_window_->GetScriptController().ExecuteJavaScriptURL(
         url_to_execute->url, network::mojom::CSPDisposition::CHECK,
         url_to_execute->world.Get());
@@ -9649,8 +9651,8 @@ void Document::ProcessJavaScriptUrl(const KURL& url,
   if (is_initial_empty_document_)
     load_event_progress_ = kLoadEventNotRun;
   GetFrame()->Loader().Progress().ProgressStarted();
-  pending_javascript_urls_.push_back(
-      MakeGarbageCollected<PendingJavascriptUrl>(url, world));
+  pending_javascript_urls_.push_back(MakeGarbageCollected<PendingJavascriptUrl>(
+      GetExecutionContext(), url, world));
   if (!javascript_url_task_handle_.IsActive()) {
     javascript_url_task_handle_ = PostCancellableTask(
         *GetTaskRunner(TaskType::kNetworking), FROM_HERE,
@@ -9981,9 +9983,13 @@ Document::PaintPreviewScope::~PaintPreviewScope() {
 }
 
 Document::PendingJavascriptUrl::PendingJavascriptUrl(
+    ExecutionContext* context,
     const KURL& input_url,
     const DOMWrapperWorld* world)
-    : url(input_url), world(world) {}
+    : url(input_url), world(world) {
+  async_task_context.Schedule(context, "javascriptURL",
+                              probe::AsyncTaskContext::ScanForAds::kTrue);
+}
 
 Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
 

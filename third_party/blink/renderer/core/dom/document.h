@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/frame/widget_creation_observer.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -2780,7 +2781,9 @@ class CORE_EXPORT Document : public ContainerNode,
   class PendingJavascriptUrl final
       : public GarbageCollected<PendingJavascriptUrl> {
    public:
-    PendingJavascriptUrl(const KURL& input_url, const DOMWrapperWorld* world);
+    PendingJavascriptUrl(ExecutionContext*,
+                         const KURL& input_url,
+                         const DOMWrapperWorld* world);
     ~PendingJavascriptUrl();
 
     void Trace(Visitor* visitor) const;
@@ -2788,6 +2791,8 @@ class CORE_EXPORT Document : public ContainerNode,
     KURL url;
     // The world in which the navigation to |url| initiated. Non-null.
     Member<const DOMWrapperWorld> world;
+
+    probe::AsyncTaskContext async_task_context;
   };
   HeapVector<Member<PendingJavascriptUrl>> pending_javascript_urls_;
 
