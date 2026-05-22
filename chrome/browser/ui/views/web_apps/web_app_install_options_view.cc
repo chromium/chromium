@@ -27,6 +27,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/shadow_value.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/image_view.h"
@@ -87,8 +88,7 @@ views::Builder<views::BoxLayoutView> CreateIconWithLabelView(
     const ui::ImageModel& image_model,
     const std::u16string& label_text,
     const gfx::Size& image_size,
-    int corner_radius = 0,
-    raw_ptr<views::ImageView>* icon_view_out = nullptr) {
+    int corner_radius = 0) {
   auto image_builder = views::Builder<views::ImageView>()
                            .SetImage(image_model)
                            .SetImageSize(image_size)
@@ -96,18 +96,47 @@ views::Builder<views::BoxLayoutView> CreateIconWithLabelView(
   if (corner_radius > 0) {
     image_builder.SetCornerRadius(corner_radius);
   }
-  if (icon_view_out) {
-    image_builder.CopyAddressTo(icon_view_out);
-  }
+
+  auto label_builder = views::Builder<views::Label>()
+                           .SetText(label_text)
+                           .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                           .SetTextStyle(views::style::STYLE_SECONDARY);
 
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-      .AddChildren(std::move(image_builder),
-                   views::Builder<views::Label>()
-                       .SetText(label_text)
-                       .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                       .SetTextStyle(views::style::STYLE_SECONDARY));
+      .AddChildren(std::move(image_builder), std::move(label_builder));
+}
+
+// Creates an Icon View for the PWA app with a label displaying the app's
+// start URL formatted for security display.
+views::Builder<views::BoxLayoutView> CreateIconWithUrlView(
+    const ui::ImageModel& image_model,
+    const GURL& start_url,
+    const gfx::Size& image_size,
+    raw_ptr<views::ImageView>* icon_view_out) {
+  auto image_builder = views::Builder<views::ImageView>()
+                           .SetImage(image_model)
+                           .SetImageSize(image_size)
+                           .SetPreferredSize(image_size);
+  if (icon_view_out) {
+    image_builder.CopyAddressTo(icon_view_out);
+  }
+
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+  std::u16string display_text =
+      url_formatter::ElideHost(start_url, font_list, image_size.width());
+
+  auto label_builder = views::Builder<views::Label>()
+                           .SetText(display_text)
+                           .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                           .SetTextStyle(views::style::STYLE_SECONDARY);
+
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+      .AddChildren(std::move(image_builder), std::move(label_builder));
 }
 
 }  // namespace
@@ -151,13 +180,10 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(OptionsData options_data) {
                   views::LayoutProvider::Get()->GetDistanceMetric(
                       views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
               .AddChildren(
-                  CreateIconWithLabelView(
+                  CreateIconWithUrlView(
                       ui::ImageModel::FromImageSkia(displayed_image),
-                      url_formatter::FormatOriginForSecurityDisplay(
-                          url::Origin::Create(options_data.start_url),
-                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-                      displayed_image.size(),
-                      /*corner_radius=*/0, &icon_view_),
+                      options_data.start_url, displayed_image.size(),
+                      &icon_view_),
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
                           features::IsRoundedIconsEnabled()
@@ -252,13 +278,10 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(OptionsData options_data) {
                   views::LayoutProvider::Get()->GetDistanceMetric(
                       views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
               .AddChildren(
-                  CreateIconWithLabelView(
+                  CreateIconWithUrlView(
                       ui::ImageModel::FromImageSkia(displayed_image),
-                      url_formatter::FormatOriginForSecurityDisplay(
-                          url::Origin::Create(options_data.start_url),
-                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-                      displayed_image.size(),
-                      /*corner_radius=*/0, &icon_view_),
+                      options_data.start_url, displayed_image.size(),
+                      &icon_view_),
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
                           kPwaInstallArrowCustomIcon, ui::kColorIcon,
