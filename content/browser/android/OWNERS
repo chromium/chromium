@@ -1,3 +1,5 @@
 jinsukkim@chromium.org
 tedchoc@chromium.org
 yfriedman@chromium.org
+
+per-file ime_adapter_android.*=file://content/public/android/java/src/org/chromium/content/browser/input/OWNERS
