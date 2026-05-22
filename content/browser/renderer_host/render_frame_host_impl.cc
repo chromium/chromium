@@ -16005,7 +16005,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     //
     // Guest views currently don't appear to set the origin correctly for
     // synchronous new window commits under MPArch.
+    //
+    // TODO(https://crbug.com/511083727): Re-enable this check for file origins
+    // once issues around Origin dropping UNC hosts are resolved.
     if (is_synchronous_about_blank_commit &&
+        params->origin.scheme() != url::kFileScheme &&
         (!frame_tree_->is_guest() ||
          !base::FeatureList::IsEnabled(features::kGuestViewMPArch)) &&
         !params->origin.opaque() &&
