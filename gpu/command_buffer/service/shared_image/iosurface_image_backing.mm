@@ -838,6 +838,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   CHECK(shared_fences.size() == signaled_values.size());
   begin_access_desc.fenceCount = shared_fences.size();
   begin_access_desc.fences = shared_fences.data();
+  begin_access_desc.signaledValueCount = signaled_values.size();
   begin_access_desc.signaledValues = signaled_values.data();
 
   if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
@@ -897,6 +898,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
 
   CHECK_EQ(shared_texture_memory_.EndAccess(texture_, &end_access_state),
            wgpu::Status::Success);
+  CHECK(end_access_state.fenceCount == end_access_state.signaledValueCount);
 
   if (end_access_state.initialized) {
     iosurface_backing->SetClearedInternal();

@@ -355,6 +355,7 @@ bool D3DImageBacking::PersistentGraphiteDawnAccess::BeginAccess(
     signaled_value = wait_fence->GetFenceValue();
     desc.fenceCount = 1;
     desc.fences = &shared_fence;
+    desc.signaledValueCount = 1;
     desc.signaledValues = &signaled_value;
   }
 
@@ -420,7 +421,7 @@ bool D3DImageBacking::PersistentGraphiteDawnAccess::WaitForDCompBeforeWrite(
   // concurrent dcomp texture access in the middle between the prior write
   // access and current write access.
 
-  // Sanity check that EndAccess() didn't forward prior fences because we din't
+  // Sanity check that EndAccess() didn't forward prior fences because we didn't
   // submit. There should be only one fence exported (owned by Dawn).
   CHECK_LE(end_state.fenceCount, 1u);
   return BeginAccess(end_state.initialized,
@@ -1337,6 +1338,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   desc.concurrentRead = !write_access && is_clear;
   desc.fenceCount = shared_fences.size();
   desc.fences = shared_fences.data();
+  desc.signaledValueCount = signaled_values.size();
   desc.signaledValues = signaled_values.data();
   desc.nextInChain = &swapchain_begin_state;
 
@@ -1419,6 +1421,7 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
   // OK since we check for it explicitly below.
   wgpu::SharedTextureMemoryEndAccessState end_state = {};
   shared_texture_memory.EndAccess(texture.Get(), &end_state);
+  CHECK(end_state.fenceCount == end_state.signaledValueCount);
 
   D3DSharedFenceSet signaled_fences;
   if (use_cross_device_fence_synchronization()) {
@@ -1867,6 +1870,7 @@ wgpu::Buffer D3DImageBacking::BeginAccessDawnBuffer(
   desc.initialized = true;
   desc.fenceCount = shared_fences.size();
   desc.fences = shared_fences.data();
+  desc.signaledValueCount = signaled_values.size();
   desc.signaledValues = signaled_values.data();
 
   wgpu::Buffer buffer =
@@ -1896,6 +1900,7 @@ void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
 
   wgpu::SharedBufferMemoryEndAccessState end_state = {};
   dawn_shared_buffer_memory_.EndAccess(buffer.Get(), &end_state);
+  CHECK(end_state.fenceCount == end_state.signaledValueCount);
 
   D3DSharedFenceSet signaled_fences;
   signaled_fences.reserve(end_state.fenceCount);

@@ -100,6 +100,7 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
   std::vector<uint64_t> shared_fence_signals;
 
   begin_access_desc.fenceCount = fences.size();
+  begin_access_desc.signaledValueCount = fences.size();
   if (fences.size()) {
     shared_fences.resize(fences.size());
     shared_fence_signals.resize(fences.size());
@@ -207,6 +208,8 @@ void DawnOzoneImageRepresentation::EndAccess() {
   if (end_access_desc.initialized) {
     SetCleared();
   }
+
+  CHECK(end_access_desc.fenceCount == end_access_desc.signaledValueCount);
 
   // Note: Dawn may export zero fences if there were no begin fences,
   // AND the WGPUTexture was not used on the GPU queue within the

@@ -425,6 +425,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
       begin_access_desc.fenceCount = 1;
       begin_access_desc.fences = &shared_fence;
+      begin_access_desc.signaledValueCount = 1;
       begin_access_desc.signaledValues = &signaled_value;
     }
 
@@ -485,6 +486,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     if (end_access_desc.fenceCount) {
       CHECK(end_access_desc.fenceCount == 1u);
+      CHECK(end_access_desc.signaledValueCount == 1u);
       end_access_desc.fences[0].ExportInfo(&export_info);
 
       // Dawn will close its FD when `end_access_desc` falls out of scope, and
