@@ -343,12 +343,12 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
 
 // Tests that filename label and "Open in Downloads" button are showing.
 // TODO(crbug.com/438749917): Flaky on iPhone simulators.
+// TODO(crbug.com/515624708): Fails on iPhone devices.
 - (void)testVisibleFileNameAndOpenInDownloads {
-#if TARGET_IPHONE_SIMULATOR
   if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone simulator, crbug.com/438749917");
+    EARL_GREY_TEST_DISABLED(@"Failing on iPhone simulator, crbug.com/438749917 "
+                            @"crbug.com/515624708");
   }
-#endif
   // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
