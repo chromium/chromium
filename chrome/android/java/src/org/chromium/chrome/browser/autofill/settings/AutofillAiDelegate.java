@@ -429,7 +429,12 @@ public class AutofillAiDelegate {
         if (entityDataManager == null) {
             return;
         }
-        if (!entityDataManager.canListEntityInstancesInSettings()) {
+        if (!entityDataManager.canListEntityInstancesInSettings()
+                // Autofill AI leaf pages show the UI with everything disabled in case the user
+                // cannot list entities. One of Autofill and passwords goals is visibility of what
+                // user can autofill.
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
             return;
         }
 
