@@ -348,7 +348,8 @@ bool RenderViewContextMenuViews::IsCommandIdEnabled(int command_id) const {
 
 ui::AcceleratorProvider*
 RenderViewContextMenuViews::GetBrowserAcceleratorProvider() const {
-  Browser* browser = GetBrowser();
+  Browser* browser =
+      GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
   if (!browser) {
     return nullptr;
   }

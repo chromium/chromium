@@ -48,7 +48,7 @@
 #endif
 
 class AccessibilityLabelsMenuObserver;
-class Browser;
+class BrowserWindowInterface;
 #if BUILDFLAG(ENABLE_COMPOSE)
 class ChromeComposeClient;
 #endif
@@ -181,7 +181,7 @@ class RenderViewContextMenu
 
   // This may return nullptr (e.g. for WebUI dialogs). Virtual to allow tests to
   // override.
-  virtual Browser* GetBrowser() const;
+  virtual BrowserWindowInterface* GetBrowser() const;
 
   // May return nullptr if the WebContents does not have an associated
   // BrowserWindowInterface (e.g. in isolated WebUI, or in tests).

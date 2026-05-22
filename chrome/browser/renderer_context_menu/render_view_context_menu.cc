@@ -1032,9 +1032,10 @@ RenderViewContextMenu::RenderViewContextMenu(
       ContextMenuContentTypeFactory::Create(&render_frame_host, params));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  system_app_ = GetBrowser() && GetBrowser()->app_controller()
-                    ? GetBrowser()->app_controller()->system_app()
-                    : nullptr;
+  web_app::AppBrowserController* app_controller =
+      GetBrowser() ? web_app::AppBrowserController::From(GetBrowser())
+                   : nullptr;
+  system_app_ = app_controller ? app_controller->system_app() : nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   observers_.AddObserver(&autofill_context_menu_manager_);
@@ -1188,8 +1189,10 @@ ui::IsNewFeatureAtValue RenderViewContextMenu::GetIsNewFeatureAtValue(
 }
 
 bool RenderViewContextMenu::IsInProgressiveWebApp() const {
-  const Browser* browser = GetBrowser();
-  return browser && (browser->is_type_app() || browser->is_type_app_popup());
+  const BrowserWindowInterface* browser = GetBrowser();
+  return browser &&
+         (browser->GetType() == BrowserWindowInterface::TYPE_APP ||
+          browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP);
 }
 
 void RenderViewContextMenu::InitMenu() {
@@ -1879,11 +1882,13 @@ void RenderViewContextMenu::AppendLinkItems() {
       // Opening a link in split view should also go through the same
       // constraints as opening a link in a new tab since a split view tab is a
       // new tab that is then joined with the current active tab.
-      Browser* const browser = GetBrowser();
-      if (browser && browser->is_type_normal()) {
+      BrowserWindowInterface* const browser = GetBrowser();
+      if (browser &&
+          browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
         tabs::TabInterface* tab =
             tabs::TabInterface::MaybeGetFromContents(GetWebContents());
-        auto [string_id, icon] = GetOpenLinkInSplitStringAndIcon(tab, browser);
+        auto [string_id, icon] = GetOpenLinkInSplitStringAndIcon(
+            tab, browser->GetBrowserForMigrationOnly());
 
         if (tabs::kSplitViewHorizontalDirectAccess.Get() &&
             !(tab && tab->IsSplit())) {
@@ -2116,11 +2121,12 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   }
 
   int open_in_app_string_id;
-  const Browser* browser = GetBrowser();
-  if (browser && browser->app_name() ==
-                     web_app::GenerateApplicationNameFromAppId(*link_app_id)) {
+  web_app::AppBrowserController* app_controller =
+      GetBrowser() ? web_app::AppBrowserController::From(GetBrowser())
+                   : nullptr;
+  if (app_controller && app_controller->app_id() == *link_app_id) {
     if (provider->registrar_unsafe().IsTabbedWindowModeEnabled(*link_app_id)) {
-      if (browser->app_controller()->IsUrlInHomeTabScope(params_.link_url)) {
+      if (app_controller->IsUrlInHomeTabScope(params_.link_url)) {
         // Clicking on a link captured in the home tab will always focus and/or
         // navigate that tab, and not a new tab. Thus this right-click menu
         // entry should not be included in that case.
@@ -2216,8 +2222,9 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 }
 
 void RenderViewContextMenu::AppendGlicShareImageItem() {
-  const Browser* browser = GetBrowser();
-  const bool is_normal_browser = browser && browser->is_type_normal();
+  const BrowserWindowInterface* browser = GetBrowser();
+  const bool is_normal_browser =
+      browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
   if (glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) &&
       !IsGlicWindow(this, browser_context_) && is_normal_browser) {
     tabs::TabInterface* tab =
@@ -2485,16 +2492,15 @@ void RenderViewContextMenu::AppendPageItems() {
 }
 
 void RenderViewContextMenu::AppendExitFullscreenItem() {
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   if (!browser) {
     return;
   }
 
   // Only show item if in fullscreen mode.
-  if (!browser->GetFeatures()
-           .exclusive_access_manager()
-           ->fullscreen_controller()
-           ->IsControllerInitiatedFullscreen()) {
+  ExclusiveAccessManager* manager = browser->GetExclusiveAccessManager();
+  if (!manager ||
+      !manager->fullscreen_controller()->IsControllerInitiatedFullscreen()) {
     return;
   }
 
@@ -2618,7 +2624,8 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
   }
 
   // Show Read Anything option if it's not already open in the side panel.
-  if (GetBrowser() && GetBrowser()->is_type_normal() &&
+  if (GetBrowser() &&
+      GetBrowser()->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
       !IsReadAnythingEntryShowing(GetBrowser())) {
     AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                             IDS_CONTENT_CONTEXT_READING_MODE,
@@ -3085,7 +3092,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   // NOTE: If new commands are being added, please disable them by default and
   // notify the ChromeOS team by filing a bug under this component --
   // b/?q=componentid:1389107.
-  Browser* const browser = GetBrowser();
+  Browser* const browser =
+      GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
   bool should_disable_command_for_locked_fullscreen_or_on_task = false;
   if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
     should_disable_command_for_locked_fullscreen_or_on_task = true;
@@ -3948,8 +3956,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         return;
       }
 
-      Browser* browser = GetBrowser();
+      Browser* browser =
+          GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
       if (browser) {
+        // TODO(crbug.com/514547038): Move this to BrowserWindowFeatures.
         browser->window()->ShowEmojiPanel();
       } else {
         // TODO(crbug.com/40608277): Ensure this is called in the correct
@@ -4219,8 +4229,7 @@ bool RenderViewContextMenu::IsSavePageEnabled() const {
     return false;
   }
 
-  Browser* browser = GetBrowser();
-  if (browser && !browser->CanSaveContents(embedder_web_contents_)) {
+  if (GetBrowser() && !chrome::CanSavePage(GetBrowser())) {
     return false;
   }
 
@@ -4287,7 +4296,7 @@ bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
     return false;
   }
 
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   return browser && chrome::CanPrint(browser);
 }
 
@@ -4456,7 +4465,7 @@ bool RenderViewContextMenu::IsRouteMediaEnabled() const {
     return false;
   }
 
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   if (!browser) {
     return false;
   }
@@ -4466,7 +4475,7 @@ bool RenderViewContextMenu::IsRouteMediaEnabled() const {
   // WebContents for something that's not the current tab (e.g., WebUI
   // modal dialog).
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return false;
   }
@@ -4746,12 +4755,15 @@ void RenderViewContextMenu::ExecGlicShareImage() {
 }
 
 void RenderViewContextMenu::ExecExitFullscreen() {
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   if (!browser) {
     NOTREACHED();
   }
 
-  browser->GetFeatures().exclusive_access_manager()->ExitExclusiveAccess();
+  ExclusiveAccessManager* manager = browser->GetExclusiveAccessManager();
+  if (manager) {
+    manager->ExitExclusiveAccess();
+  }
 }
 
 void RenderViewContextMenu::ExecCopyLinkText() {
@@ -4862,7 +4874,7 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
 void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   CHECK(browser);
 
   bool lens_overlay_for_region_search_enabled =
@@ -5090,8 +5102,14 @@ void RenderViewContextMenu::ExecPartialTranslate() {
     chrome_translate_client->GetTranslateLanguages(
         embedder_web_contents_, &source_language, &target_language,
         /*for_display=*/false);
-    GetBrowser()->window()->StartPartialTranslate(
-        source_language, target_language, params_.selection_text);
+    Browser* browser =
+        GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
+    if (browser) {
+      // TODO(crbug.com/514729745): Remove StartPartialTranslate in
+      // favor of a BrowserWindowInterface service.
+      browser->window()->StartPartialTranslate(source_language, target_language,
+                                               params_.selection_text);
+    }
   }
 }
 
@@ -5304,10 +5322,9 @@ content::WebContents* RenderViewContextMenu::GetWebContentsForDataControls()
   return source_web_contents_;
 }
 
-Browser* RenderViewContextMenu::GetBrowser() const {
-  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+BrowserWindowInterface* RenderViewContextMenu::GetBrowser() const {
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
       embedder_web_contents_);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 ToastController* RenderViewContextMenu::GetToastController() const {
@@ -5383,11 +5400,11 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
 #if !BUILDFLAG(IS_ANDROID)
 void RenderViewContextMenu::OpenLinkInSplitView(
     split_tabs::SplitTabLayout layout) {
-  Browser* const browser = GetBrowser();
+  BrowserWindowInterface* const browser = GetBrowser();
   CHECK(browser);
-  CHECK(browser->is_type_normal());
+  CHECK(browser->GetType() == BrowserWindowInterface::TYPE_NORMAL);
 
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   tabs::TabInterface* const source_tab =
       tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
   if (source_tab && source_tab->IsSplit()) {

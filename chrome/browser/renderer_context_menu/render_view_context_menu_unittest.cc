@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -104,6 +106,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -368,7 +371,7 @@ class RenderViewContextMenuPrefsTest
   void BeginPreresolveListening() {
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
-            GetBrowser()->profile());
+            GetBrowser()->GetProfile());
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);
     last_preresolved_url_ = GURL();
@@ -387,6 +390,7 @@ class RenderViewContextMenuPrefsTest
   }
 
   void TearDown() override {
+    lens_controller_.reset();
     browser_.reset();
     template_url_service_ = nullptr;
     registry_.reset();
@@ -433,23 +437,48 @@ class RenderViewContextMenuPrefsTest
     template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
-  Browser* GetBrowser() {
+  BrowserWindowInterface* GetBrowser() {
     if (!browser_) {
-      Browser::CreateParams create_params(profile(), true);
-      auto browser_window = std::make_unique<TestBrowserWindow>();
-      create_params.window = browser_window.release();
-      browser_ = Browser::DeprecatedCreateOwnedForTesting(create_params);
+      auto mock_browser =
+          std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+      ON_CALL(*mock_browser, GetProfile())
+          .WillByDefault(testing::Return(profile()));
+      ON_CALL(testing::Const(*mock_browser), GetProfile())
+          .WillByDefault(testing::Return(profile()));
+      ON_CALL(testing::Const(*mock_browser), GetUnownedUserDataHost())
+          .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+      ON_CALL(testing::Const(*mock_browser), GetType())
+          .WillByDefault(testing::Return(BrowserWindowInterface::TYPE_NORMAL));
+      ON_CALL(*mock_browser, GetFeatures())
+          .WillByDefault(testing::ReturnRef(features_));
+      ON_CALL(testing::Const(*mock_browser), GetFeatures())
+          .WillByDefault(testing::ReturnRef(features_));
+
+      lens_controller_.emplace(mock_browser.get());
+      browser_ = std::move(mock_browser);
     }
     return browser_.get();
   }
 
-  Browser* GetPwaBrowser() {
+  BrowserWindowInterface* GetPwaBrowser() {
     if (!browser_) {
-      Browser::CreateParams create_params(Browser::Type::TYPE_APP, profile(),
-                                          true);
-      auto browser_window = std::make_unique<TestBrowserWindow>();
-      create_params.window = browser_window.release();
-      browser_ = Browser::DeprecatedCreateOwnedForTesting(create_params);
+      auto mock_browser =
+          std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+      ON_CALL(*mock_browser, GetProfile())
+          .WillByDefault(testing::Return(profile()));
+      ON_CALL(testing::Const(*mock_browser), GetProfile())
+          .WillByDefault(testing::Return(profile()));
+      ON_CALL(testing::Const(*mock_browser), GetUnownedUserDataHost())
+          .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+      ON_CALL(testing::Const(*mock_browser), GetType())
+          .WillByDefault(testing::Return(BrowserWindowInterface::TYPE_APP));
+      ON_CALL(*mock_browser, GetFeatures())
+          .WillByDefault(testing::ReturnRef(features_));
+      ON_CALL(testing::Const(*mock_browser), GetFeatures())
+          .WillByDefault(testing::ReturnRef(features_));
+
+      lens_controller_.emplace(mock_browser.get());
+      browser_ = std::move(mock_browser);
     }
     return browser_.get();
   }
@@ -466,7 +495,10 @@ class RenderViewContextMenuPrefsTest
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   raw_ptr<TemplateURLService> template_url_service_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<BrowserWindowInterface> browser_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  BrowserWindowFeatures features_;
+  std::optional<lens::LensOverlayEntryPointController> lens_controller_;
   GURL last_preresolved_url_;
   base::OnceClosure preresolved_finished_closure_;
 
