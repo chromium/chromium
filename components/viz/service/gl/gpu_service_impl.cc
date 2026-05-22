@@ -346,8 +346,6 @@ void GpuServiceImpl::UpdateGPUInfo() {
   gpu_info_.initialization_time = now - start_time_;
   startup_metric_utils::GetGpu().RecordGpuInitialized(now);
 
-  // This metric code may be removed after the following investigation:
-  // crbug.com/1350257
   UMA_HISTOGRAM_CUSTOM_TIMES("GPU.GPUInitializationTime.V4",
                              gpu_info_.initialization_time,
                              base::Milliseconds(5), base::Seconds(90), 100);
