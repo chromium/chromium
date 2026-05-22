@@ -111,6 +111,13 @@ constexpr char kBookmarkNodesNotFoundFromIdListError[] =
 
 constexpr char kInvalidBrowserError[] = "Can't find a valid browser";
 
+constexpr char kDropFailedNoWebContentsError[] =
+    "Drop failed: sender WebContents is gone.";
+constexpr char kDropFailedNoDragRouterError[] =
+    "Drop failed: surface does not host a bookmark drag router.";
+constexpr char kDropFailedNoDragDataError[] =
+    "Drop failed: no active bookmark drag data.";
+
 // Returns a single bookmark node from the argument ID.
 // This returns nullptr in case of failure.
 const BookmarkNode* GetNodeFromString(BookmarkModel* model,
@@ -649,6 +656,10 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   }
 
   content::WebContents* web_contents = GetSenderWebContents();
+  // May be null after async BookmarkModelLoaded if the RFH is gone.
+  if (!web_contents) {
+    return RespondNow(Error(kDropFailedNoWebContentsError));
+  }
   size_t drop_index;
   if (params->index) {
     drop_index = static_cast<size_t>(*params->index);
@@ -659,9 +670,18 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
 
   BookmarkManagerPrivateDragEventRouter* router =
       BookmarkManagerPrivateDragEventRouter::FromWebContents(web_contents);
+  // Surfaces that do not attach a bookmark drag router can still reach
+  // this sink; treat as a normal error rather than crashing.
+  if (!router) {
+    return RespondNow(Error(kDropFailedNoDragRouterError));
+  }
 
   const BookmarkNodeData* drag_data = router->GetBookmarkNodeData();
-  CHECK_NE(nullptr, drag_data) << "Somehow we're dropping null bookmark data";
+  // Null if a prior Drop call already consumed and cleared the data, or
+  // if the renderer invokes drop without an active drag.
+  if (!drag_data) {
+    return RespondNow(Error(kDropFailedNoDragDataError));
+  }
   const bool copy = false;
   BookmarkUIOperationsHelperNonMergedSurfaces(model, drop_parent)
       .DropBookmarks(GetProfile(), *drag_data, drop_index, copy,
