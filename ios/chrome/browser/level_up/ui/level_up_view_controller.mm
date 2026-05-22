@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 
 #import "ios/chrome/browser/level_up/ui/level_up_progress_view.h"
-#import "ios/chrome/browser/level_up/ui/level_up_tasks_view.h"
+#import "ios/chrome/browser/level_up/ui/level_up_table_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -22,8 +23,10 @@ const CGFloat kCardMargin = 16.0;
 @implementation LevelUpViewController {
   // Subview displaying the task progress indicator card.
   LevelUpProgressView* _progressView;
-  // Subview displaying the card list of level-up tasks.
-  LevelUpTasksView* _tasksCardView;
+  // Child view controller managing the task table view cells.
+  LevelUpTableViewController* _tableViewController;
+  // Height constraint for the tasks table view.
+  NSLayoutConstraint* _tableHeightConstraint;
 }
 
 - (instancetype)init {
@@ -32,14 +35,19 @@ const CGFloat kCardMargin = 16.0;
     _progressView = [[LevelUpProgressView alloc] init];
     _progressView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _tasksCardView = [[LevelUpTasksView alloc] init];
-    _tasksCardView.translatesAutoresizingMaskIntoConstraints = NO;
+    _tableViewController = [[LevelUpTableViewController alloc]
+        initWithStyle:UITableViewStylePlain];
   }
   return self;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  UIView* tableView = _tableViewController.tableView;
+
+  [self addChildViewController:_tableViewController];
+  [_tableViewController didMoveToParentViewController:self];
 
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_LEVEL_UP);
@@ -70,13 +78,19 @@ const CGFloat kCardMargin = 16.0;
       [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
 
   UIStackView* mainContainer = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _progressView, _tasksCardView ]];
+      initWithArrangedSubviews:@[ _progressView, tableView ]];
   mainContainer.translatesAutoresizingMaskIntoConstraints = NO;
   mainContainer.axis = UILayoutConstraintAxisVertical;
   mainContainer.spacing = kCardMargin;
   mainContainer.alignment = UIStackViewAlignmentFill;
 
   [self.view addSubview:mainContainer];
+
+  _tableHeightConstraint =
+      [tableView.heightAnchor constraintEqualToConstant:0.0];
+  _tableHeightConstraint.active = YES;
+
+  [self updateTableHeightConstraint];
 
   [NSLayoutConstraint activateConstraints:@[
     [mainContainer.topAnchor
@@ -95,10 +109,28 @@ const CGFloat kCardMargin = 16.0;
 
 - (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
   [_progressView setLevel:level tasksForLevel:tasks];
-  [_tasksCardView setLevel:level tasksForLevel:tasks];
+  [_tableViewController setLevel:level tasksForLevel:tasks];
+
+  [self updateTableHeightConstraint];
 }
 
 #pragma mark - Private
+
+// Updates the table height constraint constant to match the header and cells
+// combined.
+- (void)updateTableHeightConstraint {
+  if (!_tableHeightConstraint) {
+    return;
+  }
+  UITableView* tableView = _tableViewController.tableView;
+  [tableView layoutIfNeeded];
+
+  NSInteger taskCount = [_tableViewController tableView:tableView
+                                  numberOfRowsInSection:0];
+  CGFloat headerHeight = [tableView rectForHeaderInSection:0].size.height;
+  CGFloat rowHeight = tableView.rowHeight;
+  _tableHeightConstraint.constant = headerHeight + (taskCount * rowHeight);
+}
 
 - (void)dismiss {
   [self.handler dismissLevelUp];
