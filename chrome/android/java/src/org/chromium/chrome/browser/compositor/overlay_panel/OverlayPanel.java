@@ -619,7 +619,9 @@ public class OverlayPanel extends OverlayPanelAnimation
      *     should jump immediately.
      */
     public void updateBrowserControlsState(int current, boolean animate) {
-        TabBrowserControlsConstraintsHelper.update(mCurrentTabSupplier.get(), current, animate);
+        if (mCurrentTabSupplier != null) {
+            TabBrowserControlsConstraintsHelper.update(mCurrentTabSupplier.get(), current, animate);
+        }
     }
 
     /** Sets the top control state based on the internals of the panel. */
