@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -61,6 +62,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/label_source_util.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -298,6 +300,27 @@ void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
   }
 }
 
+// The feature `AutofillBetterLocalHeuristicPlaceholderSupport` modifies the
+// form parsing logic for Label attribute. To avoid modifying the crowdsourced
+// values, the function below provides the backwards compatibility for
+// crowdsourcing of the Label attribute.
+std::u16string GetLabelValueForCrowdsourcing(
+    const std::u16string& label,
+    FormFieldData::LabelSource label_source,
+    const std::u16string& placeholder) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport)) {
+    return label;
+  }
+
+  if (placeholder.empty()) {
+    return label;
+  }
+
+  return IsLabelHigherQualityThanPlaceholder(label_source) ? label
+                                                           : placeholder;
+}
+
 void PopulateRandomizedFieldMetadata(
     const RandomizedEncoder& encoder,
     const FormStructure& form,
@@ -324,8 +347,10 @@ void PopulateRandomizedFieldMetadata(
   encode_value(RandomizedEncoder::kFieldControlType,
                FormControlTypeToString(field.form_control_type()),
                metadata->mutable_type());
-  if (!field.label().empty()) {
-    encode_value(RandomizedEncoder::kFieldLabel, field.label(),
+  std::u16string effective_label = GetLabelValueForCrowdsourcing(
+      field.label(), field.label_source(), field.placeholder());
+  if (!effective_label.empty()) {
+    encode_value(RandomizedEncoder::kFieldLabel, effective_label,
                  metadata->mutable_label());
   }
   if (!field.aria_label().empty()) {
@@ -425,8 +450,10 @@ void PopulateThreeBitHashedFieldMetadata(
   }
   field_metadata->set_type(
       StrToHash3Bit(FormControlTypeToString(field.form_control_type())));
-  if (!field.label().empty()) {
-    field_metadata->set_label(StrToHash3Bit(field.label()));
+  std::u16string effective_label = GetLabelValueForCrowdsourcing(
+      field.label(), field.label_source(), field.placeholder());
+  if (!effective_label.empty()) {
+    field_metadata->set_label(StrToHash3Bit(effective_label));
   }
   if (!field.aria_label().empty()) {
     field_metadata->set_aria_label(StrToHash3Bit(field.aria_label()));

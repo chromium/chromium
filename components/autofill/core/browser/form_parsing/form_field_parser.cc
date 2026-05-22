@@ -64,6 +64,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/label_source_util.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
@@ -115,34 +116,6 @@ void MaybePrintMatchLogs(LogManager* log_manager,
   LOG_AF(log_manager) << LoggingScope::kParsing
                       << LogMessage::kLocalHeuristicRegExMatched << Tag{"table"}
                       << std::move(table_rows) << CTag{"table"};
-}
-
-// Prior to `AutofillBetterLocalHeuristicPlaceholderSupport`, the renderer
-// prioritized placeholders lower than labels assigned with the for-attribute
-// and labels inferred via `InferLabelFromSibling()`. This same prioritization
-// is used here. It's unclear whether this is the right prioritization.
-bool IsLabelHigherQualityThanPlaceholder(
-    FormFieldData::LabelSource label_source) {
-  switch (label_source) {
-    case FormFieldData::LabelSource::kCombined:
-    case FormFieldData::LabelSource::kForId:
-    case FormFieldData::LabelSource::kForName:
-    case FormFieldData::LabelSource::kForShadowHostId:
-    case FormFieldData::LabelSource::kForShadowHostName:
-    case FormFieldData::LabelSource::kLabelTag:
-    case FormFieldData::LabelSource::kPTag:
-      return true;
-    case FormFieldData::LabelSource::kAriaLabel:
-    case FormFieldData::LabelSource::kDdTag:
-    case FormFieldData::LabelSource::kDivTable:
-    case FormFieldData::LabelSource::kLiTag:
-    case FormFieldData::LabelSource::kOverlayingLabel:
-    case FormFieldData::LabelSource::kPlaceHolder:
-    case FormFieldData::LabelSource::kTdTag:
-    case FormFieldData::LabelSource::kUnknown:
-    case FormFieldData::LabelSource::kValue:
-      return false;
-  }
 }
 
 bool IsRelevant(const FormFieldData& field) {

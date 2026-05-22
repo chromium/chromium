@@ -597,6 +597,9 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   if (fd.form_control_ax_id) {
     ff.set_form_control_ax_id(*fd.form_control_ax_id);
   }
+  if (fd.label_source) {
+    ff.set_label_source(*fd.label_source);
+  }
   CHECK(!fd.checked ||
         ff.form_control_type() == FormControlType::kInputCheckbox ||
         ff.form_control_type() == FormControlType::kInputRadio)

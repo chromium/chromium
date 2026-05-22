@@ -948,6 +948,80 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
               ElementsAre(EqualsIgnoringMetadataValues(upload)));
 }
 
+struct LabelOverrideTestParams {
+  FormFieldData::LabelSource label_source;
+  bool expect_override;
+};
+
+class AutofillCrowdsourcingEncodingLabelOverrideTest
+    : public AutofillCrowdsourcingEncoding,
+      public testing::WithParamInterface<LabelOverrideTestParams> {
+ public:
+  AutofillCrowdsourcingEncodingLabelOverrideTest() = default;
+};
+
+// Tests that the backwards compatibility for Label crowdsourcing works
+// as expected. `AutofillBetterLocalHeuristicPlaceholderSupport`
+// feature enabling needs to keep the crowdsourced Labels intact.
+TEST_P(AutofillCrowdsourcingEncodingLabelOverrideTest,
+       EncodeUploadRequest_LabelOverrideForBackwardsCompatibility) {
+  const LabelOverrideTestParams& params = GetParam();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillBetterLocalHeuristicPlaceholderSupport,
+       features::kAutofillServerUploadMoreData},
+      {});
+
+  std::u16string placeholder_value(u"Placeholder Label");
+  std::u16string label_value(u"Label value");
+  FormData form =
+      test::GetFormData({.fields = {{.label = label_value,
+                                     .placeholder = placeholder_value,
+                                     .label_source = params.label_source}}});
+
+  FormStructure form_structure(form);
+
+  EncodeUploadRequestOptions options;
+  options.encoder = RandomizedEncoder(
+      "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
+      /*anonymous_url_collection_is_enabled=*/true);
+
+  std::vector<AutofillUploadContents> uploads =
+      EncodeUploadRequest(form_structure, options);
+  ASSERT_EQ(1u, uploads.size());
+  const AutofillUploadContents& upload = uploads.front();
+
+  ASSERT_EQ(upload.field_data_size(), 1);
+  const ThreeBitHashedFieldMetadata& three_bit_hashed_metadata =
+      upload.field_data(0).three_bit_hashed_field_metadata();
+  const AutofillRandomizedFieldMetadata& randomized_field_metadata =
+      upload.field_data(0).randomized_field_metadata();
+
+  std::u16string expected_label =
+      params.expect_override ? placeholder_value : label_value;
+
+  EXPECT_EQ(three_bit_hashed_metadata.label(), StrToHash3Bit(expected_label));
+
+  EXPECT_EQ(randomized_field_metadata.label().encoded_bits(),
+            options.encoder->EncodeForTesting(
+                form_structure.form_signature(),
+                form_structure.field(0)->GetFieldSignature(),
+                RandomizedEncoder::kFieldLabel, expected_label));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillCrowdsourcingEncodingLabelOverrideTest,
+    testing::Values(
+        LabelOverrideTestParams{FormFieldData::LabelSource::kValue,
+                                /*expect_override=*/true},
+        LabelOverrideTestParams{FormFieldData::LabelSource::kOverlayingLabel,
+                                /*expect_override=*/true},
+        LabelOverrideTestParams{FormFieldData::LabelSource::kLabelTag,
+                                /*expect_override=*/false},
+        LabelOverrideTestParams{FormFieldData::LabelSource::kForName,
+                                /*expect_override=*/false}));
+
 // Tests that when the form is the result of flattening multiple forms into one,
 // EncodeUploadRequest() returns multiple uploads: one for the entire form and
 // one for each of the original forms.

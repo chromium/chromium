@@ -57,6 +57,7 @@ struct FieldDescription {
   FieldPropertiesMask properties_mask = 0;
   bool checked = false;
   std::optional<int32_t> form_control_ax_id;
+  std::optional<FormFieldData::LabelSource> label_source;
 };
 
 // Attributes provided to the test form.
