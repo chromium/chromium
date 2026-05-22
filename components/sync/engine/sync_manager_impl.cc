@@ -224,6 +224,14 @@ void SyncManagerImpl::OnTrustedVaultKeyAccepted() {
   // Does nothing.
 }
 
+void SyncManagerImpl::OnKeystoreKeysRequired() {
+  // Does nothing.
+}
+
+void SyncManagerImpl::OnKeystoreKeysAccepted() {
+  // Does nothing.
+}
+
 void SyncManagerImpl::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                               bool encrypt_everything) {
   sync_status_tracker_->SetEncryptedTypes(encrypted_types);

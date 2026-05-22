@@ -68,6 +68,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   base::Time GetExplicitPassphraseTime() const;
   bool IsPassphraseRequired() const;
   bool IsTrustedVaultKeyRequired() const;
+  bool IsKeystoreKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
   bool IsEncryptEverythingEnabled() const;
 
@@ -104,6 +105,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
       const CustomPassphraseBootstrapToken& bootstrap_token) override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
+  void OnKeystoreKeysRequired() override;
+  void OnKeystoreKeysAccepted() override;
   void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -139,6 +142,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     // No keys are required locally but user action is recommended to improve
     // recoverability.
     kTrustedVaultRecoverabilityDegraded,
+    // Keystore keys are required to decrypt pending keys, but this is not a
+    // user-actionable error.
+    kKeystoreKeysRequired,
   };
 
   // Reads trusted vault keys from the client and feeds them to the sync engine.

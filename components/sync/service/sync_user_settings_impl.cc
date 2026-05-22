@@ -299,6 +299,10 @@ bool SyncUserSettingsImpl::IsTrustedVaultKeyRequired() const {
   return crypto_->IsTrustedVaultKeyRequired();
 }
 
+bool SyncUserSettingsImpl::IsKeystoreKeyRequiredForTesting() const {
+  return crypto_->IsKeystoreKeyRequired();
+}
+
 bool SyncUserSettingsImpl::IsTrustedVaultKeyRequiredForPreferredDataTypes()
     const {
   return IsEncryptedDatatypePreferred() && crypto_->IsTrustedVaultKeyRequired();

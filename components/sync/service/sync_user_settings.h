@@ -145,6 +145,8 @@ class SyncUserSettings {
   // that Sync might still be working fine if the user has disabled all
   // encrypted data types.
   virtual bool IsTrustedVaultKeyRequired() const = 0;
+  // Whether keystore keys are required for encryption or decryption to proceed.
+  virtual bool IsKeystoreKeyRequiredForTesting() const = 0;
   // Whether trusted vault keys are required for encryption or decryption to
   // proceed for currently enabled data types.
   virtual bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const = 0;

@@ -71,6 +71,14 @@ void DebugInfoEventListener::OnTrustedVaultKeyAccepted() {
   CreateAndAddEvent(sync_pb::SyncEnums::TRUSTED_VAULT_KEY_ACCEPTED);
 }
 
+void DebugInfoEventListener::OnKeystoreKeysRequired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void DebugInfoEventListener::OnKeystoreKeysAccepted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void DebugInfoEventListener::OnEncryptedTypesChanged(
     DataTypeSet encrypted_types,
     bool encrypt_everything) {

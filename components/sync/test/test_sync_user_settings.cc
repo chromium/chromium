@@ -225,6 +225,10 @@ bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {
   return trusted_vault_key_required_;
 }
 
+bool TestSyncUserSettings::IsKeystoreKeyRequiredForTesting() const {
+  return false;
+}
+
 bool TestSyncUserSettings::IsTrustedVaultKeyRequiredForPreferredDataTypes()
     const {
   return IsTrustedVaultKeyRequired() && IsEncryptedDatatypePreferred();

@@ -90,6 +90,15 @@ class PassphraseRequiredChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
+// Checker to block until service is waiting for keystore keys.
+class KeystoreKeysRequiredChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit KeystoreKeysRequiredChecker(syncer::SyncServiceImpl* service);
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+};
+
 // Checker to block until service has accepted a new passphrase.
 class PassphraseAcceptedChecker : public SingleClientStatusChangeChecker {
  public:

@@ -62,6 +62,14 @@ class SyncEncryptionHandler {
     // accepted and there are no longer pending keys.
     virtual void OnTrustedVaultKeyAccepted() = 0;
 
+    // Called when decryption keys are required in order to decrypt pending
+    // Nigori keys and resume sync, for the KEYSTORE_PASSPHRASE case.
+    virtual void OnKeystoreKeysRequired() = 0;
+
+    // Called when the keystore keys have been accepted and there are no longer
+    // pending keys.
+    virtual void OnKeystoreKeysAccepted() = 0;
+
     // Called when the set of encrypted types or the encrypt
     // everything flag has been changed. Note that this doesn't imply the
     // encryption is complete.

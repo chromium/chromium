@@ -165,6 +165,10 @@ void DataTypeRegistry::OnTrustedVaultKeyRequired() {}
 
 void DataTypeRegistry::OnTrustedVaultKeyAccepted() {}
 
+void DataTypeRegistry::OnKeystoreKeysRequired() {}
+
+void DataTypeRegistry::OnKeystoreKeysAccepted() {}
+
 void DataTypeRegistry::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                                bool encrypt_everything) {
   // This does NOT support disabling encryption without reconnecting the

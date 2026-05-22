@@ -71,6 +71,20 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
             observer_));
   }
 
+  void OnKeystoreKeysRequired() override {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SyncEncryptionHandler::Observer::OnKeystoreKeysRequired,
+                       observer_));
+  }
+
+  void OnKeystoreKeysAccepted() override {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SyncEncryptionHandler::Observer::OnKeystoreKeysAccepted,
+                       observer_));
+  }
+
   void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override {
     task_runner_->PostTask(
@@ -161,6 +175,7 @@ bool SyncServiceCrypto::IsPassphraseRequired() const {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kKeystoreKeysRequired:
       return false;
     case RequiredUserAction::kPassphraseRequired:
       return true;
@@ -175,6 +190,12 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequired() const {
              RequiredUserAction::kTrustedVaultKeyRequired ||
          state_.required_user_action ==
              RequiredUserAction::kTrustedVaultKeyRequiredButFetching;
+}
+
+bool SyncServiceCrypto::IsKeystoreKeyRequired() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return state_.required_user_action ==
+         RequiredUserAction::kKeystoreKeysRequired;
 }
 
 bool SyncServiceCrypto::IsTrustedVaultRecoverabilityDegraded() const {
@@ -205,6 +226,7 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
     case RequiredUserAction::kFetchingTrustedVaultKeys:
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
+    case RequiredUserAction::kKeystoreKeysRequired:
       // Cryptographer has pending keys.
       // TODO(crbug.com/40904402): verify this is not reachable anymore and
       // remove NotFatalUntil.
@@ -252,6 +274,7 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kKeystoreKeysRequired:
       return true;
   }
   NOTREACHED();
@@ -292,6 +315,8 @@ void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
     case RequiredUserAction::kPassphraseRequired:
       // Attempt decryption with bootstrap token if necessary.
       MaybeSetDecryptionKeyFromBootstrapToken();
+      break;
+    case RequiredUserAction::kKeystoreKeysRequired:
       break;
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
@@ -334,6 +359,7 @@ bool SyncServiceCrypto::HasCryptoError() const {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
     case RequiredUserAction::kPassphraseRequired:
+    case RequiredUserAction::kKeystoreKeysRequired:
       return true;
   }
 
@@ -419,6 +445,7 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
     case RequiredUserAction::kNone:
     case RequiredUserAction::kPassphraseRequired:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kKeystoreKeysRequired:
       return;
     case RequiredUserAction::kFetchingTrustedVaultKeys:
     case RequiredUserAction::kTrustedVaultKeyRequired:
@@ -433,6 +460,33 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
   // Make sure the data types that depend on the decryption key are started at
   // this time.
   delegate_->ReconfigureDataTypesDueToCrypto();
+}
+
+void SyncServiceCrypto::OnKeystoreKeysRequired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateRequiredUserActionAndNotify(RequiredUserAction::kKeystoreKeysRequired);
+  delegate_->ReconfigureDataTypesDueToCrypto();
+}
+
+void SyncServiceCrypto::OnKeystoreKeysAccepted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (state_.required_user_action) {
+    case RequiredUserAction::kUnknownDuringInitialization:
+    case RequiredUserAction::kNone:
+    case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kFetchingTrustedVaultKeys:
+    case RequiredUserAction::kTrustedVaultKeyRequired:
+    case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
+      break;
+    case RequiredUserAction::kPassphraseRequired:
+    case RequiredUserAction::kKeystoreKeysRequired:
+      // kPassphraseRequired is handled for the hypothetical case where a
+      // half-migrated keystore user's state (or at least a scenario that
+      // appeared to be the case) resolves automatically.
+      ResolvePendingKeysRequiredState();
+      break;
+  }
 }
 
 void SyncServiceCrypto::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
@@ -490,6 +544,7 @@ void SyncServiceCrypto::OnTrustedVaultKeysChanged(
     case RequiredUserAction::kNone:
     case RequiredUserAction::kPassphraseRequired:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kKeystoreKeysRequired:
       // If no trusted vault keys are required, there's nothing to do. If they
       // later are required, a fetch will be triggered in
       // OnTrustedVaultKeyRequired().
@@ -672,6 +727,7 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
     case RequiredUserAction::kPassphraseRequired:
+    case RequiredUserAction::kKeystoreKeysRequired:
       return;
     case RequiredUserAction::kNone:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:

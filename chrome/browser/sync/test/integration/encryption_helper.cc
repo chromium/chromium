@@ -167,6 +167,16 @@ bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
          service()->GetUserSettings()->IsPassphraseRequired();
 }
 
+KeystoreKeysRequiredChecker::KeystoreKeysRequiredChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
+
+bool KeystoreKeysRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking whether keystore keys are required";
+  return service()->IsEngineInitialized() &&
+         service()->GetUserSettings()->IsKeystoreKeyRequiredForTesting();
+}
+
 PassphraseAcceptedChecker::PassphraseAcceptedChecker(
     syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}

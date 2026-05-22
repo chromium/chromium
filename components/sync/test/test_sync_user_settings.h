@@ -70,6 +70,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
   void MarkPassphrasePromptMutedForCurrentProductVersion() override;
   bool IsTrustedVaultKeyRequired() const override;
+  bool IsKeystoreKeyRequiredForTesting() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;
   bool IsTrustedVaultRecoverabilityDegraded() const override;
   bool IsUsingExplicitPassphrase() const override;

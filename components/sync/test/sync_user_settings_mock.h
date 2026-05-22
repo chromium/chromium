@@ -92,6 +92,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (),
               (override));
   MOCK_METHOD(bool, IsTrustedVaultKeyRequired, (), (const override));
+  MOCK_METHOD(bool, IsKeystoreKeyRequiredForTesting, (), (const override));
   MOCK_METHOD(bool,
               IsTrustedVaultKeyRequiredForPreferredDataTypes,
               (),

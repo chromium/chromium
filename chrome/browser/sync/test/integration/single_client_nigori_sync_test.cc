@@ -2416,6 +2416,49 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SingleClientNigoriSyncTest,
+    ShouldPauseSyncForEncryptedTypesWhenKeystoreKeysRequired) {
+  const std::vector<std::vector<uint8_t>>& server_keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(server_keystore_keys, SizeIs(1));
+
+  std::vector<uint8_t> wrong_keystore_key = server_keystore_keys[0];
+  wrong_keystore_key[0] ^= 0xFF;
+
+  const KeyParamsForTesting kWrongKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(wrong_keystore_key);
+
+  SetNigoriInFakeServer(
+      BuildKeystoreNigoriSpecifics(
+          /*keybag_keys_params=*/{kWrongKeystoreKeyParams},
+          /*keystore_decryptor_params=*/kWrongKeystoreKeyParams,
+          /*keystore_key_params=*/kWrongKeystoreKeyParams),
+      GetFakeServer());
+
+  const std::u16string kBookmarkTitle = u"Bookmark title";
+  const GURL kBookmarkUrl = GURL("https://example.com");
+  GetFakeServer()->InjectEntity(bookmarks_helper::CreateBookmarkServerEntity(
+      kBookmarkTitle, kBookmarkUrl));
+
+  ASSERT_TRUE(SetupSync(NO_WAITING));
+
+  EXPECT_TRUE(KeystoreKeysRequiredChecker(GetSyncService(0)).Wait());
+
+  // Bookmarks are unencrypted and should continue to sync.
+  EXPECT_TRUE(
+      bookmarks_helper::BookmarksTitleChecker(0, kBookmarkTitle, 1).Wait());
+
+  // Passwords are encrypted and should be paused.
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+
+  // The user-facing error should NOT indicate that a passphrase is required,
+  // nor should it show any user-actionable errors.
+  EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->IsPassphraseRequired());
+  EXPECT_EQ(GetSyncService(0)->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kNone);
+}
+
 // ChromeOS doesn't have unconsented primary accounts.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,

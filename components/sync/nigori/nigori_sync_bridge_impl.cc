@@ -327,6 +327,18 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
     }
   }
 
+  void OnKeystoreKeysRequired() override {
+    for (Observer& observer : observers_) {
+      observer.OnKeystoreKeysRequired();
+    }
+  }
+
+  void OnKeystoreKeysAccepted() override {
+    for (Observer& observer : observers_) {
+      observer.OnKeystoreKeysAccepted();
+    }
+  }
+
   void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override {
     for (Observer& observer : observers_) {
@@ -642,8 +654,7 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     if (!state_.pending_keys.has_value()) {
       broadcasting_observer_->OnCryptographerStateChanged(
           state_.cryptographer.get(), state_.pending_keys.has_value());
-      broadcasting_observer_->OnPassphraseAccepted(
-          CustomPassphraseBootstrapToken());
+      broadcasting_observer_->OnKeystoreKeysAccepted();
     }
   }
 
@@ -818,8 +829,11 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   if (!state_.pending_keys.has_value() && had_pending_keys_before_update) {
     // Guaranteed by BuildDecryptionKeyBagForRemoteKeybag() logic.
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
-    broadcasting_observer_->OnPassphraseAccepted(
-        CustomPassphraseBootstrapToken());
+    // Note that, for users in half-migrated state, OnPassphraseRequired() may
+    // have been notified instead of OnKeystoreKeysRequired(). Instead of trying
+    // to distinguish the two cases here too, this codepath issues
+    // OnKeystoreKeysAccepted() in all cases for simplicity.
+    broadcasting_observer_->OnKeystoreKeysAccepted();
   }
 
   MaybeNotifyOfPendingKeys();
@@ -1037,12 +1051,24 @@ void NigoriSyncBridgeImpl::MaybeNotifyOfPendingKeys() const {
     case NigoriSpecifics::UNKNOWN:
       return;
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
-    case NigoriSpecifics::KEYSTORE_PASSPHRASE:
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
       broadcasting_observer_->OnPassphraseRequired(
           std::make_unique<RequiredPassphraseVerifierImpl>(
               GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
+      break;
+    case NigoriSpecifics::KEYSTORE_PASSPHRASE:
+      if (state_.pending_keystore_decryptor_token.has_value() &&
+          state_.pending_keys->key_name() !=
+              state_.pending_keystore_decryptor_token->key_name()) {
+        // Half-migrated keystore state: the user may enter the implicit
+        // passphrase.
+        broadcasting_observer_->OnPassphraseRequired(
+            std::make_unique<RequiredPassphraseVerifierImpl>(
+                GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys));
+      } else {
+        broadcasting_observer_->OnKeystoreKeysRequired();
+      }
       break;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
       broadcasting_observer_->OnTrustedVaultKeyRequired();
