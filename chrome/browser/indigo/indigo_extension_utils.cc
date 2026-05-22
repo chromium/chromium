@@ -47,6 +47,10 @@ base::DictValue GetStrings() {
            l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_2));
   dict.Set("textLayerStep3",
            l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_3));
+  dict.Set("disclaimerLine1",
+           l10n_util::GetStringUTF16(IDS_INDIGO_DISCLAIMER_LINE_1));
+  dict.Set("disclaimerLine2",
+           l10n_util::GetStringUTF16(IDS_INDIGO_DISCLAIMER_LINE_2));
   return dict;
 }
 

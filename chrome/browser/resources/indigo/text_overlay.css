@@ -7,16 +7,21 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --indigo-entry-icon-base-size: 25px;
-  --indigo-entry-icon-pulse-size: 45px;
+  /* TODO(b/515804243): Update the proportional values once UX is finalized. */
+  --indigo-steps-font-size: max(12px, 3.5vw);
+  --indigo-disclaimer-font-size:
+      max(10px, calc(var(--indigo-steps-font-size) * 0.8));
+  --indigo-entry-icon-base-size: max(15px, 7vw);
+  --indigo-disclaimer-margin-top: max(10px, 10vh);
+
+  --indigo-entry-icon-pulse-size:
+      calc(var(--indigo-entry-icon-base-size) * 1.8);
   --indigo-icon-transition-duration: 300ms;
 
   align-items: flex-start;
-  color: rgb(11, 87, 208);
   display: flex;
   font-family: 'Google Sans', 'Roboto', sans-serif;
   font-size: 16px;
-  font-weight: 500;
   height: 100%;
   width: 100%;
   top: 0;
@@ -31,7 +36,7 @@
   flex-direction: column;
   gap: 4px;
   position: absolute;
-  top: 40%;
+  top: 35%;
   transform: translateY(
     calc(
       (
@@ -40,7 +45,8 @@
       ) / 2
     )
   );
-  width: 100%;
+  width: 60%;
+  left: 20%;
 }
 
 @keyframes icon-entry {
@@ -83,9 +89,19 @@
 }
 
 #steps {
+  color: rgb(11, 87, 208);
+  font-size: var(--indigo-steps-font-size);
+  font-weight: 500;
   animation: fade-in 0.3s ease-out forwards;
 }
 
+#disclaimer {
+  color: rgb(94, 94, 94);
+  font-size: var(--indigo-disclaimer-font-size);
+  font-weight: 400;
+  margin-top: var(--indigo-disclaimer-margin-top);
+  animation: fade-in 0.3s ease-out forwards;
+}
 @keyframes fade-in {
   from {
     opacity: 0;
