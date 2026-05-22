@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/url_formatter/url_formatter.h"
@@ -30,6 +32,11 @@
 class AlternativeErrorPageOverrideInfoBrowserTest
     : public web_app::WebAppBrowserTestBase {
  public:
+  AlternativeErrorPageOverrideInfoBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
+
   // Helper function to prepare PWA and retrieve information from the
   // alternative error page function.
   content::mojom::AlternativeErrorPageOverrideInfoPtr GetErrorPageInfo(
@@ -63,6 +70,8 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   void TearDownOnMainThread() override {
     WebAppBrowserTestBase::TearDownOnMainThread();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Testing url outside the scope of an installed app.

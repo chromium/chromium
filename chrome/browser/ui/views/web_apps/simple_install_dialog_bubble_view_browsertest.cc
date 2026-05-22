@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -78,13 +79,16 @@ constexpr char kInstallDialogName[] = "WebAppSimpleInstallDialog";
 
 class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
  public:
-  SimpleInstallDialogBubbleViewBrowserTest() = default;
+  SimpleInstallDialogBubbleViewBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kWebAppInstallDialog);
+  }
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   web_app::test::ScopedDontCloseInstallDialogsOnDeactivate
       prevent_close_on_deactivate_;
-};
+};  // namespace
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
@@ -365,9 +369,17 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
 class PictureInPictureSimpleInstallDialogOcclusionTest
     : public MixinBasedInProcessBrowserTest {
+ public:
+  PictureInPictureSimpleInstallDialogOcclusionTest() {
+    feature_list_.InitAndDisableFeature(features::kWebAppInstallDialog);
+  }
+
  protected:
   DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{
       &mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureSimpleInstallDialogOcclusionTest,

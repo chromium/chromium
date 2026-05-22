@@ -222,6 +222,11 @@ using ::base::BucketsAre;
 
 class WebAppBrowserTest : public WebAppBrowserTestBase {
  public:
+  WebAppBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
+
   GURL GetSecureAppURL() {
     return embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
   }
@@ -281,6 +286,9 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
 
     return result;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using WebAppLaunchUseCounterBrowserTest = WebAppBrowserTest;

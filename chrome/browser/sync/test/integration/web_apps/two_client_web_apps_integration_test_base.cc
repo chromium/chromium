@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -39,10 +40,13 @@ TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
           ash::MultiUserWindowManager::DisableForTesting()),
 #endif  // BUILDFLAG(IS_CHROMEOS)
       helper_(this) {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-    feature_overrides_.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
   }
+  disabled_features.push_back(features::kWebAppInstallDialog);
+  feature_overrides_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 TwoClientWebAppsIntegrationTestBase::~TwoClientWebAppsIntegrationTestBase() =

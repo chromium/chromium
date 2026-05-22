@@ -34,8 +34,10 @@ class WebAppFrameToolbarInteractiveUITest
       public testing::WithParamInterface<bool> {
  public:
   WebAppFrameToolbarInteractiveUITest() {
-    feature_list_.InitWithFeatureState(
-        ::features::kDesktopPWAsElidedExtensionsMenu, IsExtensionsMenuElided());
+    feature_list_.InitWithFeatureStates(
+        {{::features::kDesktopPWAsElidedExtensionsMenu,
+          IsExtensionsMenuElided()},
+         {::features::kWebAppInstallDialog, false}});
   }
 
   void LoadAndLaunchExtension() {

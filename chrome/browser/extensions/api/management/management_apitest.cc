@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -243,7 +244,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, GenerateAppForLink) {
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  public:
   InstallReplacementWebAppApiTest()
-      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
   ~InstallReplacementWebAppApiTest() override = default;
 
  protected:
@@ -319,6 +323,9 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
   }
 
   net::EmbeddedTestServer https_test_server_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppApiTest, NotWebstore) {

@@ -96,6 +96,7 @@ class CreateShortcutConfirmationViewBrowserTest
         break;
     }
 
+    features.insert({::features::kWebAppInstallDialog, false});
     feature_list.InitWithFeatureStates(features);
     DialogBrowserTest::SetUp();
   }

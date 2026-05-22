@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -76,7 +77,10 @@ namespace web_app {
 // On ChromeOS, the Create Shortcut dialog creates DIY apps.
 class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
  public:
-  CreateShortcutBrowserTest() = default;
+  CreateShortcutBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
   webapps::AppId InstallDiyAppForCurrentUrl(bool open_as_window = false) {
     WebAppTestInstallObserver observer(profile());
     observer.BeginListening();
@@ -116,9 +120,8 @@ class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
     return provider->sync_bridge_unsafe();
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,

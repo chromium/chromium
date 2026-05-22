@@ -105,7 +105,8 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
          features::kReleaseNotesNotificationAllChannels},
-        {features::kHelpAppOpensInsteadOfReleaseNotesNotification});
+        {features::kHelpAppOpensInsteadOfReleaseNotesNotification,
+         ::features::kWebAppInstallDialog});
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
   }
 

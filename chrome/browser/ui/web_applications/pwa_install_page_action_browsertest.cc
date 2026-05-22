@@ -184,7 +184,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
           {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
             feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
          {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
-        {});
+        {features::kWebAppInstallDialog});
   }
 
   PwaInstallViewBrowserTest(const PwaInstallViewBrowserTest&) = delete;

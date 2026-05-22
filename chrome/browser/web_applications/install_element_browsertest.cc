@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -72,7 +73,7 @@ class InstallElementBrowserTest : public WebAppBrowserTestBase {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kInstallElement,
          blink::features::kBypassPepcSecurityForTesting},
-        {});
+        {features::kWebAppInstallDialog});
   }
 
   void SetUpOnMainThread() override {
@@ -786,18 +787,19 @@ class InstallElementOriginTrialBrowserTest
       case BaseFeatureStatus::kDisabled:
         scoped_feature_list_.InitWithFeatures(
             {blink::features::kBypassPepcSecurityForTesting},
-            {blink::features::kInstallElement});
+            {blink::features::kInstallElement, features::kWebAppInstallDialog});
         break;
       case BaseFeatureStatus::kEnabled:
         scoped_feature_list_.InitWithFeatures(
             {blink::features::kBypassPepcSecurityForTesting,
              blink::features::kInstallElement},
-            {});
+            {features::kWebAppInstallDialog});
         break;
       case BaseFeatureStatus::kDefault:
         // Only enable the bypass feature, let kInstallElement be at default.
         scoped_feature_list_.InitWithFeatures(
-            {blink::features::kBypassPepcSecurityForTesting}, {});
+            {blink::features::kBypassPepcSecurityForTesting},
+            {features::kWebAppInstallDialog});
         break;
     }
   }

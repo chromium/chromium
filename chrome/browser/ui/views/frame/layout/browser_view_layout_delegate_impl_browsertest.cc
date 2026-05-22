@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -82,7 +83,10 @@ class BrowserViewLayoutDelegateImplBrowsertest
     : public InteractiveBrowserTest,
       public testing::WithParamInterface<WindowState> {
  public:
-  BrowserViewLayoutDelegateImplBrowsertest() = default;
+  BrowserViewLayoutDelegateImplBrowsertest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
   ~BrowserViewLayoutDelegateImplBrowsertest() override = default;
 
   void ApplyWindowState(Browser* browser) {
@@ -124,6 +128,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<ImmersiveRevealedLock> immersive_mode_lock_;
 };

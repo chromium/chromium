@@ -176,7 +176,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
             webapps::features::kWebAppsEnableMLModelForPromotion,
             {{features::kWebAppsMLGuardrailResultReportProb.name, "1.0"},
              {features::kWebAppsMLModelUserDeclineReportProb.name, "1.0"}})},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{::features::kWebAppInstallDialog});
   }
   ~MLPromotionBrowserTest() override = default;
 

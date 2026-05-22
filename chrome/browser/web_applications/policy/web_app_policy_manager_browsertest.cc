@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -89,7 +91,10 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
   static constexpr char kCustomIconUrlSuffix[] =
       "/web_apps/install_url/blue-192.png";
 
-  WebAppPolicyManagerBrowserTest() = default;
+  WebAppPolicyManagerBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
 
   void SetUpOnMainThread() override {
     embedded_https_test_server().RegisterRequestHandler(
@@ -216,6 +221,9 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
         base::ListValue().Append(std::move(app_config)));
     return observer.Wait() == *app_id;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,

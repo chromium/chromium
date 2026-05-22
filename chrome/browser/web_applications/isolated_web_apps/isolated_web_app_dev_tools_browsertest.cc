@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -40,6 +42,12 @@ constexpr std::string_view kIsolatedAppDevToolsTitle =
     "Simple Isolated App (1.0.0)";
 }
 class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
+ public:
+  IsolatedWebAppDevToolsTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
+  }
+
  protected:
   IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
     auto app =
@@ -49,6 +57,9 @@ class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
             .BuildBundle();
     return app->InstallChecked(profile());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO (crbug.com/41495909): Resolve flakiness on linux debug builds.

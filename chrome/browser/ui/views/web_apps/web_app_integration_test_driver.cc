@@ -5073,7 +5073,8 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   enabled_features.push_back(blink::features::kWebAppMigrationApi);
 
-  scoped_feature_list_.InitWithFeatures(enabled_features, {});
+  scoped_feature_list_.InitWithFeatures(enabled_features,
+                                        {features::kWebAppInstallDialog});
 }
 
 WebAppIntegrationTest::~WebAppIntegrationTest() = default;

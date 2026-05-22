@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
@@ -50,6 +51,9 @@ namespace {
 
 class WebAppDiyInstallDialogBrowserTest : public DialogBrowserTest {
  public:
+  WebAppDiyInstallDialogBrowserTest() {
+    feature_list_.InitAndDisableFeature(::features::kWebAppInstallDialog);
+  }
   // Creates a dummy WebAppInstallInfo instance used to populate details on the
   // install dialog.
   std::unique_ptr<WebAppInstallInfo> GetAppInfo(const std::string& name) {
@@ -97,6 +101,7 @@ class WebAppDiyInstallDialogBrowserTest : public DialogBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   AppInstallationAcceptanceCallback install_callback_ = base::DoNothing();
 };
 
@@ -337,6 +342,11 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
 
 class PictureInPictureDiyDialogOcclusionTest
     : public MixinBasedInProcessBrowserTest {
+ public:
+  PictureInPictureDiyDialogOcclusionTest() {
+    feature_list_.InitAndDisableFeature(::features::kWebAppInstallDialog);
+  }
+
  protected:
   void ShowDialogUi() {
     auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
@@ -359,6 +369,9 @@ class PictureInPictureDiyDialogOcclusionTest
   }
   DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{
       &mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureDiyDialogOcclusionTest,

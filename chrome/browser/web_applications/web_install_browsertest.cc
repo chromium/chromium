@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -79,7 +80,11 @@ constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 namespace web_app {
 class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebInstallCurrentDocumentBrowserTest() = default;
+  WebInstallCurrentDocumentBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebAppInstallation},
+        {features::kWebAppInstallDialog});
+  }
 
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
@@ -150,8 +155,7 @@ class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppInstallation};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
@@ -935,15 +939,19 @@ class WebInstallOriginTrialBrowserTest
     scoped_feature_list_.Reset();
     switch (GetParam()) {
       case BaseFeatureStatus::kDisabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            blink::features::kWebAppInstallation);
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{blink::features::kWebAppInstallation,
+                                   features::kWebAppInstallDialog});
         break;
       case BaseFeatureStatus::kEnabled:
-        scoped_feature_list_.InitAndEnableFeature(
-            blink::features::kWebAppInstallation);
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/{blink::features::kWebAppInstallation},
+            /*disabled_features=*/{features::kWebAppInstallDialog});
         break;
       case BaseFeatureStatus::kDefault:
-        // Do nothing, let the feature be at its default state.
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kWebAppInstallDialog);
         break;
     }
   }
