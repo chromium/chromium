@@ -47,26 +47,6 @@
 #include "components/persistent_cache/transaction_error.h"
 #endif
 
-namespace {
-
-scoped_refptr<base::SequencedTaskRunner> MakeTaskRunner(
-    const base::FilePath& path) {
-  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
-    // Use a SequencedTaskRunner tied to the path resource. This ensures that if
-    // this StoragePartition is destroyed and recreated with the same path,
-    // operations (including deletions of old files and creation of new ones)
-    // are strictly sequenced, avoiding race conditions between distinct
-    // instances. MayBlock() because disk operations are happening on-thread
-    // under the experiment for now.
-    return base::ThreadPool::CreateSequencedTaskRunnerForResource(
-        {base::TaskPriority::USER_BLOCKING, base::MayBlock()}, path);
-  }
-  return base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::TaskPriority::USER_BLOCKING});
-}
-
-}  // namespace
-
 namespace content {
 
 // static
@@ -100,7 +80,21 @@ void GeneratedCodeCacheContext::Initialize(const base::FilePath& path,
                                            int max_bytes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!task_runner_);  // Only initialize once.
-  task_runner_ = MakeTaskRunner(path);
+
+  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    // Use a SequencedTaskRunner tied to the path resource. This ensures that if
+    // this StoragePartition is destroyed and recreated with the same path,
+    // operations (including deletions of old files and creation of new ones)
+    // are strictly sequenced, avoiding race conditions between distinct
+    // instances. MayBlock() because disk operations are happening on-thread
+    // under the experiment for now.
+    task_runner_for_resource_ = DedicatedTaskRunnerForResource::Acquire(
+        {base::TaskPriority::USER_BLOCKING, base::MayBlock()}, path);
+    task_runner_ = task_runner_for_resource_.task_runner();
+  } else {
+    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskPriority::USER_BLOCKING});
+  }
   RunOrPostTask(this, FROM_HERE,
                 base::BindOnce(&GeneratedCodeCacheContext::InitializeOnThread,
                                this, path, max_bytes));
@@ -210,9 +204,10 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
 void GeneratedCodeCacheContext::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RunOrPostTask(
-      this, FROM_HERE,
-      base::BindOnce(&GeneratedCodeCacheContext::ShutdownOnThread, this));
+  RunOrPostTask(this, FROM_HERE,
+                base::BindOnce(&GeneratedCodeCacheContext::ShutdownOnThread,
+                               this, std::move(task_runner_for_resource_)));
+  task_runner_.reset();
 }
 
 void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
@@ -297,7 +292,8 @@ GeneratedCodeCacheContext::FindInPersistentCacheCollection(
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-void GeneratedCodeCacheContext::ShutdownOnThread() {
+void GeneratedCodeCacheContext::ShutdownOnThread(
+    DedicatedTaskRunnerForResource task_runner_for_resource) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if !BUILDFLAG(IS_FUCHSIA)
   persistent_cache_collection_.reset();

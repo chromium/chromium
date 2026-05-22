@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "content/browser/code_cache/dedicated_task_runner_for_resource.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -115,7 +116,8 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   ~GeneratedCodeCacheContext();
 
   void InitializeOnThread(const base::FilePath& path, int max_bytes);
-  void ShutdownOnThread();
+  void ShutdownOnThread(
+      DedicatedTaskRunnerForResource task_runner_for_resource);
 
   // Created, used and deleted on the code cache thread.
   std::unique_ptr<GeneratedCodeCache> generated_js_code_cache_
@@ -136,6 +138,9 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
       persistent_cache_collection_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
+  // A handle that keeps a TaskRunner associated with this context's path alive
+  // for as long as this instance operates on files within that path.
+  DedicatedTaskRunnerForResource task_runner_for_resource_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
