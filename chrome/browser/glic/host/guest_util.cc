@@ -16,8 +16,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/google/core/common/google_util.h"
 #include "components/guest_view/buildflags/buildflags.h"
-#include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -166,9 +166,9 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
   if (net::GetValueForKeyInQuery(guest_url, "hl", &unused_output)) {
     return guest_url;
   }
-  std::string locale = g_browser_process->GetApplicationLocale();
-  language::ToTranslateLanguageSynonym(&locale);
-  return net::AppendQueryParameter(guest_url, "hl", locale);
+  std::string application_locale = g_browser_process->GetApplicationLocale();
+  std::string google_locale = google_util::GetGoogleLocale(application_locale);
+  return net::AppendQueryParameter(guest_url, "hl", google_locale);
 }
 
 GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {

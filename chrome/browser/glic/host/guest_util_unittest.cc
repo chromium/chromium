@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -52,14 +53,24 @@ class GuestUtilMultiInstanceTest : public testing::Test {
   TestingProfileManager profile_manager_;
 };
 
-TEST(GuestUtilTest, GetLocalizedGuestURLAddsLanguageParameter) {
-  EXPECT_EQ(GURL("https://www.google.com?hl=en"),
-            GetLocalizedGuestURL(GURL("https://www.google.com")));
-}
-
 TEST(GuestUtilTest, GetLocalizedGuestURLDoesNotChangeLanguageParameter) {
   EXPECT_EQ(GURL("https://www.google.com?hl=es"),
             GetLocalizedGuestURL(GURL("https://www.google.com?hl=es")));
+}
+
+TEST(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
+  struct LocaleTestCase {
+    std::string locale;
+    std::string expected_hl;
+  } test_cases[] = {
+      {"en", "en"},       {"es", "es"},       {"es-419", "es-419"},
+      {"es-MX", "es-MX"}, {"en-GB", "en-GB"}, {"nb", "no"},
+  };
+  for (const auto& test_case : test_cases) {
+    ScopedBrowserLocale scoped_locale(test_case.locale);
+    EXPECT_EQ(GURL("https://www.google.com?hl=" + test_case.expected_hl),
+              GetLocalizedGuestURL(GURL("https://www.google.com")));
+  }
 }
 
 TEST_F(GuestUtilMultiInstanceTest,
