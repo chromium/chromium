@@ -12,6 +12,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/android/metrics/android_atoms_logger.h"
 #include "chrome/browser/android/mojo/chrome_interface_registrar_android.h"
 #include "chrome/browser/android/preferences/clipboard_android.h"
 #include "chrome/browser/android/seccomp_support_detector.h"
@@ -100,6 +101,12 @@ int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
 
 void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
   ChromeBrowserMainParts::PostBrowserStart();
+
+  // Initializes the logger that forwards allowed UMA histograms to Android
+  // Statsd (Westworld) as atoms.
+  // TODO: crbug.com/512252292 - Add link to the readme doc for more background
+  // and context after it's created.
+  chrome::android::westworld::AndroidAtomsLogger::Initialize();
 
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
