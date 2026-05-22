@@ -24,6 +24,7 @@ web::WebUIIOSDataSource* CreateSafeBrowsingUIDataSource() {
   // Add required resources.
   html_source->AddResourcePaths(kSafeBrowsingResources);
   html_source->AddResourcePath("", IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
+  html_source->SetDefaultResource(IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
   return html_source;
 }
 

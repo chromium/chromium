@@ -8,6 +8,7 @@
 #import <sstream>
 
 #import "components/safe_browsing/core/browser/web_ui/cr_safe_browsing_log.h"
+#import "components/safe_browsing/ios/browser/web_ui/web_ui_ios_info_singleton.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 
 namespace safe_browsing {
@@ -28,10 +29,10 @@ class CrSBIOSLogMessage : public CrSBLogMessage {
   ~CrSBIOSLogMessage() override;
 };
 
-#define CRSBLOG                                            \
-  (!::safe_browsing::WebUIIOSInfoSingleton::HasListener()) \
-      ? static_cast<void>(0)                               \
-      : ::safe_browsing::CrSBLogVoidify() &                \
+#define CRSBLOG                                                           \
+  (!::safe_browsing::WebUIIOSInfoSingleton::GetInstance()->HasListener()) \
+      ? static_cast<void>(0)                                              \
+      : ::safe_browsing::CrSBLogVoidify() &                               \
             ::safe_browsing::CrSBIOSLogMessage().stream()
 
 }  // namespace safe_browsing

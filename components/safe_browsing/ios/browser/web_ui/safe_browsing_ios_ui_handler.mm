@@ -27,6 +27,8 @@ SafeBrowsingIOSUIHandler::SafeBrowsingIOSUIHandler(
   auto observer_delegate = std::make_unique<ObserverDelegate>(*this);
   event_observer_ = std::make_unique<WebUIInfoSingletonEventObserverImpl>(
       std::move(observer_delegate));
+  WebUIIOSInfoSingleton::GetInstance()->RegisterWebUIInstance(
+      event_observer_.get());
 }
 
 SafeBrowsingIOSUIHandler::~SafeBrowsingIOSUIHandler() {
