@@ -348,26 +348,10 @@ DownloadBubbleUpdateService::GetAllCacheManagers() {
   return cache_managers;
 }
 
-void DownloadBubbleUpdateService::ObserveDownloadHistory() {
-  // If OTR, this is the original profile. Otherwise, this is just the profile
-  // itself.
-  Profile* profile = profile_->GetOriginalProfile();
-  if (DownloadCoreService* dcs =
-          DownloadCoreServiceFactory::GetForBrowserContext(profile);
-      dcs && dcs->GetDownloadHistory()) {
-    download_history_observation_.Observe(dcs->GetDownloadHistory());
-  }
-}
-
 void DownloadBubbleUpdateService::Initialize(
     content::DownloadManager* manager) {
   CHECK(manager);
   CHECK(!download_item_notifier_);
-
-  // This is safe to do here because we know the DownloadManager has been
-  // created by now. If we did this earlier, then it might trigger early
-  // initialization of the DownloadManager and ChromeDownloadManagerDelegate.
-  ObserveDownloadHistory();
 
   // Assume we have an original profile and it has an OTR profile.
   // If the original profile's DownloadBubbleUpdateService is Initialize()'d
@@ -793,7 +777,8 @@ void DownloadBubbleUpdateService::OnDownloadCreated(
   }
   GetCacheForItem(item).MaybeAddDownloadItemToCache(
       item, /*is_new=*/true,
-      /*maybe_add_alert=*/download_history_loaded_);
+      /*maybe_add_alert=*/item->GetDownloadCreationType() !=
+          download::DownloadItem::TYPE_HISTORY_IMPORT);
   // NotifyWindowsOfDownloadItemAdded() is called from
   // DownloadBubbleUIControllerDelegate for new non-crx downloads.
 }
@@ -814,7 +799,8 @@ void DownloadBubbleUpdateService::OnDelayedCrxDownloadCreated(
   if (item && !item->IsDone()) {
     GetCacheForItem(item).MaybeAddDownloadItemToCache(
         item, /*is_new=*/true,
-        /*maybe_add_alert=*/download_history_loaded_);
+        /*maybe_add_alert=*/item->GetDownloadCreationType() !=
+            download::DownloadItem::TYPE_HISTORY_IMPORT);
     NotifyWindowsOfDownloadItemAdded(item);
   }
   size_t erased = delayed_crx_guids_.erase(guid);
@@ -899,7 +885,8 @@ void DownloadBubbleUpdateService::CacheManager::OnDownloadItemUpdated(
   bool removed_item = RemoveDownloadItemFromCache(item);
   bool added_back_at_end = MaybeAddDownloadItemToCache(
       item, /*is_new=*/false,
-      /*maybe_add_alert=*/update_service_->download_history_loaded());
+      /*maybe_add_alert=*/item->GetDownloadCreationType() !=
+          download::DownloadItem::TYPE_HISTORY_IMPORT);
   if (cache_was_at_max && removed_item && added_back_at_end) {
     CHECK_EQ(download_items_.size(), GetNumItemsToCache());
     const ItemSortKey& last_key =
@@ -1059,14 +1046,6 @@ void DownloadBubbleUpdateService::CacheManager::OnOfflineItemUpdated(
 void DownloadBubbleUpdateService::OnContentProviderGoingDown() {
   is_shut_down_ = true;
   main_cache_.DropAllOfflineItems();
-}
-
-void DownloadBubbleUpdateService::OnHistoryQueryComplete() {
-  download_history_loaded_ = true;
-}
-
-void DownloadBubbleUpdateService::OnDownloadHistoryDestroyed() {
-  download_history_observation_.Reset();
 }
 
 bool DownloadBubbleUpdateService::CacheManager::MaybeAddDownloadItemToCache(

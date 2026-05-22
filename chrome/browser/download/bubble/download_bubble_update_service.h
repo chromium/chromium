@@ -43,8 +43,7 @@ class DownloadItem;
 class DownloadBubbleUpdateService
     : public KeyedService,
       public download::AllDownloadItemNotifier::Observer,
-      public offline_items_collection::OfflineContentProvider::Observer,
-      public DownloadHistory::Observer {
+      public offline_items_collection::OfflineContentProvider::Observer {
  public:
   // Defines sort priority for items.
   struct ItemSortKey {
@@ -124,9 +123,6 @@ class DownloadBubbleUpdateService
   // Notifies the appropriate browser windows that a download item was added.
   void NotifyWindowsOfDownloadItemAdded(download::DownloadItem* item);
 
-  // Sets up the download history observation.
-  void ObserveDownloadHistory();
-
   // Initializes AllDownloadItemNotifier for the current profile, and
   // initializes caches. This is called when the manager is ready, to signal
   // that the DownloadBubbleUpdateService should begin tracking downloads. This
@@ -168,10 +164,6 @@ class DownloadBubbleUpdateService
                      const std::optional<offline_items_collection::UpdateDelta>&
                          update_delta) override;
   void OnContentProviderGoingDown() override;
-
-  // DownloadHistory::Observer:
-  void OnHistoryQueryComplete() override;
-  void OnDownloadHistoryDestroyed() override;
 
   OfflineItemModelManager* GetOfflineManager() const;
 
@@ -220,8 +212,6 @@ class DownloadBubbleUpdateService
   original_download_item_notifier_for_testing() {
     return *original_download_item_notifier_;
   }
-
-  bool download_history_loaded() const { return download_history_loaded_; }
 
   base::WeakPtr<DownloadBubbleUpdateService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -530,17 +520,6 @@ class DownloadBubbleUpdateService
 
   // A separate cache for each web app.
   std::map<webapps::AppId, CacheManager> web_app_caches_;
-
-  // Observes download history so we can keep track of when updates from history
-  // occur, to ignore them for the purposes of adding accessible alerts.
-  // Note: Incognito profiles do not have download histories. For incognito
-  // profiles, this observation corresponds to the original profile, because
-  // downloads for the original profile show up in the incognito window download
-  // bubble. For normal profiles, it is for the profile itself.
-  // Note: No such observer exists for OfflineItems.
-  bool download_history_loaded_ = false;
-  base::ScopedObservation<DownloadHistory, DownloadHistory::Observer>
-      download_history_observation_{this};
 
   // Observes the offline content provider.
   base::ScopedObservation<

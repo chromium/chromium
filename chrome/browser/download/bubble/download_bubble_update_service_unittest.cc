@@ -212,16 +212,19 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
   }
 
   // Forwards to the below version.
-  void InitDownloadItem(DownloadState state,
-                        const std::string& guid,
-                        bool is_paused,
-                        base::Time start_time = base::Time::Now(),
-                        const webapps::AppId* web_app_id = nullptr,
-                        bool is_crx = false,
-                        bool observe = true) {
+  void InitDownloadItem(
+      DownloadState state,
+      const std::string& guid,
+      bool is_paused,
+      base::Time start_time = base::Time::Now(),
+      const webapps::AppId* web_app_id = nullptr,
+      bool is_crx = false,
+      bool observe = true,
+      download::DownloadItem::DownloadCreationType creation_type =
+          download::DownloadItem::TYPE_ACTIVE_DOWNLOAD) {
     InitDownloadItem(*download_manager_, *update_service_, download_items_,
                      profile_, state, guid, is_paused, start_time, web_app_id,
-                     is_crx, observe);
+                     is_crx, observe, creation_type);
   }
 
   void InitDownloadItem(
@@ -235,7 +238,9 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
       base::Time start_time = base::Time::Now(),
       const webapps::AppId* web_app_id = nullptr,
       bool is_crx = false,
-      bool observe = true) {
+      bool observe = true,
+      download::DownloadItem::DownloadCreationType creation_type =
+          download::DownloadItem::TYPE_ACTIVE_DOWNLOAD) {
     size_t index = download_items.size();
     download_items.push_back(std::make_unique<NiceMockDownloadItem>());
     auto& item = *download_items[index];
@@ -269,6 +274,8 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(item, IsDone()).WillRepeatedly(Return(false));
     EXPECT_CALL(item, IsTransient()).WillRepeatedly(Return(false));
     EXPECT_CALL(item, IsPaused()).WillRepeatedly(Return(is_paused));
+    EXPECT_CALL(item, GetDownloadCreationType())
+        .WillRepeatedly(Return(creation_type));
     EXPECT_CALL(item, GetTargetDisposition())
         .WillRepeatedly(
             Return(is_crx ? download::DownloadItem::TARGET_DISPOSITION_OVERWRITE
@@ -468,6 +475,32 @@ TEST_F(DownloadBubbleUpdateServiceTest, AddsNonCrxDownloadItems) {
   EXPECT_EQ(models[0]->GetContentId().id, "new_download");
   EXPECT_THAT(update_service_->TakeAccessibleAlertsForAnnouncement(nullptr),
               UnorderedElementsAre(HasSubstr16(u"new_download")));
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest, AlertsBasedOnCreationType) {
+  // 1. History-imported downloads should not trigger alerts.
+  InitDownloadItem(*download_manager_, *update_service_, download_items_,
+                   profile_, DownloadState::IN_PROGRESS, "history_import",
+                   /*is_paused=*/false, base::Time::Now(),
+                   /*web_app_id=*/nullptr,
+                   /*is_crx=*/false, /*observe=*/false,
+                   download::DownloadItem::TYPE_HISTORY_IMPORT);
+  update_service_->OnDownloadCreated(download_manager_.get(),
+                                     &GetDownloadItem(0));
+  EXPECT_THAT(update_service_->TakeAccessibleAlertsForAnnouncement(nullptr),
+              IsEmpty());
+
+  // 2. Active downloads should trigger alerts.
+  InitDownloadItem(*download_manager_, *update_service_, download_items_,
+                   profile_, DownloadState::IN_PROGRESS, "active_download",
+                   /*is_paused=*/false, base::Time::Now(),
+                   /*web_app_id=*/nullptr,
+                   /*is_crx=*/false, /*observe=*/false,
+                   download::DownloadItem::TYPE_ACTIVE_DOWNLOAD);
+  update_service_->OnDownloadCreated(download_manager_.get(),
+                                     &GetDownloadItem(1));
+  EXPECT_THAT(update_service_->TakeAccessibleAlertsForAnnouncement(nullptr),
+              UnorderedElementsAre(HasSubstr16(u"active_download")));
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, DelaysCrx) {
