@@ -1810,6 +1810,7 @@ source_set("unit_tests") {
     "activity_log/counting_policy_unittest.cc",
     "activity_log/database_string_table_unittest.cc",
     "activity_log/fullstream_ui_policy_unittest.cc",
+    "api/activity_log_private/activity_log_private_api_unittest.cc",
     "api/bookmarks/bookmarks_api_unittest.cc",
     "api/browsing_data/browsing_data_unittest.cc",
     "api/chrome_extensions_api_client_unittest.cc",
@@ -2005,7 +2006,6 @@ source_set("unit_tests") {
 
   if (enable_extensions) {
     sources += [
-      "api/activity_log_private/activity_log_private_api_unittest.cc",
       "api/device_permissions_manager_unittest.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_unittest.cc",
       "api/file_system/file_system_api_unittest.cc",
