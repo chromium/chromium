@@ -181,4 +181,37 @@ public class NtpCustomizationPromoManagerUnitTest {
                 NtpCustomizationPromoManager.canShowCustomizationIph(
                         mTab, mWindowAndroid, /* isTablet= */ false));
     }
+
+    @Test
+    public void testCanShowCustomizationIph_withBottomSheetShow() {
+        mFakeTimeTestRule.advanceMillis(Duration.ofDays(10).toMillis());
+        when(mTab.isIncognitoBranded()).thenReturn(false);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+
+        // Enable force show flag.
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
+
+        // Case 1: Bottom sheet not shown yet -> should not show IPH.
+        assertFalse(
+                NtpCustomizationPromoManager.canShowCustomizationIph(
+                        mTab, mWindowAndroid, /* isTablet= */ false));
+
+        // Case 2: Bottom sheet shown, but within cool down period (e.g., 6 days ago).
+        long sixDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(6).toMillis();
+        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(sixDaysAgo);
+        assertFalse(
+                NtpCustomizationPromoManager.canShowCustomizationIph(
+                        mTab, mWindowAndroid, /* isTablet= */ false));
+
+        // Case 3: Bottom sheet shown, outside cool down period (e.g., 8 days ago).
+        long eightDaysAgo = TimeUtils.uptimeMillis() - Duration.ofDays(8).toMillis();
+        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(eightDaysAgo);
+        assertTrue(
+                NtpCustomizationPromoManager.canShowCustomizationIph(
+                        mTab, mWindowAndroid, /* isTablet= */ false));
+
+        // Reset flag and preferences.
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
 }

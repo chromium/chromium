@@ -19,6 +19,8 @@ import java.time.Duration;
 @NullMarked
 /** Manager which handles the trigger logic of NTP customization promos, bottom sheet and IPH. */
 public class NtpCustomizationPromoManager {
+    private static final long COOL_DOWN_PERIOD_MS = Duration.ofDays(7).toMillis();
+
     /**
      * Returns whether to trigger the NTP theme tip bottom sheet showing.
      *
@@ -50,8 +52,7 @@ public class NtpCustomizationPromoManager {
         }
 
         long lastApplyTime = NtpCustomizationUtils.getLastApplyThemeTimestampFromSharedPreference();
-        if (lastApplyTime > 0
-                && (TimeUtils.uptimeMillis() - lastApplyTime) < Duration.ofDays(7).toMillis()) {
+        if (lastApplyTime > 0 && (TimeUtils.uptimeMillis() - lastApplyTime) < COOL_DOWN_PERIOD_MS) {
             return false;
         }
 
@@ -75,6 +76,18 @@ public class NtpCustomizationPromoManager {
                 || !UrlUtilities.isNtpUrl(tab.getUrl())
                 || NtpCustomizationUtils.getNtpBackgroundType() != NtpBackgroundType.DEFAULT) {
             return false;
+        }
+
+        if (ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue()) {
+            if (!NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference()) {
+                return false;
+            }
+            long timestamp =
+                    NtpCustomizationUtils
+                            .getThemeTipBottomSheetShownTimestampFromSharedPreference();
+            if (timestamp > 0 && TimeUtils.uptimeMillis() - timestamp < COOL_DOWN_PERIOD_MS) {
+                return false;
+            }
         }
 
         return true;
