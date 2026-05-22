@@ -95,6 +95,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                                                   collapsible:NO];
     }
     case GeminiFREType::kNewUser: {
+      // TODO(crbug.com/510812963): Add new FRE rows for the updated consent.
       NSArray<GeminiConsentRow*>* rows = @[
         [self standardFirstRowForManaged:isManaged],
         [self standardSecondRowForManaged:isManaged],

@@ -209,6 +209,12 @@ BASE_DECLARE_FEATURE(kGeminiUpdatedEligibility);
 // Returns true if the updated eligibiliy checks for Gemini are enabled.
 bool IsGeminiUpdatedEligibilityEnabled();
 
+// Feature flag to enable the updated Gemini consent.
+BASE_DECLARE_FEATURE(kGeminiUpdatedConsent);
+
+// Returns true if the updated Gemini consent is enabled.
+bool IsGeminiUpdatedConsentEnabled();
+
 // Feature flag for enabling the image remixing tool in the Gemini floaty.
 BASE_DECLARE_FEATURE(kGeminiImageRemixTool);
 bool IsGeminiImageRemixToolEnabled();

@@ -851,6 +851,10 @@ inline constexpr char kGeminiUnaryMigrationName[] = "Gemini Unary Migration";
 inline constexpr char kGeminiUnaryMigrationDescription[] =
     "Enables the unary network migration for Gemini.";
 
+inline constexpr char kGeminiUpdatedConsentName[] = "Gemini Updated Consent";
+inline constexpr char kGeminiUpdatedConsentDescription[] =
+    "Enables the updated Gemini consent flow.";
+
 inline constexpr char kGeminiUpdatedEligibilityName[] =
     "Gemini Updated Eligibility";
 inline constexpr char kGeminiUpdatedEligibilityDescription[] =

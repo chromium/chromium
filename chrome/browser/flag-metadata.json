@@ -5084,6 +5084,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "gemini-updated-consent",
+    "owners": [
+      "fbeauchamp@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "gemini-updated-eligibility",
     "owners": [
       "fbeauchamp@google.com",

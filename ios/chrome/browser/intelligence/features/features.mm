@@ -388,6 +388,12 @@ bool IsGeminiUpdatedEligibilityEnabled() {
   return base::FeatureList::IsEnabled(kGeminiUpdatedEligibility);
 }
 
+BASE_FEATURE(kGeminiUpdatedConsent, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiUpdatedConsentEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiUpdatedConsent);
+}
+
 BASE_FEATURE(kGeminiImageRemixTool, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiImageRemixToolEnabled() {
