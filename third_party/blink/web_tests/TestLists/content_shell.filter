@@ -10,6 +10,7 @@
 wpt_internal/*
 virtual/threaded/wpt_internal/*
 virtual/attribution-reporting-debug-mode/wpt_internal/*
+virtual/background-fetch-service-worker-allowed/wpt_internal/*
 virtual/stable/wpt_internal/*
 virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*

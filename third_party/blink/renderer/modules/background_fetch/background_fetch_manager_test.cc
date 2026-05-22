@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -182,6 +183,40 @@ TEST_F(BackgroundFetchManagerTest, BlobsExtracted) {
   EXPECT_EQ(fetch_api_requests[0]->blob->size(), body_text.length());
 
   EXPECT_FALSE(fetch_api_requests[1]->blob);
+}
+
+TEST_F(BackgroundFetchManagerTest, ParseAllowlistEmpty) {
+  auto origins = BackgroundFetchManager::ParseAllowlist("");
+  EXPECT_TRUE(origins.empty());
+}
+
+TEST_F(BackgroundFetchManagerTest, ParseAllowlistSingleOrigin) {
+  auto origins = BackgroundFetchManager::ParseAllowlist("https://example.com");
+  EXPECT_EQ(origins.size(), 1u);
+  scoped_refptr<const SecurityOrigin> expected =
+      SecurityOrigin::CreateFromString("https://example.com");
+  EXPECT_TRUE(origins.Contains(expected));
+}
+
+TEST_F(BackgroundFetchManagerTest, ParseAllowlistMultipleOrigins) {
+  auto origins = BackgroundFetchManager::ParseAllowlist(
+      "https://example.com, https://api.allowed-origin.org,http://loopback.ip");
+  EXPECT_EQ(origins.size(), 3u);
+
+  EXPECT_TRUE(origins.Contains(
+      SecurityOrigin::CreateFromString("https://example.com")));
+  EXPECT_TRUE(origins.Contains(
+      SecurityOrigin::CreateFromString("https://api.allowed-origin.org")));
+  EXPECT_TRUE(
+      origins.Contains(SecurityOrigin::CreateFromString("http://loopback.ip")));
+}
+
+TEST_F(BackgroundFetchManagerTest, ParseAllowlistInvalidAndOpaqueOrigins) {
+  auto origins = BackgroundFetchManager::ParseAllowlist(
+      "data:text/html,https://example.com,opaque");
+  EXPECT_EQ(origins.size(), 1u);
+  EXPECT_TRUE(origins.Contains(
+      SecurityOrigin::CreateFromString("https://example.com")));
 }
 
 }  // namespace blink

@@ -199,6 +199,14 @@ BASE_FEATURE_PARAM(bool,
                    "background-code-cache-decoder-start",
                    true);
 
+BASE_FEATURE(kRestrictBackgroundFetchFromServiceWorker,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kBackgroundFetchFromServiceWorkerAllowListStr,
+                   &kRestrictBackgroundFetchFromServiceWorker,
+                   "allowlist",
+                   "");
+
 // Redefine the oklab and oklch spaces to have gamut mapping baked into them.
 // https://crbug.com/1508329
 BASE_FEATURE(kBakedGamutMapping, base::FEATURE_DISABLED_BY_DEFAULT);

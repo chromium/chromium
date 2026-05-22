@@ -202,6 +202,26 @@
     "expires": "Jul 2, 2026"
   },
   {
+    "prefix": "background-fetch-service-worker-allowed",
+    "owners": [
+      "sisidovski@chromium.org"
+    ],
+    "platforms": [
+      "Android",
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "wpt_internal/background-fetch/fetch-succeeds-with-allowlist.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=RestrictBackgroundFetchFromServiceWorker:allowlist/https%3A%2F%2Fweb-platform.test%3A8444%2Chttps%3A%2F%2Fwww1.web-platform.test%3A8444%2Chttps%3A%2F%2F127.0.0.1%3A8444%2Chttps%3A%2F%2F127.0.0.1%3A8443%2Chttps%3A%2F%2Fweb-platform.test%3A8443"
+    ],
+    "expires": "Dec 1, 2026"
+  },
+  {
     "prefix": "audio-decoder-correctness",
     "owners": ["jophba@chromium.org"],
     "platforms": ["Android", "Fuchsia", "Linux", "Mac", "Win", "Webview"],

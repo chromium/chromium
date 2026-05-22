@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
@@ -43,6 +44,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 using offline_items_collection::ContentId;
@@ -842,29 +844,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       "This origin does not have permission to start a fetch."));
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromServiceWorker) {
-  auto* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  DCHECK(settings_map);
-
-  // Give the needed permissions.
-  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
-                CONTENT_SETTING_ALLOW);
-
-  // The fetch should succeed.
-  offline_content_provider_observer_->ResumeOnNextUpdate();
-  ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
-      "StartFetchFromServiceWorker()", "backgroundfetchsuccess"));
-
-  // Revoke Automatic Downloads permission.
-  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
-                CONTENT_SETTING_BLOCK);
-
-  // This should fail without the Automatic Downloads permission.
-  ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
-      "StartFetchFromServiceWorker()", "permissionerror"));
-}
-
 // TODO(crbug.com/40805915): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                        DISABLED_FetchFromServiceWorkerWithAsk) {
@@ -1031,4 +1010,55 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(0u, entries.size());
+}
+
+class BackgroundFetchKillswitchBrowserTest
+    : public BackgroundFetchBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BackgroundFetchKillswitchBrowserTest() {
+    if (IsRestrictBackgroundFetchFromServiceWorkerEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kRestrictBackgroundFetchFromServiceWorker);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kRestrictBackgroundFetchFromServiceWorker);
+    }
+  }
+
+ protected:
+  bool IsRestrictBackgroundFetchFromServiceWorkerEnabled() {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackgroundFetchKillswitchBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(BackgroundFetchKillswitchBrowserTest,
+                       FetchFromServiceWorker) {
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+  if (IsRestrictBackgroundFetchFromServiceWorkerEnabled()) {
+    // If killswitch is enabled, the fetch should fail with a permission error.
+    ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
+        "StartFetchFromServiceWorker()", "permissionerror"));
+  } else {
+    // If killswitch is disabled, the fetch should succeed.
+    offline_content_provider_observer_->ResumeOnNextUpdate();
+    ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
+        "StartFetchFromServiceWorker()", "backgroundfetchsuccess"));
+
+    // Revoke Automatic Downloads permission.
+    SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                  CONTENT_SETTING_BLOCK);
+
+    // This should fail without the Automatic Downloads permission.
+    ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
+        "StartFetchFromServiceWorker()", "permissionerror"));
+  }
 }
