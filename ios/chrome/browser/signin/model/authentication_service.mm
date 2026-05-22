@@ -656,7 +656,9 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
     return;
   }
 
-  SignOut(signin_metrics::ProfileSignout::kAbortSignin, nil);
+  MultiProfileSignOutForProfile(profile_->AsWeakPtr(),
+                                signin_metrics::ProfileSignout::kAbortSignin,
+                                base::DoNothing());
 }
 
 void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
