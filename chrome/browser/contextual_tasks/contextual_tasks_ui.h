@@ -340,8 +340,6 @@ class ContextualTasksUI
   // Update the task's details in the WebUI.
   void PushTaskDetailsToPage();
 
-  bool CanExpandToFullTab();
-
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
 
   void UpdateExpandButtonEnabled(bool enabled) override;
@@ -425,6 +423,7 @@ class ContextualTasksUI
   WebUIState previous_web_ui_state_ = WebUIState::kUnknown;
   bool was_ai_page_ = false;
   bool is_lens_overlay_showing_ = false;
+  bool is_contextual_tasks_eligible_on_init_ = false;
 
   // Scoped observation for contextual_tasks_service_.
   base::ScopedObservation<contextual_tasks::ContextualTasksService,

@@ -25,6 +25,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
@@ -606,11 +607,19 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       base::JoinString(contextual_tasks::GetContextualTasksSignInDomains(),
                        ","));
 
+  // Determine and cache contextual tasks eligibility on initialization. This
+  // prevents the expand button from dynamically appearing or changing state
+  // mid-session, avoiding a jarring user experience.
+  is_contextual_tasks_eligible_on_init_ =
+      ui_service_ && ui_service_->GetEligibilityManager() &&
+      ui_service_->GetEligibilityManager()->IsEligible();
+
   // Expand button experiment state.
   source->AddBoolean(
       "expandButtonEnabled",
-      contextual_tasks::GetExpandButtonOption() ==
-          contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
+      is_contextual_tasks_eligible_on_init_ &&
+          contextual_tasks::GetExpandButtonOption() ==
+              contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
 
   source->AddBoolean("caretAnimationEnabled",
                      base::FeatureList::IsEnabled(
@@ -1322,7 +1331,10 @@ void ContextualTasksUI::PushTaskDetailsToPage() {
 }
 
 bool ContextualTasksUI::CanExpandToFullTab() const {
-  return was_ai_page_;
+  // Employs the cached contextual tasks eligibility value calculated on
+  // initialization. Mid-session updates are ignored to ensure the expand
+  // affordance remains static and consistent.
+  return was_ai_page_ && is_contextual_tasks_eligible_on_init_;
 }
 
 mojo::Remote<contextual_tasks::mojom::Page>&

@@ -156,10 +156,15 @@ void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
     if (contents) {
       auto* ui = contextual_tasks::GetWebUiInterface(contents);
       if (ui) {
+        // The expand button option is enabled if the experimental flag is set,
+        // provided that the WebUI is eligible to expand to a full tab (checking
+        // co-browse eligibility strictly from its static load-time cached
+        // state).
         bool enabled =
-            IsVerticalTabOrIsImmersiveMode() ||
-            (contextual_tasks::GetExpandButtonOption() ==
-             contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
+            (IsVerticalTabOrIsImmersiveMode() ||
+             (contextual_tasks::GetExpandButtonOption() ==
+              contextual_tasks::ExpandButtonOption::kSidePanelExpandButton)) &&
+            ui->CanExpandToFullTab();
 
         ui->UpdateExpandButtonEnabled(enabled);
       }

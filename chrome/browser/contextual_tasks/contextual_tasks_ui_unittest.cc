@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -24,6 +25,8 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/common/content_features.h"
@@ -123,6 +126,29 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
 
+class FakeContextualTasksEligibilityManager
+    : public ContextualTasksEligibilityManager {
+ public:
+  FakeContextualTasksEligibilityManager()
+      : ContextualTasksEligibilityManager(nullptr, nullptr, nullptr) {
+    MaybeNotifyEligibilityChanged();
+  }
+  ~FakeContextualTasksEligibilityManager() override = default;
+
+  void SetIsEligible(bool eligible) {
+    is_eligible_ = eligible;
+    MaybeNotifyEligibilityChanged();
+  }
+
+  bool IsEligibleWithoutIdentity() const override { return is_eligible_; }
+
+ protected:
+  bool CalculateEligibility() const override { return is_eligible_; }
+
+ private:
+  bool is_eligible_ = true;
+};
+
 std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
     const GURL& url) {
   auto nav_handle = std::make_unique<content::MockNavigationHandle>();
@@ -145,6 +171,17 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
 
     profile_ =
         testing_profile_manager_->CreateTestingProfile(kTestingProfileName);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        profile_,
+        base::BindLambdaForTesting([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+              *Profile::FromBrowserContext(context)->GetPrefs(),
+              /*template_url_service=*/nullptr,
+              /*url_loader_factory=*/nullptr,
+              /*identity_manager=*/nullptr);
+        }));
 
     auto contextual_tasks_service = std::make_unique<
         testing::NiceMock<contextual_tasks::MockContextualTasksService>>();
@@ -184,6 +221,8 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
     service_for_nav_ = nullptr;
     contextual_tasks_service_ = nullptr;
     if (profile_) {
+      AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+          profile_, base::NullCallback());
       ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
           profile_, base::NullCallback());
       ContextualTasksServiceFactory::GetInstance()->SetTestingFactory(
@@ -1081,6 +1120,56 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_UpdatesThemeFromCsParam) {
       wc->GetOrCreateWebPreferences();
   EXPECT_EQ(updated_prefs.preferred_color_scheme,
             blink::mojom::PreferredColorScheme::kDark);
+}
+
+TEST_F(ContextualTasksUiTest, CanExpandToFullTab_CobrowseEligible) {
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(true);
+  EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillRepeatedly(Return(&eligibility_manager));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  controller.SetIsAiPage(true);
+  EXPECT_TRUE(controller.CanExpandToFullTab());
+}
+
+TEST_F(ContextualTasksUiTest, CanExpandToFullTab_NotCobrowseEligible) {
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(false);
+  EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillRepeatedly(Return(&eligibility_manager));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  controller.SetIsAiPage(true);
+  EXPECT_FALSE(controller.CanExpandToFullTab());
+}
+
+TEST_F(ContextualTasksUiTest, CanExpandToFullTab_BecomesEligibleMidSession) {
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(false);
+  EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillRepeatedly(Return(&eligibility_manager));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  // Initially ineligible on load.
+  controller.SetIsAiPage(true);
+  EXPECT_FALSE(controller.CanExpandToFullTab());
+
+  // Dynamic eligibility change mid-session to eligible.
+  eligibility_manager.SetIsEligible(true);
+
+  // The cached eligibility value should remain false, keeping the button
+  // hidden.
+  EXPECT_FALSE(controller.CanExpandToFullTab());
 }
 
 }  // namespace contextual_tasks
