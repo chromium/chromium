@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
@@ -814,6 +816,80 @@ public class SnackbarTest {
         TimeUnit.MILLISECONDS.sleep(timeout + 100);
         pollSnackbarCondition(
                 "Snackbar should eventually time out", () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarResizeOnParentOverrideResize() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "Test resize",
+                        mDefaultController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+
+        // Show snackbar and override parent to alternate parent
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    mManager.pushParentViewOverride(
+                            ParentOverrideSlot.ONE_OFF, sAlternateParent1, null);
+                });
+        pollSnackbarCondition("Snackbar not shown", () -> mManager.isShowing());
+
+        // Get initial width of alternate parent
+        final int[] originalWidth = new int[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    originalWidth[0] = sAlternateParent1.getWidth();
+                });
+
+        // Simulate resize of alternate parent
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    ViewGroup.LayoutParams lp = sAlternateParent1.getLayoutParams();
+                    lp.width = originalWidth[0] / 2;
+                    sAlternateParent1.setLayoutParams(lp);
+                });
+
+        // Wait for layout and verify snackbar width matches the new parent width (minus margins)
+        pollSnackbarCondition(
+                "Snackbar did not resize to fit new parent width",
+                () -> {
+                    SnackbarView view = mManager.getCurrentSnackbarViewForTesting();
+                    if (view == null) return false;
+                    View containerView = view.getContainerViewForTesting();
+                    if (containerView == null) return false;
+
+                    int expectedWidth =
+                            Math.min(
+                                    sActivity
+                                            .getResources()
+                                            .getDimensionPixelSize(
+                                                    org.chromium.chrome.ui.messages.R.dimen
+                                                            .snackbar_width_max),
+                                    sAlternateParent1.getWidth()
+                                            - 2
+                                                    * sActivity
+                                                            .getResources()
+                                                            .getDimensionPixelSize(
+                                                                    org.chromium.chrome.ui.messages
+                                                                            .R.dimen
+                                                                            .snackbar_floating_margin));
+                    return containerView.getWidth() == expectedWidth;
+                });
+
+        // Clean up: restore alternate parent width
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    ViewGroup.LayoutParams lp = sAlternateParent1.getLayoutParams();
+                    lp.width = originalWidth[0];
+                    sAlternateParent1.setLayoutParams(lp);
+                    mManager.popParentViewOverride(ParentOverrideSlot.ONE_OFF);
+                });
     }
 
     private void pollSnackbarCondition(String message, Supplier<Boolean> condition) {
