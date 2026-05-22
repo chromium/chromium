@@ -200,12 +200,21 @@ bool GlicActorTaskIconManager::RequiresAttention(TaskState state) {
 bool GlicActorTaskIconManager::RequiresTaskProcessing(
     TaskState state,
     glic::mojom::FeatureMode feature_mode) {
-  if (feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
-      (state == TaskState::kFinished || state == TaskState::kFailed)) {
+  if (ShouldSuppressNotification(feature_mode, state)) {
     return false;
   }
   return GlicActorTaskIconManager::RequiresAttention(state) ||
          state == TaskState::kFinished || state == TaskState::kFailed;
+}
+
+// static
+bool GlicActorTaskIconManager::ShouldSuppressNotification(
+    glic::mojom::FeatureMode feature_mode,
+    TaskState state) {
+  return base::FeatureList::IsEnabled(
+             features::kGlicExperimentalTriggeringSuppressDoneNotification) &&
+         feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
+         (state == TaskState::kFinished || state == TaskState::kFailed);
 }
 
 // static
@@ -220,9 +229,11 @@ bool GlicActorTaskIconManager::ShouldShowBubble(
   if (GlicActorTaskIconManager::RequiresAttention(state)) {
     return true;
   }
+  if (ShouldSuppressNotification(feature_mode, state)) {
+    return false;
+  }
   return (state == TaskState::kFinished || state == TaskState::kFailed) &&
-         duration != ActorTask::TaskDuration::kTransient &&
-         feature_mode != glic::mojom::FeatureMode::kExperimentalTriggering;
+         duration != ActorTask::TaskDuration::kTransient;
 }
 
 }  // namespace glic

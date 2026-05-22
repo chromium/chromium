@@ -411,4 +411,44 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->UpdateTaskIconComponents(task_id);
 }
 
+TEST_F(GlicActorTaskIconManagerTest,
+       ExperimentalTriggeringTaskShowsDoneNotificationWhenFlagDisabled) {
+  base::test::ScopedFeatureList disabled_features;
+  disabled_features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringSuppressDoneNotification);
+
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+
+  EXPECT_CALL(mock_nudge_subscriber_,
+              OnStateChanged(/*show_bubble=*/true,
+                             Field(&ActorTaskNudgeState::text,
+                                   ActorTaskNudgeState::Text::kCompleteTasks)));
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged()).Times(2);
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  manager()->UpdateTaskIconComponents(task_id);
+}
+
+TEST_F(GlicActorTaskIconManagerTest,
+       ShouldShowBubble_FeatureModeRulesWithFlagDisabled) {
+  base::test::ScopedFeatureList disabled_features;
+  disabled_features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringSuppressDoneNotification);
+
+  // Experimental Triggering task in kFinished state should show the
+  // bubble when suppression flag is disabled.
+  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kFinished,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+
+  // Experimental Triggering task in kFailed state should show the
+  // bubble when suppression flag is disabled.
+  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kFailed,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+}
+
 }  // namespace glic

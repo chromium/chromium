@@ -1476,6 +1476,13 @@ inline constexpr char kGlicExperimentalTriggeringName[] =
     "Glic experimental triggering";
 inline constexpr char kGlicExperimentalTriggeringDescription[] =
     "Enables GLIC experimental triggering";
+inline constexpr char
+    kGlicExperimentalTriggeringSuppressDoneNotificationName[] =
+        "Glic experimental triggering suppress done notification";
+inline constexpr char
+    kGlicExperimentalTriggeringSuppressDoneNotificationDescription[] =
+        "Suppresses the done notification for GLIC experimental triggering "
+        "tasks";
 inline constexpr char kGlicActorAutofillName[] = "Glic actor autofill";
 inline constexpr char kGlicActorAutofillDescription[] =
     "Enables autofill actions for the Glic actor. Specific fillable types may "

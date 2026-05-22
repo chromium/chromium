@@ -202,6 +202,8 @@ const base::FeatureParam<double> kGlicActorApcComparisonSamplingRate{
     &kGlicActorApcComparison, "sampling-rate", 0.1};
 
 BASE_FEATURE(kGlicExperimentalTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicExperimentalTriggeringSuppressDoneNotification,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOptInBypass,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOpenWindowIfNone,
