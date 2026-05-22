@@ -17,6 +17,7 @@ import "services/network/public/mojom/timing_allow_origin.mojom";
 import "services/network/public/mojom/declarative_performance_observer.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/x_frame_options.mojom";
+import "url/mojom/url.mojom";
 
 enum OriginAgentClusterValue {
   kAbsent,  // No Origin-Agent-Cluster header specified.
@@ -164,6 +165,10 @@ struct ParsedHeaders {
   // The parsed DeclarativePerformanceObserverPolicy.
   // https://github.com/explainers-by-googlers/declarative-performance-observer
   DeclarativePerformanceObserverPolicy? declarative_performance_observer_policy;
+
+  // The parsed value of the on-prefetch-activation header. See:
+  // https://github.com/explainers-by-googlers/prefetch-activation-beacon
+  url.mojom.Url? prefetch_activation_beacon_endpoint;
 
   // Please update `CheckParsedHeadersEquals` after adding new fields.
 };

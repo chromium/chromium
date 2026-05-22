@@ -182,6 +182,12 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
     }
   }
 
+  if (std::optional<std::string> prefetch_activation_beacon =
+          headers->GetNormalizedHeader("on-prefetch-activation")) {
+    parsed_headers->prefetch_activation_beacon_endpoint =
+        url.Resolve(*prefetch_activation_beacon);
+  }
+
   return parsed_headers;
 }
 
