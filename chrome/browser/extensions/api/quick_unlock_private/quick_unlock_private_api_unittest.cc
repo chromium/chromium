@@ -193,12 +193,12 @@ class QuickUnlockPrivateUnitTest
         std::make_unique<ash::AuthSessionStorageImpl>(
             ash::UserDataAuthClient::Get()));
 
-    // Manually call InitializeExtensionService() instead of calling
-    // ExtensionApiUnittest::SetUp().
     ExtensionServiceTestBase::SetUp();
+
     ExtensionServiceInitParams params;
     params.testing_factories = GetTestingFactories();
     InitializeExtensionService(std::move(params));
+
     set_extension(ExtensionBuilder("Test").Build());
 
     // Retrieve the TestingPrefServiceSyncable that was automatically created.
@@ -254,7 +254,7 @@ class QuickUnlockPrivateUnitTest
     test_api_ = std::make_unique<ash::quick_unlock::TestApi>(
         /*override_quick_unlock=*/true);
     test_api_->EnablePinByPolicy(ash::quick_unlock::Purpose::kAny);
-    ash::quick_unlock::PinBackend::Initialize();
+    ash::quick_unlock::PinBackend::ResetForTesting();
 
     base::RunLoop().RunUntilIdle();
 
@@ -267,9 +267,9 @@ class QuickUnlockPrivateUnitTest
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
 
-    test_api_.reset();
-
     ExtensionApiUnittest::TearDown();
+
+    test_api_.reset();
 
     ash::SystemSaltGetter::Shutdown();
     ash::UserDataAuthClient::Shutdown();

@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
-#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
@@ -252,7 +251,6 @@ class WizardControllerTestBase : public ::testing::Test {
     // PreProfileInit:
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
     session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
-    quick_unlock::PinBackend::Initialize();
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     CHECK(profile_manager_->SetUp());
@@ -350,11 +348,6 @@ class WizardControllerTestBase : public ::testing::Test {
     InstallAttributesClient::Shutdown();
     BiodClient::Shutdown();
     DBusThreadManager::Shutdown();
-
-    // TODO(crbug.com/498416395): We should refactor PinBackend and
-    // shutdown/destroy it in the reverse order of initialization.
-    quick_unlock::PinBackend::Shutdown();
-
     StatsReportingController::Shutdown();
     cros_settings_.reset();
 

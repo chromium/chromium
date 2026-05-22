@@ -183,7 +183,6 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/certificate_provider",
-    "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash/assistant",
