@@ -1,6 +1,6 @@
 bot,repeat,shard,flags
 android-pixel10-perf,1,4,--fileserver --debug --disable-field-trials
-android-pixel9-perf,1,4,--fileserver --debug
-android-pixel9-pro-perf,1,4,--fileserver --debug
-android-pixel9-pro-xl-perf,1,4,--fileserver --debug
+android-pixel9-perf,1,4,--fileserver --debug --disable-field-trials
+android-pixel9-pro-perf,1,4,--fileserver --debug --disable-field-trials
+android-pixel9-pro-xl-perf,1,4,--fileserver --debug --disable-field-trials
 win-11-perf,1,20,

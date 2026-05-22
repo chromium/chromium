@@ -65,7 +65,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         }
