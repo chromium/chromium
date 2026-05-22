@@ -174,7 +174,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
             return true;
         }
-        if (mTabBottomSheetCoordinator.tryToShowBottomSheet(animate, startsExpanded)) {
+        if (!mSuppressBottomSheetForTesting
+                && mTabBottomSheetCoordinator.tryToShowBottomSheet(animate, startsExpanded)) {
             // Successfully showed bottom sheet.
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
             return true;
@@ -340,6 +341,12 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
 
     public @Nullable NativeInterfaceDelegate getNativeInterfaceDelegateForTesting() {
         return mNativeInterfaceDelegate;
+    }
+
+    private boolean mSuppressBottomSheetForTesting;
+
+    public void suppressBottomSheetForTesting(boolean suppress) {
+        mSuppressBottomSheetForTesting = suppress;
     }
 
     public void setReadAloudActivePlaybackTabSupplierForTesting(

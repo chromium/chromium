@@ -97,6 +97,11 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
   tab_bottom_sheet_bridge_->Close(/* animate= */ !options.suppress_animations);
 }
 
+void GlicSidePanelCoordinatorAndroid::SuppressBottomSheetForTesting(  // IN-TEST
+    bool suppress) {
+  tab_bottom_sheet_bridge_->SuppressBottomSheetForTesting(suppress);  // IN-TEST
+}
+
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
   return state_ == State::kShown;
 }
