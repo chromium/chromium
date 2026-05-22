@@ -53,9 +53,9 @@ namespace {
 constexpr int kToolbarPadding = 4;
 constexpr int kToolbarInitialOffset = 20;
 constexpr int kSeparatorHorizontalPadding = 8;
-constexpr int kFeatureIconSize = 12;
 constexpr int kControlIconSize = 16;
 constexpr int kActionIconSize = 20;
+constexpr int kLabelLeftMargin = 12;
 
 class IndigoOverlayTargeterDelegate : public views::ViewTargeterDelegate {
  public:
@@ -184,13 +184,10 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                   .SetDefault(views::kMarginsKey, gfx::Insets(kToolbarPadding))
                   .SetCollapseMargins(true)
                   .AddChildren(
-                      views::Builder<views::ImageView>().SetImage(
-                          ui::ImageModel::FromVectorIcon(
-                              features::IsRoundedIconsEnabled()
-                                  ? vector_icons::kChatSparkIcon
-                                  : vector_icons::kChatSparkOldIcon,
-                              ui::kColorSysOnSurfaceVariant, kFeatureIconSize)),
                       views::Builder<views::Label>()
+                          .SetProperty(
+                              views::kMarginsKey,
+                              gfx::Insets::TLBR(0, kLabelLeftMargin, 0, 0))
                           .SetText(l10n_util::GetStringUTF16(
                               IDS_INDIGO_TOOLBAR_CAPTION))
                           .SetTextContext(views::style::CONTEXT_LABEL)
