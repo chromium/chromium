@@ -82,7 +82,7 @@ class GlicPinnedTabManager {
   virtual void SetPinTrigger(tabs::TabHandle tab_handle,
                              GlicPinTrigger trigger) = 0;
 
-  // Unins the specified tabs. If any of the tab handles correspond to a tab
+  // Unpins the specified tabs. If any of the tab handles correspond to a tab
   // that either doesn't exist or is not pinned, it will be skipped and we will
   // similarly return false to indicate that the function was not fully
   // successful.
