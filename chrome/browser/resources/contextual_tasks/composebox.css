@@ -144,11 +144,15 @@
 }
 
 #composebox::part(composebox) {
+  /* Plus button padding. */
   --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start:
       12px;
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end:
+      8px;
+
+  /* Context menu padding. */
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
       0;
-  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end: 0;
   min-height: var(--composebox-min-height);
 }
 
